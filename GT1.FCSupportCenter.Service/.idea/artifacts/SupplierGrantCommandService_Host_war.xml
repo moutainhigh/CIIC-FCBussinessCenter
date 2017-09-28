@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="SupplierGrantCommandService-Host:war">
+    <output-path>$PROJECT_DIR$/SupplierGrantCommandService-Host/target</output-path>
+    <root id="archive" name="GT1.FCSupportCenter.SupplierGrantCommandService.Host.war">
+      <element id="artifact" artifact-name="SupplierGrantCommandService-Host:war exploded" />
+    </root>
+  </artifact>
+</component>

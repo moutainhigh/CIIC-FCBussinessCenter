@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BounceCommandService-Business/BounceCommandService-Business.iml" filepath="$PROJECT_DIR$/BounceCommandService-Business/BounceCommandService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BounceCommandService-Client/BounceCommandService-Client.iml" filepath="$PROJECT_DIR$/BounceCommandService-Client/BounceCommandService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BounceCommandService-Dao/BounceCommandService-Dao.iml" filepath="$PROJECT_DIR$/BounceCommandService-Dao/BounceCommandService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BounceCommandService-Host/BounceCommandService-Host.iml" filepath="$PROJECT_DIR$/BounceCommandService-Host/BounceCommandService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BounceQueryService-Business/BounceQueryService-Business.iml" filepath="$PROJECT_DIR$/BounceQueryService-Business/BounceQueryService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BounceQueryService-Client/BounceQueryService-Client.iml" filepath="$PROJECT_DIR$/BounceQueryService-Client/BounceQueryService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BounceQueryService-Dao/BounceQueryService-Dao.iml" filepath="$PROJECT_DIR$/BounceQueryService-Dao/BounceQueryService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BounceQueryService-Host/BounceQueryService-Host.iml" filepath="$PROJECT_DIR$/BounceQueryService-Host/BounceQueryService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GT1.FCSupportCenter.Service.iml" filepath="$PROJECT_DIR$/GT1.FCSupportCenter.Service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GT1FCSupportCenterService-Entity/GT1FCSupportCenterService-Entity.iml" filepath="$PROJECT_DIR$/GT1FCSupportCenterService-Entity/GT1FCSupportCenterService-Entity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GT1FCSupportCenterService-Util/GT1FCSupportCenterService-Util.iml" filepath="$PROJECT_DIR$/GT1FCSupportCenterService-Util/GT1FCSupportCenterService-Util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipCommandService-Business/PayslipCommandService-Business.iml" filepath="$PROJECT_DIR$/PayslipCommandService-Business/PayslipCommandService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipCommandService-Client/PayslipCommandService-Client.iml" filepath="$PROJECT_DIR$/PayslipCommandService-Client/PayslipCommandService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipCommandService-Dao/PayslipCommandService-Dao.iml" filepath="$PROJECT_DIR$/PayslipCommandService-Dao/PayslipCommandService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipCommandService-Host/PayslipCommandService-Host.iml" filepath="$PROJECT_DIR$/PayslipCommandService-Host/PayslipCommandService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipQueryService-Business/PayslipQueryService-Business.iml" filepath="$PROJECT_DIR$/PayslipQueryService-Business/PayslipQueryService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipQueryService-Client/PayslipQueryService-Client.iml" filepath="$PROJECT_DIR$/PayslipQueryService-Client/PayslipQueryService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipQueryService-Dao/PayslipQueryService-Dao.iml" filepath="$PROJECT_DIR$/PayslipQueryService-Dao/PayslipQueryService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PayslipQueryService-Host/PayslipQueryService-Host.iml" filepath="$PROJECT_DIR$/PayslipQueryService-Host/PayslipQueryService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantCommandService-Business/SalaryGrantCommandService-Business.iml" filepath="$PROJECT_DIR$/SalaryGrantCommandService-Business/SalaryGrantCommandService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantCommandService-Client/SalaryGrantCommandService-Client.iml" filepath="$PROJECT_DIR$/SalaryGrantCommandService-Client/SalaryGrantCommandService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantCommandService-Dao/SalaryGrantCommandService-Dao.iml" filepath="$PROJECT_DIR$/SalaryGrantCommandService-Dao/SalaryGrantCommandService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantCommandService-Host/SalaryGrantCommandService-Host.iml" filepath="$PROJECT_DIR$/SalaryGrantCommandService-Host/SalaryGrantCommandService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantQueryService-Business/SalaryGrantQueryService-Business.iml" filepath="$PROJECT_DIR$/SalaryGrantQueryService-Business/SalaryGrantQueryService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantQueryService-Client/SalaryGrantQueryService-Client.iml" filepath="$PROJECT_DIR$/SalaryGrantQueryService-Client/SalaryGrantQueryService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantQueryService-Dao/SalaryGrantQueryService-Dao.iml" filepath="$PROJECT_DIR$/SalaryGrantQueryService-Dao/SalaryGrantQueryService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalaryGrantQueryService-Host/SalaryGrantQueryService-Host.iml" filepath="$PROJECT_DIR$/SalaryGrantQueryService-Host/SalaryGrantQueryService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantCommandService-Business/SupplierGrantCommandService-Business.iml" filepath="$PROJECT_DIR$/SupplierGrantCommandService-Business/SupplierGrantCommandService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantCommandService-Client/SupplierGrantCommandService-Client.iml" filepath="$PROJECT_DIR$/SupplierGrantCommandService-Client/SupplierGrantCommandService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantCommandService-Dao/SupplierGrantCommandService-Dao.iml" filepath="$PROJECT_DIR$/SupplierGrantCommandService-Dao/SupplierGrantCommandService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantCommandService-Host/SupplierGrantCommandService-Host.iml" filepath="$PROJECT_DIR$/SupplierGrantCommandService-Host/SupplierGrantCommandService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantQueryService-Business/SupplierGrantQueryService-Business.iml" filepath="$PROJECT_DIR$/SupplierGrantQueryService-Business/SupplierGrantQueryService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantQueryService-Client/SupplierGrantQueryService-Client.iml" filepath="$PROJECT_DIR$/SupplierGrantQueryService-Client/SupplierGrantQueryService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantQueryService-Dao/SupplierGrantQueryService-Dao.iml" filepath="$PROJECT_DIR$/SupplierGrantQueryService-Dao/SupplierGrantQueryService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SupplierGrantQueryService-Host/SupplierGrantQueryService-Host.iml" filepath="$PROJECT_DIR$/SupplierGrantQueryService-Host/SupplierGrantQueryService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxCommandService-Business/TaxCommandService-Business.iml" filepath="$PROJECT_DIR$/TaxCommandService-Business/TaxCommandService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxCommandService-Client/TaxCommandService-Client.iml" filepath="$PROJECT_DIR$/TaxCommandService-Client/TaxCommandService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxCommandService-Dao/TaxCommandService-Dao.iml" filepath="$PROJECT_DIR$/TaxCommandService-Dao/TaxCommandService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxCommandService-Host/TaxCommandService-Host.iml" filepath="$PROJECT_DIR$/TaxCommandService-Host/TaxCommandService-Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxQueryService-Business/TaxQueryService-Business.iml" filepath="$PROJECT_DIR$/TaxQueryService-Business/TaxQueryService-Business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxQueryService-Client/TaxQueryService-Client.iml" filepath="$PROJECT_DIR$/TaxQueryService-Client/TaxQueryService-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxQueryService-Dao/TaxQueryService-Dao.iml" filepath="$PROJECT_DIR$/TaxQueryService-Dao/TaxQueryService-Dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TaxQueryService-Host/TaxQueryService-Host.iml" filepath="$PROJECT_DIR$/TaxQueryService-Host/TaxQueryService-Host.iml" />
+    </modules>
+  </component>
+</project>

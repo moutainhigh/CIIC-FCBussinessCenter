@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="BounceQueryService-Host:war">
+    <output-path>$PROJECT_DIR$/BounceQueryService-Host/target</output-path>
+    <root id="archive" name="GT1.FCSupportCenter.BounceQueryService.Host.war">
+      <element id="artifact" artifact-name="BounceQueryService-Host:war exploded" />
+    </root>
+  </artifact>
+</component>

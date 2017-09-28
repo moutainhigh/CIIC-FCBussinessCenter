@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="TaxQueryService-Host:war">
+    <output-path>$PROJECT_DIR$/TaxQueryService-Host/target</output-path>
+    <root id="archive" name="GT1.FCSupportCenter.TaxQueryService.Host.war">
+      <element id="artifact" artifact-name="TaxQueryService-Host:war exploded" />
+    </root>
+  </artifact>
+</component>

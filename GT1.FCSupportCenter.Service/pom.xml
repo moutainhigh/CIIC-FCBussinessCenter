@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ciicsh</groupId>
+    <artifactId>GT1.FCSupportCenter.Service</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.4.RELEASE</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- spring boot devtools 依赖包. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+            <scope>true</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.33</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.42</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <finalName>GT1.FCSupportCenter.Service</finalName>
+    </build>
+
+    <modules>
+        <module>SalaryGrantQueryService-Business</module>
+        <module>SalaryGrantQueryService-Dao</module>
+        <module>GT1FCSupportCenterService-Entity</module>
+        <module>GT1FCSupportCenterService-Util</module>
+        <module>SalaryGrantQueryService-Client</module>
+        <module>SalaryGrantQueryService-Host</module>
+        <module>SalaryGrantCommandService-Business</module>
+        <module>SalaryGrantCommandService-Dao</module>
+        <module>SalaryGrantCommandService-Client</module>
+        <module>SalaryGrantCommandService-Host</module>
+        <module>SupplierGrantQueryService-Business</module>
+        <module>SupplierGrantQueryService-Dao</module>
+        <module>SupplierGrantQueryService-Client</module>
+        <module>SupplierGrantQueryService-Host</module>
+        <module>SalaryGrantQueryService-Client</module>
+        <module>SupplierGrantCommandService-Business</module>
+        <module>SupplierGrantCommandService-Dao</module>
+        <module>SupplierGrantCommandService-Client</module>
+        <module>SupplierGrantCommandService-Host</module>
+        <module>BounceQueryService-Dao</module>
+        <module>BounceQueryService-Business</module>
+        <module>BounceQueryService-Host</module>
+        <module>BounceQueryService-Client</module>
+        <module>BounceCommandService-Dao</module>
+        <module>BounceCommandService-Business</module>
+        <module>BounceCommandService-Client</module>
+        <module>BounceCommandService-Host</module>
+        <module>PayslipQueryService-Dao</module>
+        <module>PayslipQueryService-Business</module>
+        <module>PayslipQueryService-Client</module>
+        <module>PayslipQueryService-Host</module>
+        <module>PayslipCommandService-Dao</module>
+        <module>PayslipCommandService-Client</module>
+        <module>PayslipCommandService-Business</module>
+        <module>PayslipCommandService-Host</module>
+        <module>TaxQueryService-Dao</module>
+        <module>TaxQueryService-Business</module>
+        <module>TaxQueryService-Client</module>
+        <module>TaxQueryService-Host</module>
+        <module>TaxCommandService-Dao</module>
+        <module>TaxCommandService-Business</module>
+        <module>TaxCommandService-Client</module>
+        <module>TaxCommandService-Host</module>
+    </modules>
+
+
+</project>
