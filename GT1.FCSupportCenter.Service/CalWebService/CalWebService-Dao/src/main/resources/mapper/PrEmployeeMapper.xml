@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ciicsh.zorro.leopardwebservice.dao.IPrEmployeeMapper">
+
+    <resultMap id="EmployeeMap" type="PrEmployeeEntity" >
+        <id property="employeeId" column="EmployeeID"/>
+        <result property="employeeName" column="EmployeeName"/>
+        <result property="employeeNameEn" column="EmployeeNameEn"/>
+        <result property="formerName" column="FormerName"/>
+        <result property="gender" column="Gender"/>
+        <result property="birthday" column="Birthday"/>
+        <result property="certificateType" column="CertificateType"/>
+        <result property="certificateNumber" column="CertificateNumber"/>
+        <result property="countryCode" column="CountryCode"/>
+        <result property="provinceCode" column="ProvinceCode"/>
+        <result property="cityCode" column="CityCode"/>
+        <result property="isHKMT" column="IsHKMT"/>
+        <result property="personalProperty" column="PersonalProperty"/>
+        <result property="archiveLocation" column="ArchiveLocation"/>
+        <result property="marriage" column="Marriage"/>
+        <result property="marriageDate" column="MarriageDate"/>
+        <result property="childrenNumber" column="ChildrenNumber"/>
+        <result property="departName" column="DepartName"/>
+        <result property="position" column="Position"/>
+        <result property="onBoardDate" column="OnBoardDate"/>
+        <result property="remark" column="Remark"/>
+        <result property="isActive" column="IsActive"/>
+        <result property="dataChangeCreateTime" column="DataChange_CreateTime"/>
+        <result property="dataChangeLastTime" column="DataChange_LastTime"/>
+        <result property="createdBy" column="CreatedBy"/>
+        <result property="modifiedBy" column="ModifiedBy"/>
+    </resultMap>
+
+    <select id="selectList" parameterType="PrEmployeeEntity" resultMap="EmployeeMap">
+        SELECT
+          <include refid="Employee_All_Select_Column" />
+        FROM
+          PR_Employee
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="employeeId != null">
+                AND EmployeeID = #{id}
+            </if>
+            <if test="employeeName != null">
+                AND EmployeeName = #{employeeName}
+            </if>
+            <if test="employeeNameEn != null">
+                AND EmployeeNameEn = #{employeeNameEn}
+            </if>
+            <if test="formerName != null">
+                AND FormerName = #{formerName}
+            </if>
+            <if test="gender != null">
+                AND Gender = #{gender}
+            </if>
+            <if test="birthday != null">
+                AND Birthday = #{birthday}
+            </if>
+            <if test="certificateType != null">
+                AND CertificateType = #{certificateType}
+            </if>
+            <if test="certificateNumber != null">
+                AND CertificateNumber = #{certificateNumber}
+            </if>
+            <if test="countryCode != null">
+                AND CountryCode = #{countryCode}
+            </if>
+            <if test="provinceCode != null">
+                AND ProvinceCode = #{provinceCode}
+            </if>
+            <if test="cityCode != null">
+                AND CityCode = #{cityCode}
+            </if>
+            <if test="isHKMT != null">
+                AND IsHKMT = #{isHKMT}
+            </if>
+            <if test="personalProperty != null">
+                AND PersonalProperty = #{personalProperty}
+            </if>
+            <if test="archiveLocation != null">
+                AND ArchiveLocation = #{archiveLocation}
+            </if>
+            <if test="marriage != null">
+                AND Marriage = #{marriage}
+            </if>
+            <if test="marriageDate != null">
+                AND MarriageDate = #{marriageDate}
+            </if>
+            <if test="childrenNumber != null">
+                AND ChildrenNumber = #{childrenNumber}
+            </if>
+            <if test="remark != null">
+                AND Remark = #{remark}
+            </if>
+            <if test="isActive != null">
+                AND IsActive = #{isActive}
+            </if>
+        </trim>
+    </select>
+
+    <sql id="Employee_All_Select_Column">
+        EmployeeID,
+        EmployeeName,
+        EmployeeNameEn,
+        FormerName,
+        Gender,
+        Birthday,
+        CertificateType,
+        CertificateNumber,
+        CountryCode,
+        ProvinceCode,
+        CityCode,
+        IsHKMT,
+        PersonalProperty,
+        ArchiveLocation,
+        Marriage,
+        MarriageDate,
+        ChildrenNumber,
+        Remark,
+        IsActive,
+        DataChange_CreateTime,
+        DataChange_LastTime,
+        CreatedBy,
+        ModifiedBy
+    </sql>
+
+    <sql id="Employee_All_Insert_Column">
+        EmployeeId,
+        EmployeeName,
+        EmployeeNameEn,
+        FormerName,
+        Gender,
+        Birthday,
+        CertificateType,
+        CertificateNumber,
+        CountryCode,
+        ProvinceCode,
+        CityCode,
+        IsHKMT,
+        PersonalProperty,
+        ArchiveLocation,
+        Marriage,
+        MarriageDate,
+        ChildrenNumber,
+        Remark,
+        IsActive,
+        DataChange_CreateTime,
+        DataChange_LastTime,
+        CreatedBy,
+        ModifiedBy
+    </sql>
+
+</mapper>

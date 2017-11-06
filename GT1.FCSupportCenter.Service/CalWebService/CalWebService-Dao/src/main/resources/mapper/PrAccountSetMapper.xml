@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ciicsh.zorro.leopardwebservice.dao.IPrAccountSetMapper">
+
+    <resultMap id="PrAccountSetMap" type="PrAccountSetEntity">
+        <id property="entityId" javaType="String" column="PRAccountSetID"/>
+        <result property="managementId" column="ManagementId" />
+        <result property="code" column="PRAccountSetCode" />
+        <result property="name" column="PRAccountSetName" />
+        <result property="prGroupId" column="PRGroupId" />
+        <result property="prEmployeeGroupId" column="PREmployeeGroupId" />
+        <result property="startSalaryDate" column="StartSalaryDate" />
+        <result property="endSalaryDate" column="EndSalaryDate" />
+        <result property="taxPeriod" column="TaxPeriod" />
+        <result property="remark" column="Remark" />
+        <result property="isActive" column="IsActive" />
+        <result property="dataChangeCreateTime" column="DataChange_CreateTime" />
+        <result property="dataChangeLastTime" column="DataChange_LastTime" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="modifiedBy" column="ModifiedBy" />
+    </resultMap>
+
+    <select id="selectList" parameterType="PrAccountSetEntity" resultMap="PrAccountSetMap">
+        SELECT
+            <include refid="PR_PayrollAccountSet_All_Columns" />
+        FROM
+            PR_PayrollAccountSet
+        <include refid="whereQuery" />
+    </select>
+
+    <select id="selectItemById" parameterType="String" resultMap="PrAccountSetMap">
+        SELECT
+            <include refid="PR_PayrollAccountSet_All_Columns" />
+        FROM
+            PR_PayrollAccountSet
+        WHERE
+            PRAccountSetID = #{entityId}
+    </select>
+
+    <insert id="insertItem" parameterType="PrAccountSetEntity">
+        INSERT INTO PR_PayrollAccountSet(
+        <include refid="PR_PayrollAccountSet_All_Columns" />
+        )
+        VALUES
+        (
+        #{entityId},
+        #{managementId},
+        #{code},
+        #{name},
+        #{prGroupId},
+        #{prEmployeeGroupId},
+        #{startSalaryDate},
+        #{endSalaryDate},
+        #{taxPeriod},
+        #{remark},
+        1,
+        sysdate(),
+        sysdate(),
+        #{createdBy},
+        #{modifiedBy}
+        )
+    </insert>
+
+    <update id="updateItemById" parameterType="PrEmployeeGroupEntity">
+        UPDATE
+            PR_PayrollAccountSet
+        SET
+        <if test="managementId != null">
+            ManagementId = #{managementId},
+        </if>
+        <if test="name != null">
+            PRAccountSetName = #{name},
+        </if>
+        <if test="prGroupId != null">
+            PRGroupId = #{prGroupId},
+        </if>
+        <if test="prEmployeeGroupId != null">
+            PREmployeeGroupId = #{prEmployeeGroupId},
+        </if>
+        <if test="startSalaryDate != null">
+            StartSalaryDate = #{startSalaryDate},
+        </if>
+        <if test="endSalaryDate != null">
+            EndSalaryDate = #{endSalaryDate},
+        </if>
+        <if test="taxPeriod != null">
+            TaxPeriod = #{taxPeriod},
+        </if>
+        <if test="remark != null">
+            Remark = #{remark},
+        </if>
+        <if test="isActive != null">
+            IsActive = #{isActive},
+        </if>
+        <if test="modifiedBy != null">
+            ModifiedBy = #{modifiedBy},
+        </if>
+        DataChange_LastTime = sysdate()
+        WHERE
+        PRAccountSetID = #{entityId}
+    </update>
+
+    <delete id="deleteItemById" parameterType="String">
+        DELETE FROM
+            PR_PayrollAccountSet
+        WHERE
+            PRAccountSetID = #{entityId}
+    </delete>
+
+    <select id="selectNameList" resultType="String">
+        SELECT
+            PRAccountSetName
+        FROM
+            PR_PayrollAccountSet
+        WHERE
+            ManagementId = #{managementId}
+    </select>
+
+    <sql id="PR_PayrollAccountSet_All_Columns">
+        PRAccountSetID,
+        ManagementId,
+        PRAccountSetCode,
+        PRAccountSetName,
+        PRGroupId,
+        PREmployeeGroupId,
+        StartSalaryDate,
+        EndSalaryDate,
+        TaxPeriod,
+        Remark,
+        IsActive,
+        DataChange_CreateTime,
+        DataChange_LastTime,
+        CreatedBy,
+        ModifiedBy
+    </sql>
+
+    <sql id="whereQuery">
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="entityId != null and entityId != ''">
+                AND PRAccountSetID = #{entityId}
+            </if>
+            <if test="managementId != null and managementId != ''">
+                AND ManagementId = #{managementId}
+            </if>
+            <if test="code != null and code !=''">
+                AND PRAccountSetCode = #{code}
+            </if>
+            <if test="name != null and name != ''">
+                AND PRAccountSetName = #{name}
+            </if>
+            <if test="prGroupId != null and prGroupId != ''">
+                AND PRGroupId = #{prGroupId}
+            </if>
+            <if test="prEmployeeGroupId != null and prEmployeeGroupId != ''">
+                AND PREmployeeGroupId = #{prEmployeeGroupId}
+            </if>
+            <if test="startSalaryDate != null">
+                AND StartSalaryDate = #{startSalaryDate}
+            </if>
+            <if test="endSalaryDate != null">
+                AND EndSalaryDate = #{endSalaryDate}
+            </if>
+            <if test="taxPeriod != null">
+                AND TaxPeriod = #{taxPeriod}
+            </if>
+            <if test="remark != null and remark != ''">
+                AND Remark = #{remark}
+            </if>
+            <if test="isActive != null">
+                AND IsActive = #{isActive}
+            </if>
+        </trim>
+    </sql>
+
+</mapper>

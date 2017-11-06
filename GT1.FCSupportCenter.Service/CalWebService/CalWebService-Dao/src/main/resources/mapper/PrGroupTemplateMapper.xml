@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ciicsh.zorro.leopardwebservice.dao.IPrGroupTemplateMapper">
+
+    <resultMap id="PrGroupTemplateMap" type="PrGroupTemplateEntity">
+        <id property="entityId" column="PRGroupTemplateId"/>
+        <result property="code" column="PRGroupTemplateCode"/>
+        <result property="name" column="PRGroupTemplateName"/>
+        <result property="version" column="Version"/>
+        <result property="remark" column="Remark"/>
+        <result property="isActive" column="IsActive"/>
+        <result property="dataChangeCreateTime" column="DataChange_CreateTime"/>
+        <result property="dataChangeLastTime" column="DataChange_LastTime"/>
+        <result property="createdBy" column="CreatedBy"/>
+        <result property="modifiedBy" column="ModifiedBy"/>
+    </resultMap>
+
+    <select id="selectItemById" resultMap="PrGroupTemplateMap">
+        SELECT
+        <include refid="PrPayrollGroupTemplate_All_Columns"/>
+        FROM
+            PR_PayrollGroupTemplate
+        WHERE
+            PRGroupTemplateId = #{entityId}
+        LIMIT 1
+    </select>
+
+    <select id="selectList" parameterType="PrGroupTemplateEntity" resultMap="PrGroupTemplateMap">
+        SELECT
+        <include refid="PrPayrollGroupTemplate_All_Columns"/>
+        FROM
+        PR_PayrollGroupTemplate
+        <include refid="whereQuery"/>
+    </select>
+
+    <update id="updateItemById" parameterType="PrGroupTemplateEntity">
+        UPDATE PR_PayrollGroupTemplate
+        SET
+        <if test="code != null">
+            PRGroupTemplateCode = #{code},
+        </if>
+        <if test="name != null">
+            PRGroupTemplateName = #{name},
+        </if>
+        <if test="version != null">
+            Version = #{version},
+        </if>
+        <if test="remark != null">
+            Remark = #{remark},
+        </if>
+        <if test="isActive != null">
+            IsActive = #{isActive},
+        </if>
+        <if test="modifiedBy != null">
+            ModifiedBy = #{modifiedBy},
+        </if>
+        DataChange_LastTime = sysdate()
+        WHERE
+        PRGroupTemplateId = #{entityId}
+    </update>
+
+    <insert id="insertItem" parameterType="PrGroupTemplateEntity">
+        INSERT INTO PR_PayrollGroupTemplate(
+        <include refid="PrPayrollGroupTemplate_All_Columns"/>
+        )
+        VALUES
+        (
+        #{entityId},
+        #{code},
+        #{name},
+        #{version},
+        #{remark},
+        1,
+        sysdate(),
+        sysdate(),
+        #{createdBy},
+        #{modifiedBy}
+        )
+    </insert>
+
+    <delete id="deleteItemById">
+        DELETE FROM
+            PR_PayrollGroupTemplate
+        WHERE
+            PRGroupTemplateId = #{entityId}
+    </delete>
+
+    <select id="selectNameList" resultType="String">
+        SELECT
+            PRGroupTemplateName
+        FROM
+            PR_PayrollGroupTemplate
+    </select>
+    
+    <sql id="PrPayrollGroupTemplate_All_Columns">
+        PRGroupTemplateId,
+        PRGroupTemplateCode,
+        PRGroupTemplateName,
+        Version,
+        Remark,
+        IsActive,
+        DataChange_CreateTime,
+        DataChange_LastTime,
+        CreatedBy,
+        ModifiedBy
+    </sql>
+
+    <sql id="whereQuery">
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="entityId != null and entityId != ''">
+                AND PRGroupTemplateId = #{entityId}
+            </if>
+            <if test="code != null and code !=''">
+                AND PRGroupTemplateCode = #{code}
+            </if>
+            <if test="name != null and name != ''">
+                AND PRGroupTemplateName = #{name}
+            </if>
+            <if test="version != null and version != ''">
+                AND Version = #{version}
+            </if>
+            <if test="remark != null and remark != ''">
+                AND Remark = #{remark}
+            </if>
+            <if test="isActive != null">
+                AND IsActive = #{isActive}
+            </if>
+        </trim>
+    </sql>
+
+</mapper>
