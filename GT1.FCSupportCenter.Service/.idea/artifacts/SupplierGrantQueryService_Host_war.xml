@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="SupplierGrantQueryService-Host:war">
-    <output-path>$PROJECT_DIR$/SupplierGrantQueryService-Host/target</output-path>
-    <root id="archive" name="GT1.FCSupportCenter.SupplierGrantQueryService.Host.war">
-      <element id="artifact" artifact-name="SupplierGrantQueryService-Host:war exploded" />
-    </root>
-  </artifact>
-</component>

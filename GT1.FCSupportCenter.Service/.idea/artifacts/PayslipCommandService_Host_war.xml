@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="PayslipCommandService-Host:war">
-    <output-path>$PROJECT_DIR$/PayslipCommandService-Host/target</output-path>
-    <root id="archive" name="GT1.FCSupportCenter.PayslipCommandService.Host.war">
-      <element id="artifact" artifact-name="PayslipCommandService-Host:war exploded" />
-    </root>
-  </artifact>
-</component>

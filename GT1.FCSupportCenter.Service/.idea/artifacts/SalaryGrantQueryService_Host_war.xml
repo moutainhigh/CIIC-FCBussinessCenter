@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="SalaryGrantQueryService-Host:war">
-    <output-path>$PROJECT_DIR$/SalaryGrantQueryService-Host/target</output-path>
-    <root id="archive" name="GT1.FCSupportCenter.SalaryGrantQueryService.Host.war">
-      <element id="artifact" artifact-name="SalaryGrantQueryService-Host:war exploded" />
-    </root>
-  </artifact>
-</component>
