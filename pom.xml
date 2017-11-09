@@ -52,6 +52,9 @@
 
     <modules>
         <module>CalculateService</module>
+        <module>BounceService</module>
+        <module>BusinessEntity</module>
+        <module>ConsignationService</module>
     </modules>
 
 </project>
