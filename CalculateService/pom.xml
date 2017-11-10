@@ -15,7 +15,13 @@
     </parent>
 
     <modules>
-        <!--<module>CalWebService</module>-->
+        <module>CalDispatchJob</module>
+        <module>CalExecService</module>
+        <module>CalFileImportService</module>
+        <module>CalParameterService</module>
+        <module>CalSalaryGroupGenService</module>
+        <module>CalServiceDataImportService</module>
+        <module>CalWebService</module>
     </modules>
 
 </project>
