@@ -55,6 +55,7 @@
         <module>BounceService</module>
         <module>BusinessEntity</module>
         <module>ConsignationService</module>
+        <module>SalaryGrantService</module>
     </modules>
 
 </project>
