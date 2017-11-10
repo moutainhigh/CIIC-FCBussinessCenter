@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>GT1.FCSupportCenter.SalaryManagementWebService</artifactId>
+        <artifactId>GT1.FCSupportCenter.CalWebService</artifactId>
         <groupId>com.ciicsh</groupId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
@@ -15,20 +15,20 @@
     </properties>
 
     <groupId>com.ciicsh</groupId>
-    <artifactId>GT1.FCSupportCenter.SalaryManagementWebService.Business</artifactId>
+    <artifactId>GT1.FCSupportCenter.CalWebService.Business</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>com.ciicsh</groupId>
-            <artifactId>GT1.FCSupportCenter.SalaryManagementWebService.Dao</artifactId>
+            <artifactId>GT1.FCSupportCenter.CalWebService.Dao</artifactId>
             <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.ciicsh</groupId>
-            <artifactId>GT1.FCSupportCenter.SalaryManagementWebService.Util</artifactId>
+            <artifactId>GT1.FCSupportCenter.CalWebService.Util</artifactId>
             <version>1.0.0</version>
         </dependency>
 
