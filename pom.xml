@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ciicsh</groupId>
-    <artifactId>GT1.FCSupportCenter</artifactId>
+    <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
+    <artifactId>fcsupportcenter-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
 
@@ -19,25 +19,25 @@
     </properties>
 
     <dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>Dalston.SR4</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis.generator</groupId>
-            <artifactId>mybatis-generator-core</artifactId>
-            <version>1.3.5</version>
-        </dependency>
-    </dependencies>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Dalston.SR4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>3.4.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-core</artifactId>
+                <version>1.3.5</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <!--<build>-->
@@ -52,10 +52,14 @@
 
     <modules>
         <module>CalculateService</module>
-        <module>BounceService</module>
         <module>BusinessEntity</module>
-        <module>ConsignationService</module>
-        <module>SalaryGrantService</module>
+        <module>SalaryGrant/SalaryGrant-Util</module>
+        <module>SalaryGrant/SalaryGrant-Client</module>
+        <module>SalaryGrant/SalaryGrantQuery-Business</module>
+        <module>SalaryGrant/SalaryGrantCommand-Business</module>
+        <module>SalaryGrant/SalaryGrantQuery-Host</module>
+        <module>SalaryGrant/SalaryGrantCommand-Host</module>
+        <module>SalaryGrant/SalaryGrant-Dao</module>
     </modules>
 
 </project>
