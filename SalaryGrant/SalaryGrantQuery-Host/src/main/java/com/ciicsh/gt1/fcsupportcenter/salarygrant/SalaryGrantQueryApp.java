@@ -15,18 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by houwanhua on 2017/11/10.
+ * Created by houwanhua on 2017/11/15.
  */
 @SpringBootApplication
 @EnableAutoConfiguration
 public class SalaryGrantQueryApp {
     /**
-     * 在这里我们使�? @Bean注入 fastJsonHttpMessageConvert
+     * 在这里我们使用 @Bean注入 fastJsonHttpMessageConvert
      * @return
      */
     @Bean
     public HttpMessageConverters fastJsonHttpMessageConverters() {
-        // 1、需要先定义�?�? convert 转换消息的对�?;
+        // 1、需要先定义一个 convert 转换消息的对象;
         FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
 
         //2、添加fastJson 的配置信息，比如：是否要格式化返回的json数据;
@@ -34,7 +34,7 @@ public class SalaryGrantQueryApp {
 
         fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
 
-        //3、在convert中添加配置信�?.
+        //3、在convert中添加配置信息.
         //处理中文乱码问题
         List<MediaType> fastMediaTypes = new ArrayList<>();
         fastMediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
@@ -45,6 +45,7 @@ public class SalaryGrantQueryApp {
         HttpMessageConverter<?> converter = fastConverter;
         return new HttpMessageConverters(converter);
     }
+
 
     public static void main(String[] args){
         SpringApplication.run(SalaryGrantQueryApp.class, args);

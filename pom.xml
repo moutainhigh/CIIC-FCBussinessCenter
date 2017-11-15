@@ -40,15 +40,110 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--<build>-->
-        <!--<plugins>-->
-            <!--<plugin>-->
-                <!--<groupId>org.springframework.boot</groupId>-->
-                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-                <!--<version>1.5.7.RELEASE</version>-->
-            <!--</plugin>-->
-        <!--</plugins>-->
-    <!--</build>-->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- spring boot devtools 依赖包. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+            <scope>true</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.33</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-mockmvc</artifactId>
+            <version>1.2.1.RELEASE</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>4.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.41</version>
+        </dependency>
+    </dependencies>
 
     <modules>
         <module>CalculateService</module>
@@ -60,6 +155,64 @@
         <module>SalaryGrant/SalaryGrantQuery-Host</module>
         <module>SalaryGrant/SalaryGrantCommand-Host</module>
         <module>SalaryGrant/SalaryGrant-Dao</module>
+        <module>Bounce/Bounce-Util</module>
+        <module>Bounce/Bounce-Client</module>
+        <module>Bounce/Bounce-Dao</module>
+        <module>Bounce/BounceQuery-Business</module>
+        <module>Bounce/BounceCommand-Business</module>
+        <module>Bounce/BounceQuery-Host</module>
+        <module>Bounce/BounceCommand-Host</module>
+        <module>Tax/Tax-Util</module>
+        <module>Tax/Tax-Client</module>
+        <module>Tax/Tax-Dao</module>
+        <module>Tax/TaxQuery-Business</module>
+        <module>Tax/TaxCommand-Business</module>
+        <module>Tax/TaxQuery-Host</module>
+        <module>Tax/TaxCommand-Host</module>
+        <module>Consignation/Consignation-Util</module>
+        <module>Consignation/Consignation-Client</module>
+        <module>Consignation/Consignation-Dao</module>
+        <module>Consignation/ConsignationQuery-Business</module>
+        <module>Consignation/ConsignationCommand-Business</module>
+        <module>Consignation/ConsignationQuery-Host</module>
+        <module>Consignation/ConsignationCommand-Host</module>
+        <module>Report/Report-Util</module>
+        <module>Report/Report-Client</module>
+        <module>Report/Report-Dao</module>
+        <module>Report/ReportQuery-Business</module>
+        <module>Report/ReportCommand-Business</module>
+        <module>Report/ReportQuery-Host</module>
+        <module>Report/ReportCommand-Host</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Util</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Client</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Dao</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Business</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Host</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Util</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Client</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Dao</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Business</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Host</module>
+        <module>QueryTaxData/QueryTaxData-Util</module>
+        <module>QueryTaxData/QueryTaxData-Client</module>
+        <module>QueryTaxData/QueryTaxData-Dao</module>
+        <module>QueryTaxData/QueryTaxData-Business</module>
+        <module>QueryTaxData/QueryTaxData-Host</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Util</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Client</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Dao</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Business</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Host</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Util</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Client</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Dao</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Business</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Host</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Util</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Client</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Dao</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Business</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Host</module>
     </modules>
 
 </project>
