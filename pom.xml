@@ -113,6 +113,72 @@
         <module>./Calculation/CalExecService/CalExecService-Entity</module>
         <module>./Calculation/CalExecService/CalExecService-Host</module>
         <module>./Calculation/CalExecService/CalExecService-Util</module>
+        <module>BusinessEntity</module>
+        <module>SalaryGrant/SalaryGrant-Util</module>
+        <module>SalaryGrant/SalaryGrant-Client</module>
+        <module>SalaryGrant/SalaryGrantQuery-Business</module>
+        <module>SalaryGrant/SalaryGrantCommand-Business</module>
+        <module>SalaryGrant/SalaryGrantQuery-Host</module>
+        <module>SalaryGrant/SalaryGrantCommand-Host</module>
+        <module>SalaryGrant/SalaryGrant-Dao</module>
+        <module>Bounce/Bounce-Util</module>
+        <module>Bounce/Bounce-Client</module>
+        <module>Bounce/Bounce-Dao</module>
+        <module>Bounce/BounceQuery-Business</module>
+        <module>Bounce/BounceCommand-Business</module>
+        <module>Bounce/BounceQuery-Host</module>
+        <module>Bounce/BounceCommand-Host</module>
+        <module>Tax/Tax-Util</module>
+        <module>Tax/Tax-Client</module>
+        <module>Tax/Tax-Dao</module>
+        <module>Tax/TaxQuery-Business</module>
+        <module>Tax/TaxCommand-Business</module>
+        <module>Tax/TaxQuery-Host</module>
+        <module>Tax/TaxCommand-Host</module>
+        <module>Consignation/Consignation-Util</module>
+        <module>Consignation/Consignation-Client</module>
+        <module>Consignation/Consignation-Dao</module>
+        <module>Consignation/ConsignationQuery-Business</module>
+        <module>Consignation/ConsignationCommand-Business</module>
+        <module>Consignation/ConsignationQuery-Host</module>
+        <module>Consignation/ConsignationCommand-Host</module>
+        <module>Report/Report-Util</module>
+        <module>Report/Report-Client</module>
+        <module>Report/Report-Dao</module>
+        <module>Report/ReportQuery-Business</module>
+        <module>Report/ReportCommand-Business</module>
+        <module>Report/ReportQuery-Host</module>
+        <module>Report/ReportCommand-Host</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Util</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Client</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Dao</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Business</module>
+        <module>QueryPayrollDetail/QueryPayrollDetail-Host</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Util</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Client</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Dao</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Business</module>
+        <module>QueryTaxDelay/QueryTaxDelay-Host</module>
+        <module>QueryTaxData/QueryTaxData-Util</module>
+        <module>QueryTaxData/QueryTaxData-Client</module>
+        <module>QueryTaxData/QueryTaxData-Dao</module>
+        <module>QueryTaxData/QueryTaxData-Business</module>
+        <module>QueryTaxData/QueryTaxData-Host</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Util</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Client</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Dao</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Business</module>
+        <module>QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetail-Host</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Util</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Client</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Dao</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Business</module>
+        <module>QueryReportTemplate/QueryReportTemplate-Host</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Util</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Client</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Dao</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Business</module>
+        <module>ExportReportTemplate/ExportReportTemplate-Host</module>
     </modules>
 
 </project>
