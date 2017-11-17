@@ -19,100 +19,158 @@
     </properties>
 
     <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Dalston.SR4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>3.4.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-core</artifactId>
+                <version>1.3.5</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>Dalston.SR4</version>
-            <type>pom</type>
-            <scope>import</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- spring boot devtools 依赖包. -->
         <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.5</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+            <scope>true</scope>
         </dependency>
+
+
         <dependency>
-            <groupId>org.mybatis.generator</groupId>
-            <artifactId>mybatis-generator-core</artifactId>
-            <version>1.3.5</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.7</version>
+        </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.33</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-mockmvc</artifactId>
+            <version>1.2.1.RELEASE</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>1.3.1</version>
+            <version>1.1.1</version>
         </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper</artifactId>
-            <version>4.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.41</version>
-        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.6</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>4.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.41</version>
+        </dependency>
     </dependencies>
-    </dependencyManagement>
 
     <modules>
-        <module>./Calculation/CalculateWebService/CalculateWebService-Business</module>
-        <module>./Calculation/CalculateWebService/CalculateWebService-Dao</module>
-        <module>./Calculation/CalculateWebService/CalculateWebService-Entity</module>
-        <module>./Calculation/CalculateWebService/CalculateWebService-Host</module>
-        <module>./Calculation/CalculateWebService/CalculateWebService-Util</module>
-        <module>./Calculation/CalParameterService/CalParameterService-Business</module>
-        <module>./Calculation/CalParameterService/CalParameterService-Dao</module>
-        <module>./Calculation/CalParameterService/CalParameterService-Entity</module>
-        <module>./Calculation/CalParameterService/CalParameterService-Host</module>
-        <module>./Calculation/CalParameterService/CalParameterService-Util</module>
-        <module>./Calculation/CalFileImportService/CalFileImportService-Business</module>
-        <module>./Calculation/CalFileImportService/CalFileImportService-Dao</module>
-        <module>./Calculation/CalFileImportService/CalFileImportService-Entity</module>
-        <module>./Calculation/CalFileImportService/CalFileImportService-Host</module>
-        <module>./Calculation/CalFileImportService/CalFileImportService-Util</module>
-        <module>./Calculation/CalDispatchJob/CalDispatchJob-Business</module>
-        <module>./Calculation/CalDispatchJob/CalDispatchJob-Dao</module>
-        <module>./Calculation/CalDispatchJob/CalDispatchJob-Entity</module>
-        <module>./Calculation/CalDispatchJob/CalDispatchJob-Host</module>
-        <module>./Calculation/CalDispatchJob/CalDispatchJob-Util</module>
-        <module>./Calculation/CalExecService/CalExecService-Business</module>
-        <module>./Calculation/CalExecService/CalExecService-Dao</module>
-        <module>./Calculation/CalExecService/CalExecService-Entity</module>
-        <module>./Calculation/CalExecService/CalExecService-Host</module>
-        <module>./Calculation/CalExecService/CalExecService-Util</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Business</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Dao</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Entity</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Host</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Util</module>
+        <module>Calculation/CalParameterService/CalParameterService-Business</module>
+        <module>Calculation/CalParameterService/CalParameterService-Dao</module>
+        <module>Calculation/CalParameterService/CalParameterService-Entity</module>
+        <module>Calculation/CalParameterService/CalParameterService-Host</module>
+        <module>Calculation/CalParameterService/CalParameterService-Util</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Business</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Dao</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Entity</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Host</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Util</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Business</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Dao</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Entity</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Host</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Util</module>
+        <module>Calculation/CalExecService/CalExecService-Business</module>
+        <module>Calculation/CalExecService/CalExecService-Dao</module>
+        <module>Calculation/CalExecService/CalExecService-Entity</module>
+        <module>Calculation/CalExecService/CalExecService-Host</module>
+        <module>Calculation/CalExecService/CalExecService-Util</module>
         <module>BusinessEntity</module>
         <module>SalaryGrant/SalaryGrant-Util</module>
         <module>SalaryGrant/SalaryGrant-Client</module>
