@@ -146,7 +146,31 @@
     </dependencies>
 
     <modules>
-        <module>CalculateService</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Business</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Dao</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Entity</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Host</module>
+        <module>Calculation/CalculateWebService/CalculateWebService-Util</module>
+        <module>Calculation/CalParameterService/CalParameterService-Business</module>
+        <module>Calculation/CalParameterService/CalParameterService-Dao</module>
+        <module>Calculation/CalParameterService/CalParameterService-Entity</module>
+        <module>Calculation/CalParameterService/CalParameterService-Host</module>
+        <module>Calculation/CalParameterService/CalParameterService-Util</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Business</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Dao</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Entity</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Host</module>
+        <module>Calculation/CalFileImportService/CalFileImportService-Util</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Business</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Dao</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Entity</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Host</module>
+        <module>Calculation/CalDispatchJob/CalDispatchJob-Util</module>
+        <module>Calculation/CalExecService/CalExecService-Business</module>
+        <module>Calculation/CalExecService/CalExecService-Dao</module>
+        <module>Calculation/CalExecService/CalExecService-Entity</module>
+        <module>Calculation/CalExecService/CalExecService-Host</module>
+        <module>Calculation/CalExecService/CalExecService-Util</module>
         <module>BusinessEntity</module>
         <module>SalaryGrant/SalaryGrant-Util</module>
         <module>SalaryGrant/SalaryGrant-Client</module>
