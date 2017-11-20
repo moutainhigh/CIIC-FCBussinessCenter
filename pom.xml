@@ -186,6 +186,67 @@
         <module>SalaryGrant/SalaryGrantService/SalaryGrantCommandService-Business</module>
         <module>SalaryGrant/SalaryGrantService/SalaryGrantQueryService-Host</module>
         <module>SalaryGrant/SalaryGrantService/SalaryGrantCommandService-Host</module>
+        <module>Tax/TaxService/TaxService-Util</module>
+        <module>Tax/TaxService/TaxService-Client</module>
+        <module>Tax/TaxService/TaxService-Dao</module>
+        <module>Tax/TaxService/TaxQueryService-Business</module>
+        <module>Tax/TaxService/TaxCommandService-Business</module>
+        <module>Tax/TaxService/TaxQueryService-Host</module>
+        <module>Tax/TaxService/TaxCommandService-Host</module>
+        <module>Consignation/ConsignationService/ConsignationService-Util</module>
+        <module>Consignation/ConsignationService/ConsignationService-Client</module>
+        <module>Consignation/ConsignationService/ConsignationService-Dao</module>
+        <module>Consignation/ConsignationService/ConsignationQueryService-Business</module>
+        <module>Consignation/ConsignationService/ConsignationCommandService-Business</module>
+        <module>Consignation/ConsignationService/ConsignationQueryService-Host</module>
+        <module>Consignation/ConsignationService/ConsignationCommandService-Host</module>
+        <module>Report/ReportService/ReportService-Util</module>
+        <module>Report/ReportService/ReportService-Client</module>
+        <module>Report/ReportService/ReportService-Dao</module>
+        <module>Report/ReportService/ReportQueryService-Business</module>
+        <module>Report/ReportService/ReportCommandService-Business</module>
+        <module>Report/ReportService/ReportQueryService-Host</module>
+        <module>Report/ReportService/ReportCommandService-Host</module>
+        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Util</module>
+        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Client</module>
+        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Dao</module>
+        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Business</module>
+        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Host</module>
+        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Util</module>
+        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Client</module>
+        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Dao</module>
+        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Business</module>
+        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Host</module>
+        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Util</module>
+        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Client</module>
+        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Dao</module>
+        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Business</module>
+        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Host</module>
+        <module>
+            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Client
+        </module>
+        <module>
+            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Util
+        </module>
+        <module>
+            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Dao
+        </module>
+        <module>
+            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Business
+        </module>
+        <module>
+            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Host
+        </module>
+        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Util</module>
+        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Client</module>
+        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Dao</module>
+        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Business</module>
+        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Host</module>
+        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Util</module>
+        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Client</module>
+        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Dao</module>
+        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Business</module>
+        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Host</module>
     </modules>
 
 </project>
