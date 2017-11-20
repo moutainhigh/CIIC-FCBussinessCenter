@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ciicsh.gt1.fcsupportcenter.salarygrantservice.dao.ISsEmpRefundMapper">
+
+    <!-- 定义resultMap，解决表中字段名与模型中属性名不一致的问题 -->
+    <!-- id相当于resultmap的引用的唯一标识-->
+    <resultMap id="SsEmpRefundMap" type="com.ciicsh.gt1.fcsupportcenter.businessentity.entity.SsEmpRefund">
+        <id column="EmpRefundId" jdbcType="INTEGER"  property="empRefundId" />
+        <result column="EmployeeTaskId" jdbcType="VARCHAR" property="employeeTaskId"/>
+        <result column="EmpArchiveId" jdbcType="VARCHAR" property="empArchiveId"/>
+        <result column="Amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="ProcessTime" jdbcType="TIMESTAMP" property="processTime"/>
+        <result column="ProcessWay" jdbcType="TINYINT" property="processWay"/>
+        <result column="IsActive" jdbcType="BOOLEAN" property="isActive"/>
+        <result column="CreatedBy" jdbcType="VARCHAR" property="createdby" />
+        <result column="DataChange_CreateTime" jdbcType="TIMESTAMP" property="datachangeCreatetime" />
+        <result column="ModifiedBy" jdbcType="VARCHAR" property="modifiedby" />
+        <result column="DataChange_LastTime" jdbcType="TIMESTAMP" property="datachangeLasttime" />
+    </resultMap>
+
+    <!--根据雇员id获取雇员社保退账受理信息-->
+    <select id="getSsEmpRefundByEmployeeTaskId" resultMap="SsEmpRefundMap">
+        SELECT EmpRefundId,EmployeeTaskId,EmpArchiveId,Amount,ProcessTime,ProcessWay,IsActive,CreatedBy,DataChange_CreateTime,ModifiedBy,DataChange_LastTime FROM SS_EmpRefund WHERE EmployeeTaskId = #{employeeTaskId}
+    </select>
+
+</mapper>
