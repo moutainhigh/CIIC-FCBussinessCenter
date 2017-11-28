@@ -133,6 +133,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-feign</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
             <version>4.1.6</version>
@@ -146,107 +151,75 @@
     </dependencies>
 
     <modules>
-        <module>Calculation/CalculateWebService/CalculateWebService-Business</module>
-        <module>Calculation/CalculateWebService/CalculateWebService-Dao</module>
-        <module>Calculation/CalculateWebService/CalculateWebService-Entity</module>
-        <module>Calculation/CalculateWebService/CalculateWebService-Host</module>
-        <module>Calculation/CalculateWebService/CalculateWebService-Util</module>
-        <module>Calculation/CalParameterService/CalParameterService-Business</module>
-        <module>Calculation/CalParameterService/CalParameterService-Dao</module>
-        <module>Calculation/CalParameterService/CalParameterService-Entity</module>
-        <module>Calculation/CalParameterService/CalParameterService-Host</module>
-        <module>Calculation/CalParameterService/CalParameterService-Util</module>
-        <module>Calculation/CalFileImportService/CalFileImportService-Business</module>
-        <module>Calculation/CalFileImportService/CalFileImportService-Dao</module>
-        <module>Calculation/CalFileImportService/CalFileImportService-Entity</module>
-        <module>Calculation/CalFileImportService/CalFileImportService-Host</module>
-        <module>Calculation/CalFileImportService/CalFileImportService-Util</module>
-        <module>Calculation/CalDispatchJob/CalDispatchJob-Business</module>
-        <module>Calculation/CalDispatchJob/CalDispatchJob-Dao</module>
-        <module>Calculation/CalDispatchJob/CalDispatchJob-Entity</module>
-        <module>Calculation/CalDispatchJob/CalDispatchJob-Host</module>
-        <module>Calculation/CalDispatchJob/CalDispatchJob-Util</module>
-        <module>Calculation/CalExecService/CalExecService-Business</module>
-        <module>Calculation/CalExecService/CalExecService-Dao</module>
-        <module>Calculation/CalExecService/CalExecService-Entity</module>
-        <module>Calculation/CalExecService/CalExecService-Host</module>
-        <module>Calculation/CalExecService/CalExecService-Util</module>
-        <module>BusinessEntity</module>
-        <module>Payroll/PayrollService/PayrollService-Util</module>
-        <module>Payroll/PayrollService/PayrollService-Client</module>
-        <module>Payroll/PayrollService/PayrollService-Dao</module>
-        <module>Payroll/PayrollService/PayrollQueryService-Business</module>
-        <module>Payroll/PayrollService/PayrollCommandService-Business</module>
-        <module>Payroll/PayrollService/PayrollQueryService-Host</module>
-        <module>Payroll/PayrollService/PayrollCommandService-Host</module>
-        <module>SalaryGrant/SalaryGrantService/SalaryGrantService-Util</module>
-        <module>SalaryGrant/SalaryGrantService/SalaryGrantService-Client</module>
-        <module>SalaryGrant/SalaryGrantService/SalaryGrantService-Dao</module>
-        <module>SalaryGrant/SalaryGrantService/SalaryGrantQueryService-Business</module>
-        <module>SalaryGrant/SalaryGrantService/SalaryGrantCommandService-Business</module>
-        <module>SalaryGrant/SalaryGrantService/SalaryGrantQueryService-Host</module>
-        <module>SalaryGrant/SalaryGrantService/SalaryGrantCommandService-Host</module>
-        <module>Tax/TaxService/TaxService-Util</module>
-        <module>Tax/TaxService/TaxService-Client</module>
-        <module>Tax/TaxService/TaxService-Dao</module>
-        <module>Tax/TaxService/TaxQueryService-Business</module>
-        <module>Tax/TaxService/TaxCommandService-Business</module>
-        <module>Tax/TaxService/TaxQueryService-Host</module>
-        <module>Tax/TaxService/TaxCommandService-Host</module>
-        <module>Consignation/ConsignationService/ConsignationService-Util</module>
-        <module>Consignation/ConsignationService/ConsignationService-Client</module>
-        <module>Consignation/ConsignationService/ConsignationService-Dao</module>
-        <module>Consignation/ConsignationService/ConsignationQueryService-Business</module>
-        <module>Consignation/ConsignationService/ConsignationCommandService-Business</module>
-        <module>Consignation/ConsignationService/ConsignationQueryService-Host</module>
-        <module>Consignation/ConsignationService/ConsignationCommandService-Host</module>
-        <module>Report/ReportService/ReportService-Util</module>
-        <module>Report/ReportService/ReportService-Client</module>
-        <module>Report/ReportService/ReportService-Dao</module>
-        <module>Report/ReportService/ReportQueryService-Business</module>
-        <module>Report/ReportService/ReportCommandService-Business</module>
-        <module>Report/ReportService/ReportQueryService-Host</module>
-        <module>Report/ReportService/ReportCommandService-Host</module>
-        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Util</module>
-        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Client</module>
-        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Dao</module>
-        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Business</module>
-        <module>QueryPayrollDetail/QueryPayrollDetailService/QueryPayrollDetailService-Host</module>
-        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Util</module>
-        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Client</module>
-        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Dao</module>
-        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Business</module>
-        <module>QueryTaxDelay/QueryTaxDelayService/QueryTaxDelayService-Host</module>
-        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Util</module>
-        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Client</module>
-        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Dao</module>
-        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Business</module>
-        <module>QueryTaxData/QueryTaxDataService/QueryTaxDataService-Host</module>
-        <module>
-            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Client
-        </module>
-        <module>
-            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Util
-        </module>
-        <module>
-            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Dao
-        </module>
-        <module>
-            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Business
-        </module>
-        <module>
-            QueryPayrollOfSupplierDetail/QueryPayrollOfSupplierDetailService/QueryPayrollOfSupplierDetailService-Host
-        </module>
-        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Util</module>
-        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Client</module>
-        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Dao</module>
-        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Business</module>
-        <module>QueryReportTemplate/QueryReportTemplateService/QueryReportTemplateService-Host</module>
-        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Util</module>
-        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Client</module>
-        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Dao</module>
-        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Business</module>
-        <module>ExportReportTemplate/ExportReportTemplateService/ExportReportTemplateService-Host</module>
+        <module>FCSupportCenter-Entity</module>
+        <module>FCSupportCenter-Util</module>
+
+        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Api</module>
+        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Business</module>
+        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Dao</module>
+        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Entity</module>
+        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Host</module>
+
+        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Api</module>
+        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Business</module>
+        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Dao</module>
+        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Entity</module>
+        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Host</module>
+
+        <module>Company/EmployeeCommandService/EmployeeCommandService-Api</module>
+        <module>Company/EmployeeCommandService/EmployeeCommandService-Business</module>
+        <module>Company/EmployeeCommandService/EmployeeCommandService-Dao</module>
+        <module>Company/EmployeeCommandService/EmployeeCommandService-Entity</module>
+        <module>Company/EmployeeCommandService/EmployeeCommandService-Host</module>
+
+        <module>Company/EmployeeQueryService/EmployeeQueryService-Api</module>
+        <module>Company/EmployeeQueryService/EmployeeQueryService-Business</module>
+        <module>Company/EmployeeQueryService/EmployeeQueryService-Dao</module>
+        <module>Company/EmployeeQueryService/EmployeeQueryService-Entity</module>
+        <module>Company/EmployeeQueryService/EmployeeQueryService-Host</module>
+
+        <module>PayrollGrant/GrantCommandService/GrantCommandService-Api</module>
+        <module>PayrollGrant/GrantCommandService/GrantCommandService-Business</module>
+        <module>PayrollGrant/GrantCommandService/GrantCommandService-Dao</module>
+        <module>PayrollGrant/GrantCommandService/GrantCommandService-Entity</module>
+        <module>PayrollGrant/GrantCommandService/GrantCommandService-Host</module>
+
+        <module>PayrollGrant/GrantQueryService/GrantQueryService-Api</module>
+        <module>PayrollGrant/GrantQueryService/GrantQueryService-Business</module>
+        <module>PayrollGrant/GrantQueryService/GrantQueryService-Dao</module>
+        <module>PayrollGrant/GrantQueryService/GrantQueryService-Entity</module>
+        <module>PayrollGrant/GrantQueryService/GrantQueryService-Host</module>
+
+        <module>PayrollSlip/SlipCommandService/SlipCommandService-Api</module>
+        <module>PayrollSlip/SlipCommandService/SlipCommandService-Business</module>
+        <module>PayrollSlip/SlipCommandService/SlipCommandService-Dao</module>
+        <module>PayrollSlip/SlipCommandService/SlipCommandService-Entity</module>
+        <module>PayrollSlip/SlipCommandService/SlipCommandService-Host</module>
+
+        <module>PayrollSlip/SlipQueryService/SlipQueryService-Api</module>
+        <module>PayrollSlip/SlipQueryService/SlipQueryService-Business</module>
+        <module>PayrollSlip/SlipQueryService/SlipQueryService-Dao</module>
+        <module>PayrollSlip/SlipQueryService/SlipQueryService-Entity</module>
+        <module>PayrollSlip/SlipQueryService/SlipQueryService-Host</module>
+
+        <module>Supplier/SupplierCommandService/SupplierCommandService-Api</module>
+        <module>Supplier/SupplierCommandService/SupplierCommandService-Business</module>
+        <module>Supplier/SupplierCommandService/SupplierCommandService-Dao</module>
+        <module>Supplier/SupplierCommandService/SupplierCommandService-Entity</module>
+        <module>Supplier/SupplierCommandService/SupplierCommandService-Host</module>
+
+        <module>Supplier/SupplierQueryService/SupplierQueryService-Api</module>
+        <module>Supplier/SupplierQueryService/SupplierQueryService-Business</module>
+        <module>Supplier/SupplierQueryService/SupplierQueryService-Dao</module>
+        <module>Supplier/SupplierQueryService/SupplierQueryService-Entity</module>
+        <module>Supplier/SupplierQueryService/SupplierQueryService-Host</module>
+
+        <module>Job/CalDispatchJob/CalDispatchJob-Api</module>
+        <module>Job/CalDispatchJob/CalDispatchJob-Business</module>
+        <module>Job/CalDispatchJob/CalDispatchJob-Dao</module>
+        <module>Job/CalDispatchJob/CalDispatchJob-Entity</module>
+        <module>Job/CalDispatchJob/CalDispatchJob-Host</module>
+
     </modules>
 
 </project>
