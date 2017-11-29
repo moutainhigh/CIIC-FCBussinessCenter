@@ -1,4 +1,4 @@
-package com.ciicsh.gt1.fcsupportcenter.businessentity.entity;
+package com.ciicsh.gto.fcsupportcenter.businessentity.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
