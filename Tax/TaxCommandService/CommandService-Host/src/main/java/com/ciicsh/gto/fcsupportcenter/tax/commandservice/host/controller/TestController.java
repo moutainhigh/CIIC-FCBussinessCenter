@@ -1,11 +1,12 @@
-package com.ciicsh.gto.fcsupportcenter.tax.queryservice.host.controller;
+package com.ciicsh.gto.fcsupportcenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcsupportcenter.tax.commandservice.api.TestProxy;
-import com.ciicsh.gto.fcsupportcenter.tax.queryservice.business.TestService;
+import com.ciicsh.gto.fcsupportcenter.tax.commandservice.business.TestService;
 import com.ciicsh.gto.fcsupportcenter.tax.util.json.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.tax.queryservice.host.configuration;
+package com.ciicsh.gto.fcsupportcenter.tax.commandservice.host.configuration;
 
 /**
  * Created by shil on 2017/9/21.
