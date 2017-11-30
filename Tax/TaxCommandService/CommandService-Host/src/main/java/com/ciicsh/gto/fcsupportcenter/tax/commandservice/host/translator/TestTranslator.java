@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.tax.queryservice.host.translator;
+package com.ciicsh.gto.fcsupportcenter.tax.commandservice.host.translator;
 
 import com.ciicsh.gto.fcsupportcenter.tax.commandservice.api.dto.TestDTO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TestPO;

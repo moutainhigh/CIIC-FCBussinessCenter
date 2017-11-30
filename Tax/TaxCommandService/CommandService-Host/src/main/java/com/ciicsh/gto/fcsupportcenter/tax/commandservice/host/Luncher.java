@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.tax.queryservice.host;
+package com.ciicsh.gto.fcsupportcenter.tax.commandservice.host;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
