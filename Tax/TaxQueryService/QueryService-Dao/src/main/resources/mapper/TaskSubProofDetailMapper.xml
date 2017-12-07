@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskSubProofDetailMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofDetailPO">
+		<id column="id" property="id" />
+		<result column="task_sub_proof_id" property="taskSubProofId" />
+		<result column="employee_no" property="employeeNo" />
+		<result column="employee_name" property="employeeName" />
+		<result column="id_type" property="idType" />
+		<result column="id_no" property="idNo" />
+		<result column="declare_account" property="declareAccount" />
+		<result column="income_subject" property="incomeSubject" />
+		<result column="income_start" property="incomeStart" />
+		<result column="income_end" property="incomeEnd" />
+		<result column="income_for_tax" property="incomeForTax" />
+		<result column="withholded_amount" property="withholdedAmount" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+</mapper>
