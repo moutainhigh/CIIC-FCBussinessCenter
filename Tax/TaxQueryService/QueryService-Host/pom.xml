@@ -33,13 +33,13 @@
     <build>
         <finalName>gt1.fcsupportcenter.tax.queryservice-host</finalName>
         <resources>
-            <resource>
+            <!--<resource>
                 <directory>../QueryService-Dao/src/main/resources/</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/mapper/*.xml</include>
                 </includes>
-            </resource>
+            </resource>-->
             <resource>
                 <directory>src/main/resources/</directory>
                 <filtering>true</filtering>
