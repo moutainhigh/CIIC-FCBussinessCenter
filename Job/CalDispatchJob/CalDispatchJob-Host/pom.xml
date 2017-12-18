@@ -12,18 +12,14 @@
 
     <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
     <artifactId>caldispatchjob-host</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <version>1.0.0</version>
 
     <dependencies>
+
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
-            <artifactId>caldispatchjob-dao</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
-            <artifactId>caldispatchjob-entity</artifactId>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>mongo-client</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
@@ -34,7 +30,7 @@
     </dependencies>
 
     <build>
-        <finalName>caldispatchjob-host</finalName>
+        <finalName>salary-compute-task</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>
@@ -47,38 +43,11 @@
                 </includes>
             </resource>
         </resources>
-
-        <testResources>
-            <testResource>
-                <directory>src/test/resources/</directory>
-                <filtering>true</filtering>
-            </testResource>
-            <testResource>
-                <directory>src/test/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </testResource>
-        </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
-
-                <configuration>
-                    <encoding>${file.encoding}</encoding>
-                </configuration>
-            </plugin>
-
             <!-- 这是spring boot devtool plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <!--fork :  如果没有该项配置，devtools不会起作用，即应用不会restart -->
-                    <fork>true</fork>
-                </configuration>
             </plugin>
         </plugins>
     </build>

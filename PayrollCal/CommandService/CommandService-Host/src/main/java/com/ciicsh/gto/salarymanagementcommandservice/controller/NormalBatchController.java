@@ -3,7 +3,8 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateDTO;
+import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
+import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
@@ -15,12 +16,18 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
+import org.springframework.batch.item.ExecutionContext;
+import com.ciicsh.gto.salarymanagementcommandservice.util.excel.PRItemExcelReader;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
+import org.springframework.batch.item.excel.poi.PoiItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -216,6 +223,52 @@ public class NormalBatchController {
     public JsonResult getSubBatchList(@RequestParam String code, @RequestParam Integer status){
         List<PrCustSubBatchPO> list = batchService.selectSubBatchList(code,status);
         return JsonResult.success(list);
+    }
+
+    @PostMapping("/import")
+    public JsonResult importExcel(){
+
+        PrGroupEntity entity = new PrGroupEntity();
+
+        PrItemEntity[] prItemEntities = new PrItemEntity[8];
+        for (int i=0; i< prItemEntities.length; i++){
+            prItemEntities[i] = new PrItemEntity();
+            if (i == 0) {
+                prItemEntities[i].setName("工龄");
+            }else if(i == 1){
+                prItemEntities[i].setName("成本中心");
+            }else if(i == 2){
+                prItemEntities[i].setName("基本薪资");
+            }else if(i == 3){
+                prItemEntities[i].setName("雇员编号");
+            }else if(i == 4){
+                prItemEntities[i].setName("城市");
+            }else if(i == 5){
+                prItemEntities[i].setName("调整工资");
+            }else if(i == 6){
+                prItemEntities[i].setName("郊区津贴");
+            }else if(i == 7){
+                prItemEntities[i].setName("雇员姓名");
+            }else if(i == 8){
+                prItemEntities[i].setName("综合津贴");
+            }
+        }
+        entity.setPrItemEntityList(Arrays.asList(prItemEntities));
+        try {
+            InputStream stream = new FileInputStream("/Users/bill/Documents/样本数据.xls");
+            PoiItemReader<PrGroupEntity> reader = PRItemExcelReader.getPrGroupReader(stream, entity);
+            reader.open(new ExecutionContext());
+            PrGroupEntity row = null;
+            do {
+                row = reader.read();
+                System.out.println(entity);
+            }while (row != null);
+        }
+        catch (Exception e){
+
+        }
+        return JsonResult.success(entity);
+
     }
 
 }
