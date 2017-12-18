@@ -1,0 +1,10 @@
+application-dev.ymlapplication-dev.ymleureka:
+  client:
+    serviceUrl:
+      defaultZone:
+
+spring:
+  datasource:
+    url:
+    username:
+    password:

@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.IPrItemMapper">
+
+    <!-- 定义resultMap，解决表中字段名与模型中属性名不一致的问题 -->
+    <!-- id相当于resultmap的引用的唯一标识-->
+    <!--<resultMap id="PrItemMap" type="com.ciicsh.gto.salarymanagement.entity.PrItemEntity">-->
+        <!--<id column="PRItemID" property="entityId"/>-->
+        <!--<result column="PRItemCode" property="code"/>-->
+        <!--<result column="PRItemTemplateID" property="templateId"/>-->
+        <!--<result column="ManagementID" property="managementId"/>-->
+        <!--<result column="PRItemName" property="name"/>-->
+        <!--<result column="PRItemAliasName" property="aliasName"/>-->
+        <!--<result column="PRItemType" property="type"/>-->
+        <!--<result column="DataType" property="dataType"/>-->
+        <!--<result column="DefaultValueStyle" property="defaultValueStyle"/>-->
+        <!--<result column="DefaultValue" property="defaultValue"/>-->
+        <!--<result column="DecimalProcessType" property="decimalProcessType"/>-->
+        <!--<result column="CalPrecision" property="precision"/>-->
+        <!--<result column="FormulaContent" property="formula"/>-->
+        <!--<result column="ItemCondition" property="itemCondition"/>-->
+        <!--<result column="IsHidden" property="isHidden"/>-->
+        <!--<result column="CalPriority" property="calPriority"/>-->
+        <!--<result column="DisplayPriority" property="disPriority"/>-->
+        <!--<result column="Remark" property="remark"/>-->
+        <!--<result column="IsActive" property="isActive"/>-->
+        <!--<result column="DataChange_CreateTime" property="dataChangeCreateTime"/>-->
+        <!--<result column="DataChange_LastTime" property="dataChangeLastTime"/>-->
+        <!--<result column="CreatedBy" property="createdBy"/>-->
+        <!--<result column="ModifiedBy" property="modifiedBy"/>-->
+    <!--</resultMap>-->
+
+    <!--&lt;!&ndash; 获取薪资项列表 &ndash;&gt;-->
+    <!--<select id="selectList" resultMap="PrItemMap">-->
+        <!--SELECT-->
+        <!--<include refid="PrPayrollItem_All_Columns" />-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 根据薪资组模板id获取薪资项列表 &ndash;&gt;-->
+    <!--<select id="selectListByGroupTemplateId" resultMap="PrItemMap">-->
+        <!--SELECT-->
+        <!--<include refid="PrPayrollItem_All_Columns" />-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+        <!--WHERE-->
+        <!--PRGroupTemplateID = #{prGroupTemplateId}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 根据薪资组模板id获取薪资项列表 &ndash;&gt;-->
+    <!--<select id="selectListByGroupId" resultMap="PrItemMap">-->
+        <!--SELECT-->
+        <!--<include refid="PrPayrollItem_All_Columns" />-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+        <!--WHERE-->
+        <!--PRGroupID = #{prGroupId}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 查询薪资项列表 &ndash;&gt;-->
+    <!--<select id="selectQueryList" parameterType="com.ciicsh.gto.salarymanagement.entity.PrItemEntity" resultMap="PrItemMap">-->
+        <!--SELECT-->
+        <!--<include refid="PrPayrollItem_All_Columns" />-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+        <!--WHERE TRUE-->
+        <!--<if test="managementId != null">AND ManagementID LIKE CONCAT('%',#{managementId},'%')</if>-->
+        <!--<if test="name != null">AND PRItemName LIKE CONCAT('%',#{name},'%')</if>-->
+        <!--<if test="type != null">AND PRItemType LIKE CONCAT('%',#{type},'%')</if>-->
+        <!--<if test="prGroupId != null">AND PRGroupId LIKE CONCAT('%',#{prGroupId},'%')</if>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 获取薪资项 &ndash;&gt;-->
+    <!--<select id="selectItemById" resultMap="PrItemMap">-->
+        <!--SELECT-->
+        <!--<include refid="PrPayrollItem_All_Columns" />-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+        <!--WHERE-->
+        <!--PRItemID = #{entityId}-->
+        <!--LIMIT 1-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 获取薪资项名称列表 &ndash;&gt;-->
+    <!--<select id="selectNameList" resultType="String">-->
+        <!--SELECT-->
+        <!--PRItemName-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+        <!--WHERE-->
+        <!--ManagementID = #{managementId}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 获取薪资项类型列表 &ndash;&gt;-->
+    <!--<select id="selectTypeList" resultType="Integer">-->
+        <!--SELECT-->
+        <!--PRItemType-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+        <!--WHERE-->
+        <!--ManagementID = #{managementId}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 更新薪资项 &ndash;&gt;-->
+    <!--<update id="updateItemById">-->
+        <!--UPDATE PR_PayrollItem-->
+        <!--<include refid="PrPayrollItem_Update" />-->
+        <!--WHERE-->
+        <!--PRItemID = #{entityId}-->
+    <!--</update>-->
+
+    <!--<delete id="deleteItemById">-->
+        <!--DELETE FROM PR_PayrollItem-->
+        <!--WHERE-->
+        <!--PRItemID = #{entityId}-->
+    <!--</delete>-->
+
+    <!--<select id="selectItemListByGroupId" resultMap="PrItemMap">-->
+        <!--SELECT-->
+        <!--<include refid="PrPayrollItem_All_Columns" />-->
+        <!--FROM-->
+        <!--PR_PayrollItem-->
+        <!--WHERE-->
+        <!--PRGroupID = #{PRGroupId}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 插入单个薪资项 &ndash;&gt;-->
+    <!--<insert id="insertItem" parameterType="com.ciicsh.gto.salarymanagement.entity.PrItemEntity">-->
+        <!--INSERT INTO PR_PayrollItem-->
+        <!--(<include refid="PrPayrollItem_All_Columns" />)-->
+        <!--VALUES-->
+        <!--(-->
+        <!--#{entityId},-->
+        <!--#{code},-->
+        <!--#{templateId},-->
+        <!--#{managementId},-->
+        <!--#{prGroupId},-->
+        <!--#{prGroupTemplateId},-->
+        <!--#{name},-->
+        <!--#{aliasName},-->
+        <!--#{type},-->
+        <!--#{dataType},-->
+        <!--#{defaultValueStyle},-->
+        <!--#{defaultValue},-->
+        <!--#{decimalProcessType},-->
+        <!--#{precision},-->
+        <!--#{formula},-->
+        <!--#{itemCondition},-->
+        <!--#{isHidden},-->
+        <!--#{calPriority},-->
+        <!--#{disPriority},-->
+        <!--#{remark},-->
+        <!--#{isActive},-->
+        <!--sysdate(),-->
+        <!--sysdate(),-->
+        <!--#{createdBy},-->
+        <!--#{modifiedBy}-->
+        <!--)-->
+    <!--</insert>-->
+
+    <!--<insert id="insertList">-->
+        <!--INSERT INTO PR_PayrollItem-->
+        <!--(<include refid="PrPayrollItem_All_Columns" />)-->
+        <!--VALUES-->
+        <!--<foreach collection="paramList" item="item" index="index" separator=",">-->
+        <!--(-->
+            <!--#{item.entityId},-->
+            <!--#{item.code},-->
+            <!--#{item.templateId},-->
+            <!--#{item.managementId},-->
+            <!--#{item.prGroupId},-->
+            <!--#{item.prGroupTemplateId},-->
+            <!--#{item.name},-->
+            <!--#{item.aliasName},-->
+            <!--#{item.type},-->
+            <!--#{item.dataType},-->
+            <!--#{item.defaultValueStyle},-->
+            <!--#{item.defaultValue},-->
+            <!--#{item.decimalProcessType},-->
+            <!--#{item.precision},-->
+            <!--#{item.formula},-->
+            <!--#{item.itemCondition},-->
+            <!--#{item.isHidden},-->
+            <!--#{item.calPriority},-->
+            <!--#{item.disPriority},-->
+            <!--#{item.remark},-->
+            <!--1,-->
+            <!--sysdate(),-->
+            <!--sysdate(),-->
+            <!--#{item.createdBy},-->
+            <!--#{item.modifiedBy}-->
+        <!--)-->
+        <!--</foreach>-->
+    <!--</insert>-->
+
+    <!--<select id="selectGroupIdsWithoutItemName" resultType="String">-->
+        <!--SELECT PRGroupID-->
+        <!--FROM PR_PayrollItem A-->
+        <!--WHERE NOT EXISTS-->
+        <!--(-->
+            <!--SELECT-->
+                <!--*-->
+            <!--FROM-->
+                <!--PR_PayrollItem B-->
+            <!--WHERE-->
+                <!--B.ManagementID = #{managementId}-->
+            <!--AND-->
+                <!--B.PRItemName = #{name}-->
+            <!--AND-->
+                <!--A.PRGroupID = B.PRGroupID-->
+        <!--)-->
+        <!--AND-->
+            <!--ManagementID = #{managementId}-->
+        <!--GROUP BY-->
+            <!--PRGroupID-->
+    <!--</select>-->
+
+    <!--<delete id="deleteItemByPrGroupId">-->
+        <!--DELETE FROM PR_PayrollItem-->
+        <!--WHERE PRGroupID = #{groupId}-->
+    <!--</delete>-->
+
+    <!--<sql id="PrPayrollItem_All_Columns">-->
+        <!--PRItemID,-->
+        <!--PRItemCode,-->
+        <!--PRItemTemplateID,-->
+        <!--ManagementID,-->
+        <!--PRGroupID,-->
+        <!--PRGroupTemplateID,-->
+        <!--PRItemName,-->
+        <!--PRItemAliasName,-->
+        <!--PRItemType,-->
+        <!--DataType,-->
+        <!--DefaultValueStyle,-->
+        <!--DefaultValue,-->
+        <!--DecimalProcessType,-->
+        <!--CalPrecision,-->
+        <!--FormulaContent,-->
+        <!--ItemCondition,-->
+        <!--IsHidden,-->
+        <!--CalPriority,-->
+        <!--DisplayPriority,-->
+        <!--Remark,-->
+        <!--IsActive,-->
+        <!--DataChange_CreateTime,-->
+        <!--DataChange_LastTime,-->
+        <!--CreatedBy,-->
+        <!--ModifiedBy-->
+    <!--</sql>-->
+
+    <!--<sql id="whereQuery">-->
+        <!--<trim prefix="WHERE" prefixOverrides="AND |OR ">-->
+            <!--<if test="entityId != null">-->
+                <!--AND PRItemID = #{entityId}-->
+            <!--</if>-->
+            <!--<if test="code != null">-->
+                <!--AND PRItemCode = #{code}-->
+            <!--</if>-->
+            <!--<if test="templateId != null">-->
+                <!--AND PRItemTemplateID = #{templateId}-->
+            <!--</if>-->
+            <!--<if test="managementId != null">-->
+                <!--AND ManagementID = #{managementId}-->
+            <!--</if>-->
+            <!--<if test="prGroupId != null">-->
+                <!--AND PRGroupId = #{prGroupId}-->
+            <!--</if>-->
+            <!--<if test="prGroupTemplateId != null">-->
+                <!--AND PRGroupTemplateID = #{prGroupTemplateId}-->
+            <!--</if>-->
+            <!--<if test="name != null">-->
+                <!--AND PRItemName = #{name}-->
+            <!--</if>-->
+            <!--<if test="aliasName != null">-->
+                <!--AND PRItemAliasName = #{aliasName}-->
+            <!--</if>-->
+            <!--<if test="type != null">-->
+                <!--AND PRItemType = #{type}-->
+            <!--</if>-->
+            <!--<if test="dataType != null">-->
+                <!--AND DataType = #{dataType}-->
+            <!--</if>-->
+            <!--<if test="defaultValueStyle != null">-->
+                <!--AND DecimalProcessType = #{defaultValueStyle}-->
+            <!--</if>-->
+            <!--<if test="defaultValue != null">-->
+                <!--AND DefaultValue = #{defaultValue}-->
+            <!--</if>-->
+            <!--<if test="decimalProcessType != null">-->
+                <!--AND DecimalProcessType = #{decimalProcessType}-->
+            <!--</if>-->
+            <!--<if test="precision != null">-->
+                <!--AND CalPrecision = #{precision}-->
+            <!--</if>-->
+            <!--<if test="formula != null">-->
+                <!--AND FormulaContent = #{formula}-->
+            <!--</if>-->
+            <!--<if test="itemCondition != null">-->
+                <!--AND ItemCondition = #{itemCondition}-->
+            <!--</if>-->
+            <!--<if test="isHidden != null">-->
+                <!--AND IsHidden = #{isHidden}-->
+            <!--</if>-->
+            <!--<if test="calPriority != null">-->
+                <!--AND CalPriority = #{calPriority}-->
+            <!--</if>-->
+            <!--<if test="disPriority != null">-->
+                <!--AND DisplayPriority = #{disPriority}-->
+            <!--</if>-->
+            <!--<if test="remark != null">-->
+                <!--AND Remark = #{remark}-->
+            <!--</if>-->
+            <!--<if test="isActive != null">-->
+                <!--AND IsActive = #{isActive}-->
+            <!--</if>-->
+        <!--</trim>-->
+    <!--</sql>-->
+
+    <!--<sql id="whereQueryById">-->
+        <!--<trim prefix="WHERE" prefixOverrides="AND |OR ">-->
+            <!--<if test="prGroupId != null">-->
+                <!--AND PRGroupId = #{prGroupId}-->
+            <!--</if>-->
+            <!--<if test="groupTemplateId != null">-->
+                <!--AND PRGroupTemplateID = #{groupTemplateId}-->
+            <!--</if>-->
+        <!--</trim>-->
+    <!--</sql>-->
+
+    <!--<sql id="PrPayrollItem_Update">-->
+        <!--<trim prefix="set" suffixOverrides=",">-->
+            <!--<if test="entityId != null">-->
+                <!--PRItemID = #{entityId},-->
+            <!--</if>-->
+            <!--<if test="code != null">-->
+                <!--PRItemCode = #{code},-->
+            <!--</if>-->
+            <!--<if test="templateId != null">-->
+                <!--PRItemTemplateID = #{templateId},-->
+            <!--</if>-->
+            <!--<if test="managementId != null">-->
+                <!--ManagementID = #{managementId},-->
+            <!--</if>-->
+            <!--<if test="prGroupId != null">-->
+                <!--PRGroupId = #{prGroupId},-->
+            <!--</if>-->
+            <!--<if test="prGroupTemplateId != null">-->
+                <!--PRGroupTemplateID = #{prGroupTemplateId},-->
+            <!--</if>-->
+            <!--<if test="name != null">-->
+                <!--PRItemName = #{name},-->
+            <!--</if>-->
+            <!--<if test="aliasName != null">-->
+                <!--PRItemAliasName = #{aliasName},-->
+            <!--</if>-->
+            <!--<if test="type != null">-->
+                <!--PRItemType = #{type},-->
+            <!--</if>-->
+            <!--<if test="dataType != null">-->
+                <!--DataType = #{dataType},-->
+            <!--</if>-->
+            <!--<if test="defaultValueStyle != null">-->
+                <!--DecimalProcessType = #{defaultValueStyle},-->
+            <!--</if>-->
+            <!--<if test="defaultValue != null">-->
+                <!--DefaultValue = #{defaultValue},-->
+            <!--</if>-->
+            <!--<if test="decimalProcessType != null">-->
+                <!--DecimalProcessType = #{decimalProcessType},-->
+            <!--</if>-->
+            <!--<if test="precision != null">-->
+                <!--CalPrecision = #{precision},-->
+            <!--</if>-->
+            <!--<if test="formula != null">-->
+                <!--FormulaContent = #{formula},-->
+            <!--</if>-->
+            <!--<if test="itemCondition != null">-->
+                <!--ItemCondition = #{itemCondition},-->
+            <!--</if>-->
+            <!--<if test="isHidden != null">-->
+                <!--IsHidden = #{isHidden},-->
+            <!--</if>-->
+            <!--<if test="calPriority != null">-->
+                <!--CalPriority = #{calPriority},-->
+            <!--</if>-->
+            <!--<if test="disPriority != null">-->
+                <!--DisplayPriority = #{disPriority},-->
+            <!--</if>-->
+            <!--<if test="remark != null">-->
+                <!--Remark = #{remark},-->
+            <!--</if>-->
+            <!--<if test="isActive != null">-->
+                <!--IsActive = #{isActive},-->
+            <!--</if>-->
+            <!--<if test="modifiedBy != null">-->
+                <!--ModifiedBy = #{modifiedBy},-->
+            <!--</if>-->
+            <!--DataChange_LastTime = sysdate()-->
+        <!--</trim>-->
+    <!--</sql>-->
+</mapper>

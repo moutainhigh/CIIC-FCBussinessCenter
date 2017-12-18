@@ -69,3 +69,5 @@ build
 ################
 /coverage/
 /cobertura.ser
+
+logs/

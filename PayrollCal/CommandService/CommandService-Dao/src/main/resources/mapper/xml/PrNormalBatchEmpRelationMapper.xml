@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.mapper.PrNormalBatchEmpRelationMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagementcommandservice.po.PrNormalBatchEmpRelation">
+		<id column="id" property="id" />
+		<result column="normal_batch_id" property="normalBatchId" />
+		<result column="emp_id" property="empId" />
+		<result column="net_pay" property="netPay" />
+		<result column="income_tax" property="incomeTax" />
+		<result column="net_pay_adjust_amount" property="netPayAdjustAmount" />
+		<result column="income_tax_adjust_amount" property="incomeTaxAdjustAmount" />
+		<result column="net_pay_Badjust_amount" property="netPayBadjustAmount" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+		<result column="PR_NormalBatchEmployeeRelationcol" property="PRNormalBatchEmployeeRelationcol" />
+	</resultMap>
+
+</mapper>

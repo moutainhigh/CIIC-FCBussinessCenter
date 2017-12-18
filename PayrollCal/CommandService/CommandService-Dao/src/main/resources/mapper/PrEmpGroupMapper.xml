@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="PrEmpGroupPO">
+		<id column="id" property="id" />
+		<result column="emp_group_code" property="empGroupCode" />
+		<result column="management_id" property="managementId" />
+		<result column="name" property="name" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+	<resultMap id="getKeyValueMap"   type="KeyValuePO">
+		<result property="key" column="groupCode" />
+		<result property="value" column="groupName" />
+	</resultMap>
+
+	<select id="getEmployeeGroups" parameterType="PrEmpGroupPO" resultType="PrEmpGroupPO">
+		SELECT
+		<include refid="PrEmployeeGroup_All_Columns" />
+		FROM
+		pr_emp_group
+		<include refid="whereQuery" />
+	</select>
+
+	<select id="getEmployeeGroupNames" resultMap="getKeyValueMap">
+		SELECT
+		name as 'groupName',
+		emp_group_code as 'groupCode'
+		FROM
+		pr_emp_group
+		WHERE
+		management_id = #{managementId}
+		AND
+		is_active = 1
+	</select>
+
+
+
+	<!--<select id="selectItemById" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity" resultMap="PrEmployeeGroupMap">
+		SELECT
+		empg.PREmployeeGroupID,
+		empg.PREmployeeGroupCode,
+		empg.ManagementID,
+		empg.CompanyID,
+		empg.PREmployeeGroupName,
+		emp.EmployeeID,
+		emp.EmployeeName,
+		emp.EmployeeNameEn,
+		emp.FormerName,
+		emp.Gender,
+		emp.Birthday,
+		emp.CertificateType,
+		emp.CertificateNumber,
+		emp.CountryCode,
+		emp.ProvinceCode,
+		emp.CityCode,
+		emp.IsHKMT,
+		emp.PersonalProperty,
+		emp.ArchiveLocation,
+		emp.Marriage,
+		emp.MarriageDate,
+		emp.ChildrenNumber,
+		emp.DepartName,
+		emp.Position,
+		emp.OnBoardDate,
+		empg.Remark,
+		empg.IsActive,
+		empg.DataChange_CreateTime,
+		empg.DataChange_LastTime,
+		empg.CreatedBy,
+		empg.ModifiedBy
+		FROM
+		PR_EmployeeGroup empg,
+		PR_Employee emp,
+		PR_EmpGroupEmployeeRelation empgr
+		WHERE
+		empg.PREmployeeGroupId = empgr.PREmployeeGroupId
+		AND
+		emp.EmployeeID = empgr.EmployeeId
+		AND
+		empg.PREmployeeGroupId = #{entityId}
+	</select>-->
+
+
+
+	<!--
+	<insert id="insertItem" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity">
+		INSERT INTO PR_EmployeeGroup(
+		<include refid="PrEmployeeGroup_All_Insert_Columns" />
+		)
+		VALUES
+		(
+		#{entityId},
+		#{code},
+		#{managementId},
+		#{companyId},
+		#{name},
+		#{remark},
+		1,
+		sysdate(),
+		sysdate(),
+		#{createdBy},
+		#{modifiedBy}
+		)
+	</insert>
+
+	<insert id="insertRelationList" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity">
+		INSERT INTO PR_EmpGroupEmployeeRelation(
+		<include refid="PR_EmpGroupEmployeeRelation_All_Insert_Columns" />
+		)
+		VALUES
+		<foreach collection="employeeList" item="emp" index="index" separator=",">
+			(
+			#{entityId},
+			#{emp.employeeId},
+			#{emp.departName},
+			#{emp.position},
+			#{emp.onBoardDate},
+			#{remark},
+			1,
+			sysdate(),
+			sysdate(),
+			#{createdBy},
+			#{modifiedBy}
+			)
+		</foreach>
+	</insert>
+
+	<update id="updateItemById" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity">
+		UPDATE
+		PR_EmployeeGroup
+		SET
+		<if test="managementId != null">
+			ManagementID = #{managementId},
+		</if>
+		<if test="companyId != null">
+			CompanyID = #{companyId},
+		</if>
+		<if test="name != null">
+			PREmployeeGroupName = #{name},
+		</if>
+		<if test="remark != null">
+			Remark = #{remark},
+		</if>
+		<if test="isActive != null">
+			IsActive = #{isActive},
+		</if>
+		<if test="modifiedBy != null">
+			ModifiedBy = #{modifiedBy},
+		</if>
+		DataChange_LastTime = sysdate()
+		WHERE
+		PREmployeeGroupId = #{entityId}
+	</update>
+
+	<delete id="deleteItemById">
+		DELETE FROM
+		pr_emp_group
+		WHERE
+		id = #{id}
+	</delete>
+
+
+
+	<sql id="PrEmployeeGroup_All_Insert_Columns">
+		id,
+		emp_group_code,
+		management_id,
+		CompanyID as companyId,
+		name,
+		remark,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
+	</sql>
+-->
+	<sql id="whereQuery">
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="id != null and id != 0">
+				AND id = #{id}
+			</if>
+			<if test="empGroupCode != null and empGroupCode !=''">
+				AND emp_group_code = #{empGroupCode}
+			</if>
+			<if test="managementId != null and managementId != ''">
+				AND management_id = #{managementId}
+			</if>
+			<if test="name != null and name != ''">
+				AND name = #{name}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND remark = #{remark}
+			</if>
+			<if test="isActive != null">
+				AND is_active = #{isActive}
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="PrEmployeeGroup_All_Columns">
+		id,
+		emp_group_code,
+		management_id,
+		name,
+		remark,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
+	</sql>
+</mapper>

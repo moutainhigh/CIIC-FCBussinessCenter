@@ -14,23 +14,22 @@
         <drools.version>7.0.0.Final</drools.version>
     </properties>
 
-    <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
-    <artifactId>caldispatchjob-business</artifactId>
+    <artifactId>salarymanagement-commandservice-bussiness</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
-            <artifactId>caldispatchjob-dao</artifactId>
+            <artifactId>salarymanagement-commandservice-dao</artifactId>
             <version>1.0.0</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.ciicsh.gt1.fcsupportcenter</groupId>-->
-            <!--<artifactId>caldispatchjob-util</artifactId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
+            <artifactId>salarymanagement-commandservice-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.kie</groupId>

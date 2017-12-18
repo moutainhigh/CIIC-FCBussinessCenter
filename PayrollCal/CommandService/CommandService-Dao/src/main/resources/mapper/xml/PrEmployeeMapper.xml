@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.mapper.PrEmployeeMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagementcommandservice.po.PrEmployee">
+		<id column="id" property="id" />
+		<result column="emp_id" property="empId" />
+		<result column="emp_name" property="empName" />
+		<result column="emp_name_en" property="empNameEn" />
+		<result column="is_active" property="isActive" />
+		<result column="data_change_create_time" property="dataChangeCreateTime" />
+		<result column="data_change_last_time" property="dataChangeLastTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+</mapper>
