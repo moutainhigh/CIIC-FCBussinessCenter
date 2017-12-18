@@ -9,7 +9,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcsupportcenter.tax.queryservice"})
 @MapperScan("com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao")
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 //@EnableFeignClients (basePackages = "com.ciicsh.gto.afsystemmanagecenter")
 public class Luncher extends SpringBootServletInitializer {
 

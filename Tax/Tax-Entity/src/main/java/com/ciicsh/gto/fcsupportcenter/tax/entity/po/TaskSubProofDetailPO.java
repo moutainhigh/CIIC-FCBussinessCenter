@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * <p>
@@ -67,12 +68,12 @@ public class TaskSubProofDetailPO implements Serializable {
      * 所得期间起
      */
 	@TableField("income_start")
-	private LocalDate incomeStart;
+	private Date incomeStart;
     /**
      * 所得期间止
      */
 	@TableField("income_end")
-	private LocalDate incomeEnd;
+	private Date incomeEnd;
     /**
      * 应纳税所得额
      */
@@ -92,12 +93,12 @@ public class TaskSubProofDetailPO implements Serializable {
      * 创建时间
      */
 	@TableField("created_time")
-	private LocalDateTime createdTime;
+	private Date createdTime;
     /**
      * 修改时间
      */
 	@TableField("modified_time")
-	private LocalDateTime modifiedTime;
+	private Date modifiedTime;
     /**
      * 创建人
      */
@@ -174,19 +175,19 @@ public class TaskSubProofDetailPO implements Serializable {
 		this.incomeSubject = incomeSubject;
 	}
 
-	public LocalDate getIncomeStart() {
+	public Date getIncomeStart() {
 		return incomeStart;
 	}
 
-	public void setIncomeStart(LocalDate incomeStart) {
+	public void setIncomeStart(Date incomeStart) {
 		this.incomeStart = incomeStart;
 	}
 
-	public LocalDate getIncomeEnd() {
+	public Date getIncomeEnd() {
 		return incomeEnd;
 	}
 
-	public void setIncomeEnd(LocalDate incomeEnd) {
+	public void setIncomeEnd(Date incomeEnd) {
 		this.incomeEnd = incomeEnd;
 	}
 
@@ -214,19 +215,19 @@ public class TaskSubProofDetailPO implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public LocalDateTime getCreatedTime() {
+	public Date getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(LocalDateTime createdTime) {
+	public void setCreatedTime(Date createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public LocalDateTime getModifiedTime() {
+	public Date getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(LocalDateTime modifiedTime) {
+	public void setModifiedTime(Date modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

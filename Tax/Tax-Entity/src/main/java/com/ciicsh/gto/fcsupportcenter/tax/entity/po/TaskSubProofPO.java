@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.enums.IdType;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * <p>
@@ -78,12 +79,12 @@ public class TaskSubProofPO implements Serializable {
      * 创建时间
      */
 	@TableField("created_time")
-	private LocalDateTime createdTime;
+	private Date createdTime;
     /**
      * 修改时间
      */
 	@TableField("modified_time")
-	private LocalDateTime modifiedTime;
+	private Date modifiedTime;
     /**
      * 创建人
      */
@@ -184,19 +185,19 @@ public class TaskSubProofPO implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public LocalDateTime getCreatedTime() {
+	public Date getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(LocalDateTime createdTime) {
+	public void setCreatedTime(Date createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public LocalDateTime getModifiedTime() {
+	public Date getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(LocalDateTime modifiedTime) {
+	public void setModifiedTime(Date modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
