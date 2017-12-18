@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
+		<id column="id" property="id" />
+		<result column="code" property="code" />
+		<result column="management_id" property="managementId" />
+		<result column="is_scheduled" property="isScheduled" />
+		<result column="schedule_setting" property="scheduleSetting" />
+		<result column="account_set_id" property="accountSetId" />
+		<result column="remark" property="remark" />
+		<result column="status" property="status" />
+		<result column="year_month" property="period" />
+		<result column="result_data" property="resultData" />
+		<result column="is_impl_cal" property="isImplCal" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+	<resultMap id="CustBatchResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" >
+		<result column="code" property="code"/>
+		<result column="management_id" property="managementId"/>
+		<result column="management_name" property="managementName"/>
+		<result column="account_set_code" property="accountSetCode"/>
+		<result column="period" property="period"/>
+		<result column="status" property="status"/>
+		<result column="accountName" property="acccSetName"/>
+		<result column="start_date" property="beginDate"/>
+		<result column="end_date" property="endDate"/>
+		<result column="payroll_period" property="payrollType"/>
+		<result column="empGroupName" property="empGroupName"/>
+		<result column="prGroupName" property="prGroupName"/>
+	</resultMap>
+
+	<select id="selectBatchListByUseLike" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" resultMap="CustBatchResultMap">
+		SELECT
+		a.code,
+		a.management_id,
+		a.management_name,
+		a.account_set_code,
+		a.period,
+		a.status,
+		a.start_date,
+		a.end_date,
+		b.name as acccSetName,  -- 薪资帐套名称
+		b.payroll_period,       -- 薪资期间类型
+		c.name as empGroupName, -- 雇员组名称
+		d.group_name as prGroupName -- 薪资组名称
+		FROM
+			  pr_normal_batch a , pr_payroll_account_set b, pr_emp_group c, pr_payroll_group d
+		where
+			  a.account_set_code = b.account_set_code
+			  and b.emp_group_code = c.emp_group_code
+			  and b.pr_groud_code = d.group_code
+			<if test="period != null and period !=''">
+				AND a.period = #{period}
+			</if>
+			<if test="managementName != null and managementName !=''">
+				AND a.management_name = LIKE concat(#{managementName})
+			</if>
+			<if test="status != 0">
+				AND a.status = #{status}
+			</if>
+			<if test="acccSetName != null and acccSetName != ''">
+				AND b.name LIKE concat(#{acccSetName},'%')
+			</if>
+			<if test="empGroupName != null and empGroupName !=''">
+				AND c.name LIKE concat(#{empGroupName},'%')
+			</if>
+			<if test="code != null and code != ''">
+				AND code LIKE concat(#{code},'%')
+			</if>
+
+		UNION
+			SELECT
+			a.code,
+			a.management_id,
+			a.management_name,
+			a.account_set_code,
+			a.period,
+			a.status,
+			a.start_date,
+			a.end_date,
+			b.name as acccSetName,  -- 薪资帐套名称
+			b.payroll_period,       -- 薪资期间类型
+			c.name as empGroupName, -- 雇员组名称
+			d.group_name as prGroupName -- 薪资组名称
+			FROM
+			pr_normal_batch a , pr_payroll_account_set b, pr_emp_group c, pr_payroll_group d
+			where
+			a.account_set_code = b.account_set_code
+			and b.emp_group_code = c.emp_group_code
+			and b.pr_groud_code = d.group_code
+			<if test="period != null and period !=''">
+				AND a.period = #{period}
+			</if>
+			<if test="managementName != null and managementName !=''">
+				AND a.management_name = LIKE concat(#{managementName})
+			</if>
+			<if test="acccSetName != null and acccSetName != ''">
+				AND b.name LIKE concat(#{acccSetName},'%')
+			</if>
+			<if test="empGroupName != null and empGroupName !=''">
+				AND c.name LIKE concat(#{empGroupName},'%')
+			</if>
+			<if test="code != null and code != '' and status == 0" >
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE adjust_batch_code LIKE concat(#{code},'%'))
+			</if>
+			<if test="code != null and code != '' and status != 0" >
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status} and adjust_batch_code LIKE concat(#{code},'%'))
+			</if>
+			<if test="(code == null or code == '') and status == 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch)
+			</if>
+			<if test="(code == null or code == '') and status != 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status})
+			</if>
+		UNION
+			SELECT
+			a.code,
+			a.management_id,
+			a.management_name,
+			a.account_set_code,
+			a.period,
+			a.status,
+			a.start_date,
+			a.end_date,
+			b.name as acccSetName,  -- 薪资帐套名称
+			b.payroll_period,       -- 薪资期间类型
+			c.name as empGroupName, -- 雇员组名称
+			d.group_name as prGroupName -- 薪资组名称
+			FROM
+			pr_normal_batch a , pr_payroll_account_set b, pr_emp_group c, pr_payroll_group d
+			where
+			a.account_set_code = b.account_set_code
+			and b.emp_group_code = c.emp_group_code
+			and b.pr_groud_code = d.group_code
+			<if test="period != null and period !=''" >
+				AND a.period = #{period}
+			</if>
+			<if test="managementName != null and managementName !=''">
+				AND a.management_name = LIKE concat(#{managementName})
+			</if>
+			<if test="status != 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
+			</if>
+			<if test="status == 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
+			</if>
+			<if test="acccSetName != null and acccSetName != ''">
+				AND b.name LIKE concat(#{acccSetName},'%')
+			</if>
+			<if test="empGroupName != null and empGroupName !=''">
+				AND c.name LIKE concat(#{empGroupName},'%')
+			</if>
+			<if test="code != null and code != '' and status == 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE back_tracking_batch_code LIKE concat(#{code},'%'))
+			</if>
+			<if test="code != null and code != '' and status != 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status} AND back_tracking_batch_code LIKE concat(#{code},'%'))
+			</if>
+			<if test="(code == null or code == '') and status != 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
+			</if>
+			<if test="(code == null or code == '') and status == 0">
+				AND code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
+			</if>
+	</select>
+
+
+	<resultMap id="CustSubBatchMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO" >
+		<result column="code" property="code"/>
+		<result column="batch_type" property="batchType"/>
+		<result column="status" property="status"/>
+	</resultMap>
+
+	<select id="selectSubBatchList" resultMap="CustSubBatchMap">
+		SELECT
+			adjust_batch_code as code,
+			1 as batch_type,
+			status
+		FROM
+			pr_adjust_batch
+		where
+			origin_batch_code = #{code}
+			<if test="status != 0">
+				AND status = #{status}
+			</if>
+		UNION
+		SELECT
+			back_tracking_batch_code as code,
+			2 as batch_type,
+			status
+		FROM
+			pr_back_tracking_batch
+		where
+			origin_batch_code = #{code}
+			<if test="status != 0">
+				AND status = #{status}
+			</if>
+	</select>
+
+
+	<insert id="insertNormalBatch" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
+		INSERT INTO pr_normal_batch(
+		<include refid="pr_normal_batch_insert_columns" />
+		)
+		SELECT
+		#{code},
+		#{managementId},
+		#{managementName},
+		#{accountSetCode},
+		#{period},
+		#{actualPeriod},
+		#{remark},
+		#{status},
+		#{createdBy},
+		#{modifiedBy},
+		#{startDate},
+		#{endDate}
+		FROM DUAL WHERE NOT EXISTS(
+		SELECT management_id
+		FROM pr_normal_batch
+		WHERE management_id = #{managementId} AND account_set_code=#{accountSetCode} AND period=#{period}
+		)
+	</insert>
+
+	<update id="updateNormalBatch" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
+		UPDATE pr_normal_batch
+		SET
+		<if test="period != null">
+			period = #{period},
+		</if>
+		<if test="managementId != null">
+			management_id = #{managementId},
+			management_name = #{managementName},
+		</if>
+		<if test="accountSetCode != null">
+			account_set_code = #{accountSetCode},
+			actual_period = #{actualPeriod},
+			start_date = #{startDate},
+			end_date = #{endDate}
+		</if>
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE code = #{code}
+	</update>
+
+	<sql id="pr_normal_batch_insert_columns">
+		code,
+		management_id,
+		management_name,
+		account_set_code,
+		period,
+		actual_period,
+		remark,
+		status,
+		created_by,
+		modified_by,
+		start_date,
+		end_date
+	</sql>
+
+</mapper>

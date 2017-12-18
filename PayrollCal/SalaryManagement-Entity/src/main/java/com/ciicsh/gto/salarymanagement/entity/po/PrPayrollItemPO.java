@@ -1,0 +1,387 @@
+package com.ciicsh.gto.salarymanagement.entity.po;
+
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * <p>
+ * 配置表，薪资项明细表
+ * </p>
+ *
+ * @author Neo Jiang
+ * @since 2017-12-05
+ */
+@TableName("pr_payroll_item")
+public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 薪资项I
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 薪资项编码, 规则为XZX-9位管理方ID-薪资项类型缩写-3位数字序号
+     */
+	@TableField("item_code")
+	private String itemCode;
+    /**
+     * 所属薪酬模版ID: 非必选项，让用户可以不需模板直接产生薪资项。
+     */
+	@TableField("item_template_id")
+	private String itemTemplateId;
+    /**
+     * 所属管理方ID
+     */
+	@TableField("management_id")
+	private String managementId;
+    /**
+     * 所属薪资组ID
+     */
+	@TableField("group_id")
+	private Integer groupId;
+    /**
+     * 所属薪资组模板ID
+     */
+	@TableField("group_template_id")
+	private Integer groupTemplateId;
+    /**
+     * 薪资项名称
+     */
+	@TableField("item_name")
+	private String itemName;
+    /**
+     * 薪资项类型：
+1 - 固定输入项，一次初始化，很少变更，建立批次时一般直接使用 
+2 - 可变输入项，每建立一个批次，需要从FC客户中心服务接口导入值
+3-计算项，通过配置好的公式计算得出的薪资项，如：加班工资，病假工资等
+     */
+	@TableField("item_type")
+	private Integer itemType;
+    /**
+     * 基类薪资项Code
+     */
+	@TableField("base_item_code")
+	private String baseItemCode;
+    /**
+     * 数据格式: 1-文本,2-数字,3-日期,4-布尔
+     */
+	@TableField("data_type")
+	private Integer dataType;
+    /**
+     * 默认值处理方式：
+1 - 使用历史数据 
+2 - 使用基本值
+     */
+	@TableField("default_value_style")
+	private Integer defaultValueStyle;
+    /**
+     * 默认数字
+     */
+	@TableField("default_value")
+	private String defaultValue;
+    /**
+     * 小数处理方式：
+1 - 四舍五入 
+2 - 简单去位
+     */
+	@TableField("decimal_process_type")
+	private Integer decimalProcessType;
+    /**
+     * 计算精度
+     */
+	@TableField("cal_precision")
+	private Integer calPrecision;
+    /**
+     * 公式内容
+     */
+	@TableField("formula_content")
+	private String formulaContent;
+    /**
+     * 薪资项取值范围的条件描述
+     */
+	@TableField("item_condition")
+	private String itemCondition;
+    /**
+     * 计算顺序
+     */
+	@TableField("cal_priority")
+	private Integer calPriority;
+    /**
+     * 显示顺序
+     */
+	@TableField("display_priority")
+	private Integer displayPriority;
+    /**
+     * 备注
+     */
+	private String remark;
+    /**
+     * 是否有效
+     */
+	@TableField("is_active")
+	private Boolean isActive;
+    /**
+     * 数据创建时间
+     */
+	@TableField("created_time")
+	private Date createdTime;
+    /**
+     * 最后修改时间
+     */
+	@TableField("modified_time")
+	private Date modifiedTime;
+    /**
+     * 创建人
+     */
+	@TableField("created_by")
+	private String createdBy;
+    /**
+     * 最后修改人
+     */
+	@TableField("modified_by")
+	private String modifiedBy;
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getItemCode() {
+		return itemCode;
+	}
+
+	public void setItemCode(String itemCode) {
+		this.itemCode = itemCode;
+	}
+
+	public String getItemTemplateId() {
+		return itemTemplateId;
+	}
+
+	public void setItemTemplateId(String itemTemplateId) {
+		this.itemTemplateId = itemTemplateId;
+	}
+
+	public String getManagementId() {
+		return managementId;
+	}
+
+	public void setManagementId(String managementId) {
+		this.managementId = managementId;
+	}
+
+	public Integer getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
+
+	public Integer getGroupTemplateId() {
+		return groupTemplateId;
+	}
+
+	public void setGroupTemplateId(Integer groupTemplateId) {
+		this.groupTemplateId = groupTemplateId;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public Integer getItemType() {
+		return itemType;
+	}
+
+	public void setItemType(Integer itemType) {
+		this.itemType = itemType;
+	}
+
+	public String getBaseItemCode() {
+		return baseItemCode;
+	}
+
+	public void setBaseItemCode(String baseItemCode) {
+		this.baseItemCode = baseItemCode;
+	}
+
+	public Integer getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(Integer dataType) {
+		this.dataType = dataType;
+	}
+
+	public Integer getDefaultValueStyle() {
+		return defaultValueStyle;
+	}
+
+	public void setDefaultValueStyle(Integer defaultValueStyle) {
+		this.defaultValueStyle = defaultValueStyle;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public Integer getDecimalProcessType() {
+		return decimalProcessType;
+	}
+
+	public void setDecimalProcessType(Integer decimalProcessType) {
+		this.decimalProcessType = decimalProcessType;
+	}
+
+	public Integer getCalPrecision() {
+		return calPrecision;
+	}
+
+	public void setCalPrecision(Integer calPrecision) {
+		this.calPrecision = calPrecision;
+	}
+
+	public String getFormulaContent() {
+		return formulaContent;
+	}
+
+	public void setFormulaContent(String formulaContent) {
+		this.formulaContent = formulaContent;
+	}
+
+	public String getItemCondition() {
+		return itemCondition;
+	}
+
+	public void setItemCondition(String itemCondition) {
+		this.itemCondition = itemCondition;
+	}
+
+	public Integer getCalPriority() {
+		return calPriority;
+	}
+
+	public void setCalPriority(Integer calPriority) {
+		this.calPriority = calPriority;
+	}
+
+	public Integer getDisplayPriority() {
+		return displayPriority;
+	}
+
+	public void setDisplayPriority(Integer displayPriority) {
+		this.displayPriority = displayPriority;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Boolean getActive() {
+		return isActive;
+	}
+
+	public void setActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public Date getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(Date modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "PrPayrollItemPO{" +
+			"id=" + id +
+			", itemCode=" + itemCode +
+			", itemTemplateId=" + itemTemplateId +
+			", managementId=" + managementId +
+			", groupId=" + groupId +
+			", groupTemplateId=" + groupTemplateId +
+			", itemName=" + itemName +
+			", itemType=" + itemType +
+			", baseItemCode=" + baseItemCode +
+			", dataType=" + dataType +
+			", defaultValueStyle=" + defaultValueStyle +
+			", defaultValue=" + defaultValue +
+			", decimalProcessType=" + decimalProcessType +
+			", calPrecision=" + calPrecision +
+			", formulaContent=" + formulaContent +
+			", itemCondition=" + itemCondition +
+			", calPriority=" + calPriority +
+			", displayPriority=" + displayPriority +
+			", remark=" + remark +
+			", isActive=" + isActive +
+			", createdTime=" + createdTime +
+			", modifiedTime=" + modifiedTime +
+			", createdBy=" + createdBy +
+			", modifiedBy=" + modifiedBy +
+			"}";
+	}
+}

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO">
+		<id column="id" property="id" />
+		<result column="emp_id" property="empId" />
+		<result column="emp_name" property="empName" />
+		<result column="emp_name_en" property="empNameEn" />
+		<result column="former_name" property="formerName" />
+		<result column="id_card_type" property="idCardType" />
+		<result column="id_num" property="idNum" />
+		<result column="gender" property="gender" />
+		<result column="birthday" property="birthday" />
+		<result column="join_date" property="joinDate" />
+		<result column="country_code" property="countryCode" />
+		<result column="province_code" property="provinceCode" />
+		<result column="city_code" property="cityCode" />
+		<result column="department" property="department" />
+		<result column="position" property="position" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+	<resultMap id="EmployeeSelectMap"   type="EmployeeExtensionPO">
+		<result column="id" property="relationId" />
+		<result column="emp_group_id" property="empGroupId" />
+		<result column="emp_id" property="employeeId" />
+		<result column="emp_name" property="employeeName" />
+		<result column="id_card_type" property="idCardType" />
+		<result column="id_num" property="idNum" />
+		<result column="gender" property="gender" />
+		<result column="birthday" property="birthday" />
+		<result column="department" property="department" />
+		<result column="position" property="position" />
+		<result column="join_date" property="joinDate" />
+	</resultMap>
+
+	<select id="getEmployees" resultMap="EmployeeSelectMap">
+		SELECT
+			a.id,
+			a.emp_group_id,
+			b.emp_id,
+			b.emp_name,
+			b.id_card_type,
+			b.id_num,
+			b.gender,
+			b.birthday,
+			b.department,
+			b.position,
+			b.join_date
+		FROM pr_emp_group_emp_relation a
+		INNER JOIN pr_employee b on a.emp_id = b.emp_id
+		WHERE a.emp_group_id = #{empGroupId}
+		AND a.is_active = 1
+		AND b.is_active = 1
+	</select>
+
+	<select id="isExistEmployee" resultType="int">
+		SELECT COUNT(*) FROM pr_employee WHERE emp_id = #{empId} AND is_active = 1
+	</select>
+
+</mapper>
