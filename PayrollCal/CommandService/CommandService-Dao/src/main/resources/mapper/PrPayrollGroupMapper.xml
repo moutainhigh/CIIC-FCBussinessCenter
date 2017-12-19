@@ -7,7 +7,7 @@
 		<id column="id" property="id" />
 		<result column="group_code" property="groupCode" />
 		<result column="management_id" property="managementId" />
-		<result column="group_template_id" property="groupTemplateId" />
+		<result column="group_template_code" property="groupTemplateCode" />
 		<result column="group_name" property="groupName" />
 		<result column="version" property="version" />
 		<result column="remark" property="remark" />
@@ -31,7 +31,7 @@
 			id,
 			group_code,
 			management_id,
-			group_template_id,
+			group_template_code,
 			group_name,
 			version,
 			remark,
@@ -58,7 +58,7 @@
 		</trim>
 	</select>
 	
-	<update id="updateItemAndVersionById" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
+	<update id="updateItemAndVersionByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
 		UPDATE pr_payroll_group
 		SET
 		<if test="managementId != null">
@@ -82,8 +82,34 @@
         version = CONCAT((version + 1), '.0'),
 		modified_time = sysdate()
 		WHERE
-		id = #{id}
+        group_code = #{groupCode}
 	</update>
+
+    <update id="updateItemByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
+        UPDATE pr_payroll_group
+        SET
+        <if test="managementId != null">
+            management_id = #{managementId},
+        </if>
+        <if test="groupName != null">
+            group_name = #{groupName},
+        </if>
+        <if test="isTemplate != null">
+            is_template = #{isTemplate},
+        </if>
+        <if test="remark != null">
+            Remark = #{remark},
+        </if>
+        <if test="isActive != null">
+            is_active = #{isActive},
+        </if>
+        <if test="modifiedBy != null">
+            modified_by = #{modifiedBy},
+        </if>
+        modified_time = sysdate()
+        WHERE
+        group_code = #{groupCode}
+    </update>
 
 	<select id="getPayrollGroupNames" resultMap="getKeyValueMap">
 		SELECT
@@ -96,4 +122,16 @@
 		AND
 			is_active = 1
 	</select>
+
+    <delete id="deleteByCodes">
+        DELETE
+        FROM pr_payroll_group
+        WHERE
+            group_code IN
+        <foreach item="item" index="index" collection="codes"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
 </mapper>

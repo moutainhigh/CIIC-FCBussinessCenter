@@ -21,6 +21,7 @@ import java.util.Map;
 
 /**
  * Created by jiangtianning on 2017/11/6.
+ * @author jiangtianning
  */
 @Service
 public class PrItemServiceImpl implements PrItemService {
@@ -34,10 +35,9 @@ public class PrItemServiceImpl implements PrItemService {
     final static int PAGE_SIZE = 5;
 
     @Override
-    public PageInfo<PrPayrollItemPO> getListByGroupId(String groupId, Integer pageNum, Integer pageSize) {
+    public PageInfo<PrPayrollItemPO> getListByGroupCode(String groupCode, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         PrPayrollItemPO param = new PrPayrollItemPO();
-//        param.setGroupId(Integer.parseInt(groupId));
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
@@ -45,10 +45,9 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public PageInfo<PrPayrollItemPO> getListByGroupTemplateId(String groupTemplateId, Integer pageNum, Integer pageSize) {
+    public PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         PrPayrollItemPO param = new PrPayrollItemPO();
-//        param.setGroupTemplateId(Integer.parseInt(groupTemplateId));
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
@@ -69,19 +68,17 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public PrPayrollItemPO getItemById(String id) {
-        PrPayrollItemPO result = prPayrollItemMapper.selectById(id);
+    public PrPayrollItemPO getItemByCode(String code) {
+        PrPayrollItemPO param = new PrPayrollItemPO();
+        param.setItemCode(code);
+        PrPayrollItemPO result = prPayrollItemMapper.selectOne(param);
         return result;
     }
 
     @Override
     public int addItem(PrPayrollItemPO param) {
         int insertResult = prPayrollItemMapper.insert(param);
-        if (insertResult > 0) {
-            return param.getId();
-        } else {
-            return 0;
-        }
+        return insertResult;
     }
 
     @Override
@@ -103,18 +100,18 @@ public class PrItemServiceImpl implements PrItemService {
         // 更新条数
         int i = 0;
         //先获取该薪资项当前详情用作check
-        PrItemEntity prItemEntity = new PrItemEntity();
+        PrPayrollItemPO prPayrollItemPO = new PrPayrollItemPO();
         try {
-            prItemEntity = prItemMapper.selectItemById(param.getEntityId());
+            prPayrollItemPO = prPayrollItemMapper.selectById(param.getEntityId());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (prItemEntity == null) {
+        if (prPayrollItemPO == null) {
             result.put("FAILURE", failList);
             return result;
         }
         // 如果该薪资项只存在于薪资组中，则修改无限制
-        if (StringUtils.isEmpty(prItemEntity.getPrGroupTemplateId())) {
+        if (StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
             try {
                 i = prItemMapper.updateItemById(param);
             } catch (Exception e) {
@@ -124,8 +121,9 @@ public class PrItemServiceImpl implements PrItemService {
             return result;
         }
         // 如果该薪资项由薪资组继承而产生，则需进行校验，不能修改薪资项名
-        if (!StringUtils.isEmpty(prItemEntity.getPrGroupTemplateId()) && !StringUtils.isEmpty(prItemEntity.getPrGroupId())) {
-            if (param.getName() != null && !prItemEntity.getName().equals(param.getName())) {
+        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode()) &&
+                !StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupCode())) {
+            if (param.getName() != null && !prPayrollItemPO.getItemName().equals(param.getName())) {
                 result.put("FAILURE", "不能修改继承薪资组模板产生的薪资项名称");
                 return result;
             }
@@ -138,7 +136,7 @@ public class PrItemServiceImpl implements PrItemService {
             return result;
         }
         // 如果该薪资项是薪资项模板中的项目，则需进行校验，需要更新继承该薪资组模板的薪资组的薪资项
-        if (!StringUtils.isEmpty(prItemEntity.getPrGroupTemplateId())) {
+        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
             List<PrItemEntity> prItemEntityList = new ArrayList<>();
             try {
                 prItemMapper.updateItemById(param);
@@ -146,11 +144,11 @@ public class PrItemServiceImpl implements PrItemService {
                 e.printStackTrace();
             }
             try {
-                prItemEntityList = prItemMapper.selectListByGroupTemplateId(prItemEntity.getPrGroupTemplateId());
+                prItemEntityList = prItemMapper.selectListByGroupTemplateId(prPayrollItemPO.getPayrollGroupTemplateCode());
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Date templateItemLastModified = prItemEntity.getDataChangeLastTime();
+            Date templateItemLastModified = prPayrollItemPO.getModifiedTime();
             param.setEntityId(null);
             prItemEntityList.stream()
                     .filter(item -> !StringUtils.isEmpty(item.getPrGroupId()))
@@ -188,20 +186,9 @@ public class PrItemServiceImpl implements PrItemService {
         return resultList;
     }
 
-    public List<PrItemEntity> getListByGroupTemplateId(String prGroupTemplateId) {
-        List<PrItemEntity> resultList = prItemMapper.selectListByGroupTemplateId(prGroupTemplateId);
-        return resultList;
-    }
-
-    public List<PrItemEntity> getListByGroupId(String prGroupId) {
-        List<PrItemEntity> resultList = prItemMapper.selectListByGroupId(prGroupId);
-        return resultList;
-    }
-
-
     @Override
-    public int deleteItemByIds(List<String> ids) {
-        int result = prPayrollItemMapper.deleteBatchIds(ids);
+    public int deleteItemByCodes(List<String> codes) {
+        int result = prPayrollItemMapper.deleteItemByCodes(codes);
         return result;
     }
 

@@ -24,18 +24,18 @@ public interface PrGroupService {
     PageInfo<PrPayrollGroupPO> getList(PrPayrollGroupPO param, Integer pageNum, Integer pageSize);
 
     /**
-     * 获取一个薪资组 By Id
-     * @param id 查询参数
+     * 获取一个薪资组 By code
+     * @param code 查询参数
      * @return 薪资组实体
      */
-    PrPayrollGroupPO getItemById(String id);
+    PrPayrollGroupPO getItemByCode(String code);
 
     /**
      * 更新一个薪资组
      * @param paramItem 更新参数
      * @return 更新条数
      */
-    int updateItemById(PrPayrollGroupPO paramItem);
+    int updateItemByCode(PrPayrollGroupPO paramItem);
 
     /**
      * 插入一个薪资组
@@ -69,10 +69,10 @@ public interface PrGroupService {
 
     /**
      * 删除薪资组
-     * @param prGroupId
+     * @param codes
      * @return
      */
-    int deleteByIds(List<String> prGroupId);
+    int deleteByCodes(List<String> codes);
 
     /**
      * 获取薪资组名称列表
