@@ -92,34 +92,47 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
 
     @Override
     public JsonResult addEmployeeGroup(@RequestBody PrEmpGroupDTO prEmpGroupDTO) {
-        String empGroupCode = codeGenerator.genEmpGroupCode(prEmpGroupDTO.getManagementId());
-        prEmpGroupDTO.setEmpGroupCode(empGroupCode);
-        prEmpGroupDTO.setCreatedBy("macor");
-        prEmpGroupDTO.setModifiedBy("macor");
-        PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
 
-        Integer result = employeeGroupService.addEmployeeGroup(empGroupPO);
-        if(result > 0){
-            return new JsonResult(true,"添加成功！");
+        Integer val = employeeGroupService.isExistEmpGroup(prEmpGroupDTO.getManagementId(),prEmpGroupDTO.getName());
+        if(val > 0){
+            return new JsonResult(false,"添加失败,已经存在在同一个管理方下相同的雇员组，请检查！");
         }
-        else
-        {
-            return new JsonResult(false,"添加失败！");
+        else {
+            String empGroupCode = codeGenerator.genEmpGroupCode(prEmpGroupDTO.getManagementId());
+            prEmpGroupDTO.setEmpGroupCode(empGroupCode);
+            prEmpGroupDTO.setCreatedBy("macor");
+            prEmpGroupDTO.setModifiedBy("macor");
+            PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
+
+            Integer result = employeeGroupService.addEmployeeGroup(empGroupPO);
+            if(result > 0){
+                return new JsonResult(true,"添加成功！");
+            }
+            else
+            {
+                return new JsonResult(false,"添加失败！");
+            }
         }
     }
 
     @Override
     public JsonResult editEmployeeGroup(@RequestBody PrEmpGroupDTO prEmpGroupDTO) {
-        prEmpGroupDTO.setModifiedBy("bill");
-        prEmpGroupDTO.setModifiedTime(new Date());
-        PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
-        Integer result = employeeGroupService.editEmployeeGroup(empGroupPO);
-        if(result > 0){
-            return new JsonResult(true,"编辑成功！");
+        Integer val = employeeGroupService.isExistEmpGroup(prEmpGroupDTO.getManagementId(),prEmpGroupDTO.getName());
+        if(val > 0){
+            return new JsonResult(false,"编辑失败,已经存在在同一个管理方下相同的雇员组，请检查！");
         }
-        else
-        {
-            return new JsonResult(false,"编辑失败！");
+        else{
+            prEmpGroupDTO.setModifiedBy("bill");
+            prEmpGroupDTO.setModifiedTime(new Date());
+            PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
+            Integer result = employeeGroupService.editEmployeeGroup(empGroupPO);
+            if(result > 0){
+                return new JsonResult(true,"编辑成功！");
+            }
+            else
+            {
+                return new JsonResult(false,"编辑失败！");
+            }
         }
     }
 

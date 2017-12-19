@@ -34,4 +34,13 @@ public interface PrEmpGroupMapper extends BaseMapper<PrEmpGroupPO> {
      * @return 雇员组列表
      */
     List<PrEmpGroupPO> getEmployeeGroups(PrEmpGroupPO empGroupPO);
+
+
+    /**
+     * 是否已经存在雇员组
+     * @param managementId 管理方ID
+     * @param empGroupName 雇员组名称
+     * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
+     */
+    Integer isExistEmpGroup(@Param("managementId") String managementId,@Param("managementId") String empGroupName);
 }

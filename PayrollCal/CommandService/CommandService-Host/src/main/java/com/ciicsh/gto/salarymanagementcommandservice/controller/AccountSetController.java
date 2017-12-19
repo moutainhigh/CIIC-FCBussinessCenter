@@ -132,18 +132,26 @@ public class AccountSetController {
 
     @PostMapping("/addAccountSet")
     public JsonResult addAccountSet(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
-        String accountSetCode = codeGenerator.genPrAccountSetCode(accountSetDTO.getManagementId());
-        accountSetDTO.setAccountSetCode(accountSetCode);
-        accountSetDTO.setCreatedBy("macor");
-        accountSetDTO.setModifiedBy("macor");
-        PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
-        boolean result = prAccountSetService.addAccountSet(payrollAccountSetPO);
-        if(result){
-            return new JsonResult(true,"添加成功！");
+
+        Integer val = prAccountSetService.isExistPayrollAccountSet(accountSetDTO.getManagementId(),accountSetDTO.getAccountSetName());
+
+        if(val > 0){
+            return new JsonResult(false,"添加失败,已经存在在同一个管理方下相同的薪资账套，请检查！");
         }
-        else
-        {
-            return new JsonResult(false,"添加失败！");
+        else{
+            String accountSetCode = codeGenerator.genPrAccountSetCode(accountSetDTO.getManagementId());
+            accountSetDTO.setAccountSetCode(accountSetCode);
+            accountSetDTO.setCreatedBy("macor");
+            accountSetDTO.setModifiedBy("macor");
+            PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
+            boolean result = prAccountSetService.addAccountSet(payrollAccountSetPO);
+            if(result){
+                return new JsonResult(true,"添加成功！");
+            }
+            else
+            {
+                return new JsonResult(false,"添加失败！");
+            }
         }
     }
 

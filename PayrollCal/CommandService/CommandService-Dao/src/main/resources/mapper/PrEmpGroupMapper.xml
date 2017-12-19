@@ -21,6 +21,10 @@
 		<result property="value" column="groupName" />
 	</resultMap>
 
+	<select id="isExistEmpGroup" resultType="int">
+		SELECT COUNT(*) FROM pr_emp_group WHERE management_id = #{managementId} AND name = #{empGroupName} AND is_active = 1
+	</select>
+
 	<select id="getEmployeeGroups" parameterType="PrEmpGroupPO" resultType="PrEmpGroupPO">
 		SELECT
 		<include refid="PrEmployeeGroup_All_Columns" />
@@ -41,148 +45,6 @@
 		is_active = 1
 	</select>
 
-
-
-	<!--<select id="selectItemById" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity" resultMap="PrEmployeeGroupMap">
-		SELECT
-		empg.PREmployeeGroupID,
-		empg.PREmployeeGroupCode,
-		empg.ManagementID,
-		empg.CompanyID,
-		empg.PREmployeeGroupName,
-		emp.EmployeeID,
-		emp.EmployeeName,
-		emp.EmployeeNameEn,
-		emp.FormerName,
-		emp.Gender,
-		emp.Birthday,
-		emp.CertificateType,
-		emp.CertificateNumber,
-		emp.CountryCode,
-		emp.ProvinceCode,
-		emp.CityCode,
-		emp.IsHKMT,
-		emp.PersonalProperty,
-		emp.ArchiveLocation,
-		emp.Marriage,
-		emp.MarriageDate,
-		emp.ChildrenNumber,
-		emp.DepartName,
-		emp.Position,
-		emp.OnBoardDate,
-		empg.Remark,
-		empg.IsActive,
-		empg.DataChange_CreateTime,
-		empg.DataChange_LastTime,
-		empg.CreatedBy,
-		empg.ModifiedBy
-		FROM
-		PR_EmployeeGroup empg,
-		PR_Employee emp,
-		PR_EmpGroupEmployeeRelation empgr
-		WHERE
-		empg.PREmployeeGroupId = empgr.PREmployeeGroupId
-		AND
-		emp.EmployeeID = empgr.EmployeeId
-		AND
-		empg.PREmployeeGroupId = #{entityId}
-	</select>-->
-
-
-
-	<!--
-	<insert id="insertItem" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity">
-		INSERT INTO PR_EmployeeGroup(
-		<include refid="PrEmployeeGroup_All_Insert_Columns" />
-		)
-		VALUES
-		(
-		#{entityId},
-		#{code},
-		#{managementId},
-		#{companyId},
-		#{name},
-		#{remark},
-		1,
-		sysdate(),
-		sysdate(),
-		#{createdBy},
-		#{modifiedBy}
-		)
-	</insert>
-
-	<insert id="insertRelationList" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity">
-		INSERT INTO PR_EmpGroupEmployeeRelation(
-		<include refid="PR_EmpGroupEmployeeRelation_All_Insert_Columns" />
-		)
-		VALUES
-		<foreach collection="employeeList" item="emp" index="index" separator=",">
-			(
-			#{entityId},
-			#{emp.employeeId},
-			#{emp.departName},
-			#{emp.position},
-			#{emp.onBoardDate},
-			#{remark},
-			1,
-			sysdate(),
-			sysdate(),
-			#{createdBy},
-			#{modifiedBy}
-			)
-		</foreach>
-	</insert>
-
-	<update id="updateItemById" parameterType="com.ciicsh.gto.salarymanagement.entity.PrEmployeeGroupEntity">
-		UPDATE
-		PR_EmployeeGroup
-		SET
-		<if test="managementId != null">
-			ManagementID = #{managementId},
-		</if>
-		<if test="companyId != null">
-			CompanyID = #{companyId},
-		</if>
-		<if test="name != null">
-			PREmployeeGroupName = #{name},
-		</if>
-		<if test="remark != null">
-			Remark = #{remark},
-		</if>
-		<if test="isActive != null">
-			IsActive = #{isActive},
-		</if>
-		<if test="modifiedBy != null">
-			ModifiedBy = #{modifiedBy},
-		</if>
-		DataChange_LastTime = sysdate()
-		WHERE
-		PREmployeeGroupId = #{entityId}
-	</update>
-
-	<delete id="deleteItemById">
-		DELETE FROM
-		pr_emp_group
-		WHERE
-		id = #{id}
-	</delete>
-
-
-
-	<sql id="PrEmployeeGroup_All_Insert_Columns">
-		id,
-		emp_group_code,
-		management_id,
-		CompanyID as companyId,
-		name,
-		remark,
-		is_active,
-		created_time,
-		modified_time,
-		created_by,
-		modified_by
-	</sql>
--->
 	<sql id="whereQuery">
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
 			<if test="id != null and id != 0">

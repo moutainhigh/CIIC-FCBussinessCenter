@@ -102,6 +102,11 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         return  pageInfo;
     }
 
+    @Override
+    public Integer isExistPayrollAccountSet(String managementId, String accountSetName) {
+        return accountSetMapper.isExistPayrollAccountSet(managementId,accountSetName);
+    }
+
     private PrPayrollAccountItemRelationPO toPayrollAccountItemRelationPO(PrPayrollItemPO payrollItemPO,PrPayrollAccountSetPO payrollAccountSetPO){
         PrPayrollAccountItemRelationPO relationPO = new PrPayrollAccountItemRelationPO();
         relationPO.setAccountSetCode(payrollAccountSetPO.getAccountSetCode());

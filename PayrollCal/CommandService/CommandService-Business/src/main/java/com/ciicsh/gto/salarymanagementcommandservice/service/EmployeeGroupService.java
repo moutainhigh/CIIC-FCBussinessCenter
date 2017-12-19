@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -65,4 +66,13 @@ public interface EmployeeGroupService{
      * @return
      */
     Boolean batchDelete(List<String> ids);
+
+
+    /**
+     * 是否已经存在雇员组
+     * @param managementId 管理方ID
+     * @param empGroupName 雇员组名称
+     * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
+     */
+    Integer isExistEmpGroup(String managementId, String empGroupName);
 }

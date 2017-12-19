@@ -42,4 +42,12 @@ public interface PrPayrollAccountSetMapper extends BaseMapper<PrPayrollAccountSe
      * @return 薪资账套扩展列表
      */
     List<PrPayrollAccountSetExtensionPO> getPayrollAccountSetExts(PrPayrollAccountSetExtensionPO extensionPO);
+
+    /**
+     * 是否已经存在薪资账套
+     * @param managementId 管理方ID
+     * @param accountSetName 薪资账套名称
+     * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
+     */
+    Integer isExistPayrollAccountSet(@Param("managementId") String managementId,@Param("accountSetName") String accountSetName);
 }

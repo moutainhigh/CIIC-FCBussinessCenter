@@ -4,6 +4,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -47,4 +48,13 @@ public interface PrAccountSetService {
      * @return 薪资账套扩展列表
      */
     PageInfo<PrPayrollAccountSetExtensionPO> getPayrollAccountSetExts(PrPayrollAccountSetExtensionPO extensionPO, Integer pageNum, Integer pageSize);
+
+
+    /**
+     * 是否已经存在薪资账套
+     * @param managementId 管理方ID
+     * @param accountSetName 薪资账套名称
+     * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
+     */
+    Integer isExistPayrollAccountSet(String managementId, String accountSetName);
 }

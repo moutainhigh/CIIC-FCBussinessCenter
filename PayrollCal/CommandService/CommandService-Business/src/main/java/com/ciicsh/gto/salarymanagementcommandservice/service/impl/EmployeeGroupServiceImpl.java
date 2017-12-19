@@ -128,4 +128,9 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
         }
 
     }
+
+    @Override
+    public Integer isExistEmpGroup(String managementId, String empGroupName) {
+        return empGroupMapper.isExistEmpGroup(managementId,empGroupName);
+    }
 }
