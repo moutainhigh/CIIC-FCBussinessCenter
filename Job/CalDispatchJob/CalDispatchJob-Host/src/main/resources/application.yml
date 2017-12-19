@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.16.9.15:3306/gtopayrolldb?characterEncoding=utf8&useSSL=true
+    username: root
+    password: a111111
+  application:
+    name: fcoperation-center-compute-task
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: 172.16.9.17:9092,172.16.9.18:9092
+          zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
+      bindings:
+        payroll-input-channel:
+          destination: payroll-out # topic name
+          content-type: application/json
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned: true
+
+        pr_emp_group-channel:
+          destination: pr_emp_group # 雇员组 topic
+          content-type: application/json
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned: true
+
+      instance-count: 2
+      instance-index: 1
+
+mongo:
+  host: 172.16.9.16
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%
+server:
+  port: 7777
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**.xml
+  type-aliases-package: com.ciicsh.gto.salarymanagement.entity.po
+
+  configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      map-underscore-to-camel-case: true
+      cache-enabled: false

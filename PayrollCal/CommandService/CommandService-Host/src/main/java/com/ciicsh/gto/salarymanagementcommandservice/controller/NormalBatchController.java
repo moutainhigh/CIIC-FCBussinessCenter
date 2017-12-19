@@ -97,38 +97,6 @@ public class NormalBatchController {
         return JsonResult.success(result);
     }
 
-    @GetMapping("/getAccSetList")
-    public JsonResult getAccountSetList(@RequestParam String query) {
-
-        System.out.println(query);
-
-        List<MgrData> datas = new ArrayList<>();
-        MgrData data = null;
-        data = new MgrData("acc-00009","欧莱雅工资帐套");
-        datas.add(data);
-
-        data = new MgrData("acc-10008","欧莱雅综合工时帐套");
-        datas.add(data);
-
-        List<MgrData> result = new ArrayList<>();
-        result.clear();
-        if(CommonUtils.isContainChinese(query)){
-            datas.forEach(item ->{
-                if(item.Name.indexOf(query) >-1){
-                    result.add(item);
-                }
-            });
-        }else {
-            datas.forEach(item ->{
-                if(item.Code.indexOf(query) >-1){
-                    result.add(item);
-                }
-            });
-        }
-        //依赖第三方接口：获取管理方列表
-        return JsonResult.success(result);
-    }
-
     @PostMapping("/addNormalBatch")
     public JsonResult addNormalBatch(@RequestBody PrNormalBatchDTO batchDTO)
     {

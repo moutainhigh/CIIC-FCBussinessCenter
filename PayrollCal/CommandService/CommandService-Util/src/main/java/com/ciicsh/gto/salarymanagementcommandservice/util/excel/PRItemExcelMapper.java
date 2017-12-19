@@ -30,6 +30,7 @@ public class PRItemExcelMapper implements RowMapper<PrGroupEntity> {
     public PrGroupEntity mapRow(RowSet rs) throws Exception {
 
         int totalCount = rs.getMetaData().getColumnCount();
+        String sheetName = rs.getMetaData().getSheetName();
         List<PrItemEntity> itemEntities = this.groupEntity.getPrItemEntityList();
         if(totalCount != itemEntities.size()){
             logger.info("column count is not equal");
@@ -46,5 +47,6 @@ public class PRItemExcelMapper implements RowMapper<PrGroupEntity> {
         });
         return this.groupEntity;
     }
+
 
 }
