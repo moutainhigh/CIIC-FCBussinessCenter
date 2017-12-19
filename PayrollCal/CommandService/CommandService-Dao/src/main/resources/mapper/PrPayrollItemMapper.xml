@@ -6,10 +6,10 @@
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">
 		<id column="id" property="id" />
 		<result column="item_code" property="itemCode" />
-		<result column="item_template_id" property="itemTemplateId" />
+		<result column="parent_item_code" property="parentItemCode" />
 		<result column="management_id" property="managementId" />
-		<result column="group_id" property="groupId" />
-		<result column="group_template_id" property="groupTemplateId" />
+		<result column="payroll_group_code" property="payrollGroupCode" />
+		<result column="payroll_group_template_code" property="payrollGroupTemplateCode" />
 		<result column="item_name" property="itemName" />
 		<result column="item_type" property="itemType" />
 		<result column="base_item_code" property="baseItemCode" />

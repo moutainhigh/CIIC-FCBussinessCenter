@@ -109,26 +109,26 @@ public class ItemController extends BaseController{
         PrPayrollItemPO newParam = new PrPayrollItemPO();
         BeanUtils.copyProperties(paramItem, newParam);
         newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
-        if (newParam.getGroupTemplateId()!=null){
-            List<PrPayrollItemPO> itemList = prItemService.getListByGroupTemplateId(
-                    paramItem.getGroupTemplateId().toString(),0,0).getList();
-            if (itemList != null) {
-                if (itemList.stream()
-                        .anyMatch(i -> i.getItemName().equals(newParam.getItemName()))) {
-                    return JsonResult.faultMessage("薪资组模板中已存在同名薪资项");
-                }
-            }
-        }
-        if (newParam.getGroupId()!=null){
-            List<PrPayrollItemPO> itemList = prItemService.getListByGroupId(
-                    newParam.getGroupId().toString(),0,0).getList();
-            if (itemList != null) {
-                if (itemList.stream()
-                        .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
-                    return JsonResult.faultMessage("薪资组中已存在同名薪资项");
-                }
-            }
-        }
+//        if (newParam.getGroupTemplateId()!=null){
+//            List<PrPayrollItemPO> itemList = prItemService.getListByGroupTemplateId(
+//                    paramItem.getGroupTemplateId().toString(),0,0).getList();
+//            if (itemList != null) {
+//                if (itemList.stream()
+//                        .anyMatch(i -> i.getItemName().equals(newParam.getItemName()))) {
+//                    return JsonResult.faultMessage("薪资组模板中已存在同名薪资项");
+//                }
+//            }
+//        }
+//        if (newParam.getGroupId()!=null){
+//            List<PrPayrollItemPO> itemList = prItemService.getListByGroupId(
+//                    newParam.getGroupId().toString(),0,0).getList();
+//            if (itemList != null) {
+//                if (itemList.stream()
+//                        .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
+//                    return JsonResult.faultMessage("薪资组中已存在同名薪资项");
+//                }
+//            }
+//        }
         //临时参数
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");

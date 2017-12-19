@@ -28,21 +28,21 @@ public class PrPayrollItemDTO {
      */
 	private String itemCode;
     /**
-     * 所属薪酬模版ID: 非必选项，让用户可以不需模板直接产生薪资项。
+     * 继承薪资组模板薪资项Code: 非必选项，让用户可以不需模板直接产生薪资项。
      */
-	private String itemTemplateId;
+    private String parentItemCode;
     /**
      * 所属管理方ID
      */
 	private String managementId;
     /**
-     * 所属薪资组ID
+     * 薪资组编码
      */
-	private Integer groupId;
+    private String payrollGroupCode;
     /**
-     * 所属薪资组模板ID
+     * 薪资组模版编码
      */
-	private Integer groupTemplateId;
+    private String payrollGroupTemplateCode;
     /**
      * 薪资项名称
      */

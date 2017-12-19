@@ -154,19 +154,29 @@ public class PrPayrollAccountSetPO extends Model<PrPayrollAccountSetPO> {
 		this.accountSetCode = accountSetCode;
 	}
 
-	public String getPayrollGroudCode() {
+
+	public Boolean getIfGroupTemplate() {
+		return ifGroupTemplate;
+	}
+
+	public void setIfGroupTemplate(Boolean ifGroupTemplate) {
+		this.ifGroupTemplate = ifGroupTemplate;
+	}
+
+
+	public String getPayrollGroupCode() {
 		return payrollGroupCode;
 	}
 
-	public void setPayrollGroudCode(String payrollGroupCode) {
+	public void setPayrollGroupCode(String payrollGroupCode) {
 		this.payrollGroupCode = payrollGroupCode;
 	}
 
-	public String getPayrollGroudTemplateCode() {
+	public String getPayrollGroupTemplateCode() {
 		return payrollGroupTemplateCode;
 	}
 
-	public void setPayrollGroudTemplateCode(String payrollGroupTemplateCode) {
+	public void setPayrollGroupTemplateCode(String payrollGroupTemplateCode) {
 		this.payrollGroupTemplateCode = payrollGroupTemplateCode;
 	}
 

@@ -37,7 +37,7 @@ public class PrItemServiceImpl implements PrItemService {
     public PageInfo<PrPayrollItemPO> getListByGroupId(String groupId, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         PrPayrollItemPO param = new PrPayrollItemPO();
-        param.setGroupId(Integer.parseInt(groupId));
+//        param.setGroupId(Integer.parseInt(groupId));
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
@@ -48,7 +48,7 @@ public class PrItemServiceImpl implements PrItemService {
     public PageInfo<PrPayrollItemPO> getListByGroupTemplateId(String groupTemplateId, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         PrPayrollItemPO param = new PrPayrollItemPO();
-        param.setGroupTemplateId(Integer.parseInt(groupTemplateId));
+//        param.setGroupTemplateId(Integer.parseInt(groupTemplateId));
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);

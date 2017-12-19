@@ -33,25 +33,25 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 	@TableField("item_code")
 	private String itemCode;
     /**
-     * 所属薪酬模版ID: 非必选项，让用户可以不需模板直接产生薪资项。
+     * 继承薪资组模板薪资项Code: 非必选项，让用户可以不需模板直接产生薪资项。
      */
-	@TableField("item_template_id")
-	private String itemTemplateId;
+	@TableField("parent_item_code")
+	private String parentItemCode;
     /**
      * 所属管理方ID
      */
 	@TableField("management_id")
 	private String managementId;
-    /**
-     * 所属薪资组ID
-     */
-	@TableField("group_id")
-	private Integer groupId;
-    /**
-     * 所属薪资组模板ID
-     */
-	@TableField("group_template_id")
-	private Integer groupTemplateId;
+	/**
+	 * 薪资组编码
+	 */
+	@TableField("payroll_group_code")
+	private String payrollGroupCode;
+	/**
+	 * 薪资组模版编码
+	 */
+	@TableField("payroll_group_template_code")
+	private String payrollGroupTemplateCode;
     /**
      * 薪资项名称
      */
@@ -166,12 +166,12 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 		this.itemCode = itemCode;
 	}
 
-	public String getItemTemplateId() {
-		return itemTemplateId;
+	public String getParentItemCode() {
+		return parentItemCode;
 	}
 
-	public void setItemTemplateId(String itemTemplateId) {
-		this.itemTemplateId = itemTemplateId;
+	public void setParentItemCode(String parentItemCode) {
+		this.parentItemCode = parentItemCode;
 	}
 
 	public String getManagementId() {
@@ -182,20 +182,20 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 		this.managementId = managementId;
 	}
 
-	public Integer getGroupId() {
-		return groupId;
+	public String getPayrollGroupCode() {
+		return payrollGroupCode;
 	}
 
-	public void setGroupId(Integer groupId) {
-		this.groupId = groupId;
+	public void setPayrollGroupCode(String payrollGroupCode) {
+		this.payrollGroupCode = payrollGroupCode;
 	}
 
-	public Integer getGroupTemplateId() {
-		return groupTemplateId;
+	public String getPayrollGroupTemplateCode() {
+		return payrollGroupTemplateCode;
 	}
 
-	public void setGroupTemplateId(Integer groupTemplateId) {
-		this.groupTemplateId = groupTemplateId;
+	public void setPayrollGroupTemplateCode(String payrollGroupTemplateCode) {
+		this.payrollGroupTemplateCode = payrollGroupTemplateCode;
 	}
 
 	public String getItemName() {
@@ -360,10 +360,10 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 		return "PrPayrollItemPO{" +
 			"id=" + id +
 			", itemCode=" + itemCode +
-			", itemTemplateId=" + itemTemplateId +
+			", parentItemCode=" + parentItemCode +
 			", managementId=" + managementId +
-			", groupId=" + groupId +
-			", groupTemplateId=" + groupTemplateId +
+			", payrollGroupCode=" + payrollGroupCode +
+			", payrollGroupTemplateCode=" + payrollGroupTemplateCode +
 			", itemName=" + itemName +
 			", itemType=" + itemType +
 			", baseItemCode=" + baseItemCode +
