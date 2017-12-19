@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.mapper.PrPayrollItemMapper">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper">
 
 	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">
@@ -29,5 +29,57 @@
 		<result column="created_by" property="createdBy" />
 		<result column="modified_by" property="modifiedBy" />
 	</resultMap>
+
+
+	<select id="getPayrollItems" parameterType="PayrollGroupExtPO" resultType="PrPayrollItemPO">
+		SELECT
+		<include refid="PayrollItem_All_Columns" />
+		FROM
+		pr_payroll_item
+		<include refid="whereQuery" />
+	</select>
+
+	<sql id="PayrollItem_All_Columns">
+		id,
+		item_code,
+		parent_item_code,
+		management_id,
+		payroll_group_code,
+		payroll_group_template_code,
+		item_name,
+		item_type,
+		base_item_code,
+		data_type,
+		default_value_style,
+		default_value,
+		decimal_process_type,
+		cal_precision,
+		formula_content,
+		item_condition,
+		cal_priority,
+		display_priority,
+		remark,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
+	</sql>
+
+	<sql id="whereQuery">
+		is_active = 1
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="managementId != null and managementId != ''">
+				AND management_id = #{managementId}
+			</if>
+			<if test="payrollGroupCode != null and payrollGroupCode != ''">
+				AND payroll_group_code = #{payrollGroupCode}
+			</if>
+			<if test="payrollGroupTemplateCode != null and payrollGroupTemplateCode != ''">
+				AND payroll_group_template_code = #{payrollGroupTemplateCode}
+			</if>
+		</trim>
+	</sql>
+
 
 </mapper>

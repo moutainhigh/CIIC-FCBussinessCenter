@@ -137,8 +137,8 @@ public class AccountSetController {
         accountSetDTO.setCreatedBy("macor");
         accountSetDTO.setModifiedBy("macor");
         PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
-        Integer result = prAccountSetService.addAccountSet(payrollAccountSetPO);
-        if(result > 0){
+        boolean result = prAccountSetService.addAccountSet(payrollAccountSetPO);
+        if(result){
             return new JsonResult(true,"添加成功！");
         }
         else

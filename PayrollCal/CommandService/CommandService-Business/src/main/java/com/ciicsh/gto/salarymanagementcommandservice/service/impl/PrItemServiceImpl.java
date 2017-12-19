@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrItemMapper;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
@@ -208,5 +209,10 @@ public class PrItemServiceImpl implements PrItemService {
     @Override
     public int deleteItemByPrGroupId(String prGroupId) {
         return prItemMapper.deleteItemByPrGroupId(prGroupId);
+    }
+
+    @Override
+    public List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO) {
+        return prPayrollItemMapper.getPayrollItems(extPO);
     }
 }

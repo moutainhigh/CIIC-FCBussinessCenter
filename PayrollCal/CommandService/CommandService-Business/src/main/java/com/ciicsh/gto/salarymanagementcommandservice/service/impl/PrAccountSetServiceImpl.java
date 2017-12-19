@@ -2,9 +2,14 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountSetMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jiangtianning on 2017/11/1.
@@ -24,11 +31,44 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
     @Autowired
     private PrPayrollAccountSetMapper accountSetMapper;
 
-    static final private int PAGE_SIZE = 10;
+    @Autowired
+    private PrPayrollItemMapper payrollItemMapper;
+
+    @Autowired
+    private PrPayrollAccountItemRelationMapper relationMapper;
 
     @Override
-    public Integer addAccountSet(PrPayrollAccountSetPO payrollAccountSetPO) {
-        return accountSetMapper.insert(payrollAccountSetPO);
+    public Boolean addAccountSet(PrPayrollAccountSetPO payrollAccountSetPO) {
+        try {
+            Integer val = accountSetMapper.insert(payrollAccountSetPO);
+            if(val > 0){
+                PayrollGroupExtPO extPO = new PayrollGroupExtPO();
+                extPO.setManagementId(payrollAccountSetPO.getManagementId());
+                if(payrollAccountSetPO.getIfGroupTemplate()){
+                    extPO.setPayrollGroupTemplateCode(payrollAccountSetPO.getPayrollGroupTemplateCode());
+                }
+                else {
+                    extPO.setPayrollGroupCode(payrollAccountSetPO.getPayrollGroupCode());
+                }
+                List<PrPayrollItemPO> payrollItems = payrollItemMapper.getPayrollItems(extPO);
+                if(payrollItems != null && payrollItems.size() > 0){
+                    List<PrPayrollAccountItemRelationPO> relations = payrollItems
+                            .stream()
+                            .map(item->toPayrollAccountItemRelationPO(item,payrollAccountSetPO))
+                            .collect(Collectors.toList());
+                    if(null != relations && relations.size() > 0){
+                        relations.forEach(x->relationMapper.insert(x));
+                    }
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception ex){
+            return false;
+        }
     }
 
     @Override
@@ -60,5 +100,17 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         }
         PageInfo<PrPayrollAccountSetExtensionPO> pageInfo = new PageInfo<>(results);
         return  pageInfo;
+    }
+
+    private PrPayrollAccountItemRelationPO toPayrollAccountItemRelationPO(PrPayrollItemPO payrollItemPO,PrPayrollAccountSetPO payrollAccountSetPO){
+        PrPayrollAccountItemRelationPO relationPO = new PrPayrollAccountItemRelationPO();
+        relationPO.setAccountSetCode(payrollAccountSetPO.getAccountSetCode());
+        relationPO.setPayrollItemCode(payrollItemPO.getItemCode());
+        relationPO.setActive(true);
+        relationPO.setCreatedTime(new Date());
+        relationPO.setCreatedBy("macor");
+        relationPO.setModifiedTime(new Date());
+        relationPO.setModifiedBy("macor");
+        return relationPO;
     }
 }

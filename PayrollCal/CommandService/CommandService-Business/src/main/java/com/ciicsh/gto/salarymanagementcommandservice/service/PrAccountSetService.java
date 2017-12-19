@@ -18,7 +18,7 @@ public interface PrAccountSetService {
      * @param payrollAccountSetPO 新增薪资实体
      * @return 是否新增成功
      */
-    Integer addAccountSet(PrPayrollAccountSetPO payrollAccountSetPO);
+    Boolean addAccountSet(PrPayrollAccountSetPO payrollAccountSetPO);
 
 
     /**
