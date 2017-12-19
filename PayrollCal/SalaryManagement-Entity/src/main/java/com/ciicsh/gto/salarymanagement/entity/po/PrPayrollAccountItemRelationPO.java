@@ -1,24 +1,24 @@
 package com.ciicsh.gto.salarymanagement.entity.po;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
-
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.enums.IdType;
 import java.util.Date;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
 
 /**
  * <p>
- * 薪资账套薪资项别名表
+ * 薪资账套薪资项名表
  * </p>
  *
  * @author Neo Jiang
- * @since 2017-12-05
+ * @since 2017-12-19
  */
-@TableName("pr_payroll_account_itemalias")
-public class PrPayrollAccountItemaliasPO extends Model<PrPayrollAccountItemaliasPO> {
+@TableName("pr_payroll_account_item_relation")
+public class PrPayrollAccountItemRelationPO extends Model<PrPayrollAccountItemRelationPO> {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,15 +28,15 @@ public class PrPayrollAccountItemaliasPO extends Model<PrPayrollAccountItemalias
 	@TableId(value="id", type= IdType.AUTO)
 	private Long id;
     /**
-     * 薪资账套Id
+     * 薪酬账套代码
      */
-	@TableField("payroll_account_id")
-	private Integer payrollAccountId;
+	@TableField("account_set_code")
+	private String accountSetCode;
     /**
-     * 薪资项ID
+     * 薪资项编码, 规则为XZX-9位管理方ID-薪资项类型缩写-3位数字序号
      */
-	@TableField("payroll_item_id")
-	private Integer payrollItemId;
+	@TableField("payroll_item_code")
+	private String payrollItemCode;
     /**
      * 薪资账套薪资项别名
      */
@@ -47,11 +47,6 @@ public class PrPayrollAccountItemaliasPO extends Model<PrPayrollAccountItemalias
      */
 	@TableField("is_active")
 	private Boolean isActive;
-    /**
-     * 是否显示
-     */
-	@TableField("is_show")
-	private Boolean isShow;
     /**
      * 数据创建时间
      */
@@ -82,20 +77,20 @@ public class PrPayrollAccountItemaliasPO extends Model<PrPayrollAccountItemalias
 		this.id = id;
 	}
 
-	public Integer getPayrollAccountId() {
-		return payrollAccountId;
+	public String getAccountSetCode() {
+		return accountSetCode;
 	}
 
-	public void setPayrollAccountId(Integer payrollAccountId) {
-		this.payrollAccountId = payrollAccountId;
+	public void setAccountSetCode(String accountSetCode) {
+		this.accountSetCode = accountSetCode;
 	}
 
-	public Integer getPayrollItemId() {
-		return payrollItemId;
+	public String getPayrollItemCode() {
+		return payrollItemCode;
 	}
 
-	public void setPayrollItemId(Integer payrollItemId) {
-		this.payrollItemId = payrollItemId;
+	public void setPayrollItemCode(String payrollItemCode) {
+		this.payrollItemCode = payrollItemCode;
 	}
 
 	public String getPayrollItemAlias() {
@@ -112,14 +107,6 @@ public class PrPayrollAccountItemaliasPO extends Model<PrPayrollAccountItemalias
 
 	public void setActive(Boolean isActive) {
 		this.isActive = isActive;
-	}
-
-	public Boolean getShow() {
-		return isShow;
-	}
-
-	public void setShow(Boolean isShow) {
-		this.isShow = isShow;
 	}
 
 	public Date getCreatedTime() {
@@ -161,13 +148,12 @@ public class PrPayrollAccountItemaliasPO extends Model<PrPayrollAccountItemalias
 
 	@Override
 	public String toString() {
-		return "PrPayrollAccountItemaliasPO{" +
+		return "PrPayrollAccountItemRelationPO{" +
 			"id=" + id +
-			", payrollAccountId=" + payrollAccountId +
-			", payrollItemId=" + payrollItemId +
+			", accountSetCode=" + accountSetCode +
+			", payrollItemCode=" + payrollItemCode +
 			", payrollItemAlias=" + payrollItemAlias +
 			", isActive=" + isActive +
-			", isShow=" + isShow +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +

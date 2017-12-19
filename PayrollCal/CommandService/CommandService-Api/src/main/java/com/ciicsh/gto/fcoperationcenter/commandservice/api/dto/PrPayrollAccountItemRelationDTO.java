@@ -7,15 +7,15 @@ import java.util.Date;
 
 /**
  * <p>
- * 薪资账套薪资项别名表
+ * 薪资账套薪资项名表
  * </p>
  *
  * @author Neo Jiang
- * @since 2017-12-05
+ * @since 2017-12-19
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class PrPayrollAccountItemaliasDTO {
+public class PrPayrollAccountItemRelationDTO{
 
     private static final long serialVersionUID = 1L;
 
@@ -24,13 +24,13 @@ public class PrPayrollAccountItemaliasDTO {
      */
 	private Long id;
     /**
-     * 薪资账套Id
+     * 薪酬账套代码
      */
-	private Integer payrollAccountId;
+	private String accountSetCode;
     /**
-     * 薪资项ID
+     * 薪资项编码, 规则为XZX-9位管理方ID-薪资项类型缩写-3位数字序号
      */
-	private Integer payrollItemId;
+	private String payrollItemCode;
     /**
      * 薪资账套薪资项别名
      */
@@ -39,10 +39,6 @@ public class PrPayrollAccountItemaliasDTO {
      * 是否有效
      */
 	private Boolean isActive;
-    /**
-     * 是否显示
-     */
-	private Boolean isShow;
     /**
      * 数据创建时间
      */
@@ -59,5 +55,4 @@ public class PrPayrollAccountItemaliasDTO {
      * 最后修改人
      */
 	private String modifiedBy;
-
 }

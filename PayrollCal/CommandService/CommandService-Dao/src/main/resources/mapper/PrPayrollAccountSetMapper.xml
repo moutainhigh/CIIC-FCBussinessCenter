@@ -82,8 +82,8 @@
 		FROM
 		pr_payroll_account_set a
 		INNER JOIN pr_emp_group b on a.emp_group_code = b.emp_group_code
-		LEFT JOIN pr_payroll_group c on a.pr_groud_code = c.group_code
-		LEFT JOIN pr_payroll_group_template d on a.pr_groud_template_code = d.group_template_code
+		LEFT JOIN pr_payroll_group c on a.payroll_group_code = c.group_code
+		LEFT JOIN pr_payroll_group_template d on a.payroll_group_template_code = d.group_template_code
 		<include refid="whereExtQuery" />
 	</select>
 
