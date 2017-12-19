@@ -15,6 +15,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +39,7 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
     private PrPayrollAccountItemRelationMapper relationMapper;
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public Boolean addAccountSet(PrPayrollAccountSetPO payrollAccountSetPO) {
         try {
             Integer val = accountSetMapper.insert(payrollAccountSetPO);
