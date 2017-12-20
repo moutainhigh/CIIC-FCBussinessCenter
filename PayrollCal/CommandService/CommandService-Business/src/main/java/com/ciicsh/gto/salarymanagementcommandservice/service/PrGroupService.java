@@ -18,7 +18,7 @@ public interface PrGroupService {
 
     /**
      * 获取薪资组列表
-     * @param paramItem 查询参数
+     * @param param 查询参数
      * @return 薪资组列表
      */
     PageInfo<PrPayrollGroupPO> getList(PrPayrollGroupPO param, Integer pageNum, Integer pageSize);
@@ -80,4 +80,12 @@ public interface PrGroupService {
      * @return 薪资组名称列表
      */
     List<KeyValuePO> getPayrollGroupNames(String managementId);
+
+    /**
+     * 复制薪资组
+     * @param srcCode
+     * @param newName
+     * @return
+     */
+    String copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity);
 }

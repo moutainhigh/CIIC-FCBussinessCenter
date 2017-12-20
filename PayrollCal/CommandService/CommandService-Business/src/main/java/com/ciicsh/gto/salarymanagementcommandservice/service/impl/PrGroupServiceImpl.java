@@ -168,6 +168,18 @@ public class PrGroupServiceImpl implements PrGroupService {
         return keyValues;
     }
 
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public String copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity) {
+
+        int prGroupAddResult = this.addItem(newEntity);
+        if (prGroupAddResult == 0) {
+            throw new RuntimeException("插入薪资组失败");
+        }
+
+        return null;
+    }
+
     // 从公式中获取薪资项名称列表
     private List<String> getPayItems(String formula){
         List<String> names = new LinkedList<>();

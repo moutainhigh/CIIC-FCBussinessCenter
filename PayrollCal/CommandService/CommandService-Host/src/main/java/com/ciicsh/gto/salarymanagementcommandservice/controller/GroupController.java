@@ -70,7 +70,33 @@ public class GroupController {
         return ResultEntity.success("");
     }
 
+    /**
+     * 拷贝薪资组
+     * @param srcCode
+     * @param newName
+     * @return
+     */
+    @GetMapping(value = "/copyPrGroup")
+    @ResponseBody
+    public JsonResult copyPrGroup(@RequestParam String srcCode,
+                                           @RequestParam String newName){
+        PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
+        PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
+        BeanUtils.copyProperties(srcEntity, newEntity);
+        newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
 
+        return JsonResult.success("");
+    }
+
+
+
+    /**
+     * 查询薪资组列表
+     * @param pageNum
+     * @param pageSize
+     * @param param
+     * @return
+     */
     @PostMapping(value = "/prGroupQuery")
     @ResponseBody
     public JsonResult getPrGroupList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
@@ -164,6 +190,11 @@ public class GroupController {
         return ResultEntity.success(result);
     }
 
+    /**
+     * 删除薪资组
+     * @param code
+     * @return
+     */
     @DeleteMapping(value = "/prGroup/{code}")
     public JsonResult deleteItem(@PathVariable("code") String code){
         String[] codes = code.split(",");
