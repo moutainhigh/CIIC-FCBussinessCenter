@@ -4,6 +4,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -47,4 +48,8 @@ public interface PrAccountSetService {
      * @return 薪资账套扩展列表
      */
     PageInfo<PrPayrollAccountSetExtensionPO> getPayrollAccountSetExts(PrPayrollAccountSetExtensionPO extensionPO, Integer pageNum, Integer pageSize);
+
+    /*根据CODE 获取薪资帐套信息*/
+    PrPayrollAccountSetPO getAccountSetInfo(@Param("accSetCode") String accSetCode);
+
 }

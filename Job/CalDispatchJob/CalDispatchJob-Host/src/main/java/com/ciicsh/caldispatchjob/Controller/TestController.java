@@ -1,7 +1,7 @@
 package com.ciicsh.caldispatchjob.Controller;
 
-import com.ciicsh.caldispatchjob.compute.mongo.EmpGroupMongoOpt;
-import com.ciicsh.caldispatchjob.compute.mongo.NormalBatchMongoOpt;
+import com.ciicsh.caldispatchjob.compute.service.EmpAgreementServiceImpl;
+import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +19,10 @@ import java.util.UUID;
 public class TestController {
 
     @Autowired
-    private EmpGroupMongoOpt empGroupOpt;
+    private EmpAgreementServiceImpl empAgreementService;
 
     @Autowired
-    private NormalBatchMongoOpt normalBatchMongoOpt;
+    private NormalBatchServiceImpl normalBatchService;
 
     @PostMapping("/batchInsert")
     public void batchInsert(){
@@ -45,30 +45,46 @@ public class TestController {
 
             list.add(emp);
         }
-
-        empGroupOpt.batchInsert(list);
+        //empGroupOpt.batchInsert(list);
     }
 
-    @PostMapping("/batchDel")
-    public void batchDel(){
-
-        List<String> groupIDs = new ArrayList<>();
-        groupIDs.add("19");
-
-        List<String> empIDs = new ArrayList<>();
-        //empIDs.add("YYA14502");
-        //empIDs.add("YYA14106");
-        //empIDs.add("YYA14183");
-        empIDs.add("YYA14276,YYA14292,YYA14341");
-
-        empGroupOpt.batchDelGroupEmployees(groupIDs,empIDs);
+    @PostMapping("/batchEmpAgreement")
+    public void batchEmpAgreement(){
+        List<String> empIds = new ArrayList<>();
+        empIds.add("YYA14369");
+        empIds.add("YYA14378");
+        empAgreementService.batchInsertServiceAgreement(empIds);
     }
 
-    @PostMapping("/normalBatchInsert")
-    public void normalBatchInsert(){
-        String batchCode = UUID.randomUUID().toString();
+    @PostMapping("/updatePayItem")
+    public void updatePayItem(){
+        String batchCode = "5bb57dfe-1dcb-447e-9179-a4d4010085f5";
         String empGroupId = "19";
+        String groupCode = "";
+        String empId = "YYA14369";
+        List<DBObject> list = new ArrayList<>();
+        DBObject  object = new BasicDBObject();
+        object.put("基本工资", 15000);
+        object.put("加班小时数",20.8);
+        object.put("税后工资",12000);
+        object.put("工龄",1.2);
 
-        normalBatchMongoOpt.batchInsertNormalBatch(batchCode,empGroupId);
+        normalBatchService.associateEmpPayItems(batchCode,empGroupId,groupCode,empId,object);
+    }
+
+    @PostMapping("/updateEmpAgreement")
+    public void updateEmpAgreement(){
+        String batchCode = "5bb57dfe-1dcb-447e-9179-a4d4010085f5";
+        String empGroupId = "19";
+        String groupCode = "";
+        String empId = "YYA14369";
+        List<DBObject> list = new ArrayList<>();
+        DBObject  object = new BasicDBObject();
+        object.put("产品名称", "薪酬福利计算");
+        object.put("金额",2220.8);
+        object.put("频率","次/月");
+        object.put("时间","2017-08-09");
+
+        normalBatchService.associateEmpAgreements(batchCode,empGroupId,groupCode,empId,object);
     }
 }

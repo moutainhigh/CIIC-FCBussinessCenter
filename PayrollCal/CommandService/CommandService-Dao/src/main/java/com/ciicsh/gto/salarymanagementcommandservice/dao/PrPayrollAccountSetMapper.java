@@ -42,4 +42,7 @@ public interface PrPayrollAccountSetMapper extends BaseMapper<PrPayrollAccountSe
      * @return 薪资账套扩展列表
      */
     List<PrPayrollAccountSetExtensionPO> getPayrollAccountSetExts(PrPayrollAccountSetExtensionPO extensionPO);
+
+    /*根据CODE 获取薪资帐套信息*/
+    PrPayrollAccountSetPO getAccountSetInfo(@Param("accSetCode") String accSetCode);
 }

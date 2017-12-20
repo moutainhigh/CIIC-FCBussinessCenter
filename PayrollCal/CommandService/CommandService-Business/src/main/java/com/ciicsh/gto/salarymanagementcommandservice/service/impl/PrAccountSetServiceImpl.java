@@ -61,4 +61,9 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         PageInfo<PrPayrollAccountSetExtensionPO> pageInfo = new PageInfo<>(results);
         return  pageInfo;
     }
+
+    @Override
+    public PrPayrollAccountSetPO getAccountSetInfo(String accSetCode) {
+        return accountSetMapper.getAccountSetInfo(accSetCode);
+    }
 }

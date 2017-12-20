@@ -169,7 +169,7 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 		return accountSetCode;
 	}
 
-	public void setAccountSetCode(String accountSetId) {
+	public void setAccountSetCode(String accountSetCode) {
 		this.accountSetCode = accountSetCode;
 	}
 

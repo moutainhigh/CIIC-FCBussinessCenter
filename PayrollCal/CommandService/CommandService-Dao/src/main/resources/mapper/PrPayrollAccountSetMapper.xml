@@ -76,6 +76,14 @@
 		<include refid="whereQuery" />
 	</select>
 
+	<select id="getAccountSetInfo" resultType="PrPayrollAccountSetPO">
+		SELECT
+		<include refid="PayrollAccountSet_All_Columns" />
+		FROM
+		pr_payroll_account_set
+		WHERE account_set_code = #{accSetCode} AND is_active = 1
+	</select>
+
 	<select id="getPayrollAccountSetExts" resultMap="BaseExtensionResultMap" parameterType="PrPayrollAccountSetExtensionPO">
 		SELECT
 		<include refid="PayrollAccountSet_Extension_All_Columns" />

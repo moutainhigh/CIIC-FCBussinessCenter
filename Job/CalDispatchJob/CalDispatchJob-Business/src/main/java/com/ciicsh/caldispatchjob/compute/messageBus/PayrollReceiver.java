@@ -1,6 +1,6 @@
 package com.ciicsh.caldispatchjob.compute.messageBus;
 
-import com.ciicsh.caldispatchjob.compute.mongo.EmpGroupMongoOpt;
+import com.ciicsh.caldispatchjob.compute.service.EmpGroupServiceImpl;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
@@ -23,7 +23,7 @@ public class PayrollReceiver {
     private final static Logger logger = LoggerFactory.getLogger(PayrollReceiver.class);
 
     @Autowired
-    private EmpGroupMongoOpt empBatchOpt;
+    private EmpGroupServiceImpl empGroupService;
 
     @StreamListener(PayrollSink.INPUT)
     public void receive(PayrollMsg message){
@@ -47,11 +47,11 @@ public class PayrollReceiver {
             String empGroupId = String.valueOf(groupIds.toArray()[0]);
             logger.info("ADD Opt");
             logger.info("emp group id:" + empGroupId);
-            empBatchOpt.batchInsertGroupEmployees(empGroupId,empIds);
+            empGroupService.batchInsertGroupEmployees(empGroupId,empIds);
         }
         else if(message.getOperateType() == OperateTypeEnum.DELETE.getValue()){
             logger.info("DELETE Opt");
-            empBatchOpt.batchDelGroupEmployees(groupIds,empIds);
+            empGroupService.batchDelGroupEmployees(groupIds,empIds);
         }
 
     }
