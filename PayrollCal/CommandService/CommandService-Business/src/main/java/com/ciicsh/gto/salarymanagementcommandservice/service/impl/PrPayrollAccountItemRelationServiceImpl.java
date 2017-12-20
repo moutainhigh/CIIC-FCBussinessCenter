@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrPayrollAccountItemRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,10 @@ public class PrPayrollAccountItemRelationServiceImpl implements PrPayrollAccount
     @Override
     public List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(String accountSetCode) {
         return relationMapper.getAccountItemRelationExts(accountSetCode);
+    }
+
+    @Override
+    public Integer editAccountItemRelation(PrPayrollAccountItemRelationPO relationPO) {
+        return relationMapper.updateById(relationPO);
     }
 }
