@@ -1,10 +1,13 @@
 package com.ciicsh.gto.salarymanagementcommandservice.dao;
 
+import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -24,4 +27,11 @@ public interface PrPayrollAccountItemRelationMapper extends BaseMapper<PrPayroll
      * @return 返回影响的行数
      */
     Integer delAccountItemRelationByAccountCode(@Param("accountSetCode") String accountSetCode);
+
+    /**
+     * 根据薪资账套Code 获取薪资账套扩展薪资项关系数据
+     * @param accountSetCode 薪资账套Code
+     * @return 返回薪资账套扩展薪资项关系数据
+     */
+    List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(@Param("accountSetCode") String accountSetCode);
 }

@@ -8,7 +8,6 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;

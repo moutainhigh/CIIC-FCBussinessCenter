@@ -62,31 +62,34 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
     public Boolean editAccountSet(PrPayrollAccountSetPO payrollAccountSetPO) {
         try{
             PrPayrollAccountSetExtensionPO extensionPO = accountSetMapper.getPayrollAccountSetExtByCode(payrollAccountSetPO.getAccountSetCode());
-            if(extensionPO != null){
-                if(payrollAccountSetPO.getIfGroupTemplate()){
-                    if(extensionPO.getIfGroupTemplate()){
-                        if(!payrollAccountSetPO.getPayrollGroupTemplateCode().equals(extensionPO.getPayrollGroupTemplateCode())){
-                            relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
-                        }
-                    }
-                    else {
-                        relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
-                    }
-                }
-                else{
-                    if(extensionPO.getIfGroupTemplate()){
-                        relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
-                    }
-                    else{
-                        if(!payrollAccountSetPO.getPayrollGroupCode().equals(extensionPO.getPayrollGroupCode())){
-                            relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
-                        }
-                    }
-                }
-            }
             Integer val = accountSetMapper.updateById(payrollAccountSetPO);
             if(val > 0){
-                this.saveItemRelation(payrollAccountSetPO);
+                if(extensionPO != null){
+                    if(payrollAccountSetPO.getIfGroupTemplate()){
+                        if(extensionPO.getIfGroupTemplate()){
+                            if(!payrollAccountSetPO.getPayrollGroupTemplateCode().equals(extensionPO.getPayrollGroupTemplateCode())){
+                                relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                                this.saveItemRelation(payrollAccountSetPO);
+                            }
+                        }
+                        else {
+                            relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                            this.saveItemRelation(payrollAccountSetPO);
+                        }
+                    }
+                    else{
+                        if(extensionPO.getIfGroupTemplate()){
+                            relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                            this.saveItemRelation(payrollAccountSetPO);
+                        }
+                        else{
+                            if(!payrollAccountSetPO.getPayrollGroupCode().equals(extensionPO.getPayrollGroupCode())){
+                                relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                                this.saveItemRelation(payrollAccountSetPO);
+                            }
+                        }
+                    }
+                }
                 return true;
             }
             else{
@@ -101,11 +104,11 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
     private void saveItemRelation(PrPayrollAccountSetPO payrollAccountSetPO){
         PayrollGroupExtPO extPO = new PayrollGroupExtPO();
         if(payrollAccountSetPO.getIfGroupTemplate()){
-            extPO.setManagementId("GLF-00000");
+            //extPO.setManagementId("GLF-00000");
             extPO.setPayrollGroupTemplateCode(payrollAccountSetPO.getPayrollGroupTemplateCode());
         }
         else {
-            extPO.setManagementId(payrollAccountSetPO.getManagementId());
+            //extPO.setManagementId(payrollAccountSetPO.getManagementId());
             extPO.setPayrollGroupCode(payrollAccountSetPO.getPayrollGroupCode());
         }
         List<PrPayrollItemPO> payrollItems = payrollItemMapper.getPayrollItems(extPO);

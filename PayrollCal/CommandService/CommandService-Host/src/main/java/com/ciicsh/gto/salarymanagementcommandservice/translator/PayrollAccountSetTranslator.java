@@ -1,6 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.translator;
 
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PayrollAccountItemRelationExtDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetDTO;
+import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import org.springframework.beans.BeanUtils;
 
@@ -18,5 +20,11 @@ public class PayrollAccountSetTranslator {
         PrPayrollAccountSetDTO payrollAccountSetDTO = new PrPayrollAccountSetDTO();
         BeanUtils.copyProperties(payrollAccountSetPO,payrollAccountSetDTO);
         return payrollAccountSetDTO;
+    }
+
+    public static PayrollAccountItemRelationExtDTO toPayrollAccountItemRelationExtDTO(PayrollAccountItemRelationExtPO relationExtPO){
+        PayrollAccountItemRelationExtDTO relationExtDTO = new PayrollAccountItemRelationExtDTO();
+        BeanUtils.copyProperties(relationExtPO,relationExtDTO);
+        return relationExtDTO;
     }
 }
