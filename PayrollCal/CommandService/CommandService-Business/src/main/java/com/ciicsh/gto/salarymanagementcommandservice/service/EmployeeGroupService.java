@@ -75,4 +75,12 @@ public interface EmployeeGroupService{
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
     Integer isExistEmpGroup(EmpGroupOptPO optPO);
+
+
+    /**
+     * 根据雇员组Code查询雇员组
+     * @param empGroupCode 雇员组Code
+     * @return 返回雇员组
+     */
+    PrEmpGroupPO getEmployeeGroupByCode(String empGroupCode);
 }

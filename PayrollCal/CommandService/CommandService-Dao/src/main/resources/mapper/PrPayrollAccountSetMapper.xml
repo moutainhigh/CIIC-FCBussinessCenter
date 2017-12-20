@@ -203,13 +203,13 @@
 	<sql id="whereIsExist">
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
 			<if test="managementId != null and managementId != ''">
-				AND a.management_id = #{managementId}
+				AND management_id = #{managementId}
 			</if>
 			<if test="accountSetName != null and accountSetName != ''">
-				AND a.account_set_name = #{accountSetName}
+				AND account_set_name = #{accountSetName}
 			</if>
 			<if test="accountSetCode != null and accountSetCode !=''">
-				AND a.account_set_code != #{accountSetCode}
+				AND account_set_code != #{accountSetCode}
 			</if>
 		</trim>
 	</sql>

@@ -134,4 +134,9 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
     public Integer isExistEmpGroup(EmpGroupOptPO optPO) {
         return empGroupMapper.isExistEmpGroup(optPO);
     }
+
+    @Override
+    public PrEmpGroupPO getEmployeeGroupByCode(String empGroupCode) {
+        return empGroupMapper.getEmployeeGroupByCode(empGroupCode);
+    }
 }

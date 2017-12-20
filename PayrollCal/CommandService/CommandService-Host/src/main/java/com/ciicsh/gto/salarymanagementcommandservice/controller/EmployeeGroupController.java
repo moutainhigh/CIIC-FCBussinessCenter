@@ -8,6 +8,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
+import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
@@ -86,7 +87,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         optPO.setEmpGroupName(prEmpGroupDTO.getName());
         Integer val = employeeGroupService.isExistEmpGroup(optPO);
         if(val > 0){
-            return new JsonResult(false,"添加失败,已经存在在同一个管理方下相同的雇员组，请检查！");
+            return JsonResult.faultMessage("添加失败,已经存在在同一个管理方下相同的雇员组，请检查！");
         }
         else {
             String empGroupCode = codeGenerator.genEmpGroupCode(prEmpGroupDTO.getManagementId());
@@ -97,11 +98,20 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
 
             Integer result = employeeGroupService.addEmployeeGroup(empGroupPO);
             if(result > 0){
-                return new JsonResult(true,"添加成功！");
+
+                PrEmpGroupPO groupPO = employeeGroupService.getEmployeeGroupByCode(empGroupCode);
+                PrEmpGroupDTO groupDTO = null;
+                if(null != groupPO){
+                    groupDTO = EmployeeGroupTranslator.toPrEmpGroupDTO(groupPO);
+                    if(getManagement().containsKey(groupDTO.getManagementId())){
+                        groupDTO.setManagementName(getManagement().get(groupDTO.getManagementId()));
+                    }
+                }
+                return JsonResult.success(groupDTO,"添加成功！");
             }
             else
             {
-                return new JsonResult(false,"添加失败！");
+                return JsonResult.faultMessage("添加失败！");
             }
         }
     }
@@ -114,7 +124,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         optPO.setEmpGroupCode(prEmpGroupDTO.getEmpGroupCode());
         Integer val = employeeGroupService.isExistEmpGroup(optPO);
         if(val > 0){
-            return new JsonResult(false,"编辑失败,已经存在在同一个管理方下相同的雇员组，请检查！");
+            return JsonResult.faultMessage("编辑失败,已经存在在同一个管理方下相同的雇员组，请检查！");
         }
         else{
             prEmpGroupDTO.setModifiedBy("bill");
@@ -122,11 +132,19 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
             PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
             Integer result = employeeGroupService.editEmployeeGroup(empGroupPO);
             if(result > 0){
-                return new JsonResult(true,"编辑成功！");
+                PrEmpGroupPO groupPO = employeeGroupService.getEmployeeGroupByCode(prEmpGroupDTO.getEmpGroupCode());
+                PrEmpGroupDTO groupDTO = null;
+                if(null != groupPO){
+                    groupDTO = EmployeeGroupTranslator.toPrEmpGroupDTO(groupPO);
+                    if(getManagement().containsKey(groupDTO.getManagementId())){
+                        groupDTO.setManagementName(getManagement().get(groupDTO.getManagementId()));
+                    }
+                }
+                return JsonResult.success(groupDTO,"编辑成功！");
             }
             else
             {
-                return new JsonResult(false,"编辑失败！");
+                return JsonResult.faultMessage("编辑失败！");
             }
         }
     }

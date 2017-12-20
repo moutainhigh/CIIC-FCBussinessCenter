@@ -146,6 +146,9 @@ public class AccountSetController extends BaseController {
                 PrPayrollAccountSetExtensionDTO extensionDTO = null;
                 if(null != extensionPO){
                     extensionDTO = PayrollAccountSetExtensionTranslator.toPrPayrollAccountSetExtensionDTO(extensionPO);
+                    if(getManagement().containsKey(extensionDTO.getManagementId())){
+                        extensionDTO.setManagementName(getManagement().get(extensionDTO.getManagementId()));
+                    }
                 }
                 return JsonResult.success(extensionDTO,"添加成功！");
             }
@@ -177,6 +180,9 @@ public class AccountSetController extends BaseController {
                 PrPayrollAccountSetExtensionDTO extensionDTO = null;
                 if(null != extensionPO){
                     extensionDTO = PayrollAccountSetExtensionTranslator.toPrPayrollAccountSetExtensionDTO(extensionPO);
+                    if(getManagement().containsKey(extensionDTO.getManagementId())){
+                        extensionDTO.setManagementName(getManagement().get(extensionDTO.getManagementId()));
+                    }
                 }
                 return JsonResult.success(extensionDTO,"编辑成功！");
             }
