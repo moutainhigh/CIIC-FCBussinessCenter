@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators.In;
@@ -38,9 +39,8 @@ public interface PrEmpGroupMapper extends BaseMapper<PrEmpGroupPO> {
 
     /**
      * 是否已经存在雇员组
-     * @param managementId 管理方ID
-     * @param empGroupName 雇员组名称
+     * @param optPO
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmpGroup(@Param("managementId") String managementId,@Param("empGroupName") String empGroupName);
+    Integer isExistEmpGroup(EmpGroupOptPO optPO);
 }

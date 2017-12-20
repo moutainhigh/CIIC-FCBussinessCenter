@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 
@@ -70,9 +71,8 @@ public interface EmployeeGroupService{
 
     /**
      * 是否已经存在雇员组
-     * @param managementId 管理方ID
-     * @param empGroupName 雇员组名称
+     * @param optPO
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmpGroup(String managementId, String empGroupName);
+    Integer isExistEmpGroup(EmpGroupOptPO optPO);
 }

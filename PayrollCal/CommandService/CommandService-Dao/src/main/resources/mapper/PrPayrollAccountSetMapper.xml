@@ -57,8 +57,9 @@
 	</resultMap>
 
 
-	<select id="isExistPayrollAccountSet" resultType="int">
-		SELECT COUNT(*) FROM pr_payroll_account_set WHERE management_id = #{managementId} AND account_set_name = #{accountSetName} AND is_active = 1
+	<select id="isExistPayrollAccountSet" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO" resultType="int">
+		SELECT COUNT(*) FROM pr_payroll_account_set
+		<include refid="whereIsExist" />
 	</select>
 
 	<select id="getPayrollAccountSetNames" resultMap="getKeyValueMap">
@@ -91,6 +92,21 @@
 		LEFT JOIN pr_payroll_group_template d on a.payroll_group_template_code = d.group_template_code
 		<include refid="whereExtQuery" />
 	</select>
+
+
+	<select id="getPayrollAccountSetExtByCode" resultMap="BaseExtensionResultMap">
+		SELECT
+		<include refid="PayrollAccountSet_Extension_All_Columns" />
+		FROM
+		pr_payroll_account_set a
+		INNER JOIN pr_emp_group b on a.emp_group_code = b.emp_group_code
+		LEFT JOIN pr_payroll_group c on a.payroll_group_code = c.group_code
+		LEFT JOIN pr_payroll_group_template d on a.payroll_group_template_code = d.group_template_code
+		WHERE
+		a.account_set_code = #{accountSetCode} AND a.is_active = 1
+	</select>
+
+
 
 	<sql id="PayrollAccountSet_All_Columns">
 		id,
@@ -180,6 +196,20 @@
 			</if>
 			<if test="payrollGroupCode != null and payrollGroupCode != ''">
 				AND a.payroll_group_code = #{payrollGroupCode}
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="whereIsExist">
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="managementId != null and managementId != ''">
+				AND a.management_id = #{managementId}
+			</if>
+			<if test="accountSetName != null and accountSetName != ''">
+				AND a.account_set_name = #{accountSetName}
+			</if>
+			<if test="accountSetCode != null and accountSetCode !=''">
+				AND a.account_set_code != #{accountSetCode}
 			</if>
 		</trim>
 	</sql>

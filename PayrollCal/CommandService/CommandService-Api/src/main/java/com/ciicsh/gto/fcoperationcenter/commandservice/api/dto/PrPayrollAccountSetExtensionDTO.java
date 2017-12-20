@@ -12,6 +12,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 public class PrPayrollAccountSetExtensionDTO {
     private Integer id;
+    private String managementName;
     private String managementId;
     private String accountSetName;
     private String accountSetCode;

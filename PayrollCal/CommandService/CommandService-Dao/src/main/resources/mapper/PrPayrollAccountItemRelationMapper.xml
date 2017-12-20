@@ -15,4 +15,8 @@
 		<result column="modified_by" property="modifiedBy" />
 	</resultMap>
 
+	<select id="delAccountItemRelationByAccountCode" resultType="int">
+		DELETE FROM pr_payroll_account_item_relation WHERE account_set_code = #{accountSetCode}
+	</select>
+
 </mapper>

@@ -7,6 +7,7 @@ import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupEmpRelationPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupEmpRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupMapper;
@@ -130,7 +131,7 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
     }
 
     @Override
-    public Integer isExistEmpGroup(String managementId, String empGroupName) {
-        return empGroupMapper.isExistEmpGroup(managementId,empGroupName);
+    public Integer isExistEmpGroup(EmpGroupOptPO optPO) {
+        return empGroupMapper.isExistEmpGroup(optPO);
     }
 }

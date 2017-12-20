@@ -7,6 +7,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountSetMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
@@ -44,24 +45,7 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         try {
             Integer val = accountSetMapper.insert(payrollAccountSetPO);
             if(val > 0){
-                PayrollGroupExtPO extPO = new PayrollGroupExtPO();
-                extPO.setManagementId(payrollAccountSetPO.getManagementId());
-                if(payrollAccountSetPO.getIfGroupTemplate()){
-                    extPO.setPayrollGroupTemplateCode(payrollAccountSetPO.getPayrollGroupTemplateCode());
-                }
-                else {
-                    extPO.setPayrollGroupCode(payrollAccountSetPO.getPayrollGroupCode());
-                }
-                List<PrPayrollItemPO> payrollItems = payrollItemMapper.getPayrollItems(extPO);
-                if(payrollItems != null && payrollItems.size() > 0){
-                    List<PrPayrollAccountItemRelationPO> relations = payrollItems
-                            .stream()
-                            .map(item->toPayrollAccountItemRelationPO(item,payrollAccountSetPO))
-                            .collect(Collectors.toList());
-                    if(null != relations && relations.size() > 0){
-                        relations.forEach(x->relationMapper.insert(x));
-                    }
-                }
+                this.saveItemRelation(payrollAccountSetPO);
                 return true;
             }
             else {
@@ -70,6 +54,69 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         }
         catch (Exception ex){
             return false;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public Boolean editAccountSet(PrPayrollAccountSetPO payrollAccountSetPO) {
+        try{
+            PrPayrollAccountSetExtensionPO extensionPO = accountSetMapper.getPayrollAccountSetExtByCode(payrollAccountSetPO.getAccountSetCode());
+            if(extensionPO != null){
+                if(payrollAccountSetPO.getIfGroupTemplate()){
+                    if(extensionPO.getIfGroupTemplate()){
+                        if(!payrollAccountSetPO.getPayrollGroupTemplateCode().equals(extensionPO.getPayrollGroupTemplateCode())){
+                            relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                        }
+                    }
+                    else {
+                        relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                    }
+                }
+                else{
+                    if(extensionPO.getIfGroupTemplate()){
+                        relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                    }
+                    else{
+                        if(!payrollAccountSetPO.getPayrollGroupCode().equals(extensionPO.getPayrollGroupCode())){
+                            relationMapper.delAccountItemRelationByAccountCode(payrollAccountSetPO.getAccountSetCode());
+                        }
+                    }
+                }
+            }
+            Integer val = accountSetMapper.updateById(payrollAccountSetPO);
+            if(val > 0){
+                this.saveItemRelation(payrollAccountSetPO);
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        catch (Exception ex){
+            return false;
+        }
+    }
+
+    private void saveItemRelation(PrPayrollAccountSetPO payrollAccountSetPO){
+        PayrollGroupExtPO extPO = new PayrollGroupExtPO();
+        if(payrollAccountSetPO.getIfGroupTemplate()){
+            extPO.setManagementId("GLF-00000");
+            extPO.setPayrollGroupTemplateCode(payrollAccountSetPO.getPayrollGroupTemplateCode());
+        }
+        else {
+            extPO.setManagementId(payrollAccountSetPO.getManagementId());
+            extPO.setPayrollGroupCode(payrollAccountSetPO.getPayrollGroupCode());
+        }
+        List<PrPayrollItemPO> payrollItems = payrollItemMapper.getPayrollItems(extPO);
+        if(payrollItems != null && payrollItems.size() > 0){
+            List<PrPayrollAccountItemRelationPO> relations = payrollItems
+                    .stream()
+                    .map(item->toPayrollAccountItemRelationPO(item,payrollAccountSetPO))
+                    .collect(Collectors.toList());
+            if(null != relations && relations.size() > 0){
+                relations.forEach(x->relationMapper.insert(x));
+            }
         }
     }
 
@@ -105,8 +152,13 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
     }
 
     @Override
-    public Integer isExistPayrollAccountSet(String managementId, String accountSetName) {
-        return accountSetMapper.isExistPayrollAccountSet(managementId,accountSetName);
+    public Integer isExistPayrollAccountSet(PrAccountItemOptPO optPO) {
+        return accountSetMapper.isExistPayrollAccountSet(optPO);
+    }
+
+    @Override
+    public PrPayrollAccountSetExtensionPO getPayrollAccountSetExtByCode(String accountSetCode) {
+        return accountSetMapper.getPayrollAccountSetExtByCode(accountSetCode);
     }
 
     private PrPayrollAccountItemRelationPO toPayrollAccountItemRelationPO(PrPayrollItemPO payrollItemPO,PrPayrollAccountSetPO payrollAccountSetPO){

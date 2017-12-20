@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,6 +21,14 @@ public interface PrAccountSetService {
      * @return 是否新增成功
      */
     Boolean addAccountSet(PrPayrollAccountSetPO payrollAccountSetPO);
+
+
+    /**
+     * 编辑薪资账套
+     * @param payrollAccountSetPO 新增薪资实体
+     * @return 是否编辑成功
+     */
+    Boolean editAccountSet(PrPayrollAccountSetPO payrollAccountSetPO);
 
 
     /**
@@ -52,9 +61,16 @@ public interface PrAccountSetService {
 
     /**
      * 是否已经存在薪资账套
-     * @param managementId 管理方ID
-     * @param accountSetName 薪资账套名称
+     * @param optPO
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistPayrollAccountSet(String managementId, String accountSetName);
+    Integer isExistPayrollAccountSet(PrAccountItemOptPO optPO);
+
+
+    /**
+     * 根据薪资账套Code获取薪资账套扩展数据
+     * @param accountSetCode 薪资账套Code
+     * @return 薪资账套扩展数据
+     */
+    PrPayrollAccountSetExtensionPO getPayrollAccountSetExtByCode(String accountSetCode);
 }
