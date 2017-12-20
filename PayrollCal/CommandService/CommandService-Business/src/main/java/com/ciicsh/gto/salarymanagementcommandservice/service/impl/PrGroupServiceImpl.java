@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrGroupMapper;
@@ -55,23 +56,23 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    public PrPayrollGroupPO getItemById(String id) {
-        PrPayrollGroupPO result = prPayrollGroupMapper.selectById(id);
+    public PrPayrollGroupPO getItemByCode(String code) {
+        PrPayrollGroupPO param = new PrPayrollGroupPO();
+        param.setGroupCode(code);
+        PrPayrollGroupPO result = prPayrollGroupMapper.selectOne(param);
         return result;
     }
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public int updateItemById(PrPayrollGroupPO paramItem) {
-        return prPayrollGroupMapper.updateById(paramItem);
+    public int updateItemByCode(PrPayrollGroupPO paramItem) {
+
+        return prPayrollGroupMapper.updateItemByCode(paramItem);
     }
 
     @Override
     public int addItem(PrPayrollGroupPO paramItem) {
         int result = prPayrollGroupMapper.insert(paramItem);
-        if (result >0) {
-            return paramItem.getId();
-        }
         return result;
     }
 
@@ -149,10 +150,10 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    public int deleteByIds(List<String> ids) {
+    public int deleteByCodes(List<String> codes) {
         int result = 0;
         // TODO 删除薪资项
-        result = prPayrollGroupMapper.deleteBatchIds(ids);
+        result = prPayrollGroupMapper.deleteByCodes(codes);
         return result;
     }
 
@@ -165,6 +166,18 @@ public class PrGroupServiceImpl implements PrGroupService {
             e.printStackTrace();
         }
         return keyValues;
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public String copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity) {
+
+        int prGroupAddResult = this.addItem(newEntity);
+        if (prGroupAddResult == 0) {
+            throw new RuntimeException("插入薪资组失败");
+        }
+
+        return null;
     }
 
     // 从公式中获取薪资项名称列表

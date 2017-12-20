@@ -29,7 +29,7 @@ public interface PrGroupTemplateService {
      * @param entityId entityId
      * @return 薪资项模板
      */
-    PrPayrollGroupTemplatePO getItemById(String entityId);
+    PrPayrollGroupTemplatePO getItemByCode(String code);
 
     /**
      * 插入一个薪资组模板
@@ -39,18 +39,18 @@ public interface PrGroupTemplateService {
     int newItem(PrPayrollGroupTemplatePO param);
 
     /**
-     * 删除薪资组模板 BY entityId
-     * @param ids entityId
+     * 删除薪资组模板 BY code
+     * @param codes entityId
      * @return 删除条数
      */
-    int deleteByIds(List<String> ids);
+    int deleteByCodes(List<String> codes);
 
     /**
      * 更新薪资组模板 BY entityId
      * @param param 更新参数
      * @return 更新条数
      */
-    int updateItemById(PrPayrollGroupTemplatePO param);
+    int updateItemByCode(PrPayrollGroupTemplatePO param);
 
     /**
      * 获取薪资组模板名称列表

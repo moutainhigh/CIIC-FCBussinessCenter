@@ -33,9 +33,6 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     @Autowired
     private PrPayrollGroupTemplateMapper prPayrollGroupTemplateMapper;
 
-    @Autowired
-    private PrItemService prItemService;
-
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
     @Override
@@ -52,32 +49,31 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     }
 
     @Override
-    public PrPayrollGroupTemplatePO getItemById(String id) {
-        PrPayrollGroupTemplatePO result = prPayrollGroupTemplateMapper.selectById(id);
+    public PrPayrollGroupTemplatePO getItemByCode(String code) {
+        PrPayrollGroupTemplatePO param = new PrPayrollGroupTemplatePO();
+        param.setGroupTemplateCode(code);
+        PrPayrollGroupTemplatePO result = prPayrollGroupTemplateMapper.selectOne(param);
         return result;
     }
 
     @Override
     public int newItem(PrPayrollGroupTemplatePO param) {
         int result = prPayrollGroupTemplateMapper.insert(param);
-        if (result >0) {
-            return param.getId();
-        }
         return result;
     }
 
     @Override
-    public int deleteByIds(List<String> ids) {
-        int result = prPayrollGroupTemplateMapper.deleteBatchIds(ids);
+    public int deleteByCodes(List<String> codes) {
+        int result = prPayrollGroupTemplateMapper.deleteByCodes(codes);
         return result;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int updateItemById(PrPayrollGroupTemplatePO param) {
+    public int updateItemByCode(PrPayrollGroupTemplatePO param) {
         EntityWrapper<PrPayrollGroupTemplatePO> ew = new EntityWrapper<>();
         ew.setEntity(param);
-        int result = prPayrollGroupTemplateMapper.updateById(param);
+        int result = prPayrollGroupTemplateMapper.updateItemByCode(param);
         return result;
     }
 

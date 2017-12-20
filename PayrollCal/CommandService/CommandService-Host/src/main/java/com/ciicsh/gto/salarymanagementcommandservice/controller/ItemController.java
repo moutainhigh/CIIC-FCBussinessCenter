@@ -42,24 +42,21 @@ public class ItemController extends BaseController{
     @Autowired
     private PrItemService prItemService;
 
-    @Autowired
-    private PrEntityIdClient entityIdClient;
-
     private static final int GROUP_TEMPLATE = 0;
     private static final int GROUP = 1;
 
     @GetMapping(value = "/prItem")
-    public JsonResult getPrItemList(@RequestParam String groupId,
+    public JsonResult getPrItemList(@RequestParam String groupCode,
                                       @RequestParam Integer parentType,
                                       @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                       @RequestParam(required = false, defaultValue = "50") Integer pageSize) {
         PageInfo<PrPayrollItemPO> pageInfo;
         if (GROUP_TEMPLATE == parentType) {
             // 获取薪资组模板的薪资项
-            pageInfo = prItemService.getListByGroupTemplateId(groupId, pageNum, pageSize);
+            pageInfo = prItemService.getListByGroupTemplateCode(groupCode, pageNum, pageSize);
         } else if (GROUP == parentType) {
             // 获取薪资组的薪资项
-            pageInfo = prItemService.getListByGroupId(groupId, pageNum, pageSize);
+            pageInfo = prItemService.getListByGroupCode(groupCode, pageNum, pageSize);
         } else {
             return JsonResult.faultMessage("非法的参数parentType: " + parentType);
         }
@@ -72,9 +69,9 @@ public class ItemController extends BaseController{
         return JsonResult.success(resultPage);
     }
 
-    @GetMapping(value = "/prItem/{id}")
-    public JsonResult getPrItem(@PathVariable("id") String id) {
-        PrPayrollItemPO result =  prItemService.getItemById(id);
+    @GetMapping(value = "/prItem/{code}")
+    public JsonResult getPrItem(@PathVariable("code") String code) {
+        PrPayrollItemPO result =  prItemService.getItemByCode(code);
         PrPayrollItemDTO resultItem = ItemTranslator.toPrPayrollItemDTO(result);
         return JsonResult.success(resultItem);
     }
@@ -109,37 +106,37 @@ public class ItemController extends BaseController{
         PrPayrollItemPO newParam = new PrPayrollItemPO();
         BeanUtils.copyProperties(paramItem, newParam);
         newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
-//        if (newParam.getGroupTemplateId()!=null){
-//            List<PrPayrollItemPO> itemList = prItemService.getListByGroupTemplateId(
-//                    paramItem.getGroupTemplateId().toString(),0,0).getList();
-//            if (itemList != null) {
-//                if (itemList.stream()
-//                        .anyMatch(i -> i.getItemName().equals(newParam.getItemName()))) {
-//                    return JsonResult.faultMessage("薪资组模板中已存在同名薪资项");
-//                }
-//            }
-//        }
-//        if (newParam.getGroupId()!=null){
-//            List<PrPayrollItemPO> itemList = prItemService.getListByGroupId(
-//                    newParam.getGroupId().toString(),0,0).getList();
-//            if (itemList != null) {
-//                if (itemList.stream()
-//                        .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
-//                    return JsonResult.faultMessage("薪资组中已存在同名薪资项");
-//                }
-//            }
-//        }
+        if (newParam.getPayrollGroupTemplateCode()!=null){
+            List<PrPayrollItemPO> itemList = prItemService.getListByGroupTemplateCode(
+                    paramItem.getPayrollGroupTemplateCode(),0,0).getList();
+            if (itemList != null) {
+                if (itemList.stream()
+                        .anyMatch(i -> i.getItemName().equals(newParam.getItemName()))) {
+                    return JsonResult.faultMessage("薪资组模板中已存在同名薪资项");
+                }
+            }
+        }
+        if (newParam.getPayrollGroupCode()!=null){
+            List<PrPayrollItemPO> itemList = prItemService.getListByGroupCode(
+                    newParam.getPayrollGroupCode(),0,0).getList();
+            if (itemList != null) {
+                if (itemList.stream()
+                        .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
+                    return JsonResult.faultMessage("薪资组中已存在同名薪资项");
+                }
+            }
+        }
         //临时参数
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");
         int resultId = prItemService.addItem(newParam);
-        return resultId > 0 ? JsonResult.success(resultId) : JsonResult.faultMessage("新建薪资项失败");
+        return resultId > 0 ? JsonResult.success(newParam.getItemCode()) : JsonResult.faultMessage("新建薪资项失败");
     }
 
-    @DeleteMapping("/prItem/{id}")
-    public JsonResult deleteItem(@PathVariable("id") String id) {
-        String[] ids = id.split(",");
-        int i = prItemService.deleteItemByIds(Arrays.asList(ids));
+    @DeleteMapping("/prItem/{code}")
+    public JsonResult deleteItem(@PathVariable("code") String code) {
+        String[] codes = code.split(",");
+        int i = prItemService.deleteItemByCodes(Arrays.asList(codes));
         if (i >= 1){
             return JsonResult.success(i,"删除成功");
         }else {

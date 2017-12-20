@@ -2,8 +2,10 @@ package com.ciicsh.gto.salarymanagementcommandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -38,4 +40,25 @@ public interface PrPayrollGroupTemplateMapper extends BaseMapper<PrPayrollGroupT
      * @return 薪资组模板列表
      */
     List<KeyValuePO> getPayrollGroupTemplateNames();
+
+    /**
+     * 更新薪资组，version + 1
+     * @param param
+     * @return
+     */
+    Integer updateItemAndVersionByCode(PrPayrollGroupTemplatePO param);
+
+    /**
+     * 更新薪资组，不增加version
+     * @param param
+     * @return
+     */
+    Integer updateItemByCode(PrPayrollGroupTemplatePO param);
+
+    /**
+     * 删除薪资组模板by code
+     * @param codes
+     * @return
+     */
+    Integer deleteByCodes(@Param("codes") List<String> codes);
 }

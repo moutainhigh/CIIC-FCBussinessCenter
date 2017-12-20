@@ -53,22 +53,22 @@ public class GroupTemplateController extends BaseController implements PayrollGr
         return JsonResult.success(resultPage);
     }
 
-    @GetMapping(value = "/prGroupTemplate/{id}")
-    public JsonResult getPrGroupTemplateById(@PathVariable("id") String id) {
-        PrPayrollGroupTemplatePO resultPO = prGroupTemplateService.getItemById(id);
+    @GetMapping(value = "/prGroupTemplate/{code}")
+    public JsonResult getPrGroupTemplateByCode(@PathVariable("code") String code) {
+        PrPayrollGroupTemplatePO resultPO = prGroupTemplateService.getItemByCode(code);
         PrPayrollGroupTemplateDTO resultDTO = GroupTemplateTranslator.toPrPayrollGroupTemplateDTO(resultPO);
         return JsonResult.success(resultDTO);
     }
 
-    @PutMapping(value = "/prGroupTemplate/{id}")
-    public JsonResult updatePrGroupTemplateById(@PathVariable("id") String id,
+    @PutMapping(value = "/prGroupTemplate/{code}")
+    public JsonResult updatePrGroupTemplateByCode(@PathVariable("code") String code,
                                              @RequestBody PrPayrollGroupTemplateDTO param) {
 
         PrPayrollGroupTemplatePO updateParam = new PrPayrollGroupTemplatePO();
         TranslatorUtils.copyNotNullProperties(param, updateParam);
-        updateParam.setId(Integer.parseInt(id));
+        updateParam.setGroupTemplateCode(code);
         updateParam.setModifiedBy("jiang");
-        Integer result = prGroupTemplateService.updateItemById(updateParam);
+        Integer result = prGroupTemplateService.updateItemByCode(updateParam);
         return JsonResult.success(result);
     }
 
@@ -81,7 +81,7 @@ public class GroupTemplateController extends BaseController implements PayrollGr
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");
         int result = prGroupTemplateService.newItem(newParam);
-        return result > 0 ? JsonResult.success(result) : JsonResult.faultMessage("新建薪资组模板失败");
+        return result > 0 ? JsonResult.success(newParam.getGroupTemplateCode()) : JsonResult.faultMessage("新建薪资组模板失败");
     }
 
     @GetMapping(value = "/prGroupTemplateName")
@@ -98,13 +98,13 @@ public class GroupTemplateController extends BaseController implements PayrollGr
         if(resultList.size() > 0){
             if(CommonUtils.isContainChinese(query)){
                 resultList.forEach(item->{
-                    if(item.getValue().indexOf(query) >-1){
+                    if(item.getValue().contains(query)){
                         results.add(item);
                     }
                 });
             }else {
                 resultList.forEach(item ->{
-                    if(item.getKey().indexOf(query) >-1){
+                    if(item.getKey().contains(query)){
                         results.add(item);
                     }
                 });
@@ -113,10 +113,10 @@ public class GroupTemplateController extends BaseController implements PayrollGr
         return JsonResult.success(results);
     }
 
-    @DeleteMapping(value = "/prGroupTemplate/{id}")
-    public JsonResult deleteItem(@PathVariable("id") String id){
-        String[] ids = id.split(",");
-        int i = prGroupTemplateService.deleteByIds(Arrays.asList(ids));
+    @DeleteMapping(value = "/prGroupTemplate/{code}")
+    public JsonResult deleteItem(@PathVariable("code") String code){
+        String[] codes = code.split(",");
+        int i = prGroupTemplateService.deleteByCodes(Arrays.asList(codes));
         if (i >= 1){
             return JsonResult.success(i,"删除成功");
         }else {

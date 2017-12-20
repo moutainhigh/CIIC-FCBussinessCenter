@@ -15,21 +15,21 @@ public interface PrItemService {
 
     /**
      * 获取薪资项列表 from 薪资组
-     * @param groupId
+     * @param code
      * @param pageNum
      * @param pageSize
      * @return 结果列表
      */
-    PageInfo<PrPayrollItemPO> getListByGroupId(String groupId, Integer pageNum, Integer pageSize);
+    PageInfo<PrPayrollItemPO> getListByGroupCode(String code, Integer pageNum, Integer pageSize);
 
     /**
      * 获取薪资项列表 from 薪资组模板
-     * @param groupId
+     * @param code
      * @param pageNum
      * @param pageSize
      * @return 结果列表
      */
-    PageInfo<PrPayrollItemPO> getListByGroupTemplateId(String groupId, Integer pageNum, Integer pageSize);
+    PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String code, Integer pageNum, Integer pageSize);
 
     /**
      * 查询薪资项列表
@@ -44,7 +44,7 @@ public interface PrItemService {
      * @param id 查询参数
      * @return 结果项
      */
-    PrPayrollItemPO getItemById(String id);
+    PrPayrollItemPO getItemByCode(String id);
 
     /**
      * 插入一个薪资项
@@ -97,10 +97,10 @@ public interface PrItemService {
 
     /**
      * 通过id来删除薪资项
-     * @param ids 薪资项id
+     * @param codes 薪资项codes
      * @return 删除条数
      */
-    int deleteItemByIds(List<String> ids);
+    int deleteItemByCodes(List<String> codes);
 
     /**
      * 删除一个薪资组中的所有薪资项

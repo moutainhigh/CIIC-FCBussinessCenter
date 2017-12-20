@@ -57,16 +57,8 @@ public class GroupController {
     @Autowired
     private PrGroupService prGroupService;
 
-//    @Autowired
-//    private PrEntityIdClient entityIdClient;
-
     @Autowired
     private CodeGenerator codeGenerator;
-
-    @GetMapping(value = "/prCode")
-    public String getCode() {
-        return codeGenerator.genPrGroupCode("001");
-    }
 
     @GetMapping(value = "/prGroup/{id}/import")
     public ResultEntity importPrGroup(@RequestParam String from,
@@ -78,7 +70,33 @@ public class GroupController {
         return ResultEntity.success("");
     }
 
+    /**
+     * 拷贝薪资组
+     * @param srcCode
+     * @param newName
+     * @return
+     */
+    @GetMapping(value = "/copyPrGroup")
+    @ResponseBody
+    public JsonResult copyPrGroup(@RequestParam String srcCode,
+                                           @RequestParam String newName){
+        PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
+        PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
+        BeanUtils.copyProperties(srcEntity, newEntity);
+        newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
 
+        return JsonResult.success("");
+    }
+
+
+
+    /**
+     * 查询薪资组列表
+     * @param pageNum
+     * @param pageSize
+     * @param param
+     * @return
+     */
     @PostMapping(value = "/prGroupQuery")
     @ResponseBody
     public JsonResult getPrGroupList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
@@ -118,29 +136,29 @@ public class GroupController {
      * 更新薪资组
      * @return
      */
-    @PutMapping(value = "/prGroup/{id}")
+    @PutMapping(value = "/prGroup/{code}")
     @ResponseBody
-    public JsonResult updatePrGroup(@PathVariable("id") String id, @RequestBody PrPayrollGroupDTO paramItem){
+    public JsonResult updatePrGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
 
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
-        updateParam.setId(Integer.parseInt(id));
+        updateParam.setGroupCode(code);
         updateParam.setModifiedBy("jiang");
-        Integer result = prGroupService.updateItemById(updateParam);
+        Integer result = prGroupService.updateItemByCode(updateParam);
         return JsonResult.success(result);
     }
 
 
     /**
      * 获取薪资组详情
-     * @param id
+     * @param code
      * @return
      */
-    @GetMapping(value = "/prGroup/{id}")
+    @GetMapping(value = "/prGroup/{code}")
     @ResponseBody
-    public JsonResult getPrGroup(@PathVariable("id") String id) {
+    public JsonResult getPrGroup(@PathVariable("code") String code) {
 
-        PrPayrollGroupPO result =  prGroupService.getItemById(id);
+        PrPayrollGroupPO result =  prGroupService.getItemByCode(code);
         return JsonResult.success(result);
     }
 
@@ -161,7 +179,7 @@ public class GroupController {
         // Version 生成
         newParam.setVersion("1.0");
         int result= prGroupService.addItem(newParam);
-        return result > 0 ? JsonResult.success(result) : JsonResult.faultMessage("新建薪资组失败");
+        return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
     }
 
     @DeleteMapping(value = "/prGroup/{prGroupId}/prItem/{prItemId}")
@@ -172,10 +190,15 @@ public class GroupController {
         return ResultEntity.success(result);
     }
 
-    @DeleteMapping(value = "/prGroup/{id}")
-    public JsonResult deleteItem(@PathVariable("id") String id){
-        String[] ids = id.split(",");
-        int i = prGroupService.deleteByIds(Arrays.asList(ids));
+    /**
+     * 删除薪资组
+     * @param code
+     * @return
+     */
+    @DeleteMapping(value = "/prGroup/{code}")
+    public JsonResult deleteItem(@PathVariable("code") String code){
+        String[] codes = code.split(",");
+        int i = prGroupService.deleteByCodes(Arrays.asList(codes));
         if (i >= 1){
             return JsonResult.success(i,"删除成功");
         }else {
@@ -199,13 +222,13 @@ public class GroupController {
         result.clear();
         if(CommonUtils.isContainChinese(query)){
             keyValues.forEach(model ->{
-                if(model.getValue().indexOf(query) >-1){
+                if(model.getValue().contains(query)){
                     result.add(model);
                 }
             });
         }else {
             keyValues.forEach(model ->{
-                if(model.getKey().indexOf(query) >-1){
+                if(model.getKey().contains(query)){
                     result.add(model);
                 }
             });

@@ -32,7 +32,14 @@ public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
      * @param param
      * @return
      */
-    Integer updateItemAndVersionById(PrPayrollGroupPO param);
+    Integer updateItemAndVersionByCode(PrPayrollGroupPO param);
+
+    /**
+     * 更新薪资组，不增加version
+     * @param param
+     * @return
+     */
+    Integer updateItemByCode(PrPayrollGroupPO param);
 
 
     /**
@@ -41,4 +48,11 @@ public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
      * @return 薪资组名称列表
      */
     List<KeyValuePO> getPayrollGroupNames(@Param("managementId") String managementId);
+
+    /**
+     * 删除一批薪资组by code
+     * @param codes
+     * @return
+     */
+    Integer deleteByCodes(@Param("codes") List<String> codes);
 }
