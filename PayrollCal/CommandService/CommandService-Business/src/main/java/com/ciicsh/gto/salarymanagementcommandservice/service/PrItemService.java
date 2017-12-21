@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
+import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
@@ -108,4 +109,12 @@ public interface PrItemService {
      * @return
      */
     int deleteItemByPrGroupId(String prGroupId);
+
+
+    /**
+     * 获取薪资项列表
+     * @param extPO
+     * @return 返回薪资项列表
+     */
+    List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO);
 }

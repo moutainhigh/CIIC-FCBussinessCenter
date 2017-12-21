@@ -1,9 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.context.annotation.ComponentScan;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author Neo Jiang
  * @since 2017-12-05
  */
+@Mapper
 @Component
 public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
 
@@ -26,4 +28,10 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      */
     Integer deleteItemByCodes(@Param("codes") List<String> codes);
 
+    /**
+     * 获取薪资项列表
+     * @param extPO
+     * @return 返回薪资项列表
+     */
+    List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO);
 }

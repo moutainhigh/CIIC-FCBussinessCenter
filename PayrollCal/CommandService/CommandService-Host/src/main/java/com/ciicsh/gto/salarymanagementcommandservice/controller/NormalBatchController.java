@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.fcsupportcenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.fcsupportcenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
@@ -11,16 +12,20 @@ import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrGroupTemplateServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.batch.item.ExecutionContext;
 import com.ciicsh.gto.salarymanagementcommandservice.util.excel.PRItemExcelReader;
@@ -28,6 +33,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender
 import com.github.pagehelper.PageInfo;
 import org.springframework.batch.item.excel.poi.PoiItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +41,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -63,10 +70,16 @@ public class NormalBatchController {
     private NormalBatchMongoOpt normalBatchMongoOpt;
 
     @Autowired
+    private EmpGroupMongoOpt empGroupMongoOpt;
+
+    @Autowired
     private PrAccountSetService accountSetService;
 
     @Autowired
     private PrGroupService prGroupService;
+
+    @Autowired
+    private PrItemService prItemService;
 
     @Autowired
     private PrGroupTemplateServiceImpl prGroupTemplateService;
@@ -215,31 +228,49 @@ public class NormalBatchController {
     @PostMapping("/uploadExcel")
     public JsonResult importExcel(String pr_code, String pr_template_code, String emp_group_code, MultipartFile file){
 
+        List<PrPayrollItemPO> prList = null;
+        String groupCode = "";
         if(StringUtils.isNotEmpty(pr_code)){ // 薪资组编码存在
-            // TODO get
-           //PrPayrollGroupPO entity = prGroupService.ge
-        }else { // 薪资组模版编码存在
-            // TODO get
+            prList = prItemService.getListByGroupCode(pr_code,0,0).getList();
+            groupCode = pr_code;
+
+        }else if(StringUtils.isNotEmpty(pr_template_code)) { // 薪资组模版编码存在
+            prList = prItemService.getListByGroupTemplateCode(pr_code,0,0).getList();
+            groupCode = pr_template_code;
         }
 
-        PrGroupEntity entity = new PrGroupEntity();
-
-        //entity.setPrItemEntityList(Arrays.asList(prItemEntities));
+        // get employee list by group id from mongodb
+        List<DBObject> empList = empGroupMongoOpt.list(Criteria.where("emp_group_code").is(emp_group_code));
+        if(empList == null || empList.size() == 0){
+            //ToDO get employee list from db;
+        }
+        List<DBObject> results = new ArrayList<>();
         try {
-            InputStream stream = new FileInputStream("/Users/bill/Documents/样本数据.xls");
-            PoiItemReader<PrGroupEntity> reader = PRItemExcelReader.getPrGroupReader(stream, entity);
+            InputStream stream = file.getInputStream();//new FileInputStream("/Users/bill/Documents/样本数据.xls");
+            PoiItemReader<List<PrPayrollItemPO>> reader = PRItemExcelReader.getPrGroupReader(stream, prList,empList);
             reader.open(new ExecutionContext());
-            PrGroupEntity row = null;
+            List<PrPayrollItemPO> row = null;
+            DBObject dbObject = new BasicDBObject();
+            String batchCode = "glf-00091-201712-0000000030";
             do {
                 row = reader.read();
-                //normalBatchMongoOpt.batchUpdate()
-                System.out.println(entity);
+                if (row != null){
+                    row.forEach(r-> {
+                        dbObject.put("batch_code",batchCode);
+                        dbObject.put("emp_group_code",pr_template_code);
+                        dbObject.put("batch_code",batchCode);
+                        dbObject.put(r.getItemName(),r);
+                        results.add(dbObject);
+                    });
+                }
             }while (row != null);
+
+            normalBatchMongoOpt.batchInsert(results);
         }
         catch (Exception e){
-
+            e.printStackTrace();
         }
-        return JsonResult.success(entity);
+        return JsonResult.success("");
 
     }
 

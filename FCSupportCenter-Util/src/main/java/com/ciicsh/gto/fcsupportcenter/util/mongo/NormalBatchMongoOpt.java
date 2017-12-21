@@ -35,8 +35,8 @@ public class NormalBatchMongoOpt extends BaseOpt {
     public void createIndex(){
         DBObject indexOptions = new BasicDBObject();
         indexOptions.put("batch_code",1);    //批次编号
-        indexOptions.put("emp_group_id",1);  //雇员组编号
-        indexOptions.put("employee_id",1);   //雇员编号
+        indexOptions.put("emp_group_code",1);  //雇员组编号
+        indexOptions.put("雇员编号",1);   //雇员编号
         indexOptions.put("pr_group_code", 1);     //薪资组或者薪资组模版CODE
         CompoundIndexDefinition indexDefinition = new CompoundIndexDefinition(indexOptions);
         mongoTemplate.indexOps(PR_NORMAL_BATCH).ensureIndex(indexDefinition);
@@ -47,8 +47,9 @@ public class NormalBatchMongoOpt extends BaseOpt {
         mongoTemplate.upsert(
                 Query.query(
                         Criteria.where("batch_code").is(batchCode)
-                        .andOperator(Criteria.where("emp_group_id").is(empGroupId),
-                                Criteria.where("employee_id").is(empId))
+                        .andOperator(Criteria.where("emp_group_code").is(empGroupId),
+                                Criteria.where("pr_group_code").is(groupCode),
+                                Criteria.where("雇员编号").is(empId))
                         ),
                 Update.update("pay_items",payItems),PR_NORMAL_BATCH);
     }
@@ -58,10 +59,15 @@ public class NormalBatchMongoOpt extends BaseOpt {
         mongoTemplate.upsert(
                 Query.query(
                         Criteria.where("batch_code").is(batchCode)
-                                .andOperator(Criteria.where("emp_group_id").is(empGroupId),
+                                .andOperator(Criteria.where("emp_group_code").is(empGroupId),
                                         Criteria.where("pr_group_code").is(groupCode),
-                                        Criteria.where("employee_id").is(empId))
+                                        Criteria.where("雇员编号").is(empId))
                 ),
                 Update.update("agreements",empAgreements),PR_NORMAL_BATCH);
+    }
+
+    public void batchInsertNormal(List<DBObject> list){
+        createIndex();
+        this.batchInsert(list);
     }
 }

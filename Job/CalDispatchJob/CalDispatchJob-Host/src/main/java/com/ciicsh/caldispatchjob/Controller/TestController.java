@@ -24,30 +24,6 @@ public class TestController {
     @Autowired
     private NormalBatchServiceImpl normalBatchService;
 
-    @PostMapping("/batchInsert")
-    public void batchInsert(){
-        String empGroupId = UUID.randomUUID().toString();
-        List<DBObject> list = new ArrayList<>();
-        for (int i=0; i< 2000; i++){
-            DBObject emp = new BasicDBObject();
-            emp.put("emp_group_id", empGroupId);
-            emp.put("emp_id",UUID.randomUUID().toString());
-            emp.put("name", "bill" + String.valueOf(i));
-            emp.put("department", "department" + String.valueOf(i));
-            emp.put("birthDay", "2017-09-09");
-            emp.put("country","country" + String.valueOf(i));
-
-            DBObject empPayItems = new BasicDBObject();
-            empPayItems.put("baseSalary",1500.00);
-            empPayItems.put("OT",200.00);
-
-            emp.put("payItems",empPayItems);
-
-            list.add(emp);
-        }
-        //empGroupOpt.batchInsert(list);
-    }
-
     @PostMapping("/batchEmpAgreement")
     public void batchEmpAgreement(){
         List<String> empIds = new ArrayList<>();

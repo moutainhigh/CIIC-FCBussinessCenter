@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Created by bill on 17/12/9.
  */
@@ -23,12 +25,17 @@ public class EmpGroupMongoOpt extends BaseOpt {
     public void createIndex(){
         DBObject indexOptions = new BasicDBObject();
         indexOptions.put("emp_group_id",1);
-        indexOptions.put("employee_id",1);
+        indexOptions.put("雇员编号",1);
         CompoundIndexDefinition indexDefinition = new CompoundIndexDefinition(indexOptions);
         mongoTemplate.indexOps(PR_EMPLOYEE_GROUP).ensureIndex(indexDefinition);
     }
 
     public EmpGroupMongoOpt() {
         super(PR_EMPLOYEE_GROUP);
+    }
+
+    public void batchInsertEmpGroup(List<DBObject> empList){
+        createIndex();
+        this.batchInsert(empList);
     }
 }

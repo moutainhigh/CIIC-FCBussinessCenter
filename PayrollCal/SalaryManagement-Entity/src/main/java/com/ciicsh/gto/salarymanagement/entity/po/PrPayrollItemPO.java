@@ -149,6 +149,11 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 	@TableField("modified_by")
 	private String modifiedBy;
 
+	/**
+	 * 薪资项值用于计算扩展
+	 */
+	@TableField("item_value")
+	private String itemValue;
 
 	public Integer getId() {
 		return id;
@@ -350,6 +355,14 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getItemValue() {
+		return itemValue;
+	}
+
+	public void setItemValue(String itemValue) {
+		this.itemValue = itemValue;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -382,6 +395,7 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
 			", modifiedBy=" + modifiedBy +
+				", itemValue=" + this.itemValue +
 			"}";
 	}
 }

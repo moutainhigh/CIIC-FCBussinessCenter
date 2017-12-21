@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountS
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
  * Created by jiangtianning on 2017/11/1.
  */
 @RestController
-public class AccountSetController {
+public class AccountSetController extends BaseController {
 
     class WorkCalendar{
         public String ManagementId;
@@ -47,14 +49,7 @@ public class AccountSetController {
     }
 
     @Autowired
-    protected CodeGenerator codeGenerator;
-
-    @Autowired
     private PrAccountSetService prAccountSetService;
-
-    @Autowired
-    private PrEntityIdClient entityIdClient;
-
 
 
     @GetMapping("/getWorkCalendarList")
@@ -132,18 +127,84 @@ public class AccountSetController {
 
     @PostMapping("/addAccountSet")
     public JsonResult addAccountSet(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
-        String accountSetCode = codeGenerator.genPrAccountSetCode(accountSetDTO.getManagementId());
-        accountSetDTO.setAccountSetCode(accountSetCode);
-        accountSetDTO.setCreatedBy("macor");
-        accountSetDTO.setModifiedBy("macor");
-        PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
-        Integer result = prAccountSetService.addAccountSet(payrollAccountSetPO);
-        if(result > 0){
-            return new JsonResult(true,"添加成功！");
+        PrAccountItemOptPO optPO = new PrAccountItemOptPO();
+        optPO.setManagementId(accountSetDTO.getManagementId());
+        optPO.setAccountSetName(accountSetDTO.getAccountSetName());
+        Integer val = prAccountSetService.isExistPayrollAccountSet(optPO);
+        if(val > 0){
+            return JsonResult.faultMessage("添加失败,已经存在在同一个管理方下相同的薪资账套，请检查！");
         }
-        else
-        {
-            return new JsonResult(false,"添加失败！");
+        else{
+            String accountSetCode = codeGenerator.genPrAccountSetCode(accountSetDTO.getManagementId());
+            accountSetDTO.setAccountSetCode(accountSetCode);
+            accountSetDTO.setCreatedBy("macor");
+            accountSetDTO.setModifiedBy("macor");
+            PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
+            boolean result = prAccountSetService.addAccountSet(payrollAccountSetPO);
+            if(result){
+                PrPayrollAccountSetExtensionPO extensionPO = prAccountSetService.getPayrollAccountSetExtByCode(accountSetCode);
+                PrPayrollAccountSetExtensionDTO extensionDTO = null;
+                if(null != extensionPO){
+                    extensionDTO = PayrollAccountSetExtensionTranslator.toPrPayrollAccountSetExtensionDTO(extensionPO);
+                    if(getManagement().containsKey(extensionDTO.getManagementId())){
+                        extensionDTO.setManagementName(getManagement().get(extensionDTO.getManagementId()));
+                    }
+                }
+                return JsonResult.success(extensionDTO,"添加成功！");
+            }
+            else
+            {
+                return JsonResult.faultMessage("添加失败！");
+            }
+        }
+    }
+
+    @PostMapping("/editAccountSet")
+    public JsonResult editAccountSet(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
+        PrAccountItemOptPO optPO = new PrAccountItemOptPO();
+        optPO.setManagementId(accountSetDTO.getManagementId());
+        optPO.setAccountSetName(accountSetDTO.getAccountSetName());
+        optPO.setAccountSetCode(accountSetDTO.getAccountSetCode());
+        Integer val = prAccountSetService.isExistPayrollAccountSet(optPO);
+        if(val > 0){
+            return JsonResult.faultMessage("编辑失败,已经存在在同一个管理方下相同的薪资账套，请检查！");
+        }
+        else{
+
+            accountSetDTO.setModifiedBy("bill");
+            accountSetDTO.setModifiedTime(new Date());
+            PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
+            boolean result = prAccountSetService.editAccountSet(payrollAccountSetPO);
+            if(result){
+                PrPayrollAccountSetExtensionPO extensionPO = prAccountSetService.getPayrollAccountSetExtByCode(accountSetDTO.getAccountSetCode());
+                PrPayrollAccountSetExtensionDTO extensionDTO = null;
+                if(null != extensionPO){
+                    extensionDTO = PayrollAccountSetExtensionTranslator.toPrPayrollAccountSetExtensionDTO(extensionPO);
+                    if(getManagement().containsKey(extensionDTO.getManagementId())){
+                        extensionDTO.setManagementName(getManagement().get(extensionDTO.getManagementId()));
+                    }
+                }
+                return JsonResult.success(extensionDTO,"编辑成功！");
+            }
+            else
+            {
+                return JsonResult.faultMessage("编辑失败！");
+            }
+        }
+    }
+
+
+    @PostMapping("/editIsActive")
+    public JsonResult editIsActive(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
+        accountSetDTO.setModifiedBy("bill");
+        accountSetDTO.setModifiedTime(new Date());
+        PrPayrollAccountSetPO accountSetPO = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
+        Integer val = prAccountSetService.editIsActive(accountSetPO);
+        if(val > 0){
+            return JsonResult.success("修改成功！");
+        }
+        else{
+            return JsonResult.faultMessage("修改失败！");
         }
     }
 
@@ -196,6 +257,7 @@ public class AccountSetController {
         List<PrPayrollAccountSetExtensionDTO> extensions = pageInfo.getList()
                 .stream()
                 .map(PayrollAccountSetExtensionTranslator::toPrPayrollAccountSetExtensionDTO)
+                .map(this::setPayrollAccountSetExtDTO)
                 .collect(Collectors.toList());
         PageInfo<PrPayrollAccountSetExtensionDTO> resultPage = new PageInfo<>(extensions);
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
@@ -203,75 +265,10 @@ public class AccountSetController {
     }
 
 
-//    @GetMapping(value = "/prAccountSet")
-//    public ResultEntity getPrAccountSetList(@RequestParam String managementId,
-//                                            @RequestParam Integer pageNum) {
-//
-//        PrAccountSetEntity param = new PrAccountSetEntity();
-//        param.setManagementId(managementId);
-//        PageInfo<PrAccountSetEntity> pageInfo = prAccountSetService.getList(param, pageNum);
-//        List<PrAccountSetEntity> resultList = pageInfo.getList();
-//        return ResultEntity.success(resultList);
-//    }
-//
-//    @PostMapping(value = "/prAccountSetQuery")
-//    public ResultEntity searchPrAccountSetList(@RequestBody PrAccountSetEntity param,
-//                                                           @RequestParam Integer pageNum) {
-//
-//        PageInfo<PrAccountSetEntity> pageInfo = prAccountSetService.getList(param, pageNum);
-//        List<PrAccountSetEntity> resultList = pageInfo.getList();
-//        return ResultEntity.success(resultList);
-//    }
-//
-//    @PostMapping(value = "/prAccountSet")
-//    public ResultEntity newPrAccountSet(@RequestBody PrAccountSetEntity param) {
-//
-//        Random random = new Random();
-//        DecimalFormat df6 = new DecimalFormat("000000");
-//        Integer tempCode = random.nextInt(999999);
-//        if (param.getEntityId()==null){
-//            param.setEntityId(entityIdClient.getEntityId(PrEntityIdClient.PR_ACCOUNT_SET_CAT_ID));
-//        }
-//
-//        param.setCode("XZZT-CMY" + df6.format(tempCode) + "-001-01");
-//        param.setCreatedBy("jiang");
-//        param.setModifiedBy("jiang");
-//        int result = prAccountSetService.addItem(param);
-//        return ResultEntity.success(result);
-//    }
-//
-//    @GetMapping(value = "/prAccountSet/{id}")
-//    public ResultEntity getPrAccountSet(@PathVariable("id") String id) {
-//
-//        PrAccountSetEntity result = prAccountSetService.getItemById(id);
-//        return ResultEntity.success(result);
-//    }
-//
-//    @PutMapping(value = "/prAccountSet/{id}")
-//    public ResultEntity updatePrAccountSet(@PathVariable("id") String id,
-//                                  @RequestBody PrAccountSetEntity param) {
-//
-//        param.setEntityId(id);
-//        param.setModifiedBy("jiang");
-//        param.setDataChangeLastTime(new Date());
-//        int result = prAccountSetService.updateItemById(param);
-//        return ResultEntity.success(result);
-//    }
-//
-//    @GetMapping(value = "/prAccountSetName")
-//    public ResultEntity getPrAccountSetNameList(@RequestParam String managementId) {
-//
-//        List<String> resultList = prAccountSetService.getNameList(managementId);
-//        return ResultEntity.success(resultList);
-//    }
-//
-//    @DeleteMapping(value = "/prAccount/{id}")
-//    public ResultEntity deleteAccountSet(@PathVariable("id") String id){
-//        int result = prAccountSetService.deleteItemById(id);
-//        if (result==1){
-//            return ResultEntity.success(result,"删除成功");
-//        }else {
-//            return ResultEntity.faultMessage();
-//        }
-//    }
+    private PrPayrollAccountSetExtensionDTO setPayrollAccountSetExtDTO(PrPayrollAccountSetExtensionDTO accountSetExtensionDTO){
+        if(getManagement().containsKey(accountSetExtensionDTO.getManagementId())){
+            accountSetExtensionDTO.setManagementName(getManagement().get(accountSetExtensionDTO.getManagementId()));
+        }
+        return accountSetExtensionDTO;
+    }
 }

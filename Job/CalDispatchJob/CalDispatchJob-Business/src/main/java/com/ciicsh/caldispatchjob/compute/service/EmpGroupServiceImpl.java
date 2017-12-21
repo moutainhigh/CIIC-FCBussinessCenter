@@ -47,16 +47,16 @@ public class EmpGroupServiceImpl {
             DBObject basicDBObject = null;
             for (EmployeeExtensionPO item: employees) {
                 basicDBObject = new BasicDBObject();
-                basicDBObject.put("emp_group_id",item.getEmpGroupId());
-                basicDBObject.put("employee_id",item.getEmployeeId());
-                basicDBObject.put("employee_name",item.getEmployeeName());
-                basicDBObject.put("birthday",item.getBirthday());
-                basicDBObject.put("department",item.getDepartment());
-                basicDBObject.put("gender",item.getGender());
-                basicDBObject.put("id_card_type",item.getIdCardType());
-                basicDBObject.put("join_date",item.getJoinDate());
-                basicDBObject.put("id_num",item.getIdNum());
-                basicDBObject.put("position",item.getPosition());
+                basicDBObject.put("emp_group_code",item.getEmpGroupId());
+                basicDBObject.put("雇员编号",item.getEmployeeId());
+                basicDBObject.put("雇员姓名",item.getEmployeeName());
+                basicDBObject.put("出生日期",item.getBirthday());
+                basicDBObject.put("部门",item.getDepartment());
+                basicDBObject.put("性别",item.getGender());
+                basicDBObject.put("证件类型",item.getIdCardType());
+                basicDBObject.put("入职日期",item.getJoinDate());
+                basicDBObject.put("证件号码",item.getIdNum());
+                basicDBObject.put("职位",item.getPosition());
 
                 // 获取雇员服务协议
                 //basicDBObject.put("servicePortal", "{ key : value}");
@@ -89,9 +89,9 @@ public class EmpGroupServiceImpl {
             String[] ids = empIds.toString().replace("[","").replace("]","").split(",");
             List<String> copyEmpIDs = Arrays.asList(ids);
             logger.info("emp Ids :" + copyEmpIDs);
-            rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_id").is(groupId).andOperator(Criteria.where("employee_id").in(copyEmpIDs)));
+            rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_code").is(groupId).andOperator(Criteria.where("雇员编号").in(copyEmpIDs)));
         }else {
-            rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_id").in(Arrays.asList(copyGroupIDs)));
+            rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_code").in(Arrays.asList(copyGroupIDs)));
         }
 
         logger.info("deleted affected rows :" + rowAffected);

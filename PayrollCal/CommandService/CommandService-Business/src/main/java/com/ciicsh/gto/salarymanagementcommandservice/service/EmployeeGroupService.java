@@ -2,7 +2,9 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -65,4 +67,20 @@ public interface EmployeeGroupService{
      * @return
      */
     Boolean batchDelete(List<String> ids);
+
+
+    /**
+     * 是否已经存在雇员组
+     * @param optPO
+     * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
+     */
+    Integer isExistEmpGroup(EmpGroupOptPO optPO);
+
+
+    /**
+     * 根据雇员组Code查询雇员组
+     * @param empGroupCode 雇员组Code
+     * @return 返回雇员组
+     */
+    PrEmpGroupPO getEmployeeGroupByCode(String empGroupCode);
 }

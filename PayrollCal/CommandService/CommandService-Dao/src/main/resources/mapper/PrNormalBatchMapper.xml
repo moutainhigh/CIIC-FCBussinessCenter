@@ -242,7 +242,10 @@
 			account_set_code = #{accountSetCode},
 			actual_period = #{actualPeriod},
 			start_date = #{startDate},
-			end_date = #{endDate}
+			end_date = #{endDate},
+		</if>
+		<if test="status !=0">
+			status = #{status},
 		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()

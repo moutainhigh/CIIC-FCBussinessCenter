@@ -27,7 +27,7 @@ public class NormalBatchServiceImpl {
 
     public void batchInsertNormalBatch(String batchCode, String empGroupId){
 
-        List<DBObject> employees = empGroupMongoOpt.list(Criteria.where("emp_group_id").is(empGroupId));
+        List<DBObject> employees = empGroupMongoOpt.list(Criteria.where("emp_group_code").is(empGroupId));
 
         /*DBObject dbObject = new BasicDBObject();
         dbObject.put("batch_code",batchCode);

@@ -5,6 +5,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -45,4 +46,17 @@ public interface PrPayrollAccountSetMapper extends BaseMapper<PrPayrollAccountSe
 
     /*根据CODE 获取薪资帐套信息*/
     PrPayrollAccountSetPO getAccountSetInfo(@Param("accSetCode") String accSetCode);
+    /**
+     * 是否已经存在薪资账套
+     * @param optPO
+     * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
+     */
+    Integer isExistPayrollAccountSet(PrAccountItemOptPO optPO);
+
+    /**
+     * 根据薪资账套Code获取薪资账套扩展数据
+     * @param accountSetCode 薪资账套Code
+     * @return 薪资账套扩展数据
+     */
+    PrPayrollAccountSetExtensionPO getPayrollAccountSetExtByCode(@Param("accountSetCode") String accountSetCode);
 }
