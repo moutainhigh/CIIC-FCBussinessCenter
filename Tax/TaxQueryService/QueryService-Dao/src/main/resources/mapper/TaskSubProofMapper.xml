@@ -19,10 +19,11 @@
         <result column="modified_time" property="modifiedTime"/>
         <result column="created_by" property="createdBy"/>
         <result column="modified_by" property="modifiedBy"/>
+        <result column="task_type" property="taskType"/>
     </resultMap>
 
     <!--新增完税凭证子任务-->
-    <insert id="addTaskSubProof" useGeneratedKeys="true" keyProperty="ID"
+    <insert id="addTaskSubProof" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO">
 		INSERT into tax_fc_task_sub_proof(task_main_proof_id,task_no,declare_account,status,created_by,modified_by)
 		VALUES (#{taskMainProofId,jdbcType=INTEGER},#{taskNo,jdbcType=VARCHAR},#{declareAccount,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{createdBy,jdbcType=VARCHAR},#{modifiedBy,jdbcType=VARCHAR})
@@ -31,7 +32,7 @@
     <!--根据主键ID修改完税凭证子任务状态-->
     <update id="updateSubTaskProof">
         update tax_fc_task_sub_proof set status = #{status},modified_by = #{modifiedBy}
-        WHERE status = '00' AND id in
+        WHERE status = '00' AND is_active = 1 AND id in
         <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
             #{subProofId}
         </foreach>
@@ -62,6 +63,20 @@
         <foreach collection="mainProofIds" item="mainProofId" open="(" separator="," close=")">
             #{mainProofId}
         </foreach>
+    </update>
+
+    <!--根据主任务ID查询其下所有子任务的相关申报账户 -->
+    <select id="selectSubTaskMapByMainId" resultMap="BaseResultMap">
+        select declare_account,id from tax_fc_task_sub_proof
+        where status = "00" and is_active = 1
+        and task_main_proof_id = #{mainId}
+    </select>
+
+    <!--根据主键ID重新计算子任务总人数-->
+    <update id="updateSubHeadcountById">
+        update tax_fc_task_sub_proof tsp
+        set tsp.headcount = (select count(1) from tax_fc_task_sub_proof_detail spd where spd.is_active = 1 and  spd.task_sub_proof_id = #{id} )
+        where  tsp.is_active = 1 and tsp.id = #{id}
     </update>
 
 </mapper>

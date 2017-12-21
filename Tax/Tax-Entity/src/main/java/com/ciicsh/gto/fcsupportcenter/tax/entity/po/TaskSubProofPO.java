@@ -96,6 +96,12 @@ public class TaskSubProofPO implements Serializable {
 	@TableField("modified_by")
 	private String modifiedBy;
 
+	/**
+	 * 任务类型(01:自动,02:人工)
+	 */
+	@TableField("task_type")
+	private String taskType;
+
 
 	public Long getId() {
 		return id;
@@ -217,24 +223,33 @@ public class TaskSubProofPO implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getTaskType() {
+		return taskType;
+	}
+
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubProofPO{" +
-			"id=" + id +
-			", taskMainProofId=" + taskMainProofId +
-			", taskSubProofId=" + taskSubProofId +
-			", taskNo=" + taskNo +
-			", declareAccount=" + declareAccount +
-			", period=" + period +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+				"id=" + id +
+				", taskMainProofId=" + taskMainProofId +
+				", taskSubProofId=" + taskSubProofId +
+				", taskNo='" + taskNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", period=" + period +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", taskType='" + taskType + '\'' +
+				'}';
 	}
 }

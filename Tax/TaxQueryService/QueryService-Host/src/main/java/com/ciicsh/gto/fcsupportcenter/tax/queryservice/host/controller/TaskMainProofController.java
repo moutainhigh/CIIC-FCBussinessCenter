@@ -58,6 +58,8 @@ public class TaskMainProofController {
      */
     @RequestMapping(value = "/addTaskProof")
     public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+        //创建人
+        taskProofDTO.setCreatedBy("admin");
         JsonResult jr = new JsonResult();
         try {
             //完税凭证主任务
@@ -71,7 +73,7 @@ public class TaskMainProofController {
                 BeanUtils.copyProperties(taskProofDTO, taskMainProofPO);
                 taskMainProofPO.setTaskNo("TAX"+dateTimeStr);
                 taskMainProofPO.setStatus("00");
-                taskMainProofPO.setModifiedBy("test");
+                taskMainProofPO.setModifiedBy("zhangsan");
             }
             dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS") .format(new Date() );
             if(taskProofDTO.getDeclareAccount() != null && !"".equals(taskProofDTO.getDeclareAccount())){
@@ -79,7 +81,7 @@ public class TaskMainProofController {
                 BeanUtils.copyProperties(taskProofDTO, taskSubProofPO);
                 taskSubProofPO.setTaskNo("TAX"+dateTimeStr);
                 taskSubProofPO.setStatus("00");
-                taskSubProofPO.setModifiedBy("test");
+                taskSubProofPO.setModifiedBy("zhangsan");
             }
             flag = taskMainProofService.addTaskProof(taskMainProofPO,taskSubProofPO);
             jr.setErrorcode("200");
@@ -105,6 +107,7 @@ public class TaskMainProofController {
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            requestForProof.setModifiedBy("adminMain");
             Boolean flag = taskMainProofService.updateTaskProofByRes(requestForProof);
             jr.setErrorcode("200");
             jr.setErrormsg("success");

@@ -91,6 +91,20 @@ public class TaskProofDTO {
      */
     private String employeeName;
 
+    /**
+     * 所得项目
+     */
+    private String incomeSubject;
+
+    /**
+     * 证件类型
+     */
+    private String idType;
+
+    /**
+     * 证件号
+     */
+    private String idNo;
 
     public Long getId() {
         return id;
@@ -228,6 +242,30 @@ public class TaskProofDTO {
         this.employeeName = employeeName;
     }
 
+    public String getIncomeSubject() {
+        return incomeSubject;
+    }
+
+    public void setIncomeSubject(String incomeSubject) {
+        this.incomeSubject = incomeSubject;
+    }
+
+    public String getIdType() {
+        return idType;
+    }
+
+    public void setIdType(String idType) {
+        this.idType = idType;
+    }
+
+    public String getIdNo() {
+        return idNo;
+    }
+
+    public void setIdNo(String idNo) {
+        this.idNo = idNo;
+    }
+
     @Override
     public String toString() {
         return "TaskProofDTO{" +
@@ -248,6 +286,9 @@ public class TaskProofDTO {
                 ", taskId=" + taskId +
                 ", employeeNo='" + employeeNo + '\'' +
                 ", employeeName='" + employeeName + '\'' +
+                ", incomeSubject='" + incomeSubject + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idNo='" + idNo + '\'' +
                 '}';
     }
 }

@@ -12,11 +12,11 @@ public class EmployeeBO {
 
     private String idNo;
 
-    private String manageNo;
+    private String managerNo;
 
-    private String manageName;
+    private String managerName;
 
-    private String declareAcount;
+    private String declareAccount;
 
     public Long getId() {
         return id;
@@ -58,27 +58,27 @@ public class EmployeeBO {
         this.idNo = idNo;
     }
 
-    public String getManageNo() {
-        return manageNo;
+    public String getManagerNo() {
+        return managerNo;
     }
 
-    public void setManageNo(String manageNo) {
-        this.manageNo = manageNo;
+    public void setManagerNo(String managerNo) {
+        this.managerNo = managerNo;
     }
 
-    public String getManageName() {
-        return manageName;
+    public String getManagerName() {
+        return managerName;
     }
 
-    public void setManageName(String manageName) {
-        this.manageName = manageName;
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 
-    public String getDeclareAcount() {
-        return declareAcount;
+    public String getDeclareAccount() {
+        return declareAccount;
     }
 
-    public void setDeclareAcount(String declareAcount) {
-        this.declareAcount = declareAcount;
+    public void setDeclareAccount(String declareAccount) {
+        this.declareAccount = declareAccount;
     }
 }

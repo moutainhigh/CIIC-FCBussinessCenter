@@ -29,7 +29,7 @@
           spd.id,spd.task_sub_proof_id,spd.employee_no,spd.employee_name,spd.id_type,spd.id_no,spd.declare_account,spd.income_subject,spd.income_start,spd.income_end,spd.income_for_tax,spd.withholded_amount,spd.created_time
         from tax_fc_task_sub_proof_detail spd
         inner join tax_fc_task_sub_proof sp on spd.task_sub_proof_id = sp.id
-        WHERE 1 = 1
+        WHERE spd.is_active = 1
         <if test = "id != null and id != ''">
             and sp.task_main_proof_id = #{id}
         </if>
@@ -48,7 +48,7 @@
         spd.id,spd.task_sub_proof_id,spd.employee_no,spd.employee_name,spd.id_type,spd.id_no,spd.declare_account,spd.income_subject,spd.income_start,spd.income_end,spd.income_for_tax,spd.withholded_amount,spd.created_time
         from tax_fc_task_sub_proof_detail spd
         inner join tax_fc_task_sub_proof sp on spd.task_sub_proof_id = sp.id
-        WHERE 1 = 1
+        WHERE spd.is_active = 1
         <if test = "id != null and id != ''">
             and sp.id = #{id}
         </if>

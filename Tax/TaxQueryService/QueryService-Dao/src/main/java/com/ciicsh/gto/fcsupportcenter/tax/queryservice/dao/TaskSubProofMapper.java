@@ -1,8 +1,6 @@
 package com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
 import org.apache.ibatis.annotations.Param;
 
@@ -60,5 +58,18 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
      * @return
      */
     Boolean invalidSubTaskProofByMainIds(@Param("mainProofIds") String[] mainProofIds,@Param("modifiedBy") String modifiedBy);
+
+    /**
+     * 根据主任务ID，查询其下所有子任务ID的相关申报账户
+     * @param mainId
+     * @return
+     */
+    List<TaskSubProofPO> selectSubTaskMapByMainId(Long mainId);
+
+    /**
+     * 根据主键ID重新计算子任务总人数
+     * @param id
+     */
+    void updateSubHeadcountById(@Param("id") Long id);
 
 }

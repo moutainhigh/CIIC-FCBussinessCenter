@@ -66,6 +66,21 @@ public class RequestForProof extends PageInfo {
      */
     private String employeeName;
 
+    /**
+     * 证件类型
+     */
+    private String idType;
+
+    /**
+     * 证件号
+     */
+    private String idNo;
+
+    /**
+     * 所得项目
+     */
+    private String incomeSubject;
+
     public Long getId() {
         return id;
     }
@@ -160,5 +175,29 @@ public class RequestForProof extends PageInfo {
 
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
+    }
+
+    public String getIdType() {
+        return idType;
+    }
+
+    public void setIdType(String idType) {
+        this.idType = idType;
+    }
+
+    public String getIdNo() {
+        return idNo;
+    }
+
+    public void setIdNo(String idNo) {
+        this.idNo = idNo;
+    }
+
+    public String getIncomeSubject() {
+        return incomeSubject;
+    }
+
+    public void setIncomeSubject(String incomeSubject) {
+        this.incomeSubject = incomeSubject;
     }
 }

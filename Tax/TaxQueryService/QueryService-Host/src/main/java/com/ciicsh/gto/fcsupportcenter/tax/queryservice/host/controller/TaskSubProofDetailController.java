@@ -13,7 +13,6 @@ import com.ciicsh.gto.fcsupportcenter.tax.queryservice.business.TaskSubProofDeta
 import com.ciicsh.gto.fcsupportcenter.tax.util.json.JsonResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +28,7 @@ public class TaskSubProofDetailController {
 
     @Autowired
     private TaskSubProofDetailService taskSubProofDetailService;
+
 
     /**
      * 查询完税申请明细
@@ -71,17 +71,17 @@ public class TaskSubProofDetailController {
         List<EmployeeBO> employeeBOList = new ArrayList<>();
         ResponseForEmployee responseForEmployee = new ResponseForEmployee();
         try {
-            if ("".equals(taskProofDTO.getDeclareAccount())) {
+            if ("main".equals(taskProofDTO.getDetailType())) {
                 for (int i = begin; i < pageEnd; i++) {
                     EmployeeBO employeeBO = new EmployeeBO();
                     employeeBO.setId(Long.valueOf(i));
                     employeeBO.setEmployeeNo("NO20171215" + i);
-                    employeeBO.setEmployeeName("test" + i);
+                    employeeBO.setEmployeeName("main" + i);
                     employeeBO.setIdType("01");
                     employeeBO.setIdNo("32100019901010123" + i);
-                    employeeBO.setManageNo("WP20171208175700" + i);
-                    employeeBO.setManageName("百盛餐饮集" + i);
-                    employeeBO.setDeclareAcount("WPSUB201712111130000" + i);
+                    employeeBO.setManagerNo("WP20171208175700" + i);
+                    employeeBO.setManagerName("百盛餐饮集");
+                    employeeBO.setDeclareAccount("WPSUB201712111130000" + i);
                     employeeBOList.add(employeeBO);
                 }
             } else {
@@ -89,12 +89,12 @@ public class TaskSubProofDetailController {
                     EmployeeBO employeeBO = new EmployeeBO();
                     employeeBO.setId(Long.valueOf(i));
                     employeeBO.setEmployeeNo("NO20171215" + i);
-                    employeeBO.setEmployeeName("test" + i);
+                    employeeBO.setEmployeeName("sub" + i);
                     employeeBO.setIdType("01");
                     employeeBO.setIdNo("32100019901010123" + i);
-                    employeeBO.setManageNo("WP20171208175700");
-                    employeeBO.setManageName("百盛餐饮集");
-                    employeeBO.setDeclareAcount("WPSUB2017121111300001");
+                    employeeBO.setManagerNo("WP20171208175700");
+                    employeeBO.setManagerName("百盛餐饮集");
+                    employeeBO.setDeclareAccount(taskProofDTO.getDeclareAccount());
                     employeeBOList.add(employeeBO);
                 }
             }
@@ -132,10 +132,11 @@ public class TaskSubProofDetailController {
         for(TaskSubProofDetailDTO taskSubProofDetailDTO:taskSubProofDetailDTOList){
             TaskSubProofDetailBO taskSubProofDetailBO = new TaskSubProofDetailBO();
             BeanUtils.copyProperties(taskSubProofDetailDTO,taskSubProofDetailBO);
-//            taskSubProofDetailBO.setIncomeStart(taskSubProofDetailDTO.getIncomeStart());
+            if(taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null ){
+                taskSubProofDetailBO.setIncomeEnd(taskSubProofDetailDTO.getIncomeStart());
+            }
             taskSubProofDetailBOList.add(taskSubProofDetailBO);
         }
-
         requestForSubDetail.setTaskSubProofDetailBOList(taskSubProofDetailBOList);
         Boolean flag = taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
         JsonResult jr = new JsonResult();

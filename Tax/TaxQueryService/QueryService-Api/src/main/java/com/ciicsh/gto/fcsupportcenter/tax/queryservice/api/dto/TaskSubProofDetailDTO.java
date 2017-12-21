@@ -24,13 +24,15 @@ public class TaskSubProofDetailDTO {
 
     private String incomeSubject;
 
-    private String incomeStart;
+    private Date incomeStart;
 
-    private String incomeEnd;
+    private Date incomeEnd;
 
     private BigDecimal incomeForTax;
 
     private BigDecimal withholdedAmount;
+
+    private String declareAccount;
 
     public Long getId() {
         return id;
@@ -96,19 +98,19 @@ public class TaskSubProofDetailDTO {
         this.incomeSubject = incomeSubject;
     }
 
-    public String getIncomeStart() {
+    public Date getIncomeStart() {
         return incomeStart;
     }
 
-    public void setIncomeStart(String incomeStart) {
+    public void setIncomeStart(Date incomeStart) {
         this.incomeStart = incomeStart;
     }
 
-    public String getIncomeEnd() {
+    public Date getIncomeEnd() {
         return incomeEnd;
     }
 
-    public void setIncomeEnd(String incomeEnd) {
+    public void setIncomeEnd(Date incomeEnd) {
         this.incomeEnd = incomeEnd;
     }
 
@@ -126,5 +128,13 @@ public class TaskSubProofDetailDTO {
 
     public void setWithholdedAmount(BigDecimal withholdedAmount) {
         this.withholdedAmount = withholdedAmount;
+    }
+
+    public String getDeclareAccount() {
+        return declareAccount;
+    }
+
+    public void setDeclareAccount(String declareAccount) {
+        this.declareAccount = declareAccount;
     }
 }

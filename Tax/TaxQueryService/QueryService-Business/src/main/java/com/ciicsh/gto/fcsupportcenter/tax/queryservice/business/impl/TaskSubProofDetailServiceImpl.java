@@ -3,20 +3,23 @@ package com.ciicsh.gto.fcsupportcenter.tax.queryservice.business.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofDetailBO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofDetailPO;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.request.RequestForProof;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.request.RequestForSubDetail;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.response.voucher.ResponseForSubDetail;
 import com.ciicsh.gto.fcsupportcenter.tax.queryservice.business.TaskSubProofDetailService;
+import com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskMainProofMapper;
 import com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskSubProofDetailMapper;
+import com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskSubProofMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author yuantongqing on 2017/12/14
@@ -24,6 +27,11 @@ import java.util.List;
 @Service
 public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetailMapper, TaskSubProofDetailPO> implements TaskSubProofDetailService, Serializable {
 
+    @Autowired(required = false)
+    private TaskMainProofMapper taskMainProofMapper;
+
+    @Autowired(required = false)
+    private TaskSubProofMapper taskSubProofMapper;
     /**
      * 查询完税申请明细
      *
@@ -67,40 +75,103 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
     @Override
     public Boolean saveSubProofDetail(RequestForSubDetail requestForSubDetail) {
         Boolean flag = true;
-        try {
-            if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
-                //根据主键ID将完税凭证申请明细修改为失效状态
-               baseMapper.invalidSubProofDetailByIds(requestForSubDetail.getOldDeleteIds());
-            }
-            if (requestForSubDetail.getTaskSubProofDetailBOList() != null) {
-                List<TaskSubProofDetailPO> taskSubProofDetailPOList = new ArrayList<>();
-                List<TaskSubProofDetailBO> taskSubProofDetailBOList = requestForSubDetail.getTaskSubProofDetailBOList();
-                for (TaskSubProofDetailBO taskSubProofDetailBO : taskSubProofDetailBOList) {
-                    TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
-                    BeanUtils.copyProperties(taskSubProofDetailBO,taskSubProofDetailPO);
-                    if(taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO)){
-                        taskSubProofDetailPO.setModifiedBy("yuantqUpdate");
-                        taskSubProofDetailPO.setModifiedTime(new Date());
-                    }else{
-                        if("sub".equals(requestForSubDetail.getDetailType())){
-                            taskSubProofDetailPO.setTaskSubProofId(requestForSubDetail.getTaskId());
-                        }
-                        taskSubProofDetailPO.setCreatedBy("yuantq");
-                        taskSubProofDetailPO.setModifiedBy("yuantq");
-                    }
-                    taskSubProofDetailPOList.add(taskSubProofDetailPO);
+        if("main".equals(requestForSubDetail.getDetailType())){
+            try {
+                if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
+                    //根据主键ID将完税凭证申请明细修改为失效状态
+                    baseMapper.invalidSubProofDetailByIds(requestForSubDetail.getOldDeleteIds());
                 }
-                //mybatisPlus批量插入或者修改
+                //根据主任务ID查询其下所有子任务
+                List<TaskSubProofPO> subList = taskSubProofMapper.selectSubTaskMapByMainId(requestForSubDetail.getTaskId());
+                Map<String,Long> subMap = new HashMap<>();
+                for(TaskSubProofPO taskSubProofPO:subList){
+                    subMap.put(taskSubProofPO.getDeclareAccount(),taskSubProofPO.getId());
+                }
+                List<TaskSubProofDetailBO> taskSubProofDetailBOList = requestForSubDetail.getTaskSubProofDetailBOList();
+                List<TaskSubProofDetailPO> taskSubProofDetailPOList = new ArrayList<>();
+                for(TaskSubProofDetailBO taskSubProofDetailBO : taskSubProofDetailBOList){
+                    if(taskSubProofDetailBO.getDeclareAccount() != null && !"".equals(taskSubProofDetailBO.getDeclareAccount())){
+                        //判断是否含有该申报账户的子任务
+                        if(subMap == null || !subMap.containsKey(taskSubProofDetailBO.getDeclareAccount())){
+                            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+                            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmss") .format(new Date() );
+                            taskSubProofPO.setTaskMainProofId(requestForSubDetail.getTaskId());
+                            taskSubProofPO.setDeclareAccount(taskSubProofDetailBO.getDeclareAccount());
+                            taskSubProofPO.setTaskNo("TAX"+dateTimeStr);
+                            taskSubProofPO.setStatus("00");
+                            taskSubProofPO.setCreatedBy("adminMain");
+                            taskSubProofPO.setModifiedBy("adminMain");
+                            taskSubProofMapper.addTaskSubProof(taskSubProofPO);
+                            subMap.put(taskSubProofDetailBO.getDeclareAccount(),taskSubProofPO.getId());
+                        }
+                        //设置申报明细
+                        TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
+                        BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
+                        if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO.getId())) {
+                            taskSubProofDetailPO.setModifiedBy("adminMain");
+                            taskSubProofDetailPO.setModifiedTime(new Date());
+                        } else {
+                            taskSubProofDetailPO.setTaskSubProofId(subMap.get(taskSubProofDetailBO.getDeclareAccount()));
+                            taskSubProofDetailPO.setCreatedBy("adminMain");
+                            taskSubProofDetailPO.setModifiedBy("adminMain");
+                        }
+                        taskSubProofDetailPOList.add(taskSubProofDetailPO);
+                    }
+                }
                 this.insertOrUpdateBatch(taskSubProofDetailPOList);
+                //统计子任务总人数
+                for (String key : subMap.keySet()) {
+                     Long subId = subMap.get(key);
+                    taskSubProofMapper.updateSubHeadcountById(subId);
+                }
+                //统计总任务人数
+                taskMainProofMapper.updateMainHeadcountBySubId(requestForSubDetail.getTaskId());
+            } catch (Exception e) {
+                flag = false;
+                e.printStackTrace();
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            } finally {
+                return flag;
             }
-        } catch (Exception e) {
-            flag = false;
-            e.printStackTrace();
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        } finally {
-            return flag;
+        }else if("sub".equals(requestForSubDetail.getDetailType())) {
+            try {
+                if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
+                    //根据主键ID将完税凭证申请明细修改为失效状态
+                    baseMapper.invalidSubProofDetailByIds(requestForSubDetail.getOldDeleteIds());
+                }
+                if (requestForSubDetail.getTaskSubProofDetailBOList() != null) {
+                    List<TaskSubProofDetailPO> taskSubProofDetailPOList = new ArrayList<>();
+                    List<TaskSubProofDetailBO> taskSubProofDetailBOList = requestForSubDetail.getTaskSubProofDetailBOList();
+                    for (TaskSubProofDetailBO taskSubProofDetailBO : taskSubProofDetailBOList) {
+                        TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
+                        BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
+                        if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO)) {
+                            taskSubProofDetailPO.setModifiedBy("adminMain");
+                            taskSubProofDetailPO.setModifiedTime(new Date());
+                        } else {
+                            taskSubProofDetailPO.setTaskSubProofId(requestForSubDetail.getTaskId());
+                            taskSubProofDetailPO.setCreatedBy("adminMain");
+                            taskSubProofDetailPO.setModifiedBy("adminMain");
+                        }
+                        taskSubProofDetailPOList.add(taskSubProofDetailPO);
+                    }
+                    //mybatisPlus批量插入或者修改
+                    this.insertOrUpdateBatch(taskSubProofDetailPOList);
+                }
+                //统计子任务总人数
+                taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId());
+                //统计总任务人数
+                TaskSubProofPO taskSubProofPO = taskSubProofMapper.selectById(requestForSubDetail.getTaskId());
+                taskMainProofMapper.updateMainHeadcountBySubId(taskSubProofPO.getTaskMainProofId());
+            } catch (Exception e) {
+                flag = false;
+                e.printStackTrace();
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            } finally {
+                return flag;
+            }
+        }else{
+            return false;
         }
-
-
     }
 }

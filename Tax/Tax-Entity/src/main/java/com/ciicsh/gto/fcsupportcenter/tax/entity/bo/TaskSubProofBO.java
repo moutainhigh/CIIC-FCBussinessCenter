@@ -64,7 +64,12 @@ public class TaskSubProofBO {
     /**
      * 修改时间
      */
-    private String modifiedTime;
+    private Date modifiedTime;
+
+    /**
+     * 是否可用
+     */
+    private Boolean isActive;
 
     /**
      * 分页page对象
@@ -159,11 +164,11 @@ public class TaskSubProofBO {
         this.modifiedBy = modifiedBy;
     }
 
-    public String getModifiedTime() {
+    public Date getModifiedTime() {
         return modifiedTime;
     }
 
-    public void setModifiedTime(String modifiedTime) {
+    public void setModifiedTime(Date modifiedTime) {
         this.modifiedTime = modifiedTime;
     }
 
@@ -173,6 +178,14 @@ public class TaskSubProofBO {
 
     public void setPage(Page page) {
         this.page = page;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
     }
 
     @Override
@@ -189,7 +202,8 @@ public class TaskSubProofBO {
                 ", createdBy='" + createdBy + '\'' +
                 ", createdTime=" + createdTime +
                 ", modifiedBy='" + modifiedBy + '\'' +
-                ", modifiedTime='" + modifiedTime + '\'' +
+                ", modifiedTime=" + modifiedTime +
+                ", isActive=" + isActive +
                 ", page=" + page +
                 '}';
     }

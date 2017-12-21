@@ -16,6 +16,8 @@ public class TaskMainProofBO {
     private Integer foreignerNum;
     private String createdBy;
     private Date createdTime;
+    private String status;
+    private Boolean isActive;
 
     public Long getId() {
         return id;
@@ -89,6 +91,22 @@ public class TaskMainProofBO {
         this.createdTime = createdTime;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     @Override
     public String toString() {
         return "TaskMainProofBO{" +
@@ -101,6 +119,8 @@ public class TaskMainProofBO {
                 ", foreignerNum=" + foreignerNum +
                 ", createdBy='" + createdBy + '\'' +
                 ", createdTime=" + createdTime +
+                ", status='" + status + '\'' +
+                ", isActive=" + isActive +
                 '}';
     }
 }

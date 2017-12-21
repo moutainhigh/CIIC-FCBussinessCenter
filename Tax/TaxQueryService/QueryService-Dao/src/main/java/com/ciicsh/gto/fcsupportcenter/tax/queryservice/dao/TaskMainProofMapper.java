@@ -44,4 +44,11 @@ public interface TaskMainProofMapper extends BaseMapper<TaskMainProofPO> {
      */
     Boolean invalidMainTaskProofByIds(@Param("mainProofIds") String[] mainProofIds,@Param("modifiedBy") String modifiedBy);
 
+
+    /**
+     * 根据主键ID重新计算主任务总人数id
+     * @param id
+     */
+    void updateMainHeadcountBySubId(@Param("id") Long id);
+
 }
