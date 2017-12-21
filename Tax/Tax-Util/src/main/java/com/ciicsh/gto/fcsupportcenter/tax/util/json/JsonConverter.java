@@ -12,5 +12,6 @@ public final class JsonConverter {
 
     public static <T> T convertToEntity(Object jsonObj, Class<T> clazz) {
         return JSON.parseObject(JSON.toJSONString(jsonObj), clazz);
+
     }
 }
