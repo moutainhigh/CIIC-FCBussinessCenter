@@ -16,6 +16,8 @@ import java.util.stream.Stream;
  */
 public class CommonUtils {
 
+    private final static Pattern CHINESE_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
+
     public static String[] getNullPropertyNames(Object source) {
         final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
         return Stream.of(wrappedSource.getPropertyDescriptors())
@@ -40,8 +42,7 @@ public class CommonUtils {
      */
     public static boolean isContainChinese(String str) {
 
-        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
-        Matcher m = p.matcher(str);
+        Matcher m = CHINESE_PATTERN.matcher(str);
         if (m.find()) {
             return true;
         }

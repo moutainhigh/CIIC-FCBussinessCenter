@@ -2,17 +2,13 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
-import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.GroupTranslator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
-import com.ciicsh.gto.salarymanagementcommandservice.util.PrEntityIdClient;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,11 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -40,11 +34,19 @@ import java.util.stream.Collectors;
 public class ItemController extends BaseController{
 
     @Autowired
-    private PrItemService prItemService;
+    private PrItemService itemService;
 
     private static final int GROUP_TEMPLATE = 0;
     private static final int GROUP = 1;
 
+    /**
+     * 获取薪资项列表
+     * @param groupCode
+     * @param parentType
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping(value = "/prItem")
     public JsonResult getPrItemList(@RequestParam String groupCode,
                                       @RequestParam Integer parentType,
@@ -53,10 +55,10 @@ public class ItemController extends BaseController{
         PageInfo<PrPayrollItemPO> pageInfo;
         if (GROUP_TEMPLATE == parentType) {
             // 获取薪资组模板的薪资项
-            pageInfo = prItemService.getListByGroupTemplateCode(groupCode, pageNum, pageSize);
+            pageInfo = itemService.getListByGroupTemplateCode(groupCode, pageNum, pageSize);
         } else if (GROUP == parentType) {
             // 获取薪资组的薪资项
-            pageInfo = prItemService.getListByGroupCode(groupCode, pageNum, pageSize);
+            pageInfo = itemService.getListByGroupCode(groupCode, pageNum, pageSize);
         } else {
             return JsonResult.faultMessage("非法的参数parentType: " + parentType);
         }
@@ -69,36 +71,52 @@ public class ItemController extends BaseController{
         return JsonResult.success(resultPage);
     }
 
+    /**
+     * 获取薪资项
+     * @param code
+     * @return
+     */
     @GetMapping(value = "/prItem/{code}")
     public JsonResult getPrItem(@PathVariable("code") String code) {
-        PrPayrollItemPO result =  prItemService.getItemByCode(code);
+        PrPayrollItemPO result =  itemService.getItemByCode(code);
         PrPayrollItemDTO resultItem = ItemTranslator.toPrPayrollItemDTO(result);
         return JsonResult.success(resultItem);
     }
 
-    @PutMapping(value = "/prItem/{id}")
-    public ResultEntity updatePrItem(@PathVariable("id") String entityId,
-                                            @RequestBody PrItemEntity paramItem) {
+    /**
+     * 更新薪资项
+     * @param code
+     * @param paramItem
+     * @return
+     */
+    @PutMapping(value = "/prItem/{code}")
+    public JsonResult updatePrItem(@PathVariable("code") String code,
+                                            @RequestBody PrPayrollItemPO paramItem) {
 
-        paramItem.setEntityId(entityId);
-        Map<String, Object> resultMap  = prItemService.updateItem(paramItem);
-        return ResultEntity.success(resultMap);
+        paramItem.setItemCode(code);
+        Map<String, Object> resultMap  = itemService.updateItem(paramItem);
+        return JsonResult.success(resultMap);
     }
 
     @GetMapping(value = "/prItemName")
     public ResultEntity getPrItemNameList(@RequestParam("managementId") String managementId) {
 
-        List<String> resultList = prItemService.getNameList(managementId);
+        List<String> resultList = itemService.getNameList(managementId);
         return ResultEntity.success(resultList);
     }
 
     @GetMapping(value = "/prItemType")
     public ResultEntity getPrItemTypeList(@RequestParam("managementId") String managementId) {
 
-        List<Integer> resultList = prItemService.getTypeList(managementId);
+        List<Integer> resultList = itemService.getTypeList(managementId);
         return ResultEntity.success(resultList);
     }
 
+    /**
+     * 新建薪资项
+     * @param paramItem
+     * @return
+     */
     @PostMapping(value = "/prItem")
     public JsonResult newPrItem(@RequestBody PrPayrollItemDTO paramItem) {
 
@@ -106,8 +124,8 @@ public class ItemController extends BaseController{
         PrPayrollItemPO newParam = new PrPayrollItemPO();
         BeanUtils.copyProperties(paramItem, newParam);
         newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
-        if (newParam.getPayrollGroupTemplateCode()!=null){
-            List<PrPayrollItemPO> itemList = prItemService.getListByGroupTemplateCode(
+        if (!StringUtils.isEmpty(newParam.getPayrollGroupTemplateCode())){
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(
                     paramItem.getPayrollGroupTemplateCode(),0,0).getList();
             if (itemList != null) {
                 if (itemList.stream()
@@ -116,8 +134,8 @@ public class ItemController extends BaseController{
                 }
             }
         }
-        if (newParam.getPayrollGroupCode()!=null){
-            List<PrPayrollItemPO> itemList = prItemService.getListByGroupCode(
+        if (!StringUtils.isEmpty(newParam.getPayrollGroupCode())){
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(
                     newParam.getPayrollGroupCode(),0,0).getList();
             if (itemList != null) {
                 if (itemList.stream()
@@ -129,14 +147,14 @@ public class ItemController extends BaseController{
         //临时参数
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");
-        int resultId = prItemService.addItem(newParam);
+        int resultId = itemService.addItem(newParam);
         return resultId > 0 ? JsonResult.success(newParam.getItemCode()) : JsonResult.faultMessage("新建薪资项失败");
     }
 
     @DeleteMapping("/prItem/{code}")
     public JsonResult deleteItem(@PathVariable("code") String code) {
         String[] codes = code.split(",");
-        int i = prItemService.deleteItemByCodes(Arrays.asList(codes));
+        int i = itemService.deleteItemByCodes(Arrays.asList(codes));
         if (i >= 1){
             return JsonResult.success(i,"删除成功");
         }else {

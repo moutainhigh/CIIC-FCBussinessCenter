@@ -1,11 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
-import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -83,9 +80,9 @@ public interface PrGroupService {
 
     /**
      * 复制薪资组
-     * @param srcCode
-     * @param newName
+     * @param srcEntity
+     * @param newEntity
      * @return
      */
-    String copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity);
+    boolean copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity);
 }

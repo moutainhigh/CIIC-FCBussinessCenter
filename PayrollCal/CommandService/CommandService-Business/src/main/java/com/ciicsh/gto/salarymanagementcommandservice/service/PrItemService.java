@@ -5,12 +5,14 @@ import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
+import scala.annotation.meta.param;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * Created by jiangtianning on 2017/11/6.
+ * @author jiangtianning
  */
 public interface PrItemService {
 
@@ -59,7 +61,7 @@ public interface PrItemService {
      * @param paramList 待插入列表
      * @return 插入条数
      */
-    int addList(List<PrItemEntity> paramList);
+    int addList(List<PrPayrollItemPO> paramList);
 
     /**
      * 获取薪资项名称列表
@@ -73,7 +75,7 @@ public interface PrItemService {
      * @param param 更新薪资项实体
      * @return 更新条数
      */
-    Map<String, Object> updateItem(PrItemEntity param);
+    Map<String, Object> updateItem(PrPayrollItemPO param);
 
     /**
      * 获取薪资项类型列表
@@ -81,20 +83,6 @@ public interface PrItemService {
      * @return
      */
     List<Integer> getTypeList(@Param("managementId") String managementId);
-
-//    /**
-//     * 根据薪资组模板id获取薪资项列表
-//     * @param prGroupTemplateId
-//     * @return
-//     */
-//    List<PrItemEntity> getListByGroupTemplateId(String prGroupTemplateId);
-//
-//    /**
-//     * 根据薪资组id获取薪资项列表
-//     * @param prGroupId
-//     * @return
-//     */
-//    List<PrItemEntity> getListByGroupId(String prGroupId);
 
     /**
      * 通过id来删除薪资项

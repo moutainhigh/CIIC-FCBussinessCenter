@@ -60,14 +60,14 @@ public class GroupController {
     @Autowired
     private CodeGenerator codeGenerator;
 
-    @GetMapping(value = "/prGroup/{id}/import")
-    public ResultEntity importPrGroup(@RequestParam String from,
-                                      @PathVariable("id") String to) {
+    @GetMapping(value = "/importPrGroup")
+    public JsonResult importPrGroup(@RequestParam String from,
+                                      @RequestParam String to) {
         boolean importResult = prGroupService.importPrGroup(from, to);
         if (!importResult) {
             throw new BusinessException("薪资组导入失败");
         }
-        return ResultEntity.success("");
+        return JsonResult.success("导入成功");
     }
 
     /**
@@ -84,8 +84,10 @@ public class GroupController {
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
         newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
-
-        return JsonResult.success("");
+        newEntity.setGroupName(newName);
+        newEntity.setVersion("1.0");
+        boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
+        return result ? JsonResult.success("薪资组复制成功") : JsonResult.faultMessage("薪资组复制失败");
     }
 
 

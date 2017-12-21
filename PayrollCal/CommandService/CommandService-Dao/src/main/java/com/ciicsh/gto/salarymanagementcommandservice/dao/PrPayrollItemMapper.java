@@ -34,4 +34,33 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      * @return 返回薪资项列表
      */
     List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO);
+
+     /**
+      * 插入一组薪资项
+     * @param items
+     * @return
+     */
+    Integer insertBatchItems(@Param("items") List<PrPayrollItemPO> items);
+
+    /**
+     * 删除薪资项by group code
+     * @param groupCode
+     * @return
+     */
+    Integer deleteItemByGroupCode(@Param("groupCode") String groupCode);
+
+    /**
+     * 删除薪资项by groupTemplate code
+     * @param groupTemplateCode
+     * @return
+     */
+    Integer deleteItemByGroupTemplateCode(@Param("groupTemplateCode") String groupTemplateCode);
+
+    /**
+     * 更新薪资项 by code
+     * @param prPayrollItemPO
+     * @return
+     */
+    Integer updateItemByCode(PrPayrollItemPO prPayrollItemPO);
+
 }

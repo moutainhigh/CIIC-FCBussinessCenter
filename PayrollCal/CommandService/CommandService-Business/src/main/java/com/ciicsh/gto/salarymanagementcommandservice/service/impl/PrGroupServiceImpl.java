@@ -1,20 +1,29 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
+import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollBaseItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrGroupMapper;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollBaseItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrBaseItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
-import com.ciicsh.gto.salarymanagementcommandservice.util.PrEntityIdClient;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -24,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by jiangtianning on 2017/10/24.
@@ -39,10 +49,16 @@ public class PrGroupServiceImpl implements PrGroupService {
     private IPrGroupMapper prGroupMapper;
 
     @Autowired
-    private PrItemService prItemService;
+    private PrPayrollBaseItemMapper prPayrollBaseItemMapper;
 
     @Autowired
-    private PrEntityIdClient prEntityIdClient;
+    private PrItemService itemService;
+
+    @Autowired
+    private PrPayrollItemMapper prPayrollItemMapper;
+
+    @Autowired
+    private CodeGenerator codeGenerator;
 
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
@@ -71,8 +87,25 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollGroupPO paramItem) {
         int result = prPayrollGroupMapper.insert(paramItem);
+        List<PrPayrollBaseItemPO> paramList = prPayrollBaseItemMapper.selectList(
+                new EntityWrapper<>(new PrPayrollBaseItemPO()));
+        List<PrPayrollItemPO> itemList = paramList.stream()
+                .map(i -> {
+                    PrPayrollItemPO item = new PrPayrollItemPO();
+                    BeanUtils.copyProperties(i, item);
+                    item.setId(null);
+                    item.setItemName(i.getBaseItemName());
+                    item.setBaseItemCode(i.getBaseItemCode());
+                    item.setItemType(i.getBaseItemType());
+                    item.setPayrollGroupCode(paramItem.getGroupCode());
+                    item.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
+                    return item;
+                })
+                .collect(Collectors.toList());
+        itemService.addList(itemList);
         return result;
     }
 
@@ -113,7 +146,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                 });
         if (failList.size() == 0) {
             try {
-//                deleteRows = prItemService.deleteItemById(prItemId);
+//                deleteRows = itemService.deleteItemById(prItemId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -125,24 +158,31 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = RuntimeException.class)
     public boolean importPrGroup(String from, String to) {
 
-        PrGroupEntity prGroup = prGroupMapper.selectItemById(from);
-        List<PrItemEntity> prItemEntities = prGroup.getPrItemEntityList();
-        if (prItemEntities == null || prItemEntities.size() == 0) {
+        PrPayrollGroupPO toEntity = this.getItemByCode(to);
+
+        //获取from薪资组中的薪资项
+        PrPayrollItemPO param = new PrPayrollItemPO();
+        param.setPayrollGroupCode(from);
+        EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
+        List<PrPayrollItemPO> items = prPayrollItemMapper.selectList(ew);
+
+        if (items == null || items.size() == 0) {
             throw new RuntimeException("导入薪资组中无薪资项");
         }
-        prItemEntities.forEach(i -> {
-            i.setPrGroupId(to);
-            i.setEntityId(prEntityIdClient.getEntityId(PrEntityIdClient.PR_ITEM_CAT_ID));
+        items.forEach(i -> {
+            i.setPayrollGroupCode(to);
+            i.setItemCode(codeGenerator.genPrItemCode(toEntity.getManagementId()));
         });
         //删除原来存在于该薪资组的薪资项
-        int deleteItemResult = prItemService.deleteItemByPrGroupId(to);
+        int deleteItemResult = prPayrollItemMapper.deleteItemByGroupCode(to);
         if (deleteItemResult == 0) {
             throw new RuntimeException("导入目标薪资组中薪资项删除失败");
         }
-        int insertItemResult = prItemService.addList(prItemEntities);
+        // TODO 修改了插入批量薪资项API
+        int insertItemResult = itemService.addList(items);
         if (insertItemResult == 0) {
             throw new RuntimeException("导入薪资组中薪资项时失败");
         }
@@ -150,10 +190,11 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public int deleteByCodes(List<String> codes) {
         int result = 0;
-        // TODO 删除薪资项
         result = prPayrollGroupMapper.deleteByCodes(codes);
+        codes.forEach(i -> prPayrollItemMapper.deleteItemByGroupCode(i));
         return result;
     }
 
@@ -170,14 +211,25 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public String copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity) {
+    public boolean copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity) {
 
-        int prGroupAddResult = this.addItem(newEntity);
+        boolean result = false;
+        int prGroupAddResult = prPayrollGroupMapper.insert(newEntity);
         if (prGroupAddResult == 0) {
-            throw new RuntimeException("插入薪资组失败");
+            throw new RuntimeException("复制薪资组失败");
         }
-
-        return null;
+        List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(srcEntity.getGroupCode(),
+                0, 0).getList();
+        itemList.forEach(i -> {
+            i.setPayrollGroupCode(newEntity.getGroupCode());
+            i.setItemCode(codeGenerator.genPrItemCode(srcEntity.getManagementId()));
+        });
+        int itemAddResult = itemService.addList(itemList);
+        if (itemAddResult == 0) {
+            throw new RuntimeException("复制薪资项失败");
+        }
+        result = true;
+        return result;
     }
 
     // 从公式中获取薪资项名称列表

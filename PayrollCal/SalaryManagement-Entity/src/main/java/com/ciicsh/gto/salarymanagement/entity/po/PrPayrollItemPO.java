@@ -100,6 +100,11 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 	@TableField("cal_precision")
 	private Integer calPrecision;
     /**
+     * 公式原始内容
+     */
+	@TableField("origin_formula")
+	private String originFormula;
+    /**
      * 公式内容
      */
 	@TableField("formula_content")
@@ -267,7 +272,15 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 		this.calPrecision = calPrecision;
 	}
 
-	public String getFormulaContent() {
+    public String getOriginFormula() {
+        return originFormula;
+    }
+
+    public void setOriginFormula(String originFormula) {
+        this.originFormula = originFormula;
+    }
+
+    public String getFormulaContent() {
 		return formulaContent;
 	}
 
