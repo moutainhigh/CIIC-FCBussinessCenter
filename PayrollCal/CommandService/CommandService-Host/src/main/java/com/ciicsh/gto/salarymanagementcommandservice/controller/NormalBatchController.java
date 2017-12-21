@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by bill on 17/12/6.
@@ -254,15 +255,13 @@ public class NormalBatchController {
             String batchCode = "glf-00091-201712-0000000030";
             do {
                 row = reader.read();
-                if (row != null){
-                    row.forEach(r-> {
-                        dbObject.put("batch_code",batchCode);
-                        dbObject.put("emp_group_code",pr_template_code);
-                        dbObject.put("batch_code",batchCode);
-                        dbObject.put(r.getItemName(),r);
-                        results.add(dbObject);
-                    });
-                }
+                dbObject.put("batch_code",batchCode);
+                dbObject.put("emp_group_code",pr_template_code);
+                dbObject.put("batch_code",batchCode);
+                PrPayrollItemPO itemPO = row.stream().filter(item->item.getItemName().equals("雇员编码")).collect(Collectors.toList()).get(0);
+                dbObject.put("employee_id",itemPO.getItemValue());
+                dbObject.put("pay_items",row);
+                results.add(dbObject);
             }while (row != null);
 
             normalBatchMongoOpt.batchInsert(results);

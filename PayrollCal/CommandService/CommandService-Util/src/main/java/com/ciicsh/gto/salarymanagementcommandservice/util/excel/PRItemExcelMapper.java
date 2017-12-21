@@ -50,11 +50,11 @@ public class PRItemExcelMapper implements RowMapper<List<PrPayrollItemPO>> {
             logger.info("column count is not equal");
         }
 
-        if(rs.getProperties().get("雇员编码") == null ){
+        if(rs.getProperties().get("雇员编号") == null ){
             logger.info("employee code does not exit");
             return null;
         }
-        String empCode = String.valueOf(rs.getProperties().get("雇员编码"));
+        String empCode = String.valueOf(rs.getProperties().get("雇员编号"));
         DBObject dbObject = getDbObject(empCode);
 
         list.stream().forEach(item -> {
@@ -77,7 +77,10 @@ public class PRItemExcelMapper implements RowMapper<List<PrPayrollItemPO>> {
 
         return empList
                     .stream()
-                    .filter(dbObject -> String.valueOf(dbObject.get("雇员编码")) == empCode)
+                    .filter(dbObject -> {
+                        logger.info(String.valueOf(dbObject.get("雇员编号")));
+                        logger.info( String.valueOf(String.valueOf(dbObject.get("雇员编号")) == empCode));
+                        return String.valueOf(dbObject.get("雇员编号")).equals(empCode); })
                     .collect(Collectors.toList()).get(0);
     }
 }
