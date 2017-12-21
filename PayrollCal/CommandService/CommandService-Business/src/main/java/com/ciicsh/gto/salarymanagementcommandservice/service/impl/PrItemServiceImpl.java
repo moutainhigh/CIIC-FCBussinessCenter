@@ -5,6 +5,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrItemMapper;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrBaseItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.github.pagehelper.PageHelper;
@@ -84,8 +85,9 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public int addList(List<PrItemEntity> paramList) {
-        return 0;
+    public int addList(List<PrPayrollItemPO> paramList) {
+        int insertResult = prPayrollItemMapper.insertBatchItems(paramList);
+        return insertResult;
     }
 
     @Override
@@ -95,90 +97,93 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public Map<String, Object> updateItem(PrItemEntity param) {
+    public Map<String, Object> updateItem(PrPayrollItemPO param) {
         Map<String, Object> result = new HashMap<>();
-        List<String> failList = new ArrayList<>();
-        List<String> successList = new ArrayList<>();
-        // 更新条数
-        int i = 0;
-        //先获取该薪资项当前详情用作check
-        PrPayrollItemPO prPayrollItemPO = new PrPayrollItemPO();
-        try {
-            prPayrollItemPO = prPayrollItemMapper.selectById(param.getEntityId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (prPayrollItemPO == null) {
-            result.put("FAILURE", failList);
-            return result;
-        }
-        // 如果该薪资项只存在于薪资组中，则修改无限制
-        if (StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
-            try {
-                i = prItemMapper.updateItemById(param);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            result.put("SUCCESS", i);
-            return result;
-        }
-        // 如果该薪资项由薪资组继承而产生，则需进行校验，不能修改薪资项名
-        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode()) &&
-                !StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupCode())) {
-            if (param.getName() != null && !prPayrollItemPO.getItemName().equals(param.getName())) {
-                result.put("FAILURE", "不能修改继承薪资组模板产生的薪资项名称");
-                return result;
-            }
-            try {
-                i = prItemMapper.updateItemById(param);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            result.put("SUCCESS", i);
-            return result;
-        }
-        // 如果该薪资项是薪资项模板中的项目，则需进行校验，需要更新继承该薪资组模板的薪资组的薪资项
-        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
-            List<PrItemEntity> prItemEntityList = new ArrayList<>();
-            try {
-                prItemMapper.updateItemById(param);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                prItemEntityList = prItemMapper.selectListByGroupTemplateId(prPayrollItemPO.getPayrollGroupTemplateCode());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Date templateItemLastModified = prPayrollItemPO.getModifiedTime();
-            param.setEntityId(null);
-            prItemEntityList.stream()
-                    .filter(item -> !StringUtils.isEmpty(item.getPrGroupId()))
-                    .forEach(item -> {
-                        if (item.getDataChangeLastTime().after(templateItemLastModified)) {
-                            failList.add(item.getName());
-                        } else {
-                            try {
-                                CommonUtils.copyNotNullProperties(param, item);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                int updateCount = prItemMapper.updateItemById(item);
-                                if (updateCount != 0) {
-                                    successList.add(item.getName());
-                                } else {
-                                    failList.add(item.getName());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-            result.put("SUCCESS", successList);
-            result.put("FAILURE", failList);
-            return result;
-        }
+        int updateResult = prPayrollItemMapper.updateItemByCode(param);
+        //TODO 继承check逻辑变更
+//        List<String> failList = new ArrayList<>();
+//        List<String> successList = new ArrayList<>();
+//        // 更新条数
+//        int i = 0;
+//        //先获取该薪资项当前详情用作check
+//        PrPayrollItemPO prPayrollItemPO = new PrPayrollItemPO();
+//        try {
+//            prPayrollItemPO = prPayrollItemMapper.selectById(param.getEntityId());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        if (prPayrollItemPO == null) {
+//            result.put("FAILURE", failList);
+//            return result;
+//        }
+//        // 如果该薪资项只存在于薪资组中，则修改无限制
+//        if (StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
+//            try {
+//                i = prItemMapper.updateItemById(param);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            result.put("SUCCESS", i);
+//            return result;
+//        }
+//        // 如果该薪资项由薪资组继承而产生，则需进行校验，不能修改薪资项名
+//        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode()) &&
+//                !StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupCode())) {
+//            if (param.getName() != null && !prPayrollItemPO.getItemName().equals(param.getName())) {
+//                result.put("FAILURE", "不能修改继承薪资组模板产生的薪资项名称");
+//                return result;
+//            }
+//            try {
+//                i = prItemMapper.updateItemById(param);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            result.put("SUCCESS", i);
+//            return result;
+//        }
+//        // 如果该薪资项是薪资项模板中的项目，则需进行校验，需要更新继承该薪资组模板的薪资组的薪资项
+//        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
+//            List<PrItemEntity> prItemEntityList = new ArrayList<>();
+//            try {
+//                prItemMapper.updateItemById(param);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            try {
+//                prItemEntityList = prItemMapper.selectListByGroupTemplateId(prPayrollItemPO.getPayrollGroupTemplateCode());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            Date templateItemLastModified = prPayrollItemPO.getModifiedTime();
+//            param.setEntityId(null);
+//            prItemEntityList.stream()
+//                    .filter(item -> !StringUtils.isEmpty(item.getPrGroupId()))
+//                    .forEach(item -> {
+//                        if (item.getDataChangeLastTime().after(templateItemLastModified)) {
+//                            failList.add(item.getName());
+//                        } else {
+//                            try {
+//                                CommonUtils.copyNotNullProperties(param, item);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                            try {
+//                                int updateCount = prItemMapper.updateItemById(item);
+//                                if (updateCount != 0) {
+//                                    successList.add(item.getName());
+//                                } else {
+//                                    failList.add(item.getName());
+//                                }
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//            result.put("SUCCESS", successList);
+//            result.put("FAILURE", failList);
+//            return result;
+//        }
+        result.put("SUCCESS", updateResult);
         return result;
     }
 

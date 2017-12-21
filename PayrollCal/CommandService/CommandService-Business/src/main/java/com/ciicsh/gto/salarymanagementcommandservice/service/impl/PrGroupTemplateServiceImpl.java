@@ -6,8 +6,8 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,9 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
 
     @Autowired
     private PrPayrollGroupTemplateMapper prPayrollGroupTemplateMapper;
+
+    @Autowired
+    private PrPayrollItemMapper prPayrollItemMapper;
 
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
@@ -63,8 +66,10 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public int deleteByCodes(List<String> codes) {
         int result = prPayrollGroupTemplateMapper.deleteByCodes(codes);
+        codes.forEach(i -> prPayrollItemMapper.deleteItemByGroupTemplateCode(i));
         return result;
     }
 

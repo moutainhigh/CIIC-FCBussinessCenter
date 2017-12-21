@@ -2,7 +2,7 @@
 //
 //import com.alibaba.fastjson.JSONObject;
 //import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
-//import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+//import com.ciicsh.gto.salarymanagementcommandservice.service.ItemService;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@
 //public class PrItemTest extends PrBaseTest {
 //
 //    @Autowired
-//    private PrItemService prItemService;
+//    private ItemService prItemService;
 //
 //    @Test
 //    public void newPrItemTest(){
