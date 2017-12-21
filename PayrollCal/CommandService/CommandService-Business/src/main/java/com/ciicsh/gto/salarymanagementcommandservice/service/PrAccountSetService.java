@@ -31,6 +31,14 @@ public interface PrAccountSetService {
 
 
     /**
+     * 编辑薪资账套是否禁用/启用
+     * @param payrollAccountSetPO 新增薪资实体
+     * @return 是否编辑成功
+     */
+    Integer editIsActive(PrPayrollAccountSetPO payrollAccountSetPO);
+
+
+    /**
      * 获取薪资组名称列表
      * @param managementId 管理方ID
      * @return 薪资组名称列表

@@ -194,6 +194,20 @@ public class AccountSetController extends BaseController {
     }
 
 
+    @PostMapping("/editIsActive")
+    public JsonResult editIsActive(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
+        accountSetDTO.setModifiedBy("bill");
+        accountSetDTO.setModifiedTime(new Date());
+        PrPayrollAccountSetPO accountSetPO = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
+        Integer val = prAccountSetService.editIsActive(accountSetPO);
+        if(val > 0){
+            return JsonResult.success("修改成功！");
+        }
+        else{
+            return JsonResult.faultMessage("修改失败！");
+        }
+    }
+
     @GetMapping("/getPayrollAccountSetNames")
     @ResponseBody
     public  JsonResult getPayrollAccountSetNames(@RequestParam String managementId,@RequestParam String query){

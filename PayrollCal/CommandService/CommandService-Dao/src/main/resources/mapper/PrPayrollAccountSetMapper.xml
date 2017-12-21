@@ -184,7 +184,6 @@
 
 	<sql id="whereExtQuery">
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
-			a.is_active = 1 AND b.is_active = 1
 			<if test="managementId != null and managementId != ''">
 				AND a.management_id = #{managementId}
 			</if>

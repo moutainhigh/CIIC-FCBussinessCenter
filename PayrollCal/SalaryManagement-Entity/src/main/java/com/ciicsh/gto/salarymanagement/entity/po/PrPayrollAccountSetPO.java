@@ -236,6 +236,14 @@ public class PrPayrollAccountSetPO extends Model<PrPayrollAccountSetPO> {
 		this.remark = remark;
 	}
 
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
 	public Boolean getActive() {
 		return isActive;
 	}

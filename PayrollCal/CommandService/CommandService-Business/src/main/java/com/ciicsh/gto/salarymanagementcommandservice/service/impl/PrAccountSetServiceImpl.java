@@ -101,6 +101,11 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         }
     }
 
+    @Override
+    public Integer editIsActive(PrPayrollAccountSetPO payrollAccountSetPO) {
+        return accountSetMapper.updateById(payrollAccountSetPO);
+    }
+
     private void saveItemRelation(PrPayrollAccountSetPO payrollAccountSetPO){
         PayrollGroupExtPO extPO = new PayrollGroupExtPO();
         if(payrollAccountSetPO.getIfGroupTemplate()){
