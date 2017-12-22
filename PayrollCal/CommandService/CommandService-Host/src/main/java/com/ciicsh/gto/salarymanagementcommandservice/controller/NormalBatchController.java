@@ -93,7 +93,7 @@ public class NormalBatchController {
 
         List<MgrData> datas = new ArrayList<>();
         MgrData data = null;
-        data = new MgrData("glf-0009","微软中国（上海）");
+        data = new MgrData("glf-00090","微软中国（上海）");
         datas.add(data);
 
         data = new MgrData("glf-00091","微软中国（北京）");
