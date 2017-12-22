@@ -24,8 +24,10 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
+import com.ciicsh.gto.salarymanagementcommandservice.util.Constants.PayItemName;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.batch.item.ExecutionContext;
 import com.ciicsh.gto.salarymanagementcommandservice.util.excel.PRItemExcelReader;
@@ -251,17 +253,19 @@ public class NormalBatchController {
             PoiItemReader<List<PrPayrollItemPO>> reader = PRItemExcelReader.getPrGroupReader(stream, prList,empList);
             reader.open(new ExecutionContext());
             List<PrPayrollItemPO> row = null;
-            DBObject dbObject = new BasicDBObject();
+            DBObject dbObject = null;
             String batchCode = "glf-00091-201712-0000000030";
             do {
                 row = reader.read();
-                dbObject.put("batch_code",batchCode);
-                dbObject.put("emp_group_code",pr_template_code);
-                dbObject.put("batch_code",batchCode);
-                PrPayrollItemPO itemPO = row.stream().filter(item->item.getItemName().equals("雇员编码")).collect(Collectors.toList()).get(0);
-                dbObject.put("employee_id",itemPO.getItemValue());
-                dbObject.put("pay_items",row);
-                results.add(dbObject);
+                if(row != null) {
+                    dbObject = new BasicDBObject();
+                    dbObject.put("batch_code", batchCode);
+                    dbObject.put("emp_group_code", groupCode);
+                    PrPayrollItemPO itemPO = row.stream().filter(item -> item.getItemName().equals(PayItemName.EMPLOYEE_CODE_CN)).collect(Collectors.toList()).get(0);
+                    dbObject.put("employee_id", itemPO.getItemValue());
+                    dbObject.put("pay_items", BathTranslator.transPrPayrollItemPOToDBObject(row));
+                    results.add(dbObject);
+                }
             }while (row != null);
 
             normalBatchMongoOpt.batchInsert(results);

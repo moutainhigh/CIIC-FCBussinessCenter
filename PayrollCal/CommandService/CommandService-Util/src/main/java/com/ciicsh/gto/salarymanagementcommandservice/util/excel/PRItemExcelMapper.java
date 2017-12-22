@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.util.excel;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagementcommandservice.util.Constants.PayItemName;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -50,14 +51,14 @@ public class PRItemExcelMapper implements RowMapper<List<PrPayrollItemPO>> {
             logger.info("column count is not equal");
         }
 
-        if(rs.getProperties().get("雇员编号") == null ){
+        if(rs.getProperties().get(PayItemName.EMPLOYEE_CODE_CN) == null ){
             logger.info("employee code does not exit");
             return null;
         }
-        String empCode = String.valueOf(rs.getProperties().get("雇员编号"));
+        String empCode = String.valueOf(rs.getProperties().get(PayItemName.EMPLOYEE_CODE_CN));
         DBObject dbObject = getDbObject(empCode);
 
-        list.stream().forEach(item -> {
+        list.forEach(item -> {
             String prName = item.getItemName();             // 薪资项名称
             Object val = rs.getProperties().get(prName);    // 薪资项值
             Object baseVal = dbObject.get(prName);          // 基础薪资项值
@@ -65,7 +66,7 @@ public class PRItemExcelMapper implements RowMapper<List<PrPayrollItemPO>> {
             if(baseVal != null) {
                 item.setItemValue(String.valueOf(baseVal));
             }else if(val != null){
-                item.setItemValue(String.valueOf(val));                       //把EXCEL的值 赋予 该薪资项
+                item.setItemValue(String.valueOf(val));      //把EXCEL的值 赋予 该薪资项
             }else{
                 logger.info("不存在列名：" + prName);
             }
@@ -78,9 +79,7 @@ public class PRItemExcelMapper implements RowMapper<List<PrPayrollItemPO>> {
         return empList
                     .stream()
                     .filter(dbObject -> {
-                        logger.info(String.valueOf(dbObject.get("雇员编号")));
-                        logger.info( String.valueOf(String.valueOf(dbObject.get("雇员编号")) == empCode));
-                        return String.valueOf(dbObject.get("雇员编号")).equals(empCode); })
+                        return String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)).equals(empCode); })
                     .collect(Collectors.toList()).get(0);
     }
 }
