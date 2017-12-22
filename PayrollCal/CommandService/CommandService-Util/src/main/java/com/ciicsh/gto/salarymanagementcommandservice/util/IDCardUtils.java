@@ -115,7 +115,7 @@ public class IDCardUtils {
 
         //return "YY"+randomChar()+createData(5);
         Integer falg = 10000 +i;
-        return "YY"+randomChar()+falg;
+        return "17"+randomChar()+falg;
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 public class EmployeeExtensionDTO {
     private String relationId;
-    private String empGroupId;
+    private String empGroupCode;
     private String employeeId;
     private String employeeName;
     private Integer idCardType;

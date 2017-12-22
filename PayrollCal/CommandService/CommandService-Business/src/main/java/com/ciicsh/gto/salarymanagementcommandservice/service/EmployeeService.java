@@ -22,14 +22,14 @@ public interface EmployeeService {
      * @param employeeTestPOS 雇员主表数据
      * @return 是否增加成功
      */
-    Boolean addEmployees(List<PrEmployeeTestPO> employeeTestPOS, String empGroupId);
+    Boolean addEmployees(List<PrEmployeeTestPO> employeeTestPOS, String empGroupCode);
 
     /**
      * 获取雇员组雇员列表
-     * @param empGroupId 雇员组ID
+     * @param empGroupCode 雇员组Code
      * @return 雇员组雇员列表
      */
-    PageInfo<EmployeeExtensionPO> getEmployees(Integer empGroupId, Integer pageNum, Integer pageSize);
+    PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, Integer pageNum, Integer pageSize);
 
 
     /**
@@ -37,5 +37,5 @@ public interface EmployeeService {
      * @param ids 雇员和雇员组关系ID
      * @return
      */
-    Integer batchDelete(List<String> ids, List<String> employeeIds, String empGroupId);
+    Integer batchDelete(List<String> ids, List<String> employeeIds, String empGroupCode);
 }

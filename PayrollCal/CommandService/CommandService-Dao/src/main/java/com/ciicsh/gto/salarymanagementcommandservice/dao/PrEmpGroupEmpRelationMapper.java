@@ -21,16 +21,16 @@ import java.util.List;
 public interface PrEmpGroupEmpRelationMapper extends BaseMapper<PrEmpGroupEmpRelationPO> {
     /**
      * 判断雇员组雇员关系是否已经存在
-     * @param empGroupId 雇员组Id
+     * @param empGroupCode 雇员组编号
      * @param empId 雇员ID
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmpGroupEmpRelation(@Param("empGroupId") String empGroupId,@Param("empId") String empId);
+    Integer isExistEmpGroupEmpRelation(@Param("empGroupCode") String empGroupCode,@Param("empId") String empId);
 
     /**
-     * 根据雇员组ID删除雇员组和雇员关系表数据
-     * @param empGroupIds
+     * 根据雇员组Code删除雇员组和雇员关系表数据
+     * @param empGroupCodes
      * @return
      */
-    Integer delByEmpGroupId(List<String> empGroupIds);
+    Integer delByEmpGroupCodes(List<String> empGroupCodes);
 }

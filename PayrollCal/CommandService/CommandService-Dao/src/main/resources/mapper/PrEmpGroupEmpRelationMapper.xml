@@ -5,7 +5,7 @@
 	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupEmpRelationPO">
 		<id column="id" property="id" />
-		<result column="emp_group_id" property="empGroupId" />
+		<result column="emp_group_code" property="empGroupCode" />
 		<result column="emp_id" property="empId" />
 		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
@@ -15,13 +15,13 @@
 	</resultMap>
 
 	<select id="isExistEmpGroupEmpRelation" resultType="int">
-		SELECT COUNT(*) FROM pr_emp_group_emp_relation WHERE emp_group_id = #{empGroupId} AND emp_id = #{empId} AND is_active = 1
+		SELECT COUNT(*) FROM pr_emp_group_emp_relation WHERE emp_group_code = #{empGroupCode} AND emp_id = #{empId} AND is_active = 1
 	</select>
 
-	<select id="delByEmpGroupId" resultType="int">
-		DELETE FROM pr_emp_group_emp_relation WHERE emp_group_id in
-		<foreach item="eGroupId" collection="list" open="(" separator="," close=")">
-			#{eGroupId}
+	<select id="delByEmpGroupCodes" resultType="int">
+		DELETE FROM pr_emp_group_emp_relation WHERE emp_group_code in
+		<foreach item="eGroupCode" collection="list" open="(" separator="," close=")">
+			#{eGroupCode}
 		</foreach>
 		AND is_active = 1
 	</select>

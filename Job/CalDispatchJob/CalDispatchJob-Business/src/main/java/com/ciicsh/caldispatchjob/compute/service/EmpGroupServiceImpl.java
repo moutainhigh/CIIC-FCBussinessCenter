@@ -31,9 +31,9 @@ public class EmpGroupServiceImpl {
     @Autowired
     private EmpGroupMongoOpt empGroupMongoOpt;
 
-    public void batchInsertGroupEmployees(String empGroupId, List<String> empIds){
+    public void batchInsertGroupEmployees(String empGroupCode, List<String> empIds){
 
-        List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(Integer.parseInt(empGroupId));
+        List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(empGroupCode);
         if(empIds == null || empIds.size() == 0){
             //employees = employeeMapper.getEmployees(Integer.parseInt(empGroupId));
         }else {
@@ -47,7 +47,7 @@ public class EmpGroupServiceImpl {
             DBObject basicDBObject = null;
             for (EmployeeExtensionPO item: employees) {
                 basicDBObject = new BasicDBObject();
-                basicDBObject.put("emp_group_code",item.getEmpGroupId());
+                basicDBObject.put("emp_group_code",item.getEmpGroupCode());
                 basicDBObject.put("雇员编号",item.getEmployeeId());
                 basicDBObject.put("雇员姓名",item.getEmployeeName());
                 basicDBObject.put("出生日期",item.getBirthday());
