@@ -247,6 +247,15 @@
 		<if test="status !=0">
 			status = #{status},
 		</if>
+		<if test="has_advance !=0">
+			has_advance = #{hasAdvance},
+		</if>
+		<if test="has_money !=0">
+			has_money = #{hasMoney},
+		</if>
+		<if test="result_data != '' or result_data != null">
+			result_data = #{resultData},
+		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE code = #{code}
@@ -266,5 +275,15 @@
 		start_date,
 		end_date
 	</sql>
+
+	<delete id="deleteBatchByCodes">
+		DELETE FROM pr_normal_batch
+		WHERE
+		code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
 
 </mapper>

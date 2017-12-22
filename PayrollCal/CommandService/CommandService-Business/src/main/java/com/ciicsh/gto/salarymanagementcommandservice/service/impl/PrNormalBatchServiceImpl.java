@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
@@ -48,5 +49,18 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     @Override
     public List<PrCustSubBatchPO> selectSubBatchList(String code, Integer status) {
         return normalBatchMapper.selectSubBatchList(code, status);
+    }
+
+    @Override
+    public Integer deleteBatchByCodes(List<String> codes) {
+        return normalBatchMapper.deleteBatchByCodes(codes);
+    }
+
+    @Override
+    public PrNormalBatchPO getBatchByCode(String code) {
+        PrNormalBatchPO param = new PrNormalBatchPO();
+        param.setCode(code);
+        PrNormalBatchPO result = normalBatchMapper.selectOne(param);
+        return result;
     }
 }

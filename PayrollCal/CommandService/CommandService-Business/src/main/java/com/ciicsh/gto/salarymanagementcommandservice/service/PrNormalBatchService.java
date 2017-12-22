@@ -4,6 +4,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -27,4 +28,7 @@ public interface PrNormalBatchService {
 
     List<PrCustSubBatchPO> selectSubBatchList(String code, Integer status);
 
+    Integer deleteBatchByCodes(List<String> codes);
+
+    PrNormalBatchPO getBatchByCode(String code);
 }

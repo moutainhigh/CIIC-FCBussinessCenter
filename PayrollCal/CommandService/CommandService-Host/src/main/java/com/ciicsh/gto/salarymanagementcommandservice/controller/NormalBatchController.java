@@ -254,7 +254,7 @@ public class NormalBatchController {
             reader.open(new ExecutionContext());
             List<PrPayrollItemPO> row = null;
             DBObject dbObject = null;
-            String batchCode = "glf-00091-201712-0000000030";
+            String batchCode = "glf-00091-201712-0000000030"; // TODO
             do {
                 row = reader.read();
                 if(row != null) {
@@ -275,6 +275,18 @@ public class NormalBatchController {
         }
         return JsonResult.success("");
 
+    }
+
+    @DeleteMapping("/deleteBatch/{code}")
+    public JsonResult deleteBatch(@PathVariable("code") String code) {
+        /*String[] codes = code.split(",");
+        int i = batchService.deleteBatchByCodes(Arrays.asList(codes));
+        if (i >= 1){
+            return JsonResult.success(i,"删除成功");
+        }else {
+            return JsonResult.faultMessage();
+        }*/
+        return null;
     }
 
 }
