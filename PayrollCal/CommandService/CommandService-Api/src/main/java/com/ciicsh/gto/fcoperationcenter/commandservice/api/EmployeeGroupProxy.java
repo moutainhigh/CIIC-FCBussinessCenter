@@ -48,5 +48,5 @@ public interface EmployeeGroupProxy {
     JsonResult getPos();
 
     @DeleteMapping("/batchDelete/{ids}")
-    JsonResult batchDelete(@PathVariable("ids") String ids);
+    JsonResult batchDelete(@PathVariable("ids") String ids,@RequestParam String empGroupCodes);
 }

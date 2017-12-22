@@ -29,7 +29,7 @@
 
 	<resultMap id="EmployeeSelectMap"   type="EmployeeExtensionPO">
 		<result column="id" property="relationId" />
-		<result column="emp_group_id" property="empGroupId" />
+		<result column="emp_group_code" property="empGroupCode" />
 		<result column="emp_id" property="employeeId" />
 		<result column="emp_name" property="employeeName" />
 		<result column="id_card_type" property="idCardType" />
@@ -44,7 +44,7 @@
 	<select id="getEmployees" resultMap="EmployeeSelectMap">
 		SELECT
 			a.id,
-			a.emp_group_id,
+			a.emp_group_code,
 			b.emp_id,
 			b.emp_name,
 			b.id_card_type,
@@ -56,7 +56,7 @@
 			b.join_date
 		FROM pr_emp_group_emp_relation a
 		INNER JOIN pr_employee b on a.emp_id = b.emp_id
-		WHERE a.emp_group_id = #{empGroupId}
+		WHERE a.emp_group_code = #{empGroupCode}
 		AND a.is_active = 1
 		AND b.is_active = 1
 	</select>

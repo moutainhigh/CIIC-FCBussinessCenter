@@ -47,24 +47,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Boolean addEmployees(List<PrEmployeeTestPO> employeeTestPOS,String empGroupId) {
+    public Boolean addEmployees(List<PrEmployeeTestPO> employeeTestPOS,String empGroupCode) {
         try {
             List<String> ids = new ArrayList<>();
             employeeTestPOS.forEach(employeeTestPO -> {
-                Integer revalue = empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupId,employeeTestPO.getEmployeeId());
+                Integer revalue = empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode,employeeTestPO.getEmployeeId());
                 if(revalue <= 0){
                     Integer isExist = employeeMapper.isExistEmployee(employeeTestPO.getEmployeeId());
                     if(isExist <= 0)
                     {
                         employeeMapper.insert(this.toEmployeePO(employeeTestPO));
                     }
-                    empGroupEmpRelationMapper.insert(this.toEmpGroupEmpRelationPO(employeeTestPO,empGroupId));
+                    empGroupEmpRelationMapper.insert(this.toEmpGroupEmpRelationPO(employeeTestPO,empGroupCode));
                     ids.add(employeeTestPO.getEmployeeId());
                 }
             });
             if(ids.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupId));
+                payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupCode));
                 payrollEmpGroup.setIds(ids);
                 payrollEmpGroup.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
@@ -76,11 +76,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public PageInfo<EmployeeExtensionPO> getEmployees(Integer empGroupId, Integer pageNum, Integer pageSize) {
+    public PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, Integer pageNum, Integer pageSize) {
         List<EmployeeExtensionPO> employeeExtensionPOS = new ArrayList<>();
         PageHelper.startPage(pageNum,pageSize);
         try{
-            employeeExtensionPOS = employeeMapper.getEmployees(empGroupId);
+            employeeExtensionPOS = employeeMapper.getEmployees(empGroupCode);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -91,12 +91,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Integer batchDelete(List<String> ids,List<String> employeeIds,String empGroupId) {
+    public Integer batchDelete(List<String> ids,List<String> employeeIds,String empGroupCode) {
         Integer result = empGroupEmpRelationMapper.deleteBatchIds(ids);
         if(result > 0){
             if(employeeIds != null && employeeIds.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupId));
+                payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupCode));
                 payrollEmpGroup.setIds(employeeIds);
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
@@ -130,9 +130,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeePO;
     }
 
-    private PrEmpGroupEmpRelationPO toEmpGroupEmpRelationPO(PrEmployeeTestPO employeeTestPO,String empGroupId){
+    private PrEmpGroupEmpRelationPO toEmpGroupEmpRelationPO(PrEmployeeTestPO employeeTestPO,String empGroupCode){
         PrEmpGroupEmpRelationPO empGroupEmpRelationPO = new PrEmpGroupEmpRelationPO();
-        empGroupEmpRelationPO.setEmpGroupId(empGroupId);
+        empGroupEmpRelationPO.setEmpGroupCode(empGroupCode);
         empGroupEmpRelationPO.setEmpId(employeeTestPO.getEmployeeId());
         empGroupEmpRelationPO.setActive(true);
         empGroupEmpRelationPO.setCreatedTime(new Date());

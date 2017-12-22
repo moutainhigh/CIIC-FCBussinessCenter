@@ -174,9 +174,10 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
     }
 
     @Override
-    public JsonResult batchDelete(@PathVariable("ids")String ids) {
+    public JsonResult batchDelete(@PathVariable("ids")String ids,@RequestParam String empGroupCodes) {
         String[] empGroupIds = ids.split(",");
-        Boolean success = employeeGroupService.batchDelete( Arrays.asList(empGroupIds));
+        String[] codes = empGroupCodes.split(",");
+        Boolean success = employeeGroupService.batchDelete( Arrays.asList(empGroupIds),Arrays.asList(codes));
         return JsonResult.success(success);
     }
 }

@@ -26,15 +26,15 @@ public interface EmployeeProxy {
 //    @GetMapping("/importemployee")
 //    JsonResult getImportedEmployeeList(@RequestParam String managementId);
     @PostMapping("/addEmployees")
-    JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS,@RequestParam String empGroupId);
+    JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS,@RequestParam String empGroupCode);
 
 
     @PostMapping("/getEmployees")
-    JsonResult getEmployees(@RequestParam String empGroupId,
+    JsonResult getEmployees(@RequestParam String empGroupCode,
                             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                             @RequestParam(required = false, defaultValue = "50")  Integer pageSize);
 
 
     @DeleteMapping("/batchDelete/{ids}")
-    JsonResult batchDelete(@PathVariable("ids") String ids,@RequestParam String employeeIds,@RequestParam String empGroupId);
+    JsonResult batchDelete(@PathVariable("ids") String ids,@RequestParam String employeeIds,@RequestParam String empGroupCode);
 }

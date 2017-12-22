@@ -24,9 +24,9 @@ public class PrEmpGroupEmpRelationDTO{
      */
 	private Integer id;
     /**
-     * 雇员组ID
+     * 雇员组编码
      */
-	private String empGroupId;
+    private String empGroupCode;
     /**
      * 雇员ID
      */

@@ -17,9 +17,9 @@ public interface EmpGroupEmpRelationService {
 
     /**
      * 判断雇员组雇员关系是否已经存在
-     * @param empGroupId 雇员组Id
+     * @param empGroupCode 雇员组Code
      * @param empId 雇员ID
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmpGroupEmpRelation(String empGroupId, String empId);
+    Integer isExistEmpGroupEmpRelation(String empGroupCode, String empId);
 }

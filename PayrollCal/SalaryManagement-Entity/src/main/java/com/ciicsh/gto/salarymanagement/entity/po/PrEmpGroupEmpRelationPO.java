@@ -27,11 +27,11 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
      */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
-    /**
-     * 雇员组ID
-     */
-	@TableField("emp_group_id")
-	private String empGroupId;
+	/**
+	 * 雇员组编码
+	 */
+	@TableField("emp_group_code")
+	private String empGroupCode;
     /**
      * 雇员ID
      */
@@ -72,12 +72,12 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
 		this.id = id;
 	}
 
-	public String getEmpGroupId() {
-		return empGroupId;
+	public String getEmpGroupCode() {
+		return empGroupCode;
 	}
 
-	public void setEmpGroupId(String empGroupId) {
-		this.empGroupId = empGroupId;
+	public void setEmpGroupCode(String empGroupCode) {
+		this.empGroupCode = empGroupCode;
 	}
 
 	public String getEmpId() {
@@ -137,7 +137,7 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
 	public String toString() {
 		return "PrEmpGroupEmpRelationPO{" +
 			"id=" + id +
-			", empGroupId=" + empGroupId +
+			", empGroupCode=" + empGroupCode +
 			", empId=" + empId +
 			", isActive=" + isActive +
 			", createdTime=" + createdTime +
