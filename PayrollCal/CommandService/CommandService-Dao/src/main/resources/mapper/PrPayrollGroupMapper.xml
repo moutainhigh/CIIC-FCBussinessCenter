@@ -46,6 +46,9 @@
 		FROM
 		pr_payroll_group
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="managementId != null and managementId != ''">
+				AND management_id = #{managementId}
+			</if>
 			<if test="groupCode != null and groupCode != ''">
 				AND group_code LIKE concat(#{groupCode},'%')
 			</if>
