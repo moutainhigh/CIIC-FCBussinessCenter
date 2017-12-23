@@ -23,7 +23,7 @@ public class BathTranslator {
     public static PrCustBatchPO toPrBatchPO(PrCustomBatchDTO PrCustomBatchDTO){
         PrCustBatchPO custBatchPO = new PrCustBatchPO();
 
-        custBatchPO.setAcccSetName(PrCustomBatchDTO.getAcccSetName());
+        custBatchPO.setAccountSetName(PrCustomBatchDTO.getAccountSetName());
         custBatchPO.setCode(PrCustomBatchDTO.getCode());
         custBatchPO.setEmpGroupName(PrCustomBatchDTO.getEmpGroupName());
         custBatchPO.setStatus(PrCustomBatchDTO.getStatus());

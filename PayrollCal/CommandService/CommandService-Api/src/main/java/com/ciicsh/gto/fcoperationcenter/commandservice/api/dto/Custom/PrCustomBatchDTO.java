@@ -34,7 +34,7 @@ public class PrCustomBatchDTO {
     private String accountSetId;
 
     //薪资帐套名称
-    private String acccSetName;
+    private String accountSetName;
 
     //薪资帐套设置的工资开始日
     private int startDay;

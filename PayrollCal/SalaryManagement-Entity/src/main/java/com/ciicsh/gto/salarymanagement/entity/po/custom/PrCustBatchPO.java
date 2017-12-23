@@ -22,7 +22,7 @@ public class PrCustBatchPO {
     private String accountSetCode;
 
     //薪资帐套名称
-    private String acccSetName;
+    private String accountSetName;
 
     //薪资日期
     private String period;
@@ -54,6 +54,9 @@ public class PrCustBatchPO {
 
     //雇员组名称
     private String empGroupName;
+
+    //雇员组编码
+    private String empGroupCode;
 
     //薪资组名称
     private String prGroupName;

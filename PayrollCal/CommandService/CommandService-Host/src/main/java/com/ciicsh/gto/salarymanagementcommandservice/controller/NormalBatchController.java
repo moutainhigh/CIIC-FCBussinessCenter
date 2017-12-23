@@ -15,10 +15,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrGroupTemplateServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
@@ -83,6 +80,9 @@ public class NormalBatchController {
 
     @Autowired
     private PrItemService prItemService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @Autowired
     private PrGroupTemplateServiceImpl prGroupTemplateService;
@@ -229,7 +229,7 @@ public class NormalBatchController {
     }
 
     @PostMapping("/uploadExcel")
-    public JsonResult importExcel(String pr_code, String pr_template_code, String emp_group_code, MultipartFile file){
+    public JsonResult importExcel(String pr_code, String pr_template_code, String emp_group_code,String batchCode, MultipartFile file){
 
         List<PrPayrollItemPO> prList = null;
         String groupCode = "";
@@ -254,7 +254,6 @@ public class NormalBatchController {
             reader.open(new ExecutionContext());
             List<PrPayrollItemPO> row = null;
             DBObject dbObject = null;
-            String batchCode = "glf-00091-201712-0000000030"; // TODO
             do {
                 row = reader.read();
                 if(row != null) {
