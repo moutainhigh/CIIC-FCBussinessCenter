@@ -105,4 +105,11 @@ public interface PrItemService {
      * @return 返回薪资项列表
      */
     List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO);
+
+    /**
+     * 更新显示顺序
+     * @param codes
+     * @return
+     */
+    boolean updateDisplayPriority(List<String> codes);
 }
