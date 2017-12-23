@@ -8,6 +8,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.github.pagehelper.PageInfo;
+import kafka.utils.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +161,12 @@ public class ItemController extends BaseController{
         }else {
             return JsonResult.faultMessage();
         }
+    }
+
+    @PostMapping("/prItemDisplayPriority")
+    public JsonResult updateDisplayPriority(@RequestBody List<String> codes) {
+        return itemService.updateDisplayPriority(codes) ?
+                JsonResult.message(true,"更新薪资项显示顺序成功") : JsonResult.faultMessage("更新薪资项显示顺序失败");
     }
 
 }

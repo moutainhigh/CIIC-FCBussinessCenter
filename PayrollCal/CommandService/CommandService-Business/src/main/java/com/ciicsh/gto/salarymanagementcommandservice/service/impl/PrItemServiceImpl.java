@@ -209,4 +209,15 @@ public class PrItemServiceImpl implements PrItemService {
     public List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO) {
         return prPayrollItemMapper.getPayrollItems(extPO);
     }
+
+    @Override
+    public boolean updateDisplayPriority(List<String> codes) {
+        for(int i = 0; i < codes.size(); i++) {
+            PrPayrollItemPO param = new PrPayrollItemPO();
+            param.setItemCode(codes.get(i));
+            param.setDisplayPriority(i);
+            prPayrollItemMapper.updateItemByCode(param);
+        }
+        return true;
+    }
 }
