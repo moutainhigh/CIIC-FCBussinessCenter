@@ -43,18 +43,23 @@ public class TaskSubProofController {
                 BeanUtils.copyProperties(taskSubProofPO,taskSubProofDTO);
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubProofDTOLists);
         } catch (BeansException e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
         }
     }
 
+    /**
+     * 查询子任务信息
+     * @param taskSubProofDTO
+     * @return
+     */
     @RequestMapping(value = "/queryTaskSubProofByRes")
     public JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO){
         JsonResult jr = new JsonResult();
@@ -63,17 +68,39 @@ public class TaskSubProofController {
             BeanUtils.copyProperties(taskSubProofDTO, requestForProof);
             //其中管理方名称
             ResponseForSubProof responseForSubProof = taskSubProofService.queryTaskSubProofByRes(requestForProof);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForSubProof);
         } catch (BeansException e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
         }
 
+    }
+
+    /**
+     * 根据子任务ID复制其关联数据
+     * @param taskSubProofId
+     * @return
+     */
+    @RequestMapping(value = "/copyProofInfoBySubId/{taskSubProofId}")
+    public JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId){
+        JsonResult jr = new JsonResult();
+        try {
+            Boolean flag = taskSubProofService.copyProofInfoBySubId(taskSubProofId);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(flag);
+        } catch (BeansException e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
     }
 
 }

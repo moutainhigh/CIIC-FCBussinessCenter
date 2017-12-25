@@ -12,6 +12,7 @@ import com.ciicsh.gto.fcsupportcenter.tax.queryservice.api.dto.TaskSubProofDetai
 import com.ciicsh.gto.fcsupportcenter.tax.queryservice.business.TaskSubProofDetailService;
 import com.ciicsh.gto.fcsupportcenter.tax.util.json.JsonResult;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,12 +44,12 @@ public class TaskSubProofDetailController {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForSubDetail responseForSubDetail = taskSubProofDetailService.queryTaskSubProofDetail(requestForProof);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForSubDetail);
         } catch (Exception e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
@@ -102,12 +103,12 @@ public class TaskSubProofDetailController {
             responseForEmployee.setCurrentNum(taskProofDTO.getCurrentNum());
             responseForEmployee.setPageSize(taskProofDTO.getPageSize());
             responseForEmployee.setRowList(employeeBOList);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForEmployee);
         } catch (Exception e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
@@ -122,28 +123,35 @@ public class TaskSubProofDetailController {
      */
     @RequestMapping(value = "/saveSubProofDetail")
     public JsonResult saveSubProofDetail(@RequestBody RequestSubProofDetailDTO requestSubProofDetailDTO){
-        RequestForSubDetail requestForSubDetail = new RequestForSubDetail();
-        BeanUtils.copyProperties(requestSubProofDetailDTO,requestForSubDetail);
-        if(requestSubProofDetailDTO.getOldDeleteIds() != null && requestSubProofDetailDTO.getOldDeleteIds().length > 0){
-            requestForSubDetail.setOldDeleteIds(requestSubProofDetailDTO.getOldDeleteIds());
-        }
-        List<TaskSubProofDetailBO> taskSubProofDetailBOList = new ArrayList<>();
-        List<TaskSubProofDetailDTO> taskSubProofDetailDTOList = requestSubProofDetailDTO.getTaskSubProofDetailDTOList();
-        for(TaskSubProofDetailDTO taskSubProofDetailDTO:taskSubProofDetailDTOList){
-            TaskSubProofDetailBO taskSubProofDetailBO = new TaskSubProofDetailBO();
-            BeanUtils.copyProperties(taskSubProofDetailDTO,taskSubProofDetailBO);
-            if(taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null ){
-                taskSubProofDetailBO.setIncomeEnd(taskSubProofDetailDTO.getIncomeStart());
-            }
-            taskSubProofDetailBOList.add(taskSubProofDetailBO);
-        }
-        requestForSubDetail.setTaskSubProofDetailBOList(taskSubProofDetailBOList);
-        Boolean flag = taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
         JsonResult jr = new JsonResult();
-        jr.setErrorcode("200");
-        jr.setErrormsg("success");
-        jr.setData(flag);
-        return jr;
-    }
 
+        try {
+            RequestForSubDetail requestForSubDetail = new RequestForSubDetail();
+            BeanUtils.copyProperties(requestSubProofDetailDTO,requestForSubDetail);
+            if(requestSubProofDetailDTO.getOldDeleteIds() != null && requestSubProofDetailDTO.getOldDeleteIds().length > 0){
+                requestForSubDetail.setOldDeleteIds(requestSubProofDetailDTO.getOldDeleteIds());
+            }
+            List<TaskSubProofDetailBO> taskSubProofDetailBOList = new ArrayList<>();
+            List<TaskSubProofDetailDTO> taskSubProofDetailDTOList = requestSubProofDetailDTO.getTaskSubProofDetailDTOList();
+            for(TaskSubProofDetailDTO taskSubProofDetailDTO:taskSubProofDetailDTOList){
+                TaskSubProofDetailBO taskSubProofDetailBO = new TaskSubProofDetailBO();
+                BeanUtils.copyProperties(taskSubProofDetailDTO,taskSubProofDetailBO);
+                if(taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null ){
+                    taskSubProofDetailBO.setIncomeEnd(taskSubProofDetailDTO.getIncomeStart());
+                }
+                taskSubProofDetailBOList.add(taskSubProofDetailBO);
+            }
+            requestForSubDetail.setTaskSubProofDetailBOList(taskSubProofDetailBOList);
+            Boolean flag = taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(flag);
+        } catch (BeansException e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
+    }
 }

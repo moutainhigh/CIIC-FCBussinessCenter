@@ -11,6 +11,7 @@ import com.ciicsh.gto.fcsupportcenter.tax.util.json.JsonResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,12 +40,12 @@ public class TaskMainProofController {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskMainProofDTO, requestForProof);
             ResponseForMainProof responseForMainProof = taskMainProofService.queryTaskMainProofByRes(requestForProof);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForMainProof);
         } catch (BeansException e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
@@ -82,14 +83,15 @@ public class TaskMainProofController {
                 taskSubProofPO.setTaskNo("TAX"+dateTimeStr);
                 taskSubProofPO.setStatus("00");
                 taskSubProofPO.setModifiedBy("zhangsan");
+                taskSubProofPO.setTaskType("02");
             }
             flag = taskMainProofService.addTaskProof(taskMainProofPO,taskSubProofPO);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (BeansException e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
@@ -109,12 +111,12 @@ public class TaskMainProofController {
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             requestForProof.setModifiedBy("adminMain");
             Boolean flag = taskMainProofService.updateTaskProofByRes(requestForProof);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
@@ -133,17 +135,16 @@ public class TaskMainProofController {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             Boolean flag = taskMainProofService.invalidTaskProof(requestForProof);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;
         }
     }
-
 
 }

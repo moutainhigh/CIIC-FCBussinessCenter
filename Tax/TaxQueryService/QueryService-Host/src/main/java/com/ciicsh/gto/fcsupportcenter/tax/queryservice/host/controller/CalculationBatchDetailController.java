@@ -27,12 +27,12 @@ public class CalculationBatchDetailController {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForBatchDetail responseForBatchDetail = calculationBatchDetailService.queryCalculationBatchDetail(requestForProof);
-            jr.setErrorcode("200");
+            jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForBatchDetail);
         } catch (Exception e) {
             e.printStackTrace();
-            jr.setErrorcode("500");
+            jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
             return jr;

@@ -40,4 +40,11 @@ public interface TaskSubProofDetailMapper extends BaseMapper<TaskSubProofDetailP
      */
     Boolean invalidSubProofDetailByIds(@Param("subProofDetailIds") Integer[] subProofDetailIds);
 
+    /**
+     * 根据子任务ID查询申报明细
+     * @param subProofId
+     * @return
+     */
+    List<TaskSubProofDetailPO> querySubProofDetailBySubId(@Param("subProofId") Long subProofId);
+
 }

@@ -101,6 +101,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                             taskSubProofPO.setStatus("00");
                             taskSubProofPO.setCreatedBy("adminMain");
                             taskSubProofPO.setModifiedBy("adminMain");
+                            taskSubProofPO.setTaskType("02");
                             taskSubProofMapper.addTaskSubProof(taskSubProofPO);
                             subMap.put(taskSubProofDetailBO.getDeclareAccount(),taskSubProofPO.getId());
                         }
@@ -125,7 +126,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     taskSubProofMapper.updateSubHeadcountById(subId);
                 }
                 //统计总任务人数
-                taskMainProofMapper.updateMainHeadcountBySubId(requestForSubDetail.getTaskId());
+                taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId());
             } catch (Exception e) {
                 flag = false;
                 e.printStackTrace();
@@ -162,7 +163,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                 taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId());
                 //统计总任务人数
                 TaskSubProofPO taskSubProofPO = taskSubProofMapper.selectById(requestForSubDetail.getTaskId());
-                taskMainProofMapper.updateMainHeadcountBySubId(taskSubProofPO.getTaskMainProofId());
+                taskMainProofMapper.updateMainHeadcountById(taskSubProofPO.getTaskMainProofId());
             } catch (Exception e) {
                 flag = false;
                 e.printStackTrace();

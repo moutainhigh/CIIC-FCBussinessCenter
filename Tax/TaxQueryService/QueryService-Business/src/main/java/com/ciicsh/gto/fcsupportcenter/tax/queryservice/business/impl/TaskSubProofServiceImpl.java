@@ -4,15 +4,24 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofDetailBO;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskMainProofPO;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.request.RequestForProof;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcsupportcenter.tax.queryservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskMainProofMapper;
+import com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskSubProofDetailMapper;
 import com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskSubProofMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +30,12 @@ import java.util.List;
 @Service
 public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, TaskSubProofPO> implements TaskSubProofService {
 
+
+    @Autowired(required = false)
+    private TaskMainProofMapper taskMainProofMapper;
+
+    @Autowired(required = false)
+    private TaskSubProofDetailMapper taskSubProofDetailMapper;
 
     /**
      * 根据完税主任务ID查询其下完税子任务
@@ -78,6 +93,57 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             responseForSubProof.setRowList(taskSubProofBOList);
         }
         return responseForSubProof;
+    }
+
+    /**
+     * 根据子任务ID复制相关数据
+     * @param taskSubProofId
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean copyProofInfoBySubId(Long taskSubProofId) {
+        Boolean flag = true;
+        try {
+            //根据子任务ID查询子任务信息
+            TaskSubProofPO taskSubProofPO = baseMapper.selectById(taskSubProofId);
+            //根据主任务ID查询主任务信息
+            TaskMainProofPO taskMainProofPO = taskMainProofMapper.selectById(taskSubProofPO.getTaskMainProofId());
+            //复制新的主任务
+            taskMainProofPO.setId(null);
+            taskMainProofPO.setTaskNo("MAIN201712221314520");
+            taskMainProofPO.setStatus("00");
+            taskMainProofPO.setCreatedTime(new Date());
+            taskMainProofPO.setModifiedTime(new Date());
+            taskMainProofMapper.insert(taskMainProofPO);
+            //插入新的子任务
+            taskSubProofPO.setId(null);
+            taskSubProofPO.setTaskMainProofId(taskMainProofPO.getId());
+            taskSubProofPO.setTaskNo("SUB201712221314520");
+            taskSubProofPO.setStatus("00");
+            taskSubProofPO.setCreatedTime(new Date());
+            taskSubProofPO.setModifiedTime(new Date());
+            baseMapper.insert(taskSubProofPO);
+            //根据子任务ID查询相关申报明细，并重新插入
+            List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofDetailMapper.querySubProofDetailBySubId(taskSubProofId);
+            for(TaskSubProofDetailPO taskSubProofDetailPO:taskSubProofDetailPOList){
+                taskSubProofDetailPO.setId(null);
+                taskSubProofDetailPO.setTaskSubProofId(taskSubProofPO.getId());
+                taskSubProofDetailPO.setCreatedTime(new Date());
+                taskSubProofDetailPO.setModifiedTime(new Date());
+                taskSubProofDetailMapper.insert(taskSubProofDetailPO);
+            }
+            //重新统计复制的完税凭证任务人数
+            baseMapper.updateSubHeadcountById(taskSubProofPO.getId());
+            taskMainProofMapper.updateMainHeadcountById(taskMainProofPO.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            flag = false;
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        } finally {
+            return flag;
+        }
+
     }
 
 

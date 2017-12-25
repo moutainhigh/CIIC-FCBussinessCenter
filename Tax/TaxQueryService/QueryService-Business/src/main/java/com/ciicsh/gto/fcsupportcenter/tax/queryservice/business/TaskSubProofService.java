@@ -25,4 +25,11 @@ public interface TaskSubProofService {
      */
     ResponseForSubProof queryTaskSubProofByRes(RequestForProof requestForProof);
 
+    /**
+     * 根据子任务ID复制相关数据
+     * @param taskSubProofId
+     * @return
+     */
+    Boolean copyProofInfoBySubId(Long taskSubProofId);
+
 }

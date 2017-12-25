@@ -75,7 +75,7 @@
     </update>
 
     <!--根据主键ID重新计算主任务总人数-->
-    <update id="updateMainHeadcountBySubId">
+    <update id="updateMainHeadcountById">
         update tax_fc_task_main_proof tmp
         set tmp.headcount = (select sum(tsp.headcount) from tax_fc_task_sub_proof tsp where tsp.is_active = 1 and tsp.task_main_proof_id = #{id})
         where tmp.is_active = 1 and tmp.id = #{id}
