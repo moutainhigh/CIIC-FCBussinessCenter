@@ -9,10 +9,7 @@ import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
-import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
@@ -242,10 +239,30 @@ public class NormalBatchController {
             groupCode = pr_template_code;
         }
 
-        // get employee list by group id from mongodb
+        // get employee list by group code from mongodb
         List<DBObject> empList = empGroupMongoOpt.list(Criteria.where("emp_group_code").is(emp_group_code));
         if(empList == null || empList.size() == 0){
-            //ToDO get employee list from db;
+            // 如果mongodb不存在，则从数据库里面读取，并更新到mongodb里面
+            PageInfo<EmployeeExtensionPO> pageInfo =  employeeService.getEmployees(emp_group_code, 0,0);
+            empList = new ArrayList<>();
+            for (EmployeeExtensionPO item: pageInfo.getList()) {
+                DBObject basicDBObject = new BasicDBObject();
+                basicDBObject = new BasicDBObject();
+                basicDBObject.put("emp_group_code",item.getEmpGroupCode());
+                basicDBObject.put("雇员编号",item.getEmployeeId());
+                basicDBObject.put("雇员姓名",item.getEmployeeName());
+                basicDBObject.put("出生日期",item.getBirthday());
+                basicDBObject.put("部门",item.getDepartment());
+                basicDBObject.put("性别",item.getGender());
+                basicDBObject.put("证件类型",item.getIdCardType());
+                basicDBObject.put("入职日期",item.getJoinDate());
+                basicDBObject.put("证件号码",item.getIdNum());
+                basicDBObject.put("职位",item.getPosition());
+                empList.add(basicDBObject);
+
+                empGroupMongoOpt.batchInsert(empList);
+                //end
+            }
         }
         List<DBObject> results = new ArrayList<>();
         try {

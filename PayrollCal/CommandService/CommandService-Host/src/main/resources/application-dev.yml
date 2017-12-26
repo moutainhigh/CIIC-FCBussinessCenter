@@ -33,6 +33,13 @@ spring:
           content-type: application/json
           producer:
             partitionCount: 2
+
+        emp_extend-output-channel:
+          destination: emp_extend # 雇员扩展 topic
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
 logging:
   file: logs/dev_app.log
   pattern:
