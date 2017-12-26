@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO">
+		<id column="id" property="id" />
+		<result column="account_set_code" property="accountSetCode" />
+		<result column="payroll_item_code" property="payrollItemCode" />
+		<result column="payroll_item_alias" property="payrollItemAlias" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+
+	<resultMap id="BaseExtResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO">
+		<result column="id" property="id" />
+		<result column="account_set_code" property="accountSetCode" />
+		<result column="item_name" property="payrollItemName" />
+		<result column="payroll_item_code" property="payrollItemCode" />
+		<result column="item_type" property="payrollItemType" />
+		<result column="data_type" property="payrollDataType" />
+		<result column="payroll_item_alias" property="payrollItemAlias" />
+		<result column="is_active" property="isActive" />
+	</resultMap>
+
+	<select id="delAccountItemRelationByAccountCode" resultType="int">
+		DELETE FROM pr_payroll_account_item_relation WHERE account_set_code = #{accountSetCode}
+	</select>
+
+	<select id="getAccountItemRelationExts" resultMap="BaseExtResultMap">
+		SELECT
+		<include refid="AccountItemRelation_Extension_All_Columns" />
+		FROM
+		pr_payroll_account_item_relation a
+		INNER JOIN pr_payroll_item b on a.payroll_item_code = b.item_code
+		WHERE
+		a.account_set_code = #{accountSetCode}
+	</select>
+
+	<sql id="AccountItemRelation_Extension_All_Columns">
+		a.id,
+		a.account_set_code,
+		b.item_name,
+		a.payroll_item_code,
+		b.item_type,
+		b.data_type,
+		a.payroll_item_alias,
+		a.is_active
+	</sql>
+
+</mapper>

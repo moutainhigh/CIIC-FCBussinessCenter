@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
+		<id column="id" property="id" />
+		<result column="group_code" property="groupCode" />
+		<result column="management_id" property="managementId" />
+		<result column="group_template_code" property="groupTemplateCode" />
+		<result column="group_name" property="groupName" />
+		<result column="version" property="version" />
+		<result column="remark" property="remark" />
+		<result column="is_template" property="isTemplate" />
+		<result column="approval_status" property="approvalStatus" />
+		<result column="comments" property="comments" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+	<resultMap id="getKeyValueMap"   type="KeyValuePO">
+		<result property="key" column="group_code" />
+		<result property="value" column="group_name" />
+	</resultMap>
+
+	<select id="selectListByEntityUseLike"  resultMap="BaseResultMap">
+		SELECT
+			id,
+			group_code,
+			management_id,
+			group_template_code,
+			group_name,
+			version,
+			remark,
+			is_template,
+			approval_status,
+			comments,
+			is_active,
+			created_time,
+			modified_time,
+			created_by,
+			modified_by
+		FROM
+		pr_payroll_group
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="managementId != null and managementId != ''">
+				AND management_id = #{managementId}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND group_code LIKE concat(#{groupCode},'%')
+			</if>
+			<if test="groupName != null and groupName !=''">
+				AND group_name LIKE concat(#{groupName},'%')
+			</if>
+			<if test="approvalStatus != null">
+				AND approval_status = #{managementId}
+			</if>
+		</trim>
+	</select>
+	
+	<update id="updateItemAndVersionByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
+		UPDATE pr_payroll_group
+		SET
+		<if test="managementId != null">
+			management_id = #{managementId},
+		</if>
+		<if test="groupName != null">
+			group_name = #{groupName},
+		</if>
+		<if test="isTemplate != null">
+			is_template = #{isTemplate},
+		</if>
+		<if test="remark != null">
+			Remark = #{remark},
+		</if>
+		<if test="isActive != null">
+			is_active = #{isActive},
+		</if>
+		<if test="modifiedBy != null">
+			modified_by = #{modifiedBy},
+		</if>
+        version = CONCAT((version + 1), '.0'),
+		modified_time = sysdate()
+		WHERE
+        group_code = #{groupCode}
+	</update>
+
+    <update id="updateItemByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
+        UPDATE pr_payroll_group
+        SET
+        <if test="managementId != null">
+            management_id = #{managementId},
+        </if>
+        <if test="groupName != null">
+            group_name = #{groupName},
+        </if>
+        <if test="isTemplate != null">
+            is_template = #{isTemplate},
+        </if>
+        <if test="remark != null">
+            Remark = #{remark},
+        </if>
+        <if test="isActive != null">
+            is_active = #{isActive},
+        </if>
+        <if test="modifiedBy != null">
+            modified_by = #{modifiedBy},
+        </if>
+        modified_time = sysdate()
+        WHERE
+        group_code = #{groupCode}
+    </update>
+
+	<select id="getPayrollGroupNames" resultMap="getKeyValueMap">
+		SELECT
+			group_name,
+			group_code
+		FROM
+			pr_payroll_group
+		WHERE
+			management_id = #{managementId}
+		AND
+			is_active = 1
+	</select>
+
+    <delete id="deleteByCodes">
+        DELETE
+        FROM pr_payroll_group
+        WHERE
+            group_code IN
+        <foreach item="item" index="index" collection="codes"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.mapper.PrFunctionsMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagementcommandservice.po.PrFunctions">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="rule_name" property="ruleName" />
+		<result column="category" property="category" />
+		<result column="sub_cateogry" property="subCateogry" />
+		<result column="drl_file" property="drlFile" />
+		<result column="param_set" property="paramSet" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+</mapper>

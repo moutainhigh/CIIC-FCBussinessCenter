@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="PrEmpGroupPO">
+		<id column="id" property="id" />
+		<result column="emp_group_code" property="empGroupCode" />
+		<result column="management_id" property="managementId" />
+		<result column="name" property="name" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+	<resultMap id="getKeyValueMap"   type="KeyValuePO">
+		<result property="key" column="groupCode" />
+		<result property="value" column="groupName" />
+	</resultMap>
+
+	<select id="isExistEmpGroup" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO" resultType="int">
+		SELECT COUNT(*) FROM pr_emp_group
+		<include refid="whereIsExist" />
+	</select>
+
+	<select id="getEmployeeGroups" parameterType="PrEmpGroupPO" resultType="PrEmpGroupPO">
+		SELECT
+		<include refid="PrEmployeeGroup_All_Columns" />
+		FROM
+		pr_emp_group
+		<include refid="whereQuery" />
+	</select>
+
+	<select id="getEmployeeGroupByCode" resultMap="BaseResultMap">
+		SELECT
+		<include refid="PrEmployeeGroup_All_Columns" />
+		FROM
+		pr_emp_group
+		WHERE
+		emp_group_code = #{empGroupCode} AND is_active = 1
+	</select>
+
+
+	<select id="getEmployeeGroupNames" resultMap="getKeyValueMap">
+		SELECT
+		name as 'groupName',
+		emp_group_code as 'groupCode'
+		FROM
+		pr_emp_group
+		WHERE
+		management_id = #{managementId}
+		AND
+		is_active = 1
+	</select>
+
+	<sql id="whereQuery">
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="id != null and id != 0">
+				AND id = #{id}
+			</if>
+			<if test="empGroupCode != null and empGroupCode !=''">
+				AND emp_group_code = #{empGroupCode}
+			</if>
+			<if test="managementId != null and managementId != ''">
+				AND management_id = #{managementId}
+			</if>
+			<if test="name != null and name != ''">
+				AND name = #{name}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND remark = #{remark}
+			</if>
+			<if test="isActive != null">
+				AND is_active = #{isActive}
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="PrEmployeeGroup_All_Columns">
+		id,
+		emp_group_code,
+		management_id,
+		name,
+		remark,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
+	</sql>
+
+	<sql id="whereIsExist">
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="managementId != null and managementId != ''">
+				AND management_id = #{managementId}
+			</if>
+			<if test="empGroupName != null and empGroupName != ''">
+				AND name = #{empGroupName}
+			</if>
+			<if test="empGroupCode != null and empGroupCode !=''">
+				AND emp_group_code != #{empGroupCode}
+			</if>
+		</trim>
+	</sql>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TaskSubProofDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofDetailPO">
+        <id column="id" property="id"/>
+        <result column="task_sub_proof_id" property="taskSubProofId"/>
+        <result column="employee_no" property="employeeNo"/>
+        <result column="employee_name" property="employeeName"/>
+        <result column="id_type" property="idType"/>
+        <result column="id_no" property="idNo"/>
+        <result column="declare_account" property="declareAccount"/>
+        <result column="income_subject" property="incomeSubject"/>
+        <result column="income_start" property="incomeStart"/>
+        <result column="income_end" property="incomeEnd"/>
+        <result column="income_for_tax" property="incomeForTax"/>
+        <result column="withholded_amount" property="withholdedAmount"/>
+        <result column="is_active" property="isActive"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_time" property="modifiedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="modified_by" property="modifiedBy"/>
+    </resultMap>
+
+    <!--根据主任务ID查询完税申请明细-->
+    <select id="queryTaskSubProofDetailByMainId" resultMap="BaseResultMap">
+		select
+          spd.id,spd.task_sub_proof_id,spd.employee_no,spd.employee_name,spd.id_type,spd.id_no,spd.declare_account,spd.income_subject,spd.income_start,spd.income_end,spd.income_for_tax,spd.withholded_amount,spd.created_time
+        from tax_fc_task_sub_proof_detail spd
+        inner join tax_fc_task_sub_proof sp on spd.task_sub_proof_id = sp.id
+        WHERE spd.is_active = 1
+        <if test = "id != null and id != ''">
+            and sp.task_main_proof_id = #{id}
+        </if>
+        <if test = "employeeNo != null and employeeNo != ''">
+            and spd.employee_no LIKE concat('%', #{employeeNo, jdbcType=VARCHAR},'%')
+        </if>
+        <if test = "employeeName != null and employeeName != ''">
+            and spd.employee_name LIKE concat('%', #{employeeName, jdbcType=VARCHAR},'%')
+        </if>
+        ORDER  BY  spd.created_time desc
+	</select>
+
+    <!--根据子任务查询完税申请明细-->
+    <select id="queryTaskSubProofDetailBySubId" resultMap="BaseResultMap">
+        select
+        spd.id,spd.task_sub_proof_id,spd.employee_no,spd.employee_name,spd.id_type,spd.id_no,spd.declare_account,spd.income_subject,spd.income_start,spd.income_end,spd.income_for_tax,spd.withholded_amount,spd.created_time
+        from tax_fc_task_sub_proof_detail spd
+        inner join tax_fc_task_sub_proof sp on spd.task_sub_proof_id = sp.id
+        WHERE spd.is_active = 1
+        <if test = "id != null and id != ''">
+            and sp.id = #{id}
+        </if>
+        <if test = "employeeNo != null and employeeNo != ''">
+            and spd.employee_no LIKE concat('%', #{employeeNo, jdbcType=VARCHAR},'%')
+        </if>
+        <if test = "employeeName != null and employeeName != ''">
+            and spd.employee_name LIKE concat('%', #{employeeName, jdbcType=VARCHAR},'%')
+        </if>
+        ORDER  BY  spd.created_time desc
+    </select>
+
+    <!--根据主键ID，将完税申请明细置为失效状态-->
+    <update id="invalidSubProofDetailByIds">
+        update tax_fc_task_sub_proof_detail set is_active = false
+        WHERE id in
+        <foreach collection="subProofDetailIds" item="subProofDetailId" open="(" separator="," close=")">
+            #{subProofDetailId}
+        </foreach>
+    </update>
+
+    <!--根据子任务ID查询申报明细-->
+    <select id="querySubProofDetailBySubId" resultMap="BaseResultMap">
+        select
+        spd.id,spd.task_sub_proof_id,spd.employee_no,spd.employee_name,spd.id_type,spd.id_no,spd.declare_account,spd.income_subject,spd.income_start,spd.income_end,spd.income_for_tax,spd.withholded_amount,spd.created_time
+        from tax_fc_task_sub_proof_detail spd
+        WHERE spd.is_active = 1
+            and spd.task_sub_proof_id = #{subProofId}
+        ORDER  BY  spd.created_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,32 @@
+#mybatis:
+#  mapperLocations: classpath*:mapper/**.xml
+##  config-location: classpath:/mybatis-config.xml
+#  configuration:
+#    # map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#  type-aliases-package: com.ciicsh.gto.salarymanagement.entity
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**.xml
+  type-aliases-package: com.ciicsh.gto.salarymanagement.entity.po
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+spring:
+  datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+  profiles:
+    active: dev
+server:
+  port: 9999
+
+# mongodb configuration
+mongo:
+  host: 172.16.9.16
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%

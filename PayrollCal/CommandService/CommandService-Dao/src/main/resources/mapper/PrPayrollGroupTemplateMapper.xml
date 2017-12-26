@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateMapper">
+
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO">
+		<id column="id" property="id" />
+		<result column="group_template_code" property="groupTemplateCode" />
+		<result column="group_template_name" property="groupTemplateName" />
+		<result column="version" property="version" />
+		<result column="approval_status" property="approvalStatus" />
+		<result column="comments" property="comments" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+	<resultMap id="getKeyValueMap"   type="KeyValuePO">
+		<result property="key" column="group_template_code" />
+		<result property="value" column="group_template_name" />
+	</resultMap>
+
+	<select id="selectListByEntityUseLike" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO" resultMap="BaseResultMap">
+		SELECT
+			id,
+			group_template_code,
+			group_template_name,
+			version,
+			approval_status,
+			comments,
+			remark,
+			is_active,
+			created_time,
+			modified_time,
+			created_by,
+			modified_by
+		FROM
+			pr_payroll_group_template
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="groupTemplateCode != null and groupTemplateCode != ''">
+				AND group_template_code LIKE concat(#{groupTemplateCode},'%')
+			</if>
+			<if test="groupTemplateName != null and groupTemplateName !=''">
+				AND group_template_name LIKE concat(#{groupTemplateName},'%')
+			</if>
+			<if test="approvalStatus != null">
+				AND approval_status = #{managementId}
+			</if>
+		</trim>
+	</select>
+
+	<select id="selectNameList" resultType="hashmap">
+		SELECT
+			group_template_code as groupTemplateCode,
+			group_template_name as groupTemplateName
+		FROM
+			pr_payroll_group_template
+	</select>
+
+
+	<select id="getPayrollGroupTemplateNames" resultMap="getKeyValueMap">
+		SELECT
+			group_template_code,
+			group_template_name
+		FROM
+			pr_payroll_group_template
+		WHERE
+			is_active = 1
+	</select>
+
+	<delete id="deleteByCodes">
+		DELETE
+		FROM pr_payroll_group_template
+		WHERE
+		group_template_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<update id="updateItemAndVersionByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO">
+		UPDATE pr_payroll_group_template
+		SET
+		<if test="groupTemplateName != null">
+			group_template_name = #{groupTemplateName},
+		</if>
+		<if test="remark != null">
+			Remark = #{remark},
+		</if>
+		<if test="isActive != null">
+			is_active = #{isActive},
+		</if>
+		<if test="modifiedBy != null">
+			modified_by = #{modifiedBy},
+		</if>
+		version = CONCAT((version + 1), '.0'),
+		modified_time = sysdate()
+		WHERE
+		group_template_code = #{groupTemplateCode}
+	</update>
+
+	<update id="updateItemByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO">
+		UPDATE pr_payroll_group_template
+		SET
+		<if test="groupTemplateName != null">
+			group_template_name = #{groupTemplateName},
+		</if>
+		<if test="remark != null">
+			Remark = #{remark},
+		</if>
+		<if test="isActive != null">
+			is_active = #{isActive},
+		</if>
+		<if test="modifiedBy != null">
+			modified_by = #{modifiedBy},
+		</if>
+		modified_time = sysdate()
+		WHERE
+		group_template_code = #{groupTemplateCode}
+	</update>
+
+</mapper>

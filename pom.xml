@@ -16,6 +16,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <mybatisplus-spring-boot-starter.version>1.0.5</mybatisplus-spring-boot-starter.version>
+        <mybatisplus.version>2.1.3</mybatisplus.version>
     </properties>
 
     <dependencyManagement>
@@ -86,6 +88,11 @@
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.33</version>
         </dependency>
@@ -148,23 +155,86 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.41</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-excel</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-infrastructure</artifactId>
+            <version>3.0.8.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatisplus-spring-boot-starter</artifactId>
+            <version>${mybatisplus-spring-boot-starter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+            <version>${mybatisplus.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-kafka</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-feign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh</groupId>
+            <artifactId>afsystemmanagecenter-basicdataservice-client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <modules>
         <module>FCSupportCenter-Entity</module>
         <module>FCSupportCenter-Util</module>
 
-        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Api</module>
-        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Business</module>
-        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Dao</module>
-        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Entity</module>
-        <module>PayrollCal/CalculateWebCommandService/CalculateWebCommandService-Host</module>
-
-        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Api</module>
-        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Business</module>
-        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Dao</module>
-        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Entity</module>
-        <module>PayrollCal/CalculateWebQueryService/CalculateWebQueryService-Host</module>
+        <module>PayrollCal/SalaryManagement-Entity</module>
+        <module>PayrollCal/CommandService/CommandService-Dao</module>
+        <module>PayrollCal/CommandService/CommandService-Util</module>
+        <module>PayrollCal/CommandService/CommandService-Business</module>
+        <module>PayrollCal/CommandService/CommandService-Host</module>
+        <module>PayrollCal/CommandService/CommandService-Api</module>
+        <module>PayrollCal/QueryService/QueryService-Dao</module>
+        <module>PayrollCal/QueryService/QueryService-Util</module>
+        <module>PayrollCal/QueryService/QueryService-Business</module>
+        <module>PayrollCal/QueryService/QueryService-Host</module>
+        <module>PayrollCal/QueryService/QueryService-Api</module>
 
         <module>Company/EmployeeCommandService/EmployeeCommandService-Api</module>
         <module>Company/EmployeeCommandService/EmployeeCommandService-Business</module>
