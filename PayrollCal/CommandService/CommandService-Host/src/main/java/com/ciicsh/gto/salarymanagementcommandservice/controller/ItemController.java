@@ -169,4 +169,10 @@ public class ItemController extends BaseController{
                 JsonResult.message(true,"更新薪资项显示顺序成功") : JsonResult.faultMessage("更新薪资项显示顺序失败");
     }
 
+    @PostMapping("/prItemCalPriority")
+    public JsonResult updateCalPriority(@RequestBody List<String> codes) {
+        return itemService.updateCalPriority(codes) ?
+                JsonResult.message(true,"更新薪资项计算顺序成功") : JsonResult.faultMessage("更新薪资项计算顺序失败");
+    }
+
 }
