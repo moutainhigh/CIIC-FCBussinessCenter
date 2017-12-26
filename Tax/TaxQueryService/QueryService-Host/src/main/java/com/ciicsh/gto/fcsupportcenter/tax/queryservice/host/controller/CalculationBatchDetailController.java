@@ -20,6 +20,11 @@ public class CalculationBatchDetailController {
     @Autowired
     private CalculationBatchDetailService calculationBatchDetailService;
 
+    /**
+     * 查询申报记录
+     * @param taskProofDTO
+     * @return
+     */
     @RequestMapping(value = "/queryTaxBatchDetail")
     public JsonResult queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();

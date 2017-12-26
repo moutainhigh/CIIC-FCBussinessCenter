@@ -20,6 +20,7 @@
         <result column="created_by" property="createdBy"/>
         <result column="modified_by" property="modifiedBy"/>
         <result column="task_type" property="taskType"/>
+        <result column="is_combined" property="isCombined"/>
     </resultMap>
 
     <!--新增完税凭证子任务-->

@@ -102,6 +102,12 @@ public class TaskSubProofPO implements Serializable {
 	@TableField("task_type")
 	private String taskType;
 
+	/**
+	 * 是否为合并任务(
+	 */
+	@TableField("is_active")
+	private Boolean isCombined;
+
 
 	public Long getId() {
 		return id;
@@ -231,6 +237,14 @@ public class TaskSubProofPO implements Serializable {
 		this.taskType = taskType;
 	}
 
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubProofPO{" +
@@ -250,6 +264,7 @@ public class TaskSubProofPO implements Serializable {
 				", createdBy='" + createdBy + '\'' +
 				", modifiedBy='" + modifiedBy + '\'' +
 				", taskType='" + taskType + '\'' +
+				", isCombined='" + isCombined + '\'' +
 				'}';
 	}
 }
