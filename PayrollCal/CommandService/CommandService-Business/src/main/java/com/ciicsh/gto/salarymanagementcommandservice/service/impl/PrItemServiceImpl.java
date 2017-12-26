@@ -220,4 +220,15 @@ public class PrItemServiceImpl implements PrItemService {
         }
         return true;
     }
+
+    @Override
+    public boolean updateCalPriority(List<String> codes) {
+        for(int i = 0; i < codes.size(); i++) {
+            PrPayrollItemPO param = new PrPayrollItemPO();
+            param.setItemCode(codes.get(i));
+            param.setCalPriority(i+1);
+            prPayrollItemMapper.updateItemByCode(param);
+        }
+        return true;
+    }
 }
