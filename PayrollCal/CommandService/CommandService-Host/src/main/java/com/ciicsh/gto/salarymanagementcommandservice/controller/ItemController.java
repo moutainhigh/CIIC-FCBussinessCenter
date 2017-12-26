@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -168,5 +169,24 @@ public class ItemController extends BaseController{
         return itemService.updateDisplayPriority(codes) ?
                 JsonResult.message(true,"更新薪资项显示顺序成功") : JsonResult.faultMessage("更新薪资项显示顺序失败");
     }
+
+//    @RequestMapping("/addTest")
+//    public String addTestData() throws Exception{
+//        List<PrPayrollItemPO> items = this.getItems();
+//        for(Map.Entry<String,String> model:getPayrollGroup().entrySet()){
+//            items.forEach(x->{
+//                x.setManagementId(model.getKey());
+//                x.setItemCode(codeGenerator.genPrItemCode(model.getKey()));
+//                x.setPayrollGroupCode(model.getValue());
+//                x.setActive(true);
+//                x.setCreatedBy("macor");
+//                x.setCreatedTime(new Date());
+//                x.setModifiedBy("macor");
+//                x.setModifiedTime(new Date());
+//                itemService.addItem(x);
+//            });
+//        }
+//        return "添加成功!";
+//    }
 
 }
