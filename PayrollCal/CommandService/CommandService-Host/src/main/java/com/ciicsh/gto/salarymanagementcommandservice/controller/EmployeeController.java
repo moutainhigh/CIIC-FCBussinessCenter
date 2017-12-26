@@ -31,20 +31,20 @@ public class EmployeeController implements EmployeeProxy{
     private EmployeeService employeeService;
 
     @Override
-    public JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS, @RequestParam String empGroupId) {
+    public JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS, @RequestParam String empGroupCode) {
 
         List<PrEmployeeTestPO> employeeTestPOS = employeeTestDTOS.stream()
                 .map(EmployeeTestTranslator::toPrEmployeeTestPO)
                 .collect(Collectors.toList());
-        Boolean success = employeeService.addEmployees(employeeTestPOS,empGroupId);
+        Boolean success = employeeService.addEmployees(employeeTestPOS,empGroupCode);
         return JsonResult.success(success);
     }
 
     @Override
-    public JsonResult getEmployees(@RequestParam String empGroupId,
+    public JsonResult getEmployees(@RequestParam String empGroupCode,
                                    @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                    @RequestParam(required = false, defaultValue = "50")  Integer pageSize) {
-        PageInfo<EmployeeExtensionPO> pageInfo =  employeeService.getEmployees(Integer.parseInt(empGroupId), pageNum,pageSize);
+        PageInfo<EmployeeExtensionPO> pageInfo =  employeeService.getEmployees(empGroupCode, pageNum,pageSize);
         List<EmployeeExtensionDTO> employeeExtensions = pageInfo.getList()
                 .stream()
                 .map(EmployeeTranslator::toEmployeeExtensionDTO)
@@ -56,9 +56,9 @@ public class EmployeeController implements EmployeeProxy{
     }
 
     @Override
-    public JsonResult batchDelete(@PathVariable("ids")String ids,@RequestParam String employeeIds,@RequestParam String empGroupId) {
+    public JsonResult batchDelete(@PathVariable("ids")String ids,@RequestParam String employeeIds,@RequestParam String empGroupCode) {
         String[] relationIds = ids.split(",");
-        Integer value = employeeService.batchDelete(Arrays.asList(relationIds),Arrays.asList(employeeIds),empGroupId);
+        Integer value = employeeService.batchDelete(Arrays.asList(relationIds),Arrays.asList(employeeIds),empGroupCode);
         if(value > 0){
             return JsonResult.success(value,"删除成功!");
         }

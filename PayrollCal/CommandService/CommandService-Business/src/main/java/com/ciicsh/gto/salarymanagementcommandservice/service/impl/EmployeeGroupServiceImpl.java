@@ -111,14 +111,14 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Boolean batchDelete(List<String> ids) {
+    public Boolean batchDelete(List<String> ids,List<String> empGroupCodes) {
         try
         {
-            empGroupEmpRelationMapper.delByEmpGroupId(ids);
+            empGroupEmpRelationMapper.delByEmpGroupCodes(empGroupCodes);
             empGroupMapper.deleteBatchIds(ids);
-            if(ids.size() > 0){
+            if(empGroupCodes.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                payrollEmpGroup.setEmpGroupIds(ids);
+                payrollEmpGroup.setEmpGroupIds(empGroupCodes);
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }

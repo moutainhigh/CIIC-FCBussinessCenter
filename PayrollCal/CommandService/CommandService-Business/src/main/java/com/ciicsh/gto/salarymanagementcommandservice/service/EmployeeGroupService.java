@@ -64,9 +64,10 @@ public interface EmployeeGroupService{
     /**
      * 批量删除
      * @param ids 雇员组ID集合
+     * @param empGroupCodes 雇员组Code集合
      * @return
      */
-    Boolean batchDelete(List<String> ids);
+    Boolean batchDelete(List<String> ids,List<String> empGroupCodes);
 
 
     /**

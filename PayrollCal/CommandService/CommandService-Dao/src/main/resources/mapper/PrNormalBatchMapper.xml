@@ -29,12 +29,13 @@
 		<result column="account_set_code" property="accountSetCode"/>
 		<result column="period" property="period"/>
 		<result column="status" property="status"/>
-		<result column="accountName" property="acccSetName"/>
 		<result column="start_date" property="beginDate"/>
 		<result column="end_date" property="endDate"/>
+		<result column="accountSetName" property="accountSetName"/>
 		<result column="payroll_period" property="payrollType"/>
 		<result column="empGroupName" property="empGroupName"/>
-		<result column="prGroupName" property="prGroupName"/>
+		<result column="emp_group_code" property="empGroupCode"/>
+		<result column="group_name" property="prGroupName"/>
 	</resultMap>
 
 	<select id="selectBatchListByUseLike" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" resultMap="CustBatchResultMap">
@@ -48,9 +49,10 @@
 		a.status,
 		a.start_date,
 		a.end_date,
-		b.account_set_name as acccSetName,  -- 薪资帐套名称
+		b.account_set_name as accountSetName,  -- 薪资帐套名称
 		b.payroll_period,       -- 薪资期间类型
 		c.name as empGroupName, -- 雇员组名称
+		c.emp_group_code,
 		b.group_name -- 薪资组名称
 		FROM
 			  pr_normal_batch a , normal_batch_view b, pr_emp_group c
@@ -66,8 +68,8 @@
 			<if test="status != 0">
 				AND a.status = #{status}
 			</if>
-			<if test="acccSetName != null and acccSetName != ''">
-				AND b.account_set_name LIKE concat(#{acccSetName},'%')
+			<if test="accountSetName != null and accountSetName != ''">
+				AND b.account_set_name LIKE concat(#{accountSetName},'%')
 			</if>
 			<if test="empGroupName != null and empGroupName !=''">
 				AND c.name LIKE concat(#{empGroupName},'%')
@@ -86,9 +88,10 @@
 			a.status,
 			a.start_date,
 			a.end_date,
-			b.account_set_name as acccSetName,  -- 薪资帐套名称
+			b.account_set_name as accountSetName,  -- 薪资帐套名称
 			b.payroll_period,       -- 薪资期间类型
 			c.name as empGroupName, -- 雇员组名称
+			c.emp_group_code,
 			b.group_name -- 薪资组名称
 			FROM
 			pr_normal_batch a , normal_batch_view b, pr_emp_group c
@@ -101,8 +104,8 @@
 			<if test="managementName != null and managementName !=''">
 				AND a.management_name = LIKE concat(#{managementName})
 			</if>
-			<if test="acccSetName != null and acccSetName != ''">
-				AND b.account_set_name LIKE concat(#{acccSetName},'%')
+			<if test="accountSetName != null and accountSetName != ''">
+				AND b.account_set_name LIKE concat(#{accountSetName},'%')
 			</if>
 			<if test="empGroupName != null and empGroupName !=''">
 				AND c.name LIKE concat(#{empGroupName},'%')
@@ -129,9 +132,10 @@
 			a.status,
 			a.start_date,
 			a.end_date,
-			b.account_set_name as acccSetName,  -- 薪资帐套名称
+			b.account_set_name as accountSetName,  -- 薪资帐套名称
 			b.payroll_period,       -- 薪资期间类型
 			c.name as empGroupName, -- 雇员组名称
+			c.emp_group_code,
 			b.group_name -- 薪资组名称
 			FROM
 			pr_normal_batch a , normal_batch_view b, pr_emp_group c
@@ -150,8 +154,8 @@
 			<if test="status == 0">
 				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
 			</if>
-			<if test="acccSetName != null and acccSetName != ''">
-				AND b.account_set_name LIKE concat(#{acccSetName},'%')
+			<if test="accountSetName != null and accountSetName != ''">
+				AND b.account_set_name LIKE concat(#{accountSetName},'%')
 			</if>
 			<if test="empGroupName != null and empGroupName !=''">
 				AND c.name LIKE concat(#{empGroupName},'%')
@@ -247,6 +251,15 @@
 		<if test="status !=0">
 			status = #{status},
 		</if>
+		<if test="has_advance !=0">
+			has_advance = #{hasAdvance},
+		</if>
+		<if test="has_money !=0">
+			has_money = #{hasMoney},
+		</if>
+		<if test="result_data != '' or result_data != null">
+			result_data = #{resultData},
+		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE code = #{code}
@@ -266,5 +279,15 @@
 		start_date,
 		end_date
 	</sql>
+
+	<delete id="deleteBatchByCodes">
+		DELETE FROM pr_normal_batch
+		WHERE
+		code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
 
 </mapper>

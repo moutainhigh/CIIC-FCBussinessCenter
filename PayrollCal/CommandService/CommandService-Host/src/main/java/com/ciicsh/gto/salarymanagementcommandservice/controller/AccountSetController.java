@@ -271,4 +271,12 @@ public class AccountSetController extends BaseController {
         }
         return accountSetExtensionDTO;
     }
+
+
+    @GetMapping("/getAccountSetInfo")
+    public JsonResult getAccountSetInfo(@RequestParam("accSetCode") String accSetCode) {
+        PrPayrollAccountSetPO prPayrollAccountSetPO = prAccountSetService.getAccountSetInfo(accSetCode);
+        return JsonResult.success(prPayrollAccountSetPO);
+
+    }
 }
