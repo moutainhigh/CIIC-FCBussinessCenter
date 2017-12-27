@@ -236,17 +236,17 @@
         <module>PayrollCal/QueryService/QueryService-Host</module>
         <module>PayrollCal/QueryService/QueryService-Api</module>
 
-        <module>Company/EmployeeCommandService/EmployeeCommandService-Api</module>
-        <module>Company/EmployeeCommandService/EmployeeCommandService-Business</module>
-        <module>Company/EmployeeCommandService/EmployeeCommandService-Dao</module>
-        <module>Company/EmployeeCommandService/EmployeeCommandService-Entity</module>
-        <module>Company/EmployeeCommandService/EmployeeCommandService-Host</module>
+        <module>Company/CompanyCommandService/CompanyCommandService-Api</module>
+        <module>Company/CompanyCommandService/CompanyCommandService-Business</module>
+        <module>Company/CompanyCommandService/CompanyCommandService-Dao</module>
+        <module>Company/CompanyCommandService/CompanyCommandService-Entity</module>
+        <module>Company/CompanyCommandService/CompanyCommandService-Host</module>
 
-        <module>Company/EmployeeQueryService/EmployeeQueryService-Api</module>
-        <module>Company/EmployeeQueryService/EmployeeQueryService-Business</module>
-        <module>Company/EmployeeQueryService/EmployeeQueryService-Dao</module>
-        <module>Company/EmployeeQueryService/EmployeeQueryService-Entity</module>
-        <module>Company/EmployeeQueryService/EmployeeQueryService-Host</module>
+        <module>Company/CompanyQueryService/CompanyQueryService-Api</module>
+        <module>Company/CompanyQueryService/CompanyQueryService-Business</module>
+        <module>Company/CompanyQueryService/CompanyQueryService-Dao</module>
+        <module>Company/CompanyQueryService/CompanyQueryService-Entity</module>
+        <module>Company/CompanyQueryService/CompanyQueryService-Host</module>
 
         <module>PayrollGrant/GrantCommandService/GrantCommandService-Api</module>
         <module>PayrollGrant/GrantCommandService/GrantCommandService-Business</module>
