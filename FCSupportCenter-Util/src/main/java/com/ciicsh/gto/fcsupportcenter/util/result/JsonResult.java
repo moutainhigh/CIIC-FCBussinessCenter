@@ -76,7 +76,7 @@ public class JsonResult<T> implements Serializable {
      * @return
      */
     public static JsonResult success(Object data, String message) {
-        return new JsonResult(true, message, null, data);
+        return new JsonResult(true, message, "0", data);
     }
 
     /**
@@ -86,7 +86,7 @@ public class JsonResult<T> implements Serializable {
      * @return
      */
     public static JsonResult success(Object data) {
-        return new JsonResult(true, "操作成功", null, data);
+        return new JsonResult(true, "操作成功", "0", data);
     }
 
     /**

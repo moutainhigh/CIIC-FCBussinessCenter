@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.webcommandservice.dao.WorkingCalendarMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.webcommandservice.entity.po.WorkingCalendarPO">
+		<id column="cmy_fc_working_calendar_id" property="cmyFcWorkingCalendarId" />
+		<result column="working_calendar_name" property="workingCalendarName" />
+		<result column="management_id" property="managementId" />
+		<result column="year" property="year" />
+		<result column="work_day_january" property="workDayJanuary" />
+		<result column="work_day_february" property="workDayFebruary" />
+		<result column="work_day_april" property="workDayApril" />
+		<result column="work_day_march" property="workDayMarch" />
+		<result column="work_day_may" property="workDayMay" />
+		<result column="work_day_june" property="workDayJune" />
+		<result column="work_day_july" property="workDayJuly" />
+		<result column="work_day_september" property="workDaySeptember" />
+		<result column="work_day_august" property="workDayAugust" />
+		<result column="work_day_october" property="workDayOctober" />
+		<result column="work_day_november" property="workDayNovember" />
+		<result column="work_day_december" property="workDayDecember" />
+		<result column="rest_day_january" property="restDayJanuary" />
+		<result column="rest_day_february" property="restDayFebruary" />
+		<result column="rest_day_march" property="restDayMarch" />
+		<result column="rest_day_april" property="restDayApril" />
+		<result column="rest_day_may" property="restDayMay" />
+		<result column="rest_day_june" property="restDayJune" />
+		<result column="rest_day_july" property="restDayJuly" />
+		<result column="rest_day_september" property="restDaySeptember" />
+		<result column="rest_day_august" property="restDayAugust" />
+		<result column="rest_day_october" property="restDayOctober" />
+		<result column="rest_day_november" property="restDayNovember" />
+		<result column="rest_day_december" property="restDayDecember" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+	<select id="getList" resultMap="BaseResultMap">
+		SELECT
+		<include refid="WorkingCalendar_All_Columns"/>
+		FROM
+		cmy_fc_working_calendar
+		<include refid="whereQuery"/>
+	</select>
+
+	<sql id="whereQuery">
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			is_active = 1
+			<if test="managementId != null and managementId != ''">
+				AND management_id = #{managementId}
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WorkingCalendar_All_Columns">
+		cmy_fc_working_calendar_id,
+		working_calendar_name,
+		management_id,
+		year,
+		work_day_january,
+		work_day_february,
+		work_day_april,
+		work_day_march,
+		work_day_may,
+		work_day_june,
+		work_day_july,
+		work_day_september,
+		work_day_august,
+		work_day_october,
+		work_day_november,
+		work_day_december,
+		rest_day_january,
+		rest_day_february,
+		rest_day_march,
+		rest_day_april,
+		rest_day_may,
+		rest_day_june,
+		rest_day_july,
+		rest_day_september,
+		rest_day_august,
+		rest_day_october,
+		rest_day_november,
+		rest_day_december,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
+	</sql>
+
+</mapper>
