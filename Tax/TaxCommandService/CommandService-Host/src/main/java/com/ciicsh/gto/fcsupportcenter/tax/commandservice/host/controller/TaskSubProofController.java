@@ -8,6 +8,8 @@ import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.request.RequestForProof;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcsupportcenter.tax.util.json.JsonResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import java.util.List;
  */
 @RestController
 public class TaskSubProofController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CalculationBatchController.class);
 
     @Autowired
     private TaskSubProofService taskSubProofService;
@@ -48,7 +52,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(taskSubProofDTOLists);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("queryTaskSubProofByMainId error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -73,7 +77,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(responseForSubProof);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("queryTaskSubProofByRes error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -96,7 +100,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error(e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -120,7 +124,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(responseForSubProof);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("querySubProofInfoByTaskType error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -145,7 +149,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("combineTaskProof error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -170,7 +174,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("splitTaskProof error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -196,7 +200,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("completeTaskProof error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -222,7 +226,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("rejectTaskProof error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -248,7 +252,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("invalidTaskProof error:"+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {

@@ -239,8 +239,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 newTaskSubProof.setCombined(true);
                 //新增完税凭证子任务
                 baseMapper.insert(newTaskSubProof);
-
-                //List<Long> combinedSubIds = baseMapper.querySubIdsByCombinedIds();
+                //根据合并id获取子任务ID集合
+//                List<Long> combinedSubIds = baseMapper.querySubIdsByCombinedIds();
                 //修改完税凭证子任务
                 baseMapper.updateSubTaskProofBySubIds(newTaskSubProof.getId(),requestForProof.getSubProofIds(),requestForProof.getModifiedBy());
             }
