@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao.CalculationBatchMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcsupportcenter.tax.commandservice.entity.po.CalculationBatch">
+		<id column="id" property="id" />
+		<result column="batch_no" property="batchNo" />
+		<result column="manager_no" property="managerNo" />
+		<result column="manager_name" property="managerName" />
+		<result column="tax_amount" property="taxAmount" />
+		<result column="headcount" property="headcount" />
+		<result column="chinese_num" property="chineseNum" />
+		<result column="foreigner_num" property="foreignerNum" />
+		<result column="status" property="status" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, batch_no, manager_no, manager_name, tax_amount, headcount, chinese_num, foreigner_num, status, is_active, created_time, modified_time, created_by, modified_by
+    </sql>
+
+</mapper>
