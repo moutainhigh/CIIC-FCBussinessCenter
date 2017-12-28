@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
 import org.apache.ibatis.annotations.Param;
 
@@ -73,5 +75,61 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
     void updateSubHeadcountById(@Param("id") Long id);
 
 
+    /**
+     * 条件查询完税凭证子任务总数
+     * @param taskSubProofBO
+     * @return
+     */
+    Integer querySubProofTotalNumByTaskType(TaskSubProofBO taskSubProofBO);
+
+    /**
+     * 查询完税凭证子任务(分页)
+     * @param page
+     * @param taskSubProofBO
+     * @return
+     */
+    List<TaskSubProofBO> querySubProofInfoByTaskType(Pagination page, TaskSubProofBO taskSubProofBO);
+
+    /**
+     * 根据主键ID数组查询完税凭证子任务集合
+     * @param subProofIds
+     * @return
+     */
+    List<TaskSubProofPO> querySubTaskProofBySubIds(@Param("subProofIds") String[] subProofIds);
+
+    /**
+     * 根据主键ID数组修改完税凭证子任务的合并后ID
+     * @param taskSubProofId
+     * @param subProofIds
+     * @param modifiedBy
+     * @return
+     */
+    Boolean updateSubTaskProofBySubIds(@Param("taskSubProofId") Long taskSubProofId,@Param("subProofIds") String[] subProofIds, @Param("modifiedBy") String modifiedBy);
+
+    /**
+     * 置空原子任务的合并ID
+     * @param taskSubProofPO
+     * @return
+     */
+    Boolean updateSubTaskProofSubId(TaskSubProofPO taskSubProofPO);
+
+
+    /**
+     * 根据完税凭证子任务ID数组修改其状态
+     * @param subIds
+     * @param status
+     * @param modifiedBy
+     * @return
+     */
+    Boolean updateTaskProofStatusByIds(@Param("subIds") String[] subIds,@Param("status") String status ,@Param("modifiedBy") String modifiedBy);
+
+    /**
+     * 根据完税凭证合并ID数组修改其状态
+     * @param subProofIds
+     * @param status
+     * @param modifiedBy
+     * @return
+     */
+    Boolean updateTaskProofStatusBySubIds(@Param("subProofIds") String[] subProofIds,@Param("status") String status ,@Param("modifiedBy") String modifiedBy);
 
 }

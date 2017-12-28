@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcsupportcenter.tax.commandservice.host.controller;
 
 
+import com.ciicsh.gto.fcsupportcenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcsupportcenter.tax.commandservice.api.dto.TaskSubProofDTO;
 import com.ciicsh.gto.fcsupportcenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
@@ -95,6 +96,158 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (BeansException e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
+    }
+
+    /**
+     * 多表查询完税凭证子任务
+     * @param taskProofDTO
+     * @return
+     */
+    @RequestMapping(value = "/querySubProofInfoByTaskType")
+    public JsonResult querySubProofInfoByTaskType(@RequestBody TaskProofDTO taskProofDTO){
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForProof requestForProof = new RequestForProof();
+            BeanUtils.copyProperties(taskProofDTO,requestForProof);
+            ResponseForSubProof responseForSubProof = taskSubProofService.querySubProofInfoByTaskType(requestForProof);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(responseForSubProof);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
+    }
+
+    /**
+     * 合并完税凭证子任务
+     * @param taskProofDTO
+     * @return
+     */
+    @RequestMapping(value = "/combineSubTaskProof")
+    public JsonResult combineTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForProof requestForProof = new RequestForProof();
+            BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            requestForProof.setModifiedBy("adminMain");
+            Boolean flag = taskSubProofService.combineTaskProofByRes(requestForProof);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(flag);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
+    }
+
+    /**
+     * 拆分合并的任务
+     * @param taskProofDTO
+     * @return
+     */
+    @RequestMapping(value = "/splitSubTaskProof")
+    public JsonResult splitTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForProof requestForProof = new RequestForProof();
+            BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            requestForProof.setModifiedBy("adminMain");
+            Boolean flag = taskSubProofService.splitTaskProofByRes(requestForProof);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(flag);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
+    }
+
+    /**
+     * 批量完成完税凭证子任务
+     * @param taskProofDTO
+     * @return
+     */
+    @RequestMapping(value = "/completeSubTaskProof")
+    public JsonResult completeTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForProof requestForProof = new RequestForProof();
+            BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            requestForProof.setModifiedBy("adminMain");
+            requestForProof.setStatus("03");
+            Boolean flag = taskSubProofService.completeTaskProofByRes(requestForProof);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(flag);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
+    }
+
+    /**
+     * 批量退回完税凭证子任务
+     * @param taskProofDTO
+     * @return
+     */
+    @RequestMapping(value = "/rejectSubTaskProof")
+    public JsonResult rejectTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForProof requestForProof = new RequestForProof();
+            BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            requestForProof.setModifiedBy("adminMain");
+            requestForProof.setStatus("02");
+            Boolean flag = taskSubProofService.rejectTaskProofByRes(requestForProof);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(flag);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        } finally {
+            return jr;
+        }
+    }
+
+    /**
+     * 批量失效完税凭证子任务
+     * @param taskProofDTO
+     * @return
+     */
+    @RequestMapping(value = "/invalidSubTaskProof")
+    public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForProof requestForProof = new RequestForProof();
+            BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            requestForProof.setModifiedBy("adminMain");
+            requestForProof.setStatus("04");
+            Boolean flag = taskSubProofService.invalidTaskProofByRes(requestForProof);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(flag);
+        } catch (Exception e) {
             e.printStackTrace();
             jr.setErrorcode("1");
             jr.setErrormsg("error");
