@@ -182,8 +182,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         Boolean flag = true;
         List<TaskSubProofPO> taskSubProofPOList = new ArrayList<>();
         try {
-            //已经合并过的id集合
-            List<Long> combinedIds = new ArrayList<>();
+            StringBuffer sbCombinedParams = new StringBuffer();
             //未合并的id集合
             List<Long> unCombinedIds = new ArrayList<>();
             //如果完税凭证子任务数组不为空则查询数组内ID的任务信息
@@ -219,10 +218,13 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                     }
                     //判断是不是合并后的任务
                     if(taskSubProofPO.getTaskMainProofId() == null || "".equals(taskSubProofPO.getTaskMainProofId())){
-                        combinedIds.add(taskSubProofPO.getId());
+                        sbCombinedParams.append("'"+taskSubProofPO.getId()+"',");
                     }else{
                         unCombinedIds.add(taskSubProofPO.getId());
                     }
+                }
+                if(sbCombinedParams.length() > 0){
+                    sbCombinedParams.substring(0,sbCombinedParams.length() - 1);
                 }
                 TaskSubProofPO newTaskSubProof = new TaskSubProofPO();
                 String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS") .format(new Date() );
@@ -240,7 +242,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 //新增完税凭证子任务
                 baseMapper.insert(newTaskSubProof);
                 //根据合并id获取子任务ID集合
-//                List<Long> combinedSubIds = baseMapper.querySubIdsByCombinedIds();
+                List<Long> combinedSubIds = baseMapper.querySubIdsByCombinedIds(sbCombinedParams);
                 //修改完税凭证子任务
                 baseMapper.updateSubTaskProofBySubIds(newTaskSubProof.getId(),requestForProof.getSubProofIds(),requestForProof.getModifiedBy());
             }
