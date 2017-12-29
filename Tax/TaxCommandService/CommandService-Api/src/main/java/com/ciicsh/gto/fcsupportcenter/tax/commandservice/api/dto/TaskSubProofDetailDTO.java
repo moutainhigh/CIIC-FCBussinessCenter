@@ -8,30 +8,69 @@ import java.util.Date;
  */
 public class TaskSubProofDetailDTO {
 
+    /**
+     * 主键ID
+     */
     private Long id;
 
+    /**
+     * 类型
+     */
     private String detailType;
 
+    /**
+     * 任务ID
+     */
     private Long taskId;
 
+    /**
+     * 雇员编号
+     */
     private String employeeNo;
 
+    /**
+     * 雇员名称
+     */
     private String employeeName;
 
+    /**
+     * 证件类型
+     */
     private String idType;
 
+    /**
+     * 证件号
+     */
     private String idNo;
 
+    /**
+     * 所得项目
+     */
     private String incomeSubject;
 
+    /**
+     * 所得期间起
+     */
     private Date incomeStart;
 
+    /**
+     * 所得期间止
+     */
     private Date incomeEnd;
 
+    /**
+     * 应纳税所得额
+     */
     private BigDecimal incomeForTax;
 
+    /**
+     * 扣缴税额
+     */
     private BigDecimal withholdedAmount;
 
+    /**
+     * 申报账户
+     */
     private String declareAccount;
 
     public Long getId() {

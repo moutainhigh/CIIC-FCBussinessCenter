@@ -67,8 +67,8 @@
 
     <!--完税凭证主任务为失效状态-->
     <update id="invalidMainTaskProofByIds">
-        update tax_fc_task_main_proof set is_active = false,modified_by = #{modifiedBy}
-        WHERE status = '00' AND id in
+        update tax_fc_task_main_proof set status = '04',modified_by = #{modifiedBy}
+        WHERE is_active = 1 AND status = '00' AND id in
         <foreach collection="mainProofIds" item="mainProofId" open="(" separator="," close=")">
             #{mainProofId}
         </foreach>

@@ -105,7 +105,7 @@ public class TaskSubProofPO implements Serializable {
 	/**
 	 * 是否为合并任务(
 	 */
-	@TableField("is_active")
+	@TableField("is_combined")
 	private Boolean isCombined;
 
 

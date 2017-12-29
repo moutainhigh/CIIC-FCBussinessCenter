@@ -33,7 +33,7 @@ pagehelper:
     reasonable: true
 
 server:
-    port: 9001
+    port: 9000
     session-timeout: '# session timeout in seconds'
     tomcat:
         background-processor-delay: 30.0

@@ -8,18 +8,57 @@ import java.util.Date;
  * data 2017/12/8
  */
 public class TaskMainProofDTO{
+    /**
+     * 主键ID
+     */
     private Long id;
+    /**
+     * 任务编号
+     */
     private String taskNo;
+    /**
+     * 管理房编号
+     */
     private String managerNo;
+    /**
+     * 管理方名称
+     */
     private String managerName;
+    /**
+     * 总人数
+     */
     private Integer headcount;
+    /**
+     * 中方人数
+     */
     private Integer chineseNum;
+    /**
+     * 外方人数
+     */
     private Integer foreignerNum;
+    /**
+     * 创建人
+     */
     private String createdBy;
+    /**
+     * 起始日期
+     */
     private String submitTimeStart;
+    /**
+     * 结束日期
+     */
     private String submitTimeEnd;
+    /**
+     * 创建时间
+     */
     private Date createdTime;
+    /**
+     * 当前页数
+     */
     private Integer currentNum;
+    /**
+     * 每页显示条目
+     */
     private Integer pageSize;
 
     public Long getId() {

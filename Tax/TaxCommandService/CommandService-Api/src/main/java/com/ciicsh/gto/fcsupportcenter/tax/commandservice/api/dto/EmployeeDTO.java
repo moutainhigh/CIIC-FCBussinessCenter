@@ -4,20 +4,44 @@ package com.ciicsh.gto.fcsupportcenter.tax.commandservice.api.dto;
  * @author yuantongqing on 2017/12/15
  */
 public class EmployeeDTO {
+    /**
+     * 主键ID
+     */
     private Long id;
 
+    /**
+     * 雇员编号
+     */
     private String employeeNo;
 
+    /**
+     * 雇员名称
+     */
     private String employeeName;
 
+    /**
+     * 证件类型
+     */
     private String idType;
 
+    /**
+     * 证件号
+     */
     private String idNo;
 
+    /**
+     * 管理方编号
+     */
     private String manageNo;
 
+    /**
+     * 管理房名称
+     */
     private String manageName;
 
+    /**
+     * 申报账户
+     */
     private String declareAcount;
 
     public Long getId() {

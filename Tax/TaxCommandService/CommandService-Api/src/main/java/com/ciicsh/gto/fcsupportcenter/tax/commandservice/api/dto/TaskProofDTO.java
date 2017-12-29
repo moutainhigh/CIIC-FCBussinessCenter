@@ -106,6 +106,17 @@ public class TaskProofDTO {
      */
     private String idNo;
 
+    /**
+     * 个税期间
+     */
+    private String period;
+    /**
+     * 任务类型(01:自动,02:人工)
+     */
+    private String taskType;
+
+
+
     public Long getId() {
         return id;
     }
@@ -266,6 +277,22 @@ public class TaskProofDTO {
         this.idNo = idNo;
     }
 
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
+    }
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+
     @Override
     public String toString() {
         return "TaskProofDTO{" +
@@ -289,6 +316,8 @@ public class TaskProofDTO {
                 ", incomeSubject='" + incomeSubject + '\'' +
                 ", idType='" + idType + '\'' +
                 ", idNo='" + idNo + '\'' +
+                ", period='" + period + '\'' +
+                ", taskType='" + taskType + '\'' +
                 '}';
     }
 }

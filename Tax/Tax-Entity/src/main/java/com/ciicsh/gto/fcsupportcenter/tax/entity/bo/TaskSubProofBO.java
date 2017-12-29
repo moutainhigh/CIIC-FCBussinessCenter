@@ -72,6 +72,30 @@ public class TaskSubProofBO {
     private Boolean isActive;
 
     /**
+     * 管理方编号
+     */
+    private String managerNo;
+    /**
+     * 管理房名称
+     */
+    private String managerName;
+
+    /**
+     * 个税期间
+     */
+    private Date  period;
+
+    /**
+     * 任务类型(01:自动,02:人工)
+     */
+    private String taskType;
+
+    /**
+     * 是否为合并任务
+     */
+    private Boolean isCombined;
+
+    /**
      * 分页page对象
      */
     private Page page;
@@ -188,6 +212,46 @@ public class TaskSubProofBO {
         isActive = active;
     }
 
+    public Date getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Date period) {
+        this.period = period;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
+
+    public String getManagerNo() {
+        return managerNo;
+    }
+
+    public void setManagerNo(String managerNo) {
+        this.managerNo = managerNo;
+    }
+
+    public Boolean getCombined() {
+        return isCombined;
+    }
+
+    public void setCombined(Boolean combined) {
+        isCombined = combined;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -204,6 +268,11 @@ public class TaskSubProofBO {
                 ", modifiedBy='" + modifiedBy + '\'' +
                 ", modifiedTime=" + modifiedTime +
                 ", isActive=" + isActive +
+                ", managerNo='" + managerNo + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", period=" + period +
+                ", taskType='" + taskType + '\'' +
+                ", isCombined=" + isCombined +
                 ", page=" + page +
                 '}';
     }

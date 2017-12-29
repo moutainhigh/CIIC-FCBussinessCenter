@@ -7,31 +7,71 @@ import java.util.Date;
  */
 public class TaskSubProofDTO{
 
+    /**
+     * 主键ID
+     */
     private Long id;
 
+    /**
+     * 任务编号
+     */
     private String taskNo;
 
+    /**
+     * 主任务ID
+     */
     private Long taskMainProofId;
 
+    /**
+     * 申报账户
+     */
     private String declareAccount;
 
+    /**
+     * 城市
+     */
     private String city;
 
+    /**
+     * 税务机构
+     */
     private String taxOrganization;
 
+    /**
+     * 总人数
+     */
     private Integer headcount;
 
+    /**
+     * 中方人数
+     */
     private Integer chineseNum;
 
+    /**
+     * 外方人数
+     */
     private Integer foreignerNum;
 
+    /**
+     * 寄送状态
+     */
     private String sendStatus;
 
+    /**
+     * 任务状态
+     */
     private String status;
 
+    /**
+     * 创建人
+     */
     private String createdBy;
 
+    /**
+     * 创建时间
+     */
     private Date createdTime;
+
 
     public Long getId() {
         return id;

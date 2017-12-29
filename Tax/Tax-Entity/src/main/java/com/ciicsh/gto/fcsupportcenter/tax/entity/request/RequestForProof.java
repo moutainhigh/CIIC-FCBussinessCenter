@@ -32,7 +32,7 @@ public class RequestForProof extends PageInfo {
     private String[] mainProofIds;
 
     /**
-     * 提交/失效子任务ID
+     * 提交/失效/合并子任务ID
      */
     private String[] subProofIds;
 
@@ -80,6 +80,20 @@ public class RequestForProof extends PageInfo {
      * 所得项目
      */
     private String incomeSubject;
+
+    /**
+     * 申报账户
+     */
+    private String declareAccount;
+
+    /**
+     * 个税期间
+     */
+    private String period;
+    /**
+     * 任务类型(01:自动,02:人工)
+     */
+    private String taskType;
 
     public Long getId() {
         return id;
@@ -199,5 +213,29 @@ public class RequestForProof extends PageInfo {
 
     public void setIncomeSubject(String incomeSubject) {
         this.incomeSubject = incomeSubject;
+    }
+
+    public String getDeclareAccount() {
+        return declareAccount;
+    }
+
+    public void setDeclareAccount(String declareAccount) {
+        this.declareAccount = declareAccount;
+    }
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
     }
 }
