@@ -1,8 +1,11 @@
 package com.ciicsh.gto.fcsupportcenter.tax.commandservice.business;
 
+import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.request.RequestForProof;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.response.voucher.ResponseForSubDetail;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.response.voucher.ResponseForSubProof;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 
 import java.util.List;
 
@@ -80,5 +83,19 @@ public interface TaskSubProofService {
      * @return
      */
     Boolean invalidTaskProofByRes(RequestForProof requestForProof);
+
+    /**
+     * 根据子任务ID查询子任务详细信息
+     * @param subProofId
+     * @return
+     */
+    TaskSubProofBO queryApplyDetailsBySubId(Long subProofId);
+
+    /**
+     * 根据子任务ID分页查询完税凭证子任务申请明细
+     * @param requestForProof
+     * @return
+     */
+    ResponseForSubProofDetail queryTaskSubProofDetail(RequestForProof requestForProof);
 
 }

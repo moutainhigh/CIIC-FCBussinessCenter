@@ -123,8 +123,8 @@
         <if test="declareAccount != null and declareAccount != ''">
             and tsp.declare_account LIKE concat('%', #{declareAccount, jdbcType=VARCHAR},'%')
         </if>
-        <if test="period != null and period != ''">
-            and tsp.period = #{period}
+        <if test="period != null">
+            and date(tsp.period) = date(#{period,jdbcType=TIMESTAMP})
         </if>
         <if test="status != null and status != ''">
             and tsp.`status` = #{status}
@@ -149,8 +149,8 @@
         <if test="declareAccount != null and declareAccount != ''">
             and tsp.declare_account LIKE concat('%', #{declareAccount, jdbcType=VARCHAR},'%')
         </if>
-        <if test="period != null and period != ''">
-            and tsp.period = #{period}
+        <if test="period != null">
+            and date(tsp.period) = date(#{period,jdbcType=TIMESTAMP})
         </if>
         <if test="status != null and status != ''">
             and tsp.`status` = #{status}
@@ -198,9 +198,16 @@
     </update>
 
     <!--根据合并的ID拼接的in条件查询合并前的子任务ID-->
-    <select id="querySubIdsByCombinedIds">
+    <select id="querySubIdsByCombinedIds" resultType="java.lang.Long">
       select id from tax_fc_task_sub_proof
+      where task_sub_proof_id in (#{sbCombinedParams})
     </select>
+
+    <!--根据合并的ID拼接的in条件将符合条件的任务ID置为不可用状态-->
+    <update id="updateSubIdsByCombinedIds">
+        update tax_fc_task_sub_proof set is_active = false
+        WHERE id in (#{sbCombinedParams})
+    </update>
 
     <!--置空原子任务的合并ID-->
     <update id="updateSubTaskProofSubId">
@@ -225,5 +232,25 @@
             #{subProofId}
         </foreach>
     </update>
+
+    <!--根据主键ID查询完税凭证子任务详细信息-->
+    <select id="queryApplyDetailsBySubId" resultMap="BaseResultBOMap">
+        select tsp.id,
+        tsp.task_no,
+        tmp.manager_no,
+        tmp.manager_name,
+        tsp.declare_account,
+        tsp.period,
+        tsp.headcount,
+        tsp.chinese_num,
+        tsp.foreigner_num,
+        tsp.`status`,
+        tsp.task_type,
+        tsp.is_combined
+        from tax_fc_task_sub_proof tsp
+        left join tax_fc_task_main_proof tmp
+        on tsp.task_main_proof_id = tmp.id
+        where tsp.is_active = 1 and tsp.id = #{subProofId}
+    </select>
 
 </mapper>

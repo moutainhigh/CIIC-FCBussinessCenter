@@ -3,6 +3,8 @@ package com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofDetailBO;
+import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO;
 import org.apache.ibatis.annotations.Param;
 
@@ -104,14 +106,21 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
      * @param modifiedBy
      * @return
      */
-    Boolean updateSubTaskProofBySubIds(@Param("taskSubProofId") Long taskSubProofId,@Param("subProofIds") String[] subProofIds, @Param("modifiedBy") String modifiedBy);
+    Boolean updateSubTaskProofBySubIds(@Param("taskSubProofId") Long taskSubProofId,@Param("subProofIds") List<Long> subProofIds, @Param("modifiedBy") String modifiedBy);
 
     /**
      * 根据合并的ID拼接的in条件查询合并前的子任务ID
      * @param sbCombinedParams
      * @return
      */
-    List<Long> querySubIdsByCombinedIds(@Param("sbCombinedParams") StringBuffer sbCombinedParams);
+    List<Long> querySubIdsByCombinedIds(@Param("sbCombinedParams") String sbCombinedParams);
+
+    /**
+     * 根据合并的ID拼接的in条件将符合条件的任务ID置为不可用状态
+     * @param sbCombinedParams
+     * @return
+     */
+    Boolean updateSubIdsByCombinedIds(@Param("sbCombinedParams") String sbCombinedParams);
 
     /**
      * 置空原子任务的合并ID
@@ -138,5 +147,12 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
      * @return
      */
     Boolean updateTaskProofStatusBySubIds(@Param("subProofIds") String[] subProofIds,@Param("status") String status ,@Param("modifiedBy") String modifiedBy);
+
+    /**
+     * 根据主键ID查询完税凭证子任务详细信息
+     * @param subProofId
+     * @return
+     */
+    TaskSubProofBO queryApplyDetailsBySubId(@Param("subProofId") Long subProofId);
 
 }
