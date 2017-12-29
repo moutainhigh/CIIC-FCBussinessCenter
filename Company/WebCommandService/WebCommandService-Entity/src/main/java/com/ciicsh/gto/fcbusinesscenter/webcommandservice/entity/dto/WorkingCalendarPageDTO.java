@@ -17,7 +17,20 @@ public class WorkingCalendarPageDTO extends Model<WorkingCalendarPageDTO> {
 
     private static final long serialVersionUID = 1L;
 
-    /**
+	/**
+	 * 管理方名称
+	 */
+	private String managementName;
+
+	public String getManagementName() {
+		return managementName;
+	}
+
+	public void setManagementName(String managementName) {
+		this.managementName = managementName;
+	}
+
+	/**
      * 工作日历id
      */
 	private Integer cmyFcWorkingCalendarId;
@@ -426,6 +439,7 @@ public class WorkingCalendarPageDTO extends Model<WorkingCalendarPageDTO> {
 			"cmyFcWorkingCalendarId=" + cmyFcWorkingCalendarId +
 			", workingCalendarName=" + workingCalendarName +
 			", managementId=" + managementId +
+			", managementName=" + managementName +
 			", year=" + year +
 			", workDayJanuary=" + workDayJanuary +
 			", workDayFebruary=" + workDayFebruary +

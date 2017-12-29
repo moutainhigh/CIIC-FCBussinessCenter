@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  * <p>
- * 工作日历明细表 前端控制器
+ * 工作日历 前端控制器
  * </p>
  *
  * @author guwei
@@ -60,8 +60,8 @@ public class WorkingCalendarController extends BaseController{
      * @param cmyFcWorkingCalendarId
      * @return
      */
-    @GetMapping("/getWorkingCalendarItem/{cmyFcWorkingCalendarId}")
-    public JsonResult getWorkingCalendarItem(@PathVariable("cmyFcWorkingCalendarId") int cmyFcWorkingCalendarId) {
+    @GetMapping("/getWorkingCalendarItem/{id}")
+    public JsonResult getWorkingCalendarItem(@PathVariable("id") int cmyFcWorkingCalendarId) {
         WorkingCalendarPO workingCalendarPO = workingCalendarService.selectById(cmyFcWorkingCalendarId);
         return JsonResult.success(WorkCalendarTranslator.convertToDTO(workingCalendarPO));
     }
@@ -100,8 +100,8 @@ public class WorkingCalendarController extends BaseController{
      * @param cmyFcWorkingCalendarId
      * @return
      */
-    @DeleteMapping("/dwlWorkingCalendarItem/{cmyFcWorkingCalendarId}")
-    public JsonResult deleteWorkingCalendarItem(@PathVariable("cmyFcWorkingCalendarId") int cmyFcWorkingCalendarId){
+    @DeleteMapping("/dwlWorkingCalendarItem/{id}")
+    public JsonResult deleteWorkingCalendarItem(@PathVariable("id") int cmyFcWorkingCalendarId){
         return JsonResult.success(workingCalendarService.deleteWorkingCalendar(cmyFcWorkingCalendarId));
     }
 }

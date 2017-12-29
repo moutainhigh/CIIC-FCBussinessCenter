@@ -25,7 +25,7 @@ public class WorkingCalendarTest extends BaseTest{
         Random random = new Random();
         workingCalendarPageDTO.setWorkingCalendarName("2017CIICSH标准年历"+random.nextInt()+"测试");
         workingCalendarPageDTO.setManagementId("02134846");
-        workingCalendarPageDTO.setYear("2017");
+        workingCalendarPageDTO.setYear("2018");
         workingCalendarPageDTO.setWorkDayJanuary("1,2,3,4,5,6,7");
         workingCalendarPageDTO.setRestDayJanuary("8,9,10");
 

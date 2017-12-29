@@ -25,7 +25,7 @@ spring:
     show-sql: true
 
 server:
-  port: 8011
+  port: 9000
 
 app:
   id=10009999
