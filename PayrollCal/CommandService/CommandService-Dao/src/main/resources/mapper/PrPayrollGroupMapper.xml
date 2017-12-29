@@ -60,33 +60,6 @@
 			</if>
 		</trim>
 	</select>
-	
-	<update id="updateItemAndVersionByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
-		UPDATE pr_payroll_group
-		SET
-		<if test="managementId != null">
-			management_id = #{managementId},
-		</if>
-		<if test="groupName != null">
-			group_name = #{groupName},
-		</if>
-		<if test="isTemplate != null">
-			is_template = #{isTemplate},
-		</if>
-		<if test="remark != null">
-			Remark = #{remark},
-		</if>
-		<if test="isActive != null">
-			is_active = #{isActive},
-		</if>
-		<if test="modifiedBy != null">
-			modified_by = #{modifiedBy},
-		</if>
-        version = CONCAT((version + 1), '.0'),
-		modified_time = sysdate()
-		WHERE
-        group_code = #{groupCode}
-	</update>
 
     <update id="updateItemByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">
         UPDATE pr_payroll_group
@@ -100,8 +73,17 @@
         <if test="isTemplate != null">
             is_template = #{isTemplate},
         </if>
+		<if test="approvalStatus != null">
+			approval_status = #{approvalStatus},
+		</if>
+		<if test="comments != null">
+			comments = #{comments},
+		</if>
+		<if test="approvalStatus == 2">
+			version = CONCAT((version + 1), '.0'),
+		</if>
         <if test="remark != null">
-            Remark = #{remark},
+            remark = #{remark},
         </if>
         <if test="isActive != null">
             is_active = #{isActive},

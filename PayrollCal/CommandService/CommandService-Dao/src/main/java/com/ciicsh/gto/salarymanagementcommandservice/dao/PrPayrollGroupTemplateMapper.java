@@ -42,13 +42,6 @@ public interface PrPayrollGroupTemplateMapper extends BaseMapper<PrPayrollGroupT
     List<KeyValuePO> getPayrollGroupTemplateNames();
 
     /**
-     * 更新薪资组，version + 1
-     * @param param
-     * @return
-     */
-    Integer updateItemAndVersionByCode(PrPayrollGroupTemplatePO param);
-
-    /**
      * 更新薪资组，不增加version
      * @param param
      * @return
