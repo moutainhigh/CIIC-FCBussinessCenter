@@ -1,4 +1,4 @@
-package com.ciicsh.gto.salarymanagementcommandservice.util.Constants;
+package com.ciicsh.gto.salarymanagementcommandservice.util.constants;
 
 /**
  * Created by bill on 17/12/21.

@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.github.pagehelper.PageInfo;
@@ -85,4 +86,13 @@ public interface PrGroupService {
      * @return
      */
     boolean copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity);
+
+    /**
+     * 审核薪资租
+     * @param paramItem
+     * @return
+     */
+    boolean approvePrGroup(PrPayrollGroupPO paramItem);
+
+    JSONObject getCompareGroupItems(String srcCode);
 }

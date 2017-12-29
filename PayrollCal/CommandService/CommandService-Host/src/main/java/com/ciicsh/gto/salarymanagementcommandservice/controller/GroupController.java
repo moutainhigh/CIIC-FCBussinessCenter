@@ -1,17 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmpGroupDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
-import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
+import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.controller.NormalBatchController.MgrData;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.GroupTemplateTranslator;
@@ -77,7 +70,6 @@ public class GroupController {
      * @return
      */
     @GetMapping(value = "/copyPrGroup")
-    @ResponseBody
     public JsonResult copyPrGroup(@RequestParam String srcCode,
                                            @RequestParam String newName){
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
@@ -100,7 +92,6 @@ public class GroupController {
      * @return
      */
     @PostMapping(value = "/prGroupQuery")
-    @ResponseBody
     public JsonResult getPrGroupList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                      @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
                                      @RequestBody PrPayrollGroupDTO param){
@@ -124,7 +115,6 @@ public class GroupController {
      * @return
      */
     @GetMapping(value = "/prGroupName")
-    @ResponseBody
     public ResultEntity getPrGroupNameList(@RequestParam String managementId,
                                                    @RequestParam(required = false, defaultValue = "1") Integer pageNum){
         PrGroupEntity paramItem = new PrGroupEntity();
@@ -139,7 +129,6 @@ public class GroupController {
      * @return
      */
     @PutMapping(value = "/prGroup/{code}")
-    @ResponseBody
     public JsonResult updatePrGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
 
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
@@ -150,14 +139,12 @@ public class GroupController {
         return JsonResult.success(result);
     }
 
-
     /**
      * 获取薪资组详情
      * @param code
      * @return
      */
     @GetMapping(value = "/prGroup/{code}")
-    @ResponseBody
     public JsonResult getPrGroup(@PathVariable("code") String code) {
 
         PrPayrollGroupPO result =  prGroupService.getItemByCode(code);
@@ -170,7 +157,6 @@ public class GroupController {
      * @return
      */
     @PostMapping(value = "/prGroup")
-    @ResponseBody
     public JsonResult newPrGroup(@RequestBody PrPayrollGroupDTO paramItem){
 
         PrPayrollGroupPO newParam = new PrPayrollGroupPO();
@@ -208,16 +194,32 @@ public class GroupController {
         }
     }
 
-
     @GetMapping("/getpayrollgroupnames")
-    @ResponseBody
     public  JsonResult getPayrollGroupNames(@RequestParam String managementId){
         List<KeyValuePO> keyValues = prGroupService.getPayrollGroupNames(managementId);
         return JsonResult.success(keyValues);
     }
 
+    @PutMapping("/approvePayrollGroup/{code}")
+    public JsonResult approvePayrollGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
+
+        PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
+        TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
+        updateParam.setGroupCode(code);
+        updateParam.setModifiedBy("jiang");
+        boolean result = prGroupService.approvePrGroup(updateParam);
+        return result ? JsonResult.success("薪资组审核成功") : JsonResult.faultMessage("薪资组审核失败");
+    }
+
+    @GetMapping("/comparePayollGroup")
+    public JsonResult comparePayrollGroup(@RequestParam("code") String  code) {
+        JSONObject result = new JSONObject();
+        return null;
+    }
+
+
+
     @GetMapping("/queryGroupKeyValues")
-    @ResponseBody
     public  JsonResult queryGroupKeyValues(@RequestParam String managementId,@RequestParam String query){
         List<KeyValuePO> keyValues = prGroupService.getPayrollGroupNames(managementId);
         List<KeyValuePO> result = new ArrayList<>();

@@ -1,29 +1,27 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollBaseItemPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrGroupMapper;
+import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollBaseItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupHistoryMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrBaseItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.PayrollGroupHistoryKey;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -46,9 +44,6 @@ public class PrGroupServiceImpl implements PrGroupService {
     private PrPayrollGroupMapper prPayrollGroupMapper;
 
     @Autowired
-    private IPrGroupMapper prGroupMapper;
-
-    @Autowired
     private PrPayrollBaseItemMapper prPayrollBaseItemMapper;
 
     @Autowired
@@ -56,6 +51,9 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     @Autowired
     private PrPayrollItemMapper prPayrollItemMapper;
+
+    @Autowired
+    private PrPayrollGroupHistoryMapper prPayrollGroupHistoryMapper;
 
     @Autowired
     private CodeGenerator codeGenerator;
@@ -82,7 +80,9 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int updateItemByCode(PrPayrollGroupPO paramItem) {
-
+        if (paramItem.getApprovalStatus() == null) {
+            paramItem.setApprovalStatus(0);
+        }
         return prPayrollGroupMapper.updateItemByCode(paramItem);
     }
 
@@ -111,8 +111,8 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     @Override
     public List<String> getNameList(String managementId) {
-        List<String> nameList = prGroupMapper.selectNameList(managementId);
-        return nameList;
+//        List<String> nameList = prGroupMapper.selectNameList(managementId);
+        return null;
     }
 
     @Override
@@ -232,6 +232,44 @@ public class PrGroupServiceImpl implements PrGroupService {
         return result;
     }
 
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean approvePrGroup(PrPayrollGroupPO paramItem) {
+        boolean result = false;
+        if (paramItem.getApprovalStatus() == 2) {
+            // 获取该薪资组中的薪资项数据
+            List<PrPayrollItemPO> items = this.getListByGroupCodeWithoutPage(paramItem.getGroupCode());
+            String itemsJsonStr = JSON.toJSONString(items);
+            // 获取更新前的薪资组数据
+            PrPayrollGroupPO prGroup = getItemByCode(paramItem.getGroupCode());
+            String version = prGroup.getVersion();
+            String groupJsonStr = JSON.toJSONString(prGroup);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(PayrollGroupHistoryKey.PR_ITEMS, itemsJsonStr);
+            jsonObject.put(PayrollGroupHistoryKey.PR_GROUP, groupJsonStr);
+            String history = JSON.toJSONString(jsonObject);
+            // 保存历史数据
+            PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
+            prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
+            prPayrollGroupHistoryPO.setVersion(version);
+            prPayrollGroupHistoryPO.setPayrollGroupHistory(history);
+            prPayrollGroupHistoryPO.setCreatedBy("system");
+            prPayrollGroupHistoryPO.setModifiedBy("system");
+            prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
+        }
+        // 更新审批薪资组
+        int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
+        result = updateResult == 1;
+        return result;
+    }
+
+    @Override
+    public JSONObject getCompareGroupItems(String srcCode) {
+        List<PrPayrollItemPO> srcItemList = this.getListByGroupCodeWithoutPage(srcCode);
+        PrPayrollGroupHistoryPO lastVersionData = prPayrollGroupHistoryMapper.selectLastVersionByCode(srcCode);
+        return null;
+    }
+
     // 从公式中获取薪资项名称列表
     private List<String> getPayItems(String formula){
         List<String> names = new LinkedList<>();
@@ -241,5 +279,9 @@ public class PrGroupServiceImpl implements PrGroupService {
             names.add(m.group(1));
         }
         return names;
+    }
+
+    private List<PrPayrollItemPO> getListByGroupCodeWithoutPage(String groupCode) {
+        return itemService.getListByGroupCode(groupCode, 0, 0).getList();
     }
 }
