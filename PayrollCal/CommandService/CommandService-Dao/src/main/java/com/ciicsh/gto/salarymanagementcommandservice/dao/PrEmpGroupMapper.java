@@ -6,7 +6,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators.In;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
