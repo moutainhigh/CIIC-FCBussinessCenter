@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao.TaskSubProofMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO">
+        <id column="id" property="id"/>
+        <result column="task_main_proof_id" property="taskMainProofId"/>
+        <result column="task_sub_proof_id" property="taskSubProofId"/>
+        <result column="task_no" property="taskNo"/>
+        <result column="declare_account" property="declareAccount"/>
+        <result column="period" property="period"/>
+        <result column="headcount" property="headcount"/>
+        <result column="chinese_num" property="chineseNum"/>
+        <result column="foreigner_num" property="foreignerNum"/>
+        <result column="status" property="status"/>
+        <result column="is_active" property="isActive"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_time" property="modifiedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="modified_by" property="modifiedBy"/>
+        <result column="task_type" property="taskType"/>
+        <result column="is_combined" property="isCombined"/>
+    </resultMap>
+
+    <resultMap id="BaseResultBOMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+        <id column="id" property="id"/>
+        <result column="task_no" property="taskNo"/>
+        <result column="manager_no" property="managerNo"/>
+        <result column="manager_name" property="managerName"/>
+        <result column="declare_account" property="declareAccount"/>
+        <result column="period" property="period"/>
+        <result column="headcount" property="headcount"/>
+        <result column="chinese_num" property="chineseNum"/>
+        <result column="foreigner_num" property="foreignerNum"/>
+        <result column="status" property="status"/>
+        <result column="task_type" property="taskType"/>
+        <result column="is_combined" property="isCombined"/>
+    </resultMap>
+
+    <!--新增完税凭证子任务-->
+    <insert id="addTaskSubProof" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO">
+		INSERT into tax_fc_task_sub_proof(task_main_proof_id,task_no,declare_account,status,created_by,modified_by,task_type)
+		VALUES (#{taskMainProofId,jdbcType=INTEGER},#{taskNo,jdbcType=VARCHAR},#{declareAccount,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{createdBy,jdbcType=VARCHAR},#{modifiedBy,jdbcType=VARCHAR},#{taskType,jdbcType=VARCHAR})
+	</insert>
+
+    <!--根据主键ID修改完税凭证子任务状态-->
+    <update id="updateSubTaskProof">
+        update tax_fc_task_sub_proof set status = #{status},modified_by = #{modifiedBy}
+        WHERE is_active = 1 AND status = '00' AND id in
+        <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
+            #{subProofId}
+        </foreach>
+    </update>
+
+    <!--根据主任务ID修改完税凭证子任务状态-->
+    <update id="updateSubTaskProofByMainIds">
+        update tax_fc_task_sub_proof set status = #{status},modified_by = #{modifiedBy}
+        WHERE is_active = 1 AND status = '00' AND task_main_proof_id in
+        <foreach collection="mainProofIds" item="mainProofId" open="(" separator="," close=")">
+            #{mainProofId}
+        </foreach>
+    </update>
+
+    <!--根据主键ID将完税凭证子任务置为失效状态-->
+    <update id="invalidSubTaskProofByIds">
+        update tax_fc_task_sub_proof set status = '04',modified_by = #{modifiedBy}
+        WHERE is_active = 1 AND status = '00' AND id in
+        <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
+            #{subProofId}
+        </foreach>
+    </update>
+
+    <!--根据主任务ID将完税凭证子任务置为失效状态-->
+    <update id="invalidSubTaskProofByMainIds">
+        update tax_fc_task_sub_proof set status = '04',modified_by = #{modifiedBy}
+        WHERE is_active = 1 AND status = '00' AND task_main_proof_id in
+        <foreach collection="mainProofIds" item="mainProofId" open="(" separator="," close=")">
+            #{mainProofId}
+        </foreach>
+    </update>
+
+    <!--根据主任务ID查询其下所有子任务的相关申报账户 -->
+    <select id="selectSubTaskMapByMainId" resultMap="BaseResultMap">
+        select declare_account,id from tax_fc_task_sub_proof
+        where 1 = 1
+--         and status = "00"
+        and is_active = 1
+        and task_main_proof_id = #{mainId}
+        order by created_time desc
+    </select>
+
+    <!--根据主键ID重新计算子任务总人数-->
+    <update id="updateSubHeadcountById">
+        update tax_fc_task_sub_proof tsp
+        set tsp.headcount = (select count(1) from tax_fc_task_sub_proof_detail spd where spd.is_active = 1 and  spd.task_sub_proof_id = #{id} )
+        where  tsp.is_active = 1 and tsp.id = #{id}
+    </update>
+
+    <!--多表查询完税凭证子任务-->
+    <select id="querySubProofInfoByTaskType" resultMap="BaseResultBOMap"
+            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+        select tsp.id,
+        tsp.task_no,
+        tmp.manager_no,
+        tmp.manager_name,
+        tsp.declare_account,
+        tsp.period,
+        tsp.headcount,
+        tsp.chinese_num,
+        tsp.foreigner_num,
+        tsp.`status`,
+        tsp.task_type,
+        tsp.is_combined
+        from tax_fc_task_sub_proof tsp
+        left join tax_fc_task_main_proof tmp
+        on tsp.task_main_proof_id = tmp.id
+        where tsp.is_active = 1 <![CDATA[ and tsp.`status` <> '00' and tsp.`status` <> '02' ]]> and tsp.task_sub_proof_id is null
+        <if test="managerName != null and managerName != ''">
+            and tmp.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')
+        </if>
+        <if test="declareAccount != null and declareAccount != ''">
+            and tsp.declare_account LIKE concat('%', #{declareAccount, jdbcType=VARCHAR},'%')
+        </if>
+        <if test="period != null">
+            and date(tsp.period) = date(#{period,jdbcType=TIMESTAMP})
+        </if>
+        <if test="status != null and status != ''">
+            and tsp.`status` = #{status}
+        </if>
+        <if test="taskType != null and taskType != ''">
+            and tsp.task_type = #{taskType}
+        </if>
+        order by tsp.created_time desc
+    </select>
+
+    <!--条件查询完税凭证子任务总数-->
+    <select id="querySubProofTotalNumByTaskType" resultType="java.lang.Integer"
+            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+        select count(1)
+        from tax_fc_task_sub_proof tsp
+        left join tax_fc_task_main_proof tmp
+        on tsp.task_main_proof_id = tmp.id
+        where tsp.is_active = 1 <![CDATA[ and tsp.`status` <> '00' and tsp.`status` <> '02' ]]> and tsp.task_sub_proof_id is null
+        <if test="managerName != null and managerName != ''">
+            and tmp.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')
+        </if>
+        <if test="declareAccount != null and declareAccount != ''">
+            and tsp.declare_account LIKE concat('%', #{declareAccount, jdbcType=VARCHAR},'%')
+        </if>
+        <if test="period != null">
+            and date(tsp.period) = date(#{period,jdbcType=TIMESTAMP})
+        </if>
+        <if test="status != null and status != ''">
+            and tsp.`status` = #{status}
+        </if>
+        <if test="taskType != null and taskType != ''">
+            and tsp.task_type = #{taskType}
+        </if>
+
+    </select>
+
+    <!--根据数组查询完税凭证子任务信息-->
+    <select id="querySubTaskProofBySubIds" resultMap="BaseResultMap">
+      select id,
+      task_main_proof_id,
+      task_sub_proof_id,
+      task_no,
+      declare_account,
+      period,
+      headcount,
+      chinese_num,
+      foreigner_num,
+      status,
+      is_active,
+      created_time,
+      modified_time,
+      created_by,
+      modified_by,
+      task_type,
+      is_combined
+      from tax_fc_task_sub_proof
+      where task_sub_proof_id is null and is_active = 1 and id in
+        <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
+            #{subProofId}
+        </foreach>
+        order by modified_time,created_time desc
+    </select>
+
+    <!--根据子任务ID数组修改其合并后子任务ID-->
+    <update id="updateSubTaskProofBySubIds" >
+        update tax_fc_task_sub_proof set task_sub_proof_id = #{taskSubProofId},modified_by = #{modifiedBy}
+        WHERE is_active = 1 and status = '01' AND id in
+        <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
+            #{subProofId}
+        </foreach>
+    </update>
+
+    <!--根据合并的ID拼接的in条件查询合并前的子任务ID-->
+    <select id="querySubIdsByCombinedIds" resultType="java.lang.Long">
+      select id from tax_fc_task_sub_proof
+      where task_sub_proof_id in (#{sbCombinedParams})
+    </select>
+
+    <!--根据合并的ID拼接的in条件将符合条件的任务ID置为不可用状态-->
+    <update id="updateSubIdsByCombinedIds">
+        update tax_fc_task_sub_proof set is_active = false
+        WHERE id in (#{sbCombinedParams})
+    </update>
+
+    <!--置空原子任务的合并ID-->
+    <update id="updateSubTaskProofSubId">
+        update tax_fc_task_sub_proof set task_sub_proof_id = null,modified_by = #{modifiedBy}
+        WHERE is_active = 1  AND task_sub_proof_id = #{id}
+    </update>
+
+    <!--根据完税凭证子任务ID数组修改其状态-->
+    <update id="updateTaskProofStatusByIds">
+        update tax_fc_task_sub_proof set status = #{status},modified_by = #{modifiedBy}
+        WHERE is_active = 1  AND id IN
+        <foreach collection="subIds" item="subId" open="(" separator="," close=")">
+        #{subId}
+        </foreach>
+    </update>
+
+    <!--根据完税凭证合并ID数组修改其状态-->
+    <update id="updateTaskProofStatusBySubIds">
+        update tax_fc_task_sub_proof set status = #{status},modified_by = #{modifiedBy}
+        WHERE is_active = 1  AND task_sub_proof_id IN
+        <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
+            #{subProofId}
+        </foreach>
+    </update>
+
+    <!--根据主键ID查询完税凭证子任务详细信息-->
+    <select id="queryApplyDetailsBySubId" resultMap="BaseResultBOMap">
+        select tsp.id,
+        tsp.task_no,
+        tmp.manager_no,
+        tmp.manager_name,
+        tsp.declare_account,
+        tsp.period,
+        tsp.headcount,
+        tsp.chinese_num,
+        tsp.foreigner_num,
+        tsp.`status`,
+        tsp.task_type,
+        tsp.is_combined
+        from tax_fc_task_sub_proof tsp
+        left join tax_fc_task_main_proof tmp
+        on tsp.task_main_proof_id = tmp.id
+        where tsp.is_active = 1 and tsp.id = #{subProofId}
+    </select>
+
+</mapper>

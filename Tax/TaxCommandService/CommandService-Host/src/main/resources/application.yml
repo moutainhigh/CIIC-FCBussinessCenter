@@ -1,0 +1,77 @@
+eureka:
+    client:
+        service-url:
+            defaultZone: http://172.16.9.21:9602/eureka
+#log4j:
+#    rootLogger: DEBUG, Console
+#    appender:
+#        Console: org.apache.log4j.ConsoleAppender
+#        Console.layout: org.apache.log4j.PatternLayout
+##        Console.layout.ConversionPattern: %d [%t] %-5p [%c] - %m%n
+#    logger:
+#        Java:
+#            sql:
+#                Connection: DEBUG
+#        com:
+#            ibatis: DEBUG
+#            ibatis.common.jdbc.ScriptRunner: DEBUG
+#            ibatis.common.jdbc.SimpleDataSource: DEBUG
+#            ibatis.sqlmap.engine.impl.SqlMapClientDelegate: DEBUG
+#        java:
+#            sql:
+#                PreparedStatement: DEBUG
+#                Statement: DEBUG
+#logging:
+#    config: classpath:config/logback-spring.xml
+logging:
+    level:
+#        org.springframework.web: DEBUG
+        org.mybatis: DEBUG
+        com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao: DEBUG
+    pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+#        file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+#    file: D:/logs/mylog.log
+mybatis-plus:
+    configuration:
+        cache-enabled: false
+        map-underscore-to-camel-case: true
+        log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    global-config:
+        db-column-underline: true
+        field-strategy: 2
+        id-type: 0
+        logic-delete-value: 0
+        logic-not-delete-value: 1
+    mapper-locations: classpath*:mapper/*.xml
+#    config-location: classpath:mybatis-config.xml
+pagehelper:
+    reasonable: true
+
+server:
+    port: 9001
+#    context-path: /tax
+    session-timeout: '# session timeout in seconds'
+    tomcat:
+        background-processor-delay: 30.0
+        basedir: '/tmp '
+        max-threads: 0.0
+        protocol-header: 'x-forwarded-proto '
+        remote-ip-header: x-forwarded-for
+spring:
+    application:
+        name: fc-support-center-query-service-tax
+    datasource:
+        driverClassName: com.mysql.jdbc.Driver
+        initial-size: 10
+        max-active: 20
+        max-idle: 8
+        min-idle: 8
+        password: a111111
+        url: jdbc:mysql://172.16.9.15:3306/gtobusinessdb?characterEncoding=utf8&useSSL=false
+        username: root
+    jpa:
+        database: MYSQL
+        hibernate:
+            ddl-auto: update
+        show-sql: true
