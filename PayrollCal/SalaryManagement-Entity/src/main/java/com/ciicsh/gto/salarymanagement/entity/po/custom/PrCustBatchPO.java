@@ -61,7 +61,13 @@ public class PrCustBatchPO {
     //薪资组名称
     private String prGroupName;
 
+    //薪资组编码
+    private String prGroupCode;
+
     //薪资期间类型：本月、上月、下月
     private int payrollType;
+
+    //是否继承薪资组模版
+    private boolean isTemplate;
 
 }

@@ -20,4 +20,5 @@ public interface PayrollSource {
 
     @Output(EMP_GROUP_OUTPUT)
     MessageChannel empGroupOutput();
+
 }

@@ -3,11 +3,14 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.fcsupportcenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcsupportcenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.fcsupportcenter.util.mongo.NormalBatchMongoOpt;
-import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
-import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
+import com.ciicsh.gto.salarymanagement.entity.dto.EmpFilterDTO;
+import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
@@ -18,11 +21,11 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.Constants.PayItemName;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ExecutionContext;
 import com.ciicsh.gto.salarymanagementcommandservice.util.excel.PRItemExcelReader;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
@@ -33,11 +36,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,8 @@ import java.util.stream.Collectors;
  */
 @RestController
 public class NormalBatchController {
+
+    private final static Logger logger = LoggerFactory.getLogger(NormalBatchController.class);
 
     class MgrData{
         public String Code;
@@ -159,12 +162,10 @@ public class NormalBatchController {
         try {
             result = batchService.insert(prNormalBatchPO);
             if(result > 0){
-
                 //send message to kafka
                 PayrollMsg msg = new PayrollMsg();
-                msg.setBatchId(code);
-                msg.setEmpGroupId("emp_groupId");
-                msg.setPayrollGroupId("payroll_id");
+                msg.setBatchCode(code);
+                msg.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.Send(msg);
 
                 return JsonResult.success(result);
@@ -293,16 +294,98 @@ public class NormalBatchController {
 
     }
 
-    @DeleteMapping("/deleteBatch/{code}")
-    public JsonResult deleteBatch(@PathVariable("code") String code) {
-        /*String[] codes = code.split(",");
+    @DeleteMapping("/deleteBatch/{codes}")
+    public JsonResult deleteBatch(@PathVariable("codes") String batchCodes) {
+        String[] codes = batchCodes.split(",");
         int i = batchService.deleteBatchByCodes(Arrays.asList(codes));
         if (i >= 1){
+                //send message to kafka
+            PayrollMsg msg = new PayrollMsg();
+            msg.setBatchCode(batchCodes);
+            msg.setOperateType(OperateTypeEnum.DELETE.getValue());
+            sender.Send(msg);
+
             return JsonResult.success(i,"删除成功");
         }else {
             return JsonResult.faultMessage();
-        }*/
-        return null;
+        }
     }
+
+
+    /**
+     * 从雇员组中过滤雇员列表
+     * @param filterDTO
+     * @return
+     */
+    @PostMapping("/filterEmployees")
+    public JsonResult getEmployeeListByBatchCode(@RequestBody EmpFilterDTO filterDTO){
+
+        long start = System.currentTimeMillis(); //begin
+
+        String batchCode = filterDTO.getBatchCode();
+        String [] codes = filterDTO.getEmpCodes().split(",");
+        List<String> codeList = Arrays.asList(codes);
+        int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",false);
+        logger.info("update all " + String.valueOf(rowAffected1));
+        int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode).and("雇员编号").in(codeList),"catalog.emp_info.is_active",true);
+        logger.info("update specific " + String.valueOf(rowAffected));
+
+        long end = System.currentTimeMillis();
+        logger.info("filterEmployees cost time : " + String.valueOf((end - start)));
+
+
+        return JsonResult.success(rowAffected,"更新成功");
+
+    }
+
+    /**
+     * 从mongodb，根据批次号，获取雇员列表
+     * @param pageNum
+     * @param pageSize
+     * @param batchCode
+     * @return
+     */
+    @PostMapping("/getFilterEmployees/{batchCode}")
+    public JsonResult getFilterEmployees(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                    @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
+                                    @PathVariable("batchCode") String batchCode){
+
+        long start = System.currentTimeMillis(); //begin
+
+        //根据批次号，获取选中的雇员列表
+        List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+
+        list = list.stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
+
+        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
+            SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
+            itemPO.setEmpCode(String.valueOf(dbObject.get("雇员编号")));
+
+            DBObject calalog = (DBObject)dbObject.get("catalog");
+            DBObject empInfo = (DBObject)calalog.get("emp_info");
+            itemPO.setEmpName(empInfo.get("雇员姓名") == null ? "" : (String)empInfo.get("雇员姓名")); //雇员姓名
+            itemPO.setTaxPeriod(empInfo.get("个税期间") == null ? "本月" : (String)empInfo.get("个税期间")); //雇员个税期间 TODO
+
+            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
+            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
+            items.forEach( dbItem -> {
+                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
+                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int)dbItem.get("data_type"));
+                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int)dbItem.get("item_type"));
+                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value"): dbItem.get("item_value"));
+                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String)dbItem.get("item_name"));
+                simplePayItemDTOList.add(simplePayItemDTO);
+            });
+            itemPO.setPayItemDTOS(simplePayItemDTOList);
+            return itemPO;
+        }).collect(Collectors.toList());
+
+        long end = System.currentTimeMillis();
+        logger.info("getFilterEmployees cost time : " + String.valueOf((end - start)));
+
+        return JsonResult.success(simplePayItemDTOS);
+
+    }
+
 
 }

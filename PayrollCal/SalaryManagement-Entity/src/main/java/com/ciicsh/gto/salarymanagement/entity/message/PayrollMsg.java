@@ -1,45 +1,30 @@
 package com.ciicsh.gto.salarymanagement.entity.message;
 
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
+
 /**
  * Created by bill on 17/12/5.
  */
 public class PayrollMsg {
 
-    private String batchId;
-    private String empGroupId;
+    private String batchCode;
 
-    public String getEmpGroupId() {
-        return empGroupId;
+    //操作类型：增加，更新，删除
+    private int operateType;
+
+    public String getBatchCode() {
+        return batchCode;
     }
 
-    public void setEmpGroupId(String empGroupId) {
-        this.empGroupId = empGroupId;
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
     }
 
-    public String getPayrollGroupId() {
-        return payrollGroupId;
+    public int getOperateType() {
+        return operateType;
     }
 
-    public void setPayrollGroupId(String payrollGroupId) {
-        this.payrollGroupId = payrollGroupId;
+    public void setOperateType(int operateType) {
+        this.operateType = operateType;
     }
-
-    private String payrollGroupId;
-
-    public String getBatchId() {
-        return batchId;
-    }
-
-    public void setBatchId(String batchId) {
-        this.batchId = batchId;
-    }
-
-    public String toString() {
-        return "PayrollMsg{" +
-                "batchId=" + batchId +
-                ", empGroupId=" + empGroupId +
-                ", payrollGroupId=" + payrollGroupId +
-                "}";
-    }
-
 }

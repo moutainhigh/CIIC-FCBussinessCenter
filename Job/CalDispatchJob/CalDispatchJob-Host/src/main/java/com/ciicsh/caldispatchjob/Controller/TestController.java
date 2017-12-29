@@ -1,16 +1,19 @@
 package com.ciicsh.caldispatchjob.Controller;
 
-import com.ciicsh.caldispatchjob.compute.service.EmpAgreementServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
+import com.ciicsh.gto.fcsupportcenter.util.mongo.NormalBatchMongoOpt;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by bill on 17/12/12.
@@ -19,33 +22,27 @@ import java.util.UUID;
 public class TestController {
 
     @Autowired
-    private EmpAgreementServiceImpl empAgreementService;
-
-    @Autowired
     private NormalBatchServiceImpl normalBatchService;
 
-    @PostMapping("/batchEmpAgreement")
-    public void batchEmpAgreement(){
-        List<String> empIds = new ArrayList<>();
-        empIds.add("YYA14369");
-        empIds.add("YYA14378");
-        empAgreementService.batchInsertServiceAgreement(empIds);
-    }
+    @Autowired
+    private NormalBatchMongoOpt normalBatchMongoOpt;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @PostMapping("/updatePayItem")
     public void updatePayItem(){
-        String batchCode = "5bb57dfe-1dcb-447e-9179-a4d4010085f5";
-        String empGroupId = "19";
-        String groupCode = "";
-        String empId = "YYA14369";
-        List<DBObject> list = new ArrayList<>();
-        DBObject  object = new BasicDBObject();
-        object.put("基本工资", 15000);
-        object.put("加班小时数",20.8);
-        object.put("税后工资",12000);
-        object.put("工龄",1.2);
 
-        normalBatchService.associateEmpPayItems(batchCode,empGroupId,groupCode,empId,object);
+        //int affected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is("ymx-0001-201801-0000000043").and("calalog.pay_items")
+        //        .elemMatch(Criteria.where("cal_priority").is(null)),"cal_priority",0);
+
+        mongoTemplate.updateMulti(
+                Query.query(
+                Criteria.where("batch_code").is("ymx-0001-201801-0000000043").and("calalog.pay_items").elemMatch(
+                        Criteria.where("cal_priority").is(null)
+                )), Update.update("calalog.pay_items.cal_priority",0),"pr_normal_batch_table"
+        );
+
     }
 
     @PostMapping("/updateEmpAgreement")
@@ -61,6 +58,6 @@ public class TestController {
         object.put("频率","次/月");
         object.put("时间","2017-08-09");
 
-        normalBatchService.associateEmpAgreements(batchCode,empGroupId,groupCode,empId,object);
+        //normalBatchService.associateEmpAgreements(batchCode,empGroupId,groupCode,empId,object);
     }
 }

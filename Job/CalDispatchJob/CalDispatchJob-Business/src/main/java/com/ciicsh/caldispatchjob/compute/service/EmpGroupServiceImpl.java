@@ -1,15 +1,18 @@
 package com.ciicsh.caldispatchjob.compute.service;
 
+import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcsupportcenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,51 +34,72 @@ public class EmpGroupServiceImpl {
     @Autowired
     private EmpGroupMongoOpt empGroupMongoOpt;
 
-    public void batchInsertGroupEmployees(String empGroupCode, List<String> empIds){
+    /**
+     * 当雇员组增加雇员时：Mongodb 表 pr_emp_group_table - 更新或者添加雇员基本信息字段，雇员服务协议字段，雇员扩展字段
+     * @param empGroupCode
+     * @param empIds
+     * @return
+     */
+    public int batchInsertOrUpdateGroupEmployees(String empGroupCode, List<String> empIds) {
 
         List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(empGroupCode);
-        if(empIds == null || empIds.size() == 0){
+        if (empIds == null || empIds.size() == 0) {
             //employees = employeeMapper.getEmployees(Integer.parseInt(empGroupId));
-        }else {
+        } else {
             employees = employees.stream().filter(emp -> {
                 return empIds.contains(emp.getEmployeeId());
             }).collect(Collectors.toList());
         }
 
-        List<DBObject> list = new ArrayList<>();
-        if(employees != null){
-            DBObject basicDBObject = null;
-            for (EmployeeExtensionPO item: employees) {
-                basicDBObject = new BasicDBObject();
-                basicDBObject.put("emp_group_code",item.getEmpGroupCode());
-                basicDBObject.put("雇员编号",item.getEmployeeId());
-                basicDBObject.put("雇员姓名",item.getEmployeeName());
-                basicDBObject.put("出生日期",item.getBirthday());
-                basicDBObject.put("部门",item.getDepartment());
-                basicDBObject.put("性别",item.getGender());
-                basicDBObject.put("证件类型",item.getIdCardType());
-                basicDBObject.put("入职日期",item.getJoinDate());
-                basicDBObject.put("证件号码",item.getIdNum());
-                basicDBObject.put("职位",item.getPosition());
+        List<BathUpdateOptions> options = new ArrayList<>();
+        DBObject basicDBObject = null;
 
-                // 获取雇员服务协议
-                //basicDBObject.put("servicePortal", "{ key : value}");
+        for (EmployeeExtensionPO item : employees) {
+            BathUpdateOptions opt = new BathUpdateOptions();
+            opt.setQuery(Query.query(Criteria.where("emp_group_code").is(item.getEmpGroupCode()).andOperator(Criteria.where("雇员编号").is(item.getEmployeeId()))));
+            basicDBObject = new BasicDBObject();
+            basicDBObject.put("is_active", true);
+            basicDBObject.put("雇员姓名", item.getEmployeeName());
+            basicDBObject.put("出生日期", item.getBirthday());
+            basicDBObject.put("部门", item.getDepartment());
+            basicDBObject.put("性别", item.getGender());
+            basicDBObject.put("证件类型", item.getIdCardType());
+            basicDBObject.put("入职日期", item.getJoinDate());
+            basicDBObject.put("证件号码", item.getIdNum());
+            basicDBObject.put("职位", item.getPosition());
 
-                // 雇员薪资数据
-                //basicDBObject.put("item","{name:基本工资, val: 12, alias:}");
+            //TODO 获取雇员服务协议和雇员扩展字段接口
+            String emp_json_agreement = "{'薪资计算':{'薪资类型':{'复杂度':'复杂'}},'频率':'人月','金额':'1800／天'}";
+            basicDBObject.put("雇员服务协议", (DBObject)JSON.parse(emp_json_agreement));
 
-                list.add(basicDBObject);
-            }
-            try {
-                empGroupMongoOpt.batchInsert(list);
+            String emp_json_extend = "{'field1':'56','field2':'特性字段','field3':'其他扩展字段'}";
+            basicDBObject.put("雇员扩展字段", (DBObject)JSON.parse(emp_json_extend));
 
-            }
-            catch (Exception e){
-                logger.error(e.getMessage());
-            }
+            opt.setUpdate(Update.update("base_info", basicDBObject));
+
+            opt.setMulti(true);
+            opt.setUpsert(true);
+
+            options.add(opt);
         }
+
+        empGroupMongoOpt.createIndex();
+        int rowAffected = empGroupMongoOpt.doBathUpdate(options,false);
+        return rowAffected;
+
     }
 
+    public int batchInsertOrUpdateGroupEmployees(String empGroupCode) {
+        return batchInsertOrUpdateGroupEmployees(empGroupCode,null);
+    }
+
+
+    /**
+     * 雇员组中删除雇员：Mongodb 表 pr_emp_group_table 删除雇员
+     * @param empGroupIds
+     * @param empIds
+     * @return
+     */
     public int batchDelGroupEmployees(List<String> empGroupIds, List<String> empIds){
 
         String[] groupIDs = empGroupIds.toString().replace("[","").replace("]","").split(",");
@@ -97,6 +121,23 @@ public class EmpGroupServiceImpl {
         logger.info("deleted affected rows :" + rowAffected);
 
         return rowAffected;
+    }
+
+
+    /**
+     * 根据雇员组Code 获取 雇员列表：逻辑－ mongodb是否存在，如果不存在，mysqlDB 获取雇员列表
+     * @param empGroupCode
+     * @return
+     */
+    public List<DBObject> getEmployeesByEmpGroupCode(String empGroupCode){
+        List<DBObject> list = null;
+
+        list = empGroupMongoOpt.list(Criteria.where("emp_group_code").is(empGroupCode));
+        if(list == null || list.size() == 0){
+            batchInsertOrUpdateGroupEmployees(empGroupCode);
+            return empGroupMongoOpt.list(Criteria.where("emp_group_code").is(empGroupCode));
+        }
+        return list;
     }
 
 }

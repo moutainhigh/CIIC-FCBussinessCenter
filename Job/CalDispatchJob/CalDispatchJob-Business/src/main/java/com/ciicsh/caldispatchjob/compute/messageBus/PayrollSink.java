@@ -13,9 +13,14 @@ public interface PayrollSink {
 
     String EMP_GROUP_INPUT= "pr_emp_group-channel";
 
+    String EMP_EXTEND_INPUT = "emp_extend-channel";
+
     @Input(INPUT)
     MessageChannel input();
 
     @Input(EMP_GROUP_INPUT)
     MessageChannel empGroupInput();
+
+    @Input(EMP_EXTEND_INPUT)
+    MessageChannel empExtendInput();
 }

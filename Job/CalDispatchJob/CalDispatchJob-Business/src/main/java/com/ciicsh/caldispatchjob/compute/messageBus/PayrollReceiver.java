@@ -1,7 +1,9 @@
 package com.ciicsh.caldispatchjob.compute.messageBus;
 
 import com.ciicsh.caldispatchjob.compute.service.EmpGroupServiceImpl;
+import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpExtend;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import org.slf4j.Logger;
@@ -25,19 +27,27 @@ public class PayrollReceiver {
     @Autowired
     private EmpGroupServiceImpl empGroupService;
 
+    @Autowired
+    private NormalBatchServiceImpl batchService;
+
     @StreamListener(PayrollSink.INPUT)
     public void receive(PayrollMsg message){
-        logger.info("received from message: " + message.toString());
+        logger.info("received from batchCode : " + message.getBatchCode());
+        processNormalBatch(message.getBatchCode(), message.getOperateType());
     }
 
     @StreamListener(PayrollSink.EMP_GROUP_INPUT)
     public void receive(PayrollEmpGroup message){
         //logger.info("received employee group from message: " + message.getIds().size());
-        processMongodb(message);
+        processEmployees(message);
 
     }
 
-    private void processMongodb(PayrollEmpGroup message){
+    /**
+     * 订阅雇员组里面的雇员列表变化：新增或者删除
+     * @param message
+     */
+    private void processEmployees(PayrollEmpGroup message){
         List<String> empIds = message.getIds();
         List<String> groupIds = message.getEmpGroupIds();
 
@@ -47,7 +57,7 @@ public class PayrollReceiver {
             String empGroupId = String.valueOf(groupIds.toArray()[0]);
             logger.info("ADD Opt");
             logger.info("emp group id:" + empGroupId);
-            empGroupService.batchInsertGroupEmployees(empGroupId,empIds);
+            empGroupService.batchInsertOrUpdateGroupEmployees(empGroupId,empIds);
         }
         else if(message.getOperateType() == OperateTypeEnum.DELETE.getValue()){
             logger.info("DELETE Opt");
@@ -55,4 +65,18 @@ public class PayrollReceiver {
         }
 
     }
+
+    /**
+     * 订阅正常批次：新增或者删除
+     * @param batchCode
+     * @param optType
+     */
+    private void processNormalBatch(String batchCode, int optType){
+        if(optType == OperateTypeEnum.ADD.getValue()){
+            batchService.batchInsertOrUpdateNormalBatch(batchCode);
+        }else if(optType == OperateTypeEnum.DELETE.getValue()){
+            batchService.deleteNormalBatch(batchCode);
+        }
+    }
+
 }

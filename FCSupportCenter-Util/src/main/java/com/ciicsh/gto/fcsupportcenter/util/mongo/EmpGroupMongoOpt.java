@@ -5,8 +5,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 import org.springframework.stereotype.Component;
 
@@ -32,10 +30,5 @@ public class EmpGroupMongoOpt extends BaseOpt {
 
     public EmpGroupMongoOpt() {
         super(PR_EMPLOYEE_GROUP);
-    }
-
-    public void batchInsertEmpGroup(List<DBObject> empList){
-        createIndex();
-        this.batchInsert(empList);
     }
 }
