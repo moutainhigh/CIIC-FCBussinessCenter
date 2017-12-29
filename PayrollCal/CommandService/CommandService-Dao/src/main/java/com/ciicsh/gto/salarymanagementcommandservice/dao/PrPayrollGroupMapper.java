@@ -28,13 +28,6 @@ public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
     List<PrPayrollGroupPO> selectListByEntityUseLike(PrPayrollGroupPO param);
 
     /**
-     * 更新薪资组，version + 1
-     * @param param
-     * @return
-     */
-    Integer updateItemAndVersionByCode(PrPayrollGroupPO param);
-
-    /**
      * 更新薪资组，不增加version
      * @param param
      * @return

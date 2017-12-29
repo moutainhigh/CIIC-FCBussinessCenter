@@ -31,4 +31,14 @@ public interface PrNormalBatchService {
     Integer deleteBatchByCodes(List<String> codes);
 
     PrNormalBatchPO getBatchByCode(String code);
+
+    /**
+     * 批量插入MONGODB数据：雇员数据，雇员薪资组数据
+     * @param batchCode
+     * @param empGroupCode
+     * @param PrGroupCode
+     * @param PrTempGroupCode
+     * @return
+     */
+    int batchInsertMongoForEmpGroudCodeAndPRGroupCode(String batchCode, String empGroupCode, String PrGroupCode, String PrTempGroupCode);
 }

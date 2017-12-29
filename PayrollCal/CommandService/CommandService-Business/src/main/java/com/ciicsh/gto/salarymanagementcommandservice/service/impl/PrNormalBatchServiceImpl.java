@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
+
     @Autowired
     PrNormalBatchMapper normalBatchMapper;
 
@@ -62,5 +63,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         param.setCode(code);
         PrNormalBatchPO result = normalBatchMapper.selectOne(param);
         return result;
+    }
+
+    @Override
+    public int batchInsertMongoForEmpGroudCodeAndPRGroupCode(String batchCode, String empGroupCode, String PrGroupCode, String PrTempGroupCode) {
+
+        return 0;
     }
 }

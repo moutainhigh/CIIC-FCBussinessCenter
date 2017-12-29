@@ -31,13 +31,4 @@ public class KafkaSender {
         payrollSource.empGroupOutput().send(MessageBuilder.withPayload(empGroup).build());
     }
 
-    /*
-    public void Send1(Customer customer){
-        custSource.output1().send(MessageBuilder.withPayload(customer).build());
-    }
-
-    public void Send2(String message){
-        custSource.output2().send(MessageBuilder.withPayload(message).build());
-    }
-    */
 }

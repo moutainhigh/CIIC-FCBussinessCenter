@@ -31,9 +31,4 @@ public class EmpGroupMongoOpt extends BaseOpt {
     public EmpGroupMongoOpt() {
         super(PR_EMPLOYEE_GROUP);
     }
-
-    public void batchInsertEmpGroup(List<DBObject> empList){
-        createIndex();
-        this.batchInsert(empList);
-    }
 }

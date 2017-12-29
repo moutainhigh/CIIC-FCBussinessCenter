@@ -16,7 +16,7 @@ public class EmpAgreementMongoOpt extends BaseOpt {
 
     private final static Logger logger = LoggerFactory.getLogger(EmpGroupMongoOpt.class);
 
-    private static final String PR_EMPLOYEE_SERVICE_AGREEMENT  = "pr_emp_service_agreement_table";
+    private static final String PR_EMPLOYEE_SERVICE_AGREEMENT  = "emp_extends_table";
 
     public EmpAgreementMongoOpt() {
         super(PR_EMPLOYEE_SERVICE_AGREEMENT);

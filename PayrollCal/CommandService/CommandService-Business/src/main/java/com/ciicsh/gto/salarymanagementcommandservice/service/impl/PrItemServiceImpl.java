@@ -1,10 +1,13 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrItemMapper;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBaseItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
@@ -14,6 +17,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +37,9 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Autowired
     private PrPayrollItemMapper prPayrollItemMapper;
+
+    @Autowired
+    private PrPayrollGroupMapper prPayrollGroupMapper;
 
     final static int PAGE_SIZE = 5;
 
@@ -80,7 +87,14 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollItemPO param) {
+        // 将所在薪资组的审核状态更新为草稿
+        PrPayrollGroupPO groupParam = new PrPayrollGroupPO();
+        groupParam.setGroupCode(param.getPayrollGroupCode());
+        groupParam.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
+        prPayrollGroupMapper.updateItemByCode(groupParam);
+        // 插入薪资项
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
     }
@@ -216,6 +230,17 @@ public class PrItemServiceImpl implements PrItemService {
             PrPayrollItemPO param = new PrPayrollItemPO();
             param.setItemCode(codes.get(i));
             param.setDisplayPriority(i);
+            prPayrollItemMapper.updateItemByCode(param);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean updateCalPriority(List<String> codes) {
+        for(int i = 0; i < codes.size(); i++) {
+            PrPayrollItemPO param = new PrPayrollItemPO();
+            param.setItemCode(codes.get(i));
+            param.setCalPriority(i+1);
             prPayrollItemMapper.updateItemByCode(param);
         }
         return true;

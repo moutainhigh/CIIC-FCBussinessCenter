@@ -27,6 +27,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
+            <artifactId>fcsupportcenter-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>

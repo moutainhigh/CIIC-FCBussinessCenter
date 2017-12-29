@@ -112,4 +112,11 @@ public interface PrItemService {
      * @return
      */
     boolean updateDisplayPriority(List<String> codes);
+
+    /**
+     * 更新计算顺序
+     * @param codes
+     * @return
+     */
+    boolean updateCalPriority(List<String> codes);
 }
