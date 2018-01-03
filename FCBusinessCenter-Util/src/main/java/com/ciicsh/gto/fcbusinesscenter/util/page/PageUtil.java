@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.util.page;
+package com.ciicsh.gto.fcbusinesscenter.util.page;
 
 /**
  * PageUtil

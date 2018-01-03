@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.util.exception;
+package com.ciicsh.gto.fcbusinesscenter.util.exception;
 
 /**
  * 业务异常类

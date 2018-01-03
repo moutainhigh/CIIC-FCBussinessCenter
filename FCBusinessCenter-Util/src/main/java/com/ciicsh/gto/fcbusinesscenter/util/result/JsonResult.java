@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.util.result;
+package com.ciicsh.gto.fcbusinesscenter.util.result;
 
 import java.io.Serializable;
 
