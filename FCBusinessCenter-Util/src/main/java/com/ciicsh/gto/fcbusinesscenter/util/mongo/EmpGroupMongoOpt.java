@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.util.mongo;
+package com.ciicsh.gto.fcbusinesscenter.util.mongo;
 
 import com.ciicsh.gt1.BaseOpt;
 import com.mongodb.BasicDBObject;
@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Created by bill on 17/12/9.

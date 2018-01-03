@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.util.constants;
+package com.ciicsh.gto.fcbusinesscenter.util.constants;
 
 /**
  * Created by bill on 17/12/21.

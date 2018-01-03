@@ -1,7 +1,7 @@
 package com.ciicsh.caldispatchjob.Controller;
 
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
-import com.ciicsh.gto.fcsupportcenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;

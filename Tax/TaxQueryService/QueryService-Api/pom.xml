@@ -5,27 +5,27 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
-        <artifactId>tax-parent</artifactId>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+        <artifactId>fcbusinesscenter-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+    <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
     <artifactId>queryservice-api</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>tax-util</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>gt1.fcsupportcenter.tax.queryservice-api</finalName>
+        <finalName>gt1.fcbusinesscenter.tax.queryservice-api</finalName>
     </build>
 
 

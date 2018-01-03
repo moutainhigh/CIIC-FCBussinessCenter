@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Created by houwanhua on 2017/12/5.
  */
 
-@FeignClient("fcoperation-center-command-service")
+@FeignClient("fcbusiness-center-command-service")
 @RequestMapping("/api/employeegroup")
 public interface EmployeeGroupProxy {
     @GetMapping("/getemployeegroupnames")
@@ -33,8 +33,8 @@ public interface EmployeeGroupProxy {
 //
     @PostMapping("/getemployeegroups")
     JsonResult getEmployeeGroups(@RequestBody PrEmpGroupDTO prEmpGroupDTO,
-                                 @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                                 @RequestParam(required = false, defaultValue = "50")  Integer pageSize);
+                                 @RequestParam(required = false, defaultValue = "1",value = "pageNum") Integer pageNum,
+                                 @RequestParam(required = false, defaultValue = "50",value = "pageSize")  Integer pageSize);
 
 
     @PostMapping("/edit")

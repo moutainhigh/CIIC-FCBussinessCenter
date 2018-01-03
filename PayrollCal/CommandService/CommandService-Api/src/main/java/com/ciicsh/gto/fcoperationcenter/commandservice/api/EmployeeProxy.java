@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by houwanhua on 2017/12/5.
  */
-@FeignClient("fcoperation-center-command-service")
+@FeignClient("fcbusiness-center-command-service")
 @RequestMapping("/api/employee")
 public interface EmployeeProxy {
 
@@ -25,14 +25,19 @@ public interface EmployeeProxy {
 //                            @RequestParam(required = false, defaultValue = "") String position);
 //    @GetMapping("/importemployee")
 //    JsonResult getImportedEmployeeList(@RequestParam String managementId);
+
+    /**
+     * 添加测试雇员方法
+     * @return
+     */
     @PostMapping("/addEmployees")
     JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS,@RequestParam String empGroupCode);
 
 
     @PostMapping("/getEmployees")
     JsonResult getEmployees(@RequestParam String empGroupCode,
-                            @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                            @RequestParam(required = false, defaultValue = "50")  Integer pageSize);
+                            @RequestParam(required = false, defaultValue = "1",value = "pageNum") Integer pageNum,
+                            @RequestParam(required = false, defaultValue = "50",value = "pageSize")  Integer pageSize);
 
 
     @DeleteMapping("/batchDelete/{ids}")

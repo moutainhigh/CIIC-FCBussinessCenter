@@ -1,7 +1,7 @@
 package com.ciicsh.caldispatchjob.compute.service;
 
 import com.ciicsh.gt1.BathUpdateOptions;
-import com.ciicsh.gto.fcsupportcenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;

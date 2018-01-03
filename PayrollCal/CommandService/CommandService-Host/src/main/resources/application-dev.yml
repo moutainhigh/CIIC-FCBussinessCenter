@@ -10,7 +10,7 @@ spring:
     username: root
     password: a111111
   application:
-    name: fcoperation-center-command-service
+    name: fcbusiness-center-command-service
   cloud:
     stream:
       kafka:

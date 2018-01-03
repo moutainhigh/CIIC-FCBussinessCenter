@@ -5,19 +5,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
-        <artifactId>tax-parent</artifactId>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+        <artifactId>fcbusinesscenter-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+    <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
     <artifactId>tax-entity</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <build>
-        <finalName>gt1.fcsupportcenter.tax.tax-entity</finalName>
+        <finalName>gt1.fcbusinesscenter.tax.tax-entity</finalName>
     </build>
 
 

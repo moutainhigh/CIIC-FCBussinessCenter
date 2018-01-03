@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.util.mongo;
+package com.ciicsh.gto.fcbusinesscenter.util.mongo;
 
 import com.ciicsh.gt1.BaseOpt;
 import com.mongodb.BasicDBObject;

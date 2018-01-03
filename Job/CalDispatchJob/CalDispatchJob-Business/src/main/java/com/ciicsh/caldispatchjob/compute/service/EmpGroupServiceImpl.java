@@ -1,7 +1,7 @@
 package com.ciicsh.caldispatchjob.compute.service;
 
 import com.ciicsh.gt1.BathUpdateOptions;
-import com.ciicsh.gto.fcsupportcenter.util.mongo.EmpGroupMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
