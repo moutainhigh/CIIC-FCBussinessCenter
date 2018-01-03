@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.util.mongo;
 
 import com.ciicsh.gt1.BaseOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ public class EmpGroupMongoOpt extends BaseOpt {
     public void createIndex(){
         DBObject indexOptions = new BasicDBObject();
         indexOptions.put("emp_group_id",1);
-        indexOptions.put("雇员编号",1);
+        indexOptions.put(PayItemName.EMPLOYEE_CODE_CN,1);
         CompoundIndexDefinition indexDefinition = new CompoundIndexDefinition(indexOptions);
         mongoTemplate.indexOps(PR_EMPLOYEE_GROUP).ensureIndex(indexDefinition);
     }

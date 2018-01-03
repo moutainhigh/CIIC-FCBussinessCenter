@@ -11,6 +11,7 @@ import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
@@ -25,22 +26,16 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.item.ExecutionContext;
-import com.ciicsh.gto.salarymanagementcommandservice.util.excel.PRItemExcelReader;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
-import org.springframework.batch.item.excel.poi.PoiItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,22 +69,7 @@ public class NormalBatchController {
     private NormalBatchMongoOpt normalBatchMongoOpt;
 
     @Autowired
-    private EmpGroupMongoOpt empGroupMongoOpt;
-
-    @Autowired
     private PrAccountSetService accountSetService;
-
-    @Autowired
-    private PrGroupService prGroupService;
-
-    @Autowired
-    private PrItemService prItemService;
-
-    @Autowired
-    private EmployeeService employeeService;
-
-    @Autowired
-    private PrGroupTemplateServiceImpl prGroupTemplateService;
 
     @Autowired
     private CodeGenerator codeGenerator;
@@ -231,70 +211,13 @@ public class NormalBatchController {
     }
 
     @PostMapping("/uploadExcel")
-    public JsonResult importExcel(String pr_code, String pr_template_code, String emp_group_code,String batchCode, MultipartFile file){
+    public JsonResult importExcel(String batchCode, String empGroupCode, int importType, MultipartFile file){
 
-        List<PrPayrollItemPO> prList = null;
-        String groupCode = "";
-        if(StringUtils.isNotEmpty(pr_code)){ // 薪资组编码存在
-            prList = prItemService.getListByGroupCode(pr_code,0,0).getList();
-            groupCode = pr_code;
-
-        }else if(StringUtils.isNotEmpty(pr_template_code)) { // 薪资组模版编码存在
-            prList = prItemService.getListByGroupTemplateCode(pr_code,0,0).getList();
-            groupCode = pr_template_code;
+        int sucessRows = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, importType,file);
+        if(sucessRows == -1){
+            return JsonResult.faultMessage("雇员组中已有雇员，不能用于覆盖导入");
         }
-
-        // get employee list by group code from mongodb
-        List<DBObject> empList = empGroupMongoOpt.list(Criteria.where("emp_group_code").is(emp_group_code));
-        if(empList == null || empList.size() == 0){
-            // 如果mongodb不存在，则从数据库里面读取，并更新到mongodb里面
-            PageInfo<EmployeeExtensionPO> pageInfo =  employeeService.getEmployees(emp_group_code, 0,0);
-            empList = new ArrayList<>();
-            for (EmployeeExtensionPO item: pageInfo.getList()) {
-                DBObject basicDBObject = new BasicDBObject();
-                basicDBObject = new BasicDBObject();
-                basicDBObject.put("emp_group_code",item.getEmpGroupCode());
-                basicDBObject.put("雇员编号",item.getEmployeeId());
-                basicDBObject.put("雇员姓名",item.getEmployeeName());
-                basicDBObject.put("出生日期",item.getBirthday());
-                basicDBObject.put("部门",item.getDepartment());
-                basicDBObject.put("性别",item.getGender());
-                basicDBObject.put("证件类型",item.getIdCardType());
-                basicDBObject.put("入职日期",item.getJoinDate());
-                basicDBObject.put("证件号码",item.getIdNum());
-                basicDBObject.put("职位",item.getPosition());
-                empList.add(basicDBObject);
-
-                empGroupMongoOpt.batchInsert(empList);
-                //end
-            }
-        }
-        List<DBObject> results = new ArrayList<>();
-        try {
-            InputStream stream = file.getInputStream();//new FileInputStream("/Users/bill/Documents/样本数据.xls");
-            PoiItemReader<List<PrPayrollItemPO>> reader = PRItemExcelReader.getPrGroupReader(stream, prList,empList);
-            reader.open(new ExecutionContext());
-            List<PrPayrollItemPO> row = null;
-            DBObject dbObject = null;
-            do {
-                row = reader.read();
-                if(row != null) {
-                    dbObject = new BasicDBObject();
-                    dbObject.put("batch_code", batchCode);
-                    dbObject.put("emp_group_code", groupCode);
-                    PrPayrollItemPO itemPO = row.stream().filter(item -> item.getItemName().equals(PayItemName.EMPLOYEE_CODE_CN)).collect(Collectors.toList()).get(0);
-                    dbObject.put("employee_id", itemPO.getItemValue());
-                    dbObject.put("pay_items", BathTranslator.transPrPayrollItemPOToDBObject(row));
-                    results.add(dbObject);
-                }
-            }while (row != null);
-
-            normalBatchMongoOpt.batchInsert(results);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return JsonResult.success("");
+        return JsonResult.success(sucessRows);
 
     }
 
@@ -331,7 +254,7 @@ public class NormalBatchController {
         List<String> codeList = Arrays.asList(codes);
         int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",false);
         logger.info("update all " + String.valueOf(rowAffected1));
-        int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode).and("雇员编号").in(codeList),"catalog.emp_info.is_active",true);
+        int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_CODE_CN).in(codeList),"catalog.emp_info.is_active",true);
         logger.info("update specific " + String.valueOf(rowAffected));
 
         long end = System.currentTimeMillis();
@@ -363,12 +286,12 @@ public class NormalBatchController {
 
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
             SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
-            itemPO.setEmpCode(String.valueOf(dbObject.get("雇员编号")));
+            itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
 
             DBObject calalog = (DBObject)dbObject.get("catalog");
             DBObject empInfo = (DBObject)calalog.get("emp_info");
-            itemPO.setEmpName(empInfo.get("雇员姓名") == null ? "" : (String)empInfo.get("雇员姓名")); //雇员姓名
-            itemPO.setTaxPeriod(empInfo.get("个税期间") == null ? "本月" : (String)empInfo.get("个税期间")); //雇员个税期间 TODO
+            itemPO.setEmpName(empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN)); //雇员姓名
+            itemPO.setTaxPeriod(empInfo.get(PayItemName.EMPLOYEE_TAX_CN) == null ? "本月" : (String)empInfo.get(PayItemName.EMPLOYEE_TAX_CN)); //雇员个税期间 TODO
 
             List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
             List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
@@ -391,5 +314,19 @@ public class NormalBatchController {
 
     }
 
+    @PostMapping("/doCompute/{batchCode}")
+    public JsonResult doComputeAction(@PathVariable("batchCode") String batchCode){
+        try {
+            ComputeMsg computeMsg = new ComputeMsg();
+            computeMsg.setBatchCode(batchCode);
+            sender.SendComputeAction(computeMsg);
+        }
+        catch (Exception e){
+            logger.error(e.getMessage());
+            return JsonResult.faultMessage("发送计算任务失败");
 
+        }
+        return JsonResult.success("发送计算任务成功");
+
+    }
 }

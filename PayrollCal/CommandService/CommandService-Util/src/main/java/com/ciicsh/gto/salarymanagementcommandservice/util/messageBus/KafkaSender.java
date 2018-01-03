@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.util.messageBus;
 
+import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import org.slf4j.Logger;
@@ -29,6 +30,10 @@ public class KafkaSender {
     public void SendEmpGroup(PayrollEmpGroup empGroup)
     {
         payrollSource.empGroupOutput().send(MessageBuilder.withPayload(empGroup).build());
+    }
+
+    public void SendComputeAction(ComputeMsg computeMsg){
+        payrollSource.computeOutput().send(MessageBuilder.withPayload(computeMsg).build());
     }
 
 }

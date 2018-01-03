@@ -34,6 +34,12 @@ spring:
           producer:
             partitionCount: 2
 
+        pr_compute-output-channel:
+          destination: pr_compute # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
 logging:
   file: logs/dev_app.log
   pattern:

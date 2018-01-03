@@ -1,8 +1,10 @@
 package com.ciicsh.caldispatchjob.compute.messageBus;
 
+import com.ciicsh.caldispatchjob.compute.service.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.EmpGroupServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpExtend;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
@@ -30,6 +32,9 @@ public class PayrollReceiver {
     @Autowired
     private NormalBatchServiceImpl batchService;
 
+    @Autowired
+    private ComputeServiceImpl computeService;
+
     @StreamListener(PayrollSink.INPUT)
     public void receive(PayrollMsg message){
         logger.info("received from batchCode : " + message.getBatchCode());
@@ -41,6 +46,13 @@ public class PayrollReceiver {
         //logger.info("received employee group from message: " + message.getIds().size());
         processEmployees(message);
 
+    }
+
+    @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
+    public void receive(ComputeMsg computeMsg){
+        logger.info("received payroll compute from message: " + computeMsg);
+
+        processPayrollCompute(computeMsg.getBatchCode());
     }
 
     /**
@@ -77,6 +89,14 @@ public class PayrollReceiver {
         }else if(optType == OperateTypeEnum.DELETE.getValue()){
             batchService.deleteNormalBatch(batchCode);
         }
+    }
+
+    /**
+     * 接收薪资计算消息
+     * @param batchCode
+     */
+    private void processPayrollCompute(String batchCode){
+        computeService.processCompute(batchCode);
     }
 
 }

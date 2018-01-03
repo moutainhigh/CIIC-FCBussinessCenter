@@ -13,7 +13,7 @@ public interface PayrollSink {
 
     String EMP_GROUP_INPUT= "pr_emp_group-channel";
 
-    String EMP_EXTEND_INPUT = "emp_extend-channel";
+    String PR_COMPUTE_INPUT = "pr_compute-input-channel";
 
     @Input(INPUT)
     MessageChannel input();
@@ -21,6 +21,6 @@ public interface PayrollSink {
     @Input(EMP_GROUP_INPUT)
     MessageChannel empGroupInput();
 
-    @Input(EMP_EXTEND_INPUT)
-    MessageChannel empExtendInput();
+    @Input(PR_COMPUTE_INPUT)
+    MessageChannel PayrollComputeInput();
 }
