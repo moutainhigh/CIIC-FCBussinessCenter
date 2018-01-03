@@ -1,5 +1,4 @@
 package com.ciicsh.gto.fcbusinesscenter.entity;
-
 import lombok.Getter;
 import lombok.Setter;
 
