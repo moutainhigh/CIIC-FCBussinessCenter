@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.caldispatchjob.api.dto;
+package com.ciicsh.gto.fcbusinesscenter.caldispatchjob.api.dto;
 
 /**
  * Created by shenjian on 2017/11/28.

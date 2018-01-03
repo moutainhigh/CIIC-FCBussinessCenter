@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.caldispatchjob.api;
+package com.ciicsh.gto.fcbusinesscenter.caldispatchjob.api;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Created by shenjian on 2017/11/28.
  */
 
-@FeignClient("fcsupport-center-calculate-web-service")
+@FeignClient("fcbusinesscenter-center-calculate-web-service")
 @RequestMapping("/webService")
 public interface PayrollGroupProxy {
 }
