@@ -5,6 +5,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,12 +34,13 @@ public interface PrNormalBatchService {
     PrNormalBatchPO getBatchByCode(String code);
 
     /**
-     * 批量插入MONGODB数据：雇员数据，雇员薪资组数据
-     * @param batchCode
-     * @param empGroupCode
-     * @param PrGroupCode
-     * @param PrTempGroupCode
-     * @return
+     * 上传雇员薪资项数据
+     * @param batchCode      批次编码
+     * @param empGroupCode   雇员组编码
+     * @param importType     上传数据规则：（"覆盖导入",1),("修改导入",2),("追加导入",3),("差异导入",4),
+     * @param file           EXCEL 文件
+     * @return INT           上传成功行数
      */
-    int batchInsertMongoForEmpGroudCodeAndPRGroupCode(String batchCode, String empGroupCode, String PrGroupCode, String PrTempGroupCode);
+    int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int importType, MultipartFile file);
+
 }

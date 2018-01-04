@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao.TaskSubProofMapper">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO">
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO">
         <id column="id" property="id"/>
         <result column="task_main_proof_id" property="taskMainProofId"/>
         <result column="task_sub_proof_id" property="taskSubProofId"/>
@@ -23,7 +23,7 @@
         <result column="is_combined" property="isCombined"/>
     </resultMap>
 
-    <resultMap id="BaseResultBOMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+    <resultMap id="BaseResultBOMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO">
         <id column="id" property="id"/>
         <result column="task_no" property="taskNo"/>
         <result column="manager_no" property="managerNo"/>
@@ -40,7 +40,7 @@
 
     <!--新增完税凭证子任务-->
     <insert id="addTaskSubProof" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO">
+            parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO">
 		INSERT into tax_fc_task_sub_proof(task_main_proof_id,task_no,declare_account,status,created_by,modified_by,task_type)
 		VALUES (#{taskMainProofId,jdbcType=INTEGER},#{taskNo,jdbcType=VARCHAR},#{declareAccount,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{createdBy,jdbcType=VARCHAR},#{modifiedBy,jdbcType=VARCHAR},#{taskType,jdbcType=VARCHAR})
 	</insert>
@@ -100,7 +100,7 @@
 
     <!--多表查询完税凭证子任务-->
     <select id="querySubProofInfoByTaskType" resultMap="BaseResultBOMap"
-            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+            parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO">
         select tsp.id,
         tsp.task_no,
         tmp.manager_no,
@@ -137,7 +137,7 @@
 
     <!--条件查询完税凭证子任务总数-->
     <select id="querySubProofTotalNumByTaskType" resultType="java.lang.Integer"
-            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+            parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO">
         select count(1)
         from tax_fc_task_sub_proof tsp
         left join tax_fc_task_main_proof tmp

@@ -1,6 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.util.excel;
 
-import com.ciicsh.gto.fcsupportcenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;

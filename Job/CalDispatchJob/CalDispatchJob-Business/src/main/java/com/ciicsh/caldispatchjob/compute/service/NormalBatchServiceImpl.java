@@ -1,7 +1,8 @@
 package com.ciicsh.caldispatchjob.compute.service;
 
 import com.ciicsh.gt1.BathUpdateOptions;
-import com.ciicsh.gto.fcsupportcenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
@@ -62,28 +63,15 @@ public class NormalBatchServiceImpl {
 
         List<BathUpdateOptions> options = new ArrayList<>();
 
-        List<DBObject> payItems = getPayItemList(batchPO.isTemplate(), batchPO.getPrGroupCode(),batchPO.getManagementId());
+        List<DBObject> payItems = getPayItemList(batchPO);
 
-        employees.forEach( item -> {
-            BathUpdateOptions opt = new BathUpdateOptions();
-            opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
-                    .andOperator(
-                            Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
-                            Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
-                            Criteria.where("雇员编号").is(item.get("雇员编号"))
-                            )
-                    ));
-            DBObject basicDBObject = new BasicDBObject();
-            basicDBObject.put("batch_info",BatchPOToDBObject(batchPO));
-            basicDBObject.put("emp_info",item.get("base_info"));
-            basicDBObject.put("pay_items",payItems);
-
-            opt.setUpdate(Update.update("catalog", basicDBObject));
-            opt.setMulti(true);
-            opt.setUpsert(true);
-            options.add(opt);
-
-        });
+        if(employees !=null && employees.size() > 0) {
+            employees.forEach(item -> {
+                setBatchOptions(options,batchPO,item,payItems);
+            });
+        }else {
+            setBatchOptions(options,batchPO,null,payItems);
+        }
         try {
             //create index
             normalBatchMongoOpt.createIndex();
@@ -129,17 +117,17 @@ public class NormalBatchServiceImpl {
         return dbObject;
     }
 
-    private List<DBObject> getPayItemList(Boolean isTemplate, String pr_code, String manageId){
+    private List<DBObject> getPayItemList(PrCustBatchPO batchPO){
         List<PrPayrollItemPO> prList = null;
         List<DBObject> list = new ArrayList<>();
 
         PayrollGroupExtPO payrollGroupExtPO = new PayrollGroupExtPO();
-        payrollGroupExtPO.setManagementId(manageId);
-        if(isTemplate) {
+        payrollGroupExtPO.setManagementId(batchPO.getManagementId());
+        if(batchPO.isTemplate()) {
             payrollGroupExtPO.setPayrollGroupCode("");
-            payrollGroupExtPO.setPayrollGroupTemplateCode(pr_code);
+            payrollGroupExtPO.setPayrollGroupTemplateCode(batchPO.getPrGroupCode());
         }else {
-            payrollGroupExtPO.setPayrollGroupCode(pr_code);
+            payrollGroupExtPO.setPayrollGroupCode(batchPO.getPrGroupCode());
             payrollGroupExtPO.setPayrollGroupTemplateCode("");
 
         }
@@ -169,5 +157,38 @@ public class NormalBatchServiceImpl {
         });
 
         return list;
+    }
+
+    private void setBatchOptions(List<BathUpdateOptions> options, PrCustBatchPO batchPO, DBObject item,List<DBObject> payItems){
+
+        DBObject basicDBObject = new BasicDBObject();
+
+        BathUpdateOptions opt = new BathUpdateOptions();
+        if(item != null) {
+            opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
+                    .andOperator(
+                            Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
+                            Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
+                    )
+            ));
+            basicDBObject.put("emp_info", item.get("base_info"));
+        }else {
+            opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
+                    .andOperator(
+                            Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
+                            Criteria.where("emp_group_code").is(""), //雇员组编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
+                    )
+            ));
+            basicDBObject.put("emp_info", "");
+        }
+        basicDBObject.put("batch_info", BatchPOToDBObject(batchPO));
+        basicDBObject.put("pay_items", payItems);
+
+        opt.setUpdate(Update.update("catalog", basicDBObject));
+        opt.setMulti(true);
+        opt.setUpsert(true);
+        options.add(opt);
     }
 }

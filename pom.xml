@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
-    <artifactId>fcsupportcenter-parent</artifactId>
+    <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+    <artifactId>fcbusinesscenter-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
 
@@ -221,8 +221,8 @@
     </dependencies>
 
     <modules>
-        <module>FCSupportCenter-Entity</module>
-        <module>FCSupportCenter-Util</module>
+        <module>FCBusinessCenter-Entity</module>
+        <module>FCBusinessCenter-Util</module>
 
         <module>PayrollCal/SalaryManagement-Entity</module>
         <module>PayrollCal/CommandService/CommandService-Dao</module>

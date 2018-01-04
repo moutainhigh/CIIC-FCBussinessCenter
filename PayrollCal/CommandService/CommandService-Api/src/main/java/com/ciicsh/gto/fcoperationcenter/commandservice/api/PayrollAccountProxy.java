@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Created by houwanhua on 2017/12/5.
  */
 
-@FeignClient("fcoperation-center-command-service")
+@FeignClient("fcbusiness-center-command-service")
 @RequestMapping("/api/payrollaccount")
 public interface PayrollAccountProxy {
 

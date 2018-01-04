@@ -1,7 +1,8 @@
 package com.ciicsh.caldispatchjob.compute.service;
 
 import com.ciicsh.gt1.BathUpdateOptions;
-import com.ciicsh.gto.fcsupportcenter.util.mongo.EmpGroupMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
@@ -44,7 +45,7 @@ public class EmpGroupServiceImpl {
 
         List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(empGroupCode);
         if (empIds == null || empIds.size() == 0) {
-            //employees = employeeMapper.getEmployees(Integer.parseInt(empGroupId));
+            return -1;
         } else {
             employees = employees.stream().filter(emp -> {
                 return empIds.contains(emp.getEmployeeId());
@@ -59,14 +60,14 @@ public class EmpGroupServiceImpl {
             opt.setQuery(Query.query(Criteria.where("emp_group_code").is(item.getEmpGroupCode()).andOperator(Criteria.where("雇员编号").is(item.getEmployeeId()))));
             basicDBObject = new BasicDBObject();
             basicDBObject.put("is_active", true);
-            basicDBObject.put("雇员姓名", item.getEmployeeName());
-            basicDBObject.put("出生日期", item.getBirthday());
-            basicDBObject.put("部门", item.getDepartment());
-            basicDBObject.put("性别", item.getGender());
-            basicDBObject.put("证件类型", item.getIdCardType());
-            basicDBObject.put("入职日期", item.getJoinDate());
-            basicDBObject.put("证件号码", item.getIdNum());
-            basicDBObject.put("职位", item.getPosition());
+            basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,item.getEmployeeName());
+            basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,item.getBirthday());
+            basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,item.getDepartment());
+            basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN,item.getGender());
+            basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.getIdCardType());
+            basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,item.getJoinDate());
+            basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.getIdNum());
+            basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,item.getPosition());
 
             //TODO 获取雇员服务协议和雇员扩展字段接口
             String emp_json_agreement = "{'薪资计算':{'薪资类型':{'复杂度':'复杂'}},'频率':'人月','金额':'1800／天'}";
@@ -113,7 +114,7 @@ public class EmpGroupServiceImpl {
             String[] ids = empIds.toString().replace("[","").replace("]","").split(",");
             List<String> copyEmpIDs = Arrays.asList(ids);
             logger.info("emp Ids :" + copyEmpIDs);
-            rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_code").is(groupId).andOperator(Criteria.where("雇员编号").in(copyEmpIDs)));
+            rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_code").is(groupId).andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).in(copyEmpIDs)));
         }else {
             rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_code").in(Arrays.asList(copyGroupIDs)));
         }

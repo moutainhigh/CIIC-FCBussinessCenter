@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
-        <artifactId>fcsupportcenter-parent</artifactId>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+        <artifactId>fcbusinesscenter-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
@@ -14,6 +14,7 @@
         <poi.version>3.16</poi.version>
     </properties>
 
+    <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
     <artifactId>salarymanagement-commandservice-util</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
@@ -21,14 +22,14 @@
     <dependencies>
         <!--二方库依赖 ST-->
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-entity</artifactId>
             <version>1.0.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter</groupId>
-            <artifactId>fcsupportcenter-util</artifactId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>fcbusinesscenter-util</artifactId>
             <version>1.0.0</version>
         </dependency>
 
@@ -43,6 +44,21 @@
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
+            <!--<artifactId>salarymanagement-entity</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
+            <!--<artifactId>salarymanagement-entity</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
+            <!--<artifactId>salarymanagement-entity</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
         <!--二方库依赖 ED-->
     </dependencies>
 

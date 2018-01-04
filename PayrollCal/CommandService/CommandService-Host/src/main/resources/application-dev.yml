@@ -10,7 +10,7 @@ spring:
     username: root
     password: a111111
   application:
-    name: fcoperation-center-command-service
+    name: fcbusiness-center-command-service
   cloud:
     stream:
       kafka:
@@ -30,6 +30,12 @@ spring:
 
         pr_emp_group-output-channel:
           destination: pr_emp_group # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
+        pr_compute-output-channel:
+          destination: pr_compute # topic name
           content-type: application/json
           producer:
             partitionCount: 2

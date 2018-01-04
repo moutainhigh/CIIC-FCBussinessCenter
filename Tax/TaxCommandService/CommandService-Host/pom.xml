@@ -5,25 +5,25 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
         <artifactId>tax-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+    <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
     <artifactId>commandservice-host</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
             <artifactId>commandservice-business</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
             <artifactId>commandservice-api</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -31,7 +31,7 @@
 
 
     <build>
-        <finalName>gt1.fcsupportcenter.tax.commandservice-host</finalName>
+        <finalName>gt1.fcbusinesscenter.tax.commandservice-host</finalName>
         <resources>
             <!--<resource>
                 <directory>../CommandService-Dao/src/main/resources/</directory>
