@@ -5,24 +5,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
         <artifactId>tax-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+    <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
     <artifactId>queryservice-host</artifactId>
     <version>1.0.0</version>
 
     <dependencies>
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
             <artifactId>queryservice-business</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.ciicsh.gt1.fcsupportcenter.tax</groupId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
             <artifactId>queryservice-api</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -30,7 +30,7 @@
 
 
     <build>
-        <finalName>gt1.fcsupportcenter.tax.queryservice-host</finalName>
+        <finalName>gt1.fcbusinesscenter.tax.queryservice-host</finalName>
         <resources>
             <!--<resource>
                 <directory>../QueryService-Dao/src/main/resources/</directory>

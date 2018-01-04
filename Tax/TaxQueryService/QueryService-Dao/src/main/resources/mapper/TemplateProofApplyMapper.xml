@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ciicsh.gto.fcsupportcenter.tax.queryservice.dao.TemplateProofApplyMapper">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.queryservice.dao.TemplateProofApplyMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TemplateProofApplyPO">
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TemplateProofApplyPO">
 		<id column="id" property="id" />
 		<result column="template_no" property="templateNo" />
 		<result column="template_name" property="templateName" />
