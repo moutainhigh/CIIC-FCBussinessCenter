@@ -1,7 +1,7 @@
-package com.ciicsh.gto.fcsupportcenter.tax.entity.response.voucher;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher;
 
-import com.ciicsh.gto.fcsupportcenter.tax.entity.page.PageInfo;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.page.PageInfo;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 
 import java.util.List;
 

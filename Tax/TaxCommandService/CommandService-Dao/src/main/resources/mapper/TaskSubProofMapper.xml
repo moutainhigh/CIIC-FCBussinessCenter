@@ -23,7 +23,7 @@
         <result column="is_combined" property="isCombined"/>
     </resultMap>
 
-    <resultMap id="BaseResultBOMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+    <resultMap id="BaseResultBOMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO">
         <id column="id" property="id"/>
         <result column="task_no" property="taskNo"/>
         <result column="manager_no" property="managerNo"/>
@@ -100,7 +100,7 @@
 
     <!--多表查询完税凭证子任务-->
     <select id="querySubProofInfoByTaskType" resultMap="BaseResultBOMap"
-            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+            parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO">
         select tsp.id,
         tsp.task_no,
         tmp.manager_no,
@@ -137,7 +137,7 @@
 
     <!--条件查询完税凭证子任务总数-->
     <select id="querySubProofTotalNumByTaskType" resultType="java.lang.Integer"
-            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.bo.TaskSubProofBO">
+            parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO">
         select count(1)
         from tax_fc_task_sub_proof tsp
         left join tax_fc_task_main_proof tmp
