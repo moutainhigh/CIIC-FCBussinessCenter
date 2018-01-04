@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao.TaskSubProofMapper">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO">
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO">
         <id column="id" property="id"/>
         <result column="task_main_proof_id" property="taskMainProofId"/>
         <result column="task_sub_proof_id" property="taskSubProofId"/>
@@ -40,7 +40,7 @@
 
     <!--新增完税凭证子任务-->
     <insert id="addTaskSubProof" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofPO">
+            parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO">
 		INSERT into tax_fc_task_sub_proof(task_main_proof_id,task_no,declare_account,status,created_by,modified_by,task_type)
 		VALUES (#{taskMainProofId,jdbcType=INTEGER},#{taskNo,jdbcType=VARCHAR},#{declareAccount,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{createdBy,jdbcType=VARCHAR},#{modifiedBy,jdbcType=VARCHAR},#{taskType,jdbcType=VARCHAR})
 	</insert>

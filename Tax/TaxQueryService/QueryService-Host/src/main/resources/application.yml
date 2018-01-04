@@ -43,7 +43,7 @@ server:
         remote-ip-header: x-forwarded-for
 spring:
     application:
-        name: fc-support-center-query-service-tax
+        name: fc-business-center-query-service-tax
     datasource:
         driverClassName: com.mysql.jdbc.Driver
         initial-size: 10
