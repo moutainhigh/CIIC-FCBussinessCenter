@@ -25,6 +25,8 @@ public class BaseController {
 
     public Hashtable<String,String> getManagement(){
         Hashtable<String,String> hashtable = new Hashtable<>();
+        hashtable.put("GL170001","蓝天科技");
+
         hashtable.put("glf-0009","微软中国（上海）");
         hashtable.put("glf-00091","微软中国（北京）");
         hashtable.put("glf-00092","微软中国（深圳）");
@@ -63,6 +65,8 @@ public class BaseController {
 //        hashtable.put("ymx-0001","XZZ-ymx-0001-00049");
 //        hashtable.put("ymx-0002","XZZ-ymx-0002-00050");
 //        hashtable.put("ymx-0003","XZZ-ymx-0003-00051");
+//        hashtable.put("GL170001","XZZ-GL170001-00055");
+//
 //        return hashtable;
 //    }
 //
