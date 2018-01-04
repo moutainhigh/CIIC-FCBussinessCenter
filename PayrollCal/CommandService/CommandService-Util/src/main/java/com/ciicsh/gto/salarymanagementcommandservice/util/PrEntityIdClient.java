@@ -16,8 +16,8 @@ import java.util.LinkedList;
 @Component
 public class PrEntityIdClient {
 
-    @Autowired
-    private EntityIdClient client;
+//    @Autowired
+//    private EntityIdClient client;
 
     @Autowired
     private CacheManager cacheManager;
@@ -46,7 +46,8 @@ public class PrEntityIdClient {
 
     private IdsTip generateEntityId(String catId) {
 //        return client.getEntityIds("EC0009", 10);mvn
-        return client.getEntityIds(catId, 5);
+//        return client.getEntityIds(catId, 5);
+        return null;
     }
 
     private LinkedList<String> getEntityIdList(String catId) {

@@ -243,11 +243,12 @@ public class PrGroupServiceImpl implements PrGroupService {
             // 获取更新前的薪资组数据
             PrPayrollGroupPO prGroup = getItemByCode(paramItem.getGroupCode());
             String version = prGroup.getVersion();
-            String groupJsonStr = JSON.toJSONString(prGroup);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(PayrollGroupHistoryKey.PR_ITEMS, itemsJsonStr);
-            jsonObject.put(PayrollGroupHistoryKey.PR_GROUP, groupJsonStr);
-            String history = JSON.toJSONString(jsonObject);
+//            String groupJsonStr = JSON.toJSONString(prGroup);
+//            JSONObject jsonObject = new JSONObject();
+//            jsonObject.put(PayrollGroupHistoryKey.PR_ITEMS, itemsJsonStr);
+//            jsonObject.put(PayrollGroupHistoryKey.PR_GROUP, groupJsonStr);
+//            String history = JSON.toJSONString(itemsJsonStr);
+            String history = itemsJsonStr;
             // 保存历史数据
             PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
             prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
@@ -264,10 +265,9 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    public JSONObject getCompareGroupItems(String srcCode) {
-        List<PrPayrollItemPO> srcItemList = this.getListByGroupCodeWithoutPage(srcCode);
+    public PrPayrollGroupHistoryPO getLastVersion(String srcCode) {
         PrPayrollGroupHistoryPO lastVersionData = prPayrollGroupHistoryMapper.selectLastVersionByCode(srcCode);
-        return null;
+        return lastVersionData;
     }
 
     // 从公式中获取薪资项名称列表
