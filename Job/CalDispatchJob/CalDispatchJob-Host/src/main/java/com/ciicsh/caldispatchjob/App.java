@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 
 @SpringBootApplication(scanBasePackages =
-        {"com.ciicsh.gt1","com.ciicsh.gto.fcsupportcenter.util",
+        {"com.ciicsh.gt1","com.ciicsh.gto.fcbusinesscenter.util",
                 "com.ciicsh.gto.salarymanagementcommandservice.dao",
         "com.ciicsh.caldispatchjob"})
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")

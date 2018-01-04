@@ -57,6 +57,16 @@ public class AccountSetController extends BaseController {
 
         List<WorkCalendar> workCalendars = new ArrayList<>();
         WorkCalendar workCalendar = null;
+
+        workCalendar = new WorkCalendar("GL170001","蓝天科技工作日历A","1,2,3,4,5,6,7,8,9,10");
+        workCalendars.add(workCalendar);
+
+        workCalendar = new WorkCalendar("GL170001","蓝天科技工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
+        workCalendars.add(workCalendar);
+
+        workCalendar = new WorkCalendar("GL170001","蓝天科技工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
+        workCalendars.add(workCalendar);
+
         workCalendar = new WorkCalendar("glf-0009","上海微软中国工作日历A","1,2,3,4,5,6,7,8,9,10");
         workCalendars.add(workCalendar);
 
