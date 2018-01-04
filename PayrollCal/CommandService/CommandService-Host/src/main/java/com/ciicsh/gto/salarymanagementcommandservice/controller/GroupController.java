@@ -1,24 +1,20 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
-import com.ciicsh.gto.salarymanagementcommandservice.controller.NormalBatchController.MgrData;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.*;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.PrEntityIdClient;
 import com.ciicsh.gto.salarymanagementcommandservice.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.constants.PayrollGroupHistoryKey;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
 import com.github.pagehelper.PageInfo;
-import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,16 +25,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -84,7 +76,8 @@ public class GroupController {
         newEntity.setGroupName(newName);
         newEntity.setVersion("1.0");
         boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
-        return result ? JsonResult.success("薪资组复制成功") : JsonResult.faultMessage("薪资组复制失败");
+        return result ? JsonResult.success(ResultMessages.PAYROLL_GROUP_COPY_SUCCESS)
+                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_COPY_FAIL);
     }
 
 
