@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-    <artifactId>fcbusinesscenter-parent</artifactId>
+    <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
+    <artifactId>tax-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <!--<name>gt1.productcenter</name>-->

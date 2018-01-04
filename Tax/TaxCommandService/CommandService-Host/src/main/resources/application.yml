@@ -25,11 +25,12 @@ eureka:
 #    config: classpath:config/logback-spring.xml
 logging:
     level:
-#        org.springframework.web: DEBUG
+        org.springframework.web: DEBUG
         org.mybatis: DEBUG
-        com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao: DEBUG
+        com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao: DEBUG
+        com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller: DEBUG
     pattern:
-        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+        console: "[%-5p] %d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 #        file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 #    file: D:/logs/mylog.log
 mybatis-plus:
@@ -60,7 +61,7 @@ server:
         remote-ip-header: x-forwarded-for
 spring:
     application:
-        name: fc-support-center-query-service-tax
+        name: fc-business-center-command-service-tax
     datasource:
         driverClassName: com.mysql.jdbc.Driver
         initial-size: 10
