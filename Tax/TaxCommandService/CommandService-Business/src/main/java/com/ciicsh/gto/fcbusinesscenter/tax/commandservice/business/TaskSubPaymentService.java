@@ -1,12 +1,15 @@
-package com.ciicsh.gto.fcsupportcenter.tax.commandservice.business;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
-import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubPaymentPO;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.request.payment.RequestForSubPayment;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.response.payment.ResponseForSubPayment;
+
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPayment;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
+import org.springframework.stereotype.Service;
 
 /**
  * @author yuantongqing on 2018/01/02
  */
+@Service
 public interface TaskSubPaymentService {
 
     /**

@@ -1,6 +1,7 @@
-package com.ciicsh.gto.fcsupportcenter.tax.entity.request.payment;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment;
 
-import com.ciicsh.gto.fcsupportcenter.tax.entity.page.PageInfo;
+
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.page.PageInfo;
 
 /**
  * @author yuantongqing on 2018/01/02

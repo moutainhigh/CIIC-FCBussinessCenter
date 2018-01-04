@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.tax.entity.po;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;

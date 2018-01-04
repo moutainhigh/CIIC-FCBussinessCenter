@@ -1,7 +1,8 @@
-package com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubPaymentPO;
+
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
 import org.apache.ibatis.annotations.Param;
 
 
@@ -22,6 +23,6 @@ public interface TaskSubPaymentMapper extends BaseMapper<TaskSubPaymentPO> {
      * @param modifiedBy
      * @return
      */
-    Boolean updateTaskSubPaymentStatus(@Param("subPaymentIds") String[] subPaymentIds, @Param("status") String status , @Param("modifiedBy") String modifiedBy);
+    Boolean updateTaskSubPaymentStatus(@Param("subPaymentIds") String[] subPaymentIds, @Param("status") String status, @Param("modifiedBy") String modifiedBy);
 
 }

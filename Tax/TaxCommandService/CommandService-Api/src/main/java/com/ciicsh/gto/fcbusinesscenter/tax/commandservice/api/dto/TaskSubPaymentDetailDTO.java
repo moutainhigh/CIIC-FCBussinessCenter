@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.tax.commandservice.api.dto;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
 /**
  * @author yuantongqing

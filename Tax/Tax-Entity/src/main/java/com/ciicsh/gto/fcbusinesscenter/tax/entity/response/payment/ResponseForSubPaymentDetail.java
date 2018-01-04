@@ -1,8 +1,9 @@
-package com.ciicsh.gto.fcsupportcenter.tax.entity.response.payment;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment;
 
-import com.ciicsh.gto.fcsupportcenter.tax.entity.page.PageInfo;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubPaymentDetailPO;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubProofDetailPO;
+
+
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.page.PageInfo;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentDetailPO;
 
 import java.util.List;
 

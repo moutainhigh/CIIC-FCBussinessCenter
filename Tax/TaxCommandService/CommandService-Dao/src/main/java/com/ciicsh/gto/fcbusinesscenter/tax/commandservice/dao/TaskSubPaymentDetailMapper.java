@@ -1,7 +1,8 @@
-package com.ciicsh.gto.fcsupportcenter.tax.commandservice.dao;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.ciicsh.gto.fcsupportcenter.tax.entity.po.TaskSubPaymentDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentDetailPO;
+
 
 /**
  * <p>

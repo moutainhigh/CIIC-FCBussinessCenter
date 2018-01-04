@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcsupportcenter.tax.entity.po;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -7,8 +7,6 @@ import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
