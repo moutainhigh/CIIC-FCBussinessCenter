@@ -14,7 +14,6 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTra
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetExtensionTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.PrEntityIdClient;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

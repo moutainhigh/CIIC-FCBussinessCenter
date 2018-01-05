@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.github.pagehelper.PageInfo;
 
@@ -94,5 +95,10 @@ public interface PrGroupService {
      */
     boolean approvePrGroup(PrPayrollGroupPO paramItem);
 
-    JSONObject getCompareGroupItems(String srcCode);
+    /**
+     * 获取上个版本数据
+     * @param srcCode
+     * @return
+     */
+    PrPayrollGroupHistoryPO getLastVersion(String srcCode);
 }
