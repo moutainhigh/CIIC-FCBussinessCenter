@@ -70,7 +70,7 @@ public class TaskSubPaymentController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(flag);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("completeTaskSubPayment error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
@@ -129,5 +129,7 @@ public class TaskSubPaymentController {
              return jr;
         }
     }
+
+
 
 }

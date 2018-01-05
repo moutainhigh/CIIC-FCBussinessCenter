@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.RequestForProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.RequestForSubDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
 
 /**

@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.tax.entity.request;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher;
 
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.page.PageInfo;

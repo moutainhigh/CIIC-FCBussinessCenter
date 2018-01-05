@@ -6,8 +6,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDe
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.EmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofDetailBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.RequestForProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.RequestForSubDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForEmployee;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
 

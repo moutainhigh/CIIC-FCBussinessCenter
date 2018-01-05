@@ -9,7 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.RequestForProof;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
 
 import org.springframework.beans.BeanUtils;
