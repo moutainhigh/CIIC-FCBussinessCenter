@@ -2,7 +2,6 @@ package com.ciicsh.gto.fcbusinesscenter.webcommandservice.host.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gto.fcbusinesscenter.webcommandservice.entity.dto.WorkingCalendarPageDTO;
-import com.ciicsh.gto.fcsupportcenter.util.result.JsonResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
