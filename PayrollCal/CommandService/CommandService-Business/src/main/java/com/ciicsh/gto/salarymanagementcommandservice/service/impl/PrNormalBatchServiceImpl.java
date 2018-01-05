@@ -94,7 +94,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     public int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int importType, MultipartFile file) {
 
         //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
-        List<DBObject> batchList = normalBatchMongoOpt.list(Criteria.where("batchCode").is(batchCode));
+        List<DBObject> batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode));
 
         //如果当前批次相关的雇员组里面有雇员，并且该导入属于覆盖导入，则不能进行覆盖导入
         if(batchList.size() > 1 && importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue()) {
@@ -120,7 +120,9 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
                 row = reader.read();
                 if (row != null) {
-
+                    if(row.size() == 1){ // 读取一行错误，或者忽略改行
+                        break;
+                    }
                     BathUpdateOptions opt = new BathUpdateOptions();
                     String empCode = getEmpCode(row);
                     opt.setQuery(Query.query(Criteria.where("batch_code").is(batchCode).andOperator(
@@ -146,14 +148,14 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     private String getEmpCode(List<DBObject> list){
 
-        DBObject dbObject = list.stream().filter(item -> {
-            return item.get(PayItemName.EMPLOYEE_NAME_CN) != null;
-        }).collect(Collectors.toList()).get(0);
-
-        if(dbObject.equals(null)){
-            return "";
+        String empCode = null;
+        for (DBObject dbObject: list ) {
+            if(!dbObject.get(PayItemName.EMPLOYEE_CODE_CN).equals(null)){
+                empCode = (String)dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
+                break;
+            }
         }
-        return (String) dbObject.get(PayItemName.EMPLOYEE_NAME_CN);
+        return empCode;
     }
 
 }
