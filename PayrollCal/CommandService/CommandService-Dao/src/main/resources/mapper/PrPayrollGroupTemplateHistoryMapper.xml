@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.mapper.PrPayrollGroupTemplateHistoryMapper">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateHistoryMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagementcommandservice.po.PrPayrollGroupTemplateHistory">
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplateHistoryPO">
 		<id column="id" property="id" />
 		<result column="payroll_group_template_code" property="payrollGroupTemplateCode" />
 		<result column="version" property="version" />
@@ -13,5 +13,24 @@
 		<result column="created_by" property="createdBy" />
 		<result column="modified_by" property="modifiedBy" />
 	</resultMap>
+
+	<select id="selectLastVersionByCode" resultMap="BaseResultMap">
+		SELECT
+		id,
+		payroll_group_template_code,
+		version,
+		payroll_group_template_history,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
+		FROM
+		pr_payroll_group_template_history
+		WHERE
+		payroll_group_template_code = #{code}
+		ORDER BY
+		version desc
+		LIMIT 1
+	</select>
 
 </mapper>

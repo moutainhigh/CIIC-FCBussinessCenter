@@ -238,7 +238,7 @@ public class PrGroupServiceImpl implements PrGroupService {
         boolean result = false;
         if (paramItem.getApprovalStatus() == 2) {
             // 获取该薪资组中的薪资项数据
-            List<PrPayrollItemPO> items = this.getListByGroupCodeWithoutPage(paramItem.getGroupCode());
+            List<PrPayrollItemPO> items = this.getListByGroupCode(paramItem.getGroupCode());
             String itemsJsonStr = JSON.toJSONString(items);
             // 获取更新前的薪资组数据
             PrPayrollGroupPO prGroup = getItemByCode(paramItem.getGroupCode());
@@ -281,7 +281,11 @@ public class PrGroupServiceImpl implements PrGroupService {
         return names;
     }
 
-    private List<PrPayrollItemPO> getListByGroupCodeWithoutPage(String groupCode) {
-        return itemService.getListByGroupCode(groupCode, 0, 0).getList();
+    private List<PrPayrollItemPO> getListByGroupCode(String groupCode) {
+        PrPayrollItemPO param = new PrPayrollItemPO();
+        param.setPayrollGroupCode(groupCode);
+        EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
+        List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
+        return resultList;
     }
 }

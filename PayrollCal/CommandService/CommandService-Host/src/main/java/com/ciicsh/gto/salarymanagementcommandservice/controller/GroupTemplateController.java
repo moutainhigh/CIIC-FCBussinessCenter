@@ -1,14 +1,22 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.PayrollGroupTemplateProxy;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateHistoryDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplateHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrGroupTemplateServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.GroupTemplateTranslator;
+import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,5 +130,47 @@ public class GroupTemplateController extends BaseController implements PayrollGr
         }else {
             return JsonResult.faultMessage();
         }
+    }
+
+    /**
+     * 获取薪资租模板历史数据
+     * @param code
+     * @return
+     */
+    @GetMapping("/lastVersionPayrollGroupTemplateItems")
+    public JsonResult getLastVersion(@RequestParam("code") String code) {
+//        JSONObject result = new JSONObject();
+        PrPayrollGroupTemplateHistoryPO lastVersionData = prGroupTemplateService.getLastVersion(code);
+        if (lastVersionData == null) {
+            return JsonResult.faultMessage("该薪资组模板没有历史版本");
+        }
+        List<PrPayrollItemPO> lastVersionItems = JSON.parseObject(lastVersionData.getPayrollGroupTemplateHistory(),
+                new TypeReference<List<PrPayrollItemPO>>() {});
+        List<PrPayrollItemDTO> lastVersionItemsDTO = lastVersionItems
+                .stream()
+                .map(ItemTranslator::toPrPayrollItemDTO)
+                .collect(Collectors.toList());
+        PrPayrollGroupTemplateHistoryDTO resultObject = new PrPayrollGroupTemplateHistoryDTO();
+        BeanUtils.copyProperties(lastVersionData, resultObject);
+        resultObject.setItemDTOList(lastVersionItemsDTO);
+        return JsonResult.success(resultObject);
+    }
+
+    /**
+     * 审核薪资租模板
+     * @param code
+     * @param paramItem
+     * @return
+     */
+    @PutMapping("/approvePayrollGroupTemplate/{code}")
+    public JsonResult approvePayrollGroupTemplate(@PathVariable("code") String code, @RequestBody PrPayrollGroupTemplateDTO paramItem){
+
+        PrPayrollGroupTemplatePO updateParam = new PrPayrollGroupTemplatePO();
+        TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
+        updateParam.setGroupTemplateCode(code);
+        updateParam.setModifiedBy("system");
+        boolean result = prGroupTemplateService.approvePrGroupTemplate(updateParam);
+        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_TEMPLATE_APPROVE_SUCCESS)
+                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_TEMPLATE_APPROVE_FAIL);
     }
 }

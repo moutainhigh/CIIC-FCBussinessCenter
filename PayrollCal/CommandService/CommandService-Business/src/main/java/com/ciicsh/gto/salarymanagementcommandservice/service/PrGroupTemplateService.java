@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.PrGroupTemplateEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplateHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import com.github.pagehelper.PageInfo;
 
@@ -72,4 +73,18 @@ public interface PrGroupTemplateService {
      * @return 薪资组模板列表
      */
     List<KeyValuePO> getPayrollGroupTemplateNames();
+
+    /**
+     * 审核薪资组模板
+     * @param paramItem
+     * @return
+     */
+    boolean approvePrGroupTemplate(PrPayrollGroupTemplatePO paramItem);
+
+    /**
+     * 获取上个版本数据
+     * @param srcCode
+     * @return
+     */
+    PrPayrollGroupTemplateHistoryPO getLastVersion(String srcCode);
 }

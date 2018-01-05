@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by jiangtianning on 2017/10/24.
- * @@author jiangtianning
+ * @author jiangtianning
  */
 @RestController
 @RequestMapping(value = "/")
@@ -76,7 +76,7 @@ public class GroupController {
         newEntity.setGroupName(newName);
         newEntity.setVersion("1.0");
         boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
-        return result ? JsonResult.success(ResultMessages.PAYROLL_GROUP_COPY_SUCCESS)
+        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_COPY_SUCCESS)
                 : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_COPY_FAIL);
     }
 
@@ -200,13 +200,13 @@ public class GroupController {
 
     @PutMapping("/approvePayrollGroup/{code}")
     public JsonResult approvePayrollGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
-
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
         updateParam.setGroupCode(code);
-        updateParam.setModifiedBy("jiang");
+        updateParam.setModifiedBy("system");
         boolean result = prGroupService.approvePrGroup(updateParam);
-        return result ? JsonResult.success("薪资组审核成功") : JsonResult.faultMessage("薪资组审核失败");
+        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_APPROVE_SUCCESS)
+                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_APPROVE_FAIL);
     }
 
     @GetMapping("/lastVersionPayrollGroupItems")
