@@ -1,21 +1,19 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
-import com.ciicsh.gto.salarymanagementcommandservice.controller.NormalBatchController.MgrData;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.GroupTemplateTranslator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.GroupTranslator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetTranslator;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.translator.*;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.PrEntityIdClient;
 import com.ciicsh.gto.salarymanagementcommandservice.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,21 +25,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
  * Created by jiangtianning on 2017/10/24.
- * @@author jiangtianning
+ * @author jiangtianning
  */
 @RestController
 @RequestMapping(value = "/")
@@ -52,6 +46,9 @@ public class GroupController {
 
     @Autowired
     private CodeGenerator codeGenerator;
+
+    @Autowired
+    private PrItemService prItemService;
 
     @GetMapping(value = "/importPrGroup")
     public JsonResult importPrGroup(@RequestParam String from,
@@ -79,7 +76,8 @@ public class GroupController {
         newEntity.setGroupName(newName);
         newEntity.setVersion("1.0");
         boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
-        return result ? JsonResult.success("薪资组复制成功") : JsonResult.faultMessage("薪资组复制失败");
+        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_COPY_SUCCESS)
+                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_COPY_FAIL);
     }
 
 
@@ -202,19 +200,32 @@ public class GroupController {
 
     @PutMapping("/approvePayrollGroup/{code}")
     public JsonResult approvePayrollGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
-
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
         updateParam.setGroupCode(code);
-        updateParam.setModifiedBy("jiang");
+        updateParam.setModifiedBy("system");
         boolean result = prGroupService.approvePrGroup(updateParam);
-        return result ? JsonResult.success("薪资组审核成功") : JsonResult.faultMessage("薪资组审核失败");
+        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_APPROVE_SUCCESS)
+                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_APPROVE_FAIL);
     }
 
-    @GetMapping("/comparePayollGroup")
-    public JsonResult comparePayrollGroup(@RequestParam("code") String  code) {
-        JSONObject result = new JSONObject();
-        return null;
+    @GetMapping("/lastVersionPayrollGroupItems")
+    public JsonResult getLastVersion(@RequestParam("code") String code) {
+//        JSONObject result = new JSONObject();
+        PrPayrollGroupHistoryPO lastVersionData = prGroupService.getLastVersion(code);
+        if (lastVersionData == null) {
+            return JsonResult.faultMessage("该薪资组没有历史版本");
+        }
+        List<PrPayrollItemPO> lastVersionItems = JSON.parseObject(lastVersionData.getPayrollGroupHistory(),
+                new TypeReference<List<PrPayrollItemPO>>() {});
+        List<PrPayrollItemDTO> lastVersionItemsDTO = lastVersionItems
+                .stream()
+                .map(ItemTranslator::toPrPayrollItemDTO)
+                .collect(Collectors.toList());
+        PrPayrollGroupHistoryDTO resultObject = new PrPayrollGroupHistoryDTO();
+        BeanUtils.copyProperties(lastVersionData, resultObject);
+        resultObject.setItemDTOList(lastVersionItemsDTO);
+        return JsonResult.success(resultObject);
     }
 
 

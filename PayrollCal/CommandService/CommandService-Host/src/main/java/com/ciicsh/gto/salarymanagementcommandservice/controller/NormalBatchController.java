@@ -254,7 +254,11 @@ public class NormalBatchController {
         long start = System.currentTimeMillis(); //begin
 
         String batchCode = filterDTO.getBatchCode();
-        String [] codes = filterDTO.getEmpCodes().split(",");
+        String empCodes = filterDTO.getEmpCodes();
+        if(empCodes == "" || empCodes == null){ // 该雇员组没有雇员
+            return JsonResult.success(0,"");
+        }
+        String [] codes = empCodes.split(",");
         List<String> codeList = Arrays.asList(codes);
         int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",false);
         logger.info("update all " + String.valueOf(rowAffected1));

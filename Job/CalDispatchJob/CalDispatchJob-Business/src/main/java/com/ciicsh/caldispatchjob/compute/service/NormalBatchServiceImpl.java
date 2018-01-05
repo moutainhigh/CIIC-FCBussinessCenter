@@ -51,12 +51,15 @@ public class NormalBatchServiceImpl {
      */
     public int batchInsertOrUpdateNormalBatch(String batchCode){
 
-
         //BEGIN
         //根据batch code 获取 PrCustBatchPO
         PrCustBatchPO initialPO = new PrCustBatchPO();
         initialPO.setCode(batchCode);
-        PrCustBatchPO batchPO = normalBatchMapper.selectBatchListByUseLike(initialPO).get(0);
+        List<PrCustBatchPO> custBatchPOList = normalBatchMapper.selectBatchListByUseLike(initialPO);
+        if(custBatchPOList == null || custBatchPOList.size() == 0){
+            return -1;
+        }
+        PrCustBatchPO batchPO = custBatchPOList.get(0);
         //END
 
         List<DBObject> employees = empGroupService.getEmployeesByEmpGroupCode(batchPO.getEmpGroupCode());
@@ -178,7 +181,7 @@ public class NormalBatchServiceImpl {
                     .andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
                             Criteria.where("emp_group_code").is(""), //雇员组编码
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(batchPO.getEmpGroupCode()) //雇员编码
                     )
             ));
             basicDBObject.put("emp_info", "");

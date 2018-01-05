@@ -11,7 +11,6 @@ import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.PrEntityIdClient;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +36,6 @@ public class PrEmployeeServiceImpl implements com.ciicsh.gto.salarymanagementcom
 
     @Autowired
     private IPrItemMapper prItemMapper;
-
-    @Autowired
-    private PrEntityIdClient prEntityIdClient;
 
     final static int PAGE_SIZE = 10;
 
@@ -110,7 +106,6 @@ public class PrEmployeeServiceImpl implements com.ciicsh.gto.salarymanagementcom
     //初始化薪资项from导入固定项
     private PrItemEntity initPrItemForFixItem(PrFixedInputItemEntity fixedItem, String groupId) {
         PrItemEntity prItem = new PrItemEntity();
-        prItem.setEntityId(prEntityIdClient.getEntityId(PrEntityIdClient.PR_ITEM_CAT_ID));
         prItem.setCode("TEST-0000");
         prItem.setManagementId(fixedItem.getManagementId());
         prItem.setPrGroupId(groupId);

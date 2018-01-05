@@ -1,10 +1,14 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplateHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateHistoryMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
@@ -35,6 +39,9 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
 
     @Autowired
     private PrPayrollItemMapper prPayrollItemMapper;
+
+    @Autowired
+    private PrPayrollGroupTemplateHistoryMapper prPayrollGroupTemplateHistoryMapper;
 
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
@@ -138,6 +145,40 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         return prPayrollGroupTemplateMapper.getPayrollGroupTemplateNames();
     }
 
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean approvePrGroupTemplate(PrPayrollGroupTemplatePO paramItem){
+        boolean result = false;
+        if (paramItem.getApprovalStatus() == 2) {
+            // 获取该薪资组模板中的薪资项数据
+            List<PrPayrollItemPO> items = this.getListByGroupTemplateCode(paramItem.getGroupTemplateCode());
+            String itemsJsonStr = JSON.toJSONString(items);
+            // 获取更新前的薪资组模板数据
+            PrPayrollGroupTemplatePO prGroupTemplate = this.getItemByCode(paramItem.getGroupTemplateCode());
+            String version = prGroupTemplate.getVersion();
+            String history = itemsJsonStr;
+            // 保存历史数据
+            PrPayrollGroupTemplateHistoryPO prPayrollGroupTemplateHistoryPO = new PrPayrollGroupTemplateHistoryPO();
+            prPayrollGroupTemplateHistoryPO.setPayrollGroupTemplateCode(paramItem.getGroupTemplateCode());
+            prPayrollGroupTemplateHistoryPO.setVersion(version);
+            prPayrollGroupTemplateHistoryPO.setPayrollGroupTemplateHistory(history);
+            prPayrollGroupTemplateHistoryPO.setCreatedBy("system");
+            prPayrollGroupTemplateHistoryPO.setModifiedBy("system");
+            prPayrollGroupTemplateHistoryMapper.insert(prPayrollGroupTemplateHistoryPO);
+        }
+        // 更新审批薪资组模板
+        int updateResult = prPayrollGroupTemplateMapper.updateItemByCode(paramItem);
+        result = updateResult == 1;
+        return result;
+    }
+
+    @Override
+    public PrPayrollGroupTemplateHistoryPO getLastVersion(String srcCode){
+        PrPayrollGroupTemplateHistoryPO lastVersionData = prPayrollGroupTemplateHistoryMapper.selectLastVersionByCode(srcCode);
+        return lastVersionData;
+    }
+
+
     //判断是否可以删项
     private Map<String, Object> filterPrItem(List<PrItemEntity> items, String prItemName){
         Map<String, Object> result = new HashMap<>();
@@ -166,5 +207,13 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
             nameList.add(m.group(1));
         }
         return nameList;
+    }
+
+    private List<PrPayrollItemPO> getListByGroupTemplateCode(String groupCode) {
+        PrPayrollItemPO param = new PrPayrollItemPO();
+        param.setPayrollGroupTemplateCode(groupCode);
+        EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
+        List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
+        return resultList;
     }
 }
