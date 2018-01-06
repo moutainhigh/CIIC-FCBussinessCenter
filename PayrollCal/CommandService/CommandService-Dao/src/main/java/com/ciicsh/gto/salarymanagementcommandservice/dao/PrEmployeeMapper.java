@@ -26,7 +26,7 @@ public interface PrEmployeeMapper extends BaseMapper<PrEmployeePO> {
      * @param empGroupCode 雇员组Code
      * @return 雇员组雇员列表
      */
-    List<EmployeeExtensionPO> getEmployees(@Param("empGroupCode") String empGroupCode);
+    List<EmployeeExtensionPO> getEmployees(@Param("empGroupCode") String empGroupCode,@Param("empCode") String empCode,@Param("empName") String empName);
 
     /**
      * 判断雇员是否已经存在

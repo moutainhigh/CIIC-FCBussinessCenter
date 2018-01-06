@@ -27,6 +27,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 
 import com.mongodb.DBObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
@@ -257,19 +258,27 @@ public class NormalBatchController {
         String empCodes = filterDTO.getEmpCodes();
         if(empCodes == "" || empCodes == null){ // 该雇员组没有雇员
             return JsonResult.success(0,"");
+        }else if(empCodes.equals("all")){
+            int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",true);
+            logger.info("update all " + String.valueOf(rowAffected));
+            return JsonResult.success(rowAffected,"更新成功");
+
+        }else {
+            int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode), "catalog.emp_info.is_active", false);
+            logger.info("update all " + String.valueOf(rowAffected1));
+
+            String[] codes = empCodes.split(",");
+            List<String> codeList = Arrays.asList(codes);
+
+            int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_CODE_CN).in(codeList), "catalog.emp_info.is_active", true);
+            logger.info("update specific " + String.valueOf(rowAffected));
+
+            long end = System.currentTimeMillis();
+            logger.info("filterEmployees cost time : " + String.valueOf((end - start)));
+
+
+            return JsonResult.success(rowAffected, "更新成功");
         }
-        String [] codes = empCodes.split(",");
-        List<String> codeList = Arrays.asList(codes);
-        int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",false);
-        logger.info("update all " + String.valueOf(rowAffected1));
-        int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_CODE_CN).in(codeList),"catalog.emp_info.is_active",true);
-        logger.info("update specific " + String.valueOf(rowAffected));
-
-        long end = System.currentTimeMillis();
-        logger.info("filterEmployees cost time : " + String.valueOf((end - start)));
-
-
-        return JsonResult.success(rowAffected,"更新成功");
 
     }
 
@@ -281,14 +290,34 @@ public class NormalBatchController {
      * @return
      */
     @PostMapping("/getFilterEmployees/{batchCode}")
-    public JsonResult getFilterEmployees(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+    public JsonResult getFilterEmployees(
+                                    @RequestParam(required = false, defaultValue = "") String empCode,
+                                    @RequestParam(required = false, defaultValue = "") String empName,
+                                    @RequestParam(required = false, defaultValue = "") String customKey,
+                                    @RequestParam(required = false, defaultValue = "") String customValue,
+                                    @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
                                     @PathVariable("batchCode") String batchCode){
 
         long start = System.currentTimeMillis(); //begin
 
-        //根据批次号，获取选中的雇员列表
-        List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+        Criteria criteria = Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true);
+
+        if(StringUtils.isNotEmpty(empCode)){
+            criteria.and(PayItemName.EMPLOYEE_CODE_CN).regex(empCode);
+        }
+        if(StringUtils.isNotEmpty(empName)){
+            criteria.and("catalog.emp_info."+ PayItemName.EMPLOYEE_NAME_CN).regex(empName);
+        }
+        if(StringUtils.isNotEmpty(customKey) && StringUtils.isNotEmpty(customValue)){
+            criteria.and("catalog.emp_info."+ customKey).regex(customValue);
+        }
+
+        List<DBObject> list = normalBatchMongoOpt.list(criteria);
+        int totalCount = list.size();
+        if(totalCount == 0){
+            return JsonResult.success(0);
+        }
 
         list = list.stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 
@@ -315,10 +344,15 @@ public class NormalBatchController {
             return itemPO;
         }).collect(Collectors.toList());
 
+        PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
+        result.setTotal(totalCount);
+        //int sumPageNum = list.size() / pageSize
+        result.setPageNum(pageNum);
+
         long end = System.currentTimeMillis();
         logger.info("getFilterEmployees cost time : " + String.valueOf((end - start)));
 
-        return JsonResult.success(simplePayItemDTOS);
+        return JsonResult.success(result);
 
     }
 
@@ -336,5 +370,17 @@ public class NormalBatchController {
         }
         return JsonResult.success("发送计算任务成功");
 
+    }
+
+    @PostMapping("/updateBatchStatus")
+    public JsonResult updateBatchStatus(@RequestParam String batchCode, @RequestParam int status ){
+        String modifiedBy = "bill"; //TODO
+        int rowAffected = batchService.updateBatchStatus(batchCode,status,modifiedBy);
+        if(rowAffected > 0) {
+            return JsonResult.success(rowAffected);
+        }
+        else {
+            return JsonResult.faultMessage("更新失败");
+        }
     }
 }

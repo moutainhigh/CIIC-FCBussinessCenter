@@ -36,4 +36,5 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
      */
     Integer deleteBatchByCodes(@Param("codes") List<String> codes);
 
+    int updateBatchStatus(@Param("code") String batchCode, @Param("status") int status, @Param("modifiedBy") String modifiedBy);
 }

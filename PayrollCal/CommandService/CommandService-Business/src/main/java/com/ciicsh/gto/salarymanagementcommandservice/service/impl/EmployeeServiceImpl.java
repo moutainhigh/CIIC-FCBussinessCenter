@@ -76,11 +76,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, Integer pageNum, Integer pageSize) {
+    public PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, String empCode, String empName,Integer pageNum, Integer pageSize) {
         List<EmployeeExtensionPO> employeeExtensionPOS = new ArrayList<>();
         PageHelper.startPage(pageNum,pageSize);
         try{
-            employeeExtensionPOS = employeeMapper.getEmployees(empGroupCode);
+            employeeExtensionPOS = employeeMapper.getEmployees(empGroupCode,empCode,empName);
         }
         catch (Exception e){
             e.printStackTrace();

@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.CompExcelImportEmum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
@@ -143,6 +144,32 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         }catch (Exception ex){
             logger.error(ex.getMessage());
         }
+        return 0;
+    }
+
+    @Override
+    public int updateBatchStatus(String batchCode, int status,String modifiedBy) {
+        PrNormalBatchPO param = new PrNormalBatchPO();
+        param.setCode(batchCode);
+        PrNormalBatchPO batchPO = normalBatchMapper.selectOne(param);
+        if(batchPO.getStatus() == BatchStatusEnum.NEW.getValue()){
+            if(status == BatchStatusEnum.PENDING.getValue()){
+                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
+            }
+        }else if(batchPO.getStatus() == BatchStatusEnum.PENDING.getValue()){
+            if(status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.REJECT.getValue()){
+                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
+            }
+        }else if(batchPO.getStatus() == BatchStatusEnum.CLOSED.getValue()){
+            if(status == BatchStatusEnum.ISSUED.getValue()){
+                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
+            }
+        }else if(batchPO.getStatus() == BatchStatusEnum.ISSUED.getValue()){
+            if(status == BatchStatusEnum.TAX_DECLARED.getValue()){
+                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
+            }
+        }
+
         return 0;
     }
 

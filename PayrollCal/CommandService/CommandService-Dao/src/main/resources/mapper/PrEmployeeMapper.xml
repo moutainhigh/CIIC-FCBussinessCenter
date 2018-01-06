@@ -57,6 +57,13 @@
 		FROM pr_emp_group_emp_relation a
 		INNER JOIN pr_employee b on a.emp_id = b.emp_id
 		WHERE a.emp_group_code = #{empGroupCode}
+		<if test="empCode !=null and empCode !=''">
+			AND b.emp_id LIKE concat(#{empCode},'%')
+		</if>
+		<if test="empName !=null and empName !=''">
+			AND b.emp_name LIKE concat(#{empName},'%')
+		</if>
+
 		AND a.is_active = 1
 		AND b.is_active = 1
 	</select>

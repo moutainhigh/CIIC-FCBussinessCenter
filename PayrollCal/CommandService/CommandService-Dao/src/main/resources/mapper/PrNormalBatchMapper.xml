@@ -70,7 +70,7 @@
 				AND a.period = #{period}
 			</if>
 			<if test="managementName != null and managementName !=''">
-				AND a.management_name = LIKE concat(#{managementName})
+				AND a.management_name LIKE concat(#{managementName},'%')
 			</if>
 			<if test="status != 0">
 				AND a.status = #{status}
@@ -113,7 +113,7 @@
 				AND a.period = #{period}
 			</if>
 			<if test="managementName != null and managementName !=''">
-				AND a.management_name = LIKE concat(#{managementName})
+				AND a.management_name LIKE concat(#{managementName},'%')
 			</if>
 			<if test="accountSetName != null and accountSetName != ''">
 				AND b.account_set_name LIKE concat(#{accountSetName},'%')
@@ -160,7 +160,7 @@
 				AND a.period = #{period}
 			</if>
 			<if test="managementName != null and managementName !=''">
-				AND a.management_name = LIKE concat(#{managementName})
+				AND a.management_name LIKE concat(#{managementName},'%')
 			</if>
 			<if test="status != 0">
 				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
@@ -305,5 +305,16 @@
 			#{item}
 		</foreach>
 	</delete>
+
+	<update id="updateBatchStatus">
+		UPDATE
+			pr_normal_batch
+		SET
+		status = #{status},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE code = #{code}
+	</update>
+
 
 </mapper>

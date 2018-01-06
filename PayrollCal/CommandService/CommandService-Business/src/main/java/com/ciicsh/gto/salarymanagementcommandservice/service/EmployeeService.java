@@ -29,7 +29,7 @@ public interface EmployeeService {
      * @param empGroupCode 雇员组Code
      * @return 雇员组雇员列表
      */
-    PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, Integer pageNum, Integer pageSize);
+    PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, String empCode, String empName, Integer pageNum, Integer pageSize);
 
 
     /**
