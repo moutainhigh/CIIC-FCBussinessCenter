@@ -27,10 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -112,14 +109,14 @@ public class GroupController {
      * @param pageNum
      * @return
      */
-    @GetMapping(value = "/prGroupName")
-    public ResultEntity getPrGroupNameList(@RequestParam String managementId,
-                                                   @RequestParam(required = false, defaultValue = "1") Integer pageNum){
-        PrGroupEntity paramItem = new PrGroupEntity();
-        setCommonParam(paramItem, managementId, null);
-        List<String> resultList = prGroupService.getNameList(managementId);
-        return ResultEntity.success(resultList);
-    }
+//    @GetMapping(value = "/prGroupName")
+//    public ResultEntity getPrGroupNameList(@RequestParam String managementId,
+//                                                   @RequestParam(required = false, defaultValue = "1") Integer pageNum){
+//        PrGroupEntity paramItem = new PrGroupEntity();
+//        setCommonParam(paramItem, managementId, null);
+//        List<String> resultList = prGroupService.getNameList(managementId);
+//        return ResultEntity.success(resultList);
+//    }
 
 
     /**
@@ -196,6 +193,12 @@ public class GroupController {
     public  JsonResult getPayrollGroupNames(@RequestParam String managementId){
         List<KeyValuePO> keyValues = prGroupService.getPayrollGroupNames(managementId);
         return JsonResult.success(keyValues);
+    }
+
+    @GetMapping("/prGroupName")
+    public  JsonResult getPayrollGroupNameList(@RequestParam String query){
+        List<HashMap<String, String>> nameList = prGroupService.getPrGroupNameList(query);
+        return JsonResult.success(nameList);
     }
 
     @PutMapping("/approvePayrollGroup/{code}")
