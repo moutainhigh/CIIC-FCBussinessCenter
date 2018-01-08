@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * @author yuantongqing
  * on create 2018/1/3
+ * 缴纳详情返回对象
  */
 public class ResponseForSubPaymentDetail extends PageInfo {
 

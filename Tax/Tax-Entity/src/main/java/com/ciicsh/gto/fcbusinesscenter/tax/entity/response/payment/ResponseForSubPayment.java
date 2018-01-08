@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * @author yuantongqing on 2018/01/02
+ * 缴纳返回对象
  */
 public class ResponseForSubPayment extends PageInfo {
 

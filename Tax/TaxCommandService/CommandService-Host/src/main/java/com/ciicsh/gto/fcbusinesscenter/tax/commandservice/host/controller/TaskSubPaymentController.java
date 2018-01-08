@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author yuantongqing on 2018/01/02
+ * 缴纳详情返回对象
  */
 @RestController
 public class TaskSubPaymentController {

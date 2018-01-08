@@ -117,7 +117,6 @@ public class TaskFileController extends BaseController{
      */
     @RequestMapping(value = "downloadTaxFile")
     public void downloadTaxFile(FileDTO fileDTO, HttpServletResponse response) {
-        JsonResult jr = new JsonResult();
         InputStream inputStream = null;
         ByteArrayOutputStream out = null;
         if (!StrKit.isBlank(fileDTO.getFilenameSource()) && !StrKit.isBlank(fileDTO.getFilePath())) {

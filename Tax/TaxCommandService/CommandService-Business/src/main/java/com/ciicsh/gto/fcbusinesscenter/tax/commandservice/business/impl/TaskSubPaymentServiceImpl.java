@@ -50,7 +50,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         if (StrKit.notBlank(requestForSubPayment.getManagerName())) {
             wrapper.like("manager_name", requestForSubPayment.getManagerName());
         }
-        //期间类型currentPan,currentBeforePan,currentAfterPan  DateTimeKit.format(taskSubPaymentPO.getPeriod(),"YYYY-MM")
+        //期间类型currentPan,currentBeforePan,currentAfterPan
         if(StrKit.notBlank(requestForSubPayment.getPeriodType())){
             String currentDateStr =  DateTimeKit.format(new Date(),"YYYY-MM")+"-01";
             if("currentPan".equals(requestForSubPayment.getPeriodType())){
