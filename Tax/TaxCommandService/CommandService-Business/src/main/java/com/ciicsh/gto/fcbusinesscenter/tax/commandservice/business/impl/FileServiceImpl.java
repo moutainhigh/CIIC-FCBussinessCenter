@@ -30,6 +30,7 @@ import java.util.List;
 public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements FileService, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
+
     /**
      * 条件查询文件
      *
@@ -76,6 +77,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
 
     /**
      * 删除文件
+     *
      * @param requestForFile
      * @return
      */
@@ -84,7 +86,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
     public Boolean deleteTaxFile(RequestForFile requestForFile) {
         Boolean flag = true;
         try {
-            if (requestForFile.getId() != null ) {
+            if (requestForFile.getId() != null) {
                 FilePO filePO = new FilePO();
                 filePO.setId(requestForFile.getId());
                 filePO.setActive(false);
@@ -94,7 +96,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
                 flag = super.insertOrUpdate(filePO);
             }
         } catch (Exception e) {
-            logger.error("deleteTaxFile error "+e.toString());
+            logger.error("deleteTaxFile error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         }
@@ -117,7 +119,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             filePO.setModifiedBy("admin");
             super.insertOrUpdate(filePO);
         } catch (Exception e) {
-            logger.error("deleteTaxFile error "+e.toString());
+            logger.error("deleteTaxFile error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         }

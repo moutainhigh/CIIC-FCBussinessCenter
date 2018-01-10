@@ -9,7 +9,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoneyDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoneyDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +47,7 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
         }
         //证件类型
         if (StrKit.notBlank(requestForSubMoneyDetail.getIdType())) {
-            wrapper.andNew("id_type = {0}",requestForSubMoneyDetail.getIdType() );
+            wrapper.andNew("id_type = {0}", requestForSubMoneyDetail.getIdType());
         }
         //证件号
         if (StrKit.notBlank(requestForSubMoneyDetail.getIdNo())) {

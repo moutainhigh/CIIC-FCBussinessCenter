@@ -148,7 +148,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             baseMapper.updateSubHeadcountById(taskSubProofPO.getId());
             taskMainProofMapper.updateMainHeadcountById(taskMainProofPO.getId());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("ServiceImpl copyProofInfoBySubId error " + e.toString());
             flag = false;
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         } finally {
@@ -170,7 +170,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         BeanUtils.copyProperties(requestForProof, taskSubProofBO);
         //如果有个税期间条件，将字符型的个税期间转成日期型
         if (StrKit.notBlank(requestForProof.getPeriod())) {
-            taskSubProofBO.setPeriod(DateTimeKit.parse(requestForProof.getPeriod(),DateTimeKit.NORM_DATE_PATTERN));
+            taskSubProofBO.setPeriod(DateTimeKit.parse(requestForProof.getPeriod(), DateTimeKit.NORM_DATE_PATTERN));
         }
         List<TaskSubProofBO> taskSubProofBOList = new ArrayList<>();
         Page<TaskSubProofBO> pageTest = new Page<TaskSubProofBO>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
@@ -268,7 +268,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 baseMapper.updateSubTaskProofBySubIds(newTaskSubProof.getId(), unCombinedIds, requestForProof.getModifiedBy());
             }
         } catch (Exception e) {
-            logger.error(e.toString());
+            logger.error("ServiceImpl combineTaskProofByRes error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         } finally {
@@ -299,7 +299,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 baseMapper.updateSubTaskProofSubId(taskSubProofPO);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("ServiceImpl splitTaskProofByRes error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         } finally {
@@ -325,7 +325,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 baseMapper.updateTaskProofStatusBySubIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("ServiceImpl completeTaskProofByRes error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         } finally {
@@ -351,7 +351,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 baseMapper.updateTaskProofStatusBySubIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("ServiceImpl rejectTaskProofByRes error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         } finally {
@@ -361,6 +361,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
 
     /**
      * 批量失效完税凭证子任务
+     *
      * @param requestForProof
      * @return
      */
@@ -376,7 +377,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 baseMapper.updateTaskProofStatusBySubIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("ServiceImpl invalidTaskProofByRes error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         } finally {
@@ -386,6 +387,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
 
     /**
      * 根据子任务ID查询子任务详细信息
+     *
      * @param subProofId
      * @return
      */
@@ -397,6 +399,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
 
     /**
      * 根据子任务ID分页查询完税凭证子任务申请明细
+     *
      * @param requestForProof
      * @return
      */
@@ -411,14 +414,14 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //根据子任务ID判断该子任务是不是合并任务
         List<Long> longList = baseMapper.querySubIdsByCombinedIds(sbCombinedParams.toString());
         //如果集合大小为0,则该任务不是合并任务，顾将子任务ID放到集合中
-        if(longList.size() < 1){
+        if (longList.size() < 1) {
             longList.add(requestForProof.getId());
         }
         //根据子任务ID分页查询完税凭证申报明细
         Page<TaskSubProofDetailPO> page = new Page<TaskSubProofDetailPO>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
-        taskSubProofDetailPOList = taskSubProofDetailMapper.queryApplyDetailsBySubIdsAndEmp(page,longList,requestForProof.getEmployeeNo(),requestForProof.getEmployeeName());
+        taskSubProofDetailPOList = taskSubProofDetailMapper.queryApplyDetailsBySubIdsAndEmp(page, longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
         //根据子任务ID查询完税凭证申报明细总数
-        int total = taskSubProofDetailMapper.queryApplyDetailsTotalNumBySubIdsAndEmp(longList,requestForProof.getEmployeeNo(),requestForProof.getEmployeeName());
+        int total = taskSubProofDetailMapper.queryApplyDetailsTotalNumBySubIdsAndEmp(longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
         page = page.setRecords(taskSubProofDetailPOList);
         //条件查询总数目
         page.setTotal(total);

@@ -10,11 +10,13 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForEmployee;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
-
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +28,10 @@ import java.util.List;
  * @author yuantongqing on 2017/12/14
  */
 @RestController
+@RequestMapping("/tax")
 public class TaskSubProofDetailController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TaskSubProofDetailController.class);
 
     @Autowired
     private TaskSubProofDetailService taskSubProofDetailService;
@@ -38,7 +43,7 @@ public class TaskSubProofDetailController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskSubProofDetail")
+    @PostMapping(value = "/queryTaskSubProofDetail")
     public JsonResult queryTaskSubProofDetail(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -49,7 +54,7 @@ public class TaskSubProofDetailController {
             jr.setErrormsg("success");
             jr.setData(responseForSubDetail);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("queryTaskSubProofDetail error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -63,7 +68,7 @@ public class TaskSubProofDetailController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/queryEmployee")
+    @PostMapping(value = "/queryEmployee")
     public JsonResult queryEmployee(@RequestBody TaskProofDTO taskProofDTO) {
 //        int begin = (taskProofDTO.getCurrentNum() - 1) * taskProofDTO.getPageSize() + 1;
 //        int end = taskProofDTO.getCurrentNum() * taskProofDTO.getPageSize() + 1;
@@ -208,7 +213,7 @@ public class TaskSubProofDetailController {
             jr.setErrormsg("success");
             jr.setData(responseForEmployee);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("queryEmployee error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -219,25 +224,26 @@ public class TaskSubProofDetailController {
 
     /**
      * 批量保存完税凭证申请明细
+     *
      * @param requestSubProofDetailDTO
      * @return
      */
-    @RequestMapping(value = "/saveSubProofDetail")
-    public JsonResult saveSubProofDetail(@RequestBody RequestSubProofDetailDTO requestSubProofDetailDTO){
+    @PostMapping(value = "/saveSubProofDetail")
+    public JsonResult saveSubProofDetail(@RequestBody RequestSubProofDetailDTO requestSubProofDetailDTO) {
         JsonResult jr = new JsonResult();
 
         try {
             RequestForSubDetail requestForSubDetail = new RequestForSubDetail();
-            BeanUtils.copyProperties(requestSubProofDetailDTO,requestForSubDetail);
-            if(requestSubProofDetailDTO.getOldDeleteIds() != null && requestSubProofDetailDTO.getOldDeleteIds().length > 0){
+            BeanUtils.copyProperties(requestSubProofDetailDTO, requestForSubDetail);
+            if (requestSubProofDetailDTO.getOldDeleteIds() != null && requestSubProofDetailDTO.getOldDeleteIds().length > 0) {
                 requestForSubDetail.setOldDeleteIds(requestSubProofDetailDTO.getOldDeleteIds());
             }
             List<TaskSubProofDetailBO> taskSubProofDetailBOList = new ArrayList<>();
             List<TaskSubProofDetailDTO> taskSubProofDetailDTOList = requestSubProofDetailDTO.getTaskSubProofDetailDTOList();
-            for(TaskSubProofDetailDTO taskSubProofDetailDTO:taskSubProofDetailDTOList){
+            for (TaskSubProofDetailDTO taskSubProofDetailDTO : taskSubProofDetailDTOList) {
                 TaskSubProofDetailBO taskSubProofDetailBO = new TaskSubProofDetailBO();
-                BeanUtils.copyProperties(taskSubProofDetailDTO,taskSubProofDetailBO);
-                if(taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null ){
+                BeanUtils.copyProperties(taskSubProofDetailDTO, taskSubProofDetailBO);
+                if (taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null) {
                     taskSubProofDetailBO.setIncomeEnd(taskSubProofDetailDTO.getIncomeStart());
                 }
                 taskSubProofDetailBOList.add(taskSubProofDetailBO);
@@ -248,7 +254,7 @@ public class TaskSubProofDetailController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("saveSubProofDetail error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {

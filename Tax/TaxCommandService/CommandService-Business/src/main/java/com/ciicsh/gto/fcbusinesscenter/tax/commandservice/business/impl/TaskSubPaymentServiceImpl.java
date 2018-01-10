@@ -29,6 +29,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
 
     /**
      * 条件查询缴纳子任务
+     *
      * @param requestForSubPayment
      * @return
      */
@@ -51,13 +52,13 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             wrapper.like("manager_name", requestForSubPayment.getManagerName());
         }
         //期间类型currentPan,currentBeforePan,currentAfterPan
-        if(StrKit.notBlank(requestForSubPayment.getPeriodType())){
-            String currentDateStr =  DateTimeKit.format(new Date(),"YYYY-MM")+"-01";
-            if("currentPan".equals(requestForSubPayment.getPeriodType())){
+        if (StrKit.notBlank(requestForSubPayment.getPeriodType())) {
+            String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
+            if ("currentPan".equals(requestForSubPayment.getPeriodType())) {
                 wrapper.andNew("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            }else if("currentBeforePan".equals(requestForSubPayment.getPeriodType())){
+            } else if ("currentBeforePan".equals(requestForSubPayment.getPeriodType())) {
                 wrapper.andNew("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            }else{
+            } else {
                 wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
         }
@@ -83,6 +84,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
 
     /**
      * 批量修改缴纳子任务为完成
+     *
      * @param requestForSubPayment
      * @return
      */
@@ -95,7 +97,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
                 flag = baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
             }
         } catch (Exception e) {
-            logger.error("completeTaskSubPayment error "+e.toString());
+            logger.error("ServiceImpl completeTaskSubPayment error " + e.toString());
             flag = false;
         }
         return flag;
@@ -103,6 +105,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
 
     /**
      * 批量修改缴纳子任务为退回
+     *
      * @param requestForSubPayment
      * @return
      */
@@ -115,7 +118,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
                 flag = baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
             }
         } catch (Exception e) {
-            logger.error("rejectTaskSubPayment error "+e.toString());
+            logger.error("ServiceImpl rejectTaskSubPayment error " + e.toString());
             flag = false;
         }
         return flag;
@@ -123,6 +126,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
 
     /**
      * 根据缴纳子任务ID查询缴纳任务信息
+     *
      * @param subPaymentId
      * @return
      */

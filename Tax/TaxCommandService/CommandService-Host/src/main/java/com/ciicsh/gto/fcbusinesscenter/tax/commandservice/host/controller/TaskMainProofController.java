@@ -7,11 +7,13 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
-
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +25,10 @@ import java.util.Date;
  * @author yuantongqing
  */
 @RestController
-public class TaskMainProofController {
+@RequestMapping("/tax")
+public class TaskMainProofController{
+
+    private static final Logger logger = LoggerFactory.getLogger(TaskMainProofController.class);
 
     @Autowired
     public TaskMainProofService taskMainProofService;
@@ -33,7 +38,7 @@ public class TaskMainProofController {
      * @param taskMainProofDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskMainProofByRes")
+    @PostMapping(value = "/queryTaskMainProofByRes")
     public JsonResult queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -44,7 +49,7 @@ public class TaskMainProofController {
             jr.setErrormsg("success");
             jr.setData(responseForMainProof);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("queryTaskMainProofByRes error "+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -57,7 +62,7 @@ public class TaskMainProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/addTaskProof")
+    @PostMapping(value = "/addTaskProof")
     public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO){
         //创建人
         taskProofDTO.setCreatedBy("admin");
@@ -90,7 +95,7 @@ public class TaskMainProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("addTaskProof error "+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -103,7 +108,7 @@ public class TaskMainProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/updateTaskProof")
+    @PostMapping(value = "/updateTaskProof")
     public JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO){
         JsonResult jr = new JsonResult();
         try {
@@ -115,7 +120,7 @@ public class TaskMainProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("updateTaskProof error "+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -128,7 +133,7 @@ public class TaskMainProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/invalidTaskProof")
+    @PostMapping(value = "/invalidTaskProof")
     public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO){
         JsonResult jr = new JsonResult();
         try {
@@ -139,7 +144,7 @@ public class TaskMainProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("invalidTaskProof error "+e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {

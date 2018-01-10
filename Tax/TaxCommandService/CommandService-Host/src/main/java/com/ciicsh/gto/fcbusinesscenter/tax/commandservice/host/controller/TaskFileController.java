@@ -2,7 +2,6 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.FileDTO;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.FileServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.file.RequestForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.file.ResponseForFile;
@@ -19,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
@@ -27,7 +28,8 @@ import java.io.*;
  * on create 2018/1/4
  */
 @RestController
-public class TaskFileController extends BaseController{
+@RequestMapping("/tax")
+public class TaskFileController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(TaskFileController.class);
 
     @Autowired
@@ -112,6 +114,7 @@ public class TaskFileController extends BaseController{
 
     /**
      * 文件下载
+     *
      * @param fileDTO
      * @return
      */
@@ -130,7 +133,7 @@ public class TaskFileController extends BaseController{
                     out.write(buffer, 0, len);
                 }
                 byte[] bs = out.toByteArray();
-                super.downloadFile(response,fileDTO.getFilenameSource(),bs);
+                super.downloadFile(response, fileDTO.getFilenameSource(), bs);
             } catch (IOException e) {
                 logger.error("download file error " + e.toString());
             } finally {

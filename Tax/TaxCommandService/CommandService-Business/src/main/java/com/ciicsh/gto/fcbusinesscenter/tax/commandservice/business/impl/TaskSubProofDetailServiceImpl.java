@@ -11,6 +11,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +29,14 @@ import java.util.*;
 @Service
 public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetailMapper, TaskSubProofDetailPO> implements TaskSubProofDetailService, Serializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskSubProofDetailServiceImpl.class);
+
     @Autowired(required = false)
     private TaskMainProofMapper taskMainProofMapper;
 
     @Autowired(required = false)
     private TaskSubProofMapper taskSubProofMapper;
+
     /**
      * 查询完税申请明细
      *
@@ -75,7 +80,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
     @Override
     public Boolean saveSubProofDetail(RequestForSubDetail requestForSubDetail) {
         Boolean flag = true;
-        if("main".equals(requestForSubDetail.getDetailType())){
+        if ("main".equals(requestForSubDetail.getDetailType())) {
             try {
                 if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
                     //根据主键ID将完税凭证申请明细修改为失效状态
@@ -83,27 +88,27 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                 }
                 //根据主任务ID查询其下所有子任务
                 List<TaskSubProofPO> subList = taskSubProofMapper.selectSubTaskMapByMainId(requestForSubDetail.getTaskId());
-                Map<String,Long> subMap = new HashMap<>();
-                for(TaskSubProofPO taskSubProofPO:subList){
-                    subMap.put(taskSubProofPO.getDeclareAccount(),taskSubProofPO.getId());
+                Map<String, Long> subMap = new HashMap<>();
+                for (TaskSubProofPO taskSubProofPO : subList) {
+                    subMap.put(taskSubProofPO.getDeclareAccount(), taskSubProofPO.getId());
                 }
                 List<TaskSubProofDetailBO> taskSubProofDetailBOList = requestForSubDetail.getTaskSubProofDetailBOList();
                 List<TaskSubProofDetailPO> taskSubProofDetailPOList = new ArrayList<>();
-                for(TaskSubProofDetailBO taskSubProofDetailBO : taskSubProofDetailBOList){
-                    if(taskSubProofDetailBO.getDeclareAccount() != null && !"".equals(taskSubProofDetailBO.getDeclareAccount())){
+                for (TaskSubProofDetailBO taskSubProofDetailBO : taskSubProofDetailBOList) {
+                    if (taskSubProofDetailBO.getDeclareAccount() != null && !"".equals(taskSubProofDetailBO.getDeclareAccount())) {
                         //判断是否含有该申报账户的子任务
-                        if(subMap == null || !subMap.containsKey(taskSubProofDetailBO.getDeclareAccount())){
+                        if (subMap == null || !subMap.containsKey(taskSubProofDetailBO.getDeclareAccount())) {
                             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-                            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmss") .format(new Date() );
+                            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
                             taskSubProofPO.setTaskMainProofId(requestForSubDetail.getTaskId());
                             taskSubProofPO.setDeclareAccount(taskSubProofDetailBO.getDeclareAccount());
-                            taskSubProofPO.setTaskNo("TAX"+dateTimeStr);
+                            taskSubProofPO.setTaskNo("TAX" + dateTimeStr);
                             taskSubProofPO.setStatus("00");
                             taskSubProofPO.setCreatedBy("adminMain");
                             taskSubProofPO.setModifiedBy("adminMain");
                             taskSubProofPO.setTaskType("02");
                             taskSubProofMapper.addTaskSubProof(taskSubProofPO);
-                            subMap.put(taskSubProofDetailBO.getDeclareAccount(),taskSubProofPO.getId());
+                            subMap.put(taskSubProofDetailBO.getDeclareAccount(), taskSubProofPO.getId());
                         }
                         //设置申报明细
                         TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
@@ -122,19 +127,19 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                 this.insertOrUpdateBatch(taskSubProofDetailPOList);
                 //统计子任务总人数
                 for (String key : subMap.keySet()) {
-                     Long subId = subMap.get(key);
+                    Long subId = subMap.get(key);
                     taskSubProofMapper.updateSubHeadcountById(subId);
                 }
                 //统计总任务人数
                 taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId());
             } catch (Exception e) {
+                logger.error("ServiceImpl main saveSubProofDetail error " + e.toString());
                 flag = false;
-                e.printStackTrace();
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             } finally {
                 return flag;
             }
-        }else if("sub".equals(requestForSubDetail.getDetailType())) {
+        } else if ("sub".equals(requestForSubDetail.getDetailType())) {
             try {
                 if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
                     //根据主键ID将完税凭证申请明细修改为失效状态
@@ -166,12 +171,12 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                 taskMainProofMapper.updateMainHeadcountById(taskSubProofPO.getTaskMainProofId());
             } catch (Exception e) {
                 flag = false;
-                e.printStackTrace();
+                logger.error("ServiceImpl sub saveSubProofDetail error " + e.toString());
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             } finally {
                 return flag;
             }
-        }else{
+        } else {
             return false;
         }
     }

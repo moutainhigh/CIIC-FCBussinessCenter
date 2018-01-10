@@ -27,8 +27,10 @@ import java.util.List;
 public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, TaskSubMoneyPO> implements TaskSubMoneyService, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubMoneyServiceImpl.class);
+
     /**
      * 条件查询划款子任务
+     *
      * @param requestForSubMoney
      * @return
      */
@@ -51,13 +53,13 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             wrapper.like("manager_name", requestForSubMoney.getManagerName());
         }
         //期间类型currentPan,currentBeforePan,currentAfterPan
-        if(StrKit.notBlank(requestForSubMoney.getPeriodType())){
-            String currentDateStr =  DateTimeKit.format(new Date(),"YYYY-MM")+"-01";
-            if("currentPan".equals(requestForSubMoney.getPeriodType())){
+        if (StrKit.notBlank(requestForSubMoney.getPeriodType())) {
+            String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
+            if ("currentPan".equals(requestForSubMoney.getPeriodType())) {
                 wrapper.andNew("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            }else if("currentBeforePan".equals(requestForSubMoney.getPeriodType())){
+            } else if ("currentBeforePan".equals(requestForSubMoney.getPeriodType())) {
                 wrapper.andNew("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            }else{
+            } else {
                 wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
         }
@@ -84,6 +86,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     /**
      * 批量完成划款子任务
+     *
      * @param requestForSubMoney
      * @return
      */
@@ -96,7 +99,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
                 flag = baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
             }
         } catch (Exception e) {
-            logger.error("completeTaskSubMoney error "+e.toString());
+            logger.error("ServiceImpl completeTaskSubMoney error " + e.toString());
             flag = false;
         }
         return flag;
@@ -104,6 +107,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     /**
      * 批量退回划款子任务
+     *
      * @param requestForSubMoney
      * @return
      */
@@ -116,7 +120,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
                 flag = baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
             }
         } catch (Exception e) {
-            logger.error("rejectTaskSubMoney error "+e.toString());
+            logger.error("ServiceImpl rejectTaskSubMoney error " + e.toString());
             flag = false;
         }
         return flag;
@@ -124,6 +128,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     /**
      * 根据划款子任务ID查询划款子任务信息
+     *
      * @param subMoneyId
      * @return
      */

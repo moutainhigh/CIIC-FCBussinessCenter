@@ -13,10 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +24,7 @@ import java.util.List;
  * @author yuantongqing on 2017/12/12
  */
 @RestController
+@RequestMapping("/tax")
 public class TaskSubProofController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubProofController.class);
@@ -36,25 +34,26 @@ public class TaskSubProofController {
 
     /**
      * 根据主任务ID查询子任务
+     *
      * @param taskMainProofId
      * @return
      */
-    @RequestMapping(value = "/queryTaskSubProofByMainId/{taskMainProofId}")
-    public JsonResult queryTaskSubProofByMainId(@PathVariable Long taskMainProofId){
+    @PostMapping(value = "/queryTaskSubProofByMainId/{taskMainProofId}")
+    public JsonResult queryTaskSubProofByMainId(@PathVariable Long taskMainProofId) {
         JsonResult jr = new JsonResult();
         try {
             List<TaskSubProofDTO> taskSubProofDTOLists = new ArrayList<>();
             List<TaskSubProofPO> taskSubProofPOLists = taskSubProofService.queryTaskSubProofByMainId(taskMainProofId);
-            for (TaskSubProofPO taskSubProofPO:taskSubProofPOLists){
+            for (TaskSubProofPO taskSubProofPO : taskSubProofPOLists) {
                 TaskSubProofDTO taskSubProofDTO = new TaskSubProofDTO();
-                BeanUtils.copyProperties(taskSubProofPO,taskSubProofDTO);
+                BeanUtils.copyProperties(taskSubProofPO, taskSubProofDTO);
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubProofDTOLists);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("queryTaskSubProofByMainId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -64,11 +63,12 @@ public class TaskSubProofController {
 
     /**
      * 查询子任务信息
+     *
      * @param taskSubProofDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskSubProofByRes")
-    public JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO){
+    @PostMapping(value = "/queryTaskSubProofByRes")
+    public JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForProof requestForProof = new RequestForProof();
@@ -79,7 +79,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(responseForSubProof);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("queryTaskSubProofByRes error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -90,11 +90,12 @@ public class TaskSubProofController {
 
     /**
      * 根据子任务ID复制其关联数据
+     *
      * @param taskSubProofId
      * @return
      */
-    @RequestMapping(value = "/copyProofInfoBySubId/{taskSubProofId}")
-    public JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId){
+    @PostMapping(value = "/copyProofInfoBySubId/{taskSubProofId}")
+    public JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId) {
         JsonResult jr = new JsonResult();
         try {
             Boolean flag = taskSubProofService.copyProofInfoBySubId(taskSubProofId);
@@ -102,7 +103,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (BeansException e) {
-            e.printStackTrace();
+            logger.error("copyProofInfoBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -116,7 +117,7 @@ public class TaskSubProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/querySubProofInfoByTaskType")
+    @PostMapping(value = "/querySubProofInfoByTaskType")
     public JsonResult querySubProofInfoByTaskType(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -127,7 +128,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(responseForSubProof);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("querySubProofInfoByTaskType error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -141,7 +142,7 @@ public class TaskSubProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/combineSubTaskProof")
+    @PostMapping(value = "/combineSubTaskProof")
     public JsonResult combineTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -153,7 +154,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("combineTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -167,7 +168,7 @@ public class TaskSubProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/splitSubTaskProof")
+    @PostMapping(value = "/splitSubTaskProof")
     public JsonResult splitTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -179,7 +180,7 @@ public class TaskSubProofController {
             jr.setErrormsg("success");
             jr.setData(flag);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("splitTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -193,7 +194,7 @@ public class TaskSubProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/completeSubTaskProof")
+    @PostMapping(value = "/completeSubTaskProof")
     public JsonResult completeTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -220,7 +221,7 @@ public class TaskSubProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/rejectSubTaskProof")
+    @PostMapping(value = "/rejectSubTaskProof")
     public JsonResult rejectTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -247,7 +248,7 @@ public class TaskSubProofController {
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/invalidSubTaskProof")
+    @PostMapping(value = "/invalidSubTaskProof")
     public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -275,7 +276,7 @@ public class TaskSubProofController {
      * @param subProofId
      * @return
      */
-    @RequestMapping(value = "/queryApplyDetailsBySubId/{subProofId}")
+    @PostMapping(value = "/queryApplyDetailsBySubId/{subProofId}")
     public JsonResult queryApplyDetailsBySubId(@PathVariable Long subProofId) {
         JsonResult jr = new JsonResult();
         try {
@@ -294,10 +295,11 @@ public class TaskSubProofController {
 
     /**
      * 根据子任务ID分页查询完税凭证子任务申请明细
+     *
      * @param taskProofDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskSubProofDetailBySubId")
+    @PostMapping(value = "/queryTaskSubProofDetailBySubId")
     public JsonResult queryTaskSubProofDetailBySubId(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {

@@ -12,12 +12,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author yuantongqing create on 2018/1/3
  */
 @RestController
+@RequestMapping("/tax")
 public class TaskSubPaymentDetailController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubPaymentDetailController.class);
@@ -27,6 +29,7 @@ public class TaskSubPaymentDetailController {
 
     /**
      * 查询缴纳明细
+     *
      * @param taskSubPaymentDetailDTO
      * @return
      */
@@ -35,7 +38,7 @@ public class TaskSubPaymentDetailController {
         JsonResult jr = new JsonResult();
         try {
             RequestForSubPaymentDetail requestForSubPaymentDetail = new RequestForSubPaymentDetail();
-            BeanUtils.copyProperties(taskSubPaymentDetailDTO,requestForSubPaymentDetail);
+            BeanUtils.copyProperties(taskSubPaymentDetailDTO, requestForSubPaymentDetail);
             ResponseForSubPaymentDetail responseForSubPaymentDetail = taskSubPaymentDetailService.querySubPaymentDetailsByParams(requestForSubPaymentDetail);
             jr.setErrorcode("0");
             jr.setErrormsg("success");

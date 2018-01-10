@@ -11,7 +11,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.List;
 @Service
 public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, TaskMainProofPO> implements TaskMainProofService, Serializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskMainProofServiceImpl.class);
 
     @Autowired(required = false)
     private TaskSubProofMapper taskSubProofMapper;
@@ -109,6 +111,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 taskSubProofMapper.addTaskSubProof(taskSubProofPO);
             }
         } catch (Exception e) {
+            logger.error("ServiceImpl addTaskProof error" + e.toString());
             flag = false;
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         } finally {
@@ -131,14 +134,14 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
                 baseMapper.updateMainTaskProof(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
                 taskSubProofMapper.updateSubTaskProofByMainIds(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
-            }else{
+            } else {
                 if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
                     taskSubProofMapper.updateSubTaskProof(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("ServiceImpl updateTaskProofByRes error" + e.toString());
             flag = false;
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         } finally {
@@ -148,6 +151,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
 
     /**
      * 将完税凭证任务置为失效
+     *
      * @param requestForProof
      * @return
      */
@@ -158,15 +162,15 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         try {
             //当主任务ID数组不为空时，修改主任务以及
             if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
-                baseMapper.invalidMainTaskProofByIds(requestForProof.getMainProofIds(),requestForProof.getModifiedBy());
+                baseMapper.invalidMainTaskProofByIds(requestForProof.getMainProofIds(), requestForProof.getModifiedBy());
                 taskSubProofMapper.invalidSubTaskProofByMainIds(requestForProof.getMainProofIds(), requestForProof.getModifiedBy());
-            }else{
+            } else {
                 if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
-                    taskSubProofMapper.invalidSubTaskProofByIds(requestForProof.getSubProofIds(),requestForProof.getModifiedBy());
+                    taskSubProofMapper.invalidSubTaskProofByIds(requestForProof.getSubProofIds(), requestForProof.getModifiedBy());
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("ServiceImpl invalidTaskProof error" + e.toString());
             flag = false;
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         } finally {

@@ -9,8 +9,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -24,10 +22,9 @@ import java.util.List;
 @Service
 public class TaskSubPaymentDetailServiceImpl extends ServiceImpl<TaskSubPaymentDetailMapper, TaskSubPaymentDetailPO> implements TaskSubPaymentDetailService, Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubPaymentDetailServiceImpl.class);
-
     /**
      * 查询缴纳明细
+     *
      * @param requestForSubPaymentDetail
      * @return
      */
@@ -55,7 +52,7 @@ public class TaskSubPaymentDetailServiceImpl extends ServiceImpl<TaskSubPaymentD
         }
         //证件类型
         if (StrKit.notBlank(requestForSubPaymentDetail.getIdType())) {
-            wrapper.andNew("id_type = {0}",requestForSubPaymentDetail.getIdType() );
+            wrapper.andNew("id_type = {0}", requestForSubPaymentDetail.getIdType());
         }
         //证件号
         if (StrKit.notBlank(requestForSubPaymentDetail.getIdNo())) {
