@@ -62,7 +62,7 @@ server:
         remote-ip-header: x-forwarded-for
 spring:
     application:
-        name: fc-business-center-command-service-tax
+        name: fc-business-center-tax-command-service
     datasource:
         driverClassName: com.mysql.jdbc.Driver
         initial-size: 10

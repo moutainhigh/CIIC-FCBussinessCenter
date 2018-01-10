@@ -6,13 +6,13 @@
 
     <parent>
         <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-        <artifactId>tax-parent</artifactId>
+        <artifactId>fcbusinesscenter-tax-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-    <artifactId>commandservice-business</artifactId>
+    <artifactId>fcbusinesscenter-tax-commandservice-business</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
@@ -20,13 +20,13 @@
 
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-            <artifactId>commandservice-dao</artifactId>
+            <artifactId>fcbusinesscenter-tax-commandservice-dao</artifactId>
             <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-            <artifactId>tax-util</artifactId>
+            <artifactId>fcbusinesscenter-tax-util</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
