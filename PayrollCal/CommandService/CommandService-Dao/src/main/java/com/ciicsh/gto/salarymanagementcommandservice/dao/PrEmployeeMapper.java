@@ -35,4 +35,11 @@ public interface PrEmployeeMapper extends BaseMapper<PrEmployeePO> {
      */
     Integer isExistEmployee(@Param("empId") String empId);
 
+    /**
+     * 检查雇员是否在该雇员组上存在
+     * @param empGroupCode
+     * @return
+     */
+    int hasEmployees(@Param("empGroupCode") String empGroupCode);
+
 }

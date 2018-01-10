@@ -26,7 +26,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,44 +94,57 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     public int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int importType, MultipartFile file) {
 
         //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
-        List<DBObject> batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode));
+        List<DBObject> batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
 
         //如果当前批次相关的雇员组里面有雇员，并且该导入属于覆盖导入，则不能进行覆盖导入
         if(batchList.size() > 1 && importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue()) {
             return -1;
         }
 
-        List<List<DBObject>> payItems = new ArrayList<>();
+        List<List<BasicDBObject>> payItems = new ArrayList<>();
 
-        batchList.forEach(batchItem ->{
+        String pr_group_code = "";
+
+        for (DBObject batchItem: batchList) {
+            pr_group_code = (String) batchItem.get("pr_group_code");
             DBObject catalog = (DBObject)batchItem.get("catalog");
-            List<DBObject> items = (List<DBObject>)catalog.get("pay_items");
+            List<BasicDBObject> items = (List<BasicDBObject>)catalog.get("pay_items");
             payItems.add(items);
-        });
+        }
 
         DBObject dbObject = null;
         try {
             InputStream stream = file.getInputStream();
-            PoiItemReader<List<DBObject>> reader = excelReader.getPrGroupReader(stream, importType, payItems);
+            PoiItemReader<List<BasicDBObject>> reader = excelReader.getPrGroupReader(stream, importType, payItems);
             reader.open(new ExecutionContext());
             List<BathUpdateOptions> options = new ArrayList<>();
-            List<DBObject> row = null;
+            List<BasicDBObject> row = null;
             do {
 
                 row = reader.read();
+
                 if (row != null) {
                     if(row.size() == 1){ // 读取一行错误，或者忽略改行
                         break;
                     }
+                    if(importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue()){
+                        //TODO 增加雇员信息：雇员基本信息，雇员服务协议，雇员扩展字段
+                    }
                     BathUpdateOptions opt = new BathUpdateOptions();
-                    String empCode = getEmpCode(row);
-                    opt.setQuery(Query.query(Criteria.where("batch_code").is(batchCode).andOperator(
-                                    Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode) //雇员编码
-                            )
+                    String empCode = (String) row.get(0).get("emp_code"); // row 的第一列为雇员编码
+                    opt.setQuery(Query.query(Criteria.where("batch_code").is(batchCode)
+                                    .andOperator(
+                                            Criteria.where("pr_group_code").is(pr_group_code),
+                                            Criteria.where("emp_group_code").is(empGroupCode),
+                                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode)
+                                    )
                     ));
 
                     dbObject = new BasicDBObject();
+                    row.remove(0); // 删除row 的第一列为雇员编码
                     dbObject.put("pay_items", row);
+                    dbObject.put("emp_info",getEmpBaseInfos(row));
+
                     opt.setUpdate(Update.update("catalog", dbObject));
                     opt.setMulti(true);
                     opt.setUpsert(true);
@@ -173,16 +185,27 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return 0;
     }
 
-    private String getEmpCode(List<DBObject> list){
+    private BasicDBObject getEmpBaseInfos(List<BasicDBObject> prItems){
+        BasicDBObject empBaseInfo = new BasicDBObject();
+        empBaseInfo.put("is_active",true);
+        empBaseInfo.put(PayItemName.EMPLOYEE_NAME_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_NAME_CN));
+        empBaseInfo.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_BIRTHDAY_CN));
+        empBaseInfo.put(PayItemName.EMPLOYEE_DEP_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_DEP_CN));
+        empBaseInfo.put(PayItemName.EMPLOYEE_ID_NUM_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_ID_NUM_CN));
+        empBaseInfo.put(PayItemName.EMPLOYEE_ID_TYPE_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_ID_TYPE_CN));
+        empBaseInfo.put(PayItemName.EMPLOYEE_ONBOARD_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_ONBOARD_CN));
+        empBaseInfo.put(PayItemName.EMPLOYEE_POSITION_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_POSITION_CN));
+        empBaseInfo.put(PayItemName.EMPLOYEE_SEX_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_SEX_CN));
+        return empBaseInfo;
+    }
 
-        String empCode = null;
-        for (DBObject dbObject: list ) {
-            if(!dbObject.get(PayItemName.EMPLOYEE_CODE_CN).equals(null)){
-                empCode = (String)dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
-                break;
-            }
+    private Object getPRItemValue(List<BasicDBObject> prItems, String itemName){
+        List<DBObject> findItems = prItems.stream().filter(item-> item.get("item_name").equals(itemName)).collect(Collectors.toList());
+        if(findItems != null && findItems.size() > 0){
+            return findItems.get(0).get("item_value");
         }
-        return empCode;
+        return null;
+
     }
 
 }

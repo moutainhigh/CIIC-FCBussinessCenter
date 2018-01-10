@@ -105,6 +105,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return result;
     }
 
+    @Override
+    public int hasEmployees(String empGroupCode) {
+        return employeeMapper.hasEmployees(empGroupCode);
+    }
+
 
     private PrEmployeePO toEmployeePO(PrEmployeeTestPO employeeTestPO){
         PrEmployeePO employeePO = new PrEmployeePO();

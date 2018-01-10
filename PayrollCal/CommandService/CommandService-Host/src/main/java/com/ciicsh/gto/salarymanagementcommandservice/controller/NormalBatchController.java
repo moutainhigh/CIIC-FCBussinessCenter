@@ -73,6 +73,9 @@ public class NormalBatchController {
     private PrAccountSetService accountSetService;
 
     @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
     private CodeGenerator codeGenerator;
 
     @GetMapping("/getMgrList")
@@ -119,6 +122,12 @@ public class NormalBatchController {
         }
         //依赖第三方接口：获取管理方列表
         return JsonResult.success(result);
+    }
+
+    @GetMapping("/checkEmployees/{empGroupCode}")
+    public JsonResult checkEmployees(@PathVariable("empGroupCode") String empGroupCode){
+        int rowAffected = employeeService.hasEmployees(empGroupCode);
+        return JsonResult.success(rowAffected);
     }
 
     @PostMapping("/addNormalBatch")
@@ -256,7 +265,7 @@ public class NormalBatchController {
 
         String batchCode = filterDTO.getBatchCode();
         String empCodes = filterDTO.getEmpCodes();
-        if(empCodes == "" || empCodes == null){ // 该雇员组没有雇员
+        if(empCodes.equals("") || empCodes == null){ // 该雇员组没有雇员
             return JsonResult.success(0,"");
         }else if(empCodes.equals("all")){
             int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",true);
@@ -346,7 +355,6 @@ public class NormalBatchController {
 
         PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
         result.setTotal(totalCount);
-        //int sumPageNum = list.size() / pageSize
         result.setPageNum(pageNum);
 
         long end = System.currentTimeMillis();
@@ -366,7 +374,6 @@ public class NormalBatchController {
         catch (Exception e){
             logger.error(e.getMessage());
             return JsonResult.faultMessage("发送计算任务失败");
-
         }
         return JsonResult.success("发送计算任务成功");
 

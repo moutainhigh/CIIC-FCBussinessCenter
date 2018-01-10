@@ -180,8 +180,8 @@ public class NormalBatchServiceImpl {
             opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
                     .andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
-                            Criteria.where("emp_group_code").is(""), //雇员组编码
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(batchPO.getEmpGroupCode()) //雇员编码
+                            Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is("") //雇员编码
                     )
             ));
             basicDBObject.put("emp_info", "");
