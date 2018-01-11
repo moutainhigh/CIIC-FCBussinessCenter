@@ -63,12 +63,14 @@ public class TaskSubPaymentController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO,requestForSubPayment);
+            //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
+            //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
             requestForSubPayment.setStatus("23");
-            Boolean flag = taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
+            taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
             logger.error("completeTaskSubPayment error " + e.toString());
             jr.setErrorcode("1");
@@ -89,12 +91,14 @@ public class TaskSubPaymentController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO,requestForSubPayment);
+            //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
+            //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
             requestForSubPayment.setStatus("22");
-            Boolean flag =  taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
+            taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (BeansException e) {
             logger.error("rejectTaskSubPayment error " + e.toString());
             jr.setErrorcode("1");
@@ -116,6 +120,7 @@ public class TaskSubPaymentController {
             TaskSubPaymentPO taskSubPaymentPO = taskSubPaymentService.querySubPaymentById(subPaymentId);
             TaskSubPaymentDTO taskSubPaymentDTO = new TaskSubPaymentDTO();
             BeanUtils.copyProperties(taskSubPaymentPO,taskSubPaymentDTO);
+            //个税期间
             taskSubPaymentDTO.setPeriod(DateTimeKit.format(taskSubPaymentPO.getPeriod(),"YYYY-MM"));
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -128,7 +133,4 @@ public class TaskSubPaymentController {
              return jr;
         }
     }
-
-
-
 }

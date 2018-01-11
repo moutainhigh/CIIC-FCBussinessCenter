@@ -21,16 +21,14 @@ public interface TaskSubMoneyService {
     /**
      * 批量完成划款子任务
      * @param requestForSubMoney
-     * @return
      */
-    Boolean completeTaskSubMoney(RequestForSubMoney requestForSubMoney);
+    void completeTaskSubMoney(RequestForSubMoney requestForSubMoney);
 
     /**
      * 批量退回划款子任务
      * @param requestForSubMoney
-     * @return
      */
-    Boolean rejectTaskSubMoney(RequestForSubMoney requestForSubMoney);
+    void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney);
 
     /**
      * 根据划款子任务ID查询划款任务信息

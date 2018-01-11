@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author yuantongqing on 2017/12/16
  */
-public class RequestSubProofDetailDTO {
+public class SubProofDetailDTO {
 
     /**
      * 详情页面的类型，用于判断是主任务模块进入还是子任务模块进入
@@ -63,7 +63,7 @@ public class RequestSubProofDetailDTO {
 
     @Override
     public String toString() {
-        return "RequestSubProofDetailDTO{" +
+        return "SubProofDetailDTO{" +
                 "detailType='" + detailType + '\'' +
                 ", taskId=" + taskId +
                 ", oldDeleteIds=" + Arrays.toString(oldDeleteIds) +

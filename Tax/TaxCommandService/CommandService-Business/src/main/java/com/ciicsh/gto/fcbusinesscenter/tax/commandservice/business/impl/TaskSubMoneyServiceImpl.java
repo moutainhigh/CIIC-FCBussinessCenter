@@ -10,8 +10,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMon
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -25,8 +23,6 @@ import java.util.List;
  */
 @Service
 public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, TaskSubMoneyPO> implements TaskSubMoneyService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubMoneyServiceImpl.class);
 
     /**
      * 条件查询划款子任务
@@ -88,42 +84,26 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      * 批量完成划款子任务
      *
      * @param requestForSubMoney
-     * @return
      */
     @Override
-    public Boolean completeTaskSubMoney(RequestForSubMoney requestForSubMoney) {
-        Boolean flag = true;
-        try {
-            if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
-                //修改划款子任务状态为完成
-                flag = baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
-            }
-        } catch (Exception e) {
-            logger.error("ServiceImpl completeTaskSubMoney error " + e.toString());
-            flag = false;
+    public void completeTaskSubMoney(RequestForSubMoney requestForSubMoney) {
+        if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
+            //修改划款子任务状态为完成
+            baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
         }
-        return flag;
     }
 
     /**
      * 批量退回划款子任务
      *
      * @param requestForSubMoney
-     * @return
      */
     @Override
-    public Boolean rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
-        Boolean flag = true;
-        try {
-            if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
-                //修改划款子任务状态为退回
-                flag = baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
-            }
-        } catch (Exception e) {
-            logger.error("ServiceImpl rejectTaskSubMoney error " + e.toString());
-            flag = false;
+    public void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
+        if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
+            //修改划款子任务状态为退回
+            baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
         }
-        return flag;
     }
 
     /**

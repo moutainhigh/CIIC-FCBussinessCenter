@@ -98,10 +98,10 @@ public class TaskSubProofController {
     public JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId) {
         JsonResult jr = new JsonResult();
         try {
-            Boolean flag = taskSubProofService.copyProofInfoBySubId(taskSubProofId);
+            taskSubProofService.copyProofInfoBySubId(taskSubProofId);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (BeansException e) {
             logger.error("copyProofInfoBySubId error " + e.toString());
             jr.setErrorcode("1");
@@ -148,11 +148,12 @@ public class TaskSubProofController {
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
             requestForProof.setModifiedBy("adminMain");
-            Boolean flag = taskSubProofService.combineTaskProofByRes(requestForProof);
+            taskSubProofService.combineTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
             logger.error("combineTaskProof error " + e.toString());
             jr.setErrorcode("1");
@@ -174,11 +175,12 @@ public class TaskSubProofController {
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
             requestForProof.setModifiedBy("adminMain");
-            Boolean flag = taskSubProofService.splitTaskProofByRes(requestForProof);
+            taskSubProofService.splitTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
             logger.error("splitTaskProof error " + e.toString());
             jr.setErrorcode("1");
@@ -200,12 +202,14 @@ public class TaskSubProofController {
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
             requestForProof.setModifiedBy("adminMain");
+            //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
             requestForProof.setStatus("03");
-            Boolean flag = taskSubProofService.completeTaskProofByRes(requestForProof);
+            taskSubProofService.completeTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
             logger.error("completeTaskProof error:" + e.toString());
             jr.setErrorcode("1");
@@ -227,12 +231,14 @@ public class TaskSubProofController {
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
             requestForProof.setModifiedBy("adminMain");
+            //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
             requestForProof.setStatus("02");
-            Boolean flag = taskSubProofService.rejectTaskProofByRes(requestForProof);
+            taskSubProofService.rejectTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
             logger.error("rejectTaskProof error:" + e.toString());
             jr.setErrorcode("1");
@@ -254,12 +260,14 @@ public class TaskSubProofController {
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
             requestForProof.setModifiedBy("adminMain");
+            //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
             requestForProof.setStatus("04");
-            Boolean flag = taskSubProofService.invalidTaskProofByRes(requestForProof);
+            taskSubProofService.invalidTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
             logger.error("invalidTaskProof error:" + e.toString());
             jr.setErrorcode("1");

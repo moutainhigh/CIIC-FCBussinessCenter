@@ -23,23 +23,20 @@ public interface TaskMainProofService {
      * 新增完税凭证主任务和完税凭证子任务
      * @param taskMainProofPO
      * @param taskSubProofPO
-     * @return
      */
-    Boolean addTaskProof(TaskMainProofPO taskMainProofPO, TaskSubProofPO taskSubProofPO);
+    void addTaskProof(TaskMainProofPO taskMainProofPO, TaskSubProofPO taskSubProofPO);
 
     /**
      * 修改（即：提交）完税凭证状态
      * @param requestForProof
-     * @return
      */
-    Boolean updateTaskProofByRes(RequestForProof requestForProof);
+    void updateTaskProofByRes(RequestForProof requestForProof);
 
     /**
      * 将完税凭证任务置为失效
      * @param requestForProof
-     * @return
      */
-    Boolean invalidTaskProof(RequestForProof requestForProof);
+    void invalidTaskProof(RequestForProof requestForProof);
 
 }
 

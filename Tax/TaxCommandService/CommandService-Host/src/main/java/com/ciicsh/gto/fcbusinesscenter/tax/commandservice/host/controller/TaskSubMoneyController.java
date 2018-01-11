@@ -62,12 +62,14 @@ public class TaskSubMoneyController {
         try {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO,requestForSubMoney);
+            //设置修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
+            //缴纳/划款:21:已提交/处理中，22:被退回，23:已完成，24:已失效
             requestForSubMoney.setStatus("23");
-            Boolean flag = taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
+            taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
             logger.error("completeTaskSubMoney error " + e.toString());
             jr.setErrorcode("1");
@@ -88,12 +90,14 @@ public class TaskSubMoneyController {
         try {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO,requestForSubMoney);
+            //修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
+            //缴纳/划款:21:已提交/处理中，22:被退回，23:已完成，24:已失效
             requestForSubMoney.setStatus("22");
-            Boolean flag =  taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
+            taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (BeansException e) {
             logger.error("rejectTaskSubMoney error " + e.toString());
             jr.setErrorcode("1");

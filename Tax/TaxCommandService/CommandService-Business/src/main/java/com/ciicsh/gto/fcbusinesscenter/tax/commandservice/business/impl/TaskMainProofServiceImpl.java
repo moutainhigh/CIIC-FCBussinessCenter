@@ -11,13 +11,10 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,8 +26,6 @@ import java.util.List;
  */
 @Service
 public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, TaskMainProofPO> implements TaskMainProofService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskMainProofServiceImpl.class);
 
     @Autowired(required = false)
     private TaskSubProofMapper taskSubProofMapper;
@@ -44,7 +39,6 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
     @Override
     public ResponseForMainProof queryTaskMainProofByRes(RequestForProof requestForProof) {
         ResponseForMainProof responseForMainProof = new ResponseForMainProof();
-        List<TaskMainProofBO> taskMainProofBOList = new ArrayList<>();
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskMainProofPO());
         //判断是否包含主键ID条件
@@ -69,23 +63,13 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectPage(pageInfo, wrapper);
             //获取总数目
             int total = baseMapper.selectCount(wrapper);
-            for (TaskMainProofPO taskMainProofPO : taskMainProofPOList) {
-                TaskMainProofBO taskMainProofBO = new TaskMainProofBO();
-                BeanUtils.copyProperties(taskMainProofPO, taskMainProofBO);
-                taskMainProofBOList.add(taskMainProofBO);
-            }
             responseForMainProof.setCurrentNum(requestForProof.getCurrentNum());
             responseForMainProof.setPageSize(requestForProof.getPageSize());
             responseForMainProof.setTotalNum(total);
-            responseForMainProof.setRowList(taskMainProofBOList);
+            responseForMainProof.setRowList(taskMainProofPOList);
         } else {
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectList(wrapper);
-            for (TaskMainProofPO taskMainProofPO : taskMainProofPOList) {
-                TaskMainProofBO taskMainProofBO = new TaskMainProofBO();
-                BeanUtils.copyProperties(taskMainProofPO, taskMainProofBO);
-                taskMainProofBOList.add(taskMainProofBO);
-            }
-            responseForMainProof.setRowList(taskMainProofBOList);
+            responseForMainProof.setRowList(taskMainProofPOList);
         }
         return responseForMainProof;
     }
@@ -97,25 +81,16 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
      * @param taskSubProofPO
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean addTaskProof(TaskMainProofPO taskMainProofPO, TaskSubProofPO taskSubProofPO) {
-        Boolean flag = true;
-        try {
-            if (taskMainProofPO != null) {
-                baseMapper.addTaskMainProof(taskMainProofPO);
-            }
+    public void addTaskProof(TaskMainProofPO taskMainProofPO, TaskSubProofPO taskSubProofPO) {
+        if (taskMainProofPO != null) {
+            baseMapper.addTaskMainProof(taskMainProofPO);
+        }
 
-            if (taskSubProofPO != null) {
-                taskSubProofPO.setTaskMainProofId(taskMainProofPO.getId());
-                taskSubProofMapper.addTaskSubProof(taskSubProofPO);
-            }
-        } catch (Exception e) {
-            logger.error("ServiceImpl addTaskProof error" + e.toString());
-            flag = false;
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        } finally {
-            return flag;
+        if (taskSubProofPO != null) {
+            taskSubProofPO.setTaskMainProofId(taskMainProofPO.getId());
+            taskSubProofMapper.addTaskSubProof(taskSubProofPO);
         }
     }
 
@@ -123,29 +98,18 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
      * 修改（即：提交/失效）完税凭证状态
      *
      * @param requestForProof
-     * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean updateTaskProofByRes(RequestForProof requestForProof) {
-        Boolean flag = true;
-        try {
-            //当主任务ID数组不为空时，修改主任务以及
-            if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
-                baseMapper.updateMainTaskProof(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
-                taskSubProofMapper.updateSubTaskProofByMainIds(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
-            } else {
-                if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
-                    taskSubProofMapper.updateSubTaskProof(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
-                }
+    public void updateTaskProofByRes(RequestForProof requestForProof) {
+        //当主任务ID数组不为空时，修改主任务以及
+        if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
+            baseMapper.updateMainTaskProof(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
+            taskSubProofMapper.updateSubTaskProofByMainIds(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
+        } else {
+            if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
+                taskSubProofMapper.updateSubTaskProof(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
             }
-
-        } catch (Exception e) {
-            logger.error("ServiceImpl updateTaskProofByRes error" + e.toString());
-            flag = false;
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        } finally {
-            return flag;
         }
     }
 
@@ -153,28 +117,18 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
      * 将完税凭证任务置为失效
      *
      * @param requestForProof
-     * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean invalidTaskProof(RequestForProof requestForProof) {
-        Boolean flag = true;
-        try {
-            //当主任务ID数组不为空时，修改主任务以及
-            if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
-                baseMapper.invalidMainTaskProofByIds(requestForProof.getMainProofIds(), requestForProof.getModifiedBy());
-                taskSubProofMapper.invalidSubTaskProofByMainIds(requestForProof.getMainProofIds(), requestForProof.getModifiedBy());
-            } else {
-                if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
-                    taskSubProofMapper.invalidSubTaskProofByIds(requestForProof.getSubProofIds(), requestForProof.getModifiedBy());
-                }
+    public void invalidTaskProof(RequestForProof requestForProof) {
+        //当主任务ID数组不为空时，修改主任务以及
+        if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
+            baseMapper.invalidMainTaskProofByIds(requestForProof.getMainProofIds(), requestForProof.getModifiedBy());
+            taskSubProofMapper.invalidSubTaskProofByMainIds(requestForProof.getMainProofIds(), requestForProof.getModifiedBy());
+        } else {
+            if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
+                taskSubProofMapper.invalidSubTaskProofByIds(requestForProof.getSubProofIds(), requestForProof.getModifiedBy());
             }
-        } catch (Exception e) {
-            logger.error("ServiceImpl invalidTaskProof error" + e.toString());
-            flag = false;
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        } finally {
-            return flag;
         }
     }
 }

@@ -7,10 +7,11 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSu
 /**
  * @author yuantongqing on 2017/12/14
  */
-public interface TaskSubProofDetailService{
+public interface TaskSubProofDetailService {
 
     /**
      * 查询完税申请明细
+     *
      * @param requestForProof
      * @return
      */
@@ -18,9 +19,9 @@ public interface TaskSubProofDetailService{
 
     /**
      * 批量保存完税凭证申请明细
+     *
      * @param requestForSubDetail
-     * @return
      */
-    Boolean saveSubProofDetail(RequestForSubDetail requestForSubDetail);
+    void saveSubProofDetail(RequestForSubDetail requestForSubDetail);
 
 }

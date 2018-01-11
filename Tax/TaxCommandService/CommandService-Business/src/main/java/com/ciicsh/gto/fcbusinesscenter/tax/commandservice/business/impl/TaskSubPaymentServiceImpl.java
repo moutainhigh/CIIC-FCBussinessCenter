@@ -10,8 +10,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubP
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -24,8 +22,6 @@ import java.util.List;
  */
 @Service
 public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper, TaskSubPaymentPO> implements TaskSubPaymentService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubPaymentServiceImpl.class);
 
     /**
      * 条件查询缴纳子任务
@@ -51,8 +47,9 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         if (StrKit.notBlank(requestForSubPayment.getManagerName())) {
             wrapper.like("manager_name", requestForSubPayment.getManagerName());
         }
-        //期间类型currentPan,currentBeforePan,currentAfterPan
+        //期间类型currentPan：当期,currentBeforePan：当期前,currentAfterPan：当期后
         if (StrKit.notBlank(requestForSubPayment.getPeriodType())) {
+            //将年月的个税期间，转成1号，
             String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
             if ("currentPan".equals(requestForSubPayment.getPeriodType())) {
                 wrapper.andNew("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
@@ -89,39 +86,24 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      * @return
      */
     @Override
-    public Boolean completeTaskSubPayment(RequestForSubPayment requestForSubPayment) {
-        Boolean flag = true;
-        try {
-            if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
-                //修改缴纳子任务状态为完成
-                flag = baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
-            }
-        } catch (Exception e) {
-            logger.error("ServiceImpl completeTaskSubPayment error " + e.toString());
-            flag = false;
+    public void completeTaskSubPayment(RequestForSubPayment requestForSubPayment) {
+        if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
+            //修改缴纳子任务状态为完成
+            baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
         }
-        return flag;
     }
 
     /**
      * 批量修改缴纳子任务为退回
      *
      * @param requestForSubPayment
-     * @return
      */
     @Override
-    public Boolean rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
-        Boolean flag = true;
-        try {
-            if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
-                //修改缴纳子任务状态为退回
-                flag = baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
-            }
-        } catch (Exception e) {
-            logger.error("ServiceImpl rejectTaskSubPayment error " + e.toString());
-            flag = false;
+    public void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
+        if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
+            //修改缴纳子任务状态为退回
+            baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
         }
-        return flag;
     }
 
     /**

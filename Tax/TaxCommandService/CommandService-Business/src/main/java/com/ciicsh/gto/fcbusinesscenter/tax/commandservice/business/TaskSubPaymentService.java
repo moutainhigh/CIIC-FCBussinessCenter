@@ -14,6 +14,7 @@ public interface TaskSubPaymentService {
 
     /**
      * 条件查询缴纳子任务
+     *
      * @param requestForSubPayment
      * @return
      */
@@ -21,21 +22,22 @@ public interface TaskSubPaymentService {
 
     /**
      * 批量完成缴纳子任务
+     *
      * @param requestForSubPayment
-     * @return
      */
-    Boolean completeTaskSubPayment(RequestForSubPayment requestForSubPayment);
+    void completeTaskSubPayment(RequestForSubPayment requestForSubPayment);
 
     /**
      * 批量退回缴纳子任务
+     *
      * @param requestForSubPayment
-     * @return
      */
-    Boolean rejectTaskSubPayment(RequestForSubPayment requestForSubPayment);
+    void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment);
 
 
     /**
      * 根据缴纳子任务ID查询缴纳任务信息
+     *
      * @param subPaymentId
      * @return
      */

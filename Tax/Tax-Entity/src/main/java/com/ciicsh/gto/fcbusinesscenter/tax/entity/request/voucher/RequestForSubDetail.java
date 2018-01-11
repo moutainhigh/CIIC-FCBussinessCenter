@@ -19,6 +19,9 @@ public class RequestForSubDetail {
      */
     private Long taskId;
 
+    /**
+     * 删除的任务ID
+     */
     private Integer[] oldDeleteIds;
 
     private List<TaskSubProofDetailBO> taskSubProofDetailBOList;

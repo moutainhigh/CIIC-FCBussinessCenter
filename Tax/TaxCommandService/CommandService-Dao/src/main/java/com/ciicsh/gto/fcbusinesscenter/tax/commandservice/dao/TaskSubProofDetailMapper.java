@@ -19,14 +19,14 @@ import java.util.List;
 public interface TaskSubProofDetailMapper extends BaseMapper<TaskSubProofDetailPO> {
 
     /**
-     * 查询完税申请明细
+     * 通过主任务查询完税申请明细
      * @param taskSubProofDetailBO
      * @return
      */
     List<TaskSubProofDetailPO> queryTaskSubProofDetailByMainId(TaskSubProofDetailBO taskSubProofDetailBO);
 
     /**
-     * 查询完税申请明细
+     * 通过子任务查询完税申请明细
      * @param taskSubProofDetailBO
      * @return
      */

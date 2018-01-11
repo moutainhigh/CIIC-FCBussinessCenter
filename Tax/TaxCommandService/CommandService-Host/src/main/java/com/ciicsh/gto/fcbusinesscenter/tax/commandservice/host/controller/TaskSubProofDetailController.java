@@ -1,6 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.RequestSubProofDetailDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.SubProofDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
@@ -225,34 +225,36 @@ public class TaskSubProofDetailController {
     /**
      * 批量保存完税凭证申请明细
      *
-     * @param requestSubProofDetailDTO
+     * @param subProofDetailDTO
      * @return
      */
     @PostMapping(value = "/saveSubProofDetail")
-    public JsonResult saveSubProofDetail(@RequestBody RequestSubProofDetailDTO requestSubProofDetailDTO) {
+    public JsonResult saveSubProofDetail(@RequestBody SubProofDetailDTO subProofDetailDTO) {
         JsonResult jr = new JsonResult();
-
         try {
             RequestForSubDetail requestForSubDetail = new RequestForSubDetail();
-            BeanUtils.copyProperties(requestSubProofDetailDTO, requestForSubDetail);
-            if (requestSubProofDetailDTO.getOldDeleteIds() != null && requestSubProofDetailDTO.getOldDeleteIds().length > 0) {
-                requestForSubDetail.setOldDeleteIds(requestSubProofDetailDTO.getOldDeleteIds());
+            BeanUtils.copyProperties(subProofDetailDTO, requestForSubDetail);
+            if (subProofDetailDTO.getOldDeleteIds() != null && subProofDetailDTO.getOldDeleteIds().length > 0) {
+                requestForSubDetail.setOldDeleteIds(subProofDetailDTO.getOldDeleteIds());
             }
+            //需要完税凭证明细的BO集合
             List<TaskSubProofDetailBO> taskSubProofDetailBOList = new ArrayList<>();
-            List<TaskSubProofDetailDTO> taskSubProofDetailDTOList = requestSubProofDetailDTO.getTaskSubProofDetailDTOList();
+            List<TaskSubProofDetailDTO> taskSubProofDetailDTOList = subProofDetailDTO.getTaskSubProofDetailDTOList();
+            //循环DTO集合对象转成对应BO集合对象
             for (TaskSubProofDetailDTO taskSubProofDetailDTO : taskSubProofDetailDTOList) {
                 TaskSubProofDetailBO taskSubProofDetailBO = new TaskSubProofDetailBO();
                 BeanUtils.copyProperties(taskSubProofDetailDTO, taskSubProofDetailBO);
+                //如果个税期间止为空，则赋值为个税期间起
                 if (taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null) {
                     taskSubProofDetailBO.setIncomeEnd(taskSubProofDetailDTO.getIncomeStart());
                 }
                 taskSubProofDetailBOList.add(taskSubProofDetailBO);
             }
             requestForSubDetail.setTaskSubProofDetailBOList(taskSubProofDetailBOList);
-            Boolean flag = taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
+            taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (BeansException e) {
             logger.error("saveSubProofDetail error " + e.toString());
             jr.setErrorcode("1");

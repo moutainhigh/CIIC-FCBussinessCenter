@@ -26,7 +26,7 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping("/tax")
-public class TaskMainProofController{
+public class TaskMainProofController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskMainProofController.class);
 
@@ -35,6 +35,7 @@ public class TaskMainProofController{
 
     /**
      * 条件查询完税凭证主任务
+     *
      * @param taskMainProofDTO
      * @return
      */
@@ -49,7 +50,7 @@ public class TaskMainProofController{
             jr.setErrormsg("success");
             jr.setData(responseForMainProof);
         } catch (BeansException e) {
-            logger.error("queryTaskMainProofByRes error "+e.toString());
+            logger.error("queryTaskMainProofByRes error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -59,12 +60,13 @@ public class TaskMainProofController{
 
     /**
      * 新建任务
+     *
      * @param taskProofDTO
      * @return
      */
     @PostMapping(value = "/addTaskProof")
-    public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO){
-        //创建人
+    public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        //设置创建人
         taskProofDTO.setCreatedBy("admin");
         JsonResult jr = new JsonResult();
         try {
@@ -72,30 +74,36 @@ public class TaskMainProofController{
             TaskMainProofPO taskMainProofPO = null;
             //完税凭证子任务
             TaskSubProofPO taskSubProofPO = null;
-            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS") .format(new Date() );
-            Boolean flag = true;
-            if(taskProofDTO.getManagerName() != null && !"".equals(taskProofDTO.getManagerName())){
+            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+            if (taskProofDTO.getManagerName() != null && !"".equals(taskProofDTO.getManagerName())) {
                 taskMainProofPO = new TaskMainProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskMainProofPO);
-                taskMainProofPO.setTaskNo("TAX"+dateTimeStr);
+                //设置任务编号
+                taskMainProofPO.setTaskNo("TAX" + dateTimeStr);
+                //设置任务状态为草稿状态
                 taskMainProofPO.setStatus("00");
+                //设置修改人
                 taskMainProofPO.setModifiedBy("zhangsan");
             }
-            dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS") .format(new Date() );
-            if(taskProofDTO.getDeclareAccount() != null && !"".equals(taskProofDTO.getDeclareAccount())){
+            dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+            if (taskProofDTO.getDeclareAccount() != null && !"".equals(taskProofDTO.getDeclareAccount())) {
                 taskSubProofPO = new TaskSubProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskSubProofPO);
-                taskSubProofPO.setTaskNo("TAX"+dateTimeStr);
+                //设置任务编号
+                taskSubProofPO.setTaskNo("TAX" + dateTimeStr);
+                //设置任务状态为草稿状态
                 taskSubProofPO.setStatus("00");
+                //设置修改
                 taskSubProofPO.setModifiedBy("zhangsan");
+                //设置任务类型
                 taskSubProofPO.setTaskType("02");
             }
-            flag = taskMainProofService.addTaskProof(taskMainProofPO,taskSubProofPO);
+            taskMainProofService.addTaskProof(taskMainProofPO, taskSubProofPO);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (BeansException e) {
-            logger.error("addTaskProof error "+e.toString());
+            logger.error("addTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -105,22 +113,24 @@ public class TaskMainProofController{
 
     /**
      * 修改（即：提交）完税凭证状态
+     *
      * @param taskProofDTO
      * @return
      */
     @PostMapping(value = "/updateTaskProof")
-    public JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+    public JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //设置修改人
             requestForProof.setModifiedBy("adminMain");
-            Boolean flag = taskMainProofService.updateTaskProofByRes(requestForProof);
+            taskMainProofService.updateTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
-            logger.error("updateTaskProof error "+e.toString());
+            logger.error("updateTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
@@ -130,21 +140,22 @@ public class TaskMainProofController{
 
     /**
      * 将完税凭证任务置为失效
+     *
      * @param taskProofDTO
      * @return
      */
     @PostMapping(value = "/invalidTaskProof")
-    public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO){
+    public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            Boolean flag = taskMainProofService.invalidTaskProof(requestForProof);
+            taskMainProofService.invalidTaskProof(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
+            jr.setData(true);
         } catch (Exception e) {
-            logger.error("invalidTaskProof error "+e.toString());
+            logger.error("invalidTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         } finally {
