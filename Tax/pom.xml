@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-    <artifactId>tax-parent</artifactId>
+    <artifactId>fcbusinesscenter-tax-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <!--<name>gt1.productcenter</name>-->
@@ -44,11 +44,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>com.ciicsh</groupId>
                 <artifactId>afsystemmanagecenter-basicdataservice-client</artifactId>
                 <version>${basicdataservice.version}</version>
-            </dependency>
+            </dependency>-->
         </dependencies>
     </dependencyManagement>
 

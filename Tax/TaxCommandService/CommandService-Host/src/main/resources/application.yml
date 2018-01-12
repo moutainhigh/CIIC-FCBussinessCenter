@@ -56,7 +56,7 @@ pagehelper:
     reasonable: true
 
 server:
-    port: 9001
+    port: 7019
 #    context-path: /tax
     session-timeout: '# session timeout in seconds'
     tomcat:

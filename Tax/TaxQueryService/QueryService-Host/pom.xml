@@ -6,24 +6,24 @@
 
     <parent>
         <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-        <artifactId>tax-parent</artifactId>
+        <artifactId>fcbusinesscenter-tax-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-    <artifactId>queryservice-host</artifactId>
+    <artifactId>fcbusinesscenter-tax-queryservice-host</artifactId>
     <version>1.0.0</version>
 
     <dependencies>
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-            <artifactId>queryservice-business</artifactId>
+            <artifactId>fcbusinesscenter-tax-queryservice-business</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-            <artifactId>queryservice-api</artifactId>
+            <artifactId>fcbusinesscenter-tax-queryservice-api</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
