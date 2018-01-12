@@ -124,7 +124,7 @@ SIT环境:
 1.4 根据完税凭证主任务ID查询完税凭证子任务
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/queryTaskSubProofByMainId/{mainProofId}/"
+开发环境: http://localhost:7019/tax/queryTaskSubProofByMainId/{mainProofId}/
 SIT环境: 
 
 请求报文:
@@ -173,7 +173,7 @@ SIT环境:
 
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/copyProofInfoBySubId/{subProofId}/"
+开发环境: http://localhost:7019/tax/copyProofInfoBySubId/{subProofId}/
 SIT环境: 
 
 请求报文:
@@ -189,7 +189,7 @@ SIT环境:
 1.6 完税凭证主任务详细信息查询
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/queryTaskMainProofByRes"
+开发环境: http://localhost:7019/tax/queryTaskMainProofByRes
 SIT环境: 
 
 请求报文：
@@ -231,7 +231,7 @@ SIT环境:
 1.7 完税凭证子任务详细信息查询
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/queryTaskSubProofByRes"
+开发环境: http://localhost:7019/tax/queryTaskSubProofByRes
 SIT环境: 
 
 请求报文：
@@ -278,7 +278,7 @@ SIT环境:
 1.8 完税凭证详细页面保存数据
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/saveSubProofDetail"
+开发环境: http://localhost:7019/tax/saveSubProofDetail
 SIT环境: 
 
 
@@ -334,7 +334,7 @@ SIT环境:
 1.9 完税凭证申报明细查询
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/queryTaskSubProofDetail"
+开发环境: http://localhost:7019/tax/queryTaskSubProofDetail
 SIT环境: 
 
 请求报文:
@@ -382,7 +382,7 @@ SIT环境:
 1.10 完税凭证添加雇员列表查询
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/queryEmployee"
+开发环境: http://localhost:7019/tax/queryEmployee
 SIT环境: 
 
 请求报文：
@@ -432,7 +432,7 @@ SIT环境:
 1.11 雇员申报记录查询
 http方法: post
 api地址:
-开发环境: http://localhost:7019/tax/queryTaxBatchDetail"
+开发环境: http://localhost:7019/tax/queryTaxBatchDetail
 SIT环境: 
 
 请求报文：
