@@ -119,7 +119,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             filePO.setModifiedBy("admin");
             super.insertOrUpdate(filePO);
         } catch (Exception e) {
-            logger.error("deleteTaxFile error " + e.toString());
+            logger.error("uploadFileByBusinessIdAndType error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             flag = false;
         }

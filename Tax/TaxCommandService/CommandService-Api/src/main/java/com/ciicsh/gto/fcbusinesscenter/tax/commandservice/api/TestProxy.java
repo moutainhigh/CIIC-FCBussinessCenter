@@ -6,12 +6,11 @@ import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
-@FeignClient("fc-business-center-command-service")
-@RequestMapping("/testProxyTax")
+@FeignClient("fc-business-center-tax-command-service")
 public interface TestProxy {
 
-    @PostMapping("")
-    JsonResult test(@RequestBody Map<String, Object> param);
+    @RequestMapping("/info")
+    JsonResult test();
 
     /*@PostMapping("")
     JsonResult saveBasicProduct(@RequestBody Map<String, Object> param);
