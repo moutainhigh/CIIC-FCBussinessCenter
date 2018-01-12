@@ -4,11 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.TestProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TestService;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 public class TestController implements TestProxy {
@@ -19,9 +15,6 @@ public class TestController implements TestProxy {
     @Override
     public JsonResult test() {
         JsonResult jr = new JsonResult();
-        jr.setErrorcode("0");
-        jr.setErrormsg("success");
-        jr.setData("test");
         /*Object productObj = param.get("product");
         Object dependedRelation = param.get("dependedRelation");
         Object excludedRelation = param.get("excludedRelation");
