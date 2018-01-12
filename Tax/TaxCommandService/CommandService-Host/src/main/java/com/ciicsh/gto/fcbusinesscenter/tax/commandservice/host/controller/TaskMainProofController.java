@@ -146,6 +146,7 @@ public class TaskMainProofController {
      */
     @PostMapping(value = "/invalidTaskProof")
     public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        taskProofDTO.setModifiedBy("admin");
         JsonResult jr = new JsonResult();
         try {
             RequestForProof requestForProof = new RequestForProof();
