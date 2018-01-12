@@ -8,7 +8,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +43,7 @@ public class TaskSubMoneyDetailController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForSubMoneyDetail);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("querySubMoneyDetailsByParams error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");

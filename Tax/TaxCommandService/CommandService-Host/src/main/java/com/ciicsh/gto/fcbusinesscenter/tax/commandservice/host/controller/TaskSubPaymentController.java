@@ -10,7 +10,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +41,7 @@ public class TaskSubPaymentController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForSubPayment);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("querySubPayment error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
@@ -99,7 +98,7 @@ public class TaskSubPaymentController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(true);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("rejectTaskSubPayment error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");

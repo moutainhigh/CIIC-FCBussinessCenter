@@ -10,12 +10,11 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,7 @@ public class TaskSubProofController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubProofDTOLists);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("queryTaskSubProofByMainId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
@@ -78,7 +77,7 @@ public class TaskSubProofController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForSubProof);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("queryTaskSubProofByRes error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
@@ -102,7 +101,7 @@ public class TaskSubProofController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(true);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("copyProofInfoBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
@@ -292,7 +291,7 @@ public class TaskSubProofController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubProofBO);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("queryApplyDetailsBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
