@@ -166,7 +166,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             taskSubProofBO.setPeriod(DateTimeKit.parse(requestForProof.getPeriod(), DateTimeKit.NORM_DATE_PATTERN));
         }
         List<TaskSubProofBO> taskSubProofBOList = new ArrayList<>();
-        Page<TaskSubProofBO> pageTest = new Page<TaskSubProofBO>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
+        Page<TaskSubProofBO> pageTest = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
         taskSubProofBOList = baseMapper.querySubProofInfoByTaskType(pageTest, taskSubProofBO);
         pageTest = pageTest.setRecords(taskSubProofBOList);
         //条件查询总数目
@@ -367,7 +367,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             longList.add(requestForProof.getId());
         }
         //根据子任务ID分页查询完税凭证申报明细
-        Page<TaskSubProofDetailPO> page = new Page<TaskSubProofDetailPO>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
+        Page<TaskSubProofDetailPO> page = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
         taskSubProofDetailPOList = taskSubProofDetailMapper.queryApplyDetailsBySubIdsAndEmp(page, longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
         //根据子任务ID查询完税凭证申报明细总数
         int total = taskSubProofDetailMapper.queryApplyDetailsTotalNumBySubIdsAndEmp(longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
