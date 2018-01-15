@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPayment;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
@@ -68,12 +70,20 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             taskSubPaymentPOList = baseMapper.selectPage(pageInfo, wrapper);
             //获取查询总数目
             int total = baseMapper.selectCount(wrapper);
+            //获取缴纳任务状态中文名
+            for(TaskSubPaymentPO p: taskSubPaymentPOList){
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,p.getStatus()));
+            }
             responseForSubPayment.setRowList(taskSubPaymentPOList);
             responseForSubPayment.setTotalNum(total);
             responseForSubPayment.setCurrentNum(requestForSubPayment.getCurrentNum());
             responseForSubPayment.setPageSize(requestForSubPayment.getPageSize());
         } else {
             taskSubPaymentPOList = baseMapper.selectList(wrapper);
+            //获取缴纳任务状态中文名
+            for(TaskSubPaymentPO p: taskSubPaymentPOList){
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,p.getStatus()));
+            }
             responseForSubPayment.setRowList(taskSubPaymentPOList);
         }
         return responseForSubPayment;
@@ -114,6 +124,8 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      */
     @Override
     public TaskSubPaymentPO querySubPaymentById(Long subPaymentId) {
-        return baseMapper.selectById(subPaymentId);
+        TaskSubPaymentPO taskSubPaymentPO = baseMapper.selectById(subPaymentId);
+        taskSubPaymentPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,taskSubPaymentPO.getStatus()));
+        return taskSubPaymentPO;
     }
 }

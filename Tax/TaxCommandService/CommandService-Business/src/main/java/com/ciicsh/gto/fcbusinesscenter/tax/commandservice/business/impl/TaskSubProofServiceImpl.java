@@ -9,11 +9,13 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofDetail
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.slf4j.Logger;
@@ -85,6 +87,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             for (TaskSubProofPO taskSubProofPO : taskSubProofPOList) {
                 TaskSubProofBO taskSubProofBO = new TaskSubProofBO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
+                //获取完税凭证任务状态
+                taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofBO.getStatus()));
                 taskSubProofBOList.add(taskSubProofBO);
             }
             responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
@@ -96,6 +100,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             for (TaskSubProofPO taskSubProofPO : taskSubProofPOList) {
                 TaskSubProofBO taskSubProofBO = new TaskSubProofBO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
+                //获取完税凭证任务状态
+                taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofBO.getStatus()));
                 taskSubProofBOList.add(taskSubProofBO);
             }
             responseForSubProof.setRowList(taskSubProofBOList);
@@ -165,6 +171,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         pageTest = pageTest.setRecords(taskSubProofBOList);
         //条件查询总数目
         int total = baseMapper.querySubProofTotalNumByTaskType(taskSubProofBO);
+        //获取完税凭证任务状态中文名
+        for(TaskSubProofBO bo: taskSubProofBOList){
+            bo.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,bo.getStatus()));
+        }
         pageTest.setTotal(total);
         responseForSubProof.setRowList(taskSubProofBOList);
         responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
@@ -332,6 +342,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Override
     public TaskSubProofBO queryApplyDetailsBySubId(Long subProofId) {
         TaskSubProofBO taskSubProofBO = baseMapper.queryApplyDetailsBySubId(subProofId);
+        taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofBO.getStatus()));
         return taskSubProofBO;
     }
 
@@ -363,6 +374,11 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         page = page.setRecords(taskSubProofDetailPOList);
         //条件查询总数目
         page.setTotal(total);
+        //获取证件类型中文和所得项目中文名
+        for(TaskSubProofDetailPO p: taskSubProofDetailPOList){
+            p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
+            p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+        }
         responseForSubProofDetail.setRowList(taskSubProofDetailPOList);
         responseForSubProofDetail.setCurrentNum(requestForProof.getCurrentNum());
         responseForSubProofDetail.setPageSize(requestForProof.getPageSize());

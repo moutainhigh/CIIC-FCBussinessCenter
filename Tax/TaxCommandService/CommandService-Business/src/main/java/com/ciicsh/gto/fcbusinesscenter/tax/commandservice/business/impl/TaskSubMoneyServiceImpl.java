@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubMoneyMapper
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
@@ -68,12 +69,20 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             taskSubMoneyPOList = baseMapper.selectPage(pageInfo, wrapper);
             //获取查询总数目
             int total = baseMapper.selectCount(wrapper);
+            //获取完税凭证任务状态中文名
+            for(TaskSubMoneyPO p: taskSubMoneyPOList){
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,p.getStatus()));
+            }
             responseForSubMoney.setRowList(taskSubMoneyPOList);
             responseForSubMoney.setTotalNum(total);
             responseForSubMoney.setCurrentNum(requestForSubMoney.getCurrentNum());
             responseForSubMoney.setPageSize(requestForSubMoney.getPageSize());
         } else {
             taskSubMoneyPOList = baseMapper.selectList(wrapper);
+            //获取完税凭证任务状态中文名
+            for(TaskSubMoneyPO p: taskSubMoneyPOList){
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,p.getStatus()));
+            }
             responseForSubMoney.setRowList(taskSubMoneyPOList);
         }
         return responseForSubMoney;
@@ -114,6 +123,8 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      */
     @Override
     public TaskSubMoneyPO querySubMoneyById(Long subMoneyId) {
-        return baseMapper.selectById(subMoneyId);
+        TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(subMoneyId);
+        taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,taskSubMoneyPO.getStatus()));
+        return taskSubMoneyPO;
     }
 }

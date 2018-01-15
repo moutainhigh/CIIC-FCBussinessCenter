@@ -11,15 +11,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author yuantongqing on 2017/12/19
  */
 @RestController
-@RequestMapping("/tax")
-public class CalculationBatchDetailController {
+public class CalculationBatchDetailController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(CalculationBatchDetailController.class);
 

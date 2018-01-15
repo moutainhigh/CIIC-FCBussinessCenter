@@ -11,15 +11,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author yuantongqing on 2018/01/02
  * 缴纳详情返回对象
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskSubPaymentController {
+public class TaskSubPaymentController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubPaymentController.class);
 

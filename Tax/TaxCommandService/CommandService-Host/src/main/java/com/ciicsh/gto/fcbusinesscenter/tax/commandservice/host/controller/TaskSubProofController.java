@@ -9,12 +9,16 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +27,7 @@ import java.util.List;
  * @author yuantongqing on 2017/12/12
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskSubProofController {
+public class TaskSubProofController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubProofController.class);
 
@@ -46,6 +49,7 @@ public class TaskSubProofController {
             for (TaskSubProofPO taskSubProofPO : taskSubProofPOLists) {
                 TaskSubProofDTO taskSubProofDTO = new TaskSubProofDTO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofDTO);
+                taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofDTO.getStatus()));
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
             jr.setErrorcode("0");

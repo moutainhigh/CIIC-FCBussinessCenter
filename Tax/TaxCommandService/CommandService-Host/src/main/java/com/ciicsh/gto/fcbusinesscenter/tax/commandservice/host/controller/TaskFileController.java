@@ -28,7 +28,6 @@ import java.io.InputStream;
  * on create 2018/1/4
  */
 @RestController
-@RequestMapping("/tax")
 public class TaskFileController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(TaskFileController.class);
 

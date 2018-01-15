@@ -10,6 +10,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForEmployee;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -27,8 +27,7 @@ import java.util.List;
  * @author yuantongqing on 2017/12/14
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskSubProofDetailController {
+public class TaskSubProofDetailController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubProofDetailController.class);
 
@@ -83,6 +82,7 @@ public class TaskSubProofDetailController {
                 employeeBO1.setEmployeeNo("17A13012");
                 employeeBO1.setEmployeeName("李晓");
                 employeeBO1.setIdType("01");
+                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO1.getIdType()));
                 employeeBO1.setIdNo("321000199010101234");
                 employeeBO1.setManagerNo("GL170001");
                 employeeBO1.setManagerName("蓝天科技");
@@ -93,6 +93,7 @@ public class TaskSubProofDetailController {
                 employeeBO2.setEmployeeNo("17A13497");
                 employeeBO2.setEmployeeName("张名");
                 employeeBO2.setIdType("01");
+                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO2.getIdType()));
                 employeeBO2.setIdNo("323891199003103290");
                 employeeBO2.setManagerNo("GL170001");
                 employeeBO2.setManagerName("蓝天科技");
@@ -103,6 +104,7 @@ public class TaskSubProofDetailController {
                 employeeBO3.setEmployeeNo("17A13513");
                 employeeBO3.setEmployeeName("刘文华");
                 employeeBO3.setIdType("01");
+                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO3.getIdType()));
                 employeeBO3.setIdNo("321110197108239090");
                 employeeBO3.setManagerNo("GL170001");
                 employeeBO3.setManagerName("蓝天科技");
@@ -113,6 +115,7 @@ public class TaskSubProofDetailController {
                 employeeBO4.setEmployeeNo("17A13542");
                 employeeBO4.setEmployeeName("蒋文文");
                 employeeBO4.setIdType("01");
+                employeeBO4.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO4.getIdType()));
                 employeeBO4.setIdNo("322140199211116510");
                 employeeBO4.setManagerNo("GL170001");
                 employeeBO4.setManagerName("蓝天科技");
@@ -123,6 +126,7 @@ public class TaskSubProofDetailController {
                 employeeBO5.setEmployeeNo("17A13101");
                 employeeBO5.setEmployeeName("许强");
                 employeeBO5.setIdType("01");
+                employeeBO5.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO5.getIdType()));
                 employeeBO5.setIdNo("320171198810106787");
                 employeeBO5.setManagerNo("GL170001");
                 employeeBO5.setManagerName("蓝天科技");
@@ -146,6 +150,7 @@ public class TaskSubProofDetailController {
                 employeeBO1.setEmployeeNo("17A13012");
                 employeeBO1.setEmployeeName("李晓");
                 employeeBO1.setIdType("01");
+                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO1.getIdType()));
                 employeeBO1.setIdNo("321000199010101234");
                 employeeBO1.setManagerNo("GL170001");
                 employeeBO1.setManagerName("蓝天科技");
@@ -156,6 +161,7 @@ public class TaskSubProofDetailController {
                 employeeBO2.setEmployeeNo("17A13497");
                 employeeBO2.setEmployeeName("张名");
                 employeeBO2.setIdType("01");
+                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO2.getIdType()));
                 employeeBO2.setIdNo("323891199003103290");
                 employeeBO2.setManagerNo("GL170001");
                 employeeBO2.setManagerName("蓝天科技");
@@ -166,6 +172,7 @@ public class TaskSubProofDetailController {
                 employeeBO3.setEmployeeNo("17A13513");
                 employeeBO3.setEmployeeName("刘文华");
                 employeeBO3.setIdType("01");
+                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO3.getIdType()));
                 employeeBO3.setIdNo("321110197108239090");
                 employeeBO3.setManagerNo("GL170001");
                 employeeBO3.setManagerName("蓝天科技");
@@ -176,6 +183,7 @@ public class TaskSubProofDetailController {
                 employeeBO4.setEmployeeNo("17A13542");
                 employeeBO4.setEmployeeName("蒋文文");
                 employeeBO4.setIdType("01");
+                employeeBO4.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO4.getIdType()));
                 employeeBO4.setIdNo("322140199211116510");
                 employeeBO4.setManagerNo("GL170001");
                 employeeBO4.setManagerName("蓝天科技");
@@ -186,6 +194,7 @@ public class TaskSubProofDetailController {
                 employeeBO5.setEmployeeNo("17A13101");
                 employeeBO5.setEmployeeName("许强");
                 employeeBO5.setIdType("01");
+                employeeBO5.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO5.getIdType()));
                 employeeBO5.setIdNo("320171198810106787");
                 employeeBO5.setManagerNo("GL170001");
                 employeeBO5.setManagerName("蓝天科技");

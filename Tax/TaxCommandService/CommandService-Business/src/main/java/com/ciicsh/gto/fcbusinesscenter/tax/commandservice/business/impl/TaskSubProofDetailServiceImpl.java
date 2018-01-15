@@ -11,6 +11,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,11 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             taskSubProofDetailPOList = baseMapper.queryTaskSubProofDetailByMainId(taskSubProofDetailBO);
         } else if (subType.equals(requestForProof.getDetailType())) {
             taskSubProofDetailPOList = baseMapper.queryTaskSubProofDetailBySubId(taskSubProofDetailBO);
+        }
+        //获取证件类型中文和所得项目中文名
+        for(TaskSubProofDetailPO p: taskSubProofDetailPOList){
+            p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
+            p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
         }
         responseForSubDetail.setRowList(taskSubProofDetailPOList);
         return responseForSubDetail;

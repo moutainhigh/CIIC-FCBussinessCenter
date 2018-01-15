@@ -10,6 +10,8 @@ public class EmployeeBO {
 
     private String idType;
 
+    private String idTypeName;
+
     private String idNo;
 
     private String managerNo;
@@ -80,5 +82,13 @@ public class EmployeeBO {
 
     public void setDeclareAccount(String declareAccount) {
         this.declareAccount = declareAccount;
+    }
+
+    public String getIdTypeName() {
+        return idTypeName;
+    }
+
+    public void setIdTypeName(String idTypeName) {
+        this.idTypeName = idTypeName;
     }
 }

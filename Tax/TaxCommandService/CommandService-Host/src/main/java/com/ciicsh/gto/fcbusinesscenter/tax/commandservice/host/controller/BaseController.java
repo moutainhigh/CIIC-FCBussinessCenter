@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
@@ -17,6 +19,7 @@ import java.net.URLEncoder;
  * @author linhaihai
  * @since 2017-12-12
  */
+@RequestMapping("/tax")
 public class BaseController {
 
 

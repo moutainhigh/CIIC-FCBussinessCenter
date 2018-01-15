@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 
 import java.util.Date;
 
+/**
+ * @author yuantongqing
+ */
 public class TaskSubProofBO {
 
     /**
@@ -45,6 +48,11 @@ public class TaskSubProofBO {
      * 任务状态
      */
     private String status;
+
+    /**
+     * 状态(中文)
+     */
+    private String statusName;
 
     /**
      * 创建人
@@ -94,11 +102,6 @@ public class TaskSubProofBO {
      * 是否为合并任务
      */
     private Boolean isCombined;
-
-    /**
-     * 分页page对象
-     */
-    private Page page;
 
     public Long getId() {
         return id;
@@ -196,14 +199,6 @@ public class TaskSubProofBO {
         this.modifiedTime = modifiedTime;
     }
 
-    public Page getPage() {
-        return page;
-    }
-
-    public void setPage(Page page) {
-        this.page = page;
-    }
-
     public Boolean getActive() {
         return isActive;
     }
@@ -252,6 +247,14 @@ public class TaskSubProofBO {
         isCombined = combined;
     }
 
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -263,6 +266,7 @@ public class TaskSubProofBO {
                 ", chineseNum=" + chineseNum +
                 ", foreignerNum=" + foreignerNum +
                 ", status='" + status + '\'' +
+                ", statusName='" + statusName + '\'' +
                 ", createdBy='" + createdBy + '\'' +
                 ", createdTime=" + createdTime +
                 ", modifiedBy='" + modifiedBy + '\'' +
@@ -273,7 +277,6 @@ public class TaskSubProofBO {
                 ", period=" + period +
                 ", taskType='" + taskType + '\'' +
                 ", isCombined=" + isCombined +
-                ", page=" + page +
                 '}';
     }
 }

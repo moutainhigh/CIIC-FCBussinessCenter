@@ -11,7 +11,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -19,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * on create 2018/1/8
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskSubMoneyDetailController {
+public class TaskSubMoneyDetailController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubMoneyDetailController.class);
 
