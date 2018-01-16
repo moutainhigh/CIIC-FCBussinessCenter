@@ -86,7 +86,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             //根据主任务ID查询其下所有子任务
             List<TaskSubProofPO> subList = taskSubProofMapper.selectSubTaskMapByMainId(requestForSubDetail.getTaskId());
             //用于存申报账户
-            Map<String, Long> subMap = new HashMap<>();
+            Map<String, Long> subMap = new HashMap<>(16);
             for (TaskSubProofPO taskSubProofPO : subList) {
                 subMap.put(taskSubProofPO.getDeclareAccount(), taskSubProofPO.getId());
             }

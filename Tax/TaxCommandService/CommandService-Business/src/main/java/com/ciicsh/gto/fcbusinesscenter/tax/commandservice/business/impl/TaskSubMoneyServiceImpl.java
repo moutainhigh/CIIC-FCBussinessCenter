@@ -33,6 +33,12 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      */
     @Override
     public ResponseForSubMoney querySubMoney(RequestForSubMoney requestForSubMoney) {
+        //当期
+        String currentPan = "currentPan";
+        //当期前
+        String currentBeforePan = "currentBeforePan";
+        //当期后
+        String currentAfterPan = "currentAfterPan";
         ResponseForSubMoney responseForSubMoney = new ResponseForSubMoney();
         List<TaskSubMoneyPO> taskSubMoneyPOList = new ArrayList<>();
         EntityWrapper wrapper = new EntityWrapper();
@@ -52,11 +58,11 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         //期间类型currentPan,currentBeforePan,currentAfterPan
         if (StrKit.notBlank(requestForSubMoney.getPeriodType())) {
             String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
-            if ("currentPan".equals(requestForSubMoney.getPeriodType())) {
+            if (currentPan.equals(requestForSubMoney.getPeriodType())) {
                 wrapper.andNew("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            } else if ("currentBeforePan".equals(requestForSubMoney.getPeriodType())) {
+            } else if (currentBeforePan.equals(requestForSubMoney.getPeriodType())) {
                 wrapper.andNew("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            } else {
+            } else if (currentAfterPan.equals(requestForSubMoney.getPeriodType())) {
                 wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
         }
@@ -70,8 +76,8 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             //获取查询总数目
             int total = baseMapper.selectCount(wrapper);
             //获取完税凭证任务状态中文名
-            for(TaskSubMoneyPO p: taskSubMoneyPOList){
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,p.getStatus()));
+            for (TaskSubMoneyPO p : taskSubMoneyPOList) {
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
             }
             responseForSubMoney.setRowList(taskSubMoneyPOList);
             responseForSubMoney.setTotalNum(total);
@@ -80,8 +86,8 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         } else {
             taskSubMoneyPOList = baseMapper.selectList(wrapper);
             //获取完税凭证任务状态中文名
-            for(TaskSubMoneyPO p: taskSubMoneyPOList){
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,p.getStatus()));
+            for (TaskSubMoneyPO p : taskSubMoneyPOList) {
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS, p.getStatus()));
             }
             responseForSubMoney.setRowList(taskSubMoneyPOList);
         }
@@ -124,7 +130,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
     @Override
     public TaskSubMoneyPO querySubMoneyById(long subMoneyId) {
         TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(subMoneyId);
-        taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,taskSubMoneyPO.getStatus()));
+        taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, taskSubMoneyPO.getStatus()));
         return taskSubMoneyPO;
     }
 }

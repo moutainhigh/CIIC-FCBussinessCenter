@@ -33,6 +33,12 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      */
     @Override
     public ResponseForSubPayment querySubPayment(RequestForSubPayment requestForSubPayment) {
+        //当期
+        String currentPan = "currentPan";
+        //当期前
+        String currentBeforePan = "currentBeforePan";
+        //当期后
+        String currentAfterPan = "currentAfterPan";
         ResponseForSubPayment responseForSubPayment = new ResponseForSubPayment();
         List<TaskSubPaymentPO> taskSubPaymentPOList = new ArrayList<>();
         EntityWrapper wrapper = new EntityWrapper();
@@ -53,11 +59,11 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         if (StrKit.notBlank(requestForSubPayment.getPeriodType())) {
             //将年月的个税期间，转成1号，
             String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
-            if ("currentPan".equals(requestForSubPayment.getPeriodType())) {
+            if (currentPan.equals(requestForSubPayment.getPeriodType())) {
                 wrapper.andNew("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            } else if ("currentBeforePan".equals(requestForSubPayment.getPeriodType())) {
+            } else if (currentBeforePan.equals(requestForSubPayment.getPeriodType())) {
                 wrapper.andNew("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
-            } else {
+            } else if (currentAfterPan.equals(requestForSubPayment.getPeriodType())) {
                 wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
         }
@@ -71,8 +77,8 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             //获取查询总数目
             int total = baseMapper.selectCount(wrapper);
             //获取缴纳任务状态中文名
-            for(TaskSubPaymentPO p: taskSubPaymentPOList){
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,p.getStatus()));
+            for (TaskSubPaymentPO p : taskSubPaymentPOList) {
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
             }
             responseForSubPayment.setRowList(taskSubPaymentPOList);
             responseForSubPayment.setTotalNum(total);
@@ -81,8 +87,8 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         } else {
             taskSubPaymentPOList = baseMapper.selectList(wrapper);
             //获取缴纳任务状态中文名
-            for(TaskSubPaymentPO p: taskSubPaymentPOList){
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,p.getStatus()));
+            for (TaskSubPaymentPO p : taskSubPaymentPOList) {
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
             }
             responseForSubPayment.setRowList(taskSubPaymentPOList);
         }
@@ -125,7 +131,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
     @Override
     public TaskSubPaymentPO querySubPaymentById(long subPaymentId) {
         TaskSubPaymentPO taskSubPaymentPO = baseMapper.selectById(subPaymentId);
-        taskSubPaymentPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,taskSubPaymentPO.getStatus()));
+        taskSubPaymentPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, taskSubPaymentPO.getStatus()));
         return taskSubPaymentPO;
     }
 }
