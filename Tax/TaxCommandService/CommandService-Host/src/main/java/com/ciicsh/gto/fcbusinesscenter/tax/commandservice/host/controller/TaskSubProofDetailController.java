@@ -215,9 +215,6 @@ public class TaskSubProofDetailController extends BaseController implements Task
         try {
             RequestForSubDetail requestForSubDetail = new RequestForSubDetail();
             BeanUtils.copyProperties(subProofDetailDTO, requestForSubDetail);
-            if (subProofDetailDTO.getOldDeleteIds() != null && subProofDetailDTO.getOldDeleteIds().length > 0) {
-                requestForSubDetail.setOldDeleteIds(subProofDetailDTO.getOldDeleteIds());
-            }
             //需要完税凭证明细的BO集合
             List<TaskSubProofDetailBO> taskSubProofDetailBOList = new ArrayList<>();
             List<TaskSubProofDetailDTO> taskSubProofDetailDTOList = subProofDetailDTO.getTaskSubProofDetailDTOList();
