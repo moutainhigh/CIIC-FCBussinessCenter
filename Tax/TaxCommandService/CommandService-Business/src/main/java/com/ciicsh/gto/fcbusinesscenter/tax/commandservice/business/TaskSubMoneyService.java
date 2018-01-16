@@ -1,7 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 
@@ -35,6 +34,6 @@ public interface TaskSubMoneyService {
      * @param subMoneyId
      * @return
      */
-    TaskSubMoneyPO querySubMoneyById(Long subMoneyId);
+    TaskSubMoneyPO querySubMoneyById(long subMoneyId);
 
 }

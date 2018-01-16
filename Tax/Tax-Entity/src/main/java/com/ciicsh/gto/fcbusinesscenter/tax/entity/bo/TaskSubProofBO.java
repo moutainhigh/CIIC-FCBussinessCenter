@@ -1,7 +1,5 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
-import com.baomidou.mybatisplus.plugins.Page;
-
 import java.util.Date;
 
 /**
@@ -91,7 +89,7 @@ public class TaskSubProofBO {
     /**
      * 个税期间
      */
-    private Date  period;
+    private Date period;
 
     /**
      * 任务类型(01:自动,02:人工)

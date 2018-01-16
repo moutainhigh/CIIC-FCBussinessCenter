@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.ServletOutputStream;
@@ -22,18 +24,20 @@ import java.net.URLEncoder;
 @RequestMapping("/tax")
 public class BaseController {
 
+    private static final Logger logger = LoggerFactory.getLogger(BaseController.class);
 
     /**
      * 下载文件
+     *
      * @param response
      * @param fileName
      * @param content
      */
-    protected void downloadFile(HttpServletResponse response,String fileName,byte[] content){
+    protected void downloadFile(HttpServletResponse response, String fileName, byte[] content) {
         BufferedOutputStream bos = null;
         ServletOutputStream outputStream = null;
         BufferedInputStream bis = null;
-        try{
+        try {
             fileName = URLEncoder.encode(fileName, "UTF-8");
             response.reset();
             response.setContentType("application/octet-stream;charset=utf-8");
@@ -51,28 +55,28 @@ public class BaseController {
 
                 bos.write(buff, 0, bytesRead);
             }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
+        } catch (Exception e) {
+            logger.error("baseController downloadFile error " + e.toString());
+        } finally {
             try {
                 bis.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("close bis error " + e.toString());
             }
             try {
                 bos.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("close bos error " + e.toString());
             }
             try {
                 outputStream.flush();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("flush outputStream error " + e.toString());
             }
             try {
                 outputStream.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("close outputStream error " + e.toString());
             }
         }
 

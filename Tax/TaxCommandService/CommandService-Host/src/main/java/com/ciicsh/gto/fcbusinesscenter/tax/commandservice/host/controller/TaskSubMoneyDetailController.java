@@ -28,15 +28,16 @@ public class TaskSubMoneyDetailController extends BaseController {
 
     /**
      * 查询划款明细
+     *
      * @param taskSubMoneyDetailDTO
      * @return
      */
     @PostMapping(value = "querySubMoneyDetailsByParams")
-    public JsonResult querySubMoneyDetailsByParams(@RequestBody TaskSubMoneyDetailDTO taskSubMoneyDetailDTO){
+    public JsonResult querySubMoneyDetailsByParams(@RequestBody TaskSubMoneyDetailDTO taskSubMoneyDetailDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForSubMoneyDetail requestForSubMoneyDetail = new RequestForSubMoneyDetail();
-            BeanUtils.copyProperties(taskSubMoneyDetailDTO,requestForSubMoneyDetail);
+            BeanUtils.copyProperties(taskSubMoneyDetailDTO, requestForSubMoneyDetail);
             ResponseForSubMoneyDetail responseForSubMoneyDetail = taskSubMoneyDetailService.querySubMoneyDetailsByParams(requestForSubMoneyDetail);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -45,8 +46,7 @@ public class TaskSubMoneyDetailController extends BaseController {
             logger.error("querySubMoneyDetailsByParams error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 }

@@ -1,23 +1,50 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
+/**
+ * @author yuantongqing
+ */
 public class EmployeeBO {
 
     private Long id;
 
+    /**
+     * 雇员编号
+     */
     private String employeeNo;
 
+    /**
+     * 雇员名称
+     */
     private String employeeName;
 
+    /**
+     * 证件类型
+     */
     private String idType;
 
+    /**
+     * 证件类型(中文)
+     */
     private String idTypeName;
 
+    /**
+     * 证件号
+     */
     private String idNo;
 
+    /**
+     * 管理方编号
+     */
     private String managerNo;
 
+    /**
+     * 管理方名称
+     */
     private String managerName;
 
+    /**
+     * 申报账户
+     */
     private String declareAccount;
 
     public Long getId() {
@@ -90,5 +117,20 @@ public class EmployeeBO {
 
     public void setIdTypeName(String idTypeName) {
         this.idTypeName = idTypeName;
+    }
+
+    @Override
+    public String toString() {
+        return "EmployeeBO{" +
+                "id=" + id +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idTypeName='" + idTypeName + '\'' +
+                ", idNo='" + idNo + '\'' +
+                ", managerNo='" + managerNo + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", declareAccount='" + declareAccount + '\'' +
+                '}';
     }
 }

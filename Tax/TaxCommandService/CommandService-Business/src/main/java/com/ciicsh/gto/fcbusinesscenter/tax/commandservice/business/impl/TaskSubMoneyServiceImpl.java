@@ -122,7 +122,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      * @return
      */
     @Override
-    public TaskSubMoneyPO querySubMoneyById(Long subMoneyId) {
+    public TaskSubMoneyPO querySubMoneyById(long subMoneyId) {
         TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(subMoneyId);
         taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS,taskSubMoneyPO.getStatus()));
         return taskSubMoneyPO;

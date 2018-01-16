@@ -44,9 +44,8 @@ public class TaskSubPaymentDetailController extends BaseController {
             logger.error("querySubPaymentDetailsByParams error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 }

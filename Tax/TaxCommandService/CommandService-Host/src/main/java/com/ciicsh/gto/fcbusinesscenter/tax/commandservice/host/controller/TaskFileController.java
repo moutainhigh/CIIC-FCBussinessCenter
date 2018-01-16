@@ -54,9 +54,8 @@ public class TaskFileController extends BaseController {
             logger.error("queryTaxFile error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -79,9 +78,8 @@ public class TaskFileController extends BaseController {
             logger.error("deleteTaxFile error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 
@@ -106,9 +104,8 @@ public class TaskFileController extends BaseController {
             logger.error("uploadFileByBusinessIdAndType error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**

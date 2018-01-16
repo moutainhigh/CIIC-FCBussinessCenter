@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.SubProofDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDetailDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofDetailProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.EmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofDetailBO;
@@ -27,7 +28,7 @@ import java.util.List;
  * @author yuantongqing on 2017/12/14
  */
 @RestController
-public class TaskSubProofDetailController extends BaseController {
+public class TaskSubProofDetailController extends BaseController implements TaskSubProofDetailProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubProofDetailController.class);
 
@@ -41,7 +42,7 @@ public class TaskSubProofDetailController extends BaseController {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofDetail")
+    @Override
     public JsonResult queryTaskSubProofDetail(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -55,9 +56,8 @@ public class TaskSubProofDetailController extends BaseController {
             logger.error("queryTaskSubProofDetail error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -66,23 +66,21 @@ public class TaskSubProofDetailController extends BaseController {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/queryEmployee")
+    @Override
     public JsonResult queryEmployee(@RequestBody TaskProofDTO taskProofDTO) {
-//        int begin = (taskProofDTO.getCurrentNum() - 1) * taskProofDTO.getPageSize() + 1;
-//        int end = taskProofDTO.getCurrentNum() * taskProofDTO.getPageSize() + 1;
-//        int pageEnd  = end > 18 ? 18 : end;
-//        int total = 18 ;
+        //主任务标识
+        String main = "main";
         JsonResult jr = new JsonResult();
         List<EmployeeBO> employeeBOList = new ArrayList<>();
         ResponseForEmployee responseForEmployee = new ResponseForEmployee();
         try {
-            if ("main".equals(taskProofDTO.getDetailType())) {
+            if (main.equals(taskProofDTO.getDetailType())) {
                 EmployeeBO employeeBO1 = new EmployeeBO();
                 employeeBO1.setId(Long.valueOf(1));
                 employeeBO1.setEmployeeNo("17A13012");
                 employeeBO1.setEmployeeName("李晓");
                 employeeBO1.setIdType("01");
-                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO1.getIdType()));
+                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
                 employeeBO1.setIdNo("321000199010101234");
                 employeeBO1.setManagerNo("GL170001");
                 employeeBO1.setManagerName("蓝天科技");
@@ -93,7 +91,7 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO2.setEmployeeNo("17A13497");
                 employeeBO2.setEmployeeName("张名");
                 employeeBO2.setIdType("01");
-                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO2.getIdType()));
+                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
                 employeeBO2.setIdNo("323891199003103290");
                 employeeBO2.setManagerNo("GL170001");
                 employeeBO2.setManagerName("蓝天科技");
@@ -104,7 +102,7 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO3.setEmployeeNo("17A13513");
                 employeeBO3.setEmployeeName("刘文华");
                 employeeBO3.setIdType("01");
-                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO3.getIdType()));
+                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
                 employeeBO3.setIdNo("321110197108239090");
                 employeeBO3.setManagerNo("GL170001");
                 employeeBO3.setManagerName("蓝天科技");
@@ -115,7 +113,7 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO4.setEmployeeNo("17A13542");
                 employeeBO4.setEmployeeName("蒋文文");
                 employeeBO4.setIdType("01");
-                employeeBO4.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO4.getIdType()));
+                employeeBO4.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO4.getIdType()));
                 employeeBO4.setIdNo("322140199211116510");
                 employeeBO4.setManagerNo("GL170001");
                 employeeBO4.setManagerName("蓝天科技");
@@ -126,31 +124,19 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO5.setEmployeeNo("17A13101");
                 employeeBO5.setEmployeeName("许强");
                 employeeBO5.setIdType("01");
-                employeeBO5.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO5.getIdType()));
+                employeeBO5.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO5.getIdType()));
                 employeeBO5.setIdNo("320171198810106787");
                 employeeBO5.setManagerNo("GL170001");
                 employeeBO5.setManagerName("蓝天科技");
                 employeeBO5.setDeclareAccount("蓝天科技无锡独立户");
                 employeeBOList.add(employeeBO5);
-//                for (int i = begin; i < pageEnd; i++) {
-//                    EmployeeBO employeeBO = new EmployeeBO();
-//                    employeeBO.setId(Long.valueOf(i));
-//                    employeeBO.setEmployeeNo("NO20171215" + i);
-//                    employeeBO.setEmployeeName("main" + i);
-//                    employeeBO.setIdType("01");
-//                    employeeBO.setIdNo("32100019901010123" + i);
-//                    employeeBO.setManagerNo("WP20171208175700" + i);
-//                    employeeBO.setManagerName("百盛餐饮集");
-//                    employeeBO.setDeclareAccount("WPSUB201712111130000" + i);
-//                    employeeBOList.add(employeeBO);
-//                }
             } else {
                 EmployeeBO employeeBO1 = new EmployeeBO();
                 employeeBO1.setId(Long.valueOf(1));
                 employeeBO1.setEmployeeNo("17A13012");
                 employeeBO1.setEmployeeName("李晓");
                 employeeBO1.setIdType("01");
-                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO1.getIdType()));
+                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
                 employeeBO1.setIdNo("321000199010101234");
                 employeeBO1.setManagerNo("GL170001");
                 employeeBO1.setManagerName("蓝天科技");
@@ -161,7 +147,7 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO2.setEmployeeNo("17A13497");
                 employeeBO2.setEmployeeName("张名");
                 employeeBO2.setIdType("01");
-                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO2.getIdType()));
+                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
                 employeeBO2.setIdNo("323891199003103290");
                 employeeBO2.setManagerNo("GL170001");
                 employeeBO2.setManagerName("蓝天科技");
@@ -172,7 +158,7 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO3.setEmployeeNo("17A13513");
                 employeeBO3.setEmployeeName("刘文华");
                 employeeBO3.setIdType("01");
-                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO3.getIdType()));
+                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
                 employeeBO3.setIdNo("321110197108239090");
                 employeeBO3.setManagerNo("GL170001");
                 employeeBO3.setManagerName("蓝天科技");
@@ -183,7 +169,7 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO4.setEmployeeNo("17A13542");
                 employeeBO4.setEmployeeName("蒋文文");
                 employeeBO4.setIdType("01");
-                employeeBO4.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO4.getIdType()));
+                employeeBO4.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO4.getIdType()));
                 employeeBO4.setIdNo("322140199211116510");
                 employeeBO4.setManagerNo("GL170001");
                 employeeBO4.setManagerName("蓝天科技");
@@ -194,24 +180,12 @@ public class TaskSubProofDetailController extends BaseController {
                 employeeBO5.setEmployeeNo("17A13101");
                 employeeBO5.setEmployeeName("许强");
                 employeeBO5.setIdType("01");
-                employeeBO5.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,employeeBO5.getIdType()));
+                employeeBO5.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO5.getIdType()));
                 employeeBO5.setIdNo("320171198810106787");
                 employeeBO5.setManagerNo("GL170001");
                 employeeBO5.setManagerName("蓝天科技");
                 employeeBO5.setDeclareAccount("蓝天科技无锡独立户");
                 employeeBOList.add(employeeBO5);
-//                for (int i = begin; i < pageEnd; i++) {
-//                    EmployeeBO employeeBO = new EmployeeBO();
-//                    employeeBO.setId(Long.valueOf(i));
-//                    employeeBO.setEmployeeNo("NO20171215" + i);
-//                    employeeBO.setEmployeeName("sub" + i);
-//                    employeeBO.setIdType("01");
-//                    employeeBO.setIdNo("32100019901010123" + i);
-//                    employeeBO.setManagerNo("WP20171208175700");
-//                    employeeBO.setManagerName("百盛餐饮集");
-//                    employeeBO.setDeclareAccount(taskProofDTO.getDeclareAccount());
-//                    employeeBOList.add(employeeBO);
-//                }
             }
             responseForEmployee.setTotalNum(5);
             responseForEmployee.setCurrentNum(taskProofDTO.getCurrentNum());
@@ -224,9 +198,8 @@ public class TaskSubProofDetailController extends BaseController {
             logger.error("queryEmployee error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 
@@ -236,7 +209,7 @@ public class TaskSubProofDetailController extends BaseController {
      * @param subProofDetailDTO
      * @return
      */
-    @PostMapping(value = "/saveSubProofDetail")
+    @Override
     public JsonResult saveSubProofDetail(@RequestBody SubProofDetailDTO subProofDetailDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -267,8 +240,7 @@ public class TaskSubProofDetailController extends BaseController {
             logger.error("saveSubProofDetail error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 }

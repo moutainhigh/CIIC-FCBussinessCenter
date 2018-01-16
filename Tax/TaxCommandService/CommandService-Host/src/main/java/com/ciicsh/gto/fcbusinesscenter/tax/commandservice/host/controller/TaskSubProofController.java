@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
@@ -27,7 +28,7 @@ import java.util.List;
  * @author yuantongqing on 2017/12/12
  */
 @RestController
-public class TaskSubProofController extends BaseController{
+public class TaskSubProofController extends BaseController implements TaskSubProofProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubProofController.class);
 
@@ -40,7 +41,7 @@ public class TaskSubProofController extends BaseController{
      * @param taskMainProofId
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofByMainId/{taskMainProofId}")
+    @Override
     public JsonResult queryTaskSubProofByMainId(@PathVariable Long taskMainProofId) {
         JsonResult jr = new JsonResult();
         try {
@@ -49,7 +50,7 @@ public class TaskSubProofController extends BaseController{
             for (TaskSubProofPO taskSubProofPO : taskSubProofPOLists) {
                 TaskSubProofDTO taskSubProofDTO = new TaskSubProofDTO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofDTO);
-                taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofDTO.getStatus()));
+                taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS, taskSubProofDTO.getStatus()));
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
             jr.setErrorcode("0");
@@ -59,9 +60,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("queryTaskSubProofByMainId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -70,7 +70,7 @@ public class TaskSubProofController extends BaseController{
      * @param taskSubProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofByRes")
+    @Override
     public JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -85,10 +85,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("queryTaskSubProofByRes error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
-
+        return jr;
     }
 
     /**
@@ -97,7 +95,7 @@ public class TaskSubProofController extends BaseController{
      * @param taskSubProofId
      * @return
      */
-    @PostMapping(value = "/copyProofInfoBySubId/{taskSubProofId}")
+    @Override
     public JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId) {
         JsonResult jr = new JsonResult();
         try {
@@ -109,9 +107,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("copyProofInfoBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -134,9 +131,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("querySubProofInfoByTaskType error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -161,9 +157,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("combineTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -188,9 +183,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("splitTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -217,9 +211,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("completeTaskProof error:" + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -246,9 +239,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("rejectTaskProof error:" + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -275,9 +267,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("invalidTaskProof error:" + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 
@@ -299,9 +290,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("queryApplyDetailsBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -324,9 +314,8 @@ public class TaskSubProofController extends BaseController{
             logger.error("queryTaskSubProofDetailBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 }

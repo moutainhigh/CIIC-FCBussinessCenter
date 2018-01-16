@@ -5,9 +5,21 @@ package com.ciicsh.gto.fcbusinesscenter.tax.util.enums;
  */
 public enum BusinessStatus {
 
+    /**
+     * 处理中
+     */
     BS21("处理中"),
+    /**
+     * 被退回
+     */
     BS22("被退回"),
-    BS23("已完成"),
+    /**
+     * 已失效
+     */
+    BS23("已失效"),
+    /**
+     * 已失效
+     */
     BS24("已失效");
 
     private String  message;

@@ -1,6 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.TestProxy;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TestProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TestService;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;

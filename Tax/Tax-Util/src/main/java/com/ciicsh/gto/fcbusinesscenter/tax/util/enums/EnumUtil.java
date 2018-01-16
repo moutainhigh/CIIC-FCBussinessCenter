@@ -2,14 +2,30 @@ package com.ciicsh.gto.fcbusinesscenter.tax.util.enums;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 
+/**
+ * @author wuhua
+ */
 public class EnumUtil {
 
-    public static final String BATCH_NO_STATUS = "BNS";//薪酬计算批次状态
-    public static final String IT_TYPE = "IT";//证件类型
-    public static final String INCOME_SUBJECT = "IS";//个税所得项目
-    //完税凭证任务状态
+    /**
+     * 薪酬计算批次状态
+     */
+    public static final String BATCH_NO_STATUS = "BNS";
+    /**
+     * 证件类型
+     */
+    public static final String IT_TYPE = "IT";
+    /**
+     * 个税所得项目
+     */
+    public static final String INCOME_SUBJECT = "IS";
+    /**
+     * 完税凭证任务状态
+     */
     public static final String VOUCHER_STATUS = "VS";
-    //业务任务状态
+    /**
+     * 业务任务状态
+     */
     public static final String BUSINESS_STATUS = "BS";
 
     /**

@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskMainProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
@@ -23,7 +24,7 @@ import java.util.Date;
  * @author yuantongqing
  */
 @RestController
-public class TaskMainProofController extends BaseController {
+public class TaskMainProofController extends BaseController implements TaskMainProofProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskMainProofController.class);
 
@@ -36,7 +37,7 @@ public class TaskMainProofController extends BaseController {
      * @param taskMainProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskMainProofByRes")
+    @Override
     public JsonResult queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -50,9 +51,8 @@ public class TaskMainProofController extends BaseController {
             logger.error("queryTaskMainProofByRes error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -61,7 +61,7 @@ public class TaskMainProofController extends BaseController {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/addTaskProof")
+    @Override
     public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         //设置创建人
         taskProofDTO.setCreatedBy("admin");
@@ -103,9 +103,8 @@ public class TaskMainProofController extends BaseController {
             logger.error("addTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -130,9 +129,8 @@ public class TaskMainProofController extends BaseController {
             logger.error("updateTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -141,6 +139,7 @@ public class TaskMainProofController extends BaseController {
      * @param taskProofDTO
      * @return
      */
+    @Override
     @PostMapping(value = "/invalidTaskProof")
     public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         taskProofDTO.setModifiedBy("admin");
@@ -156,9 +155,8 @@ public class TaskMainProofController extends BaseController {
             logger.error("invalidTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 }

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 缴纳详情返回对象
  */
 @RestController
-public class TaskSubPaymentController extends BaseController{
+public class TaskSubPaymentController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubPaymentController.class);
 
@@ -30,6 +30,7 @@ public class TaskSubPaymentController extends BaseController{
 
     /**
      * 条件查询缴纳子任务
+     *
      * @param taskSubPaymentDTO
      * @return
      */
@@ -38,7 +39,7 @@ public class TaskSubPaymentController extends BaseController{
         JsonResult jr = new JsonResult();
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
-            BeanUtils.copyProperties(taskSubPaymentDTO,requestForSubPayment);
+            BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
             ResponseForSubPayment responseForSubPayment = taskSubPaymentService.querySubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -47,23 +48,23 @@ public class TaskSubPaymentController extends BaseController{
             logger.error("querySubPayment error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 
     /**
      * 批量完成缴纳子任务
+     *
      * @param taskSubPaymentDTO
      * @return
      */
     @PostMapping(value = "completeTaskSubPayment")
-    public JsonResult completeTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO){
+    public JsonResult completeTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
-            BeanUtils.copyProperties(taskSubPaymentDTO,requestForSubPayment);
+            BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
             //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
@@ -76,22 +77,22 @@ public class TaskSubPaymentController extends BaseController{
             logger.error("completeTaskSubPayment error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
      * 批量退回缴纳子任务
+     *
      * @param taskSubPaymentDTO
      * @return
      */
     @PostMapping(value = "rejectTaskSubPayment")
-    public JsonResult rejectTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO){
+    public JsonResult rejectTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
-            BeanUtils.copyProperties(taskSubPaymentDTO,requestForSubPayment);
+            BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
             //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
@@ -104,25 +105,25 @@ public class TaskSubPaymentController extends BaseController{
             logger.error("rejectTaskSubPayment error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
      * 根据缴纳子任务ID查询缴纳任务信息
+     *
      * @param subPaymentId
      * @return
      */
     @PostMapping(value = "/querySubPaymentById/{subPaymentId}")
-    public JsonResult querySubPaymentById(@PathVariable Long subPaymentId){
+    public JsonResult querySubPaymentById(@PathVariable Long subPaymentId) {
         JsonResult jr = new JsonResult();
         try {
             TaskSubPaymentPO taskSubPaymentPO = taskSubPaymentService.querySubPaymentById(subPaymentId);
             TaskSubPaymentDTO taskSubPaymentDTO = new TaskSubPaymentDTO();
-            BeanUtils.copyProperties(taskSubPaymentPO,taskSubPaymentDTO);
+            BeanUtils.copyProperties(taskSubPaymentPO, taskSubPaymentDTO);
             //个税期间
-            taskSubPaymentDTO.setPeriod(DateTimeKit.format(taskSubPaymentPO.getPeriod(),"YYYY-MM"));
+            taskSubPaymentDTO.setPeriod(DateTimeKit.format(taskSubPaymentPO.getPeriod(), "YYYY-MM"));
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubPaymentDTO);
@@ -130,8 +131,7 @@ public class TaskSubPaymentController extends BaseController{
             logger.error("querySubPaymentById error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-             return jr;
         }
+        return jr;
     }
 }

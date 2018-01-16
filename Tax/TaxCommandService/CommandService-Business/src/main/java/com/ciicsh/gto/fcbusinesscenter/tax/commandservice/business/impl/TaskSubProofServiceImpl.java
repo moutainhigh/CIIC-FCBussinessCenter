@@ -50,7 +50,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
      * @return
      */
     @Override
-    public List<TaskSubProofPO> queryTaskSubProofByMainId(Long taskMainProofId) {
+    public List<TaskSubProofPO> queryTaskSubProofByMainId(long taskMainProofId) {
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubProofPO());
         wrapper.andNew(" task_main_proof_id = {0}", taskMainProofId);
@@ -116,7 +116,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void copyProofInfoBySubId(Long taskSubProofId) {
+    public void copyProofInfoBySubId(long taskSubProofId) {
         //根据子任务ID查询子任务信息
         TaskSubProofPO taskSubProofPO = baseMapper.selectById(taskSubProofId);
         //根据主任务ID查询主任务信息
@@ -340,7 +340,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
      * @return
      */
     @Override
-    public TaskSubProofBO queryApplyDetailsBySubId(Long subProofId) {
+    public TaskSubProofBO queryApplyDetailsBySubId(long subProofId) {
         TaskSubProofBO taskSubProofBO = baseMapper.queryApplyDetailsBySubId(subProofId);
         taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofBO.getStatus()));
         return taskSubProofBO;
