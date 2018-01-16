@@ -73,7 +73,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             int total = baseMapper.selectCount(wrapper);
             //获取证件类型中文和所得项目中文
             for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
-                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdTypeName()));
+                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));
                 po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,po.getIncomeSubject()));
             }
             responseForBatchDetail.setCurrentNum(requestForProof.getCurrentNum());
@@ -84,7 +84,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectList(wrapper);
             //获取证件类型中文和所得项目中文
             for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
-                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdTypeName()));
+                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));
                 po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,po.getIncomeSubject()));
             }
             responseForBatchDetail.setRowList(calculationBatchDetailPOList);
