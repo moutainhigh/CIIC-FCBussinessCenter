@@ -72,7 +72,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             //完税凭证子任务
             TaskSubProofPO taskSubProofPO = null;
             String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-            if (taskProofDTO.getManagerName() != null && !"".equals(taskProofDTO.getManagerName())) {
+            if (taskProofDTO.getManagerNo() != null && !"".equals(taskProofDTO.getManagerNo())) {
                 taskMainProofPO = new TaskMainProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskMainProofPO);
                 //设置任务编号
@@ -113,6 +113,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      * @param taskProofDTO
      * @return
      */
+    @Override
     @PostMapping(value = "/updateTaskProof")
     public JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();

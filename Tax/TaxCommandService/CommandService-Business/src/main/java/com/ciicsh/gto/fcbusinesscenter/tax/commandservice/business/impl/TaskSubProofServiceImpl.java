@@ -9,7 +9,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofDetail
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
@@ -18,13 +17,10 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -165,21 +161,18 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         if (StrKit.notBlank(requestForProof.getPeriod())) {
             taskSubProofBO.setPeriod(DateTimeKit.parse(requestForProof.getPeriod(), DateTimeKit.NORM_DATE_PATTERN));
         }
-        List<TaskSubProofBO> taskSubProofBOList = new ArrayList<>();
         Page<TaskSubProofBO> pageTest = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
-        taskSubProofBOList = baseMapper.querySubProofInfoByTaskType(pageTest, taskSubProofBO);
-        pageTest = pageTest.setRecords(taskSubProofBOList);
+        List<TaskSubProofBO> taskSubProofBOList = baseMapper.querySubProofInfoByTaskType(pageTest, taskSubProofBO);
         //条件查询总数目
         int total = baseMapper.querySubProofTotalNumByTaskType(taskSubProofBO);
         //获取完税凭证任务状态中文名
         for(TaskSubProofBO bo: taskSubProofBOList){
             bo.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,bo.getStatus()));
         }
-        pageTest.setTotal(total);
         responseForSubProof.setRowList(taskSubProofBOList);
         responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
         responseForSubProof.setPageSize(requestForProof.getPageSize());
-        responseForSubProof.setTotalNum(pageTest.getTotal());
+        responseForSubProof.setTotalNum(total);
         return responseForSubProof;
     }
 

@@ -23,7 +23,7 @@ public interface TaskSubProofProxy {
      * @return
      */
     @PostMapping(value = "/queryTaskSubProofByMainId/{taskMainProofId}")
-    JsonResult queryTaskSubProofByMainId(@PathVariable Long taskMainProofId);
+    JsonResult queryTaskSubProofByMainId(@PathVariable(value = "taskMainProofId")  Long taskMainProofId);
 
     /**
      * 根据子任务ID复制其关联数据
@@ -32,7 +32,7 @@ public interface TaskSubProofProxy {
      * @return
      */
     @PostMapping(value = "/copyProofInfoBySubId/{taskSubProofId}")
-    JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId);
+    JsonResult copyProofInfoBySubId(@PathVariable(value = "taskSubProofId") Long taskSubProofId);
 
     /**
      * 查询子任务信息

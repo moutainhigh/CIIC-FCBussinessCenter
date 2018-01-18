@@ -24,7 +24,6 @@ public interface TaskMainProofProxy {
     @PostMapping(value = "/queryTaskMainProofByRes")
     JsonResult queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO);
 
-
     /**
      * 新建任务
      *
@@ -33,6 +32,15 @@ public interface TaskMainProofProxy {
      */
     @PostMapping(value = "/addTaskProof")
     JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO);
+
+    /**
+     * 修改（即：提交）完税凭证状态
+     *
+     * @param taskProofDTO
+     * @return
+     */
+    @PostMapping(value = "/updateTaskProof")
+    JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO);
 
     /**
      * 将完税凭证任务置为失效

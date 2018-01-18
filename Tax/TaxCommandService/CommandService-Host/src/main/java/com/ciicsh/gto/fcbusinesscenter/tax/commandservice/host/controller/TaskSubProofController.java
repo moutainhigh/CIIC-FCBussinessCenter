@@ -42,7 +42,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @Override
-    public JsonResult queryTaskSubProofByMainId(@PathVariable Long taskMainProofId) {
+    public JsonResult queryTaskSubProofByMainId(@PathVariable(value = "taskMainProofId") Long taskMainProofId) {
         JsonResult jr = new JsonResult();
         try {
             List<TaskSubProofDTO> taskSubProofDTOLists = new ArrayList<>();
@@ -96,7 +96,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @Override
-    public JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId) {
+    public JsonResult copyProofInfoBySubId(@PathVariable(value = "taskSubProofId") Long taskSubProofId) {
         JsonResult jr = new JsonResult();
         try {
             taskSubProofService.copyProofInfoBySubId(taskSubProofId);
@@ -279,7 +279,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/queryApplyDetailsBySubId/{subProofId}")
-    public JsonResult queryApplyDetailsBySubId(@PathVariable Long subProofId) {
+    public JsonResult queryApplyDetailsBySubId(@PathVariable(value = "subProofId") Long subProofId) {
         JsonResult jr = new JsonResult();
         try {
             TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
