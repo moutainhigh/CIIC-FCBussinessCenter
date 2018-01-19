@@ -2,7 +2,6 @@ package com.ciicsh.caldispatchjob.Controller;
 
 import com.ciicsh.caldispatchjob.compute.service.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
-import com.ciicsh.caldispatchjob.compute.util.Calculation;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
