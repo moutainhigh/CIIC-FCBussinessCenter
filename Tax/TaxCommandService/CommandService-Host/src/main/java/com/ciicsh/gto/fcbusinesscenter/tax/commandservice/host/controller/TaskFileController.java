@@ -28,7 +28,6 @@ import java.io.InputStream;
  * on create 2018/1/4
  */
 @RestController
-@RequestMapping("/tax")
 public class TaskFileController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(TaskFileController.class);
 
@@ -55,9 +54,8 @@ public class TaskFileController extends BaseController {
             logger.error("queryTaxFile error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -80,9 +78,8 @@ public class TaskFileController extends BaseController {
             logger.error("deleteTaxFile error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 
@@ -107,9 +104,8 @@ public class TaskFileController extends BaseController {
             logger.error("uploadFileByBusinessIdAndType error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**

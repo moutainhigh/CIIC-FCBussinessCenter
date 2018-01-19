@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentDetailMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
@@ -66,12 +68,22 @@ public class TaskSubPaymentDetailServiceImpl extends ServiceImpl<TaskSubPaymentD
             taskSubPaymentDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
             //获取查询总数目
             int total = baseMapper.selectCount(wrapper);
+            //获取证件类型中文名和所得项目中文名
+            for(TaskSubPaymentDetailPO p: taskSubPaymentDetailPOList){
+                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
+                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+            }
             responseForSubPaymentDetail.setRowList(taskSubPaymentDetailPOList);
             responseForSubPaymentDetail.setTotalNum(total);
             responseForSubPaymentDetail.setCurrentNum(requestForSubPaymentDetail.getCurrentNum());
             responseForSubPaymentDetail.setPageSize(requestForSubPaymentDetail.getPageSize());
         } else {
             taskSubPaymentDetailPOList = baseMapper.selectList(wrapper);
+            //获取证件类型中文名和所得项目中文名
+            for(TaskSubPaymentDetailPO p: taskSubPaymentDetailPOList){
+                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
+                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+            }
             responseForSubPaymentDetail.setRowList(taskSubPaymentDetailPOList);
         }
         return responseForSubPaymentDetail;

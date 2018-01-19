@@ -19,7 +19,7 @@ public interface TaskSubProofService {
      * @param taskMainProofId
      * @return
      */
-    List<TaskSubProofPO> queryTaskSubProofByMainId(Long taskMainProofId);
+    List<TaskSubProofPO> queryTaskSubProofByMainId(long taskMainProofId);
 
     /**
      * 根据请求参数查询完税子任务信息
@@ -34,7 +34,7 @@ public interface TaskSubProofService {
      *
      * @param taskSubProofId
      */
-    void copyProofInfoBySubId(Long taskSubProofId);
+    void copyProofInfoBySubId(long taskSubProofId);
 
     /**
      * 多表查询完税凭证子任务
@@ -82,7 +82,7 @@ public interface TaskSubProofService {
      * @param subProofId
      * @return
      */
-    TaskSubProofBO queryApplyDetailsBySubId(Long subProofId);
+    TaskSubProofBO queryApplyDetailsBySubId(long subProofId);
 
     /**
      * 根据子任务ID分页查询完税凭证子任务申请明细

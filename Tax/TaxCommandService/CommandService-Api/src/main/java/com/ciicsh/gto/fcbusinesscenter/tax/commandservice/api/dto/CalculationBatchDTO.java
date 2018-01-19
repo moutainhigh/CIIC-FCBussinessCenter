@@ -42,4 +42,14 @@ public class CalculationBatchDTO {
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
+
+    @Override
+    public String toString() {
+        return "CalculationBatchDTO{" +
+                "managerName='" + managerName + '\'' +
+                ", batchNo='" + batchNo + '\'' +
+                ", currentNum=" + currentNum +
+                ", pageSize=" + pageSize +
+                '}';
+    }
 }

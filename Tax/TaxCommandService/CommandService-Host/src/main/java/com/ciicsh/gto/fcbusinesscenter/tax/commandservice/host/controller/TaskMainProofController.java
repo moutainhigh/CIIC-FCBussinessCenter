@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskMainProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
@@ -14,7 +15,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
@@ -24,8 +24,7 @@ import java.util.Date;
  * @author yuantongqing
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskMainProofController {
+public class TaskMainProofController extends BaseController implements TaskMainProofProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskMainProofController.class);
 
@@ -38,7 +37,7 @@ public class TaskMainProofController {
      * @param taskMainProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskMainProofByRes")
+    @Override
     public JsonResult queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -52,9 +51,8 @@ public class TaskMainProofController {
             logger.error("queryTaskMainProofByRes error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -63,7 +61,7 @@ public class TaskMainProofController {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/addTaskProof")
+    @Override
     public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         //设置创建人
         taskProofDTO.setCreatedBy("admin");
@@ -74,7 +72,7 @@ public class TaskMainProofController {
             //完税凭证子任务
             TaskSubProofPO taskSubProofPO = null;
             String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-            if (taskProofDTO.getManagerName() != null && !"".equals(taskProofDTO.getManagerName())) {
+            if (taskProofDTO.getManagerNo() != null && !"".equals(taskProofDTO.getManagerNo())) {
                 taskMainProofPO = new TaskMainProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskMainProofPO);
                 //设置任务编号
@@ -105,9 +103,8 @@ public class TaskMainProofController {
             logger.error("addTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -116,6 +113,7 @@ public class TaskMainProofController {
      * @param taskProofDTO
      * @return
      */
+    @Override
     @PostMapping(value = "/updateTaskProof")
     public JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult jr = new JsonResult();
@@ -132,9 +130,8 @@ public class TaskMainProofController {
             logger.error("updateTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -143,6 +140,7 @@ public class TaskMainProofController {
      * @param taskProofDTO
      * @return
      */
+    @Override
     @PostMapping(value = "/invalidTaskProof")
     public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         taskProofDTO.setModifiedBy("admin");
@@ -158,9 +156,8 @@ public class TaskMainProofController {
             logger.error("invalidTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 }

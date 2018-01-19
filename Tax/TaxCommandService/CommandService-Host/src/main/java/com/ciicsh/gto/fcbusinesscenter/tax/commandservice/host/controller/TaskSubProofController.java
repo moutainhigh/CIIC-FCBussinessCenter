@@ -3,18 +3,23 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +28,7 @@ import java.util.List;
  * @author yuantongqing on 2017/12/12
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskSubProofController {
+public class TaskSubProofController extends BaseController implements TaskSubProofProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubProofController.class);
 
@@ -37,8 +41,8 @@ public class TaskSubProofController {
      * @param taskMainProofId
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofByMainId/{taskMainProofId}")
-    public JsonResult queryTaskSubProofByMainId(@PathVariable Long taskMainProofId) {
+    @Override
+    public JsonResult queryTaskSubProofByMainId(@PathVariable(value = "taskMainProofId") Long taskMainProofId) {
         JsonResult jr = new JsonResult();
         try {
             List<TaskSubProofDTO> taskSubProofDTOLists = new ArrayList<>();
@@ -46,6 +50,7 @@ public class TaskSubProofController {
             for (TaskSubProofPO taskSubProofPO : taskSubProofPOLists) {
                 TaskSubProofDTO taskSubProofDTO = new TaskSubProofDTO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofDTO);
+                taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS, taskSubProofDTO.getStatus()));
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
             jr.setErrorcode("0");
@@ -55,9 +60,8 @@ public class TaskSubProofController {
             logger.error("queryTaskSubProofByMainId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -66,7 +70,7 @@ public class TaskSubProofController {
      * @param taskSubProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofByRes")
+    @Override
     public JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO) {
         JsonResult jr = new JsonResult();
         try {
@@ -81,10 +85,8 @@ public class TaskSubProofController {
             logger.error("queryTaskSubProofByRes error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
-
+        return jr;
     }
 
     /**
@@ -93,8 +95,8 @@ public class TaskSubProofController {
      * @param taskSubProofId
      * @return
      */
-    @PostMapping(value = "/copyProofInfoBySubId/{taskSubProofId}")
-    public JsonResult copyProofInfoBySubId(@PathVariable Long taskSubProofId) {
+    @Override
+    public JsonResult copyProofInfoBySubId(@PathVariable(value = "taskSubProofId") Long taskSubProofId) {
         JsonResult jr = new JsonResult();
         try {
             taskSubProofService.copyProofInfoBySubId(taskSubProofId);
@@ -105,9 +107,8 @@ public class TaskSubProofController {
             logger.error("copyProofInfoBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -130,9 +131,8 @@ public class TaskSubProofController {
             logger.error("querySubProofInfoByTaskType error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -157,9 +157,8 @@ public class TaskSubProofController {
             logger.error("combineTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -184,9 +183,8 @@ public class TaskSubProofController {
             logger.error("splitTaskProof error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -213,9 +211,8 @@ public class TaskSubProofController {
             logger.error("completeTaskProof error:" + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -242,9 +239,8 @@ public class TaskSubProofController {
             logger.error("rejectTaskProof error:" + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -271,9 +267,8 @@ public class TaskSubProofController {
             logger.error("invalidTaskProof error:" + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 
@@ -284,7 +279,7 @@ public class TaskSubProofController {
      * @return
      */
     @PostMapping(value = "/queryApplyDetailsBySubId/{subProofId}")
-    public JsonResult queryApplyDetailsBySubId(@PathVariable Long subProofId) {
+    public JsonResult queryApplyDetailsBySubId(@PathVariable(value = "subProofId") Long subProofId) {
         JsonResult jr = new JsonResult();
         try {
             TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
@@ -295,9 +290,8 @@ public class TaskSubProofController {
             logger.error("queryApplyDetailsBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
     /**
@@ -320,9 +314,8 @@ public class TaskSubProofController {
             logger.error("queryTaskSubProofDetailBySubId error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 }

@@ -3,32 +3,67 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author yuantongqing
+ */
 public class TaskSubProofDetailBO {
 
     private Long id;
 
+    /**
+     * 雇员编号
+     */
     private String employeeNo;
 
+    /**
+     * 雇员名称
+     */
     private String employeeName;
 
+    /**
+     * 证件类型
+     */
     private String idType;
 
+    /**
+     * 证件号
+     */
     private String idNo;
 
+    /**
+     * 申报账户
+     */
     private String declareAccount;
 
+    /**
+     * 所得项目
+     */
     private String incomeSubject;
 
+    /**
+     * 所得期间起
+     */
     private Date incomeStart;
 
+    /**
+     * 所得期间止
+     */
     private Date incomeEnd;
 
+    /**
+     * 应纳税所得额
+     */
     private BigDecimal incomeForTax;
 
+    /**
+     * 扣缴税额
+     */
     private BigDecimal withholdedAmount;
 
+    /**
+     * 创建时间
+     */
     private Date createdTime;
-
 
 
     public Long getId() {
@@ -125,5 +160,23 @@ public class TaskSubProofDetailBO {
 
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskSubProofDetailBO{" +
+                "id=" + id +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idNo='" + idNo + '\'' +
+                ", declareAccount='" + declareAccount + '\'' +
+                ", incomeSubject='" + incomeSubject + '\'' +
+                ", incomeStart=" + incomeStart +
+                ", incomeEnd=" + incomeEnd +
+                ", incomeForTax=" + incomeForTax +
+                ", withholdedAmount=" + withholdedAmount +
+                ", createdTime=" + createdTime +
+                '}';
     }
 }

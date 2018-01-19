@@ -8,15 +8,45 @@ import java.util.Date;
 public class TaskMainProofBO {
 
     private Long id;
+    /**
+     * 任务编号
+     */
     private String taskNo;
+    /**
+     * 管理方编号
+     */
     private String managerNo;
+    /**
+     * 管理方名称
+     */
     private String managerName;
+    /**
+     * 总人数
+     */
     private Integer headcount;
+    /**
+     * 中方人数
+     */
     private Integer chineseNum;
+    /**
+     * 外方人数
+     */
     private Integer foreignerNum;
+    /**
+     * 创建人
+     */
     private String createdBy;
+    /**
+     * 创建时间
+     */
     private Date createdTime;
+    /**
+     * 任务状态
+     */
     private String status;
+    /**
+     * 是否可用
+     */
     private Boolean isActive;
 
     public Long getId() {

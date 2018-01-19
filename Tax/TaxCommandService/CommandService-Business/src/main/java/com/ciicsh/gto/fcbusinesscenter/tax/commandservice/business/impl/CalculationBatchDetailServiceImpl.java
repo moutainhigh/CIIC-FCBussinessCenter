@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
@@ -70,12 +71,22 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
             //获取总数目
             int total = baseMapper.selectCount(wrapper);
+            //获取证件类型中文和所得项目中文
+            for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
+                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));
+                po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,po.getIncomeSubject()));
+            }
             responseForBatchDetail.setCurrentNum(requestForProof.getCurrentNum());
             responseForBatchDetail.setPageSize(requestForProof.getPageSize());
             responseForBatchDetail.setTotalNum(total);
             responseForBatchDetail.setRowList(calculationBatchDetailPOList);
         } else {
             List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectList(wrapper);
+            //获取证件类型中文和所得项目中文
+            for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
+                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));
+                po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,po.getIncomeSubject()));
+            }
             responseForBatchDetail.setRowList(calculationBatchDetailPOList);
         }
         return responseForBatchDetail;
