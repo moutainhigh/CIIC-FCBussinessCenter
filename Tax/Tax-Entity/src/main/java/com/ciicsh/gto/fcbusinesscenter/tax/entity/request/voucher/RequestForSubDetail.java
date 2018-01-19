@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.tax.entity.request;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofDetailBO;
 
@@ -19,6 +19,9 @@ public class RequestForSubDetail {
      */
     private Long taskId;
 
+    /**
+     * 删除的任务ID
+     */
     private Integer[] oldDeleteIds;
 
     private List<TaskSubProofDetailBO> taskSubProofDetailBOList;

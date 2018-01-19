@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-    <artifactId>tax-parent</artifactId>
+    <artifactId>fcbusinesscenter-tax-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <!--<name>gt1.productcenter</name>-->
@@ -27,12 +27,14 @@
         <mysql.connector.version>5.1.44</mysql.connector.version>
         <mybatis.springboot.version>1.3.1</mybatis.springboot.version>
         <mybatis.generator.version>1.3.5</mybatis.generator.version>
-        <pagehelper.starter.version>1.2.2</pagehelper.starter.version>
+        <pagehelper.version>4.1.6</pagehelper.version>
         <basicdataservice.version>1.0.0</basicdataservice.version>
         <mybatisplus-spring-boot-starter.version>1.0.5</mybatisplus-spring-boot-starter.version>
         <mybatisplus.version>2.1.3</mybatisplus.version>
         <velocity.version>1.7</velocity.version>
         <slf4j.version>1.7.25</slf4j.version>
+        <jsonlib.version>2.4</jsonlib.version>
+        <seaweedFS.version>1.0.0</seaweedFS.version>
     </properties>
 
     <dependencyManagement>
@@ -44,12 +46,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <dependency>
+            <!--<dependency>
                 <groupId>com.ciicsh</groupId>
                 <artifactId>afsystemmanagecenter-basicdataservice-client</artifactId>
                 <version>${basicdataservice.version}</version>
-            </dependency>
+            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -68,7 +69,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
+            <!--<optional>true</optional>-->
         </dependency>
 
         <dependency>
@@ -108,8 +109,8 @@
 
         <dependency>
             <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>${pagehelper.starter.version}</version>
+            <artifactId>pagehelper</artifactId>
+            <version>${pagehelper.version}</version>
         </dependency>
 
         <dependency>
@@ -155,6 +156,17 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>${velocity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>seaweedFS-client</artifactId>
+            <version>${seaweedFS.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>${jsonlib.version}</version>
+            <classifier>jdk15</classifier>
         </dependency>
     </dependencies>
 

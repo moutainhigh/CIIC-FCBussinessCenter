@@ -7,7 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBa
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.RequestForProof;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForBatchDetail;
@@ -34,7 +34,6 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
     @Override
     public ResponseForBatchDetail queryCalculationBatchDetail(RequestForProof requestForProof) {
         ResponseForBatchDetail responseForBatchDetail = new ResponseForBatchDetail();
-        List<CalculationBatchDetailBO> calculationBatchDetailBOList = new ArrayList<>();
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new CalculationBatchDetailPO());
         //判断是否包含主键ID条件
@@ -71,23 +70,13 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
             //获取总数目
             int total = baseMapper.selectCount(wrapper);
-            for (CalculationBatchDetailPO calculationBatchDetailPO : calculationBatchDetailPOList) {
-                CalculationBatchDetailBO calculationBatchDetailBO = new CalculationBatchDetailBO();
-                BeanUtils.copyProperties(calculationBatchDetailPO, calculationBatchDetailBO);
-                calculationBatchDetailBOList.add(calculationBatchDetailBO);
-            }
             responseForBatchDetail.setCurrentNum(requestForProof.getCurrentNum());
             responseForBatchDetail.setPageSize(requestForProof.getPageSize());
             responseForBatchDetail.setTotalNum(total);
-            responseForBatchDetail.setRowList(calculationBatchDetailBOList);
+            responseForBatchDetail.setRowList(calculationBatchDetailPOList);
         } else {
             List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectList(wrapper);
-            for (CalculationBatchDetailPO calculationBatchDetailPO : calculationBatchDetailPOList) {
-                CalculationBatchDetailBO calculationBatchDetailBO = new CalculationBatchDetailBO();
-                BeanUtils.copyProperties(calculationBatchDetailPO, calculationBatchDetailBO);
-                calculationBatchDetailBOList.add(calculationBatchDetailBO);
-            }
-            responseForBatchDetail.setRowList(calculationBatchDetailBOList);
+            responseForBatchDetail.setRowList(calculationBatchDetailPOList);
         }
         return responseForBatchDetail;
     }
