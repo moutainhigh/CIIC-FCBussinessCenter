@@ -81,29 +81,29 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
      * @param requestForFile
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean deleteTaxFile(RequestForFile requestForFile) {
         Boolean flag = true;
-        try {
-            if (requestForFile.getId() != null) {
-                FilePO filePO = new FilePO();
-                filePO.setId(requestForFile.getId());
-                filePO.setActive(false);
-                filePO.setModifiedBy("adminDel");
-                filePO.setModifiedTime(new Date());
-                //删除文件:即修改数据为不可用
-                flag = super.insertOrUpdate(filePO);
-            }
-        } catch (Exception e) {
-            logger.error("deleteTaxFile error " + e.toString());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            flag = false;
+        if (requestForFile.getId() != null) {
+            FilePO filePO = new FilePO();
+            filePO.setId(requestForFile.getId());
+            filePO.setActive(false);
+            filePO.setModifiedBy("adminDel");
+            filePO.setModifiedTime(new Date());
+            //删除文件:即修改数据为不可用
+            flag =  super.insertOrUpdate(filePO);
         }
         return flag;
     }
 
-    @Transactional
+    /**
+     * 文件上传
+     * @param requestForFile
+     * @param file
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean uploadFileByBusinessIdAndType(RequestForFile requestForFile, MultipartFile file) {
         Boolean flag = true;
@@ -117,7 +117,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             filePO.setFilenameSource(fileName);
             filePO.setCreatedBy("admin");
             filePO.setModifiedBy("admin");
-            super.insertOrUpdate(filePO);
+            flag = super.insertOrUpdate(filePO);
         } catch (Exception e) {
             logger.error("uploadFileByBusinessIdAndType error " + e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

@@ -23,22 +23,29 @@ spring:
           replicationFactor: 2
       bindings:
         payroll-output-channel:
-          destination: payroll-out # topic name
+          destination: fc_payroll_batch # topic name
           content-type: application/json
           producer:
             partitionCount: 2
 
         pr_emp_group-output-channel:
-          destination: pr_emp_group # topic name
+          destination: fc_payroll_empGroup # topic name
           content-type: application/json
           producer:
             partitionCount: 2
 
         pr_compute-output-channel:
-          destination: pr_compute # topic name
+           destination: fc_payroll_compute # topic name
+           content-type: application/json
+           producer:
+             partitionCount: 2
+
+        pr_compute-input-channel:
+          destination: fc_payroll_compute-status # topic name
           content-type: application/json
-          producer:
-            partitionCount: 2
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned: true
 
 logging:
   file: logs/dev_app.log

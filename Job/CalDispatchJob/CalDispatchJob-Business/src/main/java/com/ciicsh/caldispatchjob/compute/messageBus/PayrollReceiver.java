@@ -5,7 +5,6 @@ import com.ciicsh.caldispatchjob.compute.service.EmpGroupServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
-import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpExtend;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import org.slf4j.Logger;
@@ -96,7 +95,11 @@ public class PayrollReceiver {
      * @param batchCode
      */
     private void processPayrollCompute(String batchCode){
-        computeService.processCompute(batchCode);
+        try {
+            computeService.processCompute(batchCode);
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage());
+        }
     }
-
 }

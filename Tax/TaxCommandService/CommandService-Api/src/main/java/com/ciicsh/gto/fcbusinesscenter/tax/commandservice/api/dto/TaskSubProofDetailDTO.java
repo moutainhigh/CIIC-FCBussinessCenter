@@ -176,4 +176,23 @@ public class TaskSubProofDetailDTO {
     public void setDeclareAccount(String declareAccount) {
         this.declareAccount = declareAccount;
     }
+
+    @Override
+    public String toString() {
+        return "TaskSubProofDetailDTO{" +
+                "id=" + id +
+                ", detailType='" + detailType + '\'' +
+                ", taskId=" + taskId +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idNo='" + idNo + '\'' +
+                ", incomeSubject='" + incomeSubject + '\'' +
+                ", incomeStart=" + incomeStart +
+                ", incomeEnd=" + incomeEnd +
+                ", incomeForTax=" + incomeForTax +
+                ", withholdedAmount=" + withholdedAmount +
+                ", declareAccount='" + declareAccount + '\'' +
+                '}';
+    }
 }

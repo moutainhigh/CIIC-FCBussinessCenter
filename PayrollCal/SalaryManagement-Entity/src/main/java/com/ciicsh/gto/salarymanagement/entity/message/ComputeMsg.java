@@ -6,6 +6,16 @@ package com.ciicsh.gto.salarymanagement.entity.message;
 public class ComputeMsg {
 
     private String batchCode;
+    private int computeStatus;
+
+
+    public int getComputeStatus() {
+        return computeStatus;
+    }
+
+    public void setComputeStatus(int computeStatus) {
+        this.computeStatus = computeStatus;
+    }
 
     public String getBatchCode() {
         return batchCode;

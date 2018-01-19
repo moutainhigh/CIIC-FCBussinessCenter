@@ -66,4 +66,8 @@ public class PrCustomBatchDTO {
      */
     private String period;
 
+    private int pageNum;
+
+    private int pageSize;
+
 }

@@ -13,4 +13,9 @@ public interface PayrollSink {
 
     @Input(INPUT)
     MessageChannel input();
+
+    String COMPUTE_INPUT = "pr_compute-input-channel";
+
+    @Input(COMPUTE_INPUT)
+    MessageChannel computeStatusInput();
 }

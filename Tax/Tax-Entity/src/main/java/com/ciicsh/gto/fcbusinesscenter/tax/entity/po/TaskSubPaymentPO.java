@@ -74,6 +74,11 @@ public class TaskSubPaymentPO implements Serializable {
      * 状态
      */
 	private String status;
+	/**
+	 * 状态中文
+	 */
+	@TableField(exist = false)
+	private String statusName;
     /**
      * 是否可用
      */
@@ -255,28 +260,36 @@ public class TaskSubPaymentPO implements Serializable {
 		this.managerName = managerName;
 	}
 
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
 
 	@Override
 	public String toString() {
-		return "TaskSubPayment{" +
-			"id=" + id +
-			", taskMainId=" + taskMainId +
-			", taskSubPaymentId=" + taskSubPaymentId +
-			", taskNo=" + taskNo +
-			", paymentAccount=" + paymentAccount +
-			", period=" + period +
-			", taxAmount=" + taxAmount +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			", managerNo=" + managerNo +
-			", managerName=" + managerName +
-			"}";
+		return "TaskSubPaymentPO{" +
+				"id=" + id +
+				", taskMainId=" + taskMainId +
+				", taskSubPaymentId=" + taskSubPaymentId +
+				", taskNo='" + taskNo + '\'' +
+				", paymentAccount='" + paymentAccount + '\'' +
+				", period=" + period +
+				", taxAmount=" + taxAmount +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", statusName='" + statusName + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				'}';
 	}
 }

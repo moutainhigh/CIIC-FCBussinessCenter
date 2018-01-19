@@ -43,4 +43,39 @@ public interface PrNormalBatchService {
      */
     int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int importType, MultipartFile file);
 
+    /**
+     * 更新批次状态
+     * @param batchCode
+     * @param status
+     * @return
+     */
+    int updateBatchStatus(String batchCode, int status, String modifiedBy);
+
+    /**
+     * 审批意见
+     * @param batchCode
+     * @param comments
+     * @param status
+     * @param modifiedBy
+     * @return
+     */
+    int auditBatch(String batchCode, String comments, int status, String modifiedBy);
+
+    /**
+     * 更新批次是否来款
+     * @param batchCode
+     * @param hasAdvance
+     * @param modifiedBy
+     * @return
+     */
+    int updateHasAdvance(String batchCode, boolean hasAdvance, String modifiedBy);
+
+    /**
+     * 更新批次是否垫付
+     * @param batchCode
+     * @param hasMoney
+     * @param modifiedBy
+     * @return
+     */
+    int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy);
 }

@@ -99,6 +99,14 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 	@TableField("modified_by")
 	private String modifiedBy;
 
+	/*是否垫付：0 表示未垫付，1表示已经垫付*/
+	@TableField("has_advance")
+	private Boolean hasAdvance;
+
+	/*是否来款：0表示未来款，1表示已来款*/
+	@TableField("has_money")
+	private Boolean hasMoney;
+
 
 	public Long getId() {
 		return id;
@@ -212,6 +220,22 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public Boolean getHasAdvance() {
+		return hasAdvance;
+	}
+
+	public void setHasAdvance(Boolean hasAdvance) {
+		this.hasAdvance = hasAdvance;
+	}
+
+	public Boolean getHasMoney() {
+		return hasMoney;
+	}
+
+	public void setHasMoney(Boolean hasMoney) {
+		this.hasMoney = hasMoney;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -230,6 +254,8 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 			", status=" + status +
 			", adjustResult=" + adjustResult +
 			", isActive=" + isActive +
+			", hasMoney=" + hasMoney +
+			", hasAdvance=" + hasAdvance +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +

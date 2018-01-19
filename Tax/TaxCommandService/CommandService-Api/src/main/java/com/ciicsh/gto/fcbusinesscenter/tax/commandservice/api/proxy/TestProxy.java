@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy;
 
 
 import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;

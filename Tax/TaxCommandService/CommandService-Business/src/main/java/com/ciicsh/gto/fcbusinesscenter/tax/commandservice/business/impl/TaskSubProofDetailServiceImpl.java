@@ -11,6 +11,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,11 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
         } else if (subType.equals(requestForProof.getDetailType())) {
             taskSubProofDetailPOList = baseMapper.queryTaskSubProofDetailBySubId(taskSubProofDetailBO);
         }
+        //获取证件类型中文和所得项目中文名
+        for(TaskSubProofDetailPO p: taskSubProofDetailPOList){
+            p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
+            p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+        }
         responseForSubDetail.setRowList(taskSubProofDetailPOList);
         return responseForSubDetail;
     }
@@ -80,7 +86,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             //根据主任务ID查询其下所有子任务
             List<TaskSubProofPO> subList = taskSubProofMapper.selectSubTaskMapByMainId(requestForSubDetail.getTaskId());
             //用于存申报账户
-            Map<String, Long> subMap = new HashMap<>();
+            Map<String, Long> subMap = new HashMap<>(16);
             for (TaskSubProofPO taskSubProofPO : subList) {
                 subMap.put(taskSubProofPO.getDeclareAccount(), taskSubProofPO.getId());
             }

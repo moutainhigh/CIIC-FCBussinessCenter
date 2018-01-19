@@ -44,7 +44,10 @@ public class EmployeeDTO {
      */
     private String declareAcount;
 
-    private Long batchid;//计算批次主表id
+    /**
+     * 计算批次主表id
+     */
+    private Long batchid;
 
     public Long getBatchid() {
         return batchid;

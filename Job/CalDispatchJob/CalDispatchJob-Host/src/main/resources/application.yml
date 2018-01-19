@@ -15,25 +15,31 @@ spring:
           zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
       bindings:
         payroll-input-channel:
-          destination: payroll-out # topic name
+          destination: fc_payroll_batch # topic name
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:
             partitioned: true
 
         pr_emp_group-channel:
-          destination: pr_emp_group # 雇员组 topic
+          destination: fc_payroll_empGroup # 雇员组 topic
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:
             partitioned: true
 
         pr_compute-input-channel:
-          destination: pr_compute # 薪资计算 topic
+          destination: fc_payroll_compute # 薪资计算 topic
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:
             partitioned: true
+
+        pr_compute-output-channel:
+          destination: fc_payroll_compute-status # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
 
       instance-count: 2
       instance-index: 1

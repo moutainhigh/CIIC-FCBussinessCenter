@@ -49,6 +49,11 @@ public class TaskSubProofDetailPO implements Serializable {
      */
 	@TableField("id_type")
 	private String idType;
+	/**
+	 * 证件类型（中文）
+	 */
+	@TableField(exist = false)
+	private String idTypeName;
     /**
      * 证件编号
      */
@@ -64,6 +69,11 @@ public class TaskSubProofDetailPO implements Serializable {
      */
 	@TableField("income_subject")
 	private String incomeSubject;
+	/**
+	 * 所得项目(中文)
+	 */
+	@TableField(exist = false)
+	private String incomeSubjectName;
     /**
      * 所得期间起
      */
@@ -247,26 +257,44 @@ public class TaskSubProofDetailPO implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getIdTypeName() {
+		return idTypeName;
+	}
+
+	public void setIdTypeName(String idTypeName) {
+		this.idTypeName = idTypeName;
+	}
+
+	public String getIncomeSubjectName() {
+		return incomeSubjectName;
+	}
+
+	public void setIncomeSubjectName(String incomeSubjectName) {
+		this.incomeSubjectName = incomeSubjectName;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubProofDetailPO{" +
-			"id=" + id +
-			", taskSubProofId=" + taskSubProofId +
-			", employeeNo=" + employeeNo +
-			", employeeName=" + employeeName +
-			", idType=" + idType +
-			", idNo=" + idNo +
-			", declareAccount=" + declareAccount +
-			", incomeSubject=" + incomeSubject +
-			", incomeStart=" + incomeStart +
-			", incomeEnd=" + incomeEnd +
-			", incomeForTax=" + incomeForTax +
-			", withholdedAmount=" + withholdedAmount +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+				"id=" + id +
+				", taskSubProofId=" + taskSubProofId +
+				", employeeNo='" + employeeNo + '\'' +
+				", employeeName='" + employeeName + '\'' +
+				", idType='" + idType + '\'' +
+				", idTypeName='" + idTypeName + '\'' +
+				", idNo='" + idNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", incomeSubject='" + incomeSubject + '\'' +
+				", incomeSubjectName='" + incomeSubjectName + '\'' +
+				", incomeStart=" + incomeStart +
+				", incomeEnd=" + incomeEnd +
+				", incomeForTax=" + incomeForTax +
+				", withholdedAmount=" + withholdedAmount +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				'}';
 	}
 }

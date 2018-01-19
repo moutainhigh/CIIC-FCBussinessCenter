@@ -43,7 +43,7 @@ public class EmpGroupServiceImpl {
      */
     public int batchInsertOrUpdateGroupEmployees(String empGroupCode, List<String> empIds) {
 
-        List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(empGroupCode);
+        List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(empGroupCode,"","");
         if (empIds == null || empIds.size() == 0) {
             return -1;
         } else {

@@ -8,11 +8,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -20,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * on create 2018/1/8
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskSubMoneyDetailController {
+public class TaskSubMoneyDetailController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubMoneyDetailController.class);
 
@@ -31,25 +28,25 @@ public class TaskSubMoneyDetailController {
 
     /**
      * 查询划款明细
+     *
      * @param taskSubMoneyDetailDTO
      * @return
      */
     @PostMapping(value = "querySubMoneyDetailsByParams")
-    public JsonResult querySubMoneyDetailsByParams(@RequestBody TaskSubMoneyDetailDTO taskSubMoneyDetailDTO){
+    public JsonResult querySubMoneyDetailsByParams(@RequestBody TaskSubMoneyDetailDTO taskSubMoneyDetailDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForSubMoneyDetail requestForSubMoneyDetail = new RequestForSubMoneyDetail();
-            BeanUtils.copyProperties(taskSubMoneyDetailDTO,requestForSubMoneyDetail);
+            BeanUtils.copyProperties(taskSubMoneyDetailDTO, requestForSubMoneyDetail);
             ResponseForSubMoneyDetail responseForSubMoneyDetail = taskSubMoneyDetailService.querySubMoneyDetailsByParams(requestForSubMoneyDetail);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForSubMoneyDetail);
-        } catch (BeansException e) {
+        } catch (Exception e) {
             logger.error("querySubMoneyDetailsByParams error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 }

@@ -42,9 +42,11 @@ public class EmployeeController implements EmployeeProxy{
 
     @Override
     public JsonResult getEmployees(@RequestParam String empGroupCode,
+                                   @RequestParam(required = false, defaultValue = "") String empCode,
+                                   @RequestParam(required = false, defaultValue = "") String empName,
                                    @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                    @RequestParam(required = false, defaultValue = "50")  Integer pageSize) {
-        PageInfo<EmployeeExtensionPO> pageInfo =  employeeService.getEmployees(empGroupCode, pageNum,pageSize);
+        PageInfo<EmployeeExtensionPO> pageInfo =  employeeService.getEmployees(empGroupCode,empCode,empName,pageNum,pageSize);
         List<EmployeeExtensionDTO> employeeExtensions = pageInfo.getList()
                 .stream()
                 .map(EmployeeTranslator::toEmployeeExtensionDTO)

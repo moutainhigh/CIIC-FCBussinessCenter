@@ -1,11 +1,8 @@
-package com.ciicsh.gto.salarymanagementcommandservice.service.util;
+package com.ciicsh.caldispatchjob.compute.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-/**
- * Created by jiangtianning on 2017/9/15.
- */
 public class MathUtils {
 
     public static BigDecimal getBigDecimal(Object value ) {

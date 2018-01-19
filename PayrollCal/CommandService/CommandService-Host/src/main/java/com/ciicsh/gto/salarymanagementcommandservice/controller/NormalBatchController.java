@@ -1,10 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.EmpFilterDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
@@ -13,20 +13,18 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
-import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
-import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrGroupTemplateServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 
 import com.mongodb.DBObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
@@ -70,6 +68,9 @@ public class NormalBatchController {
 
     @Autowired
     private PrAccountSetService accountSetService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @Autowired
     private CodeGenerator codeGenerator;
@@ -120,6 +121,12 @@ public class NormalBatchController {
         return JsonResult.success(result);
     }
 
+    @GetMapping("/checkEmployees/{empGroupCode}")
+    public JsonResult checkEmployees(@PathVariable("empGroupCode") String empGroupCode){
+        int rowAffected = employeeService.hasEmployees(empGroupCode);
+        return JsonResult.success(rowAffected);
+    }
+
     @PostMapping("/addNormalBatch")
     public JsonResult addNormalBatch(@RequestBody PrNormalBatchDTO batchDTO)
     {
@@ -168,11 +175,12 @@ public class NormalBatchController {
     }
 
     @PostMapping("/getBatchList")
-    public JsonResult getBatchList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                                   @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
-                                   @RequestBody PrCustomBatchDTO param){
+    public JsonResult getBatchList(@RequestBody PrCustomBatchDTO param){
 
         PrCustBatchPO custBatchPO = BathTranslator.toPrBatchPO(param);
+        int pageNum = param.getPageNum() == 0 ? 1 : param.getPageNum();
+        int pageSize = param.getPageSize() == 0 ? 50 : param.getPageSize();
+
         PageInfo<PrCustBatchPO> list = batchService.getList(custBatchPO,pageNum,pageSize);
         return JsonResult.success(list);
 
@@ -255,21 +263,29 @@ public class NormalBatchController {
 
         String batchCode = filterDTO.getBatchCode();
         String empCodes = filterDTO.getEmpCodes();
-        if(empCodes == "" || empCodes == null){ // 该雇员组没有雇员
+        if(empCodes.equals("") || empCodes == null){ // 该雇员组没有雇员
             return JsonResult.success(0,"");
+        }else if(empCodes.equals("all")){
+            int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",true);
+            logger.info("update all " + String.valueOf(rowAffected));
+            return JsonResult.success(rowAffected,"更新成功");
+
+        }else {
+            int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode), "catalog.emp_info.is_active", false);
+            logger.info("update all " + String.valueOf(rowAffected1));
+
+            String[] codes = empCodes.split(",");
+            List<String> codeList = Arrays.asList(codes);
+
+            int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_CODE_CN).in(codeList), "catalog.emp_info.is_active", true);
+            logger.info("update specific " + String.valueOf(rowAffected));
+
+            long end = System.currentTimeMillis();
+            logger.info("filterEmployees cost time : " + String.valueOf((end - start)));
+
+
+            return JsonResult.success(rowAffected, "更新成功");
         }
-        String [] codes = empCodes.split(",");
-        List<String> codeList = Arrays.asList(codes);
-        int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",false);
-        logger.info("update all " + String.valueOf(rowAffected1));
-        int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_CODE_CN).in(codeList),"catalog.emp_info.is_active",true);
-        logger.info("update specific " + String.valueOf(rowAffected));
-
-        long end = System.currentTimeMillis();
-        logger.info("filterEmployees cost time : " + String.valueOf((end - start)));
-
-
-        return JsonResult.success(rowAffected,"更新成功");
 
     }
 
@@ -281,14 +297,34 @@ public class NormalBatchController {
      * @return
      */
     @PostMapping("/getFilterEmployees/{batchCode}")
-    public JsonResult getFilterEmployees(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+    public JsonResult getFilterEmployees(
+                                    @RequestParam(required = false, defaultValue = "") String empCode,
+                                    @RequestParam(required = false, defaultValue = "") String empName,
+                                    @RequestParam(required = false, defaultValue = "") String customKey,
+                                    @RequestParam(required = false, defaultValue = "") String customValue,
+                                    @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
                                     @PathVariable("batchCode") String batchCode){
 
         long start = System.currentTimeMillis(); //begin
 
-        //根据批次号，获取选中的雇员列表
-        List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+        Criteria criteria = Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true);
+
+        if(StringUtils.isNotEmpty(empCode)){
+            criteria.and(PayItemName.EMPLOYEE_CODE_CN).regex(empCode);
+        }
+        if(StringUtils.isNotEmpty(empName)){
+            criteria.and("catalog.emp_info."+ PayItemName.EMPLOYEE_NAME_CN).regex(empName);
+        }
+        if(StringUtils.isNotEmpty(customKey) && StringUtils.isNotEmpty(customValue)){
+            criteria.and("catalog.emp_info."+ customKey).regex(customValue);
+        }
+
+        List<DBObject> list = normalBatchMongoOpt.list(criteria);
+        int totalCount = list.size();
+        if(totalCount == 0){
+            return JsonResult.success(0);
+        }
 
         list = list.stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 
@@ -315,16 +351,21 @@ public class NormalBatchController {
             return itemPO;
         }).collect(Collectors.toList());
 
+        PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
+        result.setTotal(totalCount);
+        result.setPageNum(pageNum);
+
         long end = System.currentTimeMillis();
         logger.info("getFilterEmployees cost time : " + String.valueOf((end - start)));
 
-        return JsonResult.success(simplePayItemDTOS);
+        return JsonResult.success(result);
 
     }
 
     @PostMapping("/doCompute/{batchCode}")
     public JsonResult doComputeAction(@PathVariable("batchCode") String batchCode){
         try {
+            batchService.updateBatchStatus(batchCode,BatchStatusEnum.COMPUTING.getValue(),"bill"); //TODO
             ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
             sender.SendComputeAction(computeMsg);
@@ -332,9 +373,32 @@ public class NormalBatchController {
         catch (Exception e){
             logger.error(e.getMessage());
             return JsonResult.faultMessage("发送计算任务失败");
-
         }
         return JsonResult.success("发送计算任务成功");
 
+    }
+
+    @PostMapping("/updateBatchStatus")
+    public JsonResult updateBatchStatus(@RequestParam String batchCode, @RequestParam int status ){
+        String modifiedBy = "bill"; //TODO
+        int rowAffected = batchService.updateBatchStatus(batchCode,status,modifiedBy);
+        if(rowAffected > 0) {
+            return JsonResult.success(rowAffected);
+        }
+        else {
+            return JsonResult.faultMessage("更新失败");
+        }
+    }
+
+    @PostMapping("/auditBatch")
+    public JsonResult auditBatch(@RequestBody BatchAuditDTO batchAuditDTO){
+        String modifiedBy = "bill"; //TODO
+        int rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(),batchAuditDTO.getComments(),batchAuditDTO.getStatus(),modifiedBy);
+        if(rowAffected > 0) {
+            return JsonResult.success(rowAffected);
+        }
+        else {
+            return JsonResult.faultMessage("更新失败");
+        }
     }
 }
