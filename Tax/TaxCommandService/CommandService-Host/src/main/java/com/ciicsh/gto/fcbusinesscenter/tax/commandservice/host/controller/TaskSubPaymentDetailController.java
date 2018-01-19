@@ -4,22 +4,20 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubPayment
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author yuantongqing create on 2018/1/3
  */
 @RestController
-@RequestMapping("/tax")
-public class TaskSubPaymentDetailController {
+public class TaskSubPaymentDetailController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubPaymentDetailController.class);
 
@@ -46,9 +44,8 @@ public class TaskSubPaymentDetailController {
             logger.error("querySubPaymentDetailsByParams error " + e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+        return jr;
     }
 
 }

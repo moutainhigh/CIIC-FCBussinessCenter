@@ -56,6 +56,11 @@ public class TaskSubPaymentDetailPO{
      */
 	@TableField("id_type")
 	private String idType;
+	/**
+	 * 证件类型（中文）
+	 */
+	@TableField(exist = false)
+	private String idTypeName;
     /**
      * 证件编号
      */
@@ -80,6 +85,11 @@ public class TaskSubPaymentDetailPO{
      */
 	@TableField("income_subject")
 	private String incomeSubject;
+	/**
+	 * 所得项目(中文)
+	 */
+	@TableField(exist = false)
+	private String incomeSubjectName;
     /**
      * 收入额
      */
@@ -503,46 +513,64 @@ public class TaskSubPaymentDetailPO{
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getIdTypeName() {
+		return idTypeName;
+	}
+
+	public void setIdTypeName(String idTypeName) {
+		this.idTypeName = idTypeName;
+	}
+
+	public String getIncomeSubjectName() {
+		return incomeSubjectName;
+	}
+
+	public void setIncomeSubjectName(String incomeSubjectName) {
+		this.incomeSubjectName = incomeSubjectName;
+	}
+
 	@Override
 	public String toString() {
-		return "TaskSubPaymentDetail{" +
-			"id=" + id +
-			", taskSubPaymentId=" + taskSubPaymentId +
-			", calculationBatchDetailId=" + calculationBatchDetailId +
-			", versionNo=" + versionNo +
-			", employeeNo=" + employeeNo +
-			", employeeName=" + employeeName +
-			", idType=" + idType +
-			", idNo=" + idNo +
-			", declareAccount=" + declareAccount +
-			", payAccount=" + payAccount +
-			", period=" + period +
-			", incomeSubject=" + incomeSubject +
-			", incomeTotal=" + incomeTotal +
-			", incomeDutyfree=" + incomeDutyfree +
-			", deductRetirementInsurance=" + deductRetirementInsurance +
-			", deductMedicalInsurance=" + deductMedicalInsurance +
-			", deductDlenessInsurance=" + deductDlenessInsurance +
-			", deductProperty=" + deductProperty +
-			", deductHouseFund=" + deductHouseFund +
-			", deductTakeoff=" + deductTakeoff +
-			", deductOther=" + deductOther +
-			", deductTotal=" + deductTotal +
-			", deduction=" + deduction +
-			", donation=" + donation +
-			", incomeForTax=" + incomeForTax +
-			", taxRate=" + taxRate +
-			", quickCalDeduct=" + quickCalDeduct +
-			", taxAmount=" + taxAmount +
-			", taxDeduction=" + taxDeduction +
-			", taxWithholdAmount=" + taxWithholdAmount +
-			", taxWithholdedAmount=" + taxWithholdedAmount +
-			", taxRemedyOrReturn=" + taxRemedyOrReturn +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+		return "TaskSubPaymentDetailPO{" +
+				"id=" + id +
+				", taskSubPaymentId=" + taskSubPaymentId +
+				", calculationBatchDetailId=" + calculationBatchDetailId +
+				", versionNo=" + versionNo +
+				", employeeNo='" + employeeNo + '\'' +
+				", employeeName='" + employeeName + '\'' +
+				", idType='" + idType + '\'' +
+				", idTypeName='" + idTypeName + '\'' +
+				", idNo='" + idNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", payAccount='" + payAccount + '\'' +
+				", period=" + period +
+				", incomeSubject='" + incomeSubject + '\'' +
+				", incomeSubjectName='" + incomeSubjectName + '\'' +
+				", incomeTotal=" + incomeTotal +
+				", incomeDutyfree=" + incomeDutyfree +
+				", deductRetirementInsurance=" + deductRetirementInsurance +
+				", deductMedicalInsurance=" + deductMedicalInsurance +
+				", deductDlenessInsurance=" + deductDlenessInsurance +
+				", deductProperty=" + deductProperty +
+				", deductHouseFund=" + deductHouseFund +
+				", deductTakeoff=" + deductTakeoff +
+				", deductOther=" + deductOther +
+				", deductTotal=" + deductTotal +
+				", deduction=" + deduction +
+				", donation=" + donation +
+				", incomeForTax=" + incomeForTax +
+				", taxRate='" + taxRate + '\'' +
+				", quickCalDeduct=" + quickCalDeduct +
+				", taxAmount=" + taxAmount +
+				", taxDeduction=" + taxDeduction +
+				", taxWithholdAmount=" + taxWithholdAmount +
+				", taxWithholdedAmount=" + taxWithholdedAmount +
+				", taxRemedyOrReturn=" + taxRemedyOrReturn +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				'}';
 	}
 }

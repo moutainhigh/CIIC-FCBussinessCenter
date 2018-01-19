@@ -8,7 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatc
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatch;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author wuhua
  */
 @RestController
-public class CalculationBatchController {
+//@RequestMapping("/tax")
+public class CalculationBatchController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(CalculationBatchController.class);
 
@@ -38,7 +39,9 @@ public class CalculationBatchController {
      */
     @RequestMapping(value = "/queryCalculationBatchs")
     public JsonResult queryCalculationBatchs(@RequestBody CalculationBatchDTO calculationBatchDTO) {
+
         JsonResult jr = new JsonResult();
+
         try {
             RequestForCalBatch requestForCalBatch = new RequestForCalBatch();
             BeanUtils.copyProperties(calculationBatchDTO, requestForCalBatch);
@@ -46,13 +49,14 @@ public class CalculationBatchController {
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForCalBatch);
+
         } catch (Exception e) {
             logger.error(e.toString());
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+
+        return jr;
     }
 
     /**
@@ -62,6 +66,7 @@ public class CalculationBatchController {
      */
     @RequestMapping(value = "/queryCalculationBatchDetails")
     public JsonResult queryCalculationBatchDetails(@RequestBody EmployeeDTO employeeDTO) {
+
         JsonResult jr = new JsonResult();
         try {
             RequestForEmployees requestForEmployees = new RequestForEmployees();
@@ -74,9 +79,9 @@ public class CalculationBatchController {
             e.printStackTrace();
             jr.setErrorcode("1");
             jr.setErrormsg("error");
-        } finally {
-            return jr;
         }
+
+        return jr;
     }
 
 }

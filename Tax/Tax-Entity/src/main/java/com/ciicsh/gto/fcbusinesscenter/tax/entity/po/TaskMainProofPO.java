@@ -61,6 +61,13 @@ public class TaskMainProofPO implements Serializable {
      * 状态
      */
 	private String status;
+
+	/**
+	 * 状态中文
+	 */
+	@TableField(exist = false)
+	private String statusName;
+
     /**
      * 备注
      */
@@ -204,24 +211,32 @@ public class TaskMainProofPO implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
 
 	@Override
 	public String toString() {
 		return "TaskMainProofPO{" +
-			"id=" + id +
-			", taskNo=" + taskNo +
-			", managerNo=" + managerNo +
-			", managerName=" + managerName +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", remark=" + remark +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+				"id=" + id +
+				", taskNo='" + taskNo + '\'' +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", statusName='" + statusName + '\'' +
+				", remark='" + remark + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				'}';
 	}
 }

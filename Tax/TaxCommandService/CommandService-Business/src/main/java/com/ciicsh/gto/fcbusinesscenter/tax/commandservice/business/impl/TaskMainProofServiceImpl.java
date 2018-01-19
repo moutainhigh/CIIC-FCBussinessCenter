@@ -6,18 +6,16 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
-import org.springframework.beans.BeanUtils;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,12 +61,20 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectPage(pageInfo, wrapper);
             //获取总数目
             int total = baseMapper.selectCount(wrapper);
+            //获取完税凭证任务状态中文名
+            for(TaskMainProofPO p: taskMainProofPOList){
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,p.getStatus()));
+            }
             responseForMainProof.setCurrentNum(requestForProof.getCurrentNum());
             responseForMainProof.setPageSize(requestForProof.getPageSize());
             responseForMainProof.setTotalNum(total);
             responseForMainProof.setRowList(taskMainProofPOList);
         } else {
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectList(wrapper);
+            //获取完税凭证任务状态中文名
+            for(TaskMainProofPO p: taskMainProofPOList){
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,p.getStatus()));
+            }
             responseForMainProof.setRowList(taskMainProofPOList);
         }
         return responseForMainProof;

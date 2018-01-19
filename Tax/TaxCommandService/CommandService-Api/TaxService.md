@@ -32,6 +32,7 @@ SIT环境:
                 "chineseNum": null, //中方人数
                 "foreignerNum": null,   //外方人数
                 "status": "04", //任务状态,00:草稿01:已提交/处理中02:被退回03:已完成04:已失效
+                "statusName": "已失效",
                 "remark": null, //备注
                 "createdTime": 1515459049000,   //创建时间
                 "modifiedTime": 1515459049000,  //修改时间
@@ -48,6 +49,7 @@ SIT环境:
                 "chineseNum": 1,
                 "foreignerNum": 0,
                 "status": "01",
+                "statusName": "处理中",
                 "remark": null,
                 "createdTime": 1515400273000,
                 "modifiedTime": 1515400273000,
@@ -100,7 +102,7 @@ SIT环境:
     "data": true
 }
  
-1.3 批量失效完税凭证任务
+1.4 批量失效完税凭证任务
 
 http方法: post
 api地址:
@@ -119,7 +121,7 @@ SIT环境:
 } 
 
 
-1.4 根据完税凭证主任务ID查询完税凭证子任务
+1.5 根据完税凭证主任务ID查询完税凭证子任务
 http方法: post
 api地址:
 开发环境: http://localhost:7019/tax/queryTaskSubProofByMainId/{mainProofId}/
@@ -146,6 +148,7 @@ SIT环境:
             "foreignerNum": 0,  //外方人数
             "sendStatus": null, //寄送状态
             "status": "01", //任务状态,00:草稿01:已提交/处理中02:被退回03:已完成04:已失效
+            "statusName": "处理中",
             "createdBy": "adminMain",   //创建人
             "createdTime": 1515215999000    //创建时间
         },
@@ -161,13 +164,14 @@ SIT环境:
             "foreignerNum": 0,
             "sendStatus": null,
             "status": "02",
+            "statusName": "被退回",
             "createdBy": "adminMain",
             "createdTime": 1515215999000
         }
     ]
 }
 
-1.5 根据完税凭证子任务ID复制被驳回的完税凭证子任务信息
+1.6 根据完税凭证子任务ID复制被驳回的完税凭证子任务信息
 
 http方法: post
 api地址:
@@ -184,7 +188,7 @@ SIT环境:
     "data": true
 }
 
-1.6 完税凭证主任务详细信息查询
+1.7 完税凭证主任务详细信息查询
 http方法: post
 api地址:
 开发环境: http://localhost:7019/tax/queryTaskMainProofByRes
@@ -214,6 +218,7 @@ SIT环境:
                 "chineseNum": 3,    //中方人数
                 "foreignerNum": 0,  //外方人数
                 "status": "00", //任务状态,00:草稿01:已提交/处理中02:被退回03:已完成04:已失效
+                "statusName": "草稿",
                 "remark": null, //备注
                 "createdTime": 1515740010000,   //创建时间
                 "modifiedTime": 1515740010000,  //修改时间
@@ -225,7 +230,7 @@ SIT环境:
     }
 }
 
-1.7 完税凭证子任务详细信息查询
+1.8 完税凭证子任务详细信息查询
 http方法: post
 api地址:
 开发环境: http://localhost:7019/tax/queryTaskSubProofByRes
@@ -255,6 +260,7 @@ SIT环境:
                 "chineseNum": 1,    //中方人数
                 "foreignerNum": 0,  //外方人数
                 "status": "00", //任务状态,00:草稿01:已提交/处理中02:被退回03:已完成04:已失效
+                "statusName": "草稿",
                 "createdBy": "adminMain",   //创建人
                 "createdTime": 1515740010000,   //创建时间
                 "modifiedBy": "adminMain",  //修改人
@@ -271,7 +277,7 @@ SIT环境:
     }
 }
 
-1.8 完税凭证详细页面保存数据
+1.9 完税凭证详细页面保存数据
 http方法: post
 api地址:
 开发环境: http://localhost:7019/tax/saveSubProofDetail
@@ -313,7 +319,7 @@ SIT环境:
     "data": true
 }
 
-1.9 完税凭证申报明细查询
+1.10 完税凭证申报明细查询
 http方法: post
 api地址:
 开发环境: http://localhost:7019/tax/queryTaskSubProofDetail
@@ -343,9 +349,11 @@ SIT环境:
                 "employeeNo": "17A13012",  //雇员编号 
                 "employeeName": "李晓",   //雇员姓名
                 "idType": "01", //证件类型	01:身份或者能
+                "idTypeName": "居民身份证",
                 "idNo": "321000199010101234",   //证件号
                 "declareAccount": "蓝天科技上海独立户",  //申报账户
                 "incomeSubject": "01",  //所得项目	01：工资薪金所得
+                "incomeSubjectName": "工资薪金所得",
                 "incomeStart": 1509465600000,   //所得期间起
                 "incomeEnd": 1512057600000, //所得期间止
                 "incomeForTax": 5960,   //应纳税所得额
@@ -361,7 +369,7 @@ SIT环境:
 }
 
 
-1.10 完税凭证添加雇员列表查询
+1.11 完税凭证添加雇员列表查询
 http方法: post
 api地址:
 开发环境: http://localhost:7019/tax/queryEmployee
@@ -392,6 +400,7 @@ SIT环境:
                 "employeeNo": "17A13012",   //雇员编号
                 "employeeName": "李晓",   //雇员姓名
                 "idType": "01", //证件类型 01：身份证
+                "idTypeName": "居民身份证",
                 "idNo": "321000199010101234",   //证件号
                 "managerNo": "GL170001",    //管理方编号  
                 "managerName": "蓝天科技",  //管理方名称
@@ -402,6 +411,7 @@ SIT环境:
                 "employeeNo": "17A13497",
                 "employeeName": "张名",
                 "idType": "01",
+                "idTypeName": "居民身份证",
                 "idNo": "323891199003103290",
                 "managerNo": "GL170001",
                 "managerName": "蓝天科技",
@@ -412,6 +422,7 @@ SIT环境:
                 "employeeNo": "17A13513",
                 "employeeName": "刘文华",
                 "idType": "01",
+                "idTypeName": "居民身份证",
                 "idNo": "321110197108239090",
                 "managerNo": "GL170001",
                 "managerName": "蓝天科技",
@@ -422,6 +433,7 @@ SIT环境:
                 "employeeNo": "17A13542",
                 "employeeName": "蒋文文",
                 "idType": "01",
+                "idTypeName": "居民身份证",
                 "idNo": "322140199211116510",
                 "managerNo": "GL170001",
                 "managerName": "蓝天科技",
@@ -432,6 +444,7 @@ SIT环境:
                 "employeeNo": "17A13101",
                 "employeeName": "许强",
                 "idType": "01",
+                "idTypeName": "居民身份证",
                 "idNo": "320171198810106787",
                 "managerNo": "GL170001",
                 "managerName": "蓝天科技",
@@ -441,7 +454,7 @@ SIT环境:
     }
 }
 
-1.11 雇员申报记录查询
+1.12 雇员申报记录查询
 http方法: post
 api地址:
 开发环境: http://localhost:7019/tax/queryTaxBatchDetail
@@ -472,12 +485,12 @@ SIT环境:
                 "employeeNo": "YY000001",   //雇员编号
                 "employeeName": "陆逊",   //雇员姓名
                 "idType": "01",     //证件类型 01：身份证
-                "idTypeName": null, //证件类型中文名
+                "idTypeName": "居民身份证", //证件类型中文名
                 "idNo": "321000199010101234",   //证件号
                 "declareAccount": "declare000001",  //申报账户
                 "payAccount": "pay000001",  //缴纳账户
                 "period": 1514649600000,    //个税期间
-                "incomeSubjectName": null,  //所得项目 01：工资薪金所得
+                "incomeSubjectName": "工资薪金所得",  //所得项目 01：工资薪金所得
                 "incomeSubject": "01",  //所得项目中文名
                 "incomeTotal": 12000,   //收入额
                 "incomeDutyfree": null, //免税所得
@@ -513,12 +526,12 @@ SIT环境:
                 "employeeNo": "17A13012",
                 "employeeName": "李晓",
                 "idType": "01",
-                "idTypeName": null,
+                "idTypeName": "居民身份证",
                 "idNo": "321000199010101234",
                 "declareAccount": null,
                 "payAccount": null,
                 "period": 1509465600000,
-                "incomeSubjectName": null,
+                "incomeSubjectName": "工资薪金所得",
                 "incomeSubject": "01",
                 "incomeTotal": 1000,
                 "incomeDutyfree": 100,
@@ -554,12 +567,12 @@ SIT环境:
                 "employeeNo": "17A13012",
                 "employeeName": "李晓",
                 "idType": "01",
-                "idTypeName": null,
+                "idTypeName": "居民身份证",
                 "idNo": "321000199010101234",
                 "declareAccount": null,
                 "payAccount": null,
                 "period": 1512057600000,
-                "incomeSubjectName": null,
+                "incomeSubjectName": "工资薪金所得",
                 "incomeSubject": "01",
                 "incomeTotal": 1000,
                 "incomeDutyfree": 100,
@@ -595,12 +608,12 @@ SIT环境:
                 "employeeNo": "17A13012",
                 "employeeName": "李晓",
                 "idType": "01",
-                "idTypeName": null,
+                "idTypeName": "居民身份证",
                 "idNo": "321000199010101234",
                 "declareAccount": null,
                 "payAccount": null,
                 "period": 1514736000000,
-                "incomeSubjectName": null,
+                "incomeSubjectName": "工资薪金所得",
                 "incomeSubject": "01",
                 "incomeTotal": 1000,
                 "incomeDutyfree": 100,
@@ -636,12 +649,12 @@ SIT环境:
                 "employeeNo": "17A13012",
                 "employeeName": "李晓",
                 "idType": "01",
-                "idTypeName": null,
+                "idTypeName": "居民身份证",
                 "idNo": "321000199010101234",
                 "declareAccount": null,
                 "payAccount": null,
                 "period": 1506787200000,
-                "incomeSubjectName": null,
+                "incomeSubjectName": "工资薪金所得",
                 "incomeSubject": "01",
                 "incomeTotal": 1000,
                 "incomeDutyfree": 100,
