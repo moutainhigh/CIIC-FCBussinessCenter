@@ -33,6 +33,11 @@ public class TaskSubPaymentDTO {
     private String status;
 
     /**
+     * 页签状态类别handling,completed,retreated,failed
+     */
+    private String statusType;
+
+    /**
      * 页签类型：currentPan,currentBeforePan,currentAfterPan
      */
     private String periodType;
@@ -185,6 +190,14 @@ public class TaskSubPaymentDTO {
         this.periodType = periodType;
     }
 
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
+    }
+
     @Override
     public String toString() {
         return "TaskSubPaymentDTO{" +
@@ -193,6 +206,7 @@ public class TaskSubPaymentDTO {
                 ", managerName='" + managerName + '\'' +
                 ", period='" + period + '\'' +
                 ", status='" + status + '\'' +
+                ", statusType='" + statusType + '\'' +
                 ", periodType='" + periodType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +

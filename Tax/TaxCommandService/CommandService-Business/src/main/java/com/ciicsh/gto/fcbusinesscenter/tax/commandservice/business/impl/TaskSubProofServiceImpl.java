@@ -364,9 +364,6 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         taskSubProofDetailPOList = taskSubProofDetailMapper.queryApplyDetailsBySubIdsAndEmp(page, longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
         //根据子任务ID查询完税凭证申报明细总数
         int total = taskSubProofDetailMapper.queryApplyDetailsTotalNumBySubIdsAndEmp(longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
-        page = page.setRecords(taskSubProofDetailPOList);
-        //条件查询总数目
-        page.setTotal(total);
         //获取证件类型中文和所得项目中文名
         for(TaskSubProofDetailPO p: taskSubProofDetailPOList){
             p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
@@ -375,7 +372,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         responseForSubProofDetail.setRowList(taskSubProofDetailPOList);
         responseForSubProofDetail.setCurrentNum(requestForProof.getCurrentNum());
         responseForSubProofDetail.setPageSize(requestForProof.getPageSize());
-        responseForSubProofDetail.setTotalNum(page.getTotal());
+        responseForSubProofDetail.setTotalNum(total);
 
         return responseForSubProofDetail;
     }

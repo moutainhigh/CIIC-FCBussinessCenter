@@ -27,6 +27,10 @@ public class EnumUtil {
      * 业务任务状态
      */
     public static final String BUSINESS_STATUS = "BS";
+    /**
+     * 业务任务状态类型
+     */
+    public static final String BUSINESS_STATUS_TYPE = "BS_TYPE";
 
     /**
      * 获取枚举中文
@@ -48,6 +52,8 @@ public class EnumUtil {
                 return VoucherStatus.valueOf(EnumUtil.VOUCHER_STATUS + key).getMessage();
             } else if (type.equals(EnumUtil.BUSINESS_STATUS)) {
                 return BusinessStatus.valueOf(EnumUtil.BUSINESS_STATUS + key).getMessage();
+            } else if (type.equals(EnumUtil.BUSINESS_STATUS_TYPE)) {
+                return BusinessStatusType.valueOf(key).getMessage();
             }
         }
 

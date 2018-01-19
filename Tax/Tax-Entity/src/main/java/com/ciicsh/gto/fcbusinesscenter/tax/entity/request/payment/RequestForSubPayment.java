@@ -38,6 +38,11 @@ public class RequestForSubPayment extends PageInfo {
     private String periodType;
 
     /**
+     * 页签状态类别handling,completed,retreated,failed
+     */
+    private String statusType;
+
+    /**
      * 批量完成/批量退回缴纳子任务ID
      */
     private String[] subPaymentIds;
@@ -109,5 +114,13 @@ public class RequestForSubPayment extends PageInfo {
 
     public void setPeriodType(String periodType) {
         this.periodType = periodType;
+    }
+
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
     }
 }

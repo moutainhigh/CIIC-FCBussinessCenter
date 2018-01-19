@@ -1,30 +1,30 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.util.enums;
 
 /**
- * @author yuantongqing on 2018/01/15
+ * @author yuantongqing on 2018/01/19
  */
-public enum BusinessStatus {
+public enum BusinessStatusType {
 
     /**
      * 处理中
      */
-    BS21("处理中"),
+    HANDLING("21"),
     /**
      * 被退回
      */
-    BS22("被退回"),
-    /**
-     * 已完成
-     */
-    BS23("已完成"),
+    COMPLETED("22"),
     /**
      * 已失效
      */
-    BS24("已失效");
+    RETREATED("23"),
+    /**
+     * 已失效
+     */
+    FAILED("24");
 
     private String  message;
 
-    private BusinessStatus(String message)
+    private BusinessStatusType(String message)
     {
         this.message = message;
     }
@@ -32,4 +32,5 @@ public enum BusinessStatus {
     public String getMessage() {
         return message;
     }
+
 }
