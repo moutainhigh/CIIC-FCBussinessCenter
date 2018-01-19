@@ -5,7 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.FileDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.FileServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.file.RequestForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.file.ResponseForFile;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

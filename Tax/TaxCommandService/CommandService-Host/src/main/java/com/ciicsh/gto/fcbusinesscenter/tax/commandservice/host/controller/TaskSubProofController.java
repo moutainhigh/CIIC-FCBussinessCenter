@@ -11,7 +11,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;

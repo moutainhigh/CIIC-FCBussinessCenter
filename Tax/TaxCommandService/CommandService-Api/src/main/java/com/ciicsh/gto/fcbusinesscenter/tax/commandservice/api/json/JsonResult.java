@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.tax.util.json;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json;
 
 /**
  * Created by shil on 2017/9/20.

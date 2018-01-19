@@ -2,7 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy;
 
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDTO;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

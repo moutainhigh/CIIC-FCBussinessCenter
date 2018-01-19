@@ -5,7 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymen
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPayment;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

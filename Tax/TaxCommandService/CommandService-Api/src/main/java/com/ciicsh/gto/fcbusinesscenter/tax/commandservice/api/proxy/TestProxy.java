@@ -1,16 +1,17 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy;
 
 
-import com.ciicsh.gto.fcbusinesscenter.tax.util.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.*;
-import java.util.Map;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@FeignClient("fc-business-center-tax-command-service")
+@FeignClient("fc-business-center-command-service")
+@RequestMapping("/tax")
 public interface TestProxy {
 
     @RequestMapping("/info")
     JsonResult test();
+
 
     /*@PostMapping("")
     JsonResult saveBasicProduct(@RequestBody Map<String, Object> param);

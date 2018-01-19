@@ -11,6 +11,10 @@ import java.util.Date;
 public class CalculationBatchDetailBO {
     private Long id;
 
+    private String employeeNo;
+
+    private String employeeName;
+
     private String idType;
 
     private String idNo;
@@ -111,6 +115,175 @@ public class CalculationBatchDetailBO {
      * 分页page对象
      */
     private Page page;
+
+    /**
+     * 申报账户
+     */
+    private String declareAccount;
+
+    /**
+     * 缴纳账户
+     */
+    private String payAccount;
+
+    /**
+     * 收款账户
+     */
+    private String receiptAccount;
+
+    /**
+     * 供应商编号
+     */
+    private String supportNo;
+
+    /**
+     * 供应商名称
+     */
+    private String supportName;
+
+    /**
+     * 是否供应商处理
+     */
+    private Boolean isSupport;
+
+    /**
+     * 是否供应商处理完成
+     */
+    private Boolean isSupported;
+
+    /**
+     * 是否有缴纳服务
+     */
+    private Boolean isPay;
+
+    /**
+     * 是否缴纳完成
+     */
+    private Boolean isPayed;
+
+    /**
+     * 是否有申报服务
+     */
+    private Boolean isDeclare;
+
+    /**
+     * 是否申报完成
+     */
+    private Boolean isDeclared;
+
+    /**
+     * 是否有划款服务
+     */
+    private Boolean isTranfer;
+
+    /**
+     * 是否划款完成
+     */
+    private Boolean isTranferred;
+
+    public String getDeclareAccount() {
+        return declareAccount;
+    }
+
+    public void setDeclareAccount(String declareAccount) {
+        this.declareAccount = declareAccount;
+    }
+
+    public String getPayAccount() {
+        return payAccount;
+    }
+
+    public void setPayAccount(String payAccount) {
+        this.payAccount = payAccount;
+    }
+
+    public String getReceiptAccount() {
+        return receiptAccount;
+    }
+
+    public void setReceiptAccount(String receiptAccount) {
+        this.receiptAccount = receiptAccount;
+    }
+
+    public String getSupportNo() {
+        return supportNo;
+    }
+
+    public void setSupportNo(String supportNo) {
+        this.supportNo = supportNo;
+    }
+
+    public String getSupportName() {
+        return supportName;
+    }
+
+    public void setSupportName(String supportName) {
+        this.supportName = supportName;
+    }
+
+    public Boolean getSupport() {
+        return isSupport;
+    }
+
+    public void setSupport(Boolean support) {
+        isSupport = support;
+    }
+
+    public Boolean getSupported() {
+        return isSupported;
+    }
+
+    public void setSupported(Boolean supported) {
+        isSupported = supported;
+    }
+
+    public Boolean getPay() {
+        return isPay;
+    }
+
+    public void setPay(Boolean pay) {
+        isPay = pay;
+    }
+
+    public Boolean getPayed() {
+        return isPayed;
+    }
+
+    public void setPayed(Boolean payed) {
+        isPayed = payed;
+    }
+
+    public Boolean getDeclare() {
+        return isDeclare;
+    }
+
+    public void setDeclare(Boolean declare) {
+        isDeclare = declare;
+    }
+
+    public Boolean getDeclared() {
+        return isDeclared;
+    }
+
+    public void setDeclared(Boolean declared) {
+        isDeclared = declared;
+    }
+
+    public Boolean getTranfer() {
+        return isTranfer;
+    }
+
+    public void setTranfer(Boolean tranfer) {
+        isTranfer = tranfer;
+    }
+
+    public Boolean getTranferred() {
+        return isTranferred;
+    }
+
+    public void setTranferred(Boolean tranferred) {
+        isTranferred = tranferred;
+    }
 
     public Long getId() {
         return id;
@@ -318,6 +491,22 @@ public class CalculationBatchDetailBO {
 
     public void setPage(Page page) {
         this.page = page;
+    }
+
+    public String getEmployeeNo() {
+        return employeeNo;
+    }
+
+    public void setEmployeeNo(String employeeNo) {
+        this.employeeNo = employeeNo;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 
     @Override
