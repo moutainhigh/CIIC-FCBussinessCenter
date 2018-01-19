@@ -1,10 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.EmpFilterDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
@@ -13,14 +13,11 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
-import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
-import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrGroupTemplateServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
@@ -178,11 +175,12 @@ public class NormalBatchController {
     }
 
     @PostMapping("/getBatchList")
-    public JsonResult getBatchList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                                   @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
-                                   @RequestBody PrCustomBatchDTO param){
+    public JsonResult getBatchList(@RequestBody PrCustomBatchDTO param){
 
         PrCustBatchPO custBatchPO = BathTranslator.toPrBatchPO(param);
+        int pageNum = param.getPageNum() == 0 ? 1 : param.getPageNum();
+        int pageSize = param.getPageSize() == 0 ? 50 : param.getPageSize();
+
         PageInfo<PrCustBatchPO> list = batchService.getList(custBatchPO,pageNum,pageSize);
         return JsonResult.success(list);
 
@@ -367,6 +365,7 @@ public class NormalBatchController {
     @PostMapping("/doCompute/{batchCode}")
     public JsonResult doComputeAction(@PathVariable("batchCode") String batchCode){
         try {
+            batchService.updateBatchStatus(batchCode,BatchStatusEnum.COMPUTING.getValue(),"bill"); //TODO
             ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
             sender.SendComputeAction(computeMsg);
@@ -383,6 +382,18 @@ public class NormalBatchController {
     public JsonResult updateBatchStatus(@RequestParam String batchCode, @RequestParam int status ){
         String modifiedBy = "bill"; //TODO
         int rowAffected = batchService.updateBatchStatus(batchCode,status,modifiedBy);
+        if(rowAffected > 0) {
+            return JsonResult.success(rowAffected);
+        }
+        else {
+            return JsonResult.faultMessage("更新失败");
+        }
+    }
+
+    @PostMapping("/auditBatch")
+    public JsonResult auditBatch(@RequestBody BatchAuditDTO batchAuditDTO){
+        String modifiedBy = "bill"; //TODO
+        int rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(),batchAuditDTO.getComments(),batchAuditDTO.getStatus(),modifiedBy);
         if(rowAffected > 0) {
             return JsonResult.success(rowAffected);
         }

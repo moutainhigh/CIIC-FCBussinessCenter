@@ -1,0 +1,37 @@
+package com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom;
+
+/**
+ * Created by bill on 18/1/19.
+ */
+public class BatchAuditDTO {
+    private String batchCode;
+    private int status;
+    private String comments;
+
+    public String getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+
+
+}

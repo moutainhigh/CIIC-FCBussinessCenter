@@ -1,9 +1,8 @@
-package com.ciicsh.gto.salarymanagementcommandservice.service.util;
+package com.ciicsh.caldispatchjob.compute.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 
 import java.util.*;
@@ -38,25 +37,29 @@ public class ConditionAdapter {
      */
     public static String getConditionStr(String conditionsStr){
 
-        if(StringUtils.isEmpty(conditionsStr)){
-            return "";
-        }
-
-        List<String> resolvedQueryList =
+        List<JSONObject> conditions =
                 Arrays.asList(conditionsStr.split(";"))
                         .stream()
-                        .map(c -> resolveSingleCondition(JSON.parseObject(c)))   // 调用解析方法
-                        .filter(rc -> rc.length() != 0)
-                        .map(rc -> {
-                            // 将解析好的Query String对template中进行对应替换
-                            Map<String, String> queryMap = new HashMap<String, String>() {{
-                                put("condition", rc);
-                            }};
-                            StrSubstitutor sub = new StrSubstitutor(queryMap);
-                            return sub.replace(CONDITION_TEMPLATE);
-                        })
+                        .map(con -> JSON.parseObject(con))
                         .collect(Collectors.toList());
 
+        List<String> resolvedQueryList = new ArrayList<>();
+        Map<String, String> resolvedQueryMap = new HashMap<>();
+
+        // 遍历条件数组进行解析
+        for (JSONObject o : conditions) {
+            // 调用解析方法
+            String result = resolveSingleCondition(o);
+
+            // 将解析好的Query String对template中进行对应替换
+
+            if(result.length() != 0){
+                resolvedQueryMap.put("condition", result);
+                StrSubstitutor sub = new StrSubstitutor(resolvedQueryMap);
+                String resolvedString = sub.replace(CONDITION_TEMPLATE);
+                resolvedQueryList.add(resolvedString);
+            }
+        }
         // 对所有条件分支进行拼接
         String finalResult = String.join(" else ", resolvedQueryList);
 

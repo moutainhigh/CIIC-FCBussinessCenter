@@ -316,5 +316,36 @@
 		WHERE code = #{code}
 	</update>
 
+	<update id="auditBatch">
+		UPDATE
+		pr_normal_batch
+		SET
+		status = #{status},
+		comments = #{comments},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE code = #{code}
+	</update>
+
+	<update id="updateHasAdvance">
+		UPDATE
+		pr_normal_batch
+		SET
+		has_advance = #{hasAdvance},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE code = #{code}
+	</update>
+
+	<update id="updateHasMoneny">
+		UPDATE
+		pr_normal_batch
+		SET
+		has_money = #{hasMoney},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE code = #{code}
+	</update>
+
 
 </mapper>

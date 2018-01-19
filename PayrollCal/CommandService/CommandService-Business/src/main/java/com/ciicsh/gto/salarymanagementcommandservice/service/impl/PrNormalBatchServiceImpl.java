@@ -164,8 +164,8 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         PrNormalBatchPO param = new PrNormalBatchPO();
         param.setCode(batchCode);
         PrNormalBatchPO batchPO = normalBatchMapper.selectOne(param);
-        if(batchPO.getStatus() == BatchStatusEnum.NEW.getValue()){
-            if(status == BatchStatusEnum.PENDING.getValue()){
+        /*if(batchPO.getStatus() == BatchStatusEnum.NEW.getValue()){
+            if(status == BatchStatusEnum.PENDING.getValue() || status == BatchStatusEnum.COMPUTING.getValue()){
                 return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
             }
         }else if(batchPO.getStatus() == BatchStatusEnum.PENDING.getValue()){
@@ -180,9 +180,24 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
             if(status == BatchStatusEnum.TAX_DECLARED.getValue()){
                 return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
             }
-        }
+        }*/
 
-        return 0;
+        return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
+    }
+
+    @Override
+    public int auditBatch(String batchCode, String comments, int status, String modifiedBy) {
+        return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy);
+    }
+
+    @Override
+    public int updateHasAdvance(String batchCode, boolean hasAdvance, String modifiedBy) {
+        return normalBatchMapper.updateHasAdvance(batchCode,hasAdvance,modifiedBy);
+    }
+
+    @Override
+    public int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy) {
+        return normalBatchMapper.updateHasMoneny(batchCode,hasMoney,modifiedBy);
     }
 
     private BasicDBObject getEmpBaseInfos(List<BasicDBObject> prItems){

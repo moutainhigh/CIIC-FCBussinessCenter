@@ -36,6 +36,8 @@ public class WebLogAspect {
 
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if(attributes ==null) return;
+
         HttpServletRequest request = attributes.getRequest();
 
         // 记录下请求内容

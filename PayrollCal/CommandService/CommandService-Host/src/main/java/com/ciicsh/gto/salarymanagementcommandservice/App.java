@@ -5,12 +5,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
-import org.springframework.context.annotation.Import;
 
 /**
  * Created by houwanhua on 2017/7/28.
  */
-@SpringBootApplication(scanBasePackages = {"com.ciicsh.gt1","com.ciicsh.gto.fcbusinesscenter.util","com.ciicsh.gto.salarymanagementcommandservice"})
+@SpringBootApplication(scanBasePackages =
+        {"com.ciicsh.gt1",
+          "com.ciichsh.gt1.drools.config",
+        "com.ciicsh.gto.fcbusinesscenter.util",
+                "com.ciicsh.gto.salarymanagementcommandservice"})
 @EnableDiscoveryClient
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
 @EnableFeignClients({"com.ciicsh.gto.afsystemmanagecenter"})// 指定对应中心的 @FeignClient 所在对应的包

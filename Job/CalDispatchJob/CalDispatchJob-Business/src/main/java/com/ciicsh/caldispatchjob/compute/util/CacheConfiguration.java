@@ -1,4 +1,4 @@
-package com.ciicsh.gto.salarymanagementcommandservice.service.util;
+package com.ciicsh.caldispatchjob.compute.util;
 
 import com.google.common.cache.CacheBuilder;
 import org.springframework.cache.CacheManager;
@@ -26,7 +26,7 @@ public class CacheConfiguration {
                 .expireAfterWrite(24, TimeUnit.HOURS)
                 .maximumSize(1000)
         );
-        cacheManager.setCacheNames(Arrays.asList("payRoll"));
+        cacheManager.setCacheNames(Arrays.asList("payItems"));
 //        Cache cache = cacheManager.getCache("payItems");
 //        cache.put("payItemId", new PayItem()); // todo call dao get payItem list
 
