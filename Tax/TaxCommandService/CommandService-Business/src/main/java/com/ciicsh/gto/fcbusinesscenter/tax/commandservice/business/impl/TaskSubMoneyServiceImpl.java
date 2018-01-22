@@ -77,14 +77,13 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         if (null != requestForSubMoney.getPageSize() && null != requestForSubMoney.getCurrentNum()) {
             Page<TaskSubMoneyPO> pageInfo = new Page<>(requestForSubMoney.getCurrentNum(), requestForSubMoney.getPageSize());
             taskSubMoneyPOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取查询总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(taskSubMoneyPOList);
             //获取完税凭证任务状态中文名
             for (TaskSubMoneyPO p : taskSubMoneyPOList) {
                 p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
             }
             responseForSubMoney.setRowList(taskSubMoneyPOList);
-            responseForSubMoney.setTotalNum(total);
+            responseForSubMoney.setTotalNum(pageInfo.getTotal());
             responseForSubMoney.setCurrentNum(requestForSubMoney.getCurrentNum());
             responseForSubMoney.setPageSize(requestForSubMoney.getPageSize());
         } else {

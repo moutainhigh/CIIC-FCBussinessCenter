@@ -78,14 +78,13 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         if (null != requestForSubPayment.getPageSize() && null != requestForSubPayment.getCurrentNum()) {
             Page<TaskSubPaymentPO> pageInfo = new Page<>(requestForSubPayment.getCurrentNum(), requestForSubPayment.getPageSize());
             taskSubPaymentPOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取查询总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(taskSubPaymentPOList);
             //获取缴纳任务状态中文名
             for (TaskSubPaymentPO p : taskSubPaymentPOList) {
                 p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
             }
             responseForSubPayment.setRowList(taskSubPaymentPOList);
-            responseForSubPayment.setTotalNum(total);
+            responseForSubPayment.setTotalNum(pageInfo.getTotal());
             responseForSubPayment.setCurrentNum(requestForSubPayment.getCurrentNum());
             responseForSubPayment.setPageSize(requestForSubPayment.getPageSize());
         } else {

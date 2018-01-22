@@ -64,15 +64,14 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
         if (null != requestForSubMoneyDetail.getPageSize() && null != requestForSubMoneyDetail.getCurrentNum()) {
             Page<TaskSubMoneyDetailPO> pageInfo = new Page<>(requestForSubMoneyDetail.getCurrentNum(), requestForSubMoneyDetail.getPageSize());
             taskSubMoneyDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取查询总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(taskSubMoneyDetailPOList);
             //获取证件类型中文名和所得项目中文名
             for(TaskSubMoneyDetailPO p: taskSubMoneyDetailPOList){
                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
             }
             responseForSubMoneyDetail.setRowList(taskSubMoneyDetailPOList);
-            responseForSubMoneyDetail.setTotalNum(total);
+            responseForSubMoneyDetail.setTotalNum(pageInfo.getTotal());
             responseForSubMoneyDetail.setCurrentNum(requestForSubMoneyDetail.getCurrentNum());
             responseForSubMoneyDetail.setPageSize(requestForSubMoneyDetail.getPageSize());
         } else {

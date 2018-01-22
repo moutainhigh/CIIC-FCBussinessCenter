@@ -59,15 +59,14 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         if (requestForProof.getCurrentNum() != null && requestForProof.getPageSize() != 0) {
             Page<TaskMainProofPO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(taskMainProofPOList);
             //获取完税凭证任务状态中文名
             for(TaskMainProofPO p: taskMainProofPOList){
                 p.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,p.getStatus()));
             }
             responseForMainProof.setCurrentNum(requestForProof.getCurrentNum());
             responseForMainProof.setPageSize(requestForProof.getPageSize());
-            responseForMainProof.setTotalNum(total);
+            responseForMainProof.setTotalNum(pageInfo.getTotal());
             responseForMainProof.setRowList(taskMainProofPOList);
         } else {
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectList(wrapper);

@@ -62,10 +62,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
         if (null != requestForFile.getPageSize() && null != requestForFile.getCurrentNum()) {
             Page<FilePO> pageInfo = new Page<>(requestForFile.getCurrentNum(), requestForFile.getPageSize());
             filePOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取查询总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(filePOList);
             responseForFile.setRowList(filePOList);
-            responseForFile.setTotalNum(total);
+            responseForFile.setTotalNum(pageInfo.getTotal());
             responseForFile.setCurrentNum(requestForFile.getCurrentNum());
             responseForFile.setPageSize(requestForFile.getPageSize());
         } else {

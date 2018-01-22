@@ -77,8 +77,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         if (requestForProof.getCurrentNum() != null && requestForProof.getPageSize() != 0) {
             Page<TaskSubProofPO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
             List<TaskSubProofPO> taskSubProofPOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(taskSubProofPOList);
             //将PO集合对象转换成BO集合对象
             for (TaskSubProofPO taskSubProofPO : taskSubProofPOList) {
                 TaskSubProofBO taskSubProofBO = new TaskSubProofBO();
@@ -89,7 +88,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             }
             responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
             responseForSubProof.setPageSize(requestForProof.getPageSize());
-            responseForSubProof.setTotalNum(total);
+            responseForSubProof.setTotalNum(pageInfo.getTotal());
             responseForSubProof.setRowList(taskSubProofBOList);
         } else {
             List<TaskSubProofPO> taskSubProofPOList = baseMapper.selectList(wrapper);
@@ -161,10 +160,9 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         if (StrKit.notBlank(requestForProof.getPeriod())) {
             taskSubProofBO.setPeriod(DateTimeKit.parse(requestForProof.getPeriod(), DateTimeKit.NORM_DATE_PATTERN));
         }
-        Page<TaskSubProofBO> pageTest = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
-        List<TaskSubProofBO> taskSubProofBOList = baseMapper.querySubProofInfoByTaskType(pageTest, taskSubProofBO);
-        //条件查询总数目
-        int total = baseMapper.querySubProofTotalNumByTaskType(taskSubProofBO);
+        Page<TaskSubProofBO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
+        List<TaskSubProofBO> taskSubProofBOList = baseMapper.querySubProofInfoByTaskType(pageInfo, taskSubProofBO);
+        pageInfo.setRecords(taskSubProofBOList);
         //获取完税凭证任务状态中文名
         for(TaskSubProofBO bo: taskSubProofBOList){
             bo.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,bo.getStatus()));
@@ -172,7 +170,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         responseForSubProof.setRowList(taskSubProofBOList);
         responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
         responseForSubProof.setPageSize(requestForProof.getPageSize());
-        responseForSubProof.setTotalNum(total);
+        responseForSubProof.setTotalNum(pageInfo.getTotal());
         return responseForSubProof;
     }
 
@@ -362,8 +360,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //根据子任务ID分页查询完税凭证申报明细
         Page<TaskSubProofDetailPO> page = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
         taskSubProofDetailPOList = taskSubProofDetailMapper.queryApplyDetailsBySubIdsAndEmp(page, longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
-        //根据子任务ID查询完税凭证申报明细总数
-        int total = taskSubProofDetailMapper.queryApplyDetailsTotalNumBySubIdsAndEmp(longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
+        page.setRecords(taskSubProofDetailPOList);
         //获取证件类型中文和所得项目中文名
         for(TaskSubProofDetailPO p: taskSubProofDetailPOList){
             p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
@@ -372,7 +369,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         responseForSubProofDetail.setRowList(taskSubProofDetailPOList);
         responseForSubProofDetail.setCurrentNum(requestForProof.getCurrentNum());
         responseForSubProofDetail.setPageSize(requestForProof.getPageSize());
-        responseForSubProofDetail.setTotalNum(total);
+        responseForSubProofDetail.setTotalNum(page.getTotal());
 
         return responseForSubProofDetail;
     }
