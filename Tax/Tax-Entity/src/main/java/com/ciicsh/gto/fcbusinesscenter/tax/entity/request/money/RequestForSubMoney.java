@@ -31,7 +31,10 @@ public class RequestForSubMoney extends PageInfo {
      * 状态
      */
     private String status;
-
+    /**
+     * 页签状态类别handling,completed,retreated,failed
+     */
+    private String statusType;
     /**
      * 页签类型：currentPan,currentBeforePan,currentAfterPan
      */
@@ -109,5 +112,13 @@ public class RequestForSubMoney extends PageInfo {
 
     public void setPeriodType(String periodType) {
         this.periodType = periodType;
+    }
+
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
     }
 }

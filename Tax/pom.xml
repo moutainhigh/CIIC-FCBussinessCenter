@@ -37,6 +37,19 @@
         <seaweedFS.version>1.0.0</seaweedFS.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>user-release</id>
+            <name>user release version</name>
+            <url>http://172.16.9.14:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>user-snapshots</id>
+            <name>user snapshots version</name>
+            <url>http://172.16.9.14:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

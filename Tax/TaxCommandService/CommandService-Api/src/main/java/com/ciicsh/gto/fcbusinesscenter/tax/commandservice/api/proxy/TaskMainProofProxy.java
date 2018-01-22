@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 /**
  * @author yuantongqing on 20180116
  */
-@FeignClient(name="fcbusiness-center-command-service",url = "${tax.url}")
+@FeignClient(name="fcbusiness-center-command-service",url = "${tax.api.url}")
 @RequestMapping(value = "/tax")
 public interface TaskMainProofProxy {
     /**

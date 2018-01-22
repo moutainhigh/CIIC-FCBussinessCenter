@@ -66,6 +66,10 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
                 wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
         }
+        //任务状态
+        if(StrKit.notBlank(requestForSubMoney.getStatusType())){
+            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE,requestForSubMoney.getStatusType().toUpperCase()));
+        }
         wrapper.andNew("is_active = {0} ", true);
         wrapper.orderBy("created_time", false);
 
