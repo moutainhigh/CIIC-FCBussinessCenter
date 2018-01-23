@@ -57,7 +57,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
         }
         //判断是否包含个税期间条件
         if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {
-            wrapper.andNew("period < {0} ", requestForProof.getSubmitTimeEnd());
+            wrapper.andNew("period <= {0} ", requestForProof.getSubmitTimeEnd());
         }
         //查询已申报的
         wrapper.andNew("is_declare = {0} ", 1);
