@@ -3,34 +3,24 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubMoneyMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO">
-		<id column="id" property="id" />
-		<result column="task_main_id" property="taskMainId" />
-		<result column="task_sub_money_id" property="taskSubMoneyId" />
-		<result column="task_no" property="taskNo" />
-		<result column="payment_account" property="paymentAccount" />
-		<result column="period" property="period" />
-		<result column="tax_amount" property="taxAmount" />
-		<result column="headcount" property="headcount" />
-		<result column="chinese_num" property="chineseNum" />
-		<result column="foreigner_num" property="foreignerNum" />
-		<result column="status" property="status" />
-		<result column="is_active" property="isActive" />
-		<result column="created_time" property="createdTime" />
-		<result column="modified_time" property="modifiedTime" />
-		<result column="created_by" property="createdBy" />
-		<result column="modified_by" property="modifiedBy" />
-		<result column="manager_no" property="managerNo" />
-		<result column="manager_name" property="managerName" />
-	</resultMap>
-
-	<!--修改划款子任务任务状态-->
-	<update id="updateTaskSubMoneyStatus">
-		update tax_fc_task_sub_money set status = #{status},modified_by = #{modifiedBy}
-		WHERE is_active = 1  AND id IN
-		<foreach collection="getSubMoneyIds" item="getSubMoneyId" open="(" separator="," close=")">
-			#{getSubMoneyId}
-		</foreach>
-	</update>
-
+	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO">-->
+		<!--<id column="id" property="id" />-->
+		<!--<result column="task_main_id" property="taskMainId" />-->
+		<!--<result column="task_sub_money_id" property="taskSubMoneyId" />-->
+		<!--<result column="task_no" property="taskNo" />-->
+		<!--<result column="payment_account" property="paymentAccount" />-->
+		<!--<result column="period" property="period" />-->
+		<!--<result column="tax_amount" property="taxAmount" />-->
+		<!--<result column="headcount" property="headcount" />-->
+		<!--<result column="chinese_num" property="chineseNum" />-->
+		<!--<result column="foreigner_num" property="foreignerNum" />-->
+		<!--<result column="status" property="status" />-->
+		<!--<result column="is_active" property="isActive" />-->
+		<!--<result column="created_time" property="createdTime" />-->
+		<!--<result column="modified_time" property="modifiedTime" />-->
+		<!--<result column="created_by" property="createdBy" />-->
+		<!--<result column="modified_by" property="modifiedBy" />-->
+		<!--<result column="manager_no" property="managerNo" />-->
+		<!--<result column="manager_name" property="managerName" />-->
+	<!--</resultMap>-->
 </mapper>

@@ -40,7 +40,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         //当期后
         String currentAfterPan = "currentAfterPan";
         ResponseForSubMoney responseForSubMoney = new ResponseForSubMoney();
-        List<TaskSubMoneyPO> taskSubMoneyPOList = new ArrayList<>();
+        List<TaskSubMoneyPO> taskSubMoneyPOList;
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubMoneyPO());
         //判断是否包含主键ID条件
@@ -80,7 +80,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             pageInfo.setRecords(taskSubMoneyPOList);
             //获取完税凭证任务状态中文名
             for (TaskSubMoneyPO p : taskSubMoneyPOList) {
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, p.getStatus()));
             }
             responseForSubMoney.setRowList(taskSubMoneyPOList);
             responseForSubMoney.setTotalNum(pageInfo.getTotal());
@@ -90,7 +90,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             taskSubMoneyPOList = baseMapper.selectList(wrapper);
             //获取完税凭证任务状态中文名
             for (TaskSubMoneyPO p : taskSubMoneyPOList) {
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS, p.getStatus()));
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, p.getStatus()));
             }
             responseForSubMoney.setRowList(taskSubMoneyPOList);
         }
@@ -105,12 +105,8 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      */
     @Override
     public void completeTaskSubMoney(RequestForSubMoney requestForSubMoney) {
-        if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
-            //修改划款子任务状态为完成
-            baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
-        }
+        updateTaskSubMoneyStatus(requestForSubMoney);
     }
-
     /**
      * 批量退回划款子任务
      *
@@ -118,12 +114,30 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      */
     @Override
     public void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
-        if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
-            //修改划款子任务状态为退回
-            baseMapper.updateTaskSubMoneyStatus(requestForSubMoney.getSubMoneyIds(), requestForSubMoney.getStatus(), requestForSubMoney.getModifiedBy());
-        }
+        updateTaskSubMoneyStatus(requestForSubMoney);
     }
 
+    /**
+     * 修改划款任务状态
+     * @param requestForSubMoney
+     */
+    private void updateTaskSubMoneyStatus(RequestForSubMoney requestForSubMoney) {
+        if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
+            TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
+            //任务状态
+            taskSubMoneyPO.setStatus(requestForSubMoney.getStatus());
+            //修改人
+            taskSubMoneyPO.setModifiedBy(requestForSubMoney.getModifiedBy());
+            //修改时间
+            taskSubMoneyPO.setModifiedTime(new Date());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubMoneyPO());
+            wrapper.andNew("is_active = {0}",true);
+            wrapper.in("id",requestForSubMoney.getSubMoneyIds());
+            //修改划款子任务状态
+            baseMapper.update(taskSubMoneyPO,wrapper);
+        }
+    }
     /**
      * 根据划款子任务ID查询划款子任务信息
      *
@@ -133,7 +147,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
     @Override
     public TaskSubMoneyPO querySubMoneyById(long subMoneyId) {
         TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(subMoneyId);
-        taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, taskSubMoneyPO.getStatus()));
+        taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubMoneyPO.getStatus()));
         return taskSubMoneyPO;
     }
 }

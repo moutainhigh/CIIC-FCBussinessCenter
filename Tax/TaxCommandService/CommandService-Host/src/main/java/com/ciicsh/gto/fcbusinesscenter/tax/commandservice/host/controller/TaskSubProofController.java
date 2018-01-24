@@ -50,7 +50,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             for (TaskSubProofPO taskSubProofPO : taskSubProofPOLists) {
                 TaskSubProofDTO taskSubProofDTO = new TaskSubProofDTO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofDTO);
-                taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS, taskSubProofDTO.getStatus()));
+                taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofDTO.getStatus()));
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
             jr.setErrorcode("0");
@@ -147,6 +147,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
             taskSubProofService.combineTaskProofByRes(requestForProof);
@@ -173,6 +174,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
             taskSubProofService.splitTaskProofByRes(requestForProof);
@@ -199,6 +201,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
             //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
@@ -227,6 +230,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
             //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
@@ -255,6 +259,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
             //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效

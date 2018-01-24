@@ -64,10 +64,11 @@ public class TaskSubMoneyController extends BaseController {
         try {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
+            // TODO 临时设置修改人
             //设置修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
-            //缴纳/划款:21:已提交/处理中，22:被退回，23:已完成，24:已失效
-            requestForSubMoney.setStatus("23");
+            //任务状态
+            requestForSubMoney.setStatus("03");
             taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -92,10 +93,11 @@ public class TaskSubMoneyController extends BaseController {
         try {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
+            // TODO 临时设置修改人
             //修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
-            //缴纳/划款:21:已提交/处理中，22:被退回，23:已完成，24:已失效
-            requestForSubMoney.setStatus("22");
+            //任务状态
+            requestForSubMoney.setStatus("02");
             taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
             jr.setErrorcode("0");
             jr.setErrormsg("success");

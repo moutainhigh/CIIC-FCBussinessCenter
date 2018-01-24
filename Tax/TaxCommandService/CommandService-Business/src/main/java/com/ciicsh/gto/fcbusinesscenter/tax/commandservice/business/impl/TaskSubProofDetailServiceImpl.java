@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainProofMapper;
@@ -79,12 +80,17 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
         //完税凭证子任务类型
         String subType = "sub";
         if (mainType.equals(requestForSubDetail.getDetailType())) {
-            if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
-                //根据主键ID将完税凭证申请明细修改为失效状态
-                baseMapper.invalidSubProofDetailByIds(requestForSubDetail.getOldDeleteIds());
-            }
+            //修改申报明细为不可用状态
+            updateTaskSubProofDetailActive(requestForSubDetail);
+            //查询完税凭证子任务条件
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubProofPO());
+            //主任务ID
+            wrapper.andNew("task_main_proof_id = {0} ", requestForSubDetail.getTaskId());
+            //任务为可用状态
+            wrapper.andNew("is_active = {0} ", true);
             //根据主任务ID查询其下所有子任务
-            List<TaskSubProofPO> subList = taskSubProofMapper.selectSubTaskMapByMainId(requestForSubDetail.getTaskId());
+            List<TaskSubProofPO> subList = taskSubProofMapper.selectList(wrapper);
             //用于存申报账户
             Map<String, Long> subMap = new HashMap<>(16);
             for (TaskSubProofPO taskSubProofPO : subList) {
@@ -98,27 +104,41 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     if (subMap == null || !subMap.containsKey(taskSubProofDetailBO.getDeclareAccount())) {
                         TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
                         String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+                        //设置主任务ID
                         taskSubProofPO.setTaskMainProofId(requestForSubDetail.getTaskId());
+                        //设置申报账户
                         taskSubProofPO.setDeclareAccount(taskSubProofDetailBO.getDeclareAccount());
+                        // TODO 临时设置子任务编号
+                        //设置子任务编号
                         taskSubProofPO.setTaskNo("TAX" + dateTimeStr);
+                        //设置任务为草稿状态
                         taskSubProofPO.setStatus("00");
+                        // TODO 临时设置创建人
+                        //设置创建人
                         taskSubProofPO.setCreatedBy("adminMain");
+                        // TODO 临时设置修改人
+                        //设置修改人
                         taskSubProofPO.setModifiedBy("adminMain");
+                        //设置任务类型为手动
                         taskSubProofPO.setTaskType("02");
-                        taskSubProofMapper.addTaskSubProof(taskSubProofPO);
+                        //新增完税凭证子任务
+                        taskSubProofMapper.insert(taskSubProofPO);
                         subMap.put(taskSubProofDetailBO.getDeclareAccount(), taskSubProofPO.getId());
                     }
                     //设置申报明细
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO.getId())) {
+                        // TODO 临时设置修改人
                         //修改人
                         taskSubProofDetailPO.setModifiedBy("adminMain");
                         taskSubProofDetailPO.setModifiedTime(new Date());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(subMap.get(taskSubProofDetailBO.getDeclareAccount()));
+                        // TODO 临时设置创建人
                         //创建人
                         taskSubProofDetailPO.setCreatedBy("adminMain");
+                        // TODO 临时设置修改人
                         //修改人
                         taskSubProofDetailPO.setModifiedBy("adminMain");
                     }
@@ -135,10 +155,8 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             //统计总任务人数
             taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId());
         } else if (subType.equals(requestForSubDetail.getDetailType())) {
-            if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
-                //根据主键ID将完税凭证申请明细修改为失效状态
-                baseMapper.invalidSubProofDetailByIds(requestForSubDetail.getOldDeleteIds());
-            }
+            //修改申报明细为不可用状态
+            updateTaskSubProofDetailActive(requestForSubDetail);
             if (requestForSubDetail.getTaskSubProofDetailBOList() != null) {
                 List<TaskSubProofDetailPO> taskSubProofDetailPOList = new ArrayList<>();
                 List<TaskSubProofDetailBO> taskSubProofDetailBOList = requestForSubDetail.getTaskSubProofDetailBOList();
@@ -146,13 +164,16 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO)) {
+                        // TODO 临时设置修改人
                         //修改人
                         taskSubProofDetailPO.setModifiedBy("adminMain");
                         taskSubProofDetailPO.setModifiedTime(new Date());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(requestForSubDetail.getTaskId());
+                        // TODO 临时设置修改人
                         //修改人
                         taskSubProofDetailPO.setCreatedBy("adminMain");
+                        // TODO 临时设置创建人
                         //创建人
                         taskSubProofDetailPO.setModifiedBy("adminMain");
                     }
@@ -166,6 +187,26 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             //统计总任务人数
             TaskSubProofPO taskSubProofPO = taskSubProofMapper.selectById(requestForSubDetail.getTaskId());
             taskMainProofMapper.updateMainHeadcountById(taskSubProofPO.getTaskMainProofId());
+        }
+    }
+
+    /**
+     * 修改申报明细为不可用状态
+     * @param requestForSubDetail
+     */
+    private void updateTaskSubProofDetailActive(RequestForSubDetail requestForSubDetail) {
+        if (requestForSubDetail.getOldDeleteIds() != null && requestForSubDetail.getOldDeleteIds().length > 0) {
+            //根据主键ID将完税凭证申请明细修改为不可用
+            TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
+            //设置为不可用
+            taskSubProofDetailPO.setActive(false);
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubProofDetailPO());
+            //任务为可用状态
+            wrapper.andNew("is_active = {0} ", true);
+            //完税凭证申请明细主键 IN条件
+            wrapper.in("id",requestForSubDetail.getOldDeleteIds());
+            baseMapper.update(taskSubProofDetailPO,wrapper);
         }
     }
 }

@@ -33,7 +33,7 @@ public class TaskSubPaymentDetailServiceImpl extends ServiceImpl<TaskSubPaymentD
     @Override
     public ResponseForSubPaymentDetail querySubPaymentDetailsByParams(RequestForSubPaymentDetail requestForSubPaymentDetail) {
         ResponseForSubPaymentDetail responseForSubPaymentDetail = new ResponseForSubPaymentDetail();
-        List<TaskSubPaymentDetailPO> taskSubPaymentDetailPOList = new ArrayList<>();
+        List<TaskSubPaymentDetailPO> taskSubPaymentDetailPOList;
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubPaymentDetailPO());
         //判断是否包含主键ID条件

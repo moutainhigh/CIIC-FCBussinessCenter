@@ -14,12 +14,4 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface TaskSubMoneyMapper extends BaseMapper<TaskSubMoneyPO> {
 
-    /**
-     * 根据主键ID数组修改划款子任务状态
-     * @param getSubMoneyIds
-     * @param status
-     * @param modifiedBy
-     * @return
-     */
-    Boolean updateTaskSubMoneyStatus(@Param("getSubMoneyIds") String[] getSubMoneyIds, @Param("status") String status, @Param("modifiedBy") String modifiedBy);
 }

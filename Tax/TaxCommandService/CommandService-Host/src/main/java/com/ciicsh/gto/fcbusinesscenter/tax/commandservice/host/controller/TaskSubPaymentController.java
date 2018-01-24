@@ -65,10 +65,11 @@ public class TaskSubPaymentController extends BaseController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
+            // TODO 临时设置修改人
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
-            //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
-            requestForSubPayment.setStatus("23");
+            //任务状态:
+            requestForSubPayment.setStatus("03");
             taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -93,10 +94,11 @@ public class TaskSubPaymentController extends BaseController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
+            // TODO 临时设置修改人
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
-            //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
-            requestForSubPayment.setStatus("22");
+            //任务状态
+            requestForSubPayment.setStatus("02");
             taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");

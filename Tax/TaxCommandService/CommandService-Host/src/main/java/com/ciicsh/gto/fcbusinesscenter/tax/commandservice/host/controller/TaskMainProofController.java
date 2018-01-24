@@ -63,6 +63,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      */
     @Override
     public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        // TODO 临时设置创建人
         //设置创建人
         taskProofDTO.setCreatedBy("admin");
         JsonResult jr = new JsonResult();
@@ -75,10 +76,12 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             if (taskProofDTO.getManagerNo() != null && !"".equals(taskProofDTO.getManagerNo())) {
                 taskMainProofPO = new TaskMainProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskMainProofPO);
+                // TODO 临时设置任务编号
                 //设置任务编号
                 taskMainProofPO.setTaskNo("TAX" + dateTimeStr);
                 //设置任务状态为草稿状态
                 taskMainProofPO.setStatus("00");
+                // TODO 临时设置修改人
                 //设置修改人
                 taskMainProofPO.setModifiedBy("zhangsan");
             }
@@ -86,11 +89,13 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             if (taskProofDTO.getDeclareAccount() != null && !"".equals(taskProofDTO.getDeclareAccount())) {
                 taskSubProofPO = new TaskSubProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskSubProofPO);
+                // TODO 临时设置任务编号
                 //设置任务编号
                 taskSubProofPO.setTaskNo("TAX" + dateTimeStr);
                 //设置任务状态为草稿状态
                 taskSubProofPO.setStatus("00");
-                //设置修改
+                // TODO 临时设置修改人
+                //设置修改人
                 taskSubProofPO.setModifiedBy("zhangsan");
                 //设置任务类型
                 taskSubProofPO.setTaskType("02");
@@ -120,6 +125,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            // TODO 临时设置修改人
             //设置修改人
             requestForProof.setModifiedBy("adminMain");
             taskMainProofService.updateTaskProofByRes(requestForProof);

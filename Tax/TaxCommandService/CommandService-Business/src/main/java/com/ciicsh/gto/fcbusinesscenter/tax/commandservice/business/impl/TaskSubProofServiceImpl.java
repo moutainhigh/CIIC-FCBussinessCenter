@@ -47,10 +47,14 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
      */
     @Override
     public List<TaskSubProofPO> queryTaskSubProofByMainId(long taskMainProofId) {
+        //构造查询条件
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubProofPO());
+        //主任务ID
         wrapper.andNew(" task_main_proof_id = {0}", taskMainProofId);
+        //是否可用
         wrapper.andNew("is_active = {0} ", true);
+        //创建时间排序
         wrapper.orderBy("created_time", false);
         List<TaskSubProofPO> taskSubProofPOList = baseMapper.selectList(wrapper);
         return taskSubProofPOList;
@@ -83,7 +87,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 TaskSubProofBO taskSubProofBO = new TaskSubProofBO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
-                taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofBO.getStatus()));
+                taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
                 taskSubProofBOList.add(taskSubProofBO);
             }
             responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
@@ -96,7 +100,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 TaskSubProofBO taskSubProofBO = new TaskSubProofBO();
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
-                taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofBO.getStatus()));
+                taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
                 taskSubProofBOList.add(taskSubProofBO);
             }
             responseForSubProof.setRowList(taskSubProofBOList);
@@ -118,21 +122,39 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         TaskMainProofPO taskMainProofPO = taskMainProofMapper.selectById(taskSubProofPO.getTaskMainProofId());
         //复制新的主任务
         taskMainProofPO.setId(null);
+        // TODO 临时设置任务编号
+        //设置任务编号
         taskMainProofPO.setTaskNo("MAIN201712221314520");
+        //设置任务状态为草稿
         taskMainProofPO.setStatus("00");
+        //设置创建时间
         taskMainProofPO.setCreatedTime(new Date());
+        //设置修改时间
         taskMainProofPO.setModifiedTime(new Date());
         taskMainProofMapper.insert(taskMainProofPO);
+
         //插入新的子任务
         taskSubProofPO.setId(null);
+        //设置主任务ID
         taskSubProofPO.setTaskMainProofId(taskMainProofPO.getId());
+        // TODO 临时设置任务编号
+        //设置任务编号
         taskSubProofPO.setTaskNo("SUB201712221314520");
+        //设置任务状态为草稿
         taskSubProofPO.setStatus("00");
+        //设置创建时间
         taskSubProofPO.setCreatedTime(new Date());
+        //设置修改时间
         taskSubProofPO.setModifiedTime(new Date());
         baseMapper.insert(taskSubProofPO);
+
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubProofDetailPO());
+        wrapper.andNew("task_sub_proof_id = {0}", taskSubProofId);
+        wrapper.andNew("is_active = {0} ", true);
+        wrapper.orderBy("created_time", false);
         //根据子任务ID查询相关申报明细，并重新插入
-        List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofDetailMapper.querySubProofDetailBySubId(taskSubProofId);
+        List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofDetailMapper.selectList(wrapper);
         for (TaskSubProofDetailPO taskSubProofDetailPO : taskSubProofDetailPOList) {
             taskSubProofDetailPO.setId(null);
             taskSubProofDetailPO.setTaskSubProofId(taskSubProofPO.getId());
@@ -164,8 +186,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         List<TaskSubProofBO> taskSubProofBOList = baseMapper.querySubProofInfoByTaskType(pageInfo, taskSubProofBO);
         pageInfo.setRecords(taskSubProofBOList);
         //获取完税凭证任务状态中文名
-        for(TaskSubProofBO bo: taskSubProofBOList){
-            bo.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,bo.getStatus()));
+        for (TaskSubProofBO bo : taskSubProofBOList) {
+            bo.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, bo.getStatus()));
         }
         responseForSubProof.setRowList(taskSubProofBOList);
         responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
@@ -188,7 +210,14 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         List<Long> unCombinedIds = new ArrayList<>();
         //如果完税凭证子任务数组不为空则查询数组内ID的任务信息
         if (requestForProof.getSubProofIds() != null && !"".equals(requestForProof.getSubProofIds())) {
-            taskSubProofPOList = baseMapper.querySubTaskProofBySubIds(requestForProof.getSubProofIds());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubProofPO());
+            wrapper.andNew("task_sub_proof_id is null");
+            wrapper.andNew("is_active = {0} ", true);
+            wrapper.in("id", requestForProof.getSubProofIds());
+            wrapper.orderBy("modified_time", false);
+            wrapper.orderBy("created_time", false);
+            taskSubProofPOList = baseMapper.selectList(wrapper);
         }
         if (taskSubProofPOList.size() > 0) {
             //总人数
@@ -226,16 +255,28 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             }
             TaskSubProofPO newTaskSubProof = new TaskSubProofPO();
             String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+            // TODO 临时设置任务编号
+            //设置任务编号
             newTaskSubProof.setTaskNo("CTAX" + dateTimeStr);
+            //设置申报账户
             newTaskSubProof.setDeclareAccount(taskSubProofPOList.get(0).getDeclareAccount());
+            //设置个税期间
             newTaskSubProof.setPeriod(taskSubProofPOList.get(0).getPeriod());
+            //设置总人数
             newTaskSubProof.setHeadcount(headcount);
+            //设置中方人数
             newTaskSubProof.setChineseNum(chineseNum);
+            //设置外方人数
             newTaskSubProof.setForeignerNum(foreignerNum);
+            //设置任务状态
             newTaskSubProof.setStatus(taskSubProofPOList.get(0).getStatus());
+            //设置创建人
             newTaskSubProof.setCreatedBy(requestForProof.getModifiedBy());
+            //设置修改人
             newTaskSubProof.setModifiedBy(requestForProof.getModifiedBy());
+            //设置任务类型
             newTaskSubProof.setTaskType(taskSubProofPOList.get(0).getTaskType());
+            //设置是否为合并任务
             newTaskSubProof.setCombined(true);
             //新增完税凭证子任务
             baseMapper.insert(newTaskSubProof);
@@ -250,7 +291,22 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 baseMapper.updateSubIdsByCombinedIds(str);
             }
             //修改完税凭证子任务
-            baseMapper.updateSubTaskProofBySubIds(newTaskSubProof.getId(), unCombinedIds, requestForProof.getModifiedBy());
+            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+            //子任务ID
+            taskSubProofPO.setTaskSubProofId(newTaskSubProof.getId());
+            //修改人
+            taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
+            //修改时间
+            taskSubProofPO.setModifiedTime(new Date());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubProofPO());
+            wrapper.andNew("status = {0}", "01");
+            wrapper.andNew("is_active = {0}", true);
+            //将list转为数组
+            Long[] ids = unCombinedIds.toArray(new Long[unCombinedIds.size()]);
+            wrapper.in("id", ids);
+            baseMapper.update(taskSubProofPO, wrapper);
+
         }
     }
 
@@ -264,9 +320,13 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     public void splitTaskProofByRes(RequestForProof requestForProof) {
         if (requestForProof.getId() != null && !"".equals(requestForProof.getId())) {
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+            //主键ID
             taskSubProofPO.setId(requestForProof.getId());
+            //修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
+            //修改时间
             taskSubProofPO.setModifiedTime(new Date());
+            //是否可用
             taskSubProofPO.setActive(false);
             //将合并的任务置为失效状态
             baseMapper.updateById(taskSubProofPO);
@@ -284,10 +344,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Override
     public void completeTaskProofByRes(RequestForProof requestForProof) {
         if (requestForProof.getSubProofIds() != null && !"".equals(requestForProof.getSubProofIds())) {
-            //修改完税凭证子任务合并任务ID为空的状态为完成
-            baseMapper.updateTaskProofStatusByIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
-            //修改完税凭证子任务合并任务ID在子任务数组ID的状态为完成
-            baseMapper.updateTaskProofStatusBySubIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
+            //修改完税凭证子任务状态
+            updateTaskProofStatus(requestForProof);
         }
     }
 
@@ -299,11 +357,37 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void rejectTaskProofByRes(RequestForProof requestForProof) {
+        //修改完税凭证子任务状态
+        updateTaskProofStatus(requestForProof);
+    }
+
+    /**
+     * 修改完税凭证子任务状态
+     *
+     * @param requestForProof
+     */
+    private void updateTaskProofStatus(RequestForProof requestForProof) {
         if (requestForProof.getSubProofIds() != null && !"".equals(requestForProof.getSubProofIds())) {
+            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+            //任务状态
+            taskSubProofPO.setStatus(requestForProof.getStatus());
+            //修改人
+            taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
+            //修改时间
+            taskSubProofPO.setModifiedTime(new Date());
+
+            EntityWrapper wrapperId = new EntityWrapper();
+            wrapperId.setEntity(new TaskSubProofPO());
+            wrapperId.in("id", requestForProof.getSubProofIds());
+            wrapperId.andNew("is_active = {0}", true);
             //修改完税凭证子任务合并任务ID为空的状态为退回
-            baseMapper.updateTaskProofStatusByIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
+            baseMapper.update(taskSubProofPO, wrapperId);
+            EntityWrapper wrapperSub = new EntityWrapper();
+            wrapperSub.setEntity(new TaskSubProofPO());
+            wrapperSub.in("task_sub_proof_id", requestForProof.getSubProofIds());
+            wrapperSub.andNew("is_active = {0}", true);
             //修改完税凭证子任务合并任务ID在子任务数组ID的状态为退回
-            baseMapper.updateTaskProofStatusBySubIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
+            baseMapper.update(taskSubProofPO, wrapperSub);
         }
     }
 
@@ -315,12 +399,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void invalidTaskProofByRes(RequestForProof requestForProof) {
-            if (requestForProof.getSubProofIds() != null && !"".equals(requestForProof.getSubProofIds())) {
-                //修改完税凭证子任务合并任务ID为空的状态为失效
-                baseMapper.updateTaskProofStatusByIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
-                //修改完税凭证子任务合并任务ID在子任务数组ID的状态为失效
-                baseMapper.updateTaskProofStatusBySubIds(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
-            }
+        //修改完税凭证子任务状态
+        updateTaskProofStatus(requestForProof);
 
     }
 
@@ -333,7 +413,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Override
     public TaskSubProofBO queryApplyDetailsBySubId(long subProofId) {
         TaskSubProofBO taskSubProofBO = baseMapper.queryApplyDetailsBySubId(subProofId);
-        taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.VOUCHER_STATUS,taskSubProofBO.getStatus()));
+        taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
         return taskSubProofBO;
     }
 
@@ -357,14 +437,28 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         if (longList.size() < 1) {
             longList.add(requestForProof.getId());
         }
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubProofDetailPO());
+        Long[] ids = longList.toArray(new Long[longList.size()]);
+        //雇员编号模糊查询条件
+        if (StrKit.notBlank(requestForProof.getEmployeeNo())) {
+            wrapper.like("employee_no", requestForProof.getEmployeeNo());
+        }
+        //雇员名称模糊查询条件
+        if (StrKit.notBlank(requestForProof.getEmployeeName())) {
+            wrapper.like("employee_name", requestForProof.getEmployeeName());
+        }
+        wrapper.in("task_sub_proof_id",ids);
+        wrapper.andNew("is_active = {0}",true);
+        wrapper.orderBy("created_time",false);
         //根据子任务ID分页查询完税凭证申报明细
         Page<TaskSubProofDetailPO> page = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
-        taskSubProofDetailPOList = taskSubProofDetailMapper.queryApplyDetailsBySubIdsAndEmp(page, longList, requestForProof.getEmployeeNo(), requestForProof.getEmployeeName());
+        taskSubProofDetailPOList = taskSubProofDetailMapper.selectPage(page,wrapper);
         page.setRecords(taskSubProofDetailPOList);
         //获取证件类型中文和所得项目中文名
-        for(TaskSubProofDetailPO p: taskSubProofDetailPOList){
-            p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
-            p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+        for (TaskSubProofDetailPO p : taskSubProofDetailPOList) {
+            p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, p.getIdType()));
+            p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, p.getIncomeSubject()));
         }
         responseForSubProofDetail.setRowList(taskSubProofDetailPOList);
         responseForSubProofDetail.setCurrentNum(requestForProof.getCurrentNum());
