@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPayment;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
@@ -15,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -131,7 +131,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             //更新修改人
             taskSubPaymentPO.setModifiedBy(requestForSubPayment.getModifiedBy());
             //更新修改时间
-            taskSubPaymentPO.setModifiedTime(new Date());
+            taskSubPaymentPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubPaymentPO());
             wrapper.andNew("is_active = {0}",true);

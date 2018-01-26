@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * @author yuantongqing
  * on create 2018/1/8
@@ -123,7 +125,8 @@ public class TaskSubMoneyController extends BaseController {
             TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(subMoneyId);
             TaskSubMoneyDTO taskSubMoneyDTO = new TaskSubMoneyDTO();
             BeanUtils.copyProperties(taskSubMoneyPO, taskSubMoneyDTO);
-            taskSubMoneyDTO.setPeriod(DateTimeKit.format(taskSubMoneyPO.getPeriod(), "YYYY-MM"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
+            taskSubMoneyDTO.setPeriod(taskSubMoneyPO.getPeriod().format(formatter));
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubMoneyDTO);

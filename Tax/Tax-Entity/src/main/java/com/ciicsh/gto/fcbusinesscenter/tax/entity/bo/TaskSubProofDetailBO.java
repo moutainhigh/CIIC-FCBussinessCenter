@@ -1,7 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author yuantongqing
@@ -43,12 +44,12 @@ public class TaskSubProofDetailBO {
     /**
      * 所得期间起
      */
-    private Date incomeStart;
+    private LocalDate incomeStart;
 
     /**
      * 所得期间止
      */
-    private Date incomeEnd;
+    private LocalDate incomeEnd;
 
     /**
      * 应纳税所得额
@@ -63,7 +64,7 @@ public class TaskSubProofDetailBO {
     /**
      * 创建时间
      */
-    private Date createdTime;
+    private LocalDateTime createdTime;
 
 
     public Long getId() {
@@ -122,19 +123,19 @@ public class TaskSubProofDetailBO {
         this.incomeSubject = incomeSubject;
     }
 
-    public Date getIncomeStart() {
+    public LocalDate getIncomeStart() {
         return incomeStart;
     }
 
-    public void setIncomeStart(Date incomeStart) {
+    public void setIncomeStart(LocalDate incomeStart) {
         this.incomeStart = incomeStart;
     }
 
-    public Date getIncomeEnd() {
+    public LocalDate getIncomeEnd() {
         return incomeEnd;
     }
 
-    public void setIncomeEnd(Date incomeEnd) {
+    public void setIncomeEnd(LocalDate incomeEnd) {
         this.incomeEnd = incomeEnd;
     }
 
@@ -154,11 +155,11 @@ public class TaskSubProofDetailBO {
         this.withholdedAmount = withholdedAmount;
     }
 
-    public Date getCreatedTime() {
+    public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(Date createdTime) {
+    public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 

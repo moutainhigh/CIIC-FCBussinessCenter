@@ -18,8 +18,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -94,7 +94,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             //设置修改人
             filePO.setModifiedBy("adminDel");
             //设置修改时间
-            filePO.setModifiedTime(new Date());
+            filePO.setModifiedTime(LocalDateTime.now());
             //删除文件:即修改数据为不可用
             flag =  super.insertOrUpdate(filePO);
         }

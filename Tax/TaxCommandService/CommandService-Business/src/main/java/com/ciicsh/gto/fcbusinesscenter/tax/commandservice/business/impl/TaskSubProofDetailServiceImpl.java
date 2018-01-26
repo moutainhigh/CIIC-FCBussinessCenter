@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -132,7 +133,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         // TODO 临时设置修改人
                         //修改人
                         taskSubProofDetailPO.setModifiedBy("adminMain");
-                        taskSubProofDetailPO.setModifiedTime(new Date());
+                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(subMap.get(taskSubProofDetailBO.getDeclareAccount()));
                         // TODO 临时设置创建人
@@ -167,7 +168,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         // TODO 临时设置修改人
                         //修改人
                         taskSubProofDetailPO.setModifiedBy("adminMain");
-                        taskSubProofDetailPO.setModifiedTime(new Date());
+                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(requestForSubDetail.getTaskId());
                         // TODO 临时设置修改人

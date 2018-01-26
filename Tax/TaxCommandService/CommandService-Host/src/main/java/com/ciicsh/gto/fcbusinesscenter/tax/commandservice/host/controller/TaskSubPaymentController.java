@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * @author yuantongqing on 2018/01/02
  * 缴纳详情返回对象
@@ -125,7 +127,8 @@ public class TaskSubPaymentController extends BaseController {
             TaskSubPaymentDTO taskSubPaymentDTO = new TaskSubPaymentDTO();
             BeanUtils.copyProperties(taskSubPaymentPO, taskSubPaymentDTO);
             //个税期间
-            taskSubPaymentDTO.setPeriod(DateTimeKit.format(taskSubPaymentPO.getPeriod(), "YYYY-MM"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
+            taskSubPaymentDTO.setPeriod(taskSubPaymentPO.getPeriod().format(formatter));
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubPaymentDTO);

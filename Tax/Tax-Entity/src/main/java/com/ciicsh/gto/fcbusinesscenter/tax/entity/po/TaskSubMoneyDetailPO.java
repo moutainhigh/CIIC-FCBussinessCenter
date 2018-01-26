@@ -1,16 +1,13 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
-import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
@@ -83,7 +80,7 @@ public class TaskSubMoneyDetailPO{
     /**
      * 个税期间
      */
-	private Date period;
+	private LocalDate period;
     /**
      * 所得项目
      */
@@ -201,12 +198,12 @@ public class TaskSubMoneyDetailPO{
      * 创建时间
      */
 	@TableField("created_time")
-	private Date createdTime;
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
 	@TableField("modified_time")
-	private Date modifiedTime;
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
@@ -476,27 +473,27 @@ public class TaskSubMoneyDetailPO{
 		this.isActive = isActive;
 	}
 
-	public Date getPeriod() {
+	public LocalDate getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Date period) {
+	public void setPeriod(LocalDate period) {
 		this.period = period;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

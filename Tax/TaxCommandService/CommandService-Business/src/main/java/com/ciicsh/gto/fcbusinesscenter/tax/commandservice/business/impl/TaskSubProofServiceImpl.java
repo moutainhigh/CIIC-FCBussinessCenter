@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -128,9 +130,9 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //设置任务状态为草稿
         taskMainProofPO.setStatus("00");
         //设置创建时间
-        taskMainProofPO.setCreatedTime(new Date());
+        taskMainProofPO.setCreatedTime(LocalDateTime.now());
         //设置修改时间
-        taskMainProofPO.setModifiedTime(new Date());
+        taskMainProofPO.setModifiedTime(LocalDateTime.now());
         taskMainProofMapper.insert(taskMainProofPO);
 
         //插入新的子任务
@@ -143,9 +145,9 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //设置任务状态为草稿
         taskSubProofPO.setStatus("00");
         //设置创建时间
-        taskSubProofPO.setCreatedTime(new Date());
+        taskSubProofPO.setCreatedTime(LocalDateTime.now());
         //设置修改时间
-        taskSubProofPO.setModifiedTime(new Date());
+        taskSubProofPO.setModifiedTime(LocalDateTime.now());
         baseMapper.insert(taskSubProofPO);
 
         EntityWrapper wrapper = new EntityWrapper();
@@ -158,8 +160,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         for (TaskSubProofDetailPO taskSubProofDetailPO : taskSubProofDetailPOList) {
             taskSubProofDetailPO.setId(null);
             taskSubProofDetailPO.setTaskSubProofId(taskSubProofPO.getId());
-            taskSubProofDetailPO.setCreatedTime(new Date());
-            taskSubProofDetailPO.setModifiedTime(new Date());
+            taskSubProofDetailPO.setCreatedTime(LocalDateTime.now());
+            taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
             taskSubProofDetailMapper.insert(taskSubProofDetailPO);
         }
         //重新统计复制的完税凭证任务人数
@@ -180,7 +182,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         BeanUtils.copyProperties(requestForProof, taskSubProofBO);
         //如果有个税期间条件，将字符型的个税期间转成日期型
         if (StrKit.notBlank(requestForProof.getPeriod())) {
-            taskSubProofBO.setPeriod(DateTimeKit.parse(requestForProof.getPeriod(), DateTimeKit.NORM_DATE_PATTERN));
+            taskSubProofBO.setPeriod(LocalDate.parse(requestForProof.getPeriod()));
         }
         Page<TaskSubProofBO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
         List<TaskSubProofBO> taskSubProofBOList = baseMapper.querySubProofInfoByTaskType(pageInfo, taskSubProofBO);
@@ -212,7 +214,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         if (requestForProof.getSubProofIds() != null && !"".equals(requestForProof.getSubProofIds())) {
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofPO());
-            wrapper.andNew("task_sub_proof_id is null");
+            wrapper.isNull("task_sub_proof_id");
             wrapper.andNew("is_active = {0} ", true);
             wrapper.in("id", requestForProof.getSubProofIds());
             wrapper.orderBy("modified_time", false);
@@ -297,7 +299,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             //修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //修改时间
-            taskSubProofPO.setModifiedTime(new Date());
+            taskSubProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofPO());
             wrapper.andNew("status = {0}", "01");
@@ -325,7 +327,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             //修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //修改时间
-            taskSubProofPO.setModifiedTime(new Date());
+            taskSubProofPO.setModifiedTime(LocalDateTime.now());
             //是否可用
             taskSubProofPO.setActive(false);
             //将合并的任务置为失效状态
@@ -374,7 +376,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             //修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //修改时间
-            taskSubProofPO.setModifiedTime(new Date());
+            taskSubProofPO.setModifiedTime(LocalDateTime.now());
 
             EntityWrapper wrapperId = new EntityWrapper();
             wrapperId.setEntity(new TaskSubProofPO());

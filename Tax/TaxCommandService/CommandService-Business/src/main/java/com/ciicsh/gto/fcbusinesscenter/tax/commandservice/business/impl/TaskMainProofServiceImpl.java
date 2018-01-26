@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -48,11 +49,11 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         wrapper.like("manager_name", requestForProof.getManagerName());
         //判断是否包含起始时间条件
         if (requestForProof.getSubmitTimeStart() != null && !"".equals(requestForProof.getSubmitTimeStart())) {
-            wrapper.andNew("created_time >= {0}", requestForProof.getSubmitTimeStart());
+            wrapper.andNew("created_time >= {0}", requestForProof.getSubmitTimeStart() + "00:00:00");
         }
         //判断是否包含结束时间条件
         if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {
-            wrapper.andNew("created_time <= {0} ", requestForProof.getSubmitTimeEnd());
+            wrapper.andNew("created_time <= {0} ", requestForProof.getSubmitTimeEnd() + " 23:59:59");
         }
         wrapper.andNew("is_active = {0} ", true);
         wrapper.orderBy("created_time", false);
@@ -119,7 +120,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             //设置修改人
             taskMainProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
-            taskMainProofPO.setModifiedTime(new Date());
+            taskMainProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
             //任务为操作状态
@@ -137,7 +138,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             //设置修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
-            taskSubProofPO.setModifiedTime(new Date());
+            taskSubProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
             //任务为操作状态
@@ -156,7 +157,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 //设置修改人
                 taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
                 //设置修改时间
-                taskSubProofPO.setModifiedTime(new Date());
+                taskSubProofPO.setModifiedTime(LocalDateTime.now());
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
                 //任务为操作状态
@@ -188,7 +189,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             //设置修改人
             taskMainProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
-            taskMainProofPO.setModifiedTime(new Date());
+            taskMainProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
             //任务为操作状态
@@ -207,7 +208,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             //设置修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
-            taskSubProofPO.setModifiedTime(new Date());
+            taskSubProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
             //任务为操作状态
@@ -227,7 +228,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 //设置修改人
                 taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
                 //设置修改时间
-                taskSubProofPO.setModifiedTime(new Date());
+                taskSubProofPO.setModifiedTime(LocalDateTime.now());
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
                 //任务为操作状态

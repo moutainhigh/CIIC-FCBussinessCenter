@@ -14,7 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -129,7 +129,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             //修改人
             taskSubMoneyPO.setModifiedBy(requestForSubMoney.getModifiedBy());
             //修改时间
-            taskSubMoneyPO.setModifiedTime(new Date());
+            taskSubMoneyPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubMoneyPO());
             wrapper.andNew("is_active = {0}",true);
