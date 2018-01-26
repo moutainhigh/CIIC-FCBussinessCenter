@@ -26,7 +26,7 @@ public class PrCustSubBatchPO {
     /*是否垫付*/
     private Boolean hasAdvance;
 
-    /*批次类型 1表示调整，2表示回溯*/
+    /*批次类型 2表示调整，3表示回溯*/
     private int batchType;
 
     /*状态*/

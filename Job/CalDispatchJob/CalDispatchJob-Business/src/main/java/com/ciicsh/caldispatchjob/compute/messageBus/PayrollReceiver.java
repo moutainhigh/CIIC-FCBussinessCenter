@@ -51,7 +51,7 @@ public class PayrollReceiver {
     public void receive(ComputeMsg computeMsg){
         logger.info("received payroll compute from message: " + computeMsg);
 
-        processPayrollCompute(computeMsg.getBatchCode());
+        processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
     }
 
     /**
@@ -94,9 +94,9 @@ public class PayrollReceiver {
      * 接收薪资计算消息
      * @param batchCode
      */
-    private void processPayrollCompute(String batchCode){
+    private void processPayrollCompute(String batchCode,int batchType){
         try {
-            computeService.processCompute(batchCode);
+            computeService.processCompute(batchCode,batchType);
         }
         catch (Exception ex){
             logger.error(ex.getMessage());

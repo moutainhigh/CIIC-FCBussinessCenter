@@ -37,12 +37,8 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
      */
 	@TableField("adjust_batch_code")
 	private String adjustBatchCode;
-    /**
-     * 所属管理方ID
-     */
-	@TableField("management_id")
-	private String managementId;
-    /**
+
+	/**
      * 是否计划批次
      */
 	@TableField("is_scheduled")
@@ -130,14 +126,6 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 
 	public void setAdjustBatchCode(String adjustBatchCode) {
 		this.adjustBatchCode = adjustBatchCode;
-	}
-
-	public String getManagementId() {
-		return managementId;
-	}
-
-	public void setManagementId(String managementId) {
-		this.managementId = managementId;
 	}
 
 	public Boolean getScheduled() {
@@ -247,7 +235,6 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 			"id=" + id +
 			", originBatchCode=" + originBatchCode +
 			", adjustBatchCode=" + adjustBatchCode +
-			", managementId=" + managementId +
 			", isScheduled=" + isScheduled +
 			", scheduleSetting=" + scheduleSetting +
 			", remark=" + remark +

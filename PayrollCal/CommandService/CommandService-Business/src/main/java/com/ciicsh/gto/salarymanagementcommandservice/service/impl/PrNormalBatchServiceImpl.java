@@ -2,8 +2,11 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.CompExcelImportEmum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
@@ -15,6 +18,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ExecutionContext;
@@ -48,6 +52,13 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Autowired
     private NormalBatchMongoOpt normalBatchMongoOpt;
+
+    @Autowired
+    private AdjustBatchMongoOpt adjustBatchMongoOpt;
+
+    @Autowired
+    private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
+
 
     @Override
     public int insert(PrNormalBatchPO normalBatchPO) {
@@ -91,22 +102,32 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
-    public int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int importType, MultipartFile file) {
+    public int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file) {
 
-        //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
-        List<DBObject> batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+        List<DBObject> batchList = null;
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
+            batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            batchList = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+        }else {
+            batchList = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+
+        }
 
         //如果当前批次相关的雇员组里面有雇员，并且该导入属于覆盖导入，则不能进行覆盖导入
         if(batchList.size() > 1 && importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue()) {
             return -1;
         }
 
-        List<List<BasicDBObject>> payItems = new ArrayList<>();
+        List<List<BasicDBObject>> payItems = new ArrayList<>(); //多个雇员薪资项
 
         String pr_group_code = "";
 
         for (DBObject batchItem: batchList) {
-            pr_group_code = (String) batchItem.get("pr_group_code");
+            if(StringUtils.isEmpty(pr_group_code)){
+                pr_group_code = (String) batchItem.get("pr_group_code");
+            }
             DBObject catalog = (DBObject)batchItem.get("catalog");
             List<BasicDBObject> items = (List<BasicDBObject>)catalog.get("pay_items");
             payItems.add(items);
@@ -143,7 +164,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                     dbObject = new BasicDBObject();
                     row.remove(0); // 删除row 的第一列为雇员编码
                     dbObject.put("pay_items", row);
-                    dbObject.put("emp_info",getEmpBaseInfos(row));
+                    dbObject.put("emp_info",getEmpBaseInfo(row));
 
                     opt.setUpdate(Update.update("catalog", dbObject));
                     opt.setMulti(true);
@@ -152,7 +173,15 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                 }
             } while (row != null);
 
-            return normalBatchMongoOpt.doBathUpdate(options,true);
+            if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+                //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
+                return normalBatchMongoOpt.doBathUpdate(options,true);
+            }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+                return adjustBatchMongoOpt.doBathUpdate(options,true);
+            }else {
+                return backTraceBatchMongoOpt.doBathUpdate(options,true);
+            }
+
         }catch (Exception ex){
             logger.error(ex.getMessage());
         }
@@ -161,33 +190,12 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     public int updateBatchStatus(String batchCode, int status,String modifiedBy) {
-        PrNormalBatchPO param = new PrNormalBatchPO();
-        param.setCode(batchCode);
-        PrNormalBatchPO batchPO = normalBatchMapper.selectOne(param);
-        /*if(batchPO.getStatus() == BatchStatusEnum.NEW.getValue()){
-            if(status == BatchStatusEnum.PENDING.getValue() || status == BatchStatusEnum.COMPUTING.getValue()){
-                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
-            }
-        }else if(batchPO.getStatus() == BatchStatusEnum.PENDING.getValue()){
-            if(status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.REJECT.getValue()){
-                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
-            }
-        }else if(batchPO.getStatus() == BatchStatusEnum.CLOSED.getValue()){
-            if(status == BatchStatusEnum.ISSUED.getValue()){
-                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
-            }
-        }else if(batchPO.getStatus() == BatchStatusEnum.ISSUED.getValue()){
-            if(status == BatchStatusEnum.TAX_DECLARED.getValue()){
-                return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
-            }
-        }*/
-
         return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
     }
 
     @Override
-    public int auditBatch(String batchCode, String comments, int status, String modifiedBy) {
-        return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy);
+    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+        return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
     }
 
     @Override
@@ -200,6 +208,32 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return normalBatchMapper.updateHasMoneny(batchCode,hasMoney,modifiedBy);
     }
 
+    private BasicDBObject getEmpBaseInfo(List<BasicDBObject> prItems){
+        BasicDBObject empBaseInfo = new BasicDBObject();
+        empBaseInfo.put("is_active",true);
+        prItems.stream().forEach(item ->{
+            if(item.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_NAME_CN,item.get("item_value"));
+            }else if(item.get("item_name").equals(PayItemName.EMPLOYEE_BIRTHDAY_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,item.get("item_value"));
+            }else if(item.get("item_name").equals(PayItemName.EMPLOYEE_DEP_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_DEP_CN,item.get("item_value"));
+            }else if(item.get("item_name").equals(PayItemName.EMPLOYEE_ID_NUM_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.get("item_value"));
+            }else if(item.get("item_name").equals(PayItemName.EMPLOYEE_ID_TYPE_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.get("item_value"));
+            }else if(item.get("item_name").equals(PayItemName.EMPLOYEE_ONBOARD_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_ONBOARD_CN,item.get("item_value"));
+            }else if(item.get("item_name").equals(PayItemName.EMPLOYEE_POSITION_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_POSITION_CN,item.get("item_value"));
+            }else if(item.get("item_name").equals(PayItemName.EMPLOYEE_SEX_CN)){
+                empBaseInfo.put(PayItemName.EMPLOYEE_SEX_CN,item.get("item_value"));
+            }
+        });
+        return empBaseInfo;
+    }
+
+    /*
     private BasicDBObject getEmpBaseInfos(List<BasicDBObject> prItems){
         BasicDBObject empBaseInfo = new BasicDBObject();
         empBaseInfo.put("is_active",true);
@@ -221,6 +255,6 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         }
         return null;
 
-    }
+    }*/
 
 }

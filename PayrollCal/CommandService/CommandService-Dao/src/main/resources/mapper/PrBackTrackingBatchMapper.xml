@@ -23,5 +23,14 @@
 		WHERE back_tracking_batch_code = #{code}
 	</update>
 
+	<update id="updateBatchStatus">
+		UPDATE
+		pr_back_tracking_batch
+		SET
+		status = #{status},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE back_tracking_batch_code = #{code}
+	</update>
 
 </mapper>

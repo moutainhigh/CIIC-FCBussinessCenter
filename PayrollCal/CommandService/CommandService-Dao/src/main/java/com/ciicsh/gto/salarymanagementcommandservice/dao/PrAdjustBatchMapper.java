@@ -23,4 +23,7 @@ public interface PrAdjustBatchMapper extends BaseMapper<PrAdjustBatchPO> {
     int updateHasMoneny(@Param("code") String batchCode,
                         @Param("hasMoney") boolean hasMoney,
                         @Param("modifiedBy") String modifiedBy);
+
+    int updateBatchStatus(@Param("code") String batchCode, @Param("status") int status, @Param("modifiedBy") String modifiedBy);
+
 }

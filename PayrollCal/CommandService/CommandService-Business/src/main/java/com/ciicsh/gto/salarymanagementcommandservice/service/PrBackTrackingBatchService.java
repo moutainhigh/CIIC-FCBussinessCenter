@@ -1,5 +1,11 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
+import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
+import com.mongodb.DBObject;
+
+import java.util.List;
+
 /**
  * Created by bill on 18/1/13.
  */
@@ -22,4 +28,15 @@ public interface PrBackTrackingBatchService {
      * @return
      */
     int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy);
+
+    int insert(PrBackTrackingBatchPO prBackTrackingBatchPO);
+
+    List<DBObject> getBackTrackingBatch(String batchCode, String originCode);
+    /**
+     * 更新批次状态
+     * @param batchCode
+     * @param status
+     * @return
+     */
+    int updateBatchStatus(String batchCode, int status, String modifiedBy);
 }

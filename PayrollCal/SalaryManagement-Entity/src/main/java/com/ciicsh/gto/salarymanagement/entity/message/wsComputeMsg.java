@@ -7,11 +7,21 @@ public class wsComputeMsg {
 
     private String batchCode;
 
+    private int batchType;
+
     public String getBatchCode() {
         return batchCode;
     }
 
     public void setBatchCode(String batchCode) {
         this.batchCode = batchCode;
+    }
+
+    public int getBatchType() {
+        return batchType;
+    }
+
+    public void setBatchType(int batchType) {
+        this.batchType = batchType;
     }
 }

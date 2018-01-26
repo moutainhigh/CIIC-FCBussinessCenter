@@ -1,6 +1,9 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
-import org.springframework.stereotype.Component;
+import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
+import com.mongodb.DBObject;
+
+import java.util.List;
 
 /**
  * Created by bill on 18/1/13.
@@ -24,5 +27,17 @@ public interface PrAdjustBatchService {
      * @return
      */
     int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy);
+
+    int insert(PrAdjustBatchPO adjustBatchPO);
+
+    List<DBObject> getAdjustBatch(String batchCode, String originCode);
+
+    /**
+     * 更新批次状态
+     * @param batchCode
+     * @param status
+     * @return
+     */
+    int updateBatchStatus(String batchCode, int status, String modifiedBy);
 
 }

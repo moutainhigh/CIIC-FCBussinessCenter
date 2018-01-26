@@ -8,11 +8,16 @@ import com.ciicsh.caldispatchjob.entity.DroolsContext;
 import com.ciicsh.caldispatchjob.entity.EmpPayItem;
 import com.ciicsh.caldispatchjob.entity.FuncEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrAdjustBatchMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrBackTrackingBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.NullArgumentException;
@@ -60,20 +65,46 @@ public class ComputeServiceImpl {
     private NormalBatchMongoOpt normalBatchMongoOpt;
 
     @Autowired
+    private AdjustBatchMongoOpt adjustBatchMongoOpt;
+
+    @Autowired
+    private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
+
+    @Autowired
     private PrNormalBatchMapper normalBatchMapper;
+
+    @Autowired
+    private PrAdjustBatchMapper adjustBatchMapper;
+
+
+    @Autowired
+    private PrBackTrackingBatchMapper backTrackingBatchMapper;
+
 
     @Autowired
     private KafkaSender sender;
 
-    public void processCompute(String batchCode) throws Exception{
+    public void processCompute(String batchCode,int batchType) throws Exception{
 
         DroolsContext context = new DroolsContext();
 
-        //根据batch code获取可用于计算的雇员列表
-        List<DBObject> batchList = normalBatchMongoOpt.list(
-                Criteria.where("batch_code").is(batchCode)
-                        .and("catalog.emp_info.is_active").is(true)
-        );
+        List<DBObject> batchList = null;
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            batchList = normalBatchMongoOpt.list(
+                    Criteria.where("batch_code").is(batchCode)
+                            .and("catalog.emp_info.is_active").is(true)
+            );
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            batchList = adjustBatchMongoOpt.list(
+                    Criteria.where("batch_code").is(batchCode)
+                            .and("catalog.emp_info.is_active").is(true)
+            );
+        }else {
+            batchList = backTraceBatchMongoOpt.list(
+                    Criteria.where("batch_code").is(batchCode)
+                            .and("catalog.emp_info.is_active").is(true)
+            );
+        }
 
         batchList.stream().forEach(dbObject -> {
             DBObject calalog = (DBObject)dbObject.get("catalog");
@@ -128,17 +159,40 @@ public class ComputeServiceImpl {
                 }
             });
 
-            int affectedCount = normalBatchMongoOpt.batchUpdate(
-                    Criteria.where("batch_code").is(batchCode)
-                    .and("catalog.emp_info.is_active").is(true)
-                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
-                    "catalog.pay_items",items);
-            logger.info("update mongodb affected rows: " + String.valueOf(affectedCount));
+            if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+                normalBatchMongoOpt.batchUpdate(
+                        Criteria.where("batch_code").is(batchCode)
+                                .and("catalog.emp_info.is_active").is(true)
+                                .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                        "catalog.pay_items",items);
+
+            }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+                adjustBatchMongoOpt.batchUpdate(
+                        Criteria.where("batch_code").is(batchCode)
+                                .and("catalog.emp_info.is_active").is(true)
+                                .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                        "catalog.pay_items",items);
+
+
+            }else {
+                backTraceBatchMongoOpt.batchUpdate(
+                        Criteria.where("batch_code").is(batchCode)
+                                .and("catalog.emp_info.is_active").is(true)
+                                .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                        "catalog.pay_items",items);
+            }
 
         });
 
-        //Thread.sleep(10*1000);
-        int rowAffected = normalBatchMapper.updateBatchStatus(batchCode,BatchStatusEnum.COMPUTED.getValue(),"system");
+        int rowAffected = 0;
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            rowAffected = normalBatchMapper.updateBatchStatus(batchCode, BatchStatusEnum.COMPUTED.getValue(), "system");
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            rowAffected = adjustBatchMapper.updateBatchStatus(batchCode, BatchStatusEnum.COMPUTED.getValue(), "system");
+
+        }else {
+            rowAffected = backTrackingBatchMapper.updateBatchStatus(batchCode, BatchStatusEnum.COMPUTED.getValue(), "system");
+        }
         if(rowAffected > 0) { // 数据库更新成功后发送消息
             ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
