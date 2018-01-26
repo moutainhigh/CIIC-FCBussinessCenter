@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.wsComputeMsg;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
@@ -25,10 +26,12 @@ public class ComputeController { //websocket long connection
     @MessageMapping("/getComputeStatus")
     public void getComputeStatus(wsComputeMsg computeMsg) throws Exception {
         String batchCode = computeMsg.getBatchCode();
+        int batchType = computeMsg.getBatchType();
         System.out.println("get code " + computeMsg.getBatchCode());
         //String dest = "/compute/status/" + computeMsg.getBatchCode();
         ComputeMsg msg = new ComputeMsg();
         msg.setBatchCode(batchCode);
+        msg.setBatchType(batchType);
         sender.SendComputeAction(msg); // send message to kafka
         /*for(int i=0; i<1000; i++ ) {
             Thread.sleep(1*1000);

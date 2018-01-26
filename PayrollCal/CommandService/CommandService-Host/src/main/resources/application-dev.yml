@@ -23,7 +23,7 @@ spring:
           replicationFactor: 2
       bindings:
         payroll-output-channel:
-          destination: fc_payroll_batch # topic name
+          destination: fc_payroll_normal-batch # topic name
           content-type: application/json
           producer:
             partitionCount: 2

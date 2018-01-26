@@ -30,6 +30,7 @@ public class KafkaReceiver {
 
     @StreamListener(PayrollSink.COMPUTE_INPUT)
     public void receiveComputeStatus(ComputeMsg message){
+        logger.info("received message: " + message.toString());
         String batchCode = message.getBatchCode();
         int status = message.getComputeStatus();
         String dest = "/compute/status/" + batchCode; // 浏览器订阅的topic

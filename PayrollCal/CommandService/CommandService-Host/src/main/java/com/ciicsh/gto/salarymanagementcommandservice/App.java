@@ -11,7 +11,6 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
  */
 @SpringBootApplication(scanBasePackages =
         {"com.ciicsh.gt1",
-          "com.ciichsh.gt1.drools.config",
         "com.ciicsh.gto.fcbusinesscenter.util",
                 "com.ciicsh.gto.salarymanagementcommandservice"})
 @EnableDiscoveryClient

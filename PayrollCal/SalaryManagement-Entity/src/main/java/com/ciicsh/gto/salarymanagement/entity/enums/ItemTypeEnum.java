@@ -18,7 +18,13 @@ public enum ItemTypeEnum implements IValuedEnum {
     /**
      * 计算项
      */
-    CALC(3, "计算项");
+    CALC(3, "计算项"),
+
+    /**
+     * 系统项
+     */
+    SYS(4, "系统项");
+
 
     private int value;
 
