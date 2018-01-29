@@ -2,12 +2,14 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeService;
@@ -44,6 +46,12 @@ public class AjustBatchController {
 
     @Autowired
     private AdjustBatchMongoOpt adjustBatchMongoOpt;
+
+    @Autowired
+    private NormalBatchMongoOpt normalBatchMongoOpt;
+
+    @Autowired
+    private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
 
     @Autowired
     private PrAccountSetService accountSetService;
@@ -135,5 +143,35 @@ public class AjustBatchController {
         //adjustBatchService.insert();
 
         return JsonResult.success(result);
+    }
+
+    @PostMapping("/updateBatchValue")
+    public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String empCode,
+                                       @RequestParam String payItemName, @RequestParam String payItemVal){
+
+        int rowAffected = 0;
+        if(batchType == BatchTypeEnum.NORMAL.getValue()){
+            rowAffected = normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                            .andOperator(
+                                    Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                                    Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
+                            ),"item_value",payItemVal);
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
+
+            rowAffected = adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                    .andOperator(
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
+                    ),"item_value",payItemVal);
+
+        }else {
+            rowAffected = backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                    .andOperator(
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
+                    ),"item_value",payItemVal);
+
+        }
+        return JsonResult.success(rowAffected);
     }
 }
