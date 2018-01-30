@@ -41,7 +41,7 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
         int limit = 20;
         int offset = 0;
 
-        int currentPage = (int) params.get("currentPage");
+        int currentPage = params.get("currentPage") == null ? 1 : (int) params.get("currentPage");
 
         if (currentPage > 1) {
             offset = (currentPage - 1) * limit;

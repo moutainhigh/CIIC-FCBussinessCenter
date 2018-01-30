@@ -14,7 +14,7 @@ import java.util.Date;
  * 工资单模板
  *
  * @author taka
- * @since 2018-01-29
+ * @since 2018-01-30
  */
 @TableName("prs_payroll_template")
 public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
@@ -62,6 +62,12 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
    */
   @TableField("account_name")
   private String accountName;
+
+  /**
+   * 薪资项json
+   */
+  @TableField("account_items")
+  private String accountItems;
 
   /**
    * 模板类型：0：通用 1：纸质 2：邮件 3：网上查看
@@ -205,6 +211,14 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
     this.accountName = accountName;
   }
 
+  public String getAccountitems() {
+    return accountItems;
+  }
+
+  public void setAccountitems(String accountItems) {
+    this.accountItems = accountItems;
+  }
+
   public Integer getTemplatetype() {
     return templateType;
   }
@@ -334,6 +348,7 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
             ", managementName=" + managementName +
             ", accountCode=" + accountCode +
             ", accountName=" + accountName +
+            ", accountItems=" + accountItems +
             ", templateType=" + templateType +
             ", templateFileName=" + templateFileName +
             ", templateFileUrl=" + templateFileUrl +

@@ -1,8 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.controller;
 
 import com.ciicsh.gt1.FileHandler;
-import com.ciicsh.gto.fcbusinesscenter.util.result.JsonResult;
-
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

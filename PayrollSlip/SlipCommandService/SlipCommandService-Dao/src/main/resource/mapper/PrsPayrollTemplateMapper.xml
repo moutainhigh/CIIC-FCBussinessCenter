@@ -10,6 +10,7 @@
     <result column="management_name" property="managementName" />
     <result column="account_code" property="accountCode" />
     <result column="account_name" property="accountName" />
+    <result column="account_items" property="accountItems" />
     <result column="template_type" property="templateType" />
     <result column="template_file_name" property="templateFileName" />
     <result column="template_file_url" property="templateFileUrl" />
@@ -65,8 +66,8 @@
   </select>
 
   <insert id="insert" parameterType="map">
-    INSERT INTO prs_payroll_template(template_code, template_name, management_id, management_name, account_code, account_name, template_type, template_file_name, template_file_url, effective_time, invalid_time, if_encrypt, status, comments, remark, is_active, created_time, modified_time, created_by)
-    VALUES (#{templateCode}, #{templateName}, #{managementId}, #{managementName}, #{accountCode}, #{accountName}, #{templateType}, #{templateFileName}, #{templateFileUrl}, #{effectiveTime}, #{invalidTime}, #{ifEncrypt}, #{status}, #{comments}, #{remark}, #{isActive}, #{createdTime}, #{modifiedTime}, #{createdBy})
+    INSERT INTO prs_payroll_template(template_code, template_name, management_id, management_name, account_code, account_name, account_items, template_type, template_file_name, template_file_url, effective_time, invalid_time, if_encrypt, status, comments, remark, is_active, created_time, modified_time, created_by)
+    VALUES (#{templateCode}, #{templateName}, #{managementId}, #{managementName}, #{accountCode}, #{accountName}, #{accountItems}, #{templateType}, #{templateFileName}, #{templateFileUrl}, #{effectiveTime}, #{invalidTime}, #{ifEncrypt}, #{status}, #{comments}, #{remark}, #{isActive}, #{createdTime}, #{modifiedTime}, #{createdBy})
   </insert>
 
   <update id="update" parameterType="map">
@@ -90,6 +91,9 @@
       </if>
       <if test="accountName != null and accountName != ''">
         account_name = #{accountName},
+      </if>
+      <if test="accountItems != null and accountItems != ''">
+        account_items = #{accountItems},
       </if>
       <if test="templateType != null and templateType != ''">
         template_type = #{templateType},
