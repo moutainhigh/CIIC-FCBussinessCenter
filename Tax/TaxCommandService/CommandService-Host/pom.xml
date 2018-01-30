@@ -72,6 +72,9 @@
 
                 <configuration>
                     <encoding>${file.encoding}</encoding>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>xls</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
 
