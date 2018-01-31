@@ -3,24 +3,26 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofProxy;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
 
     @Autowired
     private TaskSubProofService taskSubProofService;
+
+    @Autowired
+    private ExportFileService exportFileService;
 
     /**
      * 根据主任务ID查询子任务
@@ -322,5 +327,71 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         }
         return jr;
     }
+
+    /**
+     * 根据任务ID,导出完税凭证申请单
+     *
+     * @param subProofId
+     */
+    @RequestMapping(value = "/exportSubTaskProof/{subProofId}", method = RequestMethod.GET)
+    public void exportSubTaskProof(@PathVariable(value = "subProofId") Long subProofId, HttpServletResponse response) {
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+        try {
+            //根据完税凭证子任务查询任务信息
+            TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
+            //根据完税凭证子任务ID查询完税凭证详情
+            List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofService.querySubProofDetailList(subProofId);
+            //文件名称
+            String fileName = "";
+            // TODO 测试代码："蓝天科技上海独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技无锡独立户"=>"完税凭证_浦东"
+            //根据申报账户选择模板
+            if ("蓝天科技上海独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_三分局.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                wb = exportFileService.exportAboutSFJ(wb, taskSubProofDetailPOList);
+            } else if ("中智上海财务咨询公司大库".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_徐汇.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                wb = exportFileService.exportAboutXH(wb, taskSubProofDetailPOList);
+            } else if ("蓝天科技无锡独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_浦东.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                wb = exportFileService.exportAboutPD(wb, taskSubProofDetailPOList);
+            }
+            //导出新的excel
+            exportNewExcel(response, wb, fileName);
+        } catch (Exception e) {
+            logger.error("exportSubTaskProof error " + e.toString());
+        } finally {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception e) {
+                    logger.error("exportSubTaskProof wb close error" + e.toString());
+                }
+            }
+            if (fs != null) {
+                try {
+                    fs.close();
+                } catch (Exception e) {
+                    logger.error("exportSubTaskProof fs close error" + e.toString());
+                }
+            }
+        }
+    }
+
 
 }
