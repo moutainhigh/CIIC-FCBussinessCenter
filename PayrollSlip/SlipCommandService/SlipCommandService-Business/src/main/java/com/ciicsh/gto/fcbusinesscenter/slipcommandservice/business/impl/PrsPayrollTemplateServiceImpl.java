@@ -43,6 +43,10 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
 
         int currentPage = params.get("currentPage") == null ? 1 : (int) params.get("currentPage");
 
+        if (params.get("pageSize") != null) {
+            limit =  (int) params.get("pageSize");
+        }
+
         if (currentPage > 1) {
             offset = (currentPage - 1) * limit;
         }
@@ -51,6 +55,7 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
         params.put("offset", offset);
 
         int total = prsPayrollTemplateMapper.total(params);
+
         List<PrsPayrollTemplatePO> records = prsPayrollTemplateMapper.list(params);
         Page<PrsPayrollTemplatePO> page = new Page<>();
         page.setRecords(records);

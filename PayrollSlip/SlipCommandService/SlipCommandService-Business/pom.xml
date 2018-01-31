@@ -26,11 +26,7 @@
             <version>1.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>slipcommandservice-api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+
 
 
 

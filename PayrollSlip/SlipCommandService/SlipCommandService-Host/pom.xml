@@ -17,6 +17,11 @@
     <dependencies>
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>slipcommandservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>slipcommandservice-dao</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -35,11 +40,23 @@
             <artifactId>seaweedFS-client</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1.salecenter</groupId>
+            <artifactId>apiservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>slipcommandservice-host</finalName>
         <resources>
+            <resource>
+                <directory>../SlipCommandService-Dao/src/main/resources/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/mapper/*.xml</include>
+                </includes>
+            </resource>
             <resource>
                 <directory>src/main/resources/</directory>
                 <filtering>true</filtering>
