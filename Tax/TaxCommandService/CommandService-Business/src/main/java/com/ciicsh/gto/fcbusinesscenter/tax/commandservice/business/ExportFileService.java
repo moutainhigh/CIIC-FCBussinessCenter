@@ -13,23 +13,20 @@ public interface ExportFileService {
      * 完税凭证模板处理(徐汇)
      * @param wb
      * @param taskSubProofDetailPOList
-     * @return
      */
-    HSSFWorkbook exportAboutXH(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList);
+    void exportAboutXH(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList);
 
     /**
      * 完税凭证模板处理(三分局)
      * @param wb
      * @param taskSubProofDetailPOList
-     * @return
      */
-    HSSFWorkbook exportAboutSFJ(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList);
+    void exportAboutSFJ(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList);
 
     /**
      * 完税凭证模板处理(浦东)
      * @param wb
      * @param taskSubProofDetailPOList
-     * @return
      */
-    HSSFWorkbook exportAboutPD(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList);
+    void exportAboutPD(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList);
 }

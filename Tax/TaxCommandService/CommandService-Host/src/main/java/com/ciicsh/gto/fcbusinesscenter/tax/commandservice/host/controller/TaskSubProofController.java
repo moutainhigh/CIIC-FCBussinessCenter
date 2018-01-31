@@ -353,7 +353,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
                 //根据不同的业务需要处理wb
-                wb = exportFileService.exportAboutSFJ(wb, taskSubProofDetailPOList);
+                exportFileService.exportAboutSFJ(wb, taskSubProofDetailPOList);
             } else if ("中智上海财务咨询公司大库".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_徐汇.xls";
                 //获取POIFSFileSystem对象
@@ -361,7 +361,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
                 //根据不同的业务需要处理wb
-                wb = exportFileService.exportAboutXH(wb, taskSubProofDetailPOList);
+                exportFileService.exportAboutXH(wb, taskSubProofDetailPOList);
             } else if ("蓝天科技无锡独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_浦东.xls";
                 //获取POIFSFileSystem对象
@@ -369,7 +369,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
                 //根据不同的业务需要处理wb
-                wb = exportFileService.exportAboutPD(wb, taskSubProofDetailPOList);
+                exportFileService.exportAboutPD(wb, taskSubProofDetailPOList);
             }
             //导出新的excel
             exportNewExcel(response, wb, fileName);

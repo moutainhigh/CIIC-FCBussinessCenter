@@ -23,10 +23,9 @@ public class ExportFileServiceImpl implements ExportFileService {
      * 完税凭证处理(徐汇)
      * @param wb
      * @param taskSubProofDetailPOList
-     * @return
      */
     @Override
-    public HSSFWorkbook exportAboutXH(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
+    public void exportAboutXH(HSSFWorkbook wb,List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //单位税号A3
@@ -102,17 +101,15 @@ public class ExportFileServiceImpl implements ExportFileService {
             cellD.setCellValue(period);
             rowIndex++;
         }
-        return wb;
     }
 
     /**
      * 完税凭证模板处理(三分局)
      * @param wb
      * @param taskSubProofDetailPOList
-     * @return
      */
     @Override
-    public HSSFWorkbook exportAboutSFJ(HSSFWorkbook wb, List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
+    public void exportAboutSFJ(HSSFWorkbook wb, List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //第3行
@@ -234,17 +231,15 @@ public class ExportFileServiceImpl implements ExportFileService {
             cellH.setCellValue(period);
             rowIndex++;
         }
-        return wb;
     }
 
     /**
      * 完税凭证模板处理(浦东)
      * @param wb
      * @param taskSubProofDetailPOList
-     * @return
      */
     @Override
-    public HSSFWorkbook exportAboutPD(HSSFWorkbook wb, List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
+    public void exportAboutPD(HSSFWorkbook wb, List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //第4行
@@ -406,7 +401,6 @@ public class ExportFileServiceImpl implements ExportFileService {
             }
             num++;
         }
-        return wb;
     }
 
 
