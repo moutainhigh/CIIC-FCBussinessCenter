@@ -16,7 +16,7 @@ import java.util.Date;
  * 计算批次
  * </p>
  *
- * @author wuhua
+· * @author wuhua
  * @since 2017-12-26
  */
 @TableName("tax_fc_calculation_batch")
@@ -90,6 +90,10 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
      */
 	private String modifiedBy;
 
+	/**
+	 *主任务id
+	 */
+	private Long taskMainId;
 
 	public Long getId() {
 		return id;
@@ -209,6 +213,14 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 
 	public void setStatusName(String statusName) {
 		this.statusName = statusName;
+	}
+
+	public Long getTaskMainId() {
+		return taskMainId;
+	}
+
+	public void setTaskMainId(Long taskMainId) {
+		this.taskMainId = taskMainId;
 	}
 
 	@Override

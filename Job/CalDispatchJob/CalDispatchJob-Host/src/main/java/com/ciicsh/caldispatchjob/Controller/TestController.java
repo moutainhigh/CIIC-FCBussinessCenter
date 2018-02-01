@@ -1,5 +1,6 @@
 package com.ciicsh.caldispatchjob.Controller;
 
+import com.ciicsh.caldispatchjob.compute.service.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.mongodb.BasicDBObject;
@@ -12,8 +13,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by bill on 17/12/12.
@@ -29,6 +28,9 @@ public class TestController {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private ComputeServiceImpl computeService;
 
     @PostMapping("/updatePayItem")
     public void updatePayItem(){
@@ -47,7 +49,7 @@ public class TestController {
 
     @PostMapping("/updateEmpAgreement")
     public void updateEmpAgreement(){
-        String batchCode = "5bb57dfe-1dcb-447e-9179-a4d4010085f5";
+        /*String batchCode = "5bb57dfe-1dcb-447e-9179-a4d4010085f5";
         String empGroupId = "19";
         String groupCode = "";
         String empId = "YYA14369";
@@ -56,8 +58,13 @@ public class TestController {
         object.put("产品名称", "薪酬福利计算");
         object.put("金额",2220.8);
         object.put("频率","次/月");
-        object.put("时间","2017-08-09");
+        object.put("时间","2017-08-09");*/
 
         //normalBatchService.associateEmpAgreements(batchCode,empGroupId,groupCode,empId,object);
+    }
+
+    @PostMapping("/doCompute")
+    public void doCompute(){
+        computeService.fire();
     }
 }

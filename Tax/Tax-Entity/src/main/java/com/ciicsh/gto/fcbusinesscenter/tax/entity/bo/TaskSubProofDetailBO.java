@@ -1,34 +1,70 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+/**
+ * @author yuantongqing
+ */
 public class TaskSubProofDetailBO {
 
     private Long id;
 
+    /**
+     * 雇员编号
+     */
     private String employeeNo;
 
+    /**
+     * 雇员名称
+     */
     private String employeeName;
 
+    /**
+     * 证件类型
+     */
     private String idType;
 
+    /**
+     * 证件号
+     */
     private String idNo;
 
+    /**
+     * 申报账户
+     */
     private String declareAccount;
 
+    /**
+     * 所得项目
+     */
     private String incomeSubject;
 
-    private Date incomeStart;
+    /**
+     * 所得期间起
+     */
+    private LocalDate incomeStart;
 
-    private Date incomeEnd;
+    /**
+     * 所得期间止
+     */
+    private LocalDate incomeEnd;
 
+    /**
+     * 应纳税所得额
+     */
     private BigDecimal incomeForTax;
 
+    /**
+     * 扣缴税额
+     */
     private BigDecimal withholdedAmount;
 
-    private Date createdTime;
-
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createdTime;
 
 
     public Long getId() {
@@ -87,19 +123,19 @@ public class TaskSubProofDetailBO {
         this.incomeSubject = incomeSubject;
     }
 
-    public Date getIncomeStart() {
+    public LocalDate getIncomeStart() {
         return incomeStart;
     }
 
-    public void setIncomeStart(Date incomeStart) {
+    public void setIncomeStart(LocalDate incomeStart) {
         this.incomeStart = incomeStart;
     }
 
-    public Date getIncomeEnd() {
+    public LocalDate getIncomeEnd() {
         return incomeEnd;
     }
 
-    public void setIncomeEnd(Date incomeEnd) {
+    public void setIncomeEnd(LocalDate incomeEnd) {
         this.incomeEnd = incomeEnd;
     }
 
@@ -119,11 +155,29 @@ public class TaskSubProofDetailBO {
         this.withholdedAmount = withholdedAmount;
     }
 
-    public Date getCreatedTime() {
+    public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(Date createdTime) {
+    public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskSubProofDetailBO{" +
+                "id=" + id +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idNo='" + idNo + '\'' +
+                ", declareAccount='" + declareAccount + '\'' +
+                ", incomeSubject='" + incomeSubject + '\'' +
+                ", incomeStart=" + incomeStart +
+                ", incomeEnd=" + incomeEnd +
+                ", incomeForTax=" + incomeForTax +
+                ", withholdedAmount=" + withholdedAmount +
+                ", createdTime=" + createdTime +
+                '}';
     }
 }

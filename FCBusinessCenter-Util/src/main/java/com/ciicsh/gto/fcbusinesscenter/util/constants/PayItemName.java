@@ -7,7 +7,7 @@ public class PayItemName {
 
     public static final String EMPLOYEE_CODE_CN = "雇员编号";
 
-    public static final String EMPLOYEE_NAME_CN = "雇员姓名";
+    public static final String EMPLOYEE_NAME_CN = "雇员名称";
 
     public static final String EMPLOYEE_BIRTHDAY_CN = "出生日期";
 

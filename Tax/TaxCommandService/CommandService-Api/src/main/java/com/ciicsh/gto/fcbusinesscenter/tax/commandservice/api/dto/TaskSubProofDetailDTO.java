@@ -1,11 +1,14 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @author yuantongqing on 2017/12/16
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TaskSubProofDetailDTO {
 
     /**
@@ -175,5 +178,24 @@ public class TaskSubProofDetailDTO {
 
     public void setDeclareAccount(String declareAccount) {
         this.declareAccount = declareAccount;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskSubProofDetailDTO{" +
+                "id=" + id +
+                ", detailType='" + detailType + '\'' +
+                ", taskId=" + taskId +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idNo='" + idNo + '\'' +
+                ", incomeSubject='" + incomeSubject + '\'' +
+                ", incomeStart=" + incomeStart +
+                ", incomeEnd=" + incomeEnd +
+                ", incomeForTax=" + incomeForTax +
+                ", withholdedAmount=" + withholdedAmount +
+                ", declareAccount='" + declareAccount + '\'' +
+                '}';
     }
 }

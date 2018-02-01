@@ -1,6 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.excel;
 
-import com.mongodb.DBObject;
+import com.mongodb.BasicDBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.excel.poi.PoiItemReader;
@@ -23,8 +23,8 @@ public class PRItemExcelReader {
     @Autowired
     private PRItemExcelMapper mapper;
 
-    public PoiItemReader<List<DBObject>> getPrGroupReader(InputStream stream, int importType, List<List<DBObject>> payItems) throws  Exception{
-        PoiItemReader<List<DBObject>> itemReader = new PoiItemReader<>();
+    public PoiItemReader<List<BasicDBObject>> getPrGroupReader(InputStream stream, int importType, List<List<BasicDBObject>> payItems) throws  Exception{
+        PoiItemReader<List<BasicDBObject>> itemReader = new PoiItemReader<>();
         itemReader.setLinesToSkip(1);  //First line is column names
         PushbackInputStream stream1 = new PushbackInputStream(stream);
         itemReader.setResource(new InputStreamResource(stream1));

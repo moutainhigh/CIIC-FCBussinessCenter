@@ -5,7 +5,6 @@ import com.ciicsh.caldispatchjob.compute.service.EmpGroupServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
-import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpExtend;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public class PayrollReceiver {
     public void receive(ComputeMsg computeMsg){
         logger.info("received payroll compute from message: " + computeMsg);
 
-        processPayrollCompute(computeMsg.getBatchCode());
+        processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
     }
 
     /**
@@ -95,8 +94,12 @@ public class PayrollReceiver {
      * 接收薪资计算消息
      * @param batchCode
      */
-    private void processPayrollCompute(String batchCode){
-        computeService.processCompute(batchCode);
+    private void processPayrollCompute(String batchCode,int batchType){
+        try {
+            computeService.processCompute(batchCode,batchType);
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage());
+        }
     }
-
 }

@@ -27,7 +27,15 @@ public class TaskSubProofDTO{
 
     private String sendStatus;
 
+    /**
+     *  状态
+     */
     private String status;
+
+    /**
+     * 状态(中文)
+     */
+    private String statusName;
 
     private String createdBy;
 
@@ -137,6 +145,13 @@ public class TaskSubProofDTO{
         this.createdTime = createdTime;
     }
 
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 
     @Override
     public String toString() {
@@ -152,6 +167,7 @@ public class TaskSubProofDTO{
                 ", foreignerNum=" + foreignerNum +
                 ", sendStatus='" + sendStatus + '\'' +
                 ", status='" + status + '\'' +
+                ", statusName='" + statusName + '\'' +
                 ", createdBy='" + createdBy + '\'' +
                 ", createdTime=" + createdTime +
                 '}';

@@ -38,18 +38,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-ci</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-spring</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>23.0</version>

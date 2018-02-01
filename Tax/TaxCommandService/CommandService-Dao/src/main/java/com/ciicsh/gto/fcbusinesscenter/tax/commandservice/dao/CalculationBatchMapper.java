@@ -15,7 +15,14 @@ public interface CalculationBatchMapper extends BaseMapper<CalculationBatchPO> {
      * 查询计算批次列表
      * @param calculationBatchBO
      * @return
+     *//*
+    List<CalculationBatchBO> queryCalculationBatchsByCondition(CalculationBatchBO calculationBatchBO);*/
+
+    /**
+     * 查询计算批次列表
+     * @param calculationBatchBO
+     * @return
      */
-    List<CalculationBatchPO> queryCalculationBatchsByCondition(CalculationBatchBO calculationBatchBO);
+    List<CalculationBatchBO> queryCalculationBatchDetails(CalculationBatchBO calculationBatchBO);
 
 }

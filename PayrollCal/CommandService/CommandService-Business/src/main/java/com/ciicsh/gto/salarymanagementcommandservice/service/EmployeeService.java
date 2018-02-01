@@ -29,7 +29,7 @@ public interface EmployeeService {
      * @param empGroupCode 雇员组Code
      * @return 雇员组雇员列表
      */
-    PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, Integer pageNum, Integer pageSize);
+    PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, String empCode, String empName, Integer pageNum, Integer pageSize);
 
 
     /**
@@ -38,4 +38,11 @@ public interface EmployeeService {
      * @return
      */
     Integer batchDelete(List<String> ids, List<String> employeeIds, String empGroupCode);
+
+    /**
+     * 检查雇员在该雇员组是否存在
+     * @param empGroupCode
+     * @return
+     */
+    int hasEmployees(String empGroupCode);
 }

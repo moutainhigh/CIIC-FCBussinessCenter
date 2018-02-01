@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -81,7 +81,7 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
     /**
      * 所得期间
      */
-	private Date period;
+	private LocalDate period;
     /**
      * 所得项目
      */
@@ -96,65 +96,65 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
      * 收入额
      */
 	@TableField("income_total")
-	private BigDecimal incomeTotal;
+	private String incomeTotal;
     /**
      * 免税所得
      */
 	@TableField("income_dutyfree")
-	private BigDecimal incomeDutyfree;
+	private String incomeDutyfree;
     /**
      * 基本养老保险费（税前扣除项目）
      */
 	@TableField("deduct_retirement_insurance")
-	private BigDecimal deductRetirementInsurance;
+	private String deductRetirementInsurance;
     /**
      * 基本医疗保险费（税前扣除项目）
      */
 	@TableField("deduct_medical_insurance")
-	private BigDecimal deductMedicalInsurance;
+	private String deductMedicalInsurance;
     /**
      * 失业保险费（税前扣除项目）
      */
 	@TableField("deduct_dleness_insurance")
-	private BigDecimal deductDlenessInsurance;
+	private String deductDlenessInsurance;
     /**
      * 财产原值（税前扣除项目）
      */
 	@TableField("deduct_property")
-	private BigDecimal deductProperty;
+	private String deductProperty;
     /**
      * 住房公积金（税前扣除项目）
      */
 	@TableField("deduct_house_fund")
-	private BigDecimal deductHouseFund;
+	private String deductHouseFund;
     /**
      * 允许扣除的税费（税前扣除项目）
      */
 	@TableField("deduct_takeoff")
-	private BigDecimal deductTakeoff;
+	private String deductTakeoff;
     /**
      * 其他（税前扣除项目）
      */
 	@TableField("deduct_other")
-	private BigDecimal deductOther;
+	private String deductOther;
     /**
      * 合计（税前扣除项目）
      */
 	@TableField("deduct_total")
-	private BigDecimal deductTotal;
+	private String deductTotal;
     /**
      * 减除费用
      */
-	private BigDecimal deduction;
+	private String deduction;
     /**
      * 准予扣除的捐赠额
      */
-	private BigDecimal donation;
+	private String donation;
     /**
      * 应纳税所得额
      */
 	@TableField("income_for_tax")
-	private BigDecimal incomeForTax;
+	private String incomeForTax;
     /**
      * 税率
      */
@@ -169,27 +169,27 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
      * 应纳税额
      */
 	@TableField("tax_amount")
-	private BigDecimal taxAmount;
+	private String taxAmount;
     /**
      * 减免税额
      */
 	@TableField("tax_deduction")
-	private BigDecimal taxDeduction;
+	private String taxDeduction;
     /**
      * 应扣缴税额
      */
 	@TableField("tax_withhold_amount")
-	private BigDecimal taxWithholdAmount;
+	private String taxWithholdAmount;
     /**
      * 已扣缴税额
      */
 	@TableField("tax_withholded_amount")
-	private BigDecimal taxWithholdedAmount;
+	private String taxWithholdedAmount;
     /**
      * 应补（退）税额
      */
 	@TableField("tax_remedy_or_return")
-	private BigDecimal taxRemedyOrReturn;
+	private String taxRemedyOrReturn;
     /**
      * 是否申报
      */
@@ -209,12 +209,12 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
      * 创建时间
      */
 	@TableField("created_time")
-	private Date createdTime;
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
 	@TableField("modified_time")
-	private Date modifiedTime;
+	private LocalDateTime modifiedTime;
 
 
 	public String getIdTypeName() {
@@ -305,11 +305,11 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		this.payAccount = payAccount;
 	}
 
-	public Date getPeriod() {
+	public LocalDate getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Date period) {
+	public void setPeriod(LocalDate period) {
 		this.period = period;
 	}
 
@@ -321,107 +321,107 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		this.incomeSubject = incomeSubject;
 	}
 
-	public BigDecimal getIncomeTotal() {
+	public String getIncomeTotal() {
 		return incomeTotal;
 	}
 
-	public void setIncomeTotal(BigDecimal incomeTotal) {
+	public void setIncomeTotal(String incomeTotal) {
 		this.incomeTotal = incomeTotal;
 	}
 
-	public BigDecimal getIncomeDutyfree() {
+	public String getIncomeDutyfree() {
 		return incomeDutyfree;
 	}
 
-	public void setIncomeDutyfree(BigDecimal incomeDutyfree) {
+	public void setIncomeDutyfree(String incomeDutyfree) {
 		this.incomeDutyfree = incomeDutyfree;
 	}
 
-	public BigDecimal getDeductRetirementInsurance() {
+	public String getDeductRetirementInsurance() {
 		return deductRetirementInsurance;
 	}
 
-	public void setDeductRetirementInsurance(BigDecimal deductRetirementInsurance) {
+	public void setDeductRetirementInsurance(String deductRetirementInsurance) {
 		this.deductRetirementInsurance = deductRetirementInsurance;
 	}
 
-	public BigDecimal getDeductMedicalInsurance() {
+	public String getDeductMedicalInsurance() {
 		return deductMedicalInsurance;
 	}
 
-	public void setDeductMedicalInsurance(BigDecimal deductMedicalInsurance) {
+	public void setDeductMedicalInsurance(String deductMedicalInsurance) {
 		this.deductMedicalInsurance = deductMedicalInsurance;
 	}
 
-	public BigDecimal getDeductDlenessInsurance() {
+	public String getDeductDlenessInsurance() {
 		return deductDlenessInsurance;
 	}
 
-	public void setDeductDlenessInsurance(BigDecimal deductDlenessInsurance) {
+	public void setDeductDlenessInsurance(String deductDlenessInsurance) {
 		this.deductDlenessInsurance = deductDlenessInsurance;
 	}
 
-	public BigDecimal getDeductProperty() {
+	public String getDeductProperty() {
 		return deductProperty;
 	}
 
-	public void setDeductProperty(BigDecimal deductProperty) {
+	public void setDeductProperty(String deductProperty) {
 		this.deductProperty = deductProperty;
 	}
 
-	public BigDecimal getDeductHouseFund() {
+	public String getDeductHouseFund() {
 		return deductHouseFund;
 	}
 
-	public void setDeductHouseFund(BigDecimal deductHouseFund) {
+	public void setDeductHouseFund(String deductHouseFund) {
 		this.deductHouseFund = deductHouseFund;
 	}
 
-	public BigDecimal getDeductTakeoff() {
+	public String getDeductTakeoff() {
 		return deductTakeoff;
 	}
 
-	public void setDeductTakeoff(BigDecimal deductTakeoff) {
+	public void setDeductTakeoff(String deductTakeoff) {
 		this.deductTakeoff = deductTakeoff;
 	}
 
-	public BigDecimal getDeductOther() {
+	public String getDeductOther() {
 		return deductOther;
 	}
 
-	public void setDeductOther(BigDecimal deductOther) {
+	public void setDeductOther(String deductOther) {
 		this.deductOther = deductOther;
 	}
 
-	public BigDecimal getDeductTotal() {
+	public String getDeductTotal() {
 		return deductTotal;
 	}
 
-	public void setDeductTotal(BigDecimal deductTotal) {
+	public void setDeductTotal(String deductTotal) {
 		this.deductTotal = deductTotal;
 	}
 
-	public BigDecimal getDeduction() {
+	public String getDeduction() {
 		return deduction;
 	}
 
-	public void setDeduction(BigDecimal deduction) {
+	public void setDeduction(String deduction) {
 		this.deduction = deduction;
 	}
 
-	public BigDecimal getDonation() {
+	public String getDonation() {
 		return donation;
 	}
 
-	public void setDonation(BigDecimal donation) {
+	public void setDonation(String donation) {
 		this.donation = donation;
 	}
 
-	public BigDecimal getIncomeForTax() {
+	public String getIncomeForTax() {
 		return incomeForTax;
 	}
 
-	public void setIncomeForTax(BigDecimal incomeForTax) {
+	public void setIncomeForTax(String incomeForTax) {
 		this.incomeForTax = incomeForTax;
 	}
 
@@ -441,43 +441,43 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		this.quickCalDeduct = quickCalDeduct;
 	}
 
-	public BigDecimal getTaxAmount() {
+	public String getTaxAmount() {
 		return taxAmount;
 	}
 
-	public void setTaxAmount(BigDecimal taxAmount) {
+	public void setTaxAmount(String taxAmount) {
 		this.taxAmount = taxAmount;
 	}
 
-	public BigDecimal getTaxDeduction() {
+	public String getTaxDeduction() {
 		return taxDeduction;
 	}
 
-	public void setTaxDeduction(BigDecimal taxDeduction) {
+	public void setTaxDeduction(String taxDeduction) {
 		this.taxDeduction = taxDeduction;
 	}
 
-	public BigDecimal getTaxWithholdAmount() {
+	public String getTaxWithholdAmount() {
 		return taxWithholdAmount;
 	}
 
-	public void setTaxWithholdAmount(BigDecimal taxWithholdAmount) {
+	public void setTaxWithholdAmount(String taxWithholdAmount) {
 		this.taxWithholdAmount = taxWithholdAmount;
 	}
 
-	public BigDecimal getTaxWithholdedAmount() {
+	public String getTaxWithholdedAmount() {
 		return taxWithholdedAmount;
 	}
 
-	public void setTaxWithholdedAmount(BigDecimal taxWithholdedAmount) {
+	public void setTaxWithholdedAmount(String taxWithholdedAmount) {
 		this.taxWithholdedAmount = taxWithholdedAmount;
 	}
 
-	public BigDecimal getTaxRemedyOrReturn() {
+	public String getTaxRemedyOrReturn() {
 		return taxRemedyOrReturn;
 	}
 
-	public void setTaxRemedyOrReturn(BigDecimal taxRemedyOrReturn) {
+	public void setTaxRemedyOrReturn(String taxRemedyOrReturn) {
 		this.taxRemedyOrReturn = taxRemedyOrReturn;
 	}
 
@@ -505,19 +505,19 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		isPay = pay;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

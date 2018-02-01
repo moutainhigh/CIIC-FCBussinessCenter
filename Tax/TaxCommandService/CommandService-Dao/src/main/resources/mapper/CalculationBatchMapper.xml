@@ -18,11 +18,91 @@
 		<result column="modified_time" property="modifiedTime" />
 		<result column="created_by" property="createdBy" />
 		<result column="modified_by" property="modifiedBy" />
+		<result column="task_main_id" property="taskMainId" />
+	</resultMap>
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap2" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO">
+		<id column="id" property="id" />
+		<!--<result column="calculation_batch_id" property="calculationBatchId" />
+		<result column="version_no" property="versionNo" />
+		<result column="is_defer" property="isDefer" />-->
+		<result column="employee_no" property="employeeNo" />
+		<result column="employee_name" property="employeeName" />
+		<result column="id_type" property="idType" />
+		<result column="id_no" property="idNo" />
+		<result column="declare_account" property="declareAccount" />
+		<result column="pay_account" property="payAccount" />
+		<result column="period" property="period" />
+		<result column="income_subject" property="incomeSubject" />
+		<result column="income_total" property="incomeTotal" />
+		<result column="income_dutyfree" property="incomeDutyfree" />
+		<result column="deduct_retirement_insurance" property="deductRetirementInsurance" />
+		<result column="deduct_medical_insurance" property="deductMedicalInsurance" />
+		<result column="deduct_dleness_insurance" property="deductDlenessInsurance" />
+		<result column="deduct_property" property="deductProperty" />
+		<result column="deduct_house_fund" property="deductHouseFund" />
+		<result column="deduct_takeoff" property="deductTakeoff" />
+		<result column="deduct_other" property="deductOther" />
+		<result column="deduct_total" property="deductTotal" />
+		<result column="deduction" property="deduction" />
+		<result column="donation" property="donation" />
+		<result column="income_for_tax" property="incomeForTax" />
+		<result column="tax_rate" property="taxRate" />
+		<result column="quick_cal_deduct" property="quickCalDeduct" />
+		<result column="tax_amount" property="taxAmount" />
+		<result column="tax_deduction" property="taxDeduction" />
+		<result column="tax_withhold_amount" property="taxWithholdAmount" />
+		<result column="tax_withholded_amount" property="taxWithholdedAmount" />
+		<result column="tax_remedy_or_return" property="taxRemedyOrReturn" />
+		<result column="declare_account" property="declareAccount" />
+		<result column="pay_account" property="payAccount" />
+		<result column="receipt_account" property="receiptAccount" />
+		<result column="support_no" property="supportNo" />
+		<result column="support_name" property="supportName" />
+		<result column="is_support" property="support" />
+		<result column="is_supported" property="supported" />
+		<result column="is_pay" property="pay" />
+		<result column="is_payed" property="payed" />
+		<result column="is_declare" property="declare" />
+		<result column="is_declared" property="declared" />
+		<result column="is_transfer" property="tranfer" />
+		<result column="is_transferred" property="tranferred" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, batch_no, manager_no, manager_name, tax_amount, headcount, chinese_num, foreigner_num, status, is_active, created_time, modified_time, created_by, modified_by
     </sql>
+
+
+	<!-- 查询批次明细 -->
+	<select id="queryCalculationBatchDetails" resultMap="BaseResultMap2">
+		SELECT
+		id,task_no,
+		manager_no,
+		manager_name,
+		headcount,
+		chinese_num,
+		foreigner_num,
+		status,
+		remark,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
+		FROM tax_fc_calculation_batch t1,tax_fc_calculation_batch_detail t2,tax_fc_employee_service_batch t3
+		where is_active = 1 and t1.id = t2.calculation_batch_id and t2.id = t3.cal_batch_detail_id
+		<if test="batchNo != null and batchNo != ''">
+			and t1.batch_no = #{batchNo, jdbcType=VARCHAR}
+		</if>
+		<!--<if test="startTime != null and startTime != ''">
+			and date(created_time) &gt;= date(#{startTime,jdbcType=TIMESTAMP})
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and date(created_time) &lt;= date(#{endTime,jdbcType=TIMESTAMP})
+		</if>-->
+	</select>
 
 </mapper>

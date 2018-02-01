@@ -1,7 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
@@ -14,11 +13,8 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salarymanagementcommandservice.util.constants.PayrollGroupHistoryKey;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.StringUtil;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

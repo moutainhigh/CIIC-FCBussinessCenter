@@ -1,7 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmpGroupDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetExtensionDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
@@ -9,8 +8,6 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetExtensionTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;

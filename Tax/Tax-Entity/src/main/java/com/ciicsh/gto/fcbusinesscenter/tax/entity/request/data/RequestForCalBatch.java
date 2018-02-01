@@ -8,6 +8,16 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.page.PageInfo;
  */
 public class RequestForCalBatch extends PageInfo {
 
+    private String t;
+
+    public String getT() {
+        return t;
+    }
+
+    public void setT(String t) {
+        this.t = t;
+    }
+
     /**
      * 管理方名称
      */

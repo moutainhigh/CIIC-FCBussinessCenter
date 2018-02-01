@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentDetailMapper">
+
+	<!-- 通用查询映射结果 -->
+	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentDetailPO">-->
+		<!--<id column="id" property="id" />-->
+		<!--<result column="task_sub_payment_id" property="taskSubPaymentId" />-->
+		<!--<result column="calculation_batch_detail_id" property="calculationBatchDetailId" />-->
+		<!--<result column="version_no" property="versionNo" />-->
+		<!--<result column="employee_no" property="employeeNo" />-->
+		<!--<result column="employee_name" property="employeeName" />-->
+		<!--<result column="id_type" property="idType" />-->
+		<!--<result column="id_no" property="idNo" />-->
+		<!--<result column="declare_account" property="declareAccount" />-->
+		<!--<result column="pay_account" property="payAccount" />-->
+		<!--<result column="period" property="period" />-->
+		<!--<result column="income_subject" property="incomeSubject" />-->
+		<!--<result column="income_total" property="incomeTotal" />-->
+		<!--<result column="income_dutyfree" property="incomeDutyfree" />-->
+		<!--<result column="deduct_retirement_insurance" property="deductRetirementInsurance" />-->
+		<!--<result column="deduct_medical_insurance" property="deductMedicalInsurance" />-->
+		<!--<result column="deduct_dleness_insurance" property="deductDlenessInsurance" />-->
+		<!--<result column="deduct_property" property="deductProperty" />-->
+		<!--<result column="deduct_house_fund" property="deductHouseFund" />-->
+		<!--<result column="deduct_takeoff" property="deductTakeoff" />-->
+		<!--<result column="deduct_other" property="deductOther" />-->
+		<!--<result column="deduct_total" property="deductTotal" />-->
+		<!--<result column="deduction" property="deduction" />-->
+		<!--<result column="donation" property="donation" />-->
+		<!--<result column="income_for_tax" property="incomeForTax" />-->
+		<!--<result column="tax_rate" property="taxRate" />-->
+		<!--<result column="quick_cal_deduct" property="quickCalDeduct" />-->
+		<!--<result column="tax_amount" property="taxAmount" />-->
+		<!--<result column="tax_deduction" property="taxDeduction" />-->
+		<!--<result column="tax_withhold_amount" property="taxWithholdAmount" />-->
+		<!--<result column="tax_withholded_amount" property="taxWithholdedAmount" />-->
+		<!--<result column="tax_remedy_or_return" property="taxRemedyOrReturn" />-->
+		<!--<result column="is_active" property="isActive" />-->
+		<!--<result column="created_time" property="createdTime" />-->
+		<!--<result column="modified_time" property="modifiedTime" />-->
+		<!--<result column="created_by" property="createdBy" />-->
+		<!--<result column="modified_by" property="modifiedBy" />-->
+	<!--</resultMap>-->
+
+</mapper>

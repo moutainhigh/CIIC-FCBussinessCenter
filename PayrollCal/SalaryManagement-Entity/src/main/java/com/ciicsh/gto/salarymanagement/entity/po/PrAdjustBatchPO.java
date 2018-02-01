@@ -37,12 +37,8 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
      */
 	@TableField("adjust_batch_code")
 	private String adjustBatchCode;
-    /**
-     * 所属管理方ID
-     */
-	@TableField("management_id")
-	private String managementId;
-    /**
+
+	/**
      * 是否计划批次
      */
 	@TableField("is_scheduled")
@@ -99,6 +95,14 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 	@TableField("modified_by")
 	private String modifiedBy;
 
+	/*是否垫付：0 表示未垫付，1表示已经垫付*/
+	@TableField("has_advance")
+	private Boolean hasAdvance;
+
+	/*是否来款：0表示未来款，1表示已来款*/
+	@TableField("has_money")
+	private Boolean hasMoney;
+
 
 	public Long getId() {
 		return id;
@@ -122,14 +126,6 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 
 	public void setAdjustBatchCode(String adjustBatchCode) {
 		this.adjustBatchCode = adjustBatchCode;
-	}
-
-	public String getManagementId() {
-		return managementId;
-	}
-
-	public void setManagementId(String managementId) {
-		this.managementId = managementId;
 	}
 
 	public Boolean getScheduled() {
@@ -212,6 +208,22 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public Boolean getHasAdvance() {
+		return hasAdvance;
+	}
+
+	public void setHasAdvance(Boolean hasAdvance) {
+		this.hasAdvance = hasAdvance;
+	}
+
+	public Boolean getHasMoney() {
+		return hasMoney;
+	}
+
+	public void setHasMoney(Boolean hasMoney) {
+		this.hasMoney = hasMoney;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -223,13 +235,14 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 			"id=" + id +
 			", originBatchCode=" + originBatchCode +
 			", adjustBatchCode=" + adjustBatchCode +
-			", managementId=" + managementId +
 			", isScheduled=" + isScheduled +
 			", scheduleSetting=" + scheduleSetting +
 			", remark=" + remark +
 			", status=" + status +
 			", adjustResult=" + adjustResult +
 			", isActive=" + isActive +
+			", hasMoney=" + hasMoney +
+			", hasAdvance=" + hasAdvance +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
