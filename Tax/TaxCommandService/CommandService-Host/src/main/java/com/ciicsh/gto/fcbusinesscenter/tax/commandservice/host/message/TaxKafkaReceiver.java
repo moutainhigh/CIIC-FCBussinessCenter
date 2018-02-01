@@ -19,5 +19,4 @@ public class TaxKafkaReceiver {
     public void taxInputTest(EmployeeDTO employeeDTO) {
         logger.info("kafka接受信息:" + employeeDTO.toString());
     }
-
 }

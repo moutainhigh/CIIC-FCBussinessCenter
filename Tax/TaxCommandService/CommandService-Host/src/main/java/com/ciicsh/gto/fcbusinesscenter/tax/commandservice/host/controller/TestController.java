@@ -4,13 +4,11 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.EmployeeDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TestProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TestService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.message.TaxSender;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.message.TaxSource;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.message.TaxKafkaSender;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,12 +47,12 @@ public class TestController extends BaseController implements TestProxy{
     }
 
     @Autowired
-    private TaxSender taxSender;
+    private TaxKafkaSender taxKafkaSender;
 
     @RequestMapping("taxTest")
     @ResponseBody
     public void taxTest(EmployeeDTO employeeDTO){
-        taxSender.taxOutputTest(employeeDTO);
+        taxKafkaSender.taxOutputTest(employeeDTO);
     }
 
     @RequestMapping("/kafkaTest")
