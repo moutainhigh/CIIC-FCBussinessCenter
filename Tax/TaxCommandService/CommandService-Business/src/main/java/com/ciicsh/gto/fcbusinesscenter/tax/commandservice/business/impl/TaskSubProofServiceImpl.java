@@ -320,19 +320,32 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Override
     public void splitTaskProofByRes(RequestForProof requestForProof) {
         if (requestForProof.getId() != null && !"".equals(requestForProof.getId())) {
-            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+            TaskSubProofPO taskSubProofPOCombine = new TaskSubProofPO();
             //主键ID
-            taskSubProofPO.setId(requestForProof.getId());
+            taskSubProofPOCombine.setId(requestForProof.getId());
+            //修改人
+            taskSubProofPOCombine.setModifiedBy(requestForProof.getModifiedBy());
+            //修改时间
+            taskSubProofPOCombine.setModifiedTime(LocalDateTime.now());
+            //是否可用
+            taskSubProofPOCombine.setActive(false);
+            //将合并的任务置为失效状态
+            baseMapper.updateById(taskSubProofPOCombine);
+
+            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+            //设置合并后的任务ID为空
+            taskSubProofPO.setTaskSubProofId(null);
             //修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //修改时间
             taskSubProofPO.setModifiedTime(LocalDateTime.now());
-            //是否可用
-            taskSubProofPO.setActive(false);
-            //将合并的任务置为失效状态
-            baseMapper.updateById(taskSubProofPO);
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubProofPO());
+            wrapper.andNew("is_active = {0}", true);
+            wrapper.andNew("task_sub_proof_id = {0}",requestForProof.getId());
             //根据合并的ID将原子任务的合并ID置为空
-            baseMapper.updateSubTaskProofSubId(taskSubProofPO);
+            baseMapper.update(taskSubProofPO,wrapper);
+
         }
     }
 
