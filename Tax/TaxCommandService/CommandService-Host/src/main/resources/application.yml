@@ -34,7 +34,7 @@ logging:
         org.mybatis: DEBUG
         com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao: DEBUG
         com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller: DEBUG
-        com.ciicsh.gto.fcsupportcenter.tax.commandservice.business.impl: DEBUG
+        com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl: DEBUG
     pattern:
         console: "[%-5p] %d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 #        file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
@@ -50,6 +50,7 @@ mybatis-plus:
         id-type: 0
         logic-delete-value: 0
         logic-not-delete-value: 1
+        meta-object-handler: com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.handler.TaxMetaObjectHandler
     mapper-locations: classpath*:mapper/*.xml
 #    config-location: classpath:mybatis-config.xml
 pagehelper:
