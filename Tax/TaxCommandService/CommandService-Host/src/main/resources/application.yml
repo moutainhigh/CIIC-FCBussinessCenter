@@ -92,17 +92,15 @@ spring:
             autoAddPartitions: true
             replicationFactor: 2
         bindings:
-
           tax_output_test:
             destination: tax_test
             content-type: application/json
             producer:
               partitionCount: 1
-
           tax_input_test:
             destination: tax_test
             content-type: application/json
             group: ${spring.application.name}
             consumer:
-              partitioned: true
+              partitioned: false
 

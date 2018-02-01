@@ -47,13 +47,6 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
     Boolean updateSubIdsByCombinedIds(@Param("sbCombinedParams") String sbCombinedParams);
 
     /**
-     * 置空原子任务的合并ID
-     * @param taskSubProofPO
-     * @return
-     */
-    Boolean updateSubTaskProofSubId(TaskSubProofPO taskSubProofPO);
-
-    /**
      * 根据主键ID查询完税凭证子任务详细信息
      * @param subProofId
      * @return

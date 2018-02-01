@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
  */
 @EnableBinding(value = TaxSource.class)
 @Component
-public class TaxSender {
-    private final static Logger logger = LoggerFactory.getLogger(TaxSender.class);
+public class TaxKafkaSender {
+    private final static Logger logger = LoggerFactory.getLogger(TaxKafkaSender.class);
 
     @Autowired
     private TaxSource taxSource;
