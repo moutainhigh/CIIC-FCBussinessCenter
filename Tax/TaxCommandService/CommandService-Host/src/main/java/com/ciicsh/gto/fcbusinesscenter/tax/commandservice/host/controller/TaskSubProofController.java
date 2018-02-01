@@ -371,8 +371,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 //根据不同的业务需要处理wb
                 exportFileService.exportAboutPD(wb, taskSubProofDetailPOList);
             }
-            //导出新的excel
-            exportNewExcel(response, wb, fileName);
+            //导出excel
+            exportExcel(response, wb, fileName);
         } catch (Exception e) {
             logger.error("exportSubTaskProof error " + e.toString());
         } finally {

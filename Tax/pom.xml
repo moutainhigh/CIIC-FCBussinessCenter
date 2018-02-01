@@ -200,16 +200,6 @@
             <version>${poi-ooxml.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.sf.jxls</groupId>
-            <artifactId>jxls-core</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.kafka</groupId>-->
-            <!--<artifactId>spring-kafka</artifactId>-->
-            <!--<version>1.2.2.RELEASE</version>-->
-        <!--</dependency>-->
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-kafka</artifactId>
         </dependency>

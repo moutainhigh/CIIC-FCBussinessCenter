@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.message;
 
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.EmployeeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class TaxSender {
     @Autowired
     private TaxSource taxSource;
 
-    public void taxOutputTest(String  str) {
-        taxSource.taxOutputTest().send(MessageBuilder.withPayload(str).build());
+    public void taxOutputTest(EmployeeDTO employeeDTO) {
+        taxSource.taxOutputTest().send(MessageBuilder.withPayload(employeeDTO).build());
     }
 }

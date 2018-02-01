@@ -20,6 +20,21 @@ import java.util.List;
 public class ExportFileServiceImpl implements ExportFileService {
 
     /**
+     * 完税凭证徐汇模板列表初始大小20
+     */
+    private static final int INITIAL_XH_SIZE = 0;
+
+    /**
+     * 完税凭证三分局模板列表初始大小19
+     */
+    private static final int INITIAL_SFJ_SIZE = 0;
+
+    /**
+     * 完税凭证浦东模板列表初始大小18*2
+     */
+    private static final int INITIAL_PD_SIZE = 0;
+
+    /**
      * 完税凭证处理(徐汇)
      * @param wb
      * @param taskSubProofDetailPOList
@@ -49,10 +64,9 @@ public class ExportFileServiceImpl implements ExportFileService {
         }
         cellA4.setCellValue(cellA4.getStringCellValue() + "上海中智");
 
-        //列表数据初始大小20
-        int dateSize = 0;
-        if (taskSubProofDetailPOList.size() > dateSize) {
-            int rows = taskSubProofDetailPOList.size() - dateSize;
+        //如果结果集大于模板列表初始大小
+        if (taskSubProofDetailPOList.size() > INITIAL_XH_SIZE) {
+            int rows = taskSubProofDetailPOList.size() - INITIAL_XH_SIZE;
             //插入行数据
             insertRow(sheet, 7, rows);
         }
@@ -180,10 +194,9 @@ public class ExportFileServiceImpl implements ExportFileService {
             cellH6 = row6.createCell(7);
         }
         cellH6.setCellValue("321281199001011234");
-        //列表数据初始大小19
-        int dateSize = 0;
-        if (taskSubProofDetailPOList.size() > dateSize) {
-            int rows = taskSubProofDetailPOList.size() - dateSize;
+        //如果结果集大于模板列表初始大小
+        if (taskSubProofDetailPOList.size() > INITIAL_SFJ_SIZE) {
+            int rows = taskSubProofDetailPOList.size() - INITIAL_SFJ_SIZE;
             //插入行数据
             insertRow(sheet, 17, rows);
         }
@@ -293,11 +306,10 @@ public class ExportFileServiceImpl implements ExportFileService {
             cellI5 = row5.createCell(8);
         }
         cellI5.setCellValue("重新申报");
-        //列表数据初始大小18*2
-        int dateSize = 0;
-        if (taskSubProofDetailPOList.size() > dateSize) {
+        //如果结果集大于模板列表初始大小
+        if (taskSubProofDetailPOList.size() > INITIAL_PD_SIZE) {
             //由于每行显示2条数据,所以大于36条数据部分需要没2条数据添加插入一行,
-            int rows = (taskSubProofDetailPOList.size() - dateSize) / 2;
+            int rows = (taskSubProofDetailPOList.size() - INITIAL_PD_SIZE) / 2;
             //插入行数据
             insertRow(sheet, 7, rows);
         }
