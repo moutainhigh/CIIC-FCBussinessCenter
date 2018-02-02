@@ -88,12 +88,6 @@
       where task_sub_proof_id in (#{sbCombinedParams})
     </select>
 
-    <!--根据合并的ID拼接的in条件将符合条件的任务ID置为不可用状态-->
-    <update id="updateSubIdsByCombinedIds">
-        update tax_fc_task_sub_proof set is_active = false
-        WHERE id in (#{sbCombinedParams})
-    </update>
-
     <!--根据主键ID查询完税凭证子任务详细信息-->
     <select id="queryApplyDetailsBySubId" resultMap="BaseResultBOMap">
         select tsp.id,
