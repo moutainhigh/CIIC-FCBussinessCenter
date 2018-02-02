@@ -94,12 +94,6 @@
         WHERE id in (#{sbCombinedParams})
     </update>
 
-    <!--置空原子任务的合并ID-->
-    <update id="updateSubTaskProofSubId">
-        update tax_fc_task_sub_proof set task_sub_proof_id = null,modified_by = #{modifiedBy}
-        WHERE is_active = 1  AND task_sub_proof_id = #{id}
-    </update>
-
     <!--根据主键ID查询完税凭证子任务详细信息-->
     <select id="queryApplyDetailsBySubId" resultMap="BaseResultBOMap">
         select tsp.id,
