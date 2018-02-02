@@ -17,10 +17,4 @@ public interface PrEmployeeService {
      */
     PageInfo<PrEmployeeEntity> getEmployeeList(PrEmployeeEntity param, Integer pageNum);
 
-    /**
-     * 获取导入社保数据的员工列表
-     * @param managementId
-     * @return
-     */
-    List<PrEmployeeEntity> getImportedEmployeeList(String managementId);
 }

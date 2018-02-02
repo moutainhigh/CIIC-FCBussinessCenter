@@ -3,7 +3,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
 /**
  * Created by jiangtianning on 2017/9/8.
  */
-public enum ItemTypeEnum implements IValuedEnum {
+public enum ItemTypeEnum implements ValuedEnum {
 
     /**
      * 输入项

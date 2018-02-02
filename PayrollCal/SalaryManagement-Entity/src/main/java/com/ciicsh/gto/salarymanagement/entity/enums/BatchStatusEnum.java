@@ -4,7 +4,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
  * Created by bill on 17/12/8.
  * 批次状态：
  */
-public enum BatchStatusEnum implements IValuedEnum {
+public enum BatchStatusEnum implements ValuedEnum {
     /**
      * 新建
      */
