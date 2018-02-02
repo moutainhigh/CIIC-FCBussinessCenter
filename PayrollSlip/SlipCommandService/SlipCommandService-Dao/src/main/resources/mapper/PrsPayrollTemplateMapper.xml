@@ -72,8 +72,8 @@
   </select>
 
   <insert id="insert" parameterType="map">
-    INSERT INTO prs_payroll_template(template_code, template_name, management_id, management_name, account_code, account_name, account_items, template_type, template_file_name, template_file_url, effective_time, invalid_time, if_encrypt, status, comments, remark, is_active, created_time, modified_time, created_by)
-    VALUES (#{templateCode}, #{templateName}, #{managementId}, #{managementName}, #{accountCode}, #{accountName}, #{accountItems}, #{templateType}, #{templateFileName}, #{templateFileUrl}, #{effectiveTime}, #{invalidTime}, #{ifEncrypt}, #{status}, #{comments}, #{remark}, #{isActive}, #{createdTime}, #{modifiedTime}, #{createdBy})
+    INSERT INTO prs_payroll_template(template_code, template_name, management_id, management_name, account_code, account_name, account_items, template_type, template_file_name, template_file_url, effective_time, invalid_time, if_encrypt, status, comments, remark, created_by)
+    VALUES (#{templateCode}, #{templateName}, #{managementId}, #{managementName}, #{accountCode}, #{accountName}, #{accountItems}, #{templateType}, #{templateFileName}, #{templateFileUrl}, #{effectiveTime}, #{invalidTime}, #{ifEncrypt}, #{status}, #{comments}, #{remark}, #{createdBy})
   </insert>
 
   <update id="update" parameterType="map">
