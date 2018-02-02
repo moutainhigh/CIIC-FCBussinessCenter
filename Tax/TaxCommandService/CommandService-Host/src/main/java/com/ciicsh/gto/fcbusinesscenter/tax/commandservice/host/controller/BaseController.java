@@ -133,46 +133,60 @@ public class BaseController {
      * @param wb
      * @param fileName
      */
-    protected void exportNewExcel(HttpServletResponse response, HSSFWorkbook wb, String fileName) {
+    protected void exportExcel(HttpServletResponse response, HSSFWorkbook wb, String fileName) {
         ByteArrayOutputStream os = null;
+        InputStream is = null;
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
         try {
             os = new ByteArrayOutputStream();
             wb.write(os);
             byte[] content = os.toByteArray();
-            InputStream is = new ByteArrayInputStream(content);
+            is = new ByteArrayInputStream(content);
             // 设置response参数，可以打开下载页面
             response.reset();
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             response.setHeader("Content-Disposition", "attachment;filename=" + new String((fileName).getBytes(), "iso-8859-1"));
             ServletOutputStream sout = response.getOutputStream();
-            BufferedInputStream bis = null;
-            BufferedOutputStream bos = null;
-            try {
-                bis = new BufferedInputStream(is);
-                bos = new BufferedOutputStream(sout);
-                byte[] buff = new byte[2048];
-                int bytesRead;
-                while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {
-                    bos.write(buff, 0, bytesRead);
-                }
-            } catch (Exception e) {
-                logger.error("exportNewExcel error " + e.toString());
-            } finally {
-                if (os != null) {
-                    os.close();
-                }
-                if (is != null) {
-                    is.close();
-                }
-                if (bis != null) {
-                    bis.close();
-                }
-                if (bos != null) {
-                    bos.close();
-                }
+
+            bis = new BufferedInputStream(is);
+            bos = new BufferedOutputStream(sout);
+            byte[] buff = new byte[2048];
+            int bytesRead;
+            while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {
+                bos.write(buff, 0, bytesRead);
             }
         } catch (Exception e) {
-            logger.error("exportNewExcel error " + e.toString());
+            logger.error("exportExcel error " + e.toString());
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    logger.error("exportExcel os close error " + e.toString());
+                }
+            }
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    logger.error("exportExcel is close error " + e.toString());
+                }
+            }
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    logger.error("exportExcel bis close error " + e.toString());
+                }
+            }
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    logger.error("exportExcel bos close error " + e.toString());
+                }
+            }
         }
     }
 
