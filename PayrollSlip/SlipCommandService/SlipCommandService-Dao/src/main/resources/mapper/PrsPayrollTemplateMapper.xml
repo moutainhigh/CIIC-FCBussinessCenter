@@ -32,16 +32,22 @@
     WHERE is_active = 1
   </select>
 
-  <select id="all"  resultMap="BaseResultMap">
-    SELECT *
-    FROM prs_payroll_template
-    WHERE is_active = 1
-  </select>
-
   <select id="list"  resultMap="BaseResultMap">
     SELECT *
     FROM prs_payroll_template
     WHERE is_active = 1
+    <if test="templateCode != null and templateCode != ''">
+      and template_code = #{templateCode}
+    </if>
+    <if test="templateName != null and templateName != ''">
+      and template_name like concat('%', #{templateName}, '%')
+    </if>
+    <if test="managementId != null and managementId != ''">
+      and management_id = #{managementId}
+    </if>
+    <if test="managementName != null and managementName != ''">
+      and management_name like concat('%', #{managementName}, '%')
+    </if>
     ORDER BY id DESC
     <if test="limit != null and limit != ''">
       LIMIT #{limit}
@@ -110,7 +116,7 @@
       <if test="invalidTime != null and invalidTime != ''">
         invalid_time = #{invalidTime},
       </if>
-      <if test="ifEncrypt != null and ifEncrypt != ''">
+      <if test="ifEncrypt != null">
         if_encrypt = #{ifEncrypt},
       </if>
       <if test="status != null and status != ''">
@@ -122,7 +128,7 @@
       <if test="remark != null and remark != ''">
         remark = #{remark},
       </if>
-      <if test="isActive != null and isActive != ''">
+      <if test="isActive != null">
         is_active = #{isActive},
       </if>
       <if test="modifiedTime != null and modifiedTime != ''">
