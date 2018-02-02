@@ -1,7 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.po.PrApprovalHistoryPO;
+import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
 
 import java.util.List;
 
@@ -10,19 +10,19 @@ import java.util.List;
  *
  * @author NeoJiang
  */
-public interface PrApprovalHistoryService {
+public interface ApprovalHistoryService {
 
     /**
      * 根据提供的业务类型,业务code返回审核历史列表
      * @param bizType
      * @return
      */
-    List<PrApprovalHistoryPO> getApprovalHistory(BizTypeEnum bizType, String bizCode);
+    List<ApprovalHistoryPO> getApprovalHistory(Integer bizType, String bizCode);
 
     /**
      * 新增一条审批历史
-     * @param prApprovalHistoryPO
+     * @param approvalHistoryPO
      * @return
      */
-    Boolean addApprovalHistory(PrApprovalHistoryPO prApprovalHistoryPO);
+    Boolean addApprovalHistory(ApprovalHistoryPO approvalHistoryPO);
 }

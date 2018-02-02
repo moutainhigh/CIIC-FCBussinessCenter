@@ -1,7 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.ciicsh.gto.salarymanagement.entity.po.PrApprovalHistoryPO;
+import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrApprovalHistoryPO;
  * @author Neo Jiang
  * @since 2018-02-01
  */
-public interface PrApprovalHistoryMapper extends BaseMapper<PrApprovalHistoryPO> {
+@Component
+public interface ApprovalHistoryMapper extends BaseMapper<ApprovalHistoryPO> {
 
 }

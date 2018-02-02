@@ -6,7 +6,6 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
-import java.io.Serializable;
 
 /**
  * <p>
@@ -17,7 +16,7 @@ import java.io.Serializable;
  * @since 2018-02-01
  */
 @TableName("pr_approval_history")
-public class PrApprovalHistoryPO extends Model<PrApprovalHistoryPO> {
+public class ApprovalHistoryPO extends Model<ApprovalHistoryPO> {
 
     private static final long serialVersionUID = 1L;
 
