@@ -84,8 +84,8 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
-    public List<PrCustSubBatchPO> selectSubBatchList(String code, Integer status) {
-        return normalBatchMapper.selectSubBatchList(code, status);
+    public List<PrCustSubBatchPO> selectSubBatchList(String code) {
+        return normalBatchMapper.selectSubBatchList(code);
     }
 
     @Override

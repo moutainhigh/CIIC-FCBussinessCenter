@@ -27,7 +27,7 @@ public interface PrNormalBatchService {
 
     int update(PrNormalBatchPO normalBatchPO);
 
-    List<PrCustSubBatchPO> selectSubBatchList(String code, Integer status);
+    List<PrCustSubBatchPO> selectSubBatchList(String code);
 
     Integer deleteBatchByCodes(List<String> codes);
 

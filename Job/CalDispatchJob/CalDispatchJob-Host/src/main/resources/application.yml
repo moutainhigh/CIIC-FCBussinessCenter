@@ -6,7 +6,7 @@ spring:
     username: root
     password: a111111
   application:
-    name: fcoperation-center-compute-task
+    name: fcbusiness-center-compute-task
   cloud:
     stream:
       kafka:
@@ -44,14 +44,8 @@ spring:
       instance-count: 2
       instance-index: 1
 
-mongo:
-  host: 172.16.9.16
-  port: 27017
-  database: payroll_db
-  userName: ciicit
-  pwd: ciicit!#%
 server:
-  port: 7777
+  port: 7033
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/**.xml

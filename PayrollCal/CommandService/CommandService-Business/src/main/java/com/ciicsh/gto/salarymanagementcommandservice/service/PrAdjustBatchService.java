@@ -40,4 +40,13 @@ public interface PrAdjustBatchService {
      */
     int updateBatchStatus(String batchCode, int status, String modifiedBy);
 
+    Integer deleteAdjustBatchByCodes(List<String> codes);
+
+    /**
+     * 只有所有调整批次状态是薪资已到账，才可以新增调整批次
+     * @param originBatchCode
+     * @return
+     */
+    int checkAdjustBatch(String originBatchCode);
+
 }
