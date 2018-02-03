@@ -6,6 +6,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +43,6 @@ public interface PrGroupService {
      * @return 薪资组code
      */
     int addItem(PrPayrollGroupPO paramItem);
-
-    /**
-     * 获取薪资组名称列表
-     * @param managementId 管理方ID
-     * @return 薪资组名称列表
-     */
-    List<String> getNameList(String managementId);
 
     /**
      * 从薪资组里删除薪资项
@@ -101,4 +95,10 @@ public interface PrGroupService {
      * @return
      */
     PrPayrollGroupHistoryPO getLastVersion(String srcCode);
+
+    /**
+     * 获取薪资组名称列表
+     * @return
+     */
+    List<HashMap<String, String>> getPrGroupNameList(String query);
 }

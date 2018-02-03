@@ -3,7 +3,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
 /**
  * Created by jiangtianning on 2017/9/12.
  */
-public enum CertificateTypeEnum implements IValuedEnum {
+public enum CertificateTypeEnum implements ValuedEnum {
     ID_CARD(1, "身份证"), //身份证
     PASSPORT(2, "护照"), //护照
     OFFICER_CARD(3, "军警官证"), //军警官证

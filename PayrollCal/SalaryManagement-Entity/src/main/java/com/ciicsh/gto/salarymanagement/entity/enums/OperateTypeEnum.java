@@ -3,7 +3,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
 /**
  * Created by bill on 17/12/11.
  */
-public enum  OperateTypeEnum implements  IValuedEnum {
+public enum  OperateTypeEnum implements ValuedEnum {
 
     ADD("添加",1),
 

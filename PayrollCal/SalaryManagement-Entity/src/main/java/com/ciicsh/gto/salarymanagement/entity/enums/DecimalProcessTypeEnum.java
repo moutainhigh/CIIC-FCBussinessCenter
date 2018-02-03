@@ -4,7 +4,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
  * Created by jiangtianning on 2017/9/8.
  * @author jiangtianning
  */
-public enum DecimalProcessTypeEnum implements IValuedEnum {
+public enum DecimalProcessTypeEnum implements ValuedEnum {
     /**
      * 四舍五入
      */

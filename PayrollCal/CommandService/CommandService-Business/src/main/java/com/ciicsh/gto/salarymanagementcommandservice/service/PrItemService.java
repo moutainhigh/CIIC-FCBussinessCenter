@@ -7,6 +7,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 import scala.annotation.meta.param;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,14 +36,6 @@ public interface PrItemService {
     PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String code, Integer pageNum, Integer pageSize);
 
     /**
-     * 查询薪资项列表
-     * @param paramItem
-     * @param pageNum
-     * @return
-     */
-    PageInfo<PrItemEntity> searchPrItemList(PrItemEntity paramItem, Integer pageNum);
-
-    /**
      * 获取一个薪资项
      * @param id 查询参数
      * @return 结果项
@@ -64,13 +57,6 @@ public interface PrItemService {
     int addList(List<PrPayrollItemPO> paramList);
 
     /**
-     * 获取薪资项名称列表
-     * @param managementId 管理方ID
-     * @return 名称列表
-     */
-    List<String> getNameList(@Param("managementId") String managementId);
-
-    /**
      * 更新一个薪资项模板
      * @param param 更新薪资项实体
      * @return 更新条数
@@ -79,10 +65,9 @@ public interface PrItemService {
 
     /**
      * 获取薪资项类型列表
-     * @param managementId
      * @return
      */
-    List<Integer> getTypeList(@Param("managementId") String managementId);
+    List<HashMap<String, Object>> getTypeList();
 
     /**
      * 通过id来删除薪资项
