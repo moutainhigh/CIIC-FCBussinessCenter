@@ -2,19 +2,16 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.FileDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.FileServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.file.RequestForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.file.ResponseForFile;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -114,7 +111,7 @@ public class TaskFileController extends BaseController {
      * @param fileDTO
      * @return
      */
-    @RequestMapping(value = "downloadTaxFile")
+    @RequestMapping(value = "downloadTaxFile", method = RequestMethod.GET)
     public void downloadTaxFile(FileDTO fileDTO, HttpServletResponse response) {
         InputStream inputStream = null;
         ByteArrayOutputStream out = null;

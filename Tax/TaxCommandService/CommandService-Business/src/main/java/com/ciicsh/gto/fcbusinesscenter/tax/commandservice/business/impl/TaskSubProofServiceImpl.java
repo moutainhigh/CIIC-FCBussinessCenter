@@ -15,7 +15,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -290,7 +289,13 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                     unCombinedIds.addAll(combinedSubIds);
                 }
                 //将合并的id置为不可用
-                baseMapper.updateSubIdsByCombinedIds(str);
+                TaskSubProofPO taskSubProofPOCombine = new TaskSubProofPO();
+                taskSubProofPOCombine.setActive(false);
+                EntityWrapper wrapperPO = new EntityWrapper();
+                wrapperPO.setEntity(new TaskSubProofPO());
+                wrapperPO.in(" id ",str);
+                baseMapper.update(taskSubProofPOCombine,wrapperPO);
+
             }
             //修改完税凭证子任务
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
@@ -321,19 +326,32 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Override
     public void splitTaskProofByRes(RequestForProof requestForProof) {
         if (requestForProof.getId() != null && !"".equals(requestForProof.getId())) {
-            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+            TaskSubProofPO taskSubProofPOCombine = new TaskSubProofPO();
             //主键ID
-            taskSubProofPO.setId(requestForProof.getId());
+            taskSubProofPOCombine.setId(requestForProof.getId());
+            //修改人
+            taskSubProofPOCombine.setModifiedBy(requestForProof.getModifiedBy());
+            //修改时间
+            taskSubProofPOCombine.setModifiedTime(LocalDateTime.now());
+            //是否可用
+            taskSubProofPOCombine.setActive(false);
+            //将合并的任务置为失效状态
+            baseMapper.updateById(taskSubProofPOCombine);
+
+            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+            //设置合并后的任务ID为空
+            taskSubProofPO.setTaskSubProofId(null);
             //修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //修改时间
             taskSubProofPO.setModifiedTime(LocalDateTime.now());
-            //是否可用
-            taskSubProofPO.setActive(false);
-            //将合并的任务置为失效状态
-            baseMapper.updateById(taskSubProofPO);
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubProofPO());
+            wrapper.andNew("is_active = {0}", true);
+            wrapper.andNew("task_sub_proof_id = {0}",requestForProof.getId());
             //根据合并的ID将原子任务的合并ID置为空
-            baseMapper.updateSubTaskProofSubId(taskSubProofPO);
+            baseMapper.update(taskSubProofPO,wrapper);
+
         }
     }
 
@@ -468,5 +486,29 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         responseForSubProofDetail.setTotalNum(page.getTotal());
 
         return responseForSubProofDetail;
+    }
+
+    /**
+     * 根据完税凭证子任务ID查询申请记录
+     * @param subProofId
+     * @return
+     */
+    @Override
+    public List<TaskSubProofDetailPO> querySubProofDetailList(Long subProofId) {
+        List<TaskSubProofDetailPO> taskSubProofDetailPOList = new ArrayList<>();
+        StringBuffer sbCombinedParams = new StringBuffer();
+        sbCombinedParams.append(subProofId);
+        //根据子任务ID判断该子任务是不是合并任务
+        List<Long> longList = baseMapper.querySubIdsByCombinedIds(subProofId.toString());
+        if (longList.size() < 1) {
+            longList.add(subProofId);
+        }
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubProofDetailPO());
+        Long[] ids = longList.toArray(new Long[longList.size()]);
+        wrapper.in("task_sub_proof_id",ids);
+        wrapper.andNew("is_active = {0}",true);
+        taskSubProofDetailPOList = taskSubProofDetailMapper.selectList(wrapper);
+        return taskSubProofDetailPOList;
     }
 }

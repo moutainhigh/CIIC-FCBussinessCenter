@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
@@ -35,7 +36,7 @@ public class TaskSubProofPO implements Serializable {
     /**
      * 凭证子任务ID（非空，则记录合并后的任务ID）
      */
-	@TableField("task_sub_proof_id")
+	@TableField(value="task_sub_proof_id",fill= FieldFill.UPDATE)
 	private Long taskSubProofId;
     /**
      * 任务编号

@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
@@ -91,4 +92,10 @@ public interface TaskSubProofService {
      */
     ResponseForSubProofDetail queryTaskSubProofDetail(RequestForProof requestForProof);
 
+    /**
+     * 根据子任务ID查询申请明细列表
+     * @param subProofId
+     * @return
+     */
+    List<TaskSubProofDetailPO> querySubProofDetailList(Long subProofId);
 }
