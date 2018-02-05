@@ -3,7 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 import com.baomidou.mybatisplus.plugins.Page;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * @author yuantongqing on 2017/12/19
@@ -27,7 +27,7 @@ public class CalculationBatchDetailBO {
     /**
      * 所得期间
      */
-    private Date period;
+    private LocalDate period;
     /**
      * 所得项目
      */
@@ -351,11 +351,11 @@ public class CalculationBatchDetailBO {
         this.idNo = idNo;
     }
 
-    public Date getPeriod() {
+    public LocalDate getPeriod() {
         return period;
     }
 
-    public void setPeriod(Date period) {
+    public void setPeriod(LocalDate period) {
         this.period = period;
     }
 

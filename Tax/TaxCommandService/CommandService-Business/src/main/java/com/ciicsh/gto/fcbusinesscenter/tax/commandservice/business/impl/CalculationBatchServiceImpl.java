@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -222,7 +223,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     logger.debug("...有申报服务");
                 }
                 //申报子任务关键字(申报账户，所得期间)
-                String key = cbd.getDeclareAccount()+DateTimeKit.format(cbd.getPeriod(),"YYYY-MM");
+                String key = cbd.getDeclareAccount()+  DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                 TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
                 BeanUtils.copyProperties(cbd,taskSubDeclareDetailPO);//copy计算批次明细信息
@@ -257,7 +258,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     logger.debug("...有划款服务");
                 }
                 //划款子任务关键字(缴纳账户，所得期间)
-                String key = cbd.getPayAccount()+DateTimeKit.format(cbd.getPeriod(),"YYYY-MM");
+                String key = cbd.getPayAccount()+DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                 TaskSubMoneyDetailPO taskSubMoneyDetailPO = new TaskSubMoneyDetailPO();
                 BeanUtils.copyProperties(cbd,taskSubMoneyDetailPO);//copy计算批次明细信息
@@ -290,7 +291,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     logger.debug("...有缴纳服务");
                 }
                 //缴纳子任务关键字(缴纳账户，所得期间)
-                String key = cbd.getPayAccount()+DateTimeKit.format(cbd.getPeriod(),"YYYY-MM");
+                String key = cbd.getPayAccount()+DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                 TaskSubPaymentDetailPO taskSubPaymentDetailPO = new TaskSubPaymentDetailPO();
                 BeanUtils.copyProperties(cbd,taskSubPaymentDetailPO);//copy计算批次明细信息
@@ -326,7 +327,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     logger.debug("...供应商处理");
                 }
                 //供应商处理子任务关键字(供应商，申报账户，所得期间)
-                String key = cbd.getSupportName() + cbd.getDeclareAccount()+DateTimeKit.format(cbd.getPeriod(),"YYYY-MM");
+                String key = cbd.getSupportName() + cbd.getDeclareAccount()+DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                 TaskSubSupplierDetailPO taskSubSupplierDetailPO = new TaskSubSupplierDetailPO();
                 BeanUtils.copyProperties(cbd,taskSubSupplierDetailPO);//copy计算批次明细信息

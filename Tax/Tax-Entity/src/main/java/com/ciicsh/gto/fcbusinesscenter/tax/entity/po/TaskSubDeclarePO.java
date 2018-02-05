@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -47,7 +48,7 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
     /**
      * 个税期间
      */
-	private Date period;
+	private LocalDate period;
     /**
      * 滞纳金
      */
@@ -147,11 +148,11 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 		this.declareAccount = declareAccount;
 	}
 
-	public Date getPeriod() {
+	public LocalDate getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Date period) {
+	public void setPeriod(LocalDate period) {
 		this.period = period;
 	}
 
