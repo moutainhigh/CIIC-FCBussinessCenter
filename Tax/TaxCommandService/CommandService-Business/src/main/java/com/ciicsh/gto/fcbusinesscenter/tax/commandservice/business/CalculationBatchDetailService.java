@@ -3,7 +3,6 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForBatchDetail;
 
@@ -21,10 +20,10 @@ public interface CalculationBatchDetailService {
 
     /**
      * 查询计算批次明细信息
-     * @param requestForEmployees
+     * @param
      * @return
      */
-    ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees);
+//    ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees);
 
     /**
      * 条件查询计算批次明细
