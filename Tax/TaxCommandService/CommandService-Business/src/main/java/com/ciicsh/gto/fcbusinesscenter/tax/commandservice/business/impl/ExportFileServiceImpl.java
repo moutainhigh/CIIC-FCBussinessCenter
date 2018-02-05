@@ -133,14 +133,18 @@ public class ExportFileServiceImpl implements ExportFileService {
         }
         //填表日期相关信息-A3
         HSSFCell cellA3 = row3.getCell(0);
-        String dateStr = "";
         if (null == cellA3) {
             cellA3 = row3.createCell(1);
         }
+        //获取原文本框的值
         String oldDateStr = cellA3.getStringCellValue();
+        //年
         int year = LocalDate.now().getYear();
+        //月
         int month = LocalDate.now().getMonthValue();
+        //日
         int day = LocalDate.now().getDayOfMonth();
+        //匹配空白字符,包括空格、制表符、换页符
         String[] arrs = oldDateStr.split("\\s+");
         StringBuilder stringBuilder = new StringBuilder("");
         for (int i = 0; i < arrs.length; i++) {

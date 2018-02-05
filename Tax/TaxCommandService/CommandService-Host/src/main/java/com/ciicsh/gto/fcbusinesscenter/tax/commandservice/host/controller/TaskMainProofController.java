@@ -149,6 +149,8 @@ public class TaskMainProofController extends BaseController implements TaskMainP
     @Override
     @PostMapping(value = "/invalidTaskProof")
     public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        // TODO 临时设置修改人
+        //设置修改人
         taskProofDTO.setModifiedBy("admin");
         JsonResult jr = new JsonResult();
         try {

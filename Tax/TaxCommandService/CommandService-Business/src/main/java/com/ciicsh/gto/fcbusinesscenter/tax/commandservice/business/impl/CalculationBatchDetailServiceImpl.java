@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
@@ -15,6 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,6 +164,36 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
                 responseForBatchDetail.setRowList(calculationBatchDetailBOList);
             }*/
             return responseForCalBatchDetail;
+        }
+    }
+
+    /**
+     * 条件查询计算批次明细
+     * @param requestForCalBatchDetail
+     * @return
+     */
+    @Override
+    public ResponseForCalBatchDetail queryTaxBatchDetailByRes(RequestForCalBatchDetail requestForCalBatchDetail) {
+        return null;
+    }
+
+    /**
+     * 批量恢复计算批次明细
+     * @param ids
+     */
+    @Override
+    public void queryCalculationBatchDetail(String[] ids) {
+        if (ids != null && !"".equals(ids)) {
+            CalculationBatchDetailPO calculationBatchDetailPO = new CalculationBatchDetailPO();
+            //是否暂缓
+            calculationBatchDetailPO.setDefer(false);
+            //修改时间
+            calculationBatchDetailPO.setModifiedTime(LocalDateTime.now());
+            EntityWrapper wrapper= new EntityWrapper();
+            wrapper.setEntity(new CalculationBatchDetailPO());
+            wrapper.in("id", ids);
+            //恢复计算批次明细
+            baseMapper.update(calculationBatchDetailPO, wrapper);
         }
     }
 }
