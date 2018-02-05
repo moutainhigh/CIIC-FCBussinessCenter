@@ -11,6 +11,8 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollTem
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +79,24 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
         params.put("createdBy", '1');
         params.put("modifiedBy", '1');
 
+        String effectiveTime = (String)params.get("effectiveTime");
+        if ( effectiveTime != null ) {
+            if (effectiveTime.isEmpty()) {
+                params.remove("effectiveTime");
+            } else {
+                params.put("effectiveTime", LocalDateTime.parse(effectiveTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+            }
+        }
+
+        String invalidTime = (String)params.get("invalidTime");
+        if ( invalidTime != null ) {
+            if (invalidTime.isEmpty()) {
+                params.remove("invalidTime");
+            } else {
+                params.put("invalidTime", LocalDateTime.parse(invalidTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+            }
+        }
+
         prsPayrollTemplateMapper.insert(params);
 
         return true;
@@ -86,6 +106,16 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
     public Boolean updatePrsPayrollTemplate(Map<String, Object> params) {
         // TODO get current user
         params.put("modifiedBy", '1');
+
+        String effectiveTime = (String)params.get("effectiveTime");
+        if ( effectiveTime != null && !effectiveTime.isEmpty() ) {
+            params.put("effectiveTime", LocalDateTime.parse(effectiveTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+        }
+
+        String invalidTime = (String)params.get("invalidTime");
+        if ( invalidTime != null && !invalidTime.isEmpty() ) {
+            params.put("invalidTime", LocalDateTime.parse(invalidTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+        }
 
         prsPayrollTemplateMapper.update(params);
 
