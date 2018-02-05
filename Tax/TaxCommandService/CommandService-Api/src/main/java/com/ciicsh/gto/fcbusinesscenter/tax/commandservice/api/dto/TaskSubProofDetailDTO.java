@@ -1,11 +1,14 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @author yuantongqing on 2017/12/16
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TaskSubProofDetailDTO {
 
     /**

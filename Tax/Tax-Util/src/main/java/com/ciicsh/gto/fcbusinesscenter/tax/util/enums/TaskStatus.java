@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.util.enums;
 
 /**
- * @author wuhua
+ * @author yuantongqing on 2018/01/24
  */
 public enum TaskStatus {
     /**

@@ -4,7 +4,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
  * Created by jiangtianning on 2017/12/6.
  * @author jiangtianning
  */
-public enum ApprovalStatusEnum implements IValuedEnum{
+public enum ApprovalStatusEnum implements ValuedEnum {
 
     /**
      * 草稿

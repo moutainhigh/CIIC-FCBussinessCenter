@@ -7,6 +7,7 @@ public class BatchAuditDTO {
     private String batchCode;
     private int status;
     private String comments;
+    private String result;
 
     public String getBatchCode() {
         return batchCode;
@@ -30,6 +31,14 @@ public class BatchAuditDTO {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 
 

@@ -23,5 +23,33 @@
 		WHERE back_tracking_batch_code = #{code}
 	</update>
 
+	<update id="updateBatchStatus">
+		UPDATE
+		pr_back_tracking_batch
+		SET
+		status = #{status},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE back_tracking_batch_code = #{code}
+	</update>
+
+	<delete id="deleteBatchByCodes">
+		DELETE FROM pr_back_tracking_batch
+		WHERE
+		status = 1
+		AND
+		back_tracking_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="checkBackTraceBatch" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM back_tracking_batch_code
+		WHERE origin_batch_code = #{originBatchCode} and status != 9;
+	</select>
 
 </mapper>

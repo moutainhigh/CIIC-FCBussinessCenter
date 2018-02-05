@@ -18,8 +18,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,10 +62,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
         if (null != requestForFile.getPageSize() && null != requestForFile.getCurrentNum()) {
             Page<FilePO> pageInfo = new Page<>(requestForFile.getCurrentNum(), requestForFile.getPageSize());
             filePOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取查询总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(filePOList);
             responseForFile.setRowList(filePOList);
-            responseForFile.setTotalNum(total);
+            responseForFile.setTotalNum(pageInfo.getTotal());
             responseForFile.setCurrentNum(requestForFile.getCurrentNum());
             responseForFile.setPageSize(requestForFile.getPageSize());
         } else {
@@ -87,10 +86,15 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
         Boolean flag = true;
         if (requestForFile.getId() != null) {
             FilePO filePO = new FilePO();
+            //设置主键ID
             filePO.setId(requestForFile.getId());
+            //设置是否可用
             filePO.setActive(false);
+            // TODO 临时设置修改人
+            //设置修改人
             filePO.setModifiedBy("adminDel");
-            filePO.setModifiedTime(new Date());
+            //设置修改时间
+            filePO.setModifiedTime(LocalDateTime.now());
             //删除文件:即修改数据为不可用
             flag =  super.insertOrUpdate(filePO);
         }
@@ -113,9 +117,12 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             FilePO filePO = new FilePO();
             filePO.setBusinessId(requestForFile.getBusinessId());
             filePO.setBusinessType(requestForFile.getBusinessType());
+            //文件路径
             filePO.setFilePath(url);
             filePO.setFilenameSource(fileName);
+            // TODO 临时设置创建人
             filePO.setCreatedBy("admin");
+            // TODO 临时设置修改人
             filePO.setModifiedBy("admin");
             flag = super.insertOrUpdate(filePO);
         } catch (Exception e) {

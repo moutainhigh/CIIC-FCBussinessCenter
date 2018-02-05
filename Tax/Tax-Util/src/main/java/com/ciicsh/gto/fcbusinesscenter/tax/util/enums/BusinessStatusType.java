@@ -8,19 +8,19 @@ public enum BusinessStatusType {
     /**
      * 处理中
      */
-    HANDLING("21"),
+    HANDLING("01"),
     /**
-     * 被退回
+     * 已完成
      */
-    COMPLETED("22"),
+    COMPLETED("02"),
+    /**
+     * 已退回
+     */
+    RETREATED("03"),
     /**
      * 已失效
      */
-    RETREATED("23"),
-    /**
-     * 已失效
-     */
-    FAILED("24");
+    FAILED("04");
 
     private String  message;
 

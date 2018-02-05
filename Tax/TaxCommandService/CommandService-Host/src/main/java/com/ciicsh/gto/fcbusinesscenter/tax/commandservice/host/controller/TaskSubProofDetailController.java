@@ -13,6 +13,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForEm
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTime;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,7 +63,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
     }
 
     /**
-     * 查询雇员信息(测试接口)
+     * 查询雇员信息 TODO 临时接口方法
      *
      * @param taskProofDTO
      * @return
@@ -221,9 +224,17 @@ public class TaskSubProofDetailController extends BaseController implements Task
             for (TaskSubProofDetailDTO taskSubProofDetailDTO : taskSubProofDetailDTOList) {
                 TaskSubProofDetailBO taskSubProofDetailBO = new TaskSubProofDetailBO();
                 BeanUtils.copyProperties(taskSubProofDetailDTO, taskSubProofDetailBO);
+                //设置个税期间起
+                if(taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart())){
+                    taskSubProofDetailBO.setIncomeStart(DateTimeKit.dateToLocalDate(taskSubProofDetailDTO.getIncomeStart()));
+                }
+                //设置个税期间止
+                if(taskSubProofDetailDTO.getIncomeEnd() != null && !"".equals(taskSubProofDetailDTO.getIncomeEnd())){
+                    taskSubProofDetailBO.setIncomeEnd(DateTimeKit.dateToLocalDate(taskSubProofDetailDTO.getIncomeEnd()));
+                }
                 //如果个税期间止为空，则赋值为个税期间起
                 if (taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null) {
-                    taskSubProofDetailBO.setIncomeEnd(taskSubProofDetailDTO.getIncomeStart());
+                    taskSubProofDetailBO.setIncomeEnd(DateTimeKit.dateToLocalDate(taskSubProofDetailDTO.getIncomeStart()));
                 }
                 taskSubProofDetailBOList.add(taskSubProofDetailBO);
             }

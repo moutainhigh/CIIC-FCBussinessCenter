@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author yuantongqing
@@ -60,7 +61,7 @@ public class TaskSubProofBO {
     /**
      * 创建时间
      */
-    private Date createdTime;
+    private LocalDateTime createdTime;
 
     /**
      * 修改人
@@ -70,7 +71,7 @@ public class TaskSubProofBO {
     /**
      * 修改时间
      */
-    private Date modifiedTime;
+    private LocalDateTime modifiedTime;
 
     /**
      * 是否可用
@@ -89,7 +90,7 @@ public class TaskSubProofBO {
     /**
      * 个税期间
      */
-    private Date period;
+    private LocalDate period;
 
     /**
      * 任务类型(01:自动,02:人工)
@@ -173,11 +174,11 @@ public class TaskSubProofBO {
         this.createdBy = createdBy;
     }
 
-    public Date getCreatedTime() {
+    public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(Date createdTime) {
+    public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 
@@ -189,11 +190,11 @@ public class TaskSubProofBO {
         this.modifiedBy = modifiedBy;
     }
 
-    public Date getModifiedTime() {
+    public LocalDateTime getModifiedTime() {
         return modifiedTime;
     }
 
-    public void setModifiedTime(Date modifiedTime) {
+    public void setModifiedTime(LocalDateTime modifiedTime) {
         this.modifiedTime = modifiedTime;
     }
 
@@ -205,11 +206,11 @@ public class TaskSubProofBO {
         isActive = active;
     }
 
-    public Date getPeriod() {
+    public LocalDate getPeriod() {
         return period;
     }
 
-    public void setPeriod(Date period) {
+    public void setPeriod(LocalDate period) {
         this.period = period;
     }
 

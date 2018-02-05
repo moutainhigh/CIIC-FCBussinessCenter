@@ -3,19 +3,19 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TemplateProofApplyMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TemplateProofApplyPO">
-		<id column="id" property="id" />
-		<result column="template_no" property="templateNo" />
-		<result column="template_name" property="templateName" />
-		<result column="province" property="province" />
-		<result column="city" property="city" />
-		<result column="district" property="district" />
-		<result column="tax_organization" property="taxOrganization" />
-		<result column="is_active" property="isActive" />
-		<result column="created_time" property="createdTime" />
-		<result column="modified_time" property="modifiedTime" />
-		<result column="created_by" property="createdBy" />
-		<result column="modified_by" property="modifiedBy" />
-	</resultMap>
+	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TemplateProofApplyPO">-->
+		<!--<id column="id" property="id" />-->
+		<!--<result column="template_no" property="templateNo" />-->
+		<!--<result column="template_name" property="templateName" />-->
+		<!--<result column="province" property="province" />-->
+		<!--<result column="city" property="city" />-->
+		<!--<result column="district" property="district" />-->
+		<!--<result column="tax_organization" property="taxOrganization" />-->
+		<!--<result column="is_active" property="isActive" />-->
+		<!--<result column="created_time" property="createdTime" />-->
+		<!--<result column="modified_time" property="modifiedTime" />-->
+		<!--<result column="created_by" property="createdBy" />-->
+		<!--<result column="modified_by" property="modifiedBy" />-->
+	<!--</resultMap>-->
 
 </mapper>

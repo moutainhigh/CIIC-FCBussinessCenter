@@ -3,19 +3,19 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.FileMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.FilePO">
-		<id column="id" property="id" />
-		<result column="business_id" property="businessId" />
-		<result column="business_type" property="businessType" />
-		<result column="file_type" property="fileType" />
-		<result column="filename_source" property="filenameSource" />
-		<result column="filename_save" property="filenameSave" />
-		<result column="file_path" property="filePath" />
-		<result column="is_active" property="isActive" />
-		<result column="created_time" property="createdTime" />
-		<result column="modified_time" property="modifiedTime" />
-		<result column="created_by" property="createdBy" />
-		<result column="modified_by" property="modifiedBy" />
-	</resultMap>
+	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.FilePO">-->
+		<!--<id column="id" property="id" />-->
+		<!--<result column="business_id" property="businessId" />-->
+		<!--<result column="business_type" property="businessType" />-->
+		<!--<result column="file_type" property="fileType" />-->
+		<!--<result column="filename_source" property="filenameSource" />-->
+		<!--<result column="filename_save" property="filenameSave" />-->
+		<!--<result column="file_path" property="filePath" />-->
+		<!--<result column="is_active" property="isActive" />-->
+		<!--<result column="created_time" property="createdTime" />-->
+		<!--<result column="modified_time" property="modifiedTime" />-->
+		<!--<result column="created_by" property="createdBy" />-->
+		<!--<result column="modified_by" property="modifiedBy" />-->
+	<!--</resultMap>-->
 
 </mapper>

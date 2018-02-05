@@ -121,6 +121,7 @@ public class NormalBatchServiceImpl {
     }
 
     private List<DBObject> getPayItemList(PrCustBatchPO batchPO){
+
         List<PrPayrollItemPO> prList = null;
         List<DBObject> list = new ArrayList<>();
 

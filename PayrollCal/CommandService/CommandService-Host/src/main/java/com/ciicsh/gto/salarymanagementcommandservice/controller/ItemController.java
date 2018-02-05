@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -92,24 +89,19 @@ public class ItemController extends BaseController{
     @PutMapping(value = "/prItem/{code}")
     public JsonResult updatePrItem(@PathVariable("code") String code,
                                             @RequestBody PrPayrollItemPO paramItem) {
-
         paramItem.setItemCode(code);
         Map<String, Object> resultMap  = itemService.updateItem(paramItem);
         return JsonResult.success(resultMap);
     }
 
-    @GetMapping(value = "/prItemName")
-    public ResultEntity getPrItemNameList(@RequestParam("managementId") String managementId) {
-
-        List<String> resultList = itemService.getNameList(managementId);
-        return ResultEntity.success(resultList);
-    }
-
+    /**
+     * 获取薪资项类型列表
+     * @return
+     */
     @GetMapping(value = "/prItemType")
-    public ResultEntity getPrItemTypeList(@RequestParam("managementId") String managementId) {
-
-        List<Integer> resultList = itemService.getTypeList(managementId);
-        return ResultEntity.success(resultList);
+    public JsonResult getPrItemTypeList() {
+        List<HashMap<String, Object>> resultList = itemService.getTypeList();
+        return JsonResult.success(resultList);
     }
 
     /**

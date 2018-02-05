@@ -7,7 +7,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
 /**
  * 薪资计算：雇员数据导入规则
  */
-public enum CompExcelImportEmum implements IValuedEnum {
+public enum CompExcelImportEmum implements ValuedEnum {
     OVERRIDE_EXPORT("覆盖导入",1),
     MODIFY_EXPORT("修改导入",2),
     APPEND_EXPORT("追加导入",3),

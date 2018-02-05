@@ -106,12 +106,6 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    public List<String> getNameList(String managementId) {
-//        List<String> nameList = prGroupMapper.selectNameList(managementId);
-        return null;
-    }
-
-    @Override
     public Map<String, Object> deletePrItemFromGroup(String prGroupId, String prItemId, String prItemName) {
 
         Map<String, Object> result = new HashMap<>();
@@ -264,6 +258,13 @@ public class PrGroupServiceImpl implements PrGroupService {
     public PrPayrollGroupHistoryPO getLastVersion(String srcCode) {
         PrPayrollGroupHistoryPO lastVersionData = prPayrollGroupHistoryMapper.selectLastVersionByCode(srcCode);
         return lastVersionData;
+    }
+
+    @Override
+    public List<HashMap<String, String>> getPrGroupNameList(String query) {
+        List<HashMap<String, String>> result = new ArrayList<>(50);
+        result = prPayrollGroupMapper.selectGroupNameListByName(query);
+        return result;
     }
 
     // 从公式中获取薪资项名称列表

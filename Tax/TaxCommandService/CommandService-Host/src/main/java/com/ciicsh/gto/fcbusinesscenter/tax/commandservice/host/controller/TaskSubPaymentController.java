@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * @author yuantongqing on 2018/01/02
  * 缴纳详情返回对象
@@ -65,10 +67,11 @@ public class TaskSubPaymentController extends BaseController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
+            // TODO 临时设置修改人
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
-            //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
-            requestForSubPayment.setStatus("23");
+            //任务状态:
+            requestForSubPayment.setStatus("03");
             taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -93,10 +96,11 @@ public class TaskSubPaymentController extends BaseController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
+            // TODO 临时设置修改人
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
-            //任务状态:21:已提交/处理中，22:被退回，23:已完成，24:已失效
-            requestForSubPayment.setStatus("22");
+            //任务状态
+            requestForSubPayment.setStatus("02");
             taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -123,7 +127,8 @@ public class TaskSubPaymentController extends BaseController {
             TaskSubPaymentDTO taskSubPaymentDTO = new TaskSubPaymentDTO();
             BeanUtils.copyProperties(taskSubPaymentPO, taskSubPaymentDTO);
             //个税期间
-            taskSubPaymentDTO.setPeriod(DateTimeKit.format(taskSubPaymentPO.getPeriod(), "YYYY-MM"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
+            taskSubPaymentDTO.setPeriod(taskSubPaymentPO.getPeriod().format(formatter));
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(taskSubPaymentDTO);

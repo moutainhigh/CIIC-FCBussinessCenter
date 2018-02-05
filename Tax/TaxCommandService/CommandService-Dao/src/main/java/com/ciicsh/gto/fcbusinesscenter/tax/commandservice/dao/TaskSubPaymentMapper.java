@@ -16,13 +16,4 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface TaskSubPaymentMapper extends BaseMapper<TaskSubPaymentPO> {
 
-    /**
-     * 修改缴纳子任务任务状态
-     * @param subPaymentIds
-     * @param status
-     * @param modifiedBy
-     * @return
-     */
-    Boolean updateTaskSubPaymentStatus(@Param("subPaymentIds") String[] subPaymentIds, @Param("status") String status, @Param("modifiedBy") String modifiedBy);
-
 }

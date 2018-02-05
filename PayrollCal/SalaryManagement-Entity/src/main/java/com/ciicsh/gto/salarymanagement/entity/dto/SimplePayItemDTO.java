@@ -17,7 +17,6 @@ public class SimplePayItemDTO {
      */
     private int itemType;
 
-
     public String getName() {
         return name;
     }

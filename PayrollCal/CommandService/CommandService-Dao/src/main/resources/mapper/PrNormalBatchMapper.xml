@@ -54,9 +54,9 @@
 		a.end_date,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
+		c.name as empGroupName,
 		b.pr_group_code,
 		b.is_template,
-		c.name as empGroupName,
 		c.emp_group_code,
 		b.group_name
 		FROM
@@ -122,16 +122,16 @@
 				AND c.name LIKE concat(#{empGroupName},'%')
 			</if>
 			<if test="code != null and code != '' and status == 0" >
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE adjust_batch_code LIKE concat(#{code},'%'))
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE adjust_batch_code LIKE concat(#{code},'%'))
 			</if>
 			<if test="code != null and code != '' and status != 0" >
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status} and adjust_batch_code LIKE concat(#{code},'%'))
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status} and adjust_batch_code LIKE concat(#{code},'%'))
 			</if>
 			<if test="(code == null or code == '') and status == 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch)
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch)
 			</if>
 			<if test="(code == null or code == '') and status != 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status})
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status})
 			</if>
 		UNION
 			SELECT
@@ -163,10 +163,10 @@
 				AND a.management_name LIKE concat(#{managementName},'%')
 			</if>
 			<if test="status != 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
 			</if>
 			<if test="status == 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
 			</if>
 			<if test="accountSetName != null and accountSetName != ''">
 				AND b.account_set_name LIKE concat(#{accountSetName},'%')
@@ -175,16 +175,16 @@
 				AND c.name LIKE concat(#{empGroupName},'%')
 			</if>
 			<if test="code != null and code != '' and status == 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE back_tracking_batch_code LIKE concat(#{code},'%'))
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE back_tracking_batch_code LIKE concat(#{code},'%'))
 			</if>
 			<if test="code != null and code != '' and status != 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status} AND back_tracking_batch_code LIKE concat(#{code},'%'))
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status} AND back_tracking_batch_code LIKE concat(#{code},'%'))
 			</if>
 			<if test="(code == null or code == '') and status != 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
 			</if>
 			<if test="(code == null or code == '') and status == 0">
-				AND a.code = (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
+				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
 			</if>
 	</select>
 
@@ -198,27 +198,21 @@
 	<select id="selectSubBatchList" resultMap="CustSubBatchMap">
 		SELECT
 			adjust_batch_code as code,
-			1 as batch_type,
+			2 as batch_type,
 			status
 		FROM
 			pr_adjust_batch
 		where
 			origin_batch_code = #{code}
-			<if test="status != 0">
-				AND status = #{status}
-			</if>
 		UNION
 		SELECT
 			back_tracking_batch_code as code,
-			2 as batch_type,
+			3 as batch_type,
 			status
 		FROM
 			pr_back_tracking_batch
 		where
 			origin_batch_code = #{code}
-			<if test="status != 0">
-				AND status = #{status}
-			</if>
 	</select>
 
 
@@ -322,6 +316,7 @@
 		SET
 		status = #{status},
 		comments = #{comments},
+		result_data = #{result},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE code = #{code}

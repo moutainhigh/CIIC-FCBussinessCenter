@@ -34,11 +34,7 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
      */
 	@TableField("back_tracking_batch_code")
 	private String backTrackingBatchCode;
-    /**
-     * 所属管理方ID
-     */
-	@TableField("management_id")
-	private String managementId;
+
     /**
      * 备注
      */
@@ -127,14 +123,6 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	public void setBackTrackingBatchCode(String backTrackingBatchCode) {
 		this.backTrackingBatchCode = backTrackingBatchCode;
-	}
-
-	public String getManagementId() {
-		return managementId;
-	}
-
-	public void setManagementId(String managementId) {
-		this.managementId = managementId;
 	}
 
 	public String getRemark() {
@@ -244,7 +232,6 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 			"id=" + id +
 			", originBatchCode=" + originBatchCode +
 			", backTrackingBatchCode=" + backTrackingBatchCode +
-			", managementId=" + managementId +
 			", remark=" + remark +
 			", status=" + status +
 			", backEmpAdjustFields=" + backEmpAdjustFields +

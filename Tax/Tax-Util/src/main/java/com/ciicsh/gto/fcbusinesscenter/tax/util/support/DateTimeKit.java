@@ -1,6 +1,10 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.util.support;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -658,5 +662,18 @@ public class DateTimeKit {
 	private static String yearAndSeason(Calendar cal) {
 		return new StringBuilder().append(cal.get(Calendar.YEAR)).append(cal.get(Calendar.MONTH) / 3 + 1).toString();
 	}
+
+	/**
+	 * java.util.Date --> java.time.LocalDate
+	 * @return
+	 */
+	public static LocalDate dateToLocalDate(Date date) {
+		Instant instant = date.toInstant();
+		ZoneId zone = ZoneId.systemDefault();
+		LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
+		LocalDate localDate = localDateTime.toLocalDate();
+		return localDate;
+	}
+
 	// ------------------------------------------------------------------------ Private method end
 }

@@ -33,6 +33,11 @@ public class EnumUtil {
     public static final String BUSINESS_STATUS_TYPE = "BS_TYPE";
 
     /**
+     * 任务状态
+     */
+    public static final String TASK_STATUS = "TS";
+
+    /**
      * 获取枚举中文
      *
      * @param type
@@ -54,6 +59,8 @@ public class EnumUtil {
                 return BusinessStatus.valueOf(EnumUtil.BUSINESS_STATUS + key).getMessage();
             } else if (type.equals(EnumUtil.BUSINESS_STATUS_TYPE)) {
                 return BusinessStatusType.valueOf(key).getMessage();
+            } else if (type.equals(EnumUtil.TASK_STATUS)) {
+                return TaskStatus.valueOf(EnumUtil.TASK_STATUS + key).getMessage();
             }
         }
 

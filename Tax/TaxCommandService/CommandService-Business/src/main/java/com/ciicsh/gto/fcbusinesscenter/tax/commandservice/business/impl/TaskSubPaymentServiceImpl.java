@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPayment;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
@@ -15,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -78,21 +78,20 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         if (null != requestForSubPayment.getPageSize() && null != requestForSubPayment.getCurrentNum()) {
             Page<TaskSubPaymentPO> pageInfo = new Page<>(requestForSubPayment.getCurrentNum(), requestForSubPayment.getPageSize());
             taskSubPaymentPOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取查询总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(taskSubPaymentPOList);
             //获取缴纳任务状态中文名
             for (TaskSubPaymentPO p : taskSubPaymentPOList) {
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, p.getStatus()));
             }
             responseForSubPayment.setRowList(taskSubPaymentPOList);
-            responseForSubPayment.setTotalNum(total);
+            responseForSubPayment.setTotalNum(pageInfo.getTotal());
             responseForSubPayment.setCurrentNum(requestForSubPayment.getCurrentNum());
             responseForSubPayment.setPageSize(requestForSubPayment.getPageSize());
         } else {
             taskSubPaymentPOList = baseMapper.selectList(wrapper);
             //获取缴纳任务状态中文名
             for (TaskSubPaymentPO p : taskSubPaymentPOList) {
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, p.getStatus()));
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, p.getStatus()));
             }
             responseForSubPayment.setRowList(taskSubPaymentPOList);
         }
@@ -107,10 +106,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      */
     @Override
     public void completeTaskSubPayment(RequestForSubPayment requestForSubPayment) {
-        if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
-            //修改缴纳子任务状态为完成
-            baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
-        }
+        updateTaskSubPaymentStatus(requestForSubPayment);
     }
 
     /**
@@ -120,9 +116,28 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      */
     @Override
     public void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
+        updateTaskSubPaymentStatus(requestForSubPayment);
+    }
+
+    /**
+     * 修改缴纳任务状态
+     * @param requestForSubPayment
+     */
+    private void updateTaskSubPaymentStatus(RequestForSubPayment requestForSubPayment) {
         if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
-            //修改缴纳子任务状态为退回
-            baseMapper.updateTaskSubPaymentStatus(requestForSubPayment.getSubPaymentIds(), requestForSubPayment.getStatus(), requestForSubPayment.getModifiedBy());
+            TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
+            //更新缴纳任务状态
+            taskSubPaymentPO.setStatus(requestForSubPayment.getStatus());
+            //更新修改人
+            taskSubPaymentPO.setModifiedBy(requestForSubPayment.getModifiedBy());
+            //更新修改时间
+            taskSubPaymentPO.setModifiedTime(LocalDateTime.now());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubPaymentPO());
+            wrapper.andNew("is_active = {0}",true);
+            wrapper.in("id",requestForSubPayment.getSubPaymentIds());
+            //修改缴纳子任务状态
+            baseMapper.update(taskSubPaymentPO,wrapper);
         }
     }
 
@@ -135,7 +150,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
     @Override
     public TaskSubPaymentPO querySubPaymentById(long subPaymentId) {
         TaskSubPaymentPO taskSubPaymentPO = baseMapper.selectById(subPaymentId);
-        taskSubPaymentPO.setStatusName(EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS, taskSubPaymentPO.getStatus()));
+        taskSubPaymentPO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubPaymentPO.getStatus()));
         return taskSubPaymentPO;
     }
 }

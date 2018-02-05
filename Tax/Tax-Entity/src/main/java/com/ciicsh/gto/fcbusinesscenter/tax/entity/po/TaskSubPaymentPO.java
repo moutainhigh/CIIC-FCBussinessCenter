@@ -3,11 +3,13 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -50,7 +52,7 @@ public class TaskSubPaymentPO implements Serializable {
     /**
      * 个税期间
      */
-	private Date period;
+	private LocalDate period;
     /**
      * 个税总金额
      */
@@ -88,12 +90,12 @@ public class TaskSubPaymentPO implements Serializable {
      * 创建时间
      */
 	@TableField("created_time")
-	private Date createdTime;
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField("modified_time")
-	private Date modifiedTime;
+	@TableField(value="modified_time",fill = FieldFill.UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
@@ -156,11 +158,11 @@ public class TaskSubPaymentPO implements Serializable {
 		this.paymentAccount = paymentAccount;
 	}
 
-	public Date getPeriod() {
+	public LocalDate getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Date period) {
+	public void setPeriod(LocalDate period) {
 		this.period = period;
 	}
 
@@ -212,19 +214,19 @@ public class TaskSubPaymentPO implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

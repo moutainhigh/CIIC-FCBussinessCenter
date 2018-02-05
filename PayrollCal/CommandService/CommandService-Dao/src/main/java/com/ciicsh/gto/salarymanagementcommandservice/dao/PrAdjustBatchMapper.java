@@ -5,6 +5,8 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
   * 调整批次主表 Mapper 接口
@@ -23,4 +25,11 @@ public interface PrAdjustBatchMapper extends BaseMapper<PrAdjustBatchPO> {
     int updateHasMoneny(@Param("code") String batchCode,
                         @Param("hasMoney") boolean hasMoney,
                         @Param("modifiedBy") String modifiedBy);
+
+    int updateBatchStatus(@Param("code") String batchCode, @Param("status") int status, @Param("modifiedBy") String modifiedBy);
+
+    Integer deleteBatchByCodes(@Param("codes") List<String> codes);
+
+    int checkAdjustBatch(@Param("originBatchCode") String originBatchCode);
+
 }
