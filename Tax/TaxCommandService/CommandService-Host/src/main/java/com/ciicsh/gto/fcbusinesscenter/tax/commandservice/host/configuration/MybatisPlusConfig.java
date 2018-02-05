@@ -1,9 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.configuration;
 
 
-import com.baomidou.mybatisplus.mapper.MetaObjectHandler;
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.handler.TaxMetaObjectHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,13 +19,6 @@ public class MybatisPlusConfig {
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
     }
-
-    /**
-     * 公共字段自动填充
-     * @return
-     */
-    @Bean
-    public MetaObjectHandler myMetaObjectHandler() { return new TaxMetaObjectHandler(); }
 
     /**
      * mybatis-plus乐观锁插件

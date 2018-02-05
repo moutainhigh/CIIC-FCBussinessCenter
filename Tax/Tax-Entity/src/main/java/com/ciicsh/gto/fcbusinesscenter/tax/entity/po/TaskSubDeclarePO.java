@@ -1,28 +1,26 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
  * <p>
- * 计算批次
+ * 申报子任务
  * </p>
  *
-· * @author wuhua
- * @since 2017-12-26
+ * @author wuhua
+ * @since 2018-01-24
  */
-@TableName("tax_fc_calculation_batch")
-public class CalculationBatchPO extends Model<CalculationBatchPO> {
+@TableName("tax_fc_task_sub_declare")
+public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,17 +30,33 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	@TableId(value="id", type= IdType.AUTO)
 	private Long id;
     /**
-     * 引擎计算批次号
+     * 主任务ID（为空，则为合并任务，被合并的申报子任务可能来自不同的主任务）
      */
-	private String batchNo;
+	private Long taskMainId;
     /**
-     * 管理方编号
+     * 申报子任务ID（如果非空，则任务已合并，记录合并后的申报子任务ID）
      */
-	private String managerNo;
+	private Long taskSubDeclareId;
     /**
-     * 管理方名称
+     * 任务编号
      */
-	private String managerName;
+	private String taskNo;
+    /**
+     * 申报账户
+     */
+	private String declareAccount;
+    /**
+     * 个税期间
+     */
+	private LocalDate period;
+    /**
+     * 滞纳金
+     */
+	private BigDecimal overdue;
+    /**
+     * 罚金
+     */
+	private BigDecimal fine;
     /**
      * 个税总金额
      */
@@ -60,16 +74,9 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
      */
 	private Integer foreignerNum;
     /**
-     * 状态（未提交、审批中、审批通过、已关账）
+     * 状态
      */
 	private String status;
-
-	/**
-	 * 状态中文
-	 */
-	@TableField(exist = false)
-
-	private String statusName;
     /**
      * 是否可用
      */
@@ -78,12 +85,10 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
     /**
      * 创建时间
      */
-//    @DateTimeFormat(pattern="yyyy-MM-dd")
-	private LocalDateTime createdTime;
+	private Date createdTime;
     /**
      * 修改时间
      */
-    @TableField(value="modified_time",fill = FieldFill.UPDATE)
 	private Date modifiedTime;
     /**
      * 创建人
@@ -93,11 +98,15 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
      * 修改人
      */
 	private String modifiedBy;
+    /**
+     * 管理方编号
+     */
+	private String managerNo;
+    /**
+     * 管理方名称
+     */
+	private String managerName;
 
-	/**
-	 *主任务id
-	 */
-	private Long taskMainId;
 
 	public Long getId() {
 		return id;
@@ -107,28 +116,60 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.id = id;
 	}
 
-	public String getBatchNo() {
-		return batchNo;
+	public Long getTaskMainId() {
+		return taskMainId;
 	}
 
-	public void setBatchNo(String batchNo) {
-		this.batchNo = batchNo;
+	public void setTaskMainId(Long taskMainId) {
+		this.taskMainId = taskMainId;
 	}
 
-	public String getManagerNo() {
-		return managerNo;
+	public Long getTaskSubDeclareId() {
+		return taskSubDeclareId;
 	}
 
-	public void setManagerNo(String managerNo) {
-		this.managerNo = managerNo;
+	public void setTaskSubDeclareId(Long taskSubDeclareId) {
+		this.taskSubDeclareId = taskSubDeclareId;
 	}
 
-	public String getManagerName() {
-		return managerName;
+	public String getTaskNo() {
+		return taskNo;
 	}
 
-	public void setManagerName(String managerName) {
-		this.managerName = managerName;
+	public void setTaskNo(String taskNo) {
+		this.taskNo = taskNo;
+	}
+
+	public String getDeclareAccount() {
+		return declareAccount;
+	}
+
+	public void setDeclareAccount(String declareAccount) {
+		this.declareAccount = declareAccount;
+	}
+
+	public LocalDate getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(LocalDate period) {
+		this.period = period;
+	}
+
+	public BigDecimal getOverdue() {
+		return overdue;
+	}
+
+	public void setOverdue(BigDecimal overdue) {
+		this.overdue = overdue;
+	}
+
+	public BigDecimal getFine() {
+		return fine;
+	}
+
+	public void setFine(BigDecimal fine) {
+		this.fine = fine;
 	}
 
 	public BigDecimal getTaxAmount() {
@@ -179,19 +220,11 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.isActive = isActive;
 	}
 
-	/*public Date getCreatedTime() {
+	public Date getCreatedTime() {
 		return createdTime;
 	}
 
 	public void setCreatedTime(Date createdTime) {
-		this.createdTime = createdTime;
-	}*/
-
-	public LocalDateTime getCreatedTime() {
-		return createdTime;
-	}
-
-	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
@@ -219,20 +252,20 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public String getStatusName() {
-		return statusName;
+	public String getManagerNo() {
+		return managerNo;
 	}
 
-	public void setStatusName(String statusName) {
-		this.statusName = statusName;
+	public void setManagerNo(String managerNo) {
+		this.managerNo = managerNo;
 	}
 
-	public Long getTaskMainId() {
-		return taskMainId;
+	public String getManagerName() {
+		return managerName;
 	}
 
-	public void setTaskMainId(Long taskMainId) {
-		this.taskMainId = taskMainId;
+	public void setManagerName(String managerName) {
+		this.managerName = managerName;
 	}
 
 	@Override
@@ -242,11 +275,15 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 
 	@Override
 	public String toString() {
-		return "CalculationBatch{" +
+		return "TaskSubDeclare{" +
 			"id=" + id +
-			", batchNo=" + batchNo +
-			", managerNo=" + managerNo +
-			", managerName=" + managerName +
+			", taskMainId=" + taskMainId +
+			", taskSubDeclareId=" + taskSubDeclareId +
+			", taskNo=" + taskNo +
+			", declareAccount=" + declareAccount +
+			", period=" + period +
+			", overdue=" + overdue +
+			", fine=" + fine +
 			", taxAmount=" + taxAmount +
 			", headcount=" + headcount +
 			", chineseNum=" + chineseNum +
@@ -257,6 +294,8 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
 			", modifiedBy=" + modifiedBy +
+			", managerNo=" + managerNo +
+			", managerName=" + managerName +
 			"}";
 	}
 }
