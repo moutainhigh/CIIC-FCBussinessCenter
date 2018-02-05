@@ -9,13 +9,18 @@ import java.util.Date;
  * @author yuantongqing on 2017/12/19
  */
 public class CalculationBatchDetailBO {
+
     private Long id;
+
+    private Long calculationBatchId;
 
     private String employeeNo;
 
     private String employeeName;
 
     private String idType;
+
+    private String idTypeName;
 
     private String idNo;
 
@@ -27,6 +32,7 @@ public class CalculationBatchDetailBO {
      * 所得项目
      */
     private String incomeSubject;
+    private String incomeSubjectName;
     /**
      * 收入额
      */
@@ -180,6 +186,30 @@ public class CalculationBatchDetailBO {
      * 是否划款完成
      */
     private Boolean isTranferred;
+
+    public String getIdTypeName() {
+        return idTypeName;
+    }
+
+    public void setIdTypeName(String idTypeName) {
+        this.idTypeName = idTypeName;
+    }
+
+    public String getIncomeSubjectName() {
+        return incomeSubjectName;
+    }
+
+    public void setIncomeSubjectName(String incomeSubjectName) {
+        this.incomeSubjectName = incomeSubjectName;
+    }
+
+    public Long getCalculationBatchId() {
+        return calculationBatchId;
+    }
+
+    public void setCalculationBatchId(Long calculationBatchId) {
+        this.calculationBatchId = calculationBatchId;
+    }
 
     public String getDeclareAccount() {
         return declareAccount;
