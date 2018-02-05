@@ -1,8 +1,7 @@
 package com.ciicsh.caldispatchjob.compute.messageBus;
 
-import com.ciicsh.caldispatchjob.compute.service.ComputeServiceImpl;
-import com.ciicsh.caldispatchjob.compute.service.EmpGroupServiceImpl;
-import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
+import com.ciicsh.caldispatchjob.compute.service.*;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
@@ -32,12 +31,18 @@ public class PayrollReceiver {
     private NormalBatchServiceImpl batchService;
 
     @Autowired
+    private AdjustBatchServiceImpl adjustBatchService;
+
+    @Autowired
+    private BackTraceBatchServiceImpl backTraceBatchService;
+
+    @Autowired
     private ComputeServiceImpl computeService;
 
     @StreamListener(PayrollSink.INPUT)
     public void receive(PayrollMsg message){
         logger.info("received from batchCode : " + message.getBatchCode());
-        processNormalBatch(message.getBatchCode(), message.getOperateType());
+        processBatchInfo(message.getBatchCode(), message.getOperateType(),message.getBatchType());
     }
 
     @StreamListener(PayrollSink.EMP_GROUP_INPUT)
@@ -78,15 +83,25 @@ public class PayrollReceiver {
     }
 
     /**
-     * 订阅正常批次：新增或者删除
+     * 订阅批次：新增或者删除
      * @param batchCode
      * @param optType
      */
-    private void processNormalBatch(String batchCode, int optType){
-        if(optType == OperateTypeEnum.ADD.getValue()){
-            batchService.batchInsertOrUpdateNormalBatch(batchCode);
-        }else if(optType == OperateTypeEnum.DELETE.getValue()){
-            batchService.deleteNormalBatch(batchCode);
+    private void processBatchInfo(String batchCode, int optType, int batchType){
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            if (optType == OperateTypeEnum.ADD.getValue()) {
+                batchService.batchInsertOrUpdateNormalBatch(batchCode);
+            } else if (optType == OperateTypeEnum.DELETE.getValue()) {
+                batchService.deleteNormalBatch(batchCode);
+            }
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
+            if (optType == OperateTypeEnum.DELETE.getValue()) {
+                adjustBatchService.deleteAdjustBatch(batchCode);
+            }
+        }else {
+            if (optType == OperateTypeEnum.DELETE.getValue()) {
+                backTraceBatchService.deleteBackTraceBatch(batchCode);
+            }
         }
     }
 

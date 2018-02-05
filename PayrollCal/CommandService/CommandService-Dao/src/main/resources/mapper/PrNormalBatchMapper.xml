@@ -204,9 +204,6 @@
 			pr_adjust_batch
 		where
 			origin_batch_code = #{code}
-			<if test="status != 0">
-				AND status = #{status}
-			</if>
 		UNION
 		SELECT
 			back_tracking_batch_code as code,
@@ -216,9 +213,6 @@
 			pr_back_tracking_batch
 		where
 			origin_batch_code = #{code}
-			<if test="status != 0">
-				AND status = #{status}
-			</if>
 	</select>
 
 

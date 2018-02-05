@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import com.mongodb.DBObject;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -39,4 +40,9 @@ public interface PrBackTrackingBatchService {
      * @return
      */
     int updateBatchStatus(String batchCode, int status, String modifiedBy);
+
+    Integer deleteBackTraceBatchByCodes(List<String> codes);
+
+    int checkBackTraceBatch(String originBatchCode);
+
 }

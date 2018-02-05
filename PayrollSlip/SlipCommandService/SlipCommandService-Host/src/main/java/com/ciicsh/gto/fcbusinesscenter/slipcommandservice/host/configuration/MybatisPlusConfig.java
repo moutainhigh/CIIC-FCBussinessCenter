@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.configuration;
 
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
+import com.baomidou.mybatisplus.plugins.PerformanceInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,5 +18,11 @@ public class MybatisPlusConfig {
         return new PaginationInterceptor();
     }
 
+    @Bean
+    public PerformanceInterceptor performanceInterceptor() {
+        PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
+        performanceInterceptor.setFormat(true);
+        return performanceInterceptor;
+    }
 }
 

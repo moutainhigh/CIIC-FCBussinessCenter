@@ -4,7 +4,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
  * Created by jiangtianning on 2017/9/8.
  * @author jiangtianning
  */
-public interface IValuedEnum {
+public interface ValuedEnum {
 
     /**
      * 获取枚举值

@@ -3,7 +3,11 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
@@ -15,6 +19,7 @@ import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
@@ -80,6 +85,12 @@ public class NormalBatchController {
 
     @Autowired
     private NormalBatchMongoOpt normalBatchMongoOpt;
+
+    @Autowired
+    private AdjustBatchMongoOpt adjustBatchMongoOpt;
+
+    @Autowired
+    private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
 
     @Autowired
     private PrAccountSetService accountSetService;
@@ -232,8 +243,8 @@ public class NormalBatchController {
     }
 
     @GetMapping("/getSubBatchList")
-    public JsonResult getSubBatchList(@RequestParam String code, @RequestParam Integer status){
-        List<PrCustSubBatchPO> list = batchService.selectSubBatchList(code,status);
+    public JsonResult getSubBatchList(@RequestParam String code){
+        List<PrCustSubBatchPO> list = batchService.selectSubBatchList(code);
         return JsonResult.success(list);
     }
 
@@ -256,6 +267,7 @@ public class NormalBatchController {
                 //send message to kafka
             PayrollMsg msg = new PayrollMsg();
             msg.setBatchCode(batchCodes);
+            msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
             msg.setOperateType(OperateTypeEnum.DELETE.getValue());
             sender.Send(msg);
 
@@ -428,18 +440,46 @@ public class NormalBatchController {
         }
     }
 
-    @GetMapping(value = "/downLoad/{batchCode}")
-    public void downLoadOtherBatchImportFile(@PathVariable("batchCode") String batchCode, HttpServletResponse response) {
-        ExportParams exportParams = new ExportParams();
-        exportParams.setSheetName(batchCode);
-        exportParams.setType(ExcelType.HSSF);
-        exportParams.setAddIndex(true);
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String,Object> data = new HashMap<>();
-        data.put("test","test");
-        list.add(data);
+    @GetMapping(value = "/downLoad")
+    public void downLoadOtherBatchImportFile(@RequestParam String batchCode, @RequestParam int batchType, HttpServletResponse response) {
 
-        Workbook workbook = ExcelExportUtil. exportExcel(exportParams,Map.class,list);
+        List<DBObject> dbObjects = null;
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            dbObjects = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            dbObjects = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+        }else {
+            dbObjects = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+        }
+
+        List<ExcelExportEntity> excelExportEntities = new ArrayList<ExcelExportEntity>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        int count = 0;
+        for (DBObject dbObject: dbObjects) {
+
+            DBObject catalog = (DBObject) dbObject.get("catalog");
+
+            List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
+
+            HashMap<String, Object> map = payItems.stream().collect(
+                    HashMap<String, Object>::new,
+                    (m,c) -> m.put((String)c.get("item_name"), c.get("item_value")),
+                    (m,u)-> {}
+            );
+            list.add(map);
+            count ++;
+            if(count == 1) {
+                payItems.stream().forEach(item -> {
+                    excelExportEntities.add(new ExcelExportEntity((String) item.get("item_name"), item.get("item_name")));
+                });
+            }
+        }
+
+        ExportParams exportParams = new ExportParams();
+        exportParams.setSheetName("计算结果");
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, excelExportEntities, list);
+
         if (workbook != null);{
             downLoadExcel("计算结果.xlsx", response, workbook);
         }
@@ -452,8 +492,63 @@ public class NormalBatchController {
             response.setHeader("Content-Disposition",
                     "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
             workbook.write(response.getOutputStream());
+            workbook.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @PostMapping("/clearBatchField")
+    public JsonResult clearBatchField(@RequestParam String batchCode, @RequestParam String empCodes, @RequestParam String itemNames, @RequestParam int batchType){
+        int rowAffected = 0;
+
+        List<String> empCodeList = Arrays.asList(empCodes.split(","));
+        List<String> itemNameList = Arrays.asList(itemNames.split(","));
+
+        List<DBObject> findObjs = null;
+
+        for (String payItemName: itemNameList) {
+
+            Criteria numQuery = Criteria.where("batch_code").is(batchCode)
+                    .andOperator(
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).in(empCodeList),
+                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName).and("data_type").is(DataTypeEnum.NUM.getValue()))
+                    );
+
+            Criteria strQuery = Criteria.where("batch_code").is(batchCode)
+                    .andOperator(
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).in(empCodeList),
+                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
+                    );
+
+            if (batchType == BatchTypeEnum.NORMAL.getValue()) {
+
+                findObjs = normalBatchMongoOpt.list(numQuery);
+                if(findObjs == null || findObjs.size() == 0){
+                    rowAffected += normalBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
+                }else {
+                    rowAffected += normalBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
+                }
+
+            } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
+                findObjs = adjustBatchMongoOpt.list(numQuery);
+                if(findObjs == null || findObjs.size() == 0){
+                    rowAffected += adjustBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
+                }else {
+                    rowAffected += adjustBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
+                }
+
+            } else {
+                findObjs = backTraceBatchMongoOpt.list(numQuery);
+                if(findObjs == null){
+                    rowAffected += backTraceBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
+                }else {
+                    rowAffected += backTraceBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
+                }
+            }
+        }
+
+        return JsonResult.success(rowAffected);
+
     }
 }

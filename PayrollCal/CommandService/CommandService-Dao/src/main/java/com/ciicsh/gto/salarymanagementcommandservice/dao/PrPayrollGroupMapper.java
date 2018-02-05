@@ -7,6 +7,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,4 +49,11 @@ public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
      * @return
      */
     Integer deleteByCodes(@Param("codes") List<String> codes);
+
+    /**
+     * 获取薪资组名称 BY name 模糊查询
+     * @param name
+     * @return
+     */
+    List<HashMap<String, String>> selectGroupNameListByName(@Param("name") String name);
 }

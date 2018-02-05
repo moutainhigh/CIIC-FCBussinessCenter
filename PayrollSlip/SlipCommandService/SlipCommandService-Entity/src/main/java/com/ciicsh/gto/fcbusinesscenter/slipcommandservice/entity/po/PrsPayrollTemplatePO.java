@@ -163,107 +163,107 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
     this.id = id;
   }
 
-  public String getTemplatecode() {
+  public String getTemplateCode() {
     return templateCode;
   }
 
-  public void setTemplatecode(String templateCode) {
+  public void setTemplateCode(String templateCode) {
     this.templateCode = templateCode;
   }
 
-  public String getTemplatename() {
+  public String getTemplateName() {
     return templateName;
   }
 
-  public void setTemplatename(String templateName) {
+  public void setTemplateName(String templateName) {
     this.templateName = templateName;
   }
 
-  public String getManagementid() {
+  public String getManagementId() {
     return managementId;
   }
 
-  public void setManagementid(String managementId) {
+  public void setManagementId(String managementId) {
     this.managementId = managementId;
   }
 
-  public String getManagementname() {
+  public String getManagementName() {
     return managementName;
   }
 
-  public void setManagementname(String managementName) {
+  public void setManagementName(String managementName) {
     this.managementName = managementName;
   }
 
-  public String getAccountcode() {
+  public String getAccountCode() {
     return accountCode;
   }
 
-  public void setAccountcode(String accountCode) {
+  public void setAccountCode(String accountCode) {
     this.accountCode = accountCode;
   }
 
-  public String getAccountname() {
+  public String getAccountName() {
     return accountName;
   }
 
-  public void setAccountname(String accountName) {
+  public void setAccountName(String accountName) {
     this.accountName = accountName;
   }
 
-  public String getAccountitems() {
+  public String getAccountItems() {
     return accountItems;
   }
 
-  public void setAccountitems(String accountItems) {
+  public void setAccountItems(String accountItems) {
     this.accountItems = accountItems;
   }
 
-  public Integer getTemplatetype() {
+  public Integer getTemplateType() {
     return templateType;
   }
 
-  public void setTemplatetype(Integer templateType) {
+  public void setTemplateType(Integer templateType) {
     this.templateType = templateType;
   }
 
-  public String getTemplatefilename() {
+  public String getTemplateFileName() {
     return templateFileName;
   }
 
-  public void setTemplatefilename(String templateFileName) {
+  public void setTemplateFileName(String templateFileName) {
     this.templateFileName = templateFileName;
   }
 
-  public String getTemplatefileurl() {
+  public String getTemplateFileUrl() {
     return templateFileUrl;
   }
 
-  public void setTemplatefileurl(String templateFileUrl) {
+  public void setTemplateFileUrl(String templateFileUrl) {
     this.templateFileUrl = templateFileUrl;
   }
 
-  public Date getEffectivetime() {
+  public Date getEffectiveTime() {
     return effectiveTime;
   }
 
-  public void setEffectivetime(Date effectiveTime) {
+  public void setEffectiveTime(Date effectiveTime) {
     this.effectiveTime = effectiveTime;
   }
 
-  public Date getInvalidtime() {
+  public Date getInvalidTime() {
     return invalidTime;
   }
 
-  public void setInvalidtime(Date invalidTime) {
+  public void setInvalidTime(Date invalidTime) {
     this.invalidTime = invalidTime;
   }
 
-  public Boolean getIfencrypt() {
+  public Boolean getIfEncrypt() {
     return ifEncrypt;
   }
 
-  public void setIfencrypt(Boolean ifEncrypt) {
+  public void setIfEncrypt(Boolean ifEncrypt) {
     this.ifEncrypt = ifEncrypt;
   }
 
@@ -291,43 +291,43 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
     this.remark = remark;
   }
 
-  public Boolean getIsactive() {
+  public Boolean getIsActive() {
     return isActive;
   }
 
-  public void setIsactive(Boolean isActive) {
+  public void setIsActive(Boolean isActive) {
     this.isActive = isActive;
   }
 
-  public Date getCreatedtime() {
+  public Date getCreatedTime() {
     return createdTime;
   }
 
-  public void setCreatedtime(Date createdTime) {
+  public void setCreatedTime(Date createdTime) {
     this.createdTime = createdTime;
   }
 
-  public Date getModifiedtime() {
+  public Date getModifiedTime() {
     return modifiedTime;
   }
 
-  public void setModifiedtime(Date modifiedTime) {
+  public void setModifiedTime(Date modifiedTime) {
     this.modifiedTime = modifiedTime;
   }
 
-  public String getCreatedby() {
+  public String getCreatedBy() {
     return createdBy;
   }
 
-  public void setCreatedby(String createdBy) {
+  public void setCreatedBy(String createdBy) {
     this.createdBy = createdBy;
   }
 
-  public String getModifiedby() {
+  public String getModifiedBy() {
     return modifiedBy;
   }
 
-  public void setModifiedby(String modifiedBy) {
+  public void setModifiedBy(String modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 

@@ -10,23 +10,27 @@ import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
-import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +47,9 @@ public class AjustBatchController {
 
     @Autowired
     private PrAdjustBatchService adjustBatchService;
+
+    @Autowired
+    private PrBackTrackingBatchService backTrackingBatchService;
 
     @Autowired
     private AdjustBatchMongoOpt adjustBatchMongoOpt;
@@ -78,6 +85,23 @@ public class AjustBatchController {
         return JsonResult.success(code);
     }
 
+    @DeleteMapping("/deleteAdjustBatch/{codes}")
+    public JsonResult deleteBatch(@PathVariable("codes") String batchCodes) {
+        String[] codes = batchCodes.split(",");
+        int i = adjustBatchService.deleteAdjustBatchByCodes(Arrays.asList(codes));
+        if (i >= 1){
+            //send message to kafka
+            PayrollMsg msg = new PayrollMsg();
+            msg.setBatchCode(batchCodes);
+            msg.setOperateType(OperateTypeEnum.DELETE.getValue());
+            sender.Send(msg);
+
+            return JsonResult.success(i,"删除成功");
+        }else {
+            return JsonResult.faultMessage();
+        }
+    }
+
     @GetMapping("/getAdjustBatch")
     public JsonResult getAdjustBatch(
             @RequestParam(required = false, defaultValue = "") String empCode,
@@ -89,10 +113,6 @@ public class AjustBatchController {
             @RequestParam String batchCode,
             @RequestParam String originCode) {
 
-        List<DBObject> adjustList = adjustBatchService.getAdjustBatch(batchCode,originCode); //从mongodb里检查是否有该数据
-        if(adjustList == null || adjustList.size() == 0){
-            return JsonResult.success(0);
-        }
 
         Criteria criteria = Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true);
 
@@ -155,23 +175,143 @@ public class AjustBatchController {
                             .andOperator(
                                     Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                                     Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                            ),"item_value",payItemVal);
+                            ),"catalog.pay_items.$.item_value",payItemVal);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
+
+            updateMongoAdjust(batchType,batchCode,empCode,payItemName,payItemVal);
 
             rowAffected = adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                             Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),"item_value",payItemVal);
+                    ),"catalog.pay_items.$.item_value",payItemVal);
 
         }else {
+
+            updateMongoAdjust(batchType,batchCode,empCode,payItemName,payItemVal);
+
             rowAffected = backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                             Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),"item_value",payItemVal);
+                    ),"catalog.pay_items.$.item_value",payItemVal);
 
         }
         return JsonResult.success(rowAffected);
     }
+
+    private int updateMongoAdjust(int batchType, String batchCode, String empCode, String name, String val){
+        int affected = 0;
+        /**
+         * adjust_items like [ { name: '', origin:'', new:''}, { name: '', origin:'', new:''},... ]
+         */
+        DBObject dbObject = null;
+        if(batchType == BatchTypeEnum.ADJUST.getValue()){
+            dbObject = adjustBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode)
+                    .andOperator(
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                            Criteria.where("catalog.adjust_items").elemMatch(Criteria.where("name").is(name))
+                    ));
+        }else {
+            dbObject = backTraceBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode)
+                    .andOperator(
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                            Criteria.where("catalog.adjust_items").elemMatch(Criteria.where("name").is(name))
+                    ));
+        }
+        if(dbObject == null){ // 没有原始值，初始化
+            DBObject batch = null;
+            if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+                 batch = adjustBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode).andOperator(
+                        Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode)));
+            }else {
+                batch = backTraceBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode).andOperator(
+                        Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode)));
+            }
+
+            DBObject catalog = (DBObject) batch.get("catalog");
+            List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
+
+            DBObject updateObj = new BasicDBObject();
+            updateObj.put("name",name);
+            updateObj.put("new", val);
+
+            Optional<DBObject> findItem = payItems.stream().filter(item-> item.get("item_name").equals(name)).findFirst();
+            if(findItem.isPresent()){
+                updateObj.put("origin", findItem.get().get("item_value"));
+            }
+
+            List<DBObject> adjustItems = null;
+            if(catalog.get("adjust_items") == null){
+                adjustItems = new ArrayList<>();
+            }else {
+                adjustItems = (List<DBObject>) catalog.get("adjust_items");
+            }
+
+            adjustItems.add(updateObj);
+
+            if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+
+                affected = adjustBatchMongoOpt.upsert(Query.query(Criteria.where("batch_code").is(batchCode)
+                                .andOperator(
+                                        Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode)
+                                )),
+                        Update.update("catalog.adjust_items", adjustItems)
+                );
+            }else {
+                affected = backTraceBatchMongoOpt.upsert(Query.query(Criteria.where("batch_code").is(batchCode)
+                                .andOperator(
+                                        Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode)
+                                )),
+                        Update.update("catalog.adjust_items", adjustItems)
+                );
+            }
+        }else {
+            if (batchType == BatchTypeEnum.ADJUST.getValue()) {
+
+                affected = adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .andOperator(
+                                Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                                Criteria.where("catalog.adjust_items").elemMatch(Criteria.where("name").is(name))
+                        ), "catalog.adjust_items.$.new", val);
+            } else {
+                affected = backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .andOperator(
+                                Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                                Criteria.where("catalog.adjust_items").elemMatch(Criteria.where("name").is(name))
+                        ), "catalog.adjust_items.$.new", val);
+            }
+        }
+
+        return affected;
+    }
+
+    @PostMapping("/checkAdjustBatch")
+    public JsonResult checkAdjustBatch(@RequestParam String originBatchCode){
+        int count = adjustBatchService.checkAdjustBatch(originBatchCode);
+        return JsonResult.success(count);
+    }
+
+    @PostMapping("/deleteNew")
+    public JsonResult deleteNew(@RequestParam String batchCodes, @RequestParam int batchType) {
+        String[] codes = batchCodes.split(",");
+        int i = 0;
+        if(batchType == BatchTypeEnum.ADJUST.getValue()){
+            i = adjustBatchService.deleteAdjustBatchByCodes(Arrays.asList(codes));
+        }else {
+            i = backTrackingBatchService.deleteBackTraceBatchByCodes(Arrays.asList(codes));
+        }
+        if (i >= 1){
+            //send message to kafka
+            PayrollMsg msg = new PayrollMsg();
+            msg.setBatchCode(batchCodes);
+            msg.setBatchType(batchType);
+            msg.setOperateType(OperateTypeEnum.DELETE.getValue());
+            sender.Send(msg);
+            return JsonResult.success(i,"删除成功");
+        }else {
+            return JsonResult.faultMessage();
+        }
+    }
+
 }

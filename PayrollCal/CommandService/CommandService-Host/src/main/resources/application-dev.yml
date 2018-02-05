@@ -1,8 +1,8 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://172.16.9.24:9602/eureka/
-#        defaultZone: http://172.16.9.21:9602/eureka/,http://172.16.9.20:9601/eureka/,http://172.16.9.19:9600/eureka/ #注册中心eureka地址
+      #defaultZone: http://172.16.9.24:9602/eureka/
+      defaultZone: "http://172.16.9.21:9602/eureka/,http://172.16.9.20:9601/eureka/,http://172.16.9.19:9600/eureka/" #注册中心eureka地址
 
 spring:
   datasource:
@@ -10,7 +10,7 @@ spring:
     username: root
     password: a111111
   application:
-    name: fcbusiness-center-command-service
+    name: fcbusiness-center-compute-service
   cloud:
     stream:
       kafka:

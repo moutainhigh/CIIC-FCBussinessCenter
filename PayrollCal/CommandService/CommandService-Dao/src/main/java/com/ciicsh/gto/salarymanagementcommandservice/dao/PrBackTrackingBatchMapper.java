@@ -5,6 +5,8 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
   * 回溯批次主表 Mapper 接口
@@ -24,6 +26,10 @@ public interface PrBackTrackingBatchMapper extends BaseMapper<PrBackTrackingBatc
                              @Param("hasMoney") boolean hasMoney,
                              @Param("modifiedBy") String modifiedBy);
 
+    Integer deleteBatchByCodes(@Param("codes") List<String> codes);
+
+
     int updateBatchStatus(@Param("code") String batchCode, @Param("status") int status, @Param("modifiedBy") String modifiedBy);
 
+    int checkBackTraceBatch(@Param("originBatchCode") String originBatchCode);
 }

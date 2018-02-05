@@ -21,12 +21,5 @@ spring:
   profiles:
     active: dev
 server:
-  port: 9999
+  port: 7035
 
-# mongodb configuration
-mongo:
-  host: 172.16.9.16
-  port: 27017
-  database: payroll_db
-  userName: ciicit
-  pwd: ciicit!#%

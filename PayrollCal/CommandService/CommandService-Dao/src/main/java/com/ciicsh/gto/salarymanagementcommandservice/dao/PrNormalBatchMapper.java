@@ -27,7 +27,7 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
 
     int updateNormalBatch(PrNormalBatchPO normalBatchPO);
 
-    List<PrCustSubBatchPO> selectSubBatchList(@Param("code") String code, @Param("status") Integer status);
+    List<PrCustSubBatchPO> selectSubBatchList(@Param("code") String code);
 
     /**
      * delete batch by code

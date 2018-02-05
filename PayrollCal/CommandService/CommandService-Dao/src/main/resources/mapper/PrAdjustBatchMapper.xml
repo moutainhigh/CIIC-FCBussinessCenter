@@ -33,4 +33,23 @@
 		WHERE adjust_batch_code = #{code}
 	</update>
 
+	<delete id="deleteBatchByCodes">
+		DELETE FROM pr_adjust_batch
+		WHERE
+		status = 1
+		AND
+		adjust_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="checkAdjustBatch" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM pr_adjust_batch
+		WHERE origin_batch_code = #{originBatchCode} and status != 8;
+	</select>
+
 </mapper>
