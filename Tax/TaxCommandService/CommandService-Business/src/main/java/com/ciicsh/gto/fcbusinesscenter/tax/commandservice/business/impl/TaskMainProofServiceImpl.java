@@ -110,6 +110,8 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
     public void updateTaskProofByRes(RequestForProof requestForProof) {
         //当主任务ID数组不为空时，修改主任务以及
         if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
+
+
             baseMapper.updateMainTaskProof(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
             taskSubProofMapper.updateSubTaskProofByMainIds(requestForProof.getMainProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy());
         } else {

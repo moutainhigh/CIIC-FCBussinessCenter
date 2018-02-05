@@ -5,24 +5,21 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
  * <p>
- * 计算批次
+ * 主任务
  * </p>
  *
-· * @author wuhua
- * @since 2017-12-26
+ * @author wuhua
+ * @since 2018-01-23
  */
-@TableName("tax_fc_calculation_batch")
-public class CalculationBatchPO extends Model<CalculationBatchPO> {
+@TableName("tax_fc_task_main")
+public class TaskMainPO extends Model<TaskMainPO> {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,9 +29,9 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	@TableId(value="id", type= IdType.AUTO)
 	private Long id;
     /**
-     * 引擎计算批次号
+     * 任务编号
      */
-	private String batchNo;
+	private String taskNo;
     /**
      * 管理方编号
      */
@@ -44,32 +41,13 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
      */
 	private String managerName;
     /**
-     * 个税总金额
-     */
-	private BigDecimal taxAmount;
-    /**
-     * 总人数
-     */
-	private Integer headcount;
-    /**
-     * 中方人数
-     */
-	private Integer chineseNum;
-    /**
-     * 外方人数
-     */
-	private Integer foreignerNum;
-    /**
-     * 状态（未提交、审批中、审批通过、已关账）
+     * 状态
      */
 	private String status;
-
-	/**
-	 * 状态中文
-	 */
-	@TableField(exist = false)
-
-	private String statusName;
+    /**
+     * 备注
+     */
+	private String remark;
     /**
      * 是否可用
      */
@@ -78,12 +56,10 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
     /**
      * 创建时间
      */
-//    @DateTimeFormat(pattern="yyyy-MM-dd")
-	private LocalDateTime createdTime;
+	private Date createdTime;
     /**
      * 修改时间
      */
-    @TableField(value="modified_time",fill = FieldFill.UPDATE)
 	private Date modifiedTime;
     /**
      * 创建人
@@ -95,9 +71,19 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	private String modifiedBy;
 
 	/**
-	 *主任务id
+	 * 计算批次
 	 */
-	private Long taskMainId;
+	@TableField(exist = false)
+	private String batchIds;
+
+
+	public String getBatchIds() {
+		return batchIds;
+	}
+
+	public void setBatchIds(String batchIds) {
+		this.batchIds = batchIds;
+	}
 
 	public Long getId() {
 		return id;
@@ -107,12 +93,12 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.id = id;
 	}
 
-	public String getBatchNo() {
-		return batchNo;
+	public String getTaskNo() {
+		return taskNo;
 	}
 
-	public void setBatchNo(String batchNo) {
-		this.batchNo = batchNo;
+	public void setTaskNo(String taskNo) {
+		this.taskNo = taskNo;
 	}
 
 	public String getManagerNo() {
@@ -131,44 +117,20 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.managerName = managerName;
 	}
 
-	public BigDecimal getTaxAmount() {
-		return taxAmount;
-	}
-
-	public void setTaxAmount(BigDecimal taxAmount) {
-		this.taxAmount = taxAmount;
-	}
-
-	public Integer getHeadcount() {
-		return headcount;
-	}
-
-	public void setHeadcount(Integer headcount) {
-		this.headcount = headcount;
-	}
-
-	public Integer getChineseNum() {
-		return chineseNum;
-	}
-
-	public void setChineseNum(Integer chineseNum) {
-		this.chineseNum = chineseNum;
-	}
-
-	public Integer getForeignerNum() {
-		return foreignerNum;
-	}
-
-	public void setForeignerNum(Integer foreignerNum) {
-		this.foreignerNum = foreignerNum;
-	}
-
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public Boolean getActive() {
@@ -179,19 +141,11 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.isActive = isActive;
 	}
 
-	/*public Date getCreatedTime() {
+	public Date getCreatedTime() {
 		return createdTime;
 	}
 
 	public void setCreatedTime(Date createdTime) {
-		this.createdTime = createdTime;
-	}*/
-
-	public LocalDateTime getCreatedTime() {
-		return createdTime;
-	}
-
-	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
@@ -219,22 +173,6 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public String getStatusName() {
-		return statusName;
-	}
-
-	public void setStatusName(String statusName) {
-		this.statusName = statusName;
-	}
-
-	public Long getTaskMainId() {
-		return taskMainId;
-	}
-
-	public void setTaskMainId(Long taskMainId) {
-		this.taskMainId = taskMainId;
-	}
-
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -242,16 +180,13 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 
 	@Override
 	public String toString() {
-		return "CalculationBatch{" +
+		return "TaskMain{" +
 			"id=" + id +
-			", batchNo=" + batchNo +
+			", taskNo=" + taskNo +
 			", managerNo=" + managerNo +
 			", managerName=" + managerName +
-			", taxAmount=" + taxAmount +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
 			", status=" + status +
+			", remark=" + remark +
 			", isActive=" + isActive +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +

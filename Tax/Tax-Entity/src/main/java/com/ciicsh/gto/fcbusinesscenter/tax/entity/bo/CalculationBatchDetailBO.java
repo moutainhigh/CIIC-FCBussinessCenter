@@ -186,6 +186,18 @@ public class CalculationBatchDetailBO {
      * 是否划款完成
      */
     private Boolean isTranferred;
+    /**
+     * 是否供应商申报
+     */
+    private Boolean isDeclareSupported;
+    /**
+     * 是否供应商划款
+     */
+    private Boolean isTransferSupported;
+    /**
+     * 是否供应商缴纳
+     */
+    private Boolean isPaySupported;
 
     public String getIdTypeName() {
         return idTypeName;
@@ -537,6 +549,30 @@ public class CalculationBatchDetailBO {
 
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
+    }
+
+    public Boolean getDeclareSupported() {
+        return isDeclareSupported;
+    }
+
+    public void setDeclareSupported(Boolean declareSupported) {
+        isDeclareSupported = declareSupported;
+    }
+
+    public Boolean getTransferSupported() {
+        return isTransferSupported;
+    }
+
+    public void setTransferSupported(Boolean transferSupported) {
+        isTransferSupported = transferSupported;
+    }
+
+    public Boolean getPaySupported() {
+        return isPaySupported;
+    }
+
+    public void setPaySupported(Boolean paySupported) {
+        isPaySupported = paySupported;
     }
 
     @Override

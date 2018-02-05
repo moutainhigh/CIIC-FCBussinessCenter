@@ -5,20 +5,13 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchDetailMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -96,7 +89,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
      * 查询批次明细
      * @param requestForEmployees
      * @return
-     */
+     *//*
     @Override
     public ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees) {
         {
@@ -140,7 +133,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             responseForCalBatchDetail.setRowList(calculationBatchDetailPOList);
 
             //判断是否是分页查询
-            /*if (requestForEmployees.getCurrentNum() != null && requestForEmployees.getPageSize() != 0) {
+            *//*if (requestForEmployees.getCurrentNum() != null && requestForEmployees.getPageSize() != 0) {
                 Page<CalculationBatchDetailPO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
                 List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
                 //获取总数目
@@ -162,8 +155,8 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
                     calculationBatchDetailBOList.add(calculationBatchDetailBO);
                 }
                 responseForBatchDetail.setRowList(calculationBatchDetailBOList);
-            }*/
+            }*//*
             return responseForCalBatchDetail;
         }
-    }
+    }*/
 }
