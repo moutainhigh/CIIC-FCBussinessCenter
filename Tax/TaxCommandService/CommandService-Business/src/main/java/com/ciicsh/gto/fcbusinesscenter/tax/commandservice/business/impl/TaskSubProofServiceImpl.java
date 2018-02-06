@@ -289,7 +289,13 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                     unCombinedIds.addAll(combinedSubIds);
                 }
                 //将合并的id置为不可用
-                baseMapper.updateSubIdsByCombinedIds(str);
+                TaskSubProofPO taskSubProofPOCombine = new TaskSubProofPO();
+                taskSubProofPOCombine.setActive(false);
+                EntityWrapper wrapperPO = new EntityWrapper();
+                wrapperPO.setEntity(new TaskSubProofPO());
+                wrapperPO.in(" id ",str);
+                baseMapper.update(taskSubProofPOCombine,wrapperPO);
+
             }
             //修改完税凭证子任务
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();

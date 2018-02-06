@@ -6,6 +6,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,10 @@ public class BackTraceBatchMongoOpt extends BaseOpt {
 
     public BackTraceBatchMongoOpt() {
         super(PR_BACK_TRACE_BATCH);
+    }
+
+    public MongoTemplate getMongoTemplate(){
+        return mongoTemplate;
     }
 
     public void createIndex(){

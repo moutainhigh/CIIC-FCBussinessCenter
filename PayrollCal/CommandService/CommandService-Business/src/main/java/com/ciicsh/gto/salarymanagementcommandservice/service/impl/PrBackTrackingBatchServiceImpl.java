@@ -84,4 +84,14 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
     public int updateBatchStatus(String batchCode, int status, String modifiedBy) {
         return backTrackingBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
     }
+
+    @Override
+    public Integer deleteBackTraceBatchByCodes(List<String> codes) {
+        return backTrackingBatchMapper.deleteBatchByCodes(codes);
+    }
+
+    @Override
+    public int checkBackTraceBatch(String originBatchCode) {
+        return backTrackingBatchMapper.checkBackTraceBatch(originBatchCode);
+    }
 }

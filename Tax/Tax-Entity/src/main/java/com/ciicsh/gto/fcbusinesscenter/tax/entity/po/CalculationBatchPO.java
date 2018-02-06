@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -76,10 +78,12 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+//    @DateTimeFormat(pattern="yyyy-MM-dd")
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
+    @TableField(value="modified_time",fill = FieldFill.UPDATE)
 	private Date modifiedTime;
     /**
      * 创建人
@@ -175,11 +179,19 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	/*public Date getCreatedTime() {
 		return createdTime;
 	}
 
 	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}*/
+
+	public LocalDateTime getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 

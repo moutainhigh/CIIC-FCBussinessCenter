@@ -3,11 +3,11 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO">
+	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO">
 		<id column="id" property="id" />
 		<result column="batch_no" property="batchNo" />
 		<result column="manager_no" property="managerNo" />
-		<result column="manager_name" property="managerName" />
+		&lt;!&ndash;<result column="manager_name" property="managerName" />&ndash;&gt;
 		<result column="tax_amount" property="taxAmount" />
 		<result column="headcount" property="headcount" />
 		<result column="chinese_num" property="chineseNum" />
@@ -19,10 +19,10 @@
 		<result column="created_by" property="createdBy" />
 		<result column="modified_by" property="modifiedBy" />
 		<result column="task_main_id" property="taskMainId" />
-	</resultMap>
+	</resultMap>-->
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap2" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO">
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO">
 		<id column="id" property="id" />
 		<!--<result column="calculation_batch_id" property="calculationBatchId" />
 		<result column="version_no" property="versionNo" />
@@ -68,35 +68,31 @@
 		<result column="is_declared" property="declared" />
 		<result column="is_transfer" property="tranfer" />
 		<result column="is_transferred" property="tranferred" />
+		<result column="is_pay_supported" property="paySupported" />
+		<result column="is_declare_supported" property="declareSupported" />
+		<result column="is_transfer_supported" property="transferSupported" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <!--<sql id="Base_Column_List">
         id, batch_no, manager_no, manager_name, tax_amount, headcount, chinese_num, foreigner_num, status, is_active, created_time, modified_time, created_by, modified_by
-    </sql>
+    </sql>-->
 
 
 	<!-- 查询批次明细 -->
-	<select id="queryCalculationBatchDetails" resultMap="BaseResultMap2">
+	<select id="queryCalculationBatchDetails" resultMap="BaseResultMap">
 		SELECT
-		id,task_no,
-		manager_no,
-		manager_name,
-		headcount,
-		chinese_num,
-		foreigner_num,
-		status,
-		remark,
-		is_active,
-		created_time,
-		modified_time,
-		created_by,
-		modified_by
+		t2.id
+		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
+		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
+		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return
+		,t3.declare_account,t3.pay_account,t3.receipt_account,t3.support_no,t3.support_name,t3.is_support,t3.is_supported,t3.is_pay,t3.is_payed,t3.is_declare
+		,t3.is_declared,t3.is_transfer,t3.is_transferred,t3.is_declare_supported,t3.is_transfer_supported,t3.is_pay_supported
 		FROM tax_fc_calculation_batch t1,tax_fc_calculation_batch_detail t2,tax_fc_employee_service_batch t3
-		where is_active = 1 and t1.id = t2.calculation_batch_id and t2.id = t3.cal_batch_detail_id
-		<if test="batchNo != null and batchNo != ''">
-			and t1.batch_no = #{batchNo, jdbcType=VARCHAR}
-		</if>
+		where is_active = 1 and t1.id = t2.calculation_batch_id and t2.id = t3.cal_batch_detail_id AND t1.id in
+		<foreach collection="batchIds" item="batchId" open="(" separator="," close=")">
+			#{batchId}
+		</foreach>
 		<!--<if test="startTime != null and startTime != ''">
 			and date(created_time) &gt;= date(#{startTime,jdbcType=TIMESTAMP})
 		</if>

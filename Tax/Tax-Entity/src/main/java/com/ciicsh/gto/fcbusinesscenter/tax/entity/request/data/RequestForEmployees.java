@@ -24,7 +24,7 @@ public class RequestForEmployees extends PageInfo {
 
     private String declareAcount;
 
-    private Long batchid;//计算批次主表id
+    private Long calculationBatchId;//计算批次主表id
 
     public Long getId() {
         return id;
@@ -90,11 +90,11 @@ public class RequestForEmployees extends PageInfo {
         this.declareAcount = declareAcount;
     }
 
-    public Long getBatchid() {
-        return batchid;
+    public Long getCalculationBatchId() {
+        return calculationBatchId;
     }
 
-    public void setBatchid(Long batchid) {
-        this.batchid = batchid;
+    public void setCalculationBatchId(Long calculationBatchId) {
+        this.calculationBatchId = calculationBatchId;
     }
 }

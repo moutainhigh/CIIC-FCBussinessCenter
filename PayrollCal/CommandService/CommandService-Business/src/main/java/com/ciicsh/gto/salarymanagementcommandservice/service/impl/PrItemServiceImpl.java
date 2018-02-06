@@ -2,25 +2,20 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrItemMapper;
-import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
+import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrBaseItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
-import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,15 +28,10 @@ import java.util.Map;
 public class PrItemServiceImpl implements PrItemService {
 
     @Autowired
-    private IPrItemMapper prItemMapper;
-
-    @Autowired
     private PrPayrollItemMapper prPayrollItemMapper;
 
     @Autowired
     private PrPayrollGroupMapper prPayrollGroupMapper;
-
-    final static int PAGE_SIZE = 5;
 
     @Override
     public PageInfo<PrPayrollItemPO> getListByGroupCode(String groupCode, Integer pageNum, Integer pageSize) {
@@ -62,19 +52,6 @@ public class PrItemServiceImpl implements PrItemService {
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
-        return pageInfo;
-    }
-
-    @Override
-    public PageInfo<PrItemEntity> searchPrItemList(PrItemEntity paramItem, Integer pageNum) {
-        List<PrItemEntity> resultList = new ArrayList<>();
-        PageHelper.startPage(pageNum, PAGE_SIZE);
-        try {
-            resultList = prItemMapper.selectQueryList(paramItem);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        PageInfo<PrItemEntity> pageInfo = new PageInfo<>(resultList);
         return pageInfo;
     }
 
@@ -103,12 +80,6 @@ public class PrItemServiceImpl implements PrItemService {
     public int addList(List<PrPayrollItemPO> paramList) {
         int insertResult = prPayrollItemMapper.insertBatchItems(paramList);
         return insertResult;
-    }
-
-    @Override
-    public List<String> getNameList(String managementId) {
-        List<String> resultList = prItemMapper.selectNameList(managementId);
-        return resultList;
     }
 
     @Override
@@ -203,8 +174,8 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public List<Integer> getTypeList(String managementId) {
-        List<Integer> resultList = prItemMapper.selectTypeList(managementId);
+    public List<HashMap<String, Object>> getTypeList() {
+        List<HashMap<String, Object>> resultList = EnumHelpUtil.getLabelValueList(ItemTypeEnum.class);
         return resultList;
     }
 
@@ -216,7 +187,7 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Override
     public int deleteItemByPrGroupId(String prGroupId) {
-        return prItemMapper.deleteItemByPrGroupId(prGroupId);
+        return prPayrollItemMapper.deleteItemByGroupCode(prGroupId);
     }
 
     @Override

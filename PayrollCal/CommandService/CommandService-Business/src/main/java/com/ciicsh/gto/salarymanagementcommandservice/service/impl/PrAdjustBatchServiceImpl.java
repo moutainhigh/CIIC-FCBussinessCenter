@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by bill on 18/1/13.
@@ -47,43 +50,67 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
 
     @Override
     public int insert(PrAdjustBatchPO adjustBatchPO) {
-        return adjustBatchMapper.insert(adjustBatchPO);
-    }
 
-    @Override
-    public List<DBObject> getAdjustBatch(String adjustBatchCode, String originCode) {
+        List<DBObject> list = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(adjustBatchPO.getAdjustBatchCode()));
 
-        List<DBObject> list = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(adjustBatchCode));
-        if(list == null || list.size() == 0) {
+        int rowAffected = 0;
+        if (list == null || list.size() == 0) {
             PrNormalBatchPO normalBatchPO = new PrNormalBatchPO();
-            normalBatchPO.setCode(originCode);
+            normalBatchPO.setCode(adjustBatchPO.getOriginBatchCode());
             normalBatchPO = normalBatchMapper.selectOne(normalBatchPO);
             String jsonResult = normalBatchPO.getResultData();
             list = (List<DBObject>) JSON.parse(jsonResult);
-            if(list != null && list.size() > 0){
+            if (list != null && list.size() > 0) {
 
                 list.forEach(dbObject -> {
-                    dbObject.put("batch_code",adjustBatchCode); // update origin code to adjust code
-                    DBObject catalog = (DBObject)dbObject.get("catalog");
-                    List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
+                    dbObject.put("_id", UUID.randomUUID().toString());
+                    dbObject.put("batch_code", adjustBatchPO.getAdjustBatchCode()); // update origin code to adjust code
+                    dbObject.put("origin_code",adjustBatchPO.getOriginBatchCode());
+                    DBObject catalog = (DBObject) dbObject.get("catalog");
+                    List<DBObject> payItems = (List<DBObject>) catalog.get("pay_items");
 
-                    payItems.forEach(item ->{
-                        int itemType = item.get("item_type") == null ? 0 : (int)item.get("item_type"); // 薪资项类型
-                        if(itemType == ItemTypeEnum.CALC.getValue()) {
+                    payItems.forEach(item -> {
+                        int itemType = item.get("item_type") == null ? 0 : (int) item.get("item_type"); // 薪资项类型
+                        if (itemType == ItemTypeEnum.CALC.getValue()) {
                             item.put("item_value", 0.0); //清除计算项结果
                         }
                     });
                 });
             }
             adjustBatchMongoOpt.createIndex();
-            int rowAffected = adjustBatchMongoOpt.batchInsert(list); // batch insert to mongodb
+            rowAffected = adjustBatchMongoOpt.batchInsert(list); // batch insert to mongodb
+            if (rowAffected > 0) {
+                rowAffected += adjustBatchMapper.insert(adjustBatchPO);
+            }else {
+                Map<String,Object> map = new HashMap<>();
+                map.put("origin_batch_code",adjustBatchPO.getOriginBatchCode());
+                map.put("adjust_batch_code",adjustBatchPO.getAdjustBatchCode());
+                adjustBatchMapper.deleteByMap(map);
+                rowAffected = 0;
+            }
             logger.info(String.format("adjust batch row affected %d", rowAffected));
         }
-        return list;
+
+        return rowAffected;
+    }
+
+    @Override
+    public List<DBObject> getAdjustBatch(String adjustBatchCode, String originCode) {
+        return adjustBatchMongoOpt.list(Criteria.where("batch_code").is(adjustBatchCode));
     }
 
     @Override
     public int updateBatchStatus(String batchCode, int status, String modifiedBy) {
         return adjustBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
+    }
+
+    @Override
+    public Integer deleteAdjustBatchByCodes(List<String> codes) {
+        return adjustBatchMapper.deleteBatchByCodes(codes);
+    }
+
+    @Override
+    public int checkAdjustBatch(String originBatchCode) {
+        return adjustBatchMapper.checkAdjustBatch(originBatchCode);
     }
 }

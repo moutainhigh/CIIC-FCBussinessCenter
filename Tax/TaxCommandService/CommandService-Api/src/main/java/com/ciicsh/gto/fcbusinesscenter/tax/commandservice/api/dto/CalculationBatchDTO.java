@@ -8,8 +8,26 @@ public class CalculationBatchDTO {
 
     private String managerName;
     private String batchNo;
+    private String[] batchIds;
+    private String[] batchNos;
     private Integer currentNum;
     private Integer pageSize;
+
+    public String[] getBatchIds() {
+        return batchIds;
+    }
+
+    public String[] getBatchNos() {
+        return batchNos;
+    }
+
+    public void setBatchNos(String[] batchNos) {
+        this.batchNos = batchNos;
+    }
+
+    public void setBatchIds(String[] batchIds) {
+        this.batchIds = batchIds;
+    }
 
     public String getManagerName() {
         return managerName;

@@ -12,7 +12,7 @@ public enum BusinessStatus {
     /**
      * 被退回
      */
-    BS22("被退回"),
+    BS32("被退回"),
     /**
      * 已完成
      */

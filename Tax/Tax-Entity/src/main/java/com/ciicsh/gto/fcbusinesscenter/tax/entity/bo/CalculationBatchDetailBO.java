@@ -3,13 +3,16 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 import com.baomidou.mybatisplus.plugins.Page;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * @author yuantongqing on 2017/12/19
  */
 public class CalculationBatchDetailBO {
+
     private Long id;
+
+    private Long calculationBatchId;
 
     private String employeeNo;
 
@@ -17,16 +20,19 @@ public class CalculationBatchDetailBO {
 
     private String idType;
 
+    private String idTypeName;
+
     private String idNo;
 
     /**
      * 所得期间
      */
-    private Date period;
+    private LocalDate period;
     /**
      * 所得项目
      */
     private String incomeSubject;
+    private String incomeSubjectName;
     /**
      * 收入额
      */
@@ -180,6 +186,42 @@ public class CalculationBatchDetailBO {
      * 是否划款完成
      */
     private Boolean isTranferred;
+    /**
+     * 是否供应商申报
+     */
+    private Boolean isDeclareSupported;
+    /**
+     * 是否供应商划款
+     */
+    private Boolean isTransferSupported;
+    /**
+     * 是否供应商缴纳
+     */
+    private Boolean isPaySupported;
+
+    public String getIdTypeName() {
+        return idTypeName;
+    }
+
+    public void setIdTypeName(String idTypeName) {
+        this.idTypeName = idTypeName;
+    }
+
+    public String getIncomeSubjectName() {
+        return incomeSubjectName;
+    }
+
+    public void setIncomeSubjectName(String incomeSubjectName) {
+        this.incomeSubjectName = incomeSubjectName;
+    }
+
+    public Long getCalculationBatchId() {
+        return calculationBatchId;
+    }
+
+    public void setCalculationBatchId(Long calculationBatchId) {
+        this.calculationBatchId = calculationBatchId;
+    }
 
     public String getDeclareAccount() {
         return declareAccount;
@@ -309,11 +351,11 @@ public class CalculationBatchDetailBO {
         this.idNo = idNo;
     }
 
-    public Date getPeriod() {
+    public LocalDate getPeriod() {
         return period;
     }
 
-    public void setPeriod(Date period) {
+    public void setPeriod(LocalDate period) {
         this.period = period;
     }
 
@@ -507,6 +549,30 @@ public class CalculationBatchDetailBO {
 
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
+    }
+
+    public Boolean getDeclareSupported() {
+        return isDeclareSupported;
+    }
+
+    public void setDeclareSupported(Boolean declareSupported) {
+        isDeclareSupported = declareSupported;
+    }
+
+    public Boolean getTransferSupported() {
+        return isTransferSupported;
+    }
+
+    public void setTransferSupported(Boolean transferSupported) {
+        isTransferSupported = transferSupported;
+    }
+
+    public Boolean getPaySupported() {
+        return isPaySupported;
+    }
+
+    public void setPaySupported(Boolean paySupported) {
+        isPaySupported = paySupported;
     }
 
     @Override

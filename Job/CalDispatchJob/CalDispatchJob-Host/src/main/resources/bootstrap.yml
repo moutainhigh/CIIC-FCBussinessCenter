@@ -1,0 +1,6 @@
+mongo:
+  host: 172.16.9.52
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%

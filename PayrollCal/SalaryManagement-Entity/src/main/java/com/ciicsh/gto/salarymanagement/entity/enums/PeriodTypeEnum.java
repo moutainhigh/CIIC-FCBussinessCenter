@@ -4,7 +4,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
  * Created by bill on 17/12/9.
  * 薪资期间类型：本月、上月、下月
  */
-public enum PeriodTypeEnum implements IValuedEnum {
+public enum PeriodTypeEnum implements ValuedEnum {
 
     THIS_MONTH("本月",0),
 

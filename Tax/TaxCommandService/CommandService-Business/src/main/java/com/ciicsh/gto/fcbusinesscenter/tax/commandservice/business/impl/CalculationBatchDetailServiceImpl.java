@@ -6,16 +6,12 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +22,6 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
 
     /**
      * 查询申报记录
-     *
      * @param requestForProof
      * @return
      */
@@ -57,7 +52,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
         }
         //判断是否包含个税期间条件
         if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {
-            wrapper.andNew("period <= {0} ", requestForProof.getSubmitTimeEnd());
+            wrapper.andNew("period < {0} ", requestForProof.getSubmitTimeEnd());
         }
         //查询已申报的
         wrapper.andNew("is_declare = {0} ", 1);
@@ -67,22 +62,23 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
         if (requestForProof.getCurrentNum() != null && requestForProof.getPageSize() != 0) {
             Page<CalculationBatchDetailPO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
             List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
-            pageInfo.setRecords(calculationBatchDetailPOList);
+            //获取总数目
+            int total = baseMapper.selectCount(wrapper);
             //获取证件类型中文和所得项目中文
-            for (CalculationBatchDetailPO po : calculationBatchDetailPOList) {
-                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
-                po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, po.getIncomeSubject()));
+            for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
+                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));
+                po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,po.getIncomeSubject()));
             }
             responseForBatchDetail.setCurrentNum(requestForProof.getCurrentNum());
             responseForBatchDetail.setPageSize(requestForProof.getPageSize());
-            responseForBatchDetail.setTotalNum(pageInfo.getTotal());
+            responseForBatchDetail.setTotalNum(total);
             responseForBatchDetail.setRowList(calculationBatchDetailPOList);
         } else {
             List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectList(wrapper);
             //获取证件类型中文和所得项目中文
-            for (CalculationBatchDetailPO po : calculationBatchDetailPOList) {
-                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
-                po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, po.getIncomeSubject()));
+            for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
+                po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));
+                po.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,po.getIncomeSubject()));
             }
             responseForBatchDetail.setRowList(calculationBatchDetailPOList);
         }
@@ -91,10 +87,9 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
 
     /**
      * 查询批次明细
-     *
      * @param requestForEmployees
      * @return
-     */
+     *//*
     @Override
     public ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees) {
         {
@@ -105,7 +100,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             //批次主表id
             if (requestForEmployees.getBatchid() != null) {
                 wrapper.andNew("calculation_batch_id = {0}", requestForEmployees.getBatchid());
-            } else {
+            }else{
                 return responseForCalBatchDetail;
             }
             //证件类型
@@ -127,18 +122,18 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             //查询已申报的
             wrapper.orderBy("id", true);
 
-            Page<CalculationBatchDetailPO> page = new Page<CalculationBatchDetailPO>(0, 10);
+            Page<CalculationBatchDetailPO> page = new Page<CalculationBatchDetailPO>(0,10);
             calculationBatchDetailPOList = baseMapper.selectPage(page, wrapper);
 
-            for (CalculationBatchDetailPO p : calculationBatchDetailPOList) {
-                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, p.getIdType()));//证件类型中文显示
-                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, p.getIncomeSubject()));//个税所得项目中文显示
+            for(CalculationBatchDetailPO p : calculationBatchDetailPOList){
+                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));//证件类型中文显示
+                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));//个税所得项目中文显示
             }
 
             responseForCalBatchDetail.setRowList(calculationBatchDetailPOList);
 
             //判断是否是分页查询
-            /*if (requestForEmployees.getCurrentNum() != null && requestForEmployees.getPageSize() != 0) {
+            *//*if (requestForEmployees.getCurrentNum() != null && requestForEmployees.getPageSize() != 0) {
                 Page<CalculationBatchDetailPO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
                 List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
                 //获取总数目
@@ -160,8 +155,8 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
                     calculationBatchDetailBOList.add(calculationBatchDetailBO);
                 }
                 responseForBatchDetail.setRowList(calculationBatchDetailBOList);
-            }*/
+            }*//*
             return responseForCalBatchDetail;
         }
-    }
+    }*/
 }
