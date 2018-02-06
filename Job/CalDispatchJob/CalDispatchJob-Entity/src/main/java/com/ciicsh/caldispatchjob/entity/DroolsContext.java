@@ -3,6 +3,7 @@ package com.ciicsh.caldispatchjob.entity;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -70,6 +71,9 @@ public class DroolsContext {
      * @return
      */
     public BigDecimal getWorkDate(String onbaordDate, String leaveDate) {
+
+        YearMonth currentYearMonth = YearMonth.now();
+        currentYearMonth.lengthOfMonth();
 
         /*
         Date date = null;

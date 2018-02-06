@@ -186,6 +186,7 @@ public class NormalBatchController {
                 //send message to kafka
                 PayrollMsg msg = new PayrollMsg();
                 msg.setBatchCode(code);
+                msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
                 msg.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.Send(msg);
 
@@ -290,15 +291,17 @@ public class NormalBatchController {
 
         String batchCode = filterDTO.getBatchCode();
         String empCodes = filterDTO.getEmpCodes();
-        if(empCodes.equals("") || empCodes == null){ // 该雇员组没有雇员
+        if(StringUtils.isEmpty(empCodes)){ // 该雇员组没有雇员
             return JsonResult.success(0,"");
         }else if(empCodes.equals("all")){
+            normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode), "catalog.emp_info.is_active", false);
             int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",true);
             logger.info("update all " + String.valueOf(rowAffected));
             return JsonResult.success(rowAffected,"更新成功");
 
         }else {
             int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode), "catalog.emp_info.is_active", false);
+
             logger.info("update all " + String.valueOf(rowAffected1));
 
             String[] codes = empCodes.split(",");

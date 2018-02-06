@@ -138,9 +138,10 @@ public class ComputeServiceImpl {
                     //first name []replace item name item value
                     //second common function [[common function]]
                     //third eval
-                    String coditionFormula = replaceFormula(condition,formulaContent,context);//处理计算项的公式
-                    String finalResult = replacePayItem(coditionFormula,PAY_ITEM_REGEX,context);//处理薪资项的公式
+                    String conditionFormula = replaceFormula(condition,formulaContent,context);//处理计算项的公式
+                    String finalResult = replacePayItem(conditionFormula,PAY_ITEM_REGEX,context);//处理薪资项的公式
                     try {
+                        finalResult = Special2Normal(finalResult); //特殊字符转化
                         BigDecimal computeResult = JavaScriptEngine.compute(finalResult); // 执行JS 方法
 
                         Object result = null;
@@ -196,6 +197,7 @@ public class ComputeServiceImpl {
         if(rowAffected > 0) { // 数据库更新成功后发送消息
             ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
+            computeMsg.setBatchType(batchType);
             computeMsg.setComputeStatus(BatchStatusEnum.COMPUTED.getValue()); // send kafka compute's complete status
             sender.SendComputeStatus(computeMsg);
         }
@@ -257,7 +259,7 @@ public class ComputeServiceImpl {
 
             condition_formula = condition + CONDITION_FUNCTION_SPLIT + formulaContent;
         }
-        condition_formula = condition_formula.replaceAll("［","[").replaceAll("］","]").replaceAll("｛","{").replaceAll("｝","}");
+        condition_formula = Special2Normal(condition_formula);
         FuncEntity funcEntity = null;
         Matcher m = FUNCTION_REGEX.matcher(condition_formula);
         while (m.find()) {
@@ -363,6 +365,21 @@ public class ComputeServiceImpl {
         kSession.delete(factHandle);
         logger.info(String.format("emp_code: %s, total excute rule counts: %d", context.getEmpPayItem().getEmpCode(),count));
         return count;
+    }
+
+    /**
+     * 常规计算中的符号替换：半角 转 全角
+     * @param inputStr
+     * @return
+     */
+    private String Special2Normal(String inputStr){
+        inputStr = inputStr
+                .replaceAll("［","[").replaceAll("］","]")
+                .replaceAll("｛","{").replaceAll("｝","}")
+                .replaceAll("（","(").replaceAll("）",")")
+                .replaceAll("＋","+").replaceAll("－","-")
+                .replaceAll("＊","*").replaceAll("／","/");
+        return inputStr;
     }
 
 
