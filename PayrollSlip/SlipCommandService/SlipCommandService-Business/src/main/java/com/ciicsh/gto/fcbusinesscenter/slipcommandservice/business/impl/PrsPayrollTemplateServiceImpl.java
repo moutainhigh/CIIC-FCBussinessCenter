@@ -11,6 +11,8 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollTem
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -79,21 +81,19 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
         params.put("createdBy", '1');
         params.put("modifiedBy", '1');
 
-        String effectiveTime = (String)params.get("effectiveTime");
-        if ( effectiveTime != null ) {
-            if (effectiveTime.isEmpty()) {
-                params.remove("effectiveTime");
+        if (params.get("effectiveTime") != null) {
+            if (params.get("effectiveTime").equals("")) {
+                params.put("effectiveTime", null);
             } else {
-                params.put("effectiveTime", LocalDateTime.parse(effectiveTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+                params.put("effectiveTime", new Date((long) params.get("effectiveTime")));
             }
         }
 
-        String invalidTime = (String)params.get("invalidTime");
-        if ( invalidTime != null ) {
-            if (invalidTime.isEmpty()) {
-                params.remove("invalidTime");
+        if (params.get("invalidTime") != null) {
+            if (params.get("invalidTime").equals("")) {
+                params.put("invalidTime", null);
             } else {
-                params.put("invalidTime", LocalDateTime.parse(invalidTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+                params.put("invalidTime", new Date((long) params.get("invalidTime")));
             }
         }
 
@@ -107,14 +107,20 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
         // TODO get current user
         params.put("modifiedBy", '1');
 
-        String effectiveTime = (String)params.get("effectiveTime");
-        if ( effectiveTime != null && !effectiveTime.isEmpty() ) {
-            params.put("effectiveTime", LocalDateTime.parse(effectiveTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+        if (params.get("effectiveTime") != null) {
+            if (params.get("effectiveTime").equals("")) {
+                params.put("effectiveTime", null);
+            } else {
+                params.put("effectiveTime", new Date((long) params.get("effectiveTime")));
+            }
         }
 
-        String invalidTime = (String)params.get("invalidTime");
-        if ( invalidTime != null && !invalidTime.isEmpty() ) {
-            params.put("invalidTime", LocalDateTime.parse(invalidTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).plusHours(8));
+        if (params.get("invalidTime") != null) {
+            if (params.get("invalidTime").equals("")) {
+                params.put("invalidTime", null);
+            } else {
+                params.put("invalidTime", new Date((long) params.get("invalidTime")));
+            }
         }
 
         prsPayrollTemplateMapper.update(params);

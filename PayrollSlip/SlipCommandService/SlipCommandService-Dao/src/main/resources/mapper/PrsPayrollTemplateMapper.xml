@@ -110,10 +110,10 @@
       <if test="templateFileUrl != null and templateFileUrl != ''">
         template_file_url = #{templateFileUrl},
       </if>
-      <if test="effectiveTime != null and effectiveTime != ''">
+      <if test="effectiveTime != null">
         effective_time = #{effectiveTime},
       </if>
-      <if test="invalidTime != null and invalidTime != ''">
+      <if test="invalidTime != null">
         invalid_time = #{invalidTime},
       </if>
       <if test="ifEncrypt != null">
@@ -130,9 +130,6 @@
       </if>
       <if test="isActive != null">
         is_active = #{isActive},
-      </if>
-      <if test="modifiedTime != null and modifiedTime != ''">
-        modified_time = #{modifiedTime},
       </if>
       <if test="modifiedBy != null and modifiedBy != ''">
         modified_by = #{modifiedBy},
