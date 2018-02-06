@@ -102,7 +102,7 @@
 		,t3.declare_account,t3.pay_account,t3.receipt_account,t3.support_no,t3.support_name,t3.is_support,t3.is_supported,t3.is_pay,t3.is_payed,t3.is_declare
 		,t3.is_declared,t3.is_transfer,t3.is_transferred,t3.is_declare_supported,t3.is_transfer_supported,t3.is_pay_supported
 		FROM tax_fc_calculation_batch t1,tax_fc_calculation_batch_detail t2,tax_fc_employee_service_batch t3
-		where is_active = 1 and t1.id = t2.calculation_batch_id and t2.id = t3.cal_batch_detail_id and t2.is_defer = true
+		where t1.is_active = true and t1.id = t2.calculation_batch_id and t2.id = t3.cal_batch_detail_id and t2.is_defer = true
 		<if test = "employeeNo != null and employeeNo != ''">
 			and t2.employee_no LIKE concat('%', #{employeeNo, jdbcType=VARCHAR},'%')
 		</if>
