@@ -1,6 +1,5 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
  * Created by jiangtianning on 2017/11/6.
  */
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping(value = "/api/salaryManagement")
 public class ItemController extends BaseController{
 
     @Autowired

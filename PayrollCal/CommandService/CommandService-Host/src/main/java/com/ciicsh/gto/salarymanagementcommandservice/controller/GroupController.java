@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * @author jiangtianning
  */
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping(value = "/api/salaryManagement")
 public class GroupController {
 
     @Autowired
