@@ -11,6 +11,10 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollTem
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +81,22 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
         params.put("createdBy", '1');
         params.put("modifiedBy", '1');
 
+        if (params.get("effectiveTime") != null) {
+            if (params.get("effectiveTime").equals("")) {
+                params.put("effectiveTime", null);
+            } else {
+                params.put("effectiveTime", new Date((long) params.get("effectiveTime")));
+            }
+        }
+
+        if (params.get("invalidTime") != null) {
+            if (params.get("invalidTime").equals("")) {
+                params.put("invalidTime", null);
+            } else {
+                params.put("invalidTime", new Date((long) params.get("invalidTime")));
+            }
+        }
+
         prsPayrollTemplateMapper.insert(params);
 
         return true;
@@ -86,6 +106,22 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
     public Boolean updatePrsPayrollTemplate(Map<String, Object> params) {
         // TODO get current user
         params.put("modifiedBy", '1');
+
+        if (params.get("effectiveTime") != null) {
+            if (params.get("effectiveTime").equals("")) {
+                params.put("effectiveTime", null);
+            } else {
+                params.put("effectiveTime", new Date((long) params.get("effectiveTime")));
+            }
+        }
+
+        if (params.get("invalidTime") != null) {
+            if (params.get("invalidTime").equals("")) {
+                params.put("invalidTime", null);
+            } else {
+                params.put("invalidTime", new Date((long) params.get("invalidTime")));
+            }
+        }
 
         prsPayrollTemplateMapper.update(params);
 
