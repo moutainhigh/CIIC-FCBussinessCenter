@@ -26,6 +26,7 @@ import org.kie.api.cdi.KReleaseId;
 import org.kie.api.cdi.KSession;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.mvel2.util.Make;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +50,13 @@ public class ComputeServiceImpl {
     private final static Pattern PAY_ITEM_REGEX = Pattern.compile("\\[([^\\[\\]]+)\\]");
     private final static Pattern FUNCTION_REGEX = Pattern.compile("\\{([^\\{\\}]+)\\}");
     private final static Pattern DIGEST_REGEX = Pattern.compile("^(-?\\d+)(\\.\\d+)?$");
+    private final static Pattern PARAMETER_REGEX = Pattern.compile("\\(([^\\[\\]]+)\\)");
+
 
     private final static String FUNCTION_LEFT_SIDE_PREFIX = "{";
     private final static String FUNCTION_RIGHT_SIDE_PREFIX = "}";
+
+    private final static String CONDITION_FOMULAR_SIPE = ";";
 
     private final static String CONDITION_FUNCTION_SPLIT = "_";
 
@@ -135,13 +140,13 @@ public class ComputeServiceImpl {
 
                     String condition = item.get("item_condition") == null ? "" : (String)item.get("item_condition");//计算条件
                     String formulaContent = item.get("formula_content") == null ? "" : (String)item.get("formula_content"); //计算公式
-                    //first name []replace item name item value
-                    //second common function [[common function]]
-                    //third eval
+                    if(StringUtils.isEmpty(formulaContent)) return;
+
+                    condition = Special2Normal(condition); //特殊字符转化
+                    formulaContent = Special2Normal(formulaContent); //特殊字符转化
                     String conditionFormula = replaceFormula(condition,formulaContent,context);//处理计算项的公式
                     String finalResult = replacePayItem(conditionFormula,PAY_ITEM_REGEX,context);//处理薪资项的公式
                     try {
-                        finalResult = Special2Normal(finalResult); //特殊字符转化
                         BigDecimal computeResult = JavaScriptEngine.compute(finalResult); // 执行JS 方法
 
                         Object result = null;
@@ -222,7 +227,7 @@ public class ComputeServiceImpl {
 
     /**
      * 找出formulaContent包含函数名称的列表 -- 函数存在规则引擎里面
-     * @param formulaContent example: [a]+[c], [d]*[f] -- a,c,d,f 可能含有函数
+     * @param formulaContent example: [a]+[c]; [d]*[f] -- a,c,d,f 可能含有函数
      * @return 该公式里面包含函数名称的列表
      */
     private List<FuncEntity> getCommonFuncParams(String formulaContent, Pattern pattern){
@@ -239,32 +244,49 @@ public class ComputeServiceImpl {
 
     /**
      * 替换公式值：函数名称替换成函数值
-     * @param formulaContent   [a]+[c], [d]*[f]
+     * @param formulaContent   [a]+[c]; [d]*[f]
      * @param context  包含 当前雇员函数列表 与 当前雇员薪资项列表
      * @return
      */
     private String getFormulaContent(String condition, String formulaContent, DroolsContext context){
 
-        String[] conditions = condition.split(",");
-        String[] formulas = formulaContent.split(",");
+        condition = StringUtils.removeEnd(condition,CONDITION_FOMULAR_SIPE);      //去除字符窜最后;
+        formulaContent = StringUtils.removeEnd(formulaContent,CONDITION_FOMULAR_SIPE); //去除字符窜最后;
+
+        String[] conditions = condition.split(CONDITION_FOMULAR_SIPE);
+        String[] formulas = formulaContent.split(CONDITION_FOMULAR_SIPE);
 
         String condition_formula = null;
 
         if(formulas == null || formulas.length == 0){ // 无条件
             logger.error(String.format("emp_code is %s no function", context.getEmpPayItem().getEmpCode()));
             return "";
-        } else if((conditions == null || conditions.length == 1) && formulas.length ==1){ // 单个条件执行
+        } else if((conditions == null || (conditions.length == 1 && conditions[0].indexOf(CONDITION_FOMULAR_SIPE) < 0)) && formulas.length ==1){ // IF ELSE 单个条件执行
             condition_formula = formulas[0]; // 执行结果运算中如果调用了函数，则把该函数替换成Drools规则触发的值
         }else {
-
             condition_formula = condition + CONDITION_FUNCTION_SPLIT + formulaContent;
         }
-        condition_formula = Special2Normal(condition_formula);
         FuncEntity funcEntity = null;
         Matcher m = FUNCTION_REGEX.matcher(condition_formula);
         while (m.find()) {
             funcEntity = new FuncEntity();
-            funcEntity.setFuncName(m.group(1));
+            String func = m.group(1); // 工龄([入职日期],[离职日期])
+            func = func.replaceAll("\\(",",").replaceAll("\\)","")
+                        .replaceAll("\\[","").replaceAll("\\]","");
+            String[] funcs = func.split(",");
+            String funcName = "";
+            if(funcs.length > 1) { // 分析函数包含参数
+                funcName = funcs[0];
+                List<String> parameters = new ArrayList<>();
+                for (int i = 1; i < funcs.length; i++) {
+                    parameters.add(funcs[i]);
+                }
+                funcEntity.setParameters(parameters);
+            }else { // 分析函数无参数
+                funcName = func;
+            }
+
+            funcEntity.setFuncName(funcName);
             context.getFuncEntityList().add(funcEntity);
         }
         if (context.getFuncEntityList().size() == 0) { // 当前没有计算函数触发
@@ -277,7 +299,7 @@ public class ComputeServiceImpl {
         }
         for (FuncEntity fun : context.getFuncEntityList()) {
             //公式的函数名 替换成 公式的函数值
-            condition_formula = condition_formula.replace(FUNCTION_LEFT_SIDE_PREFIX + fun.getFuncName() + FUNCTION_RIGHT_SIDE_PREFIX, fun.getResult().toString());
+            condition_formula = condition_formula.replace(FUNCTION_LEFT_SIDE_PREFIX + fun.toString() + FUNCTION_RIGHT_SIDE_PREFIX, fun.getResult().toString());
         }
         return condition_formula;
 
@@ -301,12 +323,22 @@ public class ComputeServiceImpl {
             String[] condition_formula = formula_Content.split(CONDITION_FUNCTION_SPLIT);
             if(condition_formula.length == 1){
                 sb.append(condition_formula[0]); // 说明只有一个方法，没有执行条件
-            }else { // 多个执行条件，多个方法，一个条件一个方法
-                String[] conditions = condition_formula[0].split(",");
-                String[] formulas = condition_formula[1].split(",");
-                for (int i = 0; i < conditions.length; i++) {
-                    sb.append("if ( " + conditions[i] + " )");
-                    sb.append("{ " + formulas[i] + " }");
+            }
+            else { // 多个执行条件，多个方法，一个条件一个方法
+                String[] conditions = condition_formula[0].split(CONDITION_FOMULAR_SIPE);//aa; split(';') 后 aa
+                String[] formulas = condition_formula[1].split(CONDITION_FOMULAR_SIPE);
+                if(formulas.length == 2 && conditions.length == 1){
+                    String con = StringUtils.removeEnd(conditions[0],CONDITION_FOMULAR_SIPE);
+                    sb.append("if ( " + con + " )");
+                    sb.append("{ " + formulas[0] + " }");
+                    sb.append(" else ");
+                    sb.append(" { " + formulas[1] + " }");
+
+                }else {
+                    for (int i = 0; i < conditions.length; i++) {
+                        sb.append("if ( " + conditions[i] + " )");
+                        sb.append("{ " + formulas[i] + " }");
+                    }
                 }
             }
             return sb.toString();
@@ -378,7 +410,8 @@ public class ComputeServiceImpl {
                 .replaceAll("｛","{").replaceAll("｝","}")
                 .replaceAll("（","(").replaceAll("）",")")
                 .replaceAll("＋","+").replaceAll("－","-")
-                .replaceAll("＊","*").replaceAll("／","/");
+                .replaceAll("＊","*").replaceAll("／","/")
+                .replaceAll("，",",");
         return inputStr;
     }
 

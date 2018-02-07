@@ -8,7 +8,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by bill on 18/1/17.
+ * Created by bill on 18/1/17
+ * 规则引擎 上下文对象，包括 雇员的薪资项列表与雇员相关的函数列表
  */
 public class DroolsContext {
 
@@ -20,16 +21,7 @@ public class DroolsContext {
     }
 
     public DroolsContext(){
-
         this.funcEntityList = new ArrayList<>();
-        /*FuncEntity funcEntity = new FuncEntity();
-        funcEntity.setFuncName("城市最低生活标准");
-        this.funcEntityList.add(funcEntity);
-
-        funcEntity = new FuncEntity();
-        funcEntity.setFuncName("实际工龄");
-        this.funcEntityList.add(funcEntity);*/
-
     }
 
     public void setEmpPayItem(EmpPayItem empPayItem) {
@@ -38,12 +30,6 @@ public class DroolsContext {
 
     public List<FuncEntity> getFuncEntityList() {
         return this.funcEntityList;
-    }
-
-    public void clearFuncResult(){
-        for (FuncEntity funcEntity: this.getFuncEntityList()) {
-            funcEntity.setResult(null);
-        }
     }
 
     /**
@@ -62,6 +48,10 @@ public class DroolsContext {
      */
     public FuncEntity getFuncEntity(String funcName){
         return this.funcEntityList.stream().filter(p -> p.getFuncName().equals(funcName)).collect(Collectors.toList()).get(0);
+    }
+
+    public List<String> getParametersByFuncName(FuncEntity entity, String funcName){
+        return entity.getParameters();
     }
 
     /**

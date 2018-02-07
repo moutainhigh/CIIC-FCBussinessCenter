@@ -22,7 +22,16 @@ public class KafkaSender {
 
     public void SendComputeStatus(ComputeMsg computeMsg)
     {
-        payrollSource.computeStatusOutput().send(MessageBuilder.withPayload(computeMsg).build());
+        try{
+            payrollSource.computeStatusOutput().send(MessageBuilder.withPayload(computeMsg).build());
+            logger.info("发送计算消息成功：" + computeMsg.toString());
+        }
+        catch(Exception ex){
+            logger.error("发送计算消息失败：" + ex.getMessage());
+
+        }
+
+
     }
 
 }
