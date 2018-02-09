@@ -1,14 +1,17 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -36,6 +39,7 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
     /**
      * 申报子任务ID（如果非空，则任务已合并，记录合并后的申报子任务ID）
      */
+	@TableField(value="task_sub_declare_id",fill= FieldFill.UPDATE)
 	private Long taskSubDeclareId;
     /**
      * 任务编号
@@ -85,11 +89,11 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	private Date modifiedTime;
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
@@ -107,6 +111,11 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
      */
 	private String managerName;
 
+	/**
+	 * 是否为合并任务
+	 */
+	@TableField("is_combined")
+	private Boolean isCombined;
 
 	public Long getId() {
 		return id;
@@ -220,19 +229,19 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -268,6 +277,14 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 		this.managerName = managerName;
 	}
 
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -275,27 +292,28 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 
 	@Override
 	public String toString() {
-		return "TaskSubDeclare{" +
-			"id=" + id +
-			", taskMainId=" + taskMainId +
-			", taskSubDeclareId=" + taskSubDeclareId +
-			", taskNo=" + taskNo +
-			", declareAccount=" + declareAccount +
-			", period=" + period +
-			", overdue=" + overdue +
-			", fine=" + fine +
-			", taxAmount=" + taxAmount +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			", managerNo=" + managerNo +
-			", managerName=" + managerName +
-			"}";
+		return "TaskSubDeclarePO{" +
+				"id=" + id +
+				", taskMainId=" + taskMainId +
+				", taskSubDeclareId=" + taskSubDeclareId +
+				", taskNo='" + taskNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", period=" + period +
+				", overdue=" + overdue +
+				", fine=" + fine +
+				", taxAmount=" + taxAmount +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				", isCombined=" + isCombined +
+				'}';
 	}
 }
