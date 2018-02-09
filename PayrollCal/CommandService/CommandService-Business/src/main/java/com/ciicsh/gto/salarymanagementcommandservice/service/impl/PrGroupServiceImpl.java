@@ -13,6 +13,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
@@ -98,6 +99,8 @@ public class PrGroupServiceImpl implements PrGroupService {
                     item.setItemType(i.getBaseItemType());
                     item.setPayrollGroupCode(paramItem.getGroupCode());
                     item.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
+                    item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
+                    item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
                     return item;
                 })
                 .collect(Collectors.toList());
