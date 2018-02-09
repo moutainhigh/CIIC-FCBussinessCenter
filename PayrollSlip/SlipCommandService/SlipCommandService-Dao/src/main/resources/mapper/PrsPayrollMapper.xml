@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsPayrollMapper">
+
+  <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO">
+    <id column="payroll_id" property="payrollId" />
+		<result column="management_id" property="managementId" />
+		<result column="employee_id" property="employeeId" />
+		<result column="salary_period" property="salaryPeriod" />
+		<result column="payroll_batch" property="payrollBatch" />
+		<result column="channel" property="channel" />
+		<result column="data_object" property="dataObject" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+  </resultMap>
+
+  <select id="total"  resultType="int">
+    SELECT COUNT(*) FROM prs_payroll
+    WHERE is_active = 1
+  </select>
+
+  <select id="all"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll
+    WHERE is_active = 1
+  </select>
+
+  <select id="list"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll
+    WHERE is_active = 1
+    ORDER BY payroll_id DESC
+    <if test="limit != null and limit != ''">
+      LIMIT #{limit}
+    </if>
+    <if test="offset != null and offset != ''">
+      OFFSET #{offset}
+    </if>
+  </select>
+
+  <select id="get"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll
+    where payroll_id = #{payrollId}
+    LIMIT 1
+  </select>
+
+  <select id="last"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll
+    ORDER by payroll_id desc
+    LIMIT 1;
+  </select>
+
+  <insert id="insert" parameterType="map">
+    INSERT INTO prs_payroll(management_id, employee_id, salary_period, payroll_batch, channel, data_object, remark, created_by, modified_by)
+    VALUES (#{managementId}, #{employeeId}, #{salaryPeriod}, #{payrollBatch}, #{channel}, #{dataObject}, #{remark}, #{createdBy}, #{modifiedBy})
+  </insert>
+
+  <update id="update" parameterType="map">
+    UPDATE prs_payroll
+    SET modified_time = CURRENT_TIMESTAMP,
+    <trim suffixOverrides=",">
+        <if test="managementId != null and managementId != ''">
+          management_id = #{managementId},
+        </if>
+        <if test="employeeId != null and employeeId != ''">
+          employee_id = #{employeeId},
+        </if>
+        <if test="salaryPeriod != null and salaryPeriod != ''">
+          salary_period = #{salaryPeriod},
+        </if>
+        <if test="payrollBatch != null and payrollBatch != ''">
+          payroll_batch = #{payrollBatch},
+        </if>
+        <if test="channel != null and channel != ''">
+          channel = #{channel},
+        </if>
+        <if test="dataObject != null and dataObject != ''">
+          data_object = #{dataObject},
+        </if>
+        <if test="remark != null and remark != ''">
+          remark = #{remark},
+        </if>
+        <if test="isActive != null">
+          is_active = #{isActive},
+        </if>
+        <if test="modifiedBy != null and modifiedBy != ''">
+          modified_by = #{modifiedBy},
+        </if>
+
+    </trim>
+    WHERE payroll_id = #{payrollId}
+  </update>
+
+</mapper>
