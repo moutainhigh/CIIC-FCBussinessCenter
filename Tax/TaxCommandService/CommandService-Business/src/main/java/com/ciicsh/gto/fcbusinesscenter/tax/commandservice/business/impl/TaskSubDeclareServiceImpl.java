@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapp
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,6 +60,10 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         if(StrKit.isNotEmpty(requestForTaskSubDeclare.getManagerName())){
             wrapper.like("manager_name",requestForTaskSubDeclare.getManagerName());
         }
+        //判断是否包含个税期间条件
+        if (StrKit.notBlank(requestForTaskSubDeclare.getPeriod())) {
+            wrapper.andNew("period = {0} ", LocalDate.parse(requestForTaskSubDeclare.getPeriod()));
+        }
         //期间类型currentPan,currentBeforePan,currentAfterPan
         if (StrKit.notBlank(requestForTaskSubDeclare.getPeriodType())) {
             String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
@@ -68,6 +74,10 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             } else if (CURRENT_AFTER_PAN.equals(requestForTaskSubDeclare.getPeriodType())) {
                 wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
+        }
+        //任务状态
+        if(StrKit.notBlank(requestForTaskSubDeclare.getStatusType())){
+            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE,requestForTaskSubDeclare.getStatusType().toUpperCase()));
         }
         //申报子任务ID为空
         wrapper.isNull("task_sub_declare_id");
