@@ -195,6 +195,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+
         return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
     }
 

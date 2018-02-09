@@ -10,12 +10,18 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Created by houwanhua on 2017/12/5.
  */
 
-@FeignClient("fcbusiness-center-command-service")
-@RequestMapping("/api/payrollaccount")
+@FeignClient("fcbusiness-center-compute-service")
+@RequestMapping("/api/prAccountSet")
 public interface PayrollAccountProxy {
 
-    @GetMapping("/getpayrollaccountsets")
-    JsonResult getPayrollAccountSets(@RequestParam String managementId,
-                                   @RequestParam Integer pageNum);
+    @RequestMapping("/getAccountSets")
+    JsonResult getAccountSets(@RequestParam String managementId,
+                                     @RequestParam(required = false, defaultValue = "50") Integer pageSize,
+                                     @RequestParam(required = false, defaultValue = "1") Integer pageNum);
+
+    @RequestMapping("/getPrItemList")
+    public JsonResult getPrItemList(@RequestParam String accountSetCode,
+                                    @RequestParam(required = false, defaultValue = "50") Integer pageSize,
+                                    @RequestParam(required = false, defaultValue = "1") Integer pageNum);
 
 }

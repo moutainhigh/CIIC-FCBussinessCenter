@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Created by houwanhua on 2017/12/5.
  */
 
-@FeignClient("fcbusiness-center-command-service")
+@FeignClient("fcbusiness-center-compute-service")
 @RequestMapping("/api/employeegroup")
 public interface EmployeeGroupProxy {
     @GetMapping("/getemployeegroupnames")

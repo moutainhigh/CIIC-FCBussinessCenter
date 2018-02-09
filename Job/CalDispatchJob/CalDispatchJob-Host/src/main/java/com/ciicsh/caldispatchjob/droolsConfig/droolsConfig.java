@@ -10,5 +10,5 @@ import org.springframework.context.annotation.ImportResource;
 
 @Configuration
 @ImportResource({"classpath:drools-spring-config.xml"})
-public class DroolsConfig {
+public class droolsConfig {
 }
