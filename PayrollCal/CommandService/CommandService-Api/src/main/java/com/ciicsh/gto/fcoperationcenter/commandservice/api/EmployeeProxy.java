@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by houwanhua on 2017/12/5.
  */
-@FeignClient("fcbusiness-center-command-service")
+@FeignClient("fcbusiness-center-compute-service")
 @RequestMapping("/api/employee")
 public interface EmployeeProxy {
 

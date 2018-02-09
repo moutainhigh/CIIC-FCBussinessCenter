@@ -107,11 +107,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         List<DBObject> batchList = null;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
-            batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+            batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            batchList = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+            batchList = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
         }else {
-            batchList = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+            batchList = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
 
         }
 
@@ -195,6 +195,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+
         return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
     }
 

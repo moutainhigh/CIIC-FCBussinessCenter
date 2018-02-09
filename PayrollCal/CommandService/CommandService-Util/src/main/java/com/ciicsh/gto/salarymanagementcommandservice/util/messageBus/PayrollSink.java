@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.util.messageBus;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,8 +15,8 @@ public interface PayrollSink {
     @Input(INPUT)
     MessageChannel input();
 
-    String COMPUTE_INPUT = "pr_compute-input-channel";
+    String COMPUTE_STATUS_INPUT = "pr_compute-status-input-channel";
 
-    @Input(COMPUTE_INPUT)
-    MessageChannel computeStatusInput();
+    @Input(COMPUTE_STATUS_INPUT)
+    SubscribableChannel computeStatusInput();
 }

@@ -1,5 +1,5 @@
 mongo:
-  host: 172.16.9.52
+  host: 172.16.9.52  # 172.16.9.52 java -Xms384m -Xmx512m -jar app.jar --spring.profiles.active=qa --server.port=8060
   port: 27017
   database: payroll_db
   userName: ciicit
