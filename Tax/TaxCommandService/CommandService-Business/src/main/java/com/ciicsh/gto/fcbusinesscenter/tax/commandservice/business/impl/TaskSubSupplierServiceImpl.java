@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForTaskSubSupplier;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForTaskSubSupplier;
@@ -40,6 +39,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
 
     /**
      * 查询供应商子任务
+     *
      * @param requestForTaskSubSupplier
      * @return
      */
@@ -49,20 +49,20 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubSupplierPO());
         //判断是否包含申报账户条件
-        if(StrKit.isNotEmpty(requestForTaskSubSupplier.getDeclareAccount())){
-            wrapper.like("declare_account",requestForTaskSubSupplier.getDeclareAccount());
+        if (StrKit.isNotEmpty(requestForTaskSubSupplier.getDeclareAccount())) {
+            wrapper.like("declare_account", requestForTaskSubSupplier.getDeclareAccount());
         }
         //判断是否包含管理方名称条件
-        if(StrKit.isNotEmpty(requestForTaskSubSupplier.getManagerName())){
-            wrapper.like("manager_name",requestForTaskSubSupplier.getManagerName());
+        if (StrKit.isNotEmpty(requestForTaskSubSupplier.getManagerName())) {
+            wrapper.like("manager_name", requestForTaskSubSupplier.getManagerName());
         }
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubSupplier.getPeriod())) {
-            wrapper.andNew("period = {0} ",LocalDate.parse(requestForTaskSubSupplier.getPeriod()));
+            wrapper.andNew("period = {0} ", LocalDate.parse(requestForTaskSubSupplier.getPeriod()));
         }
         //判断是否包含供应商名称条件
-        if(StrKit.isNotEmpty(requestForTaskSubSupplier.getSupportName())){
-            wrapper.like("support_name",requestForTaskSubSupplier.getSupportName());
+        if (StrKit.isNotEmpty(requestForTaskSubSupplier.getSupportName())) {
+            wrapper.like("support_name", requestForTaskSubSupplier.getSupportName());
         }
         //期间类型currentPan,currentBeforePan,currentAfterPan
         if (StrKit.notBlank(requestForTaskSubSupplier.getPeriodType())) {
@@ -76,20 +76,32 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             }
         }
         //任务状态
-        if(StrKit.notBlank(requestForTaskSubSupplier.getStatusType())){
-            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE,requestForTaskSubSupplier.getStatusType().toUpperCase()));
+        if (StrKit.notBlank(requestForTaskSubSupplier.getStatusType())) {
+            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForTaskSubSupplier.getStatusType().toUpperCase()));
         }
         //供应商子任务ID为空
         wrapper.isNull("task_sub_supplier_id");
         //是否可用
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time",false);
-        Page<TaskSubSupplierPO> page = new Page<TaskSubSupplierPO>(requestForTaskSubSupplier.getCurrentNum(),requestForTaskSubSupplier.getPageSize());
+        wrapper.orderBy("created_time", false);
+        Page<TaskSubSupplierPO> page = new Page<TaskSubSupplierPO>(requestForTaskSubSupplier.getCurrentNum(), requestForTaskSubSupplier.getPageSize());
         List<TaskSubSupplierPO> taskSubSupplierPOList = baseMapper.selectPage(page, wrapper);
         responseForTaskSubSupplier.setRowList(taskSubSupplierPOList);
         responseForTaskSubSupplier.setTotalNum(page.getTotal());
         responseForTaskSubSupplier.setCurrentNum(requestForTaskSubSupplier.getCurrentNum());
         responseForTaskSubSupplier.setPageSize(requestForTaskSubSupplier.getPageSize());
         return responseForTaskSubSupplier;
+    }
+
+    /**
+     * 根据供应商子任务ID查询供应商信息
+     *
+     * @param subSupplierId
+     * @return
+     */
+    @Override
+    public TaskSubSupplierPO querySupplierDetailsById(long subSupplierId) {
+        TaskSubSupplierPO taskSubSupplierPO = baseMapper.selectById(subSupplierId);
+        return taskSubSupplierPO;
     }
 }
