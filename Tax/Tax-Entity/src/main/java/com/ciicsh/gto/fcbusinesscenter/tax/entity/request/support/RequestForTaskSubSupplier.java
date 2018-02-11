@@ -1,24 +1,22 @@
-package com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare;
+package com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support;
 
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.page.PageInfo;
 
 /**
- * @author wuhua
+ * @author yuantongqing on 2018/02/09
  */
-public class RequestForTaskSubDeclare extends PageInfo {
+public class RequestForTaskSubSupplier extends PageInfo {
 
     /**
      * 主键ID
      */
     private Long id;
 
-    private Long[] taskSubDeclareId;
-
     /**
-     * 批量完成/批量退回申报子任务ID
+     * 批量完成/批量退回供应商子任务ID
      */
-    private String[] subDeclareIds;
+    private String[] subSupplierIds;
 
     /**
      * 缴纳账户
@@ -30,6 +28,10 @@ public class RequestForTaskSubDeclare extends PageInfo {
      */
     private String managerName;
     /**
+     * 供应商名称
+     */
+    private String supportName;
+    /**
      * 页签状态类别handling,completed,retreated,failed
      */
     private String statusType;
@@ -38,7 +40,6 @@ public class RequestForTaskSubDeclare extends PageInfo {
      * 个税期间
      */
     private String period;
-
     /**
      * 页签类型：currentPan,currentBeforePan,currentAfterPan
      */
@@ -57,20 +58,12 @@ public class RequestForTaskSubDeclare extends PageInfo {
         this.id = id;
     }
 
-    public Long[] getTaskSubDeclareId() {
-        return taskSubDeclareId;
+    public String[] getSubSupplierIds() {
+        return subSupplierIds;
     }
 
-    public void setTaskSubDeclareId(Long[] taskSubDeclareId) {
-        this.taskSubDeclareId = taskSubDeclareId;
-    }
-
-    public String[] getSubDeclareIds() {
-        return subDeclareIds;
-    }
-
-    public void setSubDeclareIds(String[] subDeclareIds) {
-        this.subDeclareIds = subDeclareIds;
+    public void setSubSupplierIds(String[] subSupplierIds) {
+        this.subSupplierIds = subSupplierIds;
     }
 
     public String getDeclareAccount() {
@@ -89,6 +82,14 @@ public class RequestForTaskSubDeclare extends PageInfo {
         this.managerName = managerName;
     }
 
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
+    }
+
     public String getPeriodType() {
         return periodType;
     }
@@ -105,12 +106,12 @@ public class RequestForTaskSubDeclare extends PageInfo {
         this.modifiedBy = modifiedBy;
     }
 
-    public String getStatusType() {
-        return statusType;
+    public String getSupportName() {
+        return supportName;
     }
 
-    public void setStatusType(String statusType) {
-        this.statusType = statusType;
+    public void setSupportName(String supportName) {
+        this.supportName = supportName;
     }
 
     public String getPeriod() {

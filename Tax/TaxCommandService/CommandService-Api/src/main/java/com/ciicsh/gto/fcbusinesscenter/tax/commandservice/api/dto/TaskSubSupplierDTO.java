@@ -1,13 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
-
 import java.util.Arrays;
 
 /**
- * @author wuhua
+ * @author yuantongqing on 2018/02/09
  */
-public class TaskSubDeclareDTO {
-
+public class TaskSubSupplierDTO {
     /**
      * 主键ID
      */
@@ -17,13 +15,14 @@ public class TaskSubDeclareDTO {
      * 申报账户
      */
     private String declareAccount;
-
     /**
      * 管理方名称
      */
     private String managerName;
-
-    private String batchNo;
+    /**
+     * 供应商名称
+     */
+    private String supportName;
     /**
      * 页签状态类别handling,completed,retreated,failed
      */
@@ -47,10 +46,9 @@ public class TaskSubDeclareDTO {
     private Integer pageSize;
 
     /**
-     * 批量完成/批量退回申报子任务ID
+     * 批量完成/批量退回供应商子任务ID
      */
-    private String[] subDeclareIds;
-
+    private String[] subSupplierIds;
 
     public Long getId() {
         return id;
@@ -76,12 +74,20 @@ public class TaskSubDeclareDTO {
         this.managerName = managerName;
     }
 
-    public String getBatchNo() {
-        return batchNo;
+    public String getSupportName() {
+        return supportName;
     }
 
-    public void setBatchNo(String batchNo) {
-        this.batchNo = batchNo;
+    public void setSupportName(String supportName) {
+        this.supportName = supportName;
+    }
+
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
     }
 
     public String getPeriodType() {
@@ -108,20 +114,12 @@ public class TaskSubDeclareDTO {
         this.pageSize = pageSize;
     }
 
-    public String[] getSubDeclareIds() {
-        return subDeclareIds;
+    public String[] getSubSupplierIds() {
+        return subSupplierIds;
     }
 
-    public void setSubDeclareIds(String[] subDeclareIds) {
-        this.subDeclareIds = subDeclareIds;
-    }
-
-    public String getStatusType() {
-        return statusType;
-    }
-
-    public void setStatusType(String statusType) {
-        this.statusType = statusType;
+    public void setSubSupplierIds(String[] subSupplierIds) {
+        this.subSupplierIds = subSupplierIds;
     }
 
     public String getPeriod() {
@@ -134,17 +132,17 @@ public class TaskSubDeclareDTO {
 
     @Override
     public String toString() {
-        return "TaskSubDeclareDTO{" +
+        return "TaskSubSupplierDTO{" +
                 "id=" + id +
                 ", declareAccount='" + declareAccount + '\'' +
                 ", managerName='" + managerName + '\'' +
-                ", batchNo='" + batchNo + '\'' +
+                ", supportName='" + supportName + '\'' +
                 ", statusType='" + statusType + '\'' +
                 ", period='" + period + '\'' +
                 ", periodType='" + periodType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
-                ", subDeclareIds=" + Arrays.toString(subDeclareIds) +
+                ", subSupplierIds=" + Arrays.toString(subSupplierIds) +
                 '}';
     }
 }

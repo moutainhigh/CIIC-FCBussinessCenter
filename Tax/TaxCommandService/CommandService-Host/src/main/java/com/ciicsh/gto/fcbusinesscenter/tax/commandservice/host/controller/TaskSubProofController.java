@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yuantongqing on 2017/12/12
@@ -344,6 +346,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofService.querySubProofDetailList(subProofId);
             //文件名称
             String fileName = "";
+            //用于存放模板列表头部
+            Map<String, String> map = new HashMap<>(16);
             // TODO 测试代码："蓝天科技上海独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技无锡独立户"=>"完税凭证_浦东"
             //根据申报账户选择模板
             if ("蓝天科技上海独立户".equals(taskSubProofBO.getDeclareAccount())) {
@@ -352,24 +356,52 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 fs = getFSFileSystem(fileName);
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
+                //扣缴义务人名称
+                map.put("withholdingAgent", "上海中智");
+                //扣缴义务人代码(税务电脑编码)
+                map.put("withholdingAgentCode", "BM123456789");
+                //扣缴义务人电话
+                map.put("withholdingAgentPhone", "18201880000");
+                //换开人姓名
+                map.put("changePersonName","admin");
+                //换开人身份证号码
+                map.put("changePersonIdNo","321281199001011234");
                 //根据不同的业务需要处理wb
-                exportFileService.exportAboutSFJ(wb, taskSubProofDetailPOList);
+                exportFileService.exportAboutSFJ(wb, map, taskSubProofDetailPOList);
             } else if ("中智上海财务咨询公司大库".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_徐汇.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
+                //单位税号（必填）
+                map.put("unitNumber","TEST123456");
+                //单位名称（必填）
+                map.put("unitName","上海中智");
                 //根据不同的业务需要处理wb
-                exportFileService.exportAboutXH(wb, taskSubProofDetailPOList);
+                exportFileService.exportAboutXH(wb,map, taskSubProofDetailPOList);
             } else if ("蓝天科技无锡独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_浦东.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
+                //扣缴单位
+                map.put("withholdingUnit","上海中智");
+                //电脑编码
+                map.put("withholdingCode","123456789");
+                //通用缴款书流水号
+                map.put("generalPaymentBook","147258369");
+                //办税人员
+                map.put("taxationPersonnel","admin");
+                //联系电话
+                map.put("phone","18201886666");
+                //换开份数
+                map.put("changeNum","2");
+                //换开原因
+                map.put("changeReason","重新申报");
                 //根据不同的业务需要处理wb
-                exportFileService.exportAboutPD(wb, taskSubProofDetailPOList);
+                exportFileService.exportAboutPD(wb,map, taskSubProofDetailPOList);
             }
             //导出excel
             exportExcel(response, wb, fileName);
