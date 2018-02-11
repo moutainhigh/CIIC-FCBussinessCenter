@@ -7,6 +7,7 @@ import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  * Created by NeoJiang on 2018/2/7.
  * @author NeoJiang
  */
+@RestController
 public class ManagementController {
 
     @Autowired
