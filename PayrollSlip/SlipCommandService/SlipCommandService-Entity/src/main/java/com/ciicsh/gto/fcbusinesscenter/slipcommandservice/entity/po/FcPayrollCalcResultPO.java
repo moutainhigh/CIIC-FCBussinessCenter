@@ -15,7 +15,7 @@ import java.util.Date;
  * 薪资计算批次结果表(雇员维度)
  *
  * @author taka
- * @since 2018-02-09
+ * @since 2018-02-11
  */
 @TableName("fc_payroll_calc_result")
 public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
@@ -39,6 +39,12 @@ public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
    */
   @TableField("emp_name")
   private String empName;
+
+  /**
+   * 工资单类型:0-通用，1-纸质，2-邮件，3-网上查看
+   */
+  @TableField("payroll_type")
+  private Integer payrollType;
 
   /**
    * 部门
@@ -286,6 +292,14 @@ public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
 
   public void setEmpName(String empName) {
     this.empName = empName;
+  }
+
+  public Integer getPayrollType() {
+    return payrollType;
+  }
+
+  public void setPayrollType(Integer payrollType) {
+    this.payrollType = payrollType;
   }
 
   public String getDepartment() {
@@ -597,6 +611,7 @@ public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
             "fcPayrollCalcResultId=" + fcPayrollCalcResultId +
             ", empId=" + empId +
             ", empName=" + empName +
+            ", payrollType=" + payrollType +
             ", department=" + department +
             ", batchId=" + batchId +
             ", refBatchId=" + refBatchId +

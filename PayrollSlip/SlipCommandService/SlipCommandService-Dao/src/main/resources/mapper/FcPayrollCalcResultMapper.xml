@@ -6,6 +6,7 @@
         <id column="fc_payroll_calc_result_id" property="fcPayrollCalcResultId" />
         <result column="emp_id" property="empId" />
         <result column="emp_name" property="empName" />
+        <result column="payroll_type" property="payrollType" />
         <result column="department" property="department" />
         <result column="batch_id" property="batchId" />
         <result column="ref_batch_id" property="refBatchId" />
@@ -84,8 +85,8 @@
     </select>
 
     <insert id="insert" parameterType="map">
-        INSERT INTO fc_payroll_calc_result(emp_id, emp_name, department, batch_id, ref_batch_id, leaving_years, personnel_income_net_pay, personnel_income_tax, personnel_income_wage_before_tax, personnel_income_wage_after_tax, personnel_income_yearly_bonus_before_tax, personnel_income_yearly_bonus_after_tax, personnel_income_labor_before_tax, personnel_income_labor_after_tax, personnel_income_accident_before_tax, personnel_income_accident_after_tax, personnel_income_disposable_compension_before_tax, personnel_income_disposable_compension_after_tax, personnel_income_interest_before_tax, personnel_income_interest_after_tax, personnel_income_stock_option_before_tax, personnel_income_stock_option_after_tax, personnel_income_property_transfer_before_tax, personnel_income_property_transfer_after_tax, personnel_social_security, personnel_provident_fund, personnel_income_year_month, personnel_tax_exemption, tax_year_month, annuity, contract_first_party, salary_calc_result_items, employee_service_agreement, remark, created_by, modified_by)
-        VALUES (#{empId}, #{empName}, #{department}, #{batchId}, #{refBatchId}, #{leavingYears}, #{personnelIncomeNetPay}, #{personnelIncomeTax}, #{personnelIncomeWageBeforeTax}, #{personnelIncomeWageAfterTax}, #{personnelIncomeYearlyBonusBeforeTax}, #{personnelIncomeYearlyBonusAfterTax}, #{personnelIncomeLaborBeforeTax}, #{personnelIncomeLaborAfterTax}, #{personnelIncomeAccidentBeforeTax}, #{personnelIncomeAccidentAfterTax}, #{personnelIncomeDisposableCompensionBeforeTax}, #{personnelIncomeDisposableCompensionAfterTax}, #{personnelIncomeInterestBeforeTax}, #{personnelIncomeInterestAfterTax}, #{personnelIncomeStockOptionBeforeTax}, #{personnelIncomeStockOptionAfterTax}, #{personnelIncomePropertyTransferBeforeTax}, #{personnelIncomePropertyTransferAfterTax}, #{personnelSocialSecurity}, #{personnelProvidentFund}, #{personnelIncomeYearMonth}, #{personnelTaxExemption}, #{taxYearMonth}, #{annuity}, #{contractFirstParty}, #{salaryCalcResultItems}, #{employeeServiceAgreement}, #{remark}, #{createdBy}, #{modifiedBy})
+        INSERT INTO fc_payroll_calc_result(emp_id, emp_name, payroll_type, department, batch_id, ref_batch_id, leaving_years, personnel_income_net_pay, personnel_income_tax, personnel_income_wage_before_tax, personnel_income_wage_after_tax, personnel_income_yearly_bonus_before_tax, personnel_income_yearly_bonus_after_tax, personnel_income_labor_before_tax, personnel_income_labor_after_tax, personnel_income_accident_before_tax, personnel_income_accident_after_tax, personnel_income_disposable_compension_before_tax, personnel_income_disposable_compension_after_tax, personnel_income_interest_before_tax, personnel_income_interest_after_tax, personnel_income_stock_option_before_tax, personnel_income_stock_option_after_tax, personnel_income_property_transfer_before_tax, personnel_income_property_transfer_after_tax, personnel_social_security, personnel_provident_fund, personnel_income_year_month, personnel_tax_exemption, tax_year_month, annuity, contract_first_party, salary_calc_result_items, employee_service_agreement, remark, created_by, modified_by)
+        VALUES (#{empId}, #{empName}, #{payrollType}, #{department}, #{batchId}, #{refBatchId}, #{leavingYears}, #{personnelIncomeNetPay}, #{personnelIncomeTax}, #{personnelIncomeWageBeforeTax}, #{personnelIncomeWageAfterTax}, #{personnelIncomeYearlyBonusBeforeTax}, #{personnelIncomeYearlyBonusAfterTax}, #{personnelIncomeLaborBeforeTax}, #{personnelIncomeLaborAfterTax}, #{personnelIncomeAccidentBeforeTax}, #{personnelIncomeAccidentAfterTax}, #{personnelIncomeDisposableCompensionBeforeTax}, #{personnelIncomeDisposableCompensionAfterTax}, #{personnelIncomeInterestBeforeTax}, #{personnelIncomeInterestAfterTax}, #{personnelIncomeStockOptionBeforeTax}, #{personnelIncomeStockOptionAfterTax}, #{personnelIncomePropertyTransferBeforeTax}, #{personnelIncomePropertyTransferAfterTax}, #{personnelSocialSecurity}, #{personnelProvidentFund}, #{personnelIncomeYearMonth}, #{personnelTaxExemption}, #{taxYearMonth}, #{annuity}, #{contractFirstParty}, #{salaryCalcResultItems}, #{employeeServiceAgreement}, #{remark}, #{createdBy}, #{modifiedBy})
     </insert>
 
     <update id="update" parameterType="map">
@@ -97,6 +98,9 @@
             </if>
             <if test="empName != null and empName != ''">
                 emp_name = #{empName},
+            </if>
+            <if test="payrollType != null and payrollType != ''">
+                payroll_type = #{payrollType},
             </if>
             <if test="department != null and department != ''">
                 department = #{department},
@@ -204,5 +208,13 @@
         </trim>
         WHERE fc_payroll_calc_result_id = #{fcPayrollCalcResultId}
     </update>
+
+    <select id="listBatchIds"  resultMap="BaseResultMap">
+        SELECT distinct(batch_id)
+        FROM fc_payroll_calc_result
+        WHERE is_active = 1
+        ORDER BY batch_id
+
+    </select>
 
 </mapper>

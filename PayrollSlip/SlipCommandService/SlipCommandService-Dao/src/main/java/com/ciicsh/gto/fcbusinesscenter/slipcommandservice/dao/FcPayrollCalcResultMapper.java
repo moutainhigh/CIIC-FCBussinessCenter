@@ -24,4 +24,8 @@ public interface FcPayrollCalcResultMapper extends BaseMapper<FcPayrollCalcResul
     void insert(Map<String, Object> params);
 
     void update(Map<String, Object> params);
+
+    List<FcPayrollCalcResultPO> listBatchIds(Map<String, Object> params);
+
+
 }

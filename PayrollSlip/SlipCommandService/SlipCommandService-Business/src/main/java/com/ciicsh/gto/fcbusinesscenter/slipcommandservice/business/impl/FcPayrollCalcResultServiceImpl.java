@@ -94,4 +94,13 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
 
         return true;
     }
+
+
+    @Override
+    public List<FcPayrollCalcResultPO> listBatchIds(Map<String, Object> params) {
+
+        List<FcPayrollCalcResultPO> records = fcPayrollCalcResultMapper.listBatchIds(params);
+
+        return records;
+    }
 }

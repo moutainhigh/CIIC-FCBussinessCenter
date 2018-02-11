@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsPayrollMapper;
-import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO;
-import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollService;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsSubTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsSubTaskService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -16,29 +16,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 工资单 服务实现类
+ * 工资单子任务单主表 服务实现类
  *
  * @author taka
- * @since 2018-02-09
+ * @since 2018-02-11
  */
 @Service
 @Transactional
 @SuppressWarnings("all")
-public class PrsPayrollServiceImpl implements PrsPayrollService {
+public class PrsSubTaskServiceImpl implements PrsSubTaskService {
 
     @Autowired
-    private PrsPayrollMapper prsPayrollMapper;
+    private PrsSubTaskMapper prsSubTaskMapper;
 
     @Override
-    public List<PrsPayrollPO> listPrsPayrolls(Map<String, Object> params) {
+    public List<PrsSubTaskPO> listPrsSubTasks(Map<String, Object> params) {
 
-        List<PrsPayrollPO> records = prsPayrollMapper.list(params);
+        List<PrsSubTaskPO> records = prsSubTaskMapper.list(params);
 
         return records;
     }
 
     @Override
-    public Page<PrsPayrollPO> pagePrsPayrolls(Map<String, Object> params) {
+    public Page<PrsSubTaskPO> pagePrsSubTasks(Map<String, Object> params) {
         int limit = 20;
         int offset = 0;
 
@@ -55,9 +55,9 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
         params.put("limit", limit);
         params.put("offset", offset);
 
-        int total = prsPayrollMapper.total(params);
-        List<PrsPayrollPO> records = prsPayrollMapper.list(params);
-        Page<PrsPayrollPO> page = new Page<>();
+        int total = prsSubTaskMapper.total(params);
+        List<PrsSubTaskPO> records = prsSubTaskMapper.list(params);
+        Page<PrsSubTaskPO> page = new Page<>();
         page.setRecords(records);
         page.setCurrent(currentPage);
         page.setTotal(total);
@@ -67,16 +67,23 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     }
 
     @Override
-    public PrsPayrollPO getPrsPayroll(Map<String, Object> params) {
-        return prsPayrollMapper.get(params);
+    public PrsSubTaskPO getPrsSubTask(Map<String, Object> params) {
+        return prsSubTaskMapper.get(params);
     }
 
     @Override
-    public Boolean addPrsPayroll(Map<String, Object> params) {
+    public Boolean addPrsSubTask(Map<String, Object> params) {
         // TODO get current user
         params.put("createdBy", '1');
         params.put("modifiedBy", '1');
 
+        if (params.get("publishDate") != null) {
+            if (params.get("publishDate").equals("")) {
+                params.put("publishDate", null);
+            } else {
+                params.put("publishDate", new Date((long) params.get("publishDate")));
+            }
+        }
         if (params.get("approveTime") != null) {
             if (params.get("approveTime").equals("")) {
                 params.put("approveTime", null);
@@ -85,16 +92,24 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
             }
         }
 
-        prsPayrollMapper.insert(params);
+
+        prsSubTaskMapper.insert(params);
 
         return true;
     }
 
     @Override
-    public Boolean updatePrsPayroll(Map<String, Object> params) {
+    public Boolean updatePrsSubTask(Map<String, Object> params) {
         // TODO get current user
         params.put("modifiedBy", '1');
 
+        if (params.get("publishDate") != null) {
+            if (params.get("publishDate").equals("")) {
+                params.put("publishDate", null);
+            } else {
+                params.put("publishDate", new Date((long) params.get("publishDate")));
+            }
+        }
         if (params.get("approveTime") != null) {
             if (params.get("approveTime").equals("")) {
                 params.put("approveTime", null);
@@ -103,7 +118,8 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
             }
         }
 
-        prsPayrollMapper.update(params);
+
+        prsSubTaskMapper.update(params);
 
         return true;
     }

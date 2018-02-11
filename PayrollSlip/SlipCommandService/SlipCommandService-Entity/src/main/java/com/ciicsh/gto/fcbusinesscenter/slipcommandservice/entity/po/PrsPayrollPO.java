@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -14,7 +15,7 @@ import java.util.Date;
  * 工资单
  *
  * @author taka
- * @since 2018-02-09
+ * @since 2018-02-11
  */
 @TableName("prs_payroll")
 public class PrsPayrollPO extends Model<PrsPayrollPO> {
@@ -24,14 +25,32 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
   /**
    * 工资单ID
    */
-  @TableId(value="payroll_id", type=IdType.AUTO)
-  private Long payrollId;
+  @TableId(value="id", type=IdType.AUTO)
+  private Long id;
+
+  /**
+   * 工资单编号
+   */
+  @TableField("payroll_code")
+  private String payrollCode;
+
+  /**
+   * 工资单标题
+   */
+  @TableField("title")
+  private String title;
 
   /**
    * 管理方ID
    */
   @TableField("management_id")
   private String managementId;
+
+  /**
+   *
+   */
+  @TableField("management_name")
+  private String managementName;
 
   /**
    * 雇员ID
@@ -46,10 +65,28 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
   private String salaryPeriod;
 
   /**
+   * 工资年月
+   */
+  @TableField("personnel_income_year_month")
+  private String personnelIncomeYearMonth;
+
+  /**
    * 工资单批次
    */
-  @TableField("payroll_batch")
-  private String payrollBatch;
+  @TableField("batch_id")
+  private String batchId;
+
+  /**
+   * 模板id
+   */
+  @TableField("template_id")
+  private Long templateId;
+
+  /**
+   * 模板名称
+   */
+  @TableField("template_name")
+  private String templateName;
 
   /**
    * 渠道：1. 外部  2：薪酬计算  3：合并
@@ -68,6 +105,30 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
    */
   @TableField("remark")
   private String remark;
+
+  /**
+   * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效
+   */
+  @TableField("status")
+  private Integer status;
+
+  /**
+   * 审批人
+   */
+  @TableField("approver")
+  private String approver;
+
+  /**
+   * 审批时间
+   */
+  @TableField("approve_time")
+  private Date approveTime;
+
+  /**
+   * 审批备注
+   */
+  @TableField("approve_remark")
+  private String approveRemark;
 
   /**
    * 是否可用
@@ -101,12 +162,28 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
 
 
 
-  public Long getPayrollId() {
-    return payrollId;
+  public Long getId() {
+    return id;
   }
 
-  public void setPayrollId(Long payrollId) {
-    this.payrollId = payrollId;
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getPayrollCode() {
+    return payrollCode;
+  }
+
+  public void setPayrollCode(String payrollCode) {
+    this.payrollCode = payrollCode;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getManagementId() {
@@ -115,6 +192,14 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
 
   public void setManagementId(String managementId) {
     this.managementId = managementId;
+  }
+
+  public String getManagementName() {
+    return managementName;
+  }
+
+  public void setManagementName(String managementName) {
+    this.managementName = managementName;
   }
 
   public String getEmployeeId() {
@@ -133,12 +218,36 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
     this.salaryPeriod = salaryPeriod;
   }
 
-  public String getPayrollBatch() {
-    return payrollBatch;
+  public String getPersonnelIncomeYearMonth() {
+    return personnelIncomeYearMonth;
   }
 
-  public void setPayrollBatch(String payrollBatch) {
-    this.payrollBatch = payrollBatch;
+  public void setPersonnelIncomeYearMonth(String personnelIncomeYearMonth) {
+    this.personnelIncomeYearMonth = personnelIncomeYearMonth;
+  }
+
+  public String getBatchId() {
+    return batchId;
+  }
+
+  public void setBatchId(String batchId) {
+    this.batchId = batchId;
+  }
+
+  public Long getTemplateId() {
+    return templateId;
+  }
+
+  public void setTemplateId(Long templateId) {
+    this.templateId = templateId;
+  }
+
+  public String getTemplateName() {
+    return templateName;
+  }
+
+  public void setTemplateName(String templateName) {
+    this.templateName = templateName;
   }
 
   public Integer getChannel() {
@@ -163,6 +272,38 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
 
   public void setRemark(String remark) {
     this.remark = remark;
+  }
+
+  public Integer getStatus() {
+    return status;
+  }
+
+  public void setStatus(Integer status) {
+    this.status = status;
+  }
+
+  public String getApprover() {
+    return approver;
+  }
+
+  public void setApprover(String approver) {
+    this.approver = approver;
+  }
+
+  public Date getApproveTime() {
+    return approveTime;
+  }
+
+  public void setApproveTime(Date approveTime) {
+    this.approveTime = approveTime;
+  }
+
+  public String getApproveRemark() {
+    return approveRemark;
+  }
+
+  public void setApproveRemark(String approveRemark) {
+    this.approveRemark = approveRemark;
   }
 
   public Boolean getIsActive() {
@@ -209,25 +350,35 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
 
   @Override
   protected Serializable pkVal() {
-    return this.payrollId;
+    return this.id;
   }
 
   @Override
   public String toString() {
-    return "PrsPayrollPO{" + 
-			"payrollId=" + payrollId +
-			", managementId=" + managementId +
-			", employeeId=" + employeeId +
-			", salaryPeriod=" + salaryPeriod +
-			", payrollBatch=" + payrollBatch +
-			", channel=" + channel +
-			", dataObject=" + dataObject +
-			", remark=" + remark +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+    return "PrsPayrollPO{" +
+            "id=" + id +
+            ", payrollCode=" + payrollCode +
+            ", title=" + title +
+            ", managementId=" + managementId +
+            ", managementName=" + managementName +
+            ", employeeId=" + employeeId +
+            ", salaryPeriod=" + salaryPeriod +
+            ", personnelIncomeYearMonth=" + personnelIncomeYearMonth +
+            ", batchId=" + batchId +
+            ", templateId=" + templateId +
+            ", templateName=" + templateName +
+            ", channel=" + channel +
+            ", dataObject=" + dataObject +
+            ", remark=" + remark +
+            ", status=" + status +
+            ", approver=" + approver +
+            ", approveTime=" + approveTime +
+            ", approveRemark=" + approveRemark +
+            ", isActive=" + isActive +
+            ", createdTime=" + createdTime +
+            ", modifiedTime=" + modifiedTime +
+            ", createdBy=" + createdBy +
+            ", modifiedBy=" + modifiedBy +
+            "}";
   }
 }
