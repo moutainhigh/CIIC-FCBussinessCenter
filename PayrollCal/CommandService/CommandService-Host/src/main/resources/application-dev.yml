@@ -20,12 +20,11 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: 172.16.9.17:9092,172.16.9.18:9092
-          zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
+          brokers:  172.16.9.11:9092   #172.16.9.17:9092,172.16.9.18:9092
+          zk-nodes: 172.16.9.11:2181,172.16.9.16:2181    #172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
           #brokers: 192.168.1.112:9092
           #zk-nodes: 192.168.1.112:2181
           autoAddPartitions: true
-          replicationFactor: 2
       bindings:
         payroll-output-channel:
           destination: fc_payroll_normal-batch # topic name
@@ -51,6 +50,8 @@ spring:
           group: ${spring.application.name} # consumer group
           consumer:
             partitioned: true
+            resetOffsets: true # 是否重置offsets
+            startOffset: latest # resetOffsets为true才有效，默认（earliest）, latest
 
 logging:
   file: logs/dev_app.log
