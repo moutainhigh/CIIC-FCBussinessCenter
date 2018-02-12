@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单任务单主表
  *
  * @author taka
- * @since 2018-02-11
+ * @since 2018-02-12
  */
 @TableName("prs_main_task")
 public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
@@ -31,8 +31,8 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   /**
    * 任务单名称
    */
-  @TableField("task_title")
-  private String taskTitle;
+  @TableField("title")
+  private String title;
 
   /**
    * 管理方编号
@@ -63,6 +63,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
    */
   @TableField("personnel_income_year_month")
   private String personnelIncomeYearMonth;
+
+  /**
+   * 雇员列表
+   */
+  @TableField("employees")
+  private String employees;
 
   /**
    * 总人数
@@ -111,6 +117,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
    */
   @TableField("template_id")
   private Long templateId;
+
+  /**
+   * 模板名称
+   */
+  @TableField("template_name")
+  private String templateName;
 
   /**
    * 备注
@@ -176,12 +188,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.mainTaskId = mainTaskId;
   }
 
-  public String getTaskTitle() {
-    return taskTitle;
+  public String getTitle() {
+    return title;
   }
 
-  public void setTaskTitle(String taskTitle) {
-    this.taskTitle = taskTitle;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getManagementId() {
@@ -222,6 +234,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
 
   public void setPersonnelIncomeYearMonth(String personnelIncomeYearMonth) {
     this.personnelIncomeYearMonth = personnelIncomeYearMonth;
+  }
+
+  public String getEmployees() {
+    return employees;
+  }
+
+  public void setEmployees(String employees) {
+    this.employees = employees;
   }
 
   public Integer getTotalCount() {
@@ -286,6 +306,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
 
   public void setTemplateId(Long templateId) {
     this.templateId = templateId;
+  }
+
+  public String getTemplateName() {
+    return templateName;
+  }
+
+  public void setTemplateName(String templateName) {
+    this.templateName = templateName;
   }
 
   public String getRemark() {
@@ -369,31 +397,33 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
 
   @Override
   public String toString() {
-    return "PrsMainTaskPO{" + 
-			"mainTaskId=" + mainTaskId +
-			", taskTitle=" + taskTitle +
-			", managementId=" + managementId +
-			", managementName=" + managementName +
-			", batchId=" + batchId +
-			", period=" + period +
-			", personnelIncomeYearMonth=" + personnelIncomeYearMonth +
-			", totalCount=" + totalCount +
-			", chineseCount=" + chineseCount +
-			", foreignerCount=" + foreignerCount +
-			", publishDate=" + publishDate +
-			", payrollType=" + payrollType +
-			", status=" + status +
-			", comments=" + comments +
-			", templateId=" + templateId +
-			", remark=" + remark +
-			", approver=" + approver +
-			", approveTime=" + approveTime +
-			", approveRemark=" + approveRemark +
-			", isActive=" + isActive +
-			", createdBy=" + createdBy +
-			", createdTime=" + createdTime +
-			", modifiedBy=" + modifiedBy +
-			", modifiedTime=" + modifiedTime +
-			"}";
+    return "PrsMainTaskPO{" +
+            "mainTaskId=" + mainTaskId +
+            ", title=" + title +
+            ", managementId=" + managementId +
+            ", managementName=" + managementName +
+            ", batchId=" + batchId +
+            ", period=" + period +
+            ", personnelIncomeYearMonth=" + personnelIncomeYearMonth +
+            ", employees=" + employees +
+            ", totalCount=" + totalCount +
+            ", chineseCount=" + chineseCount +
+            ", foreignerCount=" + foreignerCount +
+            ", publishDate=" + publishDate +
+            ", payrollType=" + payrollType +
+            ", status=" + status +
+            ", comments=" + comments +
+            ", templateId=" + templateId +
+            ", templateName=" + templateName +
+            ", remark=" + remark +
+            ", approver=" + approver +
+            ", approveTime=" + approveTime +
+            ", approveRemark=" + approveRemark +
+            ", isActive=" + isActive +
+            ", createdBy=" + createdBy +
+            ", createdTime=" + createdTime +
+            ", modifiedBy=" + modifiedBy +
+            ", modifiedTime=" + modifiedTime +
+            "}";
   }
 }

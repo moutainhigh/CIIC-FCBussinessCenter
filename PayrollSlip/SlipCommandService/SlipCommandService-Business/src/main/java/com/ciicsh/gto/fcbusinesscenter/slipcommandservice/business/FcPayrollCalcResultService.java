@@ -24,4 +24,6 @@ public interface FcPayrollCalcResultService {
     Boolean updateFcPayrollCalcResult(Map<String, Object> params);
 
     List<FcPayrollCalcResultPO> listBatchIds(Map<String, Object> params);
+
+    List<FcPayrollCalcResultPO> listPayrollTypes(Map<String, Object> params);
 }

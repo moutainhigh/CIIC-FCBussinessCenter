@@ -9,7 +9,7 @@
         <result column="management_id" property="managementId" />
         <result column="management_name" property="managementName" />
         <result column="employee_id" property="employeeId" />
-        <result column="salary_period" property="salaryPeriod" />
+        <result column="period" property="period" />
         <result column="personnel_income_year_month" property="personnelIncomeYearMonth" />
         <result column="batch_id" property="batchId" />
         <result column="template_id" property="templateId" />
@@ -46,14 +46,14 @@
         <if test="id != null and id != ''">
             and id = #{id}
         </if>
-        <if test="salaryPeriod != null and salaryPeriod != ''">
-            and salary_period = #{salaryPeriod}
-        </if>
         <if test="managementId != null and managementId != ''">
             and management_id = #{managementId}
         </if>
         <if test="managementName != null and managementName != ''">
             and management_name like concat('%', #{managementName}, '%')
+        </if>
+        <if test="period != null and period != ''">
+            and period = #{period}
         </if>
         <if test="batchId != null and batchId != ''">
             and batch_id = #{batchId}
@@ -82,9 +82,9 @@
     </select>
 
     <insert id="insert" parameterType="map">
-        INSERT INTO prs_payroll(payroll_code, title, management_id, management_name, employee_id, salary_period, personnel_income_year_month, batch_id, template_id, template_name, channel, data_object, remark, status, approver, approve_time, approve_remark, created_by, modified_by)
-        VALUES (#{payrollCode}, #{title}, #{managementId}, #{managementName}, #{employeeId}, #{salaryPeriod}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{dataObject}, #{remark}, #{status}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
-    </insert>
+    INSERT INTO prs_payroll(payroll_code, title, management_id, management_name, employee_id, period, personnel_income_year_month, batch_id, template_id, template_name, channel, data_object, remark, status, approver, approve_time, approve_remark, created_by, modified_by)
+    VALUES (#{payrollCode}, #{title}, #{managementId}, #{managementName}, #{employeeId}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{dataObject}, #{remark}, #{status}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+  </insert>
 
     <update id="update" parameterType="map">
         UPDATE prs_payroll
@@ -105,8 +105,8 @@
             <if test="employeeId != null and employeeId != ''">
                 employee_id = #{employeeId},
             </if>
-            <if test="salaryPeriod != null and salaryPeriod != ''">
-                salary_period = #{salaryPeriod},
+            <if test="period != null and period != ''">
+                period = #{period},
             </if>
             <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
                 personnel_income_year_month = #{personnelIncomeYearMonth},

@@ -50,15 +50,6 @@ public class SalManagementController {
         return JsonResult.success(salManagementService.updateSalManagement(params));
     }
 
-    @PostMapping(value = "/uploadSalManagement")
-    public JsonResult upload(@RequestParam("file") MultipartFile multipartFile) {
-        try {
-            String dist = FileHandler.uploadFile(multipartFile.getInputStream());
-            return JsonResult.success(dist);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JsonResult.faultMessage();
-        }
-    }
+
 
 }

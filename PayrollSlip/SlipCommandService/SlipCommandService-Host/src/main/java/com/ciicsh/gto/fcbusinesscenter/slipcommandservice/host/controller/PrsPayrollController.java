@@ -50,15 +50,5 @@ public class PrsPayrollController {
         return JsonResult.success(prsPayrollService.updatePrsPayroll(params));
     }
 
-    @PostMapping(value = "/uploadPrsPayroll")
-    public JsonResult upload(@RequestParam("file") MultipartFile multipartFile) {
-        try {
-            String dist = FileHandler.uploadFile(multipartFile.getInputStream());
-            return JsonResult.success(dist);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JsonResult.faultMessage();
-        }
-    }
 
 }

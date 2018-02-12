@@ -50,15 +50,14 @@ public class FcPayrollCalcResultController {
         return JsonResult.success(fcPayrollCalcResultService.updateFcPayrollCalcResult(params));
     }
 
-    @PostMapping(value = "/uploadFcPayrollCalcResult")
-    public JsonResult upload(@RequestParam("file") MultipartFile multipartFile) {
-        try {
-            String dist = FileHandler.uploadFile(multipartFile.getInputStream());
-            return JsonResult.success(dist);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JsonResult.faultMessage();
-        }
+    @RequestMapping(value = "/listBatchIds")
+    public JsonResult listBatchIds(@RequestBody Map<String, Object> params) {
+        return JsonResult.success(fcPayrollCalcResultService.listBatchIds(params));
+    }
+
+    @RequestMapping(value = "/listPayrollTypes")
+    public JsonResult listPayrollTypes(@RequestBody Map<String, Object> params) {
+        return JsonResult.success(fcPayrollCalcResultService.listPayrollTypes(params));
     }
 
 }

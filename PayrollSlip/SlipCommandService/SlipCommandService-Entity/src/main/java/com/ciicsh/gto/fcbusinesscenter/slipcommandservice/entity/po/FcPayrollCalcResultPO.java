@@ -15,7 +15,7 @@ import java.util.Date;
  * 薪资计算批次结果表(雇员维度)
  *
  * @author taka
- * @since 2018-02-11
+ * @since 2018-02-12
  */
 @TableName("fc_payroll_calc_result")
 public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
@@ -51,6 +51,12 @@ public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
    */
   @TableField("department")
   private String department;
+
+  /**
+   * 国家代码
+   */
+  @TableField("country_code")
+  private String countryCode;
 
   /**
    * 计算批次编号（EntityId）
@@ -308,6 +314,14 @@ public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
 
   public void setDepartment(String department) {
     this.department = department;
+  }
+
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
   }
 
   public String getBatchId() {
@@ -613,6 +627,7 @@ public class FcPayrollCalcResultPO extends Model<FcPayrollCalcResultPO> {
             ", empName=" + empName +
             ", payrollType=" + payrollType +
             ", department=" + department +
+            ", countryCode=" + countryCode +
             ", batchId=" + batchId +
             ", refBatchId=" + refBatchId +
             ", leavingYears=" + leavingYears +

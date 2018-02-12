@@ -103,4 +103,12 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
 
         return records;
     }
+
+    @Override
+    public List<FcPayrollCalcResultPO> listPayrollTypes(Map<String, Object> params) {
+
+        List<FcPayrollCalcResultPO> records = fcPayrollCalcResultMapper.listPayrollTypes(params);
+
+        return records;
+    }
 }

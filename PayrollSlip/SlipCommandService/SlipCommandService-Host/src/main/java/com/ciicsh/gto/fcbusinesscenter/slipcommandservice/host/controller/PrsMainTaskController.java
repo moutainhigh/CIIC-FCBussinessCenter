@@ -50,15 +50,6 @@ public class PrsMainTaskController {
         return JsonResult.success(prsMainTaskService.updatePrsMainTask(params));
     }
 
-    @PostMapping(value = "/uploadPrsMainTask")
-    public JsonResult upload(@RequestParam("file") MultipartFile multipartFile) {
-        try {
-            String dist = FileHandler.uploadFile(multipartFile.getInputStream());
-            return JsonResult.success(dist);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JsonResult.faultMessage();
-        }
-    }
+
 
 }

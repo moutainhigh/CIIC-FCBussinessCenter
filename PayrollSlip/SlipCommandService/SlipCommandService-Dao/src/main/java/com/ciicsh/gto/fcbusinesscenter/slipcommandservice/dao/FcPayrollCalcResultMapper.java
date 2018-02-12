@@ -27,5 +27,5 @@ public interface FcPayrollCalcResultMapper extends BaseMapper<FcPayrollCalcResul
 
     List<FcPayrollCalcResultPO> listBatchIds(Map<String, Object> params);
 
-
+    List<FcPayrollCalcResultPO> listPayrollTypes(Map<String, Object> params);
 }
