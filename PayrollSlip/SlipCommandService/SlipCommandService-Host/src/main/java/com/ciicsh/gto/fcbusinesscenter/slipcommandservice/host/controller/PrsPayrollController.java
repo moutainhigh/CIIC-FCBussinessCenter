@@ -3,7 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.controller;
 import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 
-import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.SalManagementService;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,40 +16,39 @@ import java.util.Map;
 /**
  *
  * @author taka
- * @since 2018-02-05
+ * @since 2018-02-09
  */
 @RestController
 @RequestMapping("/api/payrollslipservice")
-public class SalManagementController {
+public class PrsPayrollController {
 
     @Autowired
-    private SalManagementService salManagementService;
+    private PrsPayrollService prsPayrollService;
 
-    @RequestMapping(value = "/listSalManagements")
+    @RequestMapping(value = "/listPrsPayrolls")
     public JsonResult list(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(salManagementService.listSalManagements(params));
+        return JsonResult.success(prsPayrollService.listPrsPayrolls(params));
     }
 
-    @RequestMapping(value = "/pageSalManagements")
+    @RequestMapping(value = "/pagePrsPayrolls")
     public JsonResult page(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(salManagementService.pageSalManagements(params));
+        return JsonResult.success(prsPayrollService.pagePrsPayrolls(params));
     }
 
-    @RequestMapping(value = "/getSalManagement")
+    @RequestMapping(value = "/getPrsPayroll")
     public JsonResult get(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(salManagementService.getSalManagement(params));
+        return JsonResult.success(prsPayrollService.getPrsPayroll(params));
     }
 
-    @RequestMapping(value = "/addSalManagement")
+    @RequestMapping(value = "/addPrsPayroll")
     public JsonResult add(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(salManagementService.addSalManagement(params));
+        return JsonResult.success(prsPayrollService.addPrsPayroll(params));
     }
 
-    @RequestMapping(value = "/updateSalManagement")
+    @RequestMapping(value = "/updatePrsPayroll")
     public JsonResult update(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(salManagementService.updateSalManagement(params));
+        return JsonResult.success(prsPayrollService.updatePrsPayroll(params));
     }
-
 
 
 }

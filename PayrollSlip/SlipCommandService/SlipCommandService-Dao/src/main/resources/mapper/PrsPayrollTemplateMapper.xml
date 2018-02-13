@@ -32,30 +32,7 @@
     WHERE is_active = 1
   </select>
 
-  <select id="list"  resultMap="BaseResultMap">
-    SELECT *
-    FROM prs_payroll_template
-    WHERE is_active = 1
-    <if test="templateCode != null and templateCode != ''">
-      and template_code = #{templateCode}
-    </if>
-    <if test="templateName != null and templateName != ''">
-      and template_name like concat('%', #{templateName}, '%')
-    </if>
-    <if test="managementId != null and managementId != ''">
-      and management_id = #{managementId}
-    </if>
-    <if test="managementName != null and managementName != ''">
-      and management_name like concat('%', #{managementName}, '%')
-    </if>
-    ORDER BY id DESC
-    <if test="limit != null and limit != ''">
-      LIMIT #{limit}
-    </if>
-    <if test="offset != null and offset != ''">
-      OFFSET #{offset}
-    </if>
-  </select>
+
 
   <select id="get"  resultMap="BaseResultMap">
     SELECT *
@@ -138,5 +115,30 @@
     </trim>
     WHERE id = #{id}
   </update>
+
+  <select id="list"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll_template
+    WHERE is_active = 1
+    <if test="templateCode != null and templateCode != ''">
+      and template_code = #{templateCode}
+    </if>
+    <if test="templateName != null and templateName != ''">
+      and template_name like concat('%', #{templateName}, '%')
+    </if>
+    <if test="managementId != null and managementId != ''">
+      and management_id = #{managementId}
+    </if>
+    <if test="managementName != null and managementName != ''">
+      and management_name like concat('%', #{managementName}, '%')
+    </if>
+    ORDER BY id DESC
+    <if test="limit != null and limit != ''">
+      LIMIT #{limit}
+    </if>
+    <if test="offset != null and offset != ''">
+      OFFSET #{offset}
+    </if>
+  </select>
 
 </mapper>

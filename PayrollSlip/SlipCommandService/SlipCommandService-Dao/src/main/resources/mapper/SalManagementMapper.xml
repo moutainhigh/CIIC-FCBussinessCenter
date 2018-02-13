@@ -36,21 +36,7 @@
     WHERE is_active = 1
   </select>
 
-  <select id="list"  resultMap="BaseResultMap">
-    SELECT *
-    FROM sal_management
-    WHERE is_active = 1
-    <if test="title != null and title != ''">
-      and title like concat('%', #{title}, '%')
-    </if>
-    ORDER BY management_id DESC
-    <if test="limit != null and limit != ''">
-      LIMIT #{limit}
-    </if>
-    <if test="offset != null and offset != ''">
-      OFFSET #{offset}
-    </if>
-  </select>
+
 
   <select id="get"  resultMap="BaseResultMap">
     SELECT *
@@ -136,5 +122,21 @@
     </trim>
     WHERE management_id = #{managementId}
   </update>
+
+  <select id="list"  resultMap="BaseResultMap">
+    SELECT *
+    FROM sal_management
+    WHERE is_active = 1
+    <if test="title != null and title != ''">
+      and title like concat('%', #{title}, '%')
+    </if>
+    ORDER BY management_id DESC
+    <if test="limit != null and limit != ''">
+      LIMIT #{limit}
+    </if>
+    <if test="offset != null and offset != ''">
+      OFFSET #{offset}
+    </if>
+  </select>
 
 </mapper>
