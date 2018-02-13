@@ -1,11 +1,16 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrAdjustBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -14,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +43,9 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
 
     @Autowired
     private PrNormalBatchMapper normalBatchMapper;
+
+    @Autowired
+    private ApprovalHistoryService approvalHistoryService;
 
     @Override
     public int updateHasAdvance(String batchCode, boolean hasAdvance, String modifiedBy) {
@@ -100,8 +109,26 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
     }
 
     @Override
-    public int updateBatchStatus(String batchCode, int status, String modifiedBy) {
-        return adjustBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
+    @Transactional(rollbackFor = RuntimeException.class)
+    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+        ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
+        int approvalResult = 0;
+        if(status == BatchStatusEnum.NEW.getValue()){
+            approvalResult = ApprovalStatusEnum.DRAFT.getValue();
+        }else if(status == BatchStatusEnum.PENDING.getValue()){
+            approvalResult = ApprovalStatusEnum.AUDITING.getValue();
+        }else if(status == BatchStatusEnum.APPROVAL.getValue()){
+            approvalResult = ApprovalStatusEnum.APPROVE.getValue();
+        }else if(status == BatchStatusEnum.REJECT.getValue()){
+            approvalResult = ApprovalStatusEnum.DENIED.getValue();
+        }
+        historyPO.setApprovalResult(approvalResult);
+        historyPO.setBizCode(batchCode);
+        historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
+        historyPO.setComments(comments);
+        approvalHistoryService.addApprovalHistory(historyPO);
+
+        return adjustBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
     }
 
     @Override

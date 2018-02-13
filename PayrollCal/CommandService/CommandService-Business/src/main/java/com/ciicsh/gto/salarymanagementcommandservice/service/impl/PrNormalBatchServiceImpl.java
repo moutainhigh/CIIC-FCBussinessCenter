@@ -29,6 +29,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -193,11 +194,6 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
-    public int updateBatchStatus(String batchCode, int status,String modifiedBy) {
-        return normalBatchMapper.updateBatchStatus(batchCode,status,modifiedBy);
-    }
-
-    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
@@ -214,6 +210,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         historyPO.setApprovalResult(approvalResult);
         historyPO.setBizCode(batchCode);
         historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
+        historyPO.setCreatedBy("bill"); //TODO
         historyPO.setComments(comments);
         approvalHistoryService.addApprovalHistory(historyPO);
         return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);

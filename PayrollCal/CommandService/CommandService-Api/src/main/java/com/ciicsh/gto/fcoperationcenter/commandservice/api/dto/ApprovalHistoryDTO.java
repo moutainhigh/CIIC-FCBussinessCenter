@@ -41,6 +41,8 @@ public class ApprovalHistoryDTO {
      3 表示 待审核
      */
     private Integer approvalResult;
+
+    private String resultLabel;
     /**
      * 审核备注
      */
@@ -122,6 +124,15 @@ public class ApprovalHistoryDTO {
     public void setBizTypeLabel(String bizTypeLabel) {
         this.bizTypeLabel = bizTypeLabel;
     }
+
+    public String getResultLabel() {
+        return resultLabel;
+    }
+
+    public void setResultLabel(String resultLabel) {
+        this.resultLabel = resultLabel;
+    }
+
 
     @Override
     public String toString() {

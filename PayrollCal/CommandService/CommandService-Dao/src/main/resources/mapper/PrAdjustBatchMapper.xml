@@ -23,11 +23,13 @@
 		WHERE adjust_batch_code = #{code}
 	</update>
 
-	<update id="updateBatchStatus">
+	<update id="auditBatch">
 		UPDATE
 		pr_adjust_batch
 		SET
 		status = #{status},
+		comments = #{comments},
+		result_data = #{result},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE adjust_batch_code = #{code}

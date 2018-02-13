@@ -38,7 +38,7 @@ public interface PrAdjustBatchService {
      * @param status
      * @return
      */
-    int updateBatchStatus(String batchCode, int status, String modifiedBy);
+    int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result);
 
     Integer deleteAdjustBatchByCodes(List<String> codes);
 

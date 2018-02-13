@@ -300,16 +300,6 @@
 		</foreach>
 	</delete>
 
-	<update id="updateBatchStatus">
-		UPDATE
-			pr_normal_batch
-		SET
-		status = #{status},
-		modified_by = #{modifiedBy},
-		modified_time = sysdate()
-		WHERE code = #{code}
-	</update>
-
 	<update id="auditBatch">
 		UPDATE
 		pr_normal_batch

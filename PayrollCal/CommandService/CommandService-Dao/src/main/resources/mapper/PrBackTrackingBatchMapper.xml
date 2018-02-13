@@ -23,11 +23,13 @@
 		WHERE back_tracking_batch_code = #{code}
 	</update>
 
-	<update id="updateBatchStatus">
+	<update id="auditBatch">
 		UPDATE
 		pr_back_tracking_batch
 		SET
 		status = #{status},
+		comments = #{comments},
+		result_data = #{result},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE back_tracking_batch_code = #{code}

@@ -1,8 +1,8 @@
 #mybatis:
 #  mapperLocations: classpath*:mapper/**.xml
-##  config-location: classpath:/mybatis-config.xml
+#  config-location: classpath:/mybatis-config.xml
 #  configuration:
-#    # map-underscore-to-camel-case: true
+#    map-underscore-to-camel-case: true
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #  type-aliases-package: com.ciicsh.gto.salarymanagement.entity
 

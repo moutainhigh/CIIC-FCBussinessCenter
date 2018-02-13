@@ -192,12 +192,12 @@ public class ComputeServiceImpl {
 
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            rowAffected = normalBatchMapper.updateBatchStatus(batchCode, BatchStatusEnum.COMPUTED.getValue(), "system");
+            rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system","");
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            rowAffected = adjustBatchMapper.updateBatchStatus(batchCode, BatchStatusEnum.COMPUTED.getValue(), "system");
+            rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system","");
 
         }else {
-            rowAffected = backTrackingBatchMapper.updateBatchStatus(batchCode, BatchStatusEnum.COMPUTED.getValue(), "system");
+            rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system","");
         }
         if(rowAffected > 0) { // 数据库更新成功后发送消息
             ComputeMsg computeMsg = new ComputeMsg();

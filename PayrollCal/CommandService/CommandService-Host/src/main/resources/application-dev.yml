@@ -49,9 +49,9 @@ spring:
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:
-            partitioned: true
-            resetOffsets: true # 是否重置offsets
-            startOffset: latest # resetOffsets为true才有效，默认（earliest）, latest
+            partitioned : true
+            #resetOffsets: true # 是否重置offsets
+            #startOffset:  earliest # resetOffsets为true才有效，默认（earliest）, latest
 
 logging:
   file: logs/dev_app.log

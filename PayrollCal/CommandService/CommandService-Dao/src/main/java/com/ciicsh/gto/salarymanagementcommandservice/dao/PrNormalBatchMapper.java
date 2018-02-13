@@ -36,8 +36,6 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
      */
     Integer deleteBatchByCodes(@Param("codes") List<String> codes);
 
-    int updateBatchStatus(@Param("code") String batchCode, @Param("status") int status, @Param("modifiedBy") String modifiedBy);
-
     int auditBatch(@Param("code") String batchCode,
                    @Param("comments") String comments,
                    @Param("status") int status,
@@ -45,7 +43,7 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
                    @Param("result") String result);
 
 
-        int updateHasAdvance(@Param("code") String batchCode,
+    int updateHasAdvance(@Param("code") String batchCode,
                          @Param("hasAdvance") boolean hasAdvance,
                          @Param("modifiedBy") String modifiedBy);
 
