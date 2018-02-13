@@ -147,6 +147,27 @@
         <if test="mainTaskId != null and mainTaskId != ''">
             and main_task_id = #{mainTaskId}
         </if>
+        <if test="subTaskId != null and subTaskId != ''">
+            and sub_task_id = #{subTaskId}
+        </if>
+        <if test="payrollType != null and payrollType != ''">
+            and payroll_type = #{payrollType}
+        </if>
+        <if test="title != null and title != ''">
+            and title like concat('%', #{title}, '%')
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id = #{managementId}
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
         ORDER BY sub_task_id DESC
         <if test="limit != null and limit != ''">
             LIMIT #{limit}
