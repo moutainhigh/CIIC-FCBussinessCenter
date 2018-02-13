@@ -9,6 +9,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -32,6 +33,8 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Autowired
     private PrPayrollGroupMapper prPayrollGroupMapper;
+
+
 
     @Override
     public PageInfo<PrPayrollItemPO> getListByGroupCode(String groupCode, Integer pageNum, Integer pageSize) {
@@ -72,6 +75,8 @@ public class PrItemServiceImpl implements PrItemService {
         groupParam.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
         prPayrollGroupMapper.updateItemByCode(groupParam);
         // 插入薪资项
+        param.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
+        param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
     }

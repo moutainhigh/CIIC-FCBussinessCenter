@@ -15,18 +15,6 @@
     <packaging>jar</packaging>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-websocket</artifactId>
-            <version>4.3.11.RELEASE</version>
-        </dependency>
-
         <!--二方库依赖 ST-->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
@@ -60,9 +48,26 @@
             <version>1.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.ciicsh.gt1.salecenter</groupId>
+            <artifactId>apiservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!--二方库依赖 ED-->
 
         <!--三方库依赖 ST-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>4.3.11.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

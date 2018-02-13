@@ -25,6 +25,16 @@ public class CalculationBatchDetailBO {
     private String idNo;
 
     /**
+     * 管理方名称
+     */
+    private String managerName;
+
+    /**
+     * 薪酬计算批次
+     */
+    private String batchNo;
+
+    /**
      * 所得期间
      */
     private LocalDate period;
@@ -575,14 +585,37 @@ public class CalculationBatchDetailBO {
         isPaySupported = paySupported;
     }
 
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
     @Override
     public String toString() {
         return "CalculationBatchDetailBO{" +
                 "id=" + id +
+                ", calculationBatchId=" + calculationBatchId +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
                 ", idType='" + idType + '\'' +
+                ", idTypeName='" + idTypeName + '\'' +
                 ", idNo='" + idNo + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", batchNo='" + batchNo + '\'' +
                 ", period=" + period +
                 ", incomeSubject='" + incomeSubject + '\'' +
+                ", incomeSubjectName='" + incomeSubjectName + '\'' +
                 ", incomeTotal=" + incomeTotal +
                 ", incomeDutyfree=" + incomeDutyfree +
                 ", deductRetirementInsurance=" + deductRetirementInsurance +
@@ -604,6 +637,22 @@ public class CalculationBatchDetailBO {
                 ", taxWithholdedAmount=" + taxWithholdedAmount +
                 ", taxRemedyOrReturn=" + taxRemedyOrReturn +
                 ", page=" + page +
+                ", declareAccount='" + declareAccount + '\'' +
+                ", payAccount='" + payAccount + '\'' +
+                ", receiptAccount='" + receiptAccount + '\'' +
+                ", supportNo='" + supportNo + '\'' +
+                ", supportName='" + supportName + '\'' +
+                ", isSupport=" + isSupport +
+                ", isSupported=" + isSupported +
+                ", isPay=" + isPay +
+                ", isPayed=" + isPayed +
+                ", isDeclare=" + isDeclare +
+                ", isDeclared=" + isDeclared +
+                ", isTranfer=" + isTranfer +
+                ", isTranferred=" + isTranferred +
+                ", isDeclareSupported=" + isDeclareSupported +
+                ", isTransferSupported=" + isTransferSupported +
+                ", isPaySupported=" + isPaySupported +
                 '}';
     }
 }

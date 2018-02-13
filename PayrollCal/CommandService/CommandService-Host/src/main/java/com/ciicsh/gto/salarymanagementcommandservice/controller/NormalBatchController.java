@@ -1,10 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -33,6 +30,9 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
@@ -60,16 +60,6 @@ import java.util.stream.Collectors;
 public class NormalBatchController {
 
     private final static Logger logger = LoggerFactory.getLogger(NormalBatchController.class);
-
-    class MgrData{
-        public String Code;
-        public String Name;
-
-        public MgrData(String code, String name){
-            this.Code = code;
-            this.Name = name;
-        }
-    }
 
     @Autowired
     private KafkaSender sender;
@@ -100,52 +90,6 @@ public class NormalBatchController {
 
     @Autowired
     private CodeGenerator codeGenerator;
-
-    @GetMapping("/getMgrList")
-    public JsonResult getMgrList(@RequestParam String query) {
-
-        List<MgrData> datas = new ArrayList<>();
-        MgrData data = null;
-
-        data = new MgrData("GL170001","蓝天科技");
-        datas.add(data);
-
-        data = new MgrData("glf-00090","微软中国（上海）");
-        datas.add(data);
-
-        data = new MgrData("glf-00091","微软中国（北京）");
-        datas.add(data);
-
-        data = new MgrData("glf-00092","微软中国（深圳）");
-        datas.add(data);
-
-        data = new MgrData("ymx-0001","亚马逊（上海）");
-        datas.add(data);
-
-        data = new MgrData("ymx-0002","亚马逊（北京）");
-        datas.add(data);
-
-        data = new MgrData("ymx-0003","亚马逊（深圳）");
-        datas.add(data);
-
-        List<MgrData> result = new ArrayList<>();
-        result.clear();
-        if(CommonUtils.isContainChinese(query)){
-            datas.forEach(item ->{
-                if(item.Name.indexOf(query) >-1){
-                    result.add(item);
-                }
-            });
-        }else {
-            datas.forEach(item ->{
-                if(item.Code.indexOf(query) >-1){
-                    result.add(item);
-                }
-            });
-        }
-        //依赖第三方接口：获取管理方列表
-        return JsonResult.success(result);
-    }
 
     @GetMapping("/checkEmployees/{empGroupCode}")
     public JsonResult checkEmployees(@PathVariable("empGroupCode") String empGroupCode){
@@ -186,6 +130,7 @@ public class NormalBatchController {
                 //send message to kafka
                 PayrollMsg msg = new PayrollMsg();
                 msg.setBatchCode(code);
+                msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
                 msg.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.Send(msg);
 
@@ -290,15 +235,17 @@ public class NormalBatchController {
 
         String batchCode = filterDTO.getBatchCode();
         String empCodes = filterDTO.getEmpCodes();
-        if(empCodes.equals("") || empCodes == null){ // 该雇员组没有雇员
+        if(StringUtils.isEmpty(empCodes)){ // 该雇员组没有雇员
             return JsonResult.success(0,"");
         }else if(empCodes.equals("all")){
+            normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode), "catalog.emp_info.is_active", false);
             int rowAffected = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode),"catalog.emp_info.is_active",true);
             logger.info("update all " + String.valueOf(rowAffected));
             return JsonResult.success(rowAffected,"更新成功");
 
         }else {
             int rowAffected1 = normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode), "catalog.emp_info.is_active", false);
+
             logger.info("update all " + String.valueOf(rowAffected1));
 
             String[] codes = empCodes.split(",");

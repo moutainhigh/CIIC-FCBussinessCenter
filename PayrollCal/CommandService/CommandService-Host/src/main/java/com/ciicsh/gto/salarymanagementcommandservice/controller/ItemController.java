@@ -1,12 +1,17 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.github.pagehelper.PageInfo;
+import kafka.utils.Json;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +32,7 @@ import java.util.stream.Collectors;
  * Created by jiangtianning on 2017/11/6.
  */
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping(value = "/api/salaryManagement")
 public class ItemController extends BaseController{
 
     @Autowired
@@ -100,8 +105,7 @@ public class ItemController extends BaseController{
      */
     @GetMapping(value = "/prItemType")
     public JsonResult getPrItemTypeList() {
-        List<HashMap<String, Object>> resultList = itemService.getTypeList();
-        return JsonResult.success(resultList);
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(ItemTypeEnum.class));
     }
 
     /**
@@ -184,4 +188,18 @@ public class ItemController extends BaseController{
 //        return "添加成功!";
 //    }
 
+    @GetMapping("/decimalProcessType")
+    public JsonResult getDecimalProcessTypeEnums() {
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(DecimalProcessTypeEnum.class));
+    }
+
+    @GetMapping("/defaultValueStyle")
+    public JsonResult getDefaultValueStyleEnums() {
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(DefaultValueStyleEnum.class));
+    }
+
+    @GetMapping("/dataType")
+    public JsonResult getDataTypeEnums() {
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(DataTypeEnum.class));
+    }
 }

@@ -1,5 +1,5 @@
 mongo:
-  host: 172.16.9.52 #172.16.9.16
+  host: 172.16.9.15 #172.16.9.52
   port: 27017
   database: payroll_db
   userName: ciicit
