@@ -200,6 +200,9 @@
             <if test="calPrecision != null">
                 cal_precision = #{calPrecision},
             </if>
+			<if test="originFormula != null">
+				origin_formula = #{originFormula},
+			</if>
             <if test="formulaContent != null">
                 formula_content = #{formulaContent},
             </if>

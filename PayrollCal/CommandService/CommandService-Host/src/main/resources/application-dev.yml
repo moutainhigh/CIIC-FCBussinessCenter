@@ -1,8 +1,8 @@
 eureka:
   client:
     serviceUrl:
-      #defaultZone: http://172.16.9.24:9602/eureka/
-      defaultZone: "http://172.16.9.21:9602/eureka/,http://172.16.9.20:9601/eureka/,http://172.16.9.19:9600/eureka/" #注册中心eureka地址
+      defaultZone: http://172.16.9.24:9602/eureka/
+#      defaultZone: "http://172.16.9.21:9602/eureka/,http://172.16.9.20:9601/eureka/,http://172.16.9.19:9600/eureka/" #注册中心eureka地址
   instance:
       lease-expiration-duration-in-seconds: 40
       lease-renewal-interval-in-seconds: 30

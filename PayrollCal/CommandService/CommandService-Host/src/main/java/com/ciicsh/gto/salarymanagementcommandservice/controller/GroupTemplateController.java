@@ -17,6 +17,9 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,9 @@ public class GroupTemplateController extends BaseController implements PayrollGr
     @Autowired
     private PrGroupTemplateServiceImpl prGroupTemplateService;
 
+    @Autowired
+    private ManagementProxy managementProxy;
+
     @PostMapping(value = "/prGroupTemplateQuery")
     public JsonResult searchPrGroupTemplateList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                                 @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
@@ -59,6 +65,22 @@ public class GroupTemplateController extends BaseController implements PayrollGr
     public JsonResult getPrGroupTemplateByCode(@PathVariable("code") String code) {
         PrPayrollGroupTemplatePO resultPO = prGroupTemplateService.getItemByCode(code);
         PrPayrollGroupTemplateDTO resultDTO = GroupTemplateTranslator.toPrPayrollGroupTemplateDTO(resultPO);
+        GetManagementRequestDTO param = new GetManagementRequestDTO();
+        String managementLabel;
+        param.setQueryWords(resultDTO.getManagementId());
+        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<DetailResponseDTO>> managementResult
+                = managementProxy.getManagement(param);
+        if (managementResult == null) {
+            managementLabel = "";
+        } else {
+            List<DetailResponseDTO> managementList = managementResult.getObject();
+            if (managementList == null || managementList.size() == 0) {
+                managementLabel = "";
+            } else {
+                managementLabel = managementList.get(0).getTitle();
+            }
+        }
+        resultDTO.setManagementLabel(managementLabel);
         return JsonResult.success(resultDTO);
     }
 

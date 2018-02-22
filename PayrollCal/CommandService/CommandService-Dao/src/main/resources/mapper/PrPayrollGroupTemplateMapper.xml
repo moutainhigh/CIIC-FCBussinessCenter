@@ -90,6 +90,9 @@
 		<if test="approvalStatus != null">
 			approval_status = #{approvalStatus},
 		</if>
+		<if test="managementId != null">
+			management_id = #{managementId},
+		</if>
 		<if test="comments != null">
 			comments = #{comments},
 		</if>
