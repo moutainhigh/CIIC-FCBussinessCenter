@@ -68,7 +68,7 @@ public class PrsPayrollTemplateController {
         return JsonResult.success(prsPayrollTemplateService.updatePrsPayrollTemplate(params));
     }
 
-    @PostMapping(value = "/uploadPrsPayrollTemplate")
+    @PostMapping(value = "/upload")
     public JsonResult upload(@RequestParam("file") MultipartFile multipartFile) {
 
         try {
