@@ -75,7 +75,7 @@
                 <version>2.5</version>
 
                 <configuration>
-                    <encoding>${file.encoding}</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>xls</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
