@@ -204,6 +204,9 @@
         SELECT *
         FROM fc_payroll_calc_result
         WHERE is_active = 1
+        <if test="empId != null and empId != ''">
+            and emp_id = #{empId}
+        </if>
         <if test="batchId != null and batchId != ''">
             and batch_id = #{batchId}
         </if>
