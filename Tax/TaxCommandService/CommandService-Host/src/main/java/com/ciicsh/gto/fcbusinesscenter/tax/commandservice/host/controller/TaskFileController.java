@@ -93,10 +93,9 @@ public class TaskFileController extends BaseController {
         try {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);
-            Boolean flag = fileService.uploadFileByBusinessIdAndType(requestForFile, file);
+            fileService.uploadFileByBusinessIdAndType(requestForFile, file);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
-            jr.setData(flag);
         } catch (Exception e) {
             logger.error("uploadFileByBusinessIdAndType error " + e.toString());
             jr.setErrorcode("1");

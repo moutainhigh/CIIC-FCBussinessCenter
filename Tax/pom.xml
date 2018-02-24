@@ -34,7 +34,7 @@
         <velocity.version>1.7</velocity.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jsonlib.version>2.4</jsonlib.version>
-        <seaweedFS.version>1.0.0</seaweedFS.version>
+        <seaweedFS.version>1.1.0</seaweedFS.version>
         <jackson.version>2.8.9</jackson.version>
         <poi.version>3.17</poi.version>
         <poi-ooxml.version>3.17</poi-ooxml.version>
@@ -208,6 +208,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <!--打印付款凭单-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
+            <artifactId>settlementcenter-payment-command-api</artifactId>
+            <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

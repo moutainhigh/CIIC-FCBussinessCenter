@@ -105,13 +105,11 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
      * 文件上传
      * @param requestForFile
      * @param file
-     * @return
+     * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean uploadFileByBusinessIdAndType(RequestForFile requestForFile, MultipartFile file) {
-        Boolean flag = true;
-        try {
+    public void uploadFileByBusinessIdAndType(RequestForFile requestForFile, MultipartFile file) throws Exception{
             String fileName = file.getOriginalFilename();
             String url = FileHandler.uploadFile(file.getInputStream());
             FilePO filePO = new FilePO();
@@ -124,13 +122,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             filePO.setCreatedBy("admin");
             // TODO 临时设置修改人
             filePO.setModifiedBy("admin");
-            flag = super.insertOrUpdate(filePO);
-        } catch (Exception e) {
-            logger.error("uploadFileByBusinessIdAndType error " + e.toString());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            flag = false;
-        }
-        return flag;
+            super.insertOrUpdate(filePO);
     }
 
 
