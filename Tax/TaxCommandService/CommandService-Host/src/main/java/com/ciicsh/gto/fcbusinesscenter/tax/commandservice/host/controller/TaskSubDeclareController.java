@@ -136,6 +136,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> map = new HashMap<>(16);
             //文件名称
             String fileName = "";
+            //TODO 区分本地税务和全国委托 测试
             if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
                 fileName = "扣缴个人所得税报告表.xls";
                 //获取POIFSFileSystem对象
@@ -146,6 +147,20 @@ public class TaskSubDeclareController extends BaseController {
                 map.put("taxPeriod", DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
                 //扣缴义务人名称
                 map.put("withholdingAgent", "张三");
+                //扣缴义务人编码
+                map.put("withholdingAgentCode", "147258369");
+                //根据不同的业务需要处理wb
+                exportFileService.exportAboutTax(wb, map, taskSubDeclareDetailPOList);
+            }else{
+                fileName = "扣缴个人所得税报告表.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //税款所属期
+                map.put("taxPeriod", DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
+                //扣缴义务人名称
+                map.put("withholdingAgent", "李四");
                 //扣缴义务人编码
                 map.put("withholdingAgentCode", "147258369");
                 //根据不同的业务需要处理wb
@@ -175,11 +190,12 @@ public class TaskSubDeclareController extends BaseController {
 
     /**
      * 根据申报任务ID查询申报任务信息
+     *
      * @param subDeclareId
      * @return
      */
     @PostMapping(value = "/queryDeclareDetailsById/{subDeclareId}")
-    public JsonResult queryDeclareDetailsById(@PathVariable(value = "subDeclareId") Long subDeclareId){
+    public JsonResult queryDeclareDetailsById(@PathVariable(value = "subDeclareId") Long subDeclareId) {
         JsonResult jr = new JsonResult();
         try {
             //根据申报子任务ID查询申报信息
@@ -193,5 +209,61 @@ public class TaskSubDeclareController extends BaseController {
             jr.setErrormsg("error");
         }
         return jr;
+    }
+
+    /**
+     * 根据任务ID,导出报税文件(所得项目)
+     *
+     * @param subDeclareId
+     */
+    @RequestMapping(value = "/exportDeclareBySubject/{subDeclareId}", method = RequestMethod.GET)
+    public void exportDeclareBySubject(@PathVariable(value = "subDeclareId") Long subDeclareId, HttpServletResponse response) {
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+        try {
+            //根据申报子任务ID查询申报信息
+            TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
+            //根据申报子任务ID查询申报明细
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
+            //文件名称
+            String fileName = "";
+            //TODO 区分本地税务和全国委托 测试
+            if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
+                fileName = "上海地区个税.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                exportFileService.exportAboutSubject(wb, taskSubDeclareDetailPOList);
+            }else{
+                fileName = "上海地区个税.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                exportFileService.exportAboutSubject(wb, taskSubDeclareDetailPOList);
+            }
+            //导出excel
+            exportExcel(response, wb, fileName);
+        } catch (Exception e) {
+            logger.error("exportDeclareBySubject error " + e.toString());
+        } finally {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception e) {
+                    logger.error("exportDeclareBySubject wb close error" + e.toString());
+                }
+            }
+            if (fs != null) {
+                try {
+                    fs.close();
+                } catch (Exception e) {
+                    logger.error("exportDeclareBySubject fs close error" + e.toString());
+                }
+            }
+        }
     }
 }
