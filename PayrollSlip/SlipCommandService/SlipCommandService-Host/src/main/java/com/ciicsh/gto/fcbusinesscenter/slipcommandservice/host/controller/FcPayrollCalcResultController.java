@@ -69,13 +69,20 @@ public class FcPayrollCalcResultController {
     }
 
     @RequestMapping(value = "/SalaryQuery")
-    public JsonResult SalaryQuery(HttpServletRequest request) {
+    public Map<String, Object> SalaryQuery(HttpServletRequest request) {
+        ArrayList<Map<String, Object>> list = new ArrayList();
+
         String empId = request.getParameter("EmployeeID");
         if (empId == null || empId.equals("")) {
-            return JsonResult.faultMessage("缺少参数EmployeeID");
+            return new HashMap<String, Object>(){
+                {
+                    put("EmployeeID", empId);
+                    put("SalaryInfos", list);
+                    put("IsSuccess", false);
+                    put("ErrorCode", "缺少参数EmployeeID");
+                }
+            };
         }
-
-        ArrayList<Map<String, Object>> list = new ArrayList();
 
         Map<String, Object> params = new HashMap<String, Object>(){
             {
@@ -97,14 +104,30 @@ public class FcPayrollCalcResultController {
             list.add(ele);
         }
 
-        return JsonResult.success(list);
+        return new HashMap<String, Object>(){
+            {
+                put("EmployeeID", empId);
+                put("SalaryInfos", list);
+                put("IsSuccess", true);
+                put("ErrorCode", "0");
+            }
+        };
     }
 
     @RequestMapping(value = "/DetailsSalaryQuery")
-    public JsonResult DetailsSalaryQuery(HttpServletRequest request) {
+    public Map<String, Object> DetailsSalaryQuery(HttpServletRequest request) {
+        ArrayList<Map<String, Object>> list = new ArrayList();
+
         String fcPayrollCalcResultId = request.getParameter("SalaryID");
         if (fcPayrollCalcResultId == null || fcPayrollCalcResultId.equals("")) {
-            return JsonResult.faultMessage("缺少参数SalaryID");
+            return new HashMap<String, Object>(){
+                {
+                    put("SalaryID", fcPayrollCalcResultId);
+                    put("SalaryItems", list);
+                    put("IsSuccess", false);
+                    put("ErrorCode", "缺少参数SalaryID");
+                }
+            };
         }
 
         Map<String, Object> params = new HashMap<String, Object>(){
@@ -114,8 +137,6 @@ public class FcPayrollCalcResultController {
         };
 
         FcPayrollCalcResultPO po = fcPayrollCalcResultService.getFcPayrollCalcResult(params);
-
-        ArrayList<Map<String, Object>> list = new ArrayList();
 
         JSONObject hash = JSON.parseObject(po.getSalaryCalcResultItems());
 
@@ -129,7 +150,14 @@ public class FcPayrollCalcResultController {
             list.add(item);
         }
 
-        return JsonResult.success(list);
+        return new HashMap<String, Object>(){
+            {
+                put("SalaryID", fcPayrollCalcResultId);
+                put("SalaryItems", list);
+                put("IsSuccess", true);
+                put("ErrorCode", "0");
+            }
+        };
     }
 
 
