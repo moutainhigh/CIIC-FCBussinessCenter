@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsPayrollExpressMapper">
+
+  <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollExpressPO">
+    <id column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="recipient" property="recipient" />
+		<result column="receive_address" property="receiveAddress" />
+		<result column="postcode" property="postcode" />
+		<result column="recipient_type" property="recipientType" />
+		<result column="express_company" property="expressCompany" />
+		<result column="express_number" property="expressNumber" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+  </resultMap>
+
+  <select id="total"  resultType="int">
+    SELECT COUNT(*) FROM prs_payroll_express
+    WHERE is_active = 1
+  </select>
+
+  <select id="all"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll_express
+    WHERE is_active = 1
+  </select>
+
+  <select id="get"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll_express
+    where id = #{id}
+    LIMIT 1
+  </select>
+
+  <select id="last"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll_express
+    ORDER by id desc
+    LIMIT 1;
+  </select>
+
+  <insert id="insert" parameterType="map">
+    INSERT INTO prs_payroll_express(task_id, recipient, receive_address, postcode, recipient_type, express_company, express_number, remark, created_by, modified_by)
+    VALUES (#{taskId}, #{recipient}, #{receiveAddress}, #{postcode}, #{recipientType}, #{expressCompany}, #{expressNumber}, #{remark}, #{createdBy}, #{modifiedBy})
+  </insert>
+
+  <update id="update" parameterType="map">
+    UPDATE prs_payroll_express
+    SET modified_time = CURRENT_TIMESTAMP,
+    <trim suffixOverrides=",">
+        <if test="taskId != null and taskId != ''">
+          task_id = #{taskId},
+        </if>
+        <if test="recipient != null and recipient != ''">
+          recipient = #{recipient},
+        </if>
+        <if test="receiveAddress != null and receiveAddress != ''">
+          receive_address = #{receiveAddress},
+        </if>
+        <if test="postcode != null and postcode != ''">
+          postcode = #{postcode},
+        </if>
+        <if test="recipientType != null and recipientType != ''">
+          recipient_type = #{recipientType},
+        </if>
+        <if test="expressCompany != null and expressCompany != ''">
+          express_company = #{expressCompany},
+        </if>
+        <if test="expressNumber != null and expressNumber != ''">
+          express_number = #{expressNumber},
+        </if>
+        <if test="remark != null and remark != ''">
+          remark = #{remark},
+        </if>
+        <if test="isActive != null">
+          is_active = #{isActive},
+        </if>
+        <if test="modifiedBy != null and modifiedBy != ''">
+          modified_by = #{modifiedBy},
+        </if>
+
+    </trim>
+    WHERE id = #{id}
+  </update>
+
+  <select id="list"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll_express
+    WHERE is_active = 1
+    <if test="taskId != null and taskId != ''">
+        and task_id = #{taskId}
+    </if>
+    ORDER BY id DESC
+    <if test="limit != null and limit != ''">
+      LIMIT #{limit}
+    </if>
+    <if test="offset != null and offset != ''">
+      OFFSET #{offset}
+    </if>
+  </select>
+
+</mapper>
