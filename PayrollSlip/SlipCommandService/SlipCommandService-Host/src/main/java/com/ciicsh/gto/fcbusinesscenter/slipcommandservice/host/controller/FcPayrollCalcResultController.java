@@ -77,9 +77,10 @@ public class FcPayrollCalcResultController {
             return new HashMap<String, Object>(){
                 {
                     put("EmployeeID", empId);
-                    put("SalaryInfos", list);
+                    put("ReturnObject", null);
+                    put("ErrorCode", 0);
                     put("IsSuccess", false);
-                    put("ErrorCode", "缺少参数EmployeeID");
+                    put("Message", "缺少参数EmployeeID");
                 }
             };
         }
@@ -107,9 +108,10 @@ public class FcPayrollCalcResultController {
         return new HashMap<String, Object>(){
             {
                 put("EmployeeID", empId);
-                put("SalaryInfos", list);
+                put("ReturnObject", list);
+                put("ErrorCode", 0);
                 put("IsSuccess", true);
-                put("ErrorCode", "0");
+                put("Message", "获取成功");
             }
         };
     }
@@ -123,9 +125,10 @@ public class FcPayrollCalcResultController {
             return new HashMap<String, Object>(){
                 {
                     put("SalaryID", fcPayrollCalcResultId);
-                    put("SalaryItems", list);
+                    put("ReturnObject", null);
+                    put("ErrorCode", 0);
                     put("IsSuccess", false);
-                    put("ErrorCode", "缺少参数SalaryID");
+                    put("Message", "缺少参数SalaryID");
                 }
             };
         }
@@ -153,9 +156,10 @@ public class FcPayrollCalcResultController {
         return new HashMap<String, Object>(){
             {
                 put("SalaryID", fcPayrollCalcResultId);
-                put("SalaryItems", list);
+                put("ReturnObject", list);
+                put("ErrorCode", 0);
                 put("IsSuccess", true);
-                put("ErrorCode", "0");
+                put("Message", "获取成功");
             }
         };
     }
