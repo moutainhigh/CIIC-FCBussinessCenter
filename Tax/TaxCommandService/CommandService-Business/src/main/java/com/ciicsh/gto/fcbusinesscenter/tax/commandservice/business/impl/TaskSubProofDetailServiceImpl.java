@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofDetailMapper;
@@ -109,9 +110,8 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         taskSubProofPO.setTaskMainProofId(requestForSubDetail.getTaskId());
                         //设置申报账户
                         taskSubProofPO.setDeclareAccount(taskSubProofDetailBO.getDeclareAccount());
-                        // TODO 临时设置子任务编号
                         //设置子任务编号
-                        taskSubProofPO.setTaskNo("TAX" + dateTimeStr);
+                        taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                         //设置任务为草稿状态
                         taskSubProofPO.setStatus("00");
                         // TODO 临时设置创建人
