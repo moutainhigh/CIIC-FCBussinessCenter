@@ -1,9 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.FcPayrollCalcResultService;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.FcPayrollCalcResultPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,5 +67,104 @@ public class FcPayrollCalcResultController {
     public JsonResult listPayrollTypes(@RequestBody Map<String, Object> params) {
         return JsonResult.success(fcPayrollCalcResultService.listPayrollTypes(params));
     }
+
+    @RequestMapping(value = "/SalaryQuery")
+    public Map<String, Object> SalaryQuery(HttpServletRequest request) {
+        ArrayList<Map<String, Object>> list = new ArrayList();
+
+        String empId = request.getParameter("EmployeeID");
+        if (empId == null || empId.equals("")) {
+            return new HashMap<String, Object>(){
+                {
+                    put("EmployeeID", empId);
+                    put("ReturnObject", null);
+                    put("ErrorCode", 0);
+                    put("IsSuccess", false);
+                    put("Message", "缺少参数EmployeeID");
+                }
+            };
+        }
+
+        Map<String, Object> params = new HashMap<String, Object>(){
+            {
+                put("empId", empId);
+            }
+        };
+
+
+        for (FcPayrollCalcResultPO po : fcPayrollCalcResultService.listFcPayrollCalcResults(params)) {
+
+            Map<String, Object> ele = new HashMap<String, Object>(){
+                {
+                    put("SalaryID", po.getFcPayrollCalcResultId());
+                    put("SalaryMonth", po.getPersonnelIncomeYearMonth());
+                    put("Salary", po.getPersonnelIncomeNetPay());
+                }
+            };
+
+            list.add(ele);
+        }
+
+        return new HashMap<String, Object>(){
+            {
+                put("EmployeeID", empId);
+                put("ReturnObject", list);
+                put("ErrorCode", 0);
+                put("IsSuccess", true);
+                put("Message", "获取成功");
+            }
+        };
+    }
+
+    @RequestMapping(value = "/DetailsSalaryQuery")
+    public Map<String, Object> DetailsSalaryQuery(HttpServletRequest request) {
+        ArrayList<Map<String, Object>> list = new ArrayList();
+
+        String fcPayrollCalcResultId = request.getParameter("SalaryID");
+        if (fcPayrollCalcResultId == null || fcPayrollCalcResultId.equals("")) {
+            return new HashMap<String, Object>(){
+                {
+                    put("SalaryID", fcPayrollCalcResultId);
+                    put("ReturnObject", null);
+                    put("ErrorCode", 0);
+                    put("IsSuccess", false);
+                    put("Message", "缺少参数SalaryID");
+                }
+            };
+        }
+
+        Map<String, Object> params = new HashMap<String, Object>(){
+            {
+                put("fcPayrollCalcResultId", fcPayrollCalcResultId);
+            }
+        };
+
+        FcPayrollCalcResultPO po = fcPayrollCalcResultService.getFcPayrollCalcResult(params);
+
+        JSONObject hash = JSON.parseObject(po.getSalaryCalcResultItems());
+
+        for (String key : hash.keySet()) {
+            Map<String, Object> item = new HashMap<String, Object>(){
+                {
+                    put("ItemName", key);
+                    put("ItemValue", hash.get(key));
+                }
+            };
+            list.add(item);
+        }
+
+        return new HashMap<String, Object>(){
+            {
+                put("SalaryID", fcPayrollCalcResultId);
+                put("ReturnObject", list);
+                put("ErrorCode", 0);
+                put("IsSuccess", true);
+                put("Message", "获取成功");
+            }
+        };
+    }
+
+
+
 
 }

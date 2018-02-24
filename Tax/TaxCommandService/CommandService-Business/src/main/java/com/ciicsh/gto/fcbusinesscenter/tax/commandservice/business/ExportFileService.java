@@ -46,4 +46,11 @@ public interface ExportFileService {
      * @param taskSubDeclareDetailPOList
      */
     void exportAboutTax(HSSFWorkbook wb, Map<String, String> map, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList);
+
+    /**
+     * 申报导出报税文件(所得项目)
+     * @param wb
+     * @param taskSubDeclareDetailPOList
+     */
+    void exportAboutSubject(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList);
 }

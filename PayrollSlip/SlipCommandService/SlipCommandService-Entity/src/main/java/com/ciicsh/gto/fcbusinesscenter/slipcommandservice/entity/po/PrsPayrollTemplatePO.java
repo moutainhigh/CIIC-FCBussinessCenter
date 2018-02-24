@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -14,7 +15,7 @@ import java.util.Date;
  * 工资单模板
  *
  * @author taka
- * @since 2018-01-30
+ * @since 2018-02-22
  */
 @TableName("prs_payroll_template")
 public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
@@ -86,6 +87,12 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
    */
   @TableField("template_file_url")
   private String templateFileUrl;
+
+  /**
+   * 模板html
+   */
+  @TableField("html")
+  private String html;
 
   /**
    * 生效时间
@@ -243,6 +250,14 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
     this.templateFileUrl = templateFileUrl;
   }
 
+  public String getHtml() {
+    return html;
+  }
+
+  public void setHtml(String html) {
+    this.html = html;
+  }
+
   public Date getEffectiveTime() {
     return effectiveTime;
   }
@@ -352,6 +367,7 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
             ", templateType=" + templateType +
             ", templateFileName=" + templateFileName +
             ", templateFileUrl=" + templateFileUrl +
+            ", html=" + html +
             ", effectiveTime=" + effectiveTime +
             ", invalidTime=" + invalidTime +
             ", ifEncrypt=" + ifEncrypt +
