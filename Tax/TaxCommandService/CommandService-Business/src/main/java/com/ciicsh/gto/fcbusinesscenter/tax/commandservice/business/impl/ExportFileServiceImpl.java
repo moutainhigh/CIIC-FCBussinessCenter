@@ -9,6 +9,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,11 +18,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.groupingBy;
+
 /**
  * @author wuhua
  */
 @Service
 public class ExportFileServiceImpl implements ExportFileService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExportFileServiceImpl.class);
 
     /**
      * 完税凭证徐汇模板列表初始大小20
@@ -41,6 +47,21 @@ public class ExportFileServiceImpl implements ExportFileService {
      * 扣缴个人所得税报告表初始大小3
      */
     private static final int INITIAL_TAX_SIZE = 0;
+
+    /**
+     * 所得项目_正常工资薪金收入
+     */
+    private static final String INCOME_SUBJECT_01 = "01";
+
+    /**
+     * 所得项目_外籍人员正常工资薪金
+     */
+    private static final String INCOME_SUBJECT_02 = "02";
+
+    /**
+     * 所得项目_劳务报酬所得
+     */
+    private static final String INCOME_SUBJECT_03 = "03";
 
     /**
      * 完税凭证处理(徐汇)
@@ -828,6 +849,333 @@ public class ExportFileServiceImpl implements ExportFileService {
                 cellZ = row.createCell(25);
             }
             cellZ.setCellValue(taxRemedyOrReturnTotal.toString());
+        }
+    }
+
+    /**
+     * 申报导出报税数据(上海地区个税表)
+     *
+     * @param wb
+     * @param taskSubDeclareDetailPOList
+     */
+    @Override
+    public void exportAboutSubject(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList) {
+        Map<String, List<TaskSubDeclareDetailPO>> taskSubDeclareDetailPOMap =
+                taskSubDeclareDetailPOList.stream().collect(groupingBy(TaskSubDeclareDetailPO::getIncomeSubject));
+        //页签一 "正常工资薪金收入"
+        if (taskSubDeclareDetailPOMap.containsKey(INCOME_SUBJECT_01)) {
+            //在相应的单元格进行赋值
+            int sheet1RowIndex = 1;
+            HSSFSheet sheet1 = wb.getSheetAt(0);
+            for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOMap.get(INCOME_SUBJECT_01)) {
+                HSSFRow row = sheet1.getRow(sheet1RowIndex);
+                if (null == row) {
+                    row = sheet1.createRow(sheet1RowIndex);
+                }
+                //工号-A列
+                HSSFCell cellA = row.getCell(0);
+                if (null == cellA) {
+                    cellA = row.createCell(0);
+                }
+                cellA.setCellValue(po.getEmployeeNo());
+                //姓名-B列
+                HSSFCell cellB = row.getCell(1);
+                if (null == cellB) {
+                    cellB = row.createCell(1);
+                }
+                cellB.setCellValue(po.getEmployeeName());
+                //*证照类型-C列
+                HSSFCell cellC = row.getCell(2);
+                if(null == cellC) {
+                    cellC = row.createCell(2);
+                }
+                cellC.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
+                //*证照号码-D列
+                HSSFCell cellD = row.getCell(3);
+                if(null == cellD) {
+                    cellD = row.createCell(3);
+                }
+                cellD.setCellValue(po.getIdNo());
+                //税款负担方式-E列
+
+                //*收入额-F列
+                HSSFCell cellF = row.getCell(5);
+                if(null == cellF) {
+                    cellF = row.createCell(5);
+                }
+                cellF.setCellValue(po.getIncomeTotal().toString());
+                //免税所得-G列
+                HSSFCell cellG = row.getCell(6);
+                if(null == cellG) {
+                    cellG = row.createCell(6);
+                }
+                cellG.setCellValue(po.getIncomeDutyfree().toString());
+                //基本养老保险费-H列
+                HSSFCell cellH = row.getCell(7);
+                if(null == cellH) {
+                    cellH = row.createCell(7);
+                }
+                cellH.setCellValue(po.getDeductRetirementInsurance().toString());
+                //基本医疗保险费-I列
+                HSSFCell cellI = row.getCell(8);
+                if(null == cellI) {
+                    cellI = row.createCell(8);
+                }
+                cellI.setCellValue(po.getDeductMedicalInsurance().toString());
+                //失业保险费-J列
+                HSSFCell cellJ = row.getCell(9);
+                if(null == cellJ) {
+                    cellJ = row.createCell(9);
+                }
+                cellJ.setCellValue(po.getDeductDlenessInsurance().toString());
+                //住房公积金-K列
+                HSSFCell cellK = row.getCell(10);
+                if(null == cellK) {
+                    cellK = row.createCell(10);
+                }
+                cellK.setCellValue(po.getDeductHouseFund().toString());
+                //允许扣除的税费-L列
+                HSSFCell cellL = row.getCell(11);
+                if(null == cellL) {
+                    cellL = row.createCell(11);
+                }
+                cellL.setCellValue(po.getDeductTakeoff().toString());
+                //年金-M列
+                //商业健康保险费-N列
+                //其他扣除-O列
+                HSSFCell cellO = row.getCell(14);
+                if(null == cellO) {
+                    cellO = row.createCell(14);
+                }
+                cellO.setCellValue(po.getDeductOther().toString());
+                //减除费用-P列
+                HSSFCell cellP = row.getCell(15);
+                if(null == cellP) {
+                    cellP = row.createCell(15);
+                }
+                cellP.setCellValue(po.getDeduction().toString());
+                //实际捐赠额-Q列
+                //允许列支的捐赠比例-R列
+                //准予扣除的捐赠额-S列
+                HSSFCell cellS = row.getCell(18);
+                if(null == cellS) {
+                    cellS = row.createCell(18);
+                }
+                cellS.setCellValue(po.getDonation().toString());
+                //减免税额-T列
+                HSSFCell cellT = row.getCell(19);
+                if(null == cellT) {
+                    cellT = row.createCell(19);
+                }
+                cellT.setCellValue(po.getTaxDeduction().toString());
+                //已扣缴税额-U列
+                HSSFCell cellU = row.getCell(20);
+                if(null == cellU) {
+                    cellU = row.createCell(20);
+                }
+                cellU.setCellValue(po.getTaxWithholdedAmount().toString());
+                //备注-V列
+                sheet1RowIndex++;
+            }
+        }
+        //页签二 "外籍人员正常工资薪金"
+        if (taskSubDeclareDetailPOMap.containsKey(INCOME_SUBJECT_02)) {
+            //在相应的单元格进行赋值
+            int sheet2RowIndex = 1;
+            HSSFSheet sheet2 = wb.getSheetAt(1);
+            for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOMap.get(INCOME_SUBJECT_02)) {
+                HSSFRow row = sheet2.getRow(sheet2RowIndex);
+                if (null == row) {
+                    row = sheet2.createRow(sheet2RowIndex);
+                }
+                //工号-A列
+                HSSFCell cellA = row.getCell(0);
+                if (null == cellA) {
+                    cellA = row.createCell(0);
+                }
+                cellA.setCellValue(po.getEmployeeNo());
+                //姓名-B列
+                HSSFCell cellB = row.getCell(1);
+                if (null == cellB) {
+                    cellB = row.createCell(1);
+                }
+                cellB.setCellValue(po.getEmployeeName());
+                //*证照类型-C列
+                HSSFCell cellC = row.getCell(2);
+                if (null == cellC) {
+                    cellC = row.createCell(2);
+                }
+                cellC.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
+                //*证照号码-D列
+                HSSFCell cellD = row.getCell(3);
+                if (null == cellD) {
+                    cellD = row.createCell(3);
+                }
+                cellD.setCellValue(po.getIdNo());
+                //*适用公式-E列
+                //境内天数-F列
+                //境外天数-G列
+                //境内所得境内支付-H列
+                //境内所得境外支付-I列
+                //境外所得境内支付-J列
+                //境外所得境外支付-K列
+                //基本养老保险费-L列
+                HSSFCell cellL = row.getCell(11);
+                if (null == cellL) {
+                    cellL = row.createCell(11);
+                }
+                cellL.setCellValue(po.getDeductRetirementInsurance().toString());
+                //基本医疗保险费-M列
+                HSSFCell cellM = row.getCell(12);
+                if (null == cellM) {
+                    cellM = row.createCell(12);
+                }
+                cellM.setCellValue(po.getDeductMedicalInsurance().toString());
+                //失业保险费-N列
+                HSSFCell cellN = row.getCell(13);
+                if (null == cellN) {
+                    cellN = row.createCell(13);
+                }
+                cellN.setCellValue(po.getDeductDlenessInsurance().toString());
+                //住房公积金-O列
+                HSSFCell cellO = row.getCell(14);
+                if (null == cellO) {
+                    cellO = row.createCell(14);
+                }
+                cellO.setCellValue(po.getDeductHouseFund().toString());
+                //允许扣除的税费-P列
+                HSSFCell cellP = row.getCell(15);
+                if (null == cellP) {
+                    cellP = row.createCell(15);
+                }
+                cellP.setCellValue(po.getDeductTakeoff().toString());
+                //年金-Q列
+                //商业健康保险费-R列
+                //其他>其他扣除-S列
+                //住房补贴-T列
+                //伙食补贴-U列
+                //洗衣费-V列
+                //搬迁费-W列
+                //出差补贴-X列
+                //探亲费-Y列
+                //语言培训费-Z列
+                //子女教育经费-AA列
+                //免税所得>其他费用-AB列
+                //实际捐赠额-AC列
+                //允许列支的捐赠比例-AD列
+                //准予扣除的捐赠额-AE列
+                HSSFCell cellAE = row.getCell(30);
+                if (null == cellAE) {
+                    cellAE = row.createCell(30);
+                }
+                cellAE.setCellValue(po.getDonation().toString());
+                //减免税额-AF列
+                HSSFCell cellAF = row.getCell(31);
+                if (null == cellAF) {
+                    cellAF = row.createCell(31);
+                }
+                cellAF.setCellValue(po.getTaxDeduction().toString());
+                //备注-AG列
+                sheet2RowIndex++;
+            }
+        }
+        //页签三 "劳务报酬所得"
+        if (taskSubDeclareDetailPOMap.containsKey(INCOME_SUBJECT_03)) {
+            //在相应的单元格进行赋值
+            int sheet3RowIndex = 1;
+            HSSFSheet sheet3 = wb.getSheetAt(2);
+            logger.debug("03 size = " + taskSubDeclareDetailPOMap.get(INCOME_SUBJECT_03).size());
+            for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOMap.get(INCOME_SUBJECT_03)) {
+                HSSFRow row = sheet3.getRow(sheet3RowIndex);
+                if (null == row) {
+                    row = sheet3.createRow(sheet3RowIndex);
+                }
+                //工号-A列
+                HSSFCell cellA = row.getCell(0);
+                if (null == cellA) {
+                    cellA = row.createCell(0);
+                }
+                cellA.setCellValue(po.getEmployeeNo());
+                //姓名-B列
+                HSSFCell cellB = row.getCell(1);
+                if (null == cellB) {
+                    cellB = row.createCell(1);
+                }
+                cellB.setCellValue(po.getEmployeeName());
+                //*证照类型-C列
+                HSSFCell cellC = row.getCell(2);
+                if (null == cellC) {
+                    cellC = row.createCell(2);
+                }
+                cellC.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
+                //*证照号码-D列
+                HSSFCell cellD = row.getCell(3);
+                if (null == cellD) {
+                    cellD = row.createCell(3);
+                }
+                cellD.setCellValue(po.getIdNo());
+                //税款负担方式-E列
+                //*收入额-F列
+                HSSFCell cellF = row.getCell(5);
+                if (null == cellF) {
+                    cellF = row.createCell(5);
+                }
+                cellF.setCellValue(po.getIncomeTotal().toString());
+                //免税所得-G列
+                HSSFCell cellG = row.getCell(6);
+                if (null == cellG) {
+                    cellG = row.createCell(6);
+                }
+                cellG.setCellValue(po.getIncomeDutyfree().toString());
+                //基本养老保险费-H列
+                HSSFCell cellH = row.getCell(7);
+                if (null == cellH) {
+                    cellH = row.createCell(7);
+                }
+                cellH.setCellValue(po.getDeductRetirementInsurance().toString());
+                //基本医疗保险费-I列
+                HSSFCell cellI = row.getCell(8);
+                if (null == cellI) {
+                    cellI = row.createCell(8);
+                }
+                cellI.setCellValue(po.getDeductMedicalInsurance().toString());
+                //失业保险费-J列
+                HSSFCell cellJ = row.getCell(9);
+                if (null == cellJ) {
+                    cellJ = row.createCell(9);
+                }
+                cellJ.setCellValue(po.getDeductDlenessInsurance().toString());
+                //住房公积金-K列
+                HSSFCell cellK = row.getCell(10);
+                if (null == cellK) {
+                    cellK = row.createCell(10);
+                }
+                cellK.setCellValue(po.getDeductHouseFund().toString());
+                //允许扣除的税费-L列
+                HSSFCell cellL = row.getCell(11);
+                if (null == cellL) {
+                    cellL = row.createCell(11);
+                }
+                cellL.setCellValue(po.getDeductTakeoff().toString());
+                //商业健康保险费-M列
+                //其他扣除-N列
+                //实际捐赠额-O列
+                //允许列支的捐赠比例-P列
+                //准予扣除的捐赠额-Q列
+                HSSFCell cellQ = row.getCell(16);
+                if (null == cellQ) {
+                    cellQ = row.createCell(16);
+                }
+                cellQ.setCellValue(po.getDonation().toString());
+                //减免税额-R列
+                HSSFCell cellR = row.getCell(17);
+                if (null == cellR) {
+                    cellR = row.createCell(17);
+                }
+                cellR.setCellValue(po.getTaxDeduction().toString());
+                //备注-S列
+                sheet3RowIndex++;
+            }
         }
     }
 
