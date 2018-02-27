@@ -3,23 +3,28 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper">
 
 	<!-- 通用查询映射结果 -->
-	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO">
-		<id column="id" property="id" />
+	<resultMap id="QueryCalculationBatchsResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO">
+		<id column="cal_batch_id" property="id" />
 		<result column="batch_no" property="batchNo" />
 		<result column="manager_no" property="managerNo" />
-		&lt;!&ndash;<result column="manager_name" property="managerName" />&ndash;&gt;
-		<result column="tax_amount" property="taxAmount" />
-		<result column="headcount" property="headcount" />
-		<result column="chinese_num" property="chineseNum" />
-		<result column="foreigner_num" property="foreignerNum" />
+		<result column="manager_name" property="managerName" />
 		<result column="status" property="status" />
-		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
-		<result column="modified_time" property="modifiedTime" />
-		<result column="created_by" property="createdBy" />
-		<result column="modified_by" property="modifiedBy" />
-		<result column="task_main_id" property="taskMainId" />
-	</resultMap>-->
+		<!--<collection property="calculationBatchTaskMainPOs" ofType="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchTaskMainPO">
+			<id column="id" property="id"/>
+			<result column="cal_batch_id" property="calBatchId"/>
+			<result column="task_main_id" property="taskMainId"/>
+			<association property="taskMainPOs" javaType="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainPO">
+				<id column="task_main_id" property="id"/>
+				<result column="task_no" property="taskNo"/>
+			</association>
+		</collection>-->
+	</resultMap>
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="queryTaskMainsByCalBatchResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainPO">
+		<result column="task_no" property="taskNo" />
+	</resultMap>
 
 	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO">
@@ -73,6 +78,26 @@
 		<result column="is_transfer_supported" property="transferSupported" />
 	</resultMap>
 
+	<!-- 查询批次 -->
+	<select id="queryCalculationBatchs" parameterType="java.util.Map" resultMap="QueryCalculationBatchsResultMap">
+		SELECT
+		t1.id cal_batch_id,
+		t1.batch_no,
+		t1.manager_name,
+		t1.status,
+		t1.created_time
+-- 		t2.id,
+-- 		t2.task_main_id,
+-- 		t3.task_no
+		FROM tax_fc_calculation_batch t1
+		/*left join tax_fc_calculation_batch_task_main t2 on t1.is_active = 1 and t1.id = t2.cal_batch_id
+		left join tax_fc_task_main t3 on t2.task_main_id = t3.id*/
+		where 1=1
+		<if test="manager_name!=null and manager_name!=''"> and t1.manager_name like '%${manager_name}%'</if>
+		<if test="batch_no!=null and batch_no!=''"> and t1.batch_no like '%${batch_no}%'</if>
+		ORDER BY t1.created_time desc
+	</select>
+
     <!-- 通用查询结果列 -->
     <!--<sql id="Base_Column_List">
         id, batch_no, manager_no, manager_name, tax_amount, headcount, chinese_num, foreigner_num, status, is_active, created_time, modified_time, created_by, modified_by
@@ -99,6 +124,17 @@
 		<if test="endTime != null and endTime != ''">
 			and date(created_time) &lt;= date(#{endTime,jdbcType=TIMESTAMP})
 		</if>-->
+	</select>
+
+	<!-- 查询批次对应的任务 -->
+	<select id="queryTaskMainsByCalBatch" resultMap="queryTaskMainsByCalBatchResultMap">
+		SELECT
+		t2.task_no
+		FROM tax_fc_calculation_batch_task_main t1
+		left join tax_fc_task_main t2 on t1.task_main_id = t2.id
+		where 1=1
+		<if test="calBatchId!=null and calBatchId!=''"> and t1.cal_batch_id = #{calBatchId}</if>
+		ORDER BY t2.created_time desc
 	</select>
 
 </mapper>

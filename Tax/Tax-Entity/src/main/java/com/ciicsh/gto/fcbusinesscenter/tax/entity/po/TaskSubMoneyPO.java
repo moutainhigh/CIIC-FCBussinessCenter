@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.math.BigDecimal;
@@ -92,7 +93,7 @@ public class TaskSubMoneyPO{
     /**
      * 修改时间
      */
-	@TableField("modified_time")
+    @TableField(value="modified_time",fill = FieldFill.UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人

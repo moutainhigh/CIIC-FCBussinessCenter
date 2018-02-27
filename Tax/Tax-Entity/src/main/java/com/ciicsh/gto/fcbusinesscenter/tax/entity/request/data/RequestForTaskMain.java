@@ -12,6 +12,16 @@ public class RequestForTaskMain extends PageInfo {
 
     private String[] batchNos;
 
+    private String[] taskMainIds;
+
+    public String[] getTaskMainIds() {
+        return taskMainIds;
+    }
+
+    public void setTaskMainIds(String[] taskMainIds) {
+        this.taskMainIds = taskMainIds;
+    }
+
     public String[] getBatchNos() {
         return batchNos;
     }
