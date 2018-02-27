@@ -48,6 +48,9 @@
 			<if test="approvalStatus != null">
 				AND approval_status = #{managementId}
 			</if>
+			<if test="isActive != null">
+				AND is_active = #{isActive}
+			</if>
 		</trim>
 	</select>
 
@@ -89,9 +92,6 @@
 		</if>
 		<if test="approvalStatus != null">
 			approval_status = #{approvalStatus},
-		</if>
-		<if test="managementId != null">
-			management_id = #{managementId},
 		</if>
 		<if test="comments != null">
 			comments = #{comments},

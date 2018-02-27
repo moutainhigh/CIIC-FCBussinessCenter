@@ -1,11 +1,13 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
+import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,10 +19,14 @@ import java.util.stream.Collectors;
  * @author NeoJiang
  */
 @RestController
+@RequestMapping(value = "/api")
 public class ManagementController {
 
     @Autowired
     private ManagementProxy managementProxy;
+
+    @Autowired
+    private KafkaSender kafkaSender;
 
     class MgrData{
         public String Code;
@@ -32,8 +38,14 @@ public class ManagementController {
         }
     }
 
+    // TO BE DELETED
+    @GetMapping("/test")
+    public void sendManagement(@RequestParam String str) {
+        kafkaSender.SendManagement(str);
+    }
+
     @GetMapping("/getMgrList")
-    public JsonResult getMgrList(@RequestParam String query) {
+    public JsonResult getMgrList(@RequestParam(required = false) String query) {
 
         GetManagementRequestDTO param = new GetManagementRequestDTO();
 

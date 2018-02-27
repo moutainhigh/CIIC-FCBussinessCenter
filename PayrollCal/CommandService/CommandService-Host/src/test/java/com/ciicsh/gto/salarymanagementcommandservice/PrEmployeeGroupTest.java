@@ -69,7 +69,7 @@
 ////
 ////        testRestTemplate.put("/prEmployeeGroup/PREG2", JSONObject.toJSON(param));
 ////
-////        List<PrEmployeeGroupEntity> insertedEntityList = prEmployeeGroupService.getList(param, 0).getList();
+////        List<PrEmployeeGroupEntity> insertedEntityList = prEmployeeGroupService.getListPage(param, 0).getListPage();
 ////        assertTrue(insertedEntityList.get(0).getName().equals("雇员组001"));
 ////
 ////        prEmployeeGroupService.deleteItem("PREG2");

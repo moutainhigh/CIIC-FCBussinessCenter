@@ -18,4 +18,11 @@ public interface PayrollSink {
 
     @Input(COMPUTE_INPUT)
     MessageChannel computeStatusInput();
+
+    // TO BE DELETED
+    String MANAGEMENT_INPUT = "pr_management-input-channel";
+
+    // TO BE DELETED
+    @Input(MANAGEMENT_INPUT)
+    MessageChannel managementInput();
 }

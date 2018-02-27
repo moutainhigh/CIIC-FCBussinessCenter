@@ -52,6 +52,19 @@ spring:
           consumer:
             partitioned: true
 
+        pr_management-input-channel:
+          destination: fc_payroll_management
+          content-type: application/json
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned: true
+
+        pr_management-output-channel:
+          destination: fc_payroll_management # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 1
+
 logging:
   file: logs/dev_app.log
   pattern:
@@ -61,3 +74,7 @@ logging:
     org.springframework.web: DEBUG
     com.ciicsh.zorro.salarymanagementwebservice: DEBUG
     org.mybatis: DEBUG
+
+management:
+  security:
+   enabled: false

@@ -37,11 +37,6 @@ public class PrPayrollGroupTemplatePO extends Model<PrPayrollGroupTemplatePO> {
      */
 	@TableField("group_template_name")
 	private String groupTemplateName;
-	/**
-	 * 所属管理方ID
-	 */
-	@TableField("management_id")
-	private String managementId;
     /**
      * 版本号
      */
@@ -197,14 +192,6 @@ public class PrPayrollGroupTemplatePO extends Model<PrPayrollGroupTemplatePO> {
 		return serialVersionUID;
 	}
 
-	public String getManagementId() {
-		return managementId;
-	}
-
-	public void setManagementId(String managementId) {
-		this.managementId = managementId;
-	}
-
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -216,7 +203,6 @@ public class PrPayrollGroupTemplatePO extends Model<PrPayrollGroupTemplatePO> {
 				"id=" + id +
 				", groupTemplateCode='" + groupTemplateCode + '\'' +
 				", groupTemplateName='" + groupTemplateName + '\'' +
-				", managementId='" + managementId + '\'' +
 				", version='" + version + '\'' +
 				", approvalStatus=" + approvalStatus +
 				", comments='" + comments + '\'' +

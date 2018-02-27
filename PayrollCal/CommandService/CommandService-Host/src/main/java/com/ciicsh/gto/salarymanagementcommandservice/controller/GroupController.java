@@ -176,11 +176,8 @@ public class GroupController {
 
         PrPayrollGroupPO newParam = new PrPayrollGroupPO();
         BeanUtils.copyProperties(paramItem, newParam);
-        newParam.setGroupCode(codeGenerator.genPrGroupCode(newParam.getManagementId()));
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");
-        // Version 生成
-        newParam.setVersion("1.0");
         int result= prGroupService.addItem(newParam);
         return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
     }

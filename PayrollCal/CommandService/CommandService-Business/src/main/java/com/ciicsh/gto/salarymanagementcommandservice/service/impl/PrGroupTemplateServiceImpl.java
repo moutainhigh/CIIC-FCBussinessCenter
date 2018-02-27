@@ -46,7 +46,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
     @Override
-    public PageInfo<PrPayrollGroupTemplatePO> getList(PrPayrollGroupTemplatePO param, Integer pageNum, Integer pageSize) {
+    public PageInfo<PrPayrollGroupTemplatePO> getListPage(PrPayrollGroupTemplatePO param, Integer pageNum, Integer pageSize) {
         List<PrPayrollGroupTemplatePO> resultList = new ArrayList<>();
         PageHelper.startPage(pageNum, pageSize);
         try {
@@ -56,6 +56,12 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         }
         PageInfo<PrPayrollGroupTemplatePO> pageInfo = new PageInfo<>(resultList);
         return  pageInfo;
+    }
+
+    @Override
+    public List<PrPayrollGroupTemplatePO> getList(PrPayrollGroupTemplatePO param) {
+        List<PrPayrollGroupTemplatePO> resultList = prPayrollGroupTemplateMapper.selectListByEntityUseLike(param);
+        return resultList;
     }
 
     @Override
@@ -83,6 +89,9 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateItemByCode(PrPayrollGroupTemplatePO param) {
+        if (param.getApprovalStatus() == null) {
+            param.setApprovalStatus(0);
+        }
         EntityWrapper<PrPayrollGroupTemplatePO> ew = new EntityWrapper<>();
         ew.setEntity(param);
         int result = prPayrollGroupTemplateMapper.updateItemByCode(param);
@@ -195,6 +204,13 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
                         failList.add(item.getName());
                     }
                 });
+        return result;
+    }
+
+    @Override
+    public List<HashMap<String, String>> getPrGroupTemplatNameList(String query) {
+        List<HashMap<String, String>> result = new ArrayList<>(50);
+        result = prPayrollGroupTemplateMapper.selectGroupTemplateNameListByName(query);
         return result;
     }
 
