@@ -5,13 +5,13 @@ import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.CompExcelImportEmum;
+import com.ciicsh.gto.salarymanagement.entity.enums.*;
+import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.excel.PRItemExcelReader;
 import com.github.pagehelper.PageHelper;
@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -58,6 +59,9 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Autowired
     private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
+
+    @Autowired
+    private ApprovalHistoryService approvalHistoryService;
 
 
     @Override
@@ -107,11 +111,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         List<DBObject> batchList = null;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
-            batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+            batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            batchList = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+            batchList = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
         }else {
-            batchList = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode));
+            batchList = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
 
         }
 
@@ -194,7 +198,24 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+        ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
+        int approvalResult = 0;
+        if(status == BatchStatusEnum.NEW.getValue()){
+            approvalResult = ApprovalStatusEnum.DRAFT.getValue();
+        }else if(status == BatchStatusEnum.PENDING.getValue()){
+            approvalResult = ApprovalStatusEnum.AUDITING.getValue();
+        }else if(status == BatchStatusEnum.APPROVAL.getValue()){
+            approvalResult = ApprovalStatusEnum.APPROVE.getValue();
+        }else if(status == BatchStatusEnum.REJECT.getValue()){
+            approvalResult = ApprovalStatusEnum.DENIED.getValue();
+        }
+        historyPO.setApprovalResult(approvalResult);
+        historyPO.setBizCode(batchCode);
+        historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
+        historyPO.setComments(comments);
+        approvalHistoryService.addApprovalHistory(historyPO);
         return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
     }
 

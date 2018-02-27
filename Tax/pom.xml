@@ -38,6 +38,8 @@
         <jackson.version>2.8.9</jackson.version>
         <poi.version>3.17</poi.version>
         <poi-ooxml.version>3.17</poi-ooxml.version>
+        <payment.version>1.0.0</payment.version>
+        <!--<logservice.version>1.0.0</logservice.version>-->
     </properties>
 
     <distributionManagement>
@@ -209,6 +211,26 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+
+        <!--打印付款凭单-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
+            <artifactId>settlementcenter-payment-command-api</artifactId>
+            <version>${payment.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--&lt;!&ndash;日志系统&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>com.ciicsh.gt1.logservice</groupId>-->
+            <!--<artifactId>logservice-api</artifactId>-->
+            <!--<version>${logservice.version}</version>-->
+        <!--</dependency>-->
 
     </dependencies>
 

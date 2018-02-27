@@ -28,7 +28,7 @@ public interface FileService {
      * 上传凭证，并保存数据库
      * @param requestForFile
      * @param file
-     * @return
+     * @throws Exception
      */
-    Boolean uploadFileByBusinessIdAndType(RequestForFile  requestForFile,MultipartFile file);
+    void uploadFileByBusinessIdAndType(RequestForFile  requestForFile,MultipartFile file) throws Exception;
 }

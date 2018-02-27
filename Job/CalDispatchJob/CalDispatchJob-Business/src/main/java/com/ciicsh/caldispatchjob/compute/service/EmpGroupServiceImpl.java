@@ -44,9 +44,7 @@ public class EmpGroupServiceImpl {
     public int batchInsertOrUpdateGroupEmployees(String empGroupCode, List<String> empIds) {
 
         List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(empGroupCode,"","");
-        if (empIds == null || empIds.size() == 0) {
-            return -1;
-        } else {
+        if (empIds != null ) {
             employees = employees.stream().filter(emp -> {
                 return empIds.contains(emp.getEmployeeId());
             }).collect(Collectors.toList());
@@ -60,10 +58,11 @@ public class EmpGroupServiceImpl {
             opt.setQuery(Query.query(Criteria.where("emp_group_code").is(item.getEmpGroupCode()).andOperator(Criteria.where("雇员编号").is(item.getEmployeeId()))));
             basicDBObject = new BasicDBObject();
             basicDBObject.put("is_active", true);
+            basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());
             basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,item.getEmployeeName());
             basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,item.getBirthday());
             basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,item.getDepartment());
-            basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN,item.getGender());
+            basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN,item.getGender() == true ? "男":"女");
             basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.getIdCardType());
             basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,item.getJoinDate());
             basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.getIdNum());

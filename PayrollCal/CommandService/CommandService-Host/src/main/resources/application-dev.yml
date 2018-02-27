@@ -1,11 +1,11 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://172.16.9.24:9602/eureka/
-#      defaultZone: "http://172.16.9.21:9602/eureka/,http://172.16.9.20:9601/eureka/,http://172.16.9.19:9600/eureka/" #注册中心eureka地址
+      #defaultZone: http://172.16.9.24:9602/eureka/
+      defaultZone: "http://172.16.9.21:9602/eureka/,http://172.16.9.20:9602/eureka/,http://172.16.9.19:9602/eureka/" #注册中心eureka地址
   instance:
-      lease-expiration-duration-in-seconds: 40
-      lease-renewal-interval-in-seconds: 30
+      lease-expiration-duration-in-seconds: 30
+      lease-renewal-interval-in-seconds: 40
       prefer-ip-address: true
       instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 
@@ -20,12 +20,11 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: 172.16.9.17:9092,172.16.9.18:9092
-          zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
+          brokers:  172.16.9.11:9092   #172.16.9.17:9092,172.16.9.18:9092
+          zk-nodes: 172.16.9.11:2181,172.16.9.16:2181    #172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
           #brokers: 192.168.1.112:9092
           #zk-nodes: 192.168.1.112:2181
           autoAddPartitions: true
-          replicationFactor: 2
       bindings:
         payroll-output-channel:
           destination: fc_payroll_normal-batch # topic name
@@ -40,17 +39,19 @@ spring:
             partitionCount: 2
 
         pr_compute-output-channel:
-           destination: fc_payroll_compute # topic name
+           destination: fc_payroll_compute_result # topic name
            content-type: application/json
            producer:
-             partitionCount: 2
+             partitionCount: 1
 
-        pr_compute-input-channel:
-          destination: fc_payroll_compute-status # topic name
+        pr_compute-status-input-channel:
+          destination: fc_payroll_compute-status1 # topic name
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:
             partitioned: true
+            resetOffsets: true # 是否重置offsets
+            startOffset: latest # resetOffsets为true才有效，默认（earliest）, latest
 
         pr_management-input-channel:
           destination: fc_payroll_management

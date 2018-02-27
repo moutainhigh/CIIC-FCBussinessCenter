@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Created by houwanhua on 2017/12/5.
  */
 
-@FeignClient("fcbusiness-center-command-service")
+@FeignClient("fcbusiness-center-compute-service")
 @RequestMapping("/api/payrollgroup")
 public interface PayrollGroupProxy {
 

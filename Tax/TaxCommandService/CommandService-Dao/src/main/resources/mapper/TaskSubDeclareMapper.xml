@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO">
+
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, task_main_id, task_sub_declare_id, task_no, declare_account, period, overdue, fine, tax_amount, headcount, chinese_num, foreigner_num, status, is_active, created_time, modified_time, created_by, modified_by, manager_no, manager_name
+    </sql>
+
+    <!--根据合并的ID拼接的in条件查询合并前的子任务ID-->
+    <select id="querySubDeclareIdsByMergeIds" resultType="java.lang.Long">
+        select id from tax_fc_task_sub_declare_detail
+        where task_sub_declare_id in (#{sbCombinedParams})
+    </select>
+
+</mapper>

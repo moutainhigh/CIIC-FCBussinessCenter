@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data;
 
 
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.page.PageInfo;
 
 import java.util.List;
@@ -10,13 +10,13 @@ import java.util.List;
  * @author wuhua
  */
 public class ResponseForCalBatchDetail extends PageInfo {
-    private List<CalculationBatchDetailPO> rowList;
+    private List<CalculationBatchDetailBO> rowList;
 
-    public List<CalculationBatchDetailPO> getRowList() {
+    public List<CalculationBatchDetailBO> getRowList() {
         return rowList;
     }
 
-    public void setRowList(List<CalculationBatchDetailPO> rowList) {
+    public void setRowList(List<CalculationBatchDetailBO> rowList) {
         this.rowList = rowList;
     }
 }

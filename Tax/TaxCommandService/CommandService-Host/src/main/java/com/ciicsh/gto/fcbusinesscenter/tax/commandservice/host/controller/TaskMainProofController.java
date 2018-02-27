@@ -4,6 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainProofD
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskMainProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
@@ -72,26 +73,22 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             TaskMainProofPO taskMainProofPO = null;
             //完税凭证子任务
             TaskSubProofPO taskSubProofPO = null;
-            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
             if (taskProofDTO.getManagerNo() != null && !"".equals(taskProofDTO.getManagerNo())) {
                 taskMainProofPO = new TaskMainProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskMainProofPO);
-                // TODO 临时设置任务编号
                 //设置任务编号
-                taskMainProofPO.setTaskNo("TAX" + dateTimeStr);
+                taskMainProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN_PROOF));
                 //设置任务状态为草稿状态
                 taskMainProofPO.setStatus("00");
                 // TODO 临时设置修改人
                 //设置修改人
                 taskMainProofPO.setModifiedBy("zhangsan");
             }
-            dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
             if (taskProofDTO.getDeclareAccount() != null && !"".equals(taskProofDTO.getDeclareAccount())) {
                 taskSubProofPO = new TaskSubProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskSubProofPO);
-                // TODO 临时设置任务编号
                 //设置任务编号
-                taskSubProofPO.setTaskNo("TAX" + dateTimeStr);
+                taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                 //设置任务状态为草稿状态
                 taskSubProofPO.setStatus("00");
                 // TODO 临时设置修改人
@@ -149,6 +146,8 @@ public class TaskMainProofController extends BaseController implements TaskMainP
     @Override
     @PostMapping(value = "/invalidTaskProof")
     public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        // TODO 临时设置修改人
+        //设置修改人
         taskProofDTO.setModifiedBy("admin");
         JsonResult jr = new JsonResult();
         try {

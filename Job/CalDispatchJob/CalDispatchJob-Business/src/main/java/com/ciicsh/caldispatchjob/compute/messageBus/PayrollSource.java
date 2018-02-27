@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public interface PayrollSource {
 
 
-    String PR_COMPUTE_OUTPUT = "pr_compute-output-channel";
+    String PR_COMPUTE_OUTPUT = "pr_compute-status-output-channel";
 
     @Output(PR_COMPUTE_OUTPUT)
     MessageChannel computeStatusOutput();

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by bill on 18/1/13.
  */
-@FeignClient("fcbusiness-center-command-service")
+@FeignClient("fcbusiness-center-compute-service")
 public interface BatchProxy {
 
     /**
