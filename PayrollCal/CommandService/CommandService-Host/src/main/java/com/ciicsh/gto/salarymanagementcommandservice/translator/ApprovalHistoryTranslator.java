@@ -25,6 +25,8 @@ public class ApprovalHistoryTranslator {
         if (approvalHistoryDTO.getBizType() != null) {
             approvalHistoryDTO.setBizTypeLabel(
                     EnumHelpUtil.getLabelByValue(BizTypeEnum.class, approvalHistoryDTO.getBizType()));
+
+            approvalHistoryDTO.setResultLabel(EnumHelpUtil.getLabelByValue(ApprovalStatusEnum.class, approvalHistoryDTO.getApprovalResult()));
         }
         return approvalHistoryDTO;
     }

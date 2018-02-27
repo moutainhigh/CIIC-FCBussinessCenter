@@ -44,14 +44,6 @@ public interface PrNormalBatchService {
     int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int batchType,int importType, MultipartFile file);
 
     /**
-     * 更新批次状态
-     * @param batchCode
-     * @param status
-     * @return
-     */
-    int updateBatchStatus(String batchCode, int status, String modifiedBy);
-
-    /**
      * 审批意见
      * @param batchCode
      * @param comments

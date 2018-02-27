@@ -28,8 +28,11 @@ public interface PrBackTrackingBatchMapper extends BaseMapper<PrBackTrackingBatc
 
     Integer deleteBatchByCodes(@Param("codes") List<String> codes);
 
-
-    int updateBatchStatus(@Param("code") String batchCode, @Param("status") int status, @Param("modifiedBy") String modifiedBy);
+    int auditBatch(@Param("code") String batchCode,
+                   @Param("comments") String comments,
+                   @Param("status") int status,
+                   @Param("modifiedBy") String modifiedBy,
+                   @Param("result") String result);
 
     int checkBackTraceBatch(@Param("originBatchCode") String originBatchCode);
 }

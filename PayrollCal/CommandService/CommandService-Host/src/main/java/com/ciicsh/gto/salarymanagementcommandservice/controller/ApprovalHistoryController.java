@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.ApprovalHistoryDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +33,17 @@ public class ApprovalHistoryController {
         List<ApprovalHistoryPO> approvalHistoryPOList = approvalHistoryService.getApprovalHistory(bizType, bizCode);
         List<ApprovalHistoryDTO> resultList = approvalHistoryPOList.stream()
                 .map(ApprovalHistoryTranslator::toApprovalHistoryDTO)
+                .sorted(Comparator.comparing(ApprovalHistoryDTO::getId).reversed()) // id 降序排列
                 .collect(Collectors.toList());
         return JsonResult.success(resultList);
+    }
+
+    @GetMapping(value = "/test")
+    public JsonResult test(){
+        String url = "http://172.16.9.28:9100/5,07e54c5f9981";
+        boolean check = FileHandler.checkFileExists(url);
+
+        return JsonResult.success(check);
+
     }
 }

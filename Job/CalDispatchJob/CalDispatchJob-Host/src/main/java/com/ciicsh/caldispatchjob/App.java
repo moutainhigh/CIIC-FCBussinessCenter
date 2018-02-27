@@ -14,7 +14,8 @@ import org.springframework.context.annotation.ImportResource;
         "com.ciicsh.gt1",
         "com.ciicsh.gto.fcbusinesscenter.util",
         "com.ciicsh.gto.salarymanagementcommandservice.dao",
-        "com.ciicsh.caldispatchjob"})
+        "com.ciicsh.caldispatchjob"}
+        )
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
 //@Import(com.ciicsh.gt1.config.MongoConfig.class)
 public class App {

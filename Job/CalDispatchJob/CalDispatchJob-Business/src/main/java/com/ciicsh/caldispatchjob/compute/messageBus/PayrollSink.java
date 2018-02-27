@@ -2,6 +2,7 @@ package com.ciicsh.caldispatchjob.compute.messageBus;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,5 +23,5 @@ public interface PayrollSink {
     MessageChannel empGroupInput();
 
     @Input(PR_COMPUTE_INPUT)
-    MessageChannel PayrollComputeInput();
+    SubscribableChannel PayrollComputeInput();
 }
