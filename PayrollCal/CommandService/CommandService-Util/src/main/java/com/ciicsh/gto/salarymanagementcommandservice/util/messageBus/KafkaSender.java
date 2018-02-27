@@ -36,4 +36,9 @@ public class KafkaSender {
         payrollSource.computeOutput().send(MessageBuilder.withPayload(computeMsg).build());
     }
 
+    // TO BE DELETED
+    public void SendManagement(String str) {
+        payrollSource.managementOutput().send(MessageBuilder.withPayload(str).build());
+    }
+
 }

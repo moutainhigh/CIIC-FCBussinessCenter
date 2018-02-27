@@ -14,6 +14,9 @@ import com.ciicsh.gto.salarymanagementcommandservice.exception.BusinessException
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +48,7 @@ public class GroupController {
     private CodeGenerator codeGenerator;
 
     @Autowired
-    private PrItemService prItemService;
+    private ManagementProxy managementProxy;
 
     @GetMapping(value = "/importPrGroup")
     public JsonResult importPrGroup(@RequestParam String from,
@@ -143,7 +146,24 @@ public class GroupController {
     public JsonResult getPrGroup(@PathVariable("code") String code) {
 
         PrPayrollGroupPO result =  prGroupService.getItemByCode(code);
-        return JsonResult.success(result);
+        PrPayrollGroupDTO prPayrollGroupDTO = GroupTranslator.toPrPayrollGroupDTO(result);
+        GetManagementRequestDTO param = new GetManagementRequestDTO();
+        String managementLabel;
+        param.setQueryWords(prPayrollGroupDTO.getManagementId());
+        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<DetailResponseDTO>> managementResult
+                = managementProxy.getManagement(param);
+        if (managementResult == null) {
+            managementLabel = "";
+        } else {
+            List<DetailResponseDTO> managementList = managementResult.getObject();
+            if (managementList == null || managementList.size() == 0) {
+                managementLabel = "";
+            } else {
+                managementLabel = managementList.get(0).getTitle();
+            }
+        }
+        prPayrollGroupDTO.setManagementLabel(managementLabel);
+        return JsonResult.success(prPayrollGroupDTO);
     }
 
     /**
@@ -156,11 +176,8 @@ public class GroupController {
 
         PrPayrollGroupPO newParam = new PrPayrollGroupPO();
         BeanUtils.copyProperties(paramItem, newParam);
-        newParam.setGroupCode(codeGenerator.genPrGroupCode(newParam.getManagementId()));
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");
-        // Version 生成
-        newParam.setVersion("1.0");
         int result= prGroupService.addItem(newParam);
         return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
     }

@@ -41,7 +41,7 @@ public class PrPayrollGroupPO extends Model<PrPayrollGroupPO> {
 	 * 继承薪资组模板ID
 	 */
 	@TableField("group_template_code")
-	private Integer groupTemplateCode;
+	private String groupTemplateCode;
 	/**
 	 * 薪资组名称
 	 */
@@ -123,11 +123,11 @@ public class PrPayrollGroupPO extends Model<PrPayrollGroupPO> {
 		this.managementId = managementId;
 	}
 
-	public Integer getGroupTemplateCode() {
+	public String getGroupTemplateCode() {
 		return groupTemplateCode;
 	}
 
-	public void setGroupTemplateCode(Integer groupTemplateCode) {
+	public void setGroupTemplateCode(String groupTemplateCode) {
 		this.groupTemplateCode = groupTemplateCode;
 	}
 

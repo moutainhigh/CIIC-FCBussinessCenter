@@ -17,6 +17,13 @@ public interface PayrollSink {
 
     String COMPUTE_STATUS_INPUT = "pr_compute-status-input-channel";
 
+    // TO BE DELETED
+    String MANAGEMENT_INPUT = "pr_management-input-channel";
+
+    // TO BE DELETED
+    @Input(MANAGEMENT_INPUT)
+    MessageChannel managementInput();
+
     @Input(COMPUTE_STATUS_INPUT)
     SubscribableChannel computeStatusInput();
 }
