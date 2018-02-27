@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
@@ -13,8 +14,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMai
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatch;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.collector.CollectorsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,11 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -72,22 +72,44 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
         List<CalculationBatchPO> calculationBatchPOList;
         ResponseForCalBatch responseForCalBatch = new ResponseForCalBatch();
-        EntityWrapper wrapper = new EntityWrapper();
-        wrapper.setEntity(new CalculationBatchPO());
+//        EntityWrapper wrapper = new EntityWrapper();
+//        wrapper.setEntity(new CalculationBatchPO());
+        //查询条件
+        Map<String,String> params = new HashMap<String,String>();
         //管理方名称
         if(StrKit.isNotEmpty(requestForCalBatch.getManagerName())){
-            wrapper.like("manager_name",requestForCalBatch.getManagerName());
+//            wrapper.like("manager_name",requestForCalBatch.getManagerName());
+//            params.put("manager_name","'%"+requestForCalBatch.getManagerName()+"%'");
+            params.put("manager_name",requestForCalBatch.getManagerName());
         }
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForCalBatch.getBatchNo())){
-            wrapper.andNew("batch_no={0}",requestForCalBatch.getBatchNo());
+//            wrapper.andNew("batch_no={0}",requestForCalBatch.getBatchNo());
+            params.put("batch_no",requestForCalBatch.getBatchNo());
         }
         //wrapper.like("manager_name","恒大");
-        wrapper.orderBy("created_time",false);
+//        wrapper.orderBy("created_time",false);
+
         Page<CalculationBatchPO> page = new Page<CalculationBatchPO>(requestForCalBatch.getCurrentNum(),requestForCalBatch.getPageSize());
-        calculationBatchPOList = baseMapper.selectPage(page, wrapper);
+        calculationBatchPOList = baseMapper.queryCalculationBatchs(page,params);//baseMapper.selectPage(page, wrapper);
+
+
         for(CalculationBatchPO p: calculationBatchPOList){
+            //状态中文转化
             p.setStatusName(EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,p.getStatus()));
+            List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
+            //查询由当前批次创建的任务
+            StringBuilder sb = new StringBuilder();
+            int k =0;
+            for(TaskMainPO tp : tps){
+                if(k>0){
+                    sb.append(",");
+                }
+                sb.append(tp.getTaskNo());
+                k++;
+            }
+            p.setTaskNos(sb.toString());
+
         }
         responseForCalBatch.setRowList(calculationBatchPOList);
         responseForCalBatch.setCurrentNum(requestForCalBatch.getCurrentNum());
@@ -166,9 +188,11 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
         //新增主任务
         TaskMainPO p = new TaskMainPO();
-        p.setTaskNo("SP" + DateTimeKit.format(new Date(),"yyyyMMddHHmmss"));
+        p.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN));
         p.setManagerName("中智上海");
         p.setManagerNo("CIICSH");
+        p.setStatus("00");//草稿
+        p.setCreatedBy("操作员");//
         taskMainService.insert(p);
 
         String[] batchIds = requestForMainTask.getBatchIds();
@@ -236,11 +260,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 }else{
                     TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
                     taskSubDeclarePO.setTaskMainId(p.getId());
-                    taskSubDeclarePO.setTaskNo("SPSB" + DateTimeKit.format(new Date(),"yyyyMMddHHmmssSSS"));
+                    taskSubDeclarePO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_DECLARE));
                     taskSubDeclarePO.setDeclareAccount(cbd.getDeclareAccount());//申报账户
                     taskSubDeclarePO.setPeriod(cbd.getPeriod());//个税期间
                     taskSubDeclarePO.setManagerNo(p.getManagerNo());//管理方编号
                     taskSubDeclarePO.setManagerName(p.getManagerName());//管理方名称
+                    taskSubDeclarePO.setStatus("00");//草稿
                     //新增申报子任务
                     taskSubDeclareService.insert(taskSubDeclarePO);
                     //记录申报子任务
@@ -271,11 +296,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 }else{
                     TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
                     taskSubMoneyPO.setTaskMainId(p.getId());
-                    taskSubMoneyPO.setTaskNo("SPHK" + DateTimeKit.format(new Date(),"yyyyMMddHHmmssSSS"));
+                    taskSubMoneyPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_TRANSFER));
                     taskSubMoneyPO.setPaymentAccount(cbd.getPayAccount());//缴纳账户
                     taskSubMoneyPO.setPeriod(cbd.getPeriod());//个税期间
                     taskSubMoneyPO.setManagerNo(p.getManagerNo());//管理方编号
                     taskSubMoneyPO.setManagerName(p.getManagerName());//管理方名称
+                    taskSubMoneyPO.setStatus("00");//草稿
                     //新增划款子任务
                     taskSubMoneyService.insert(taskSubMoneyPO);
                     //记录划款子任务
@@ -304,11 +330,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 }else{
                     TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
                     taskSubPaymentPO.setTaskMainId(p.getId());
-                    taskSubPaymentPO.setTaskNo("SPJN" + DateTimeKit.format(new Date(),"yyyyMMddHHmmssSSS"));
+                    taskSubPaymentPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PAYMENT));
                     taskSubPaymentPO.setPaymentAccount(cbd.getPayAccount());//缴纳账户
                     taskSubPaymentPO.setPeriod(cbd.getPeriod());//个税期间
                     taskSubPaymentPO.setManagerNo(p.getManagerNo());//管理方编号
                     taskSubPaymentPO.setManagerName(p.getManagerName());//管理方名称
+                    taskSubPaymentPO.setStatus("00");//草稿
                     //新增划款子任务
                     taskSubPaymentService.insert(taskSubPaymentPO);
                     //记录缴纳子任务已创建
@@ -341,11 +368,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
                     taskSubSupplierPO.setTaskMainId(p.getId());
                     taskSubSupplierPO.setSupportName(cbd.getSupportName());//供应商名称
-                    taskSubSupplierPO.setTaskNo("SPSU" + DateTimeKit.format(new Date(),"yyyyMMddHHmmssSSS"));
+                    taskSubSupplierPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_SUPPLIER));
                     taskSubSupplierPO.setDeclareAccount(cbd.getDeclareAccount());//申报账户
                     taskSubSupplierPO.setPeriod(cbd.getPeriod());//个税期间
                     taskSubSupplierPO.setManagerNo(p.getManagerNo());//管理方编号
                     taskSubSupplierPO.setManagerName(p.getManagerName());//管理方名称
+                    taskSubSupplierPO.setStatus("00");//草稿
                     //新增供应商处理子任务
                     taskSubSupplierService.insert(taskSubSupplierPO);
                     //记录供应商处理子任务已创建
@@ -361,18 +389,116 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         //批量新增申报子任务明细
         if(declareTaskDetail!=null && declareTaskDetail.size()>0){
             taskSubDeclareDetailService.insertBatch(declareTaskDetail);
+
+            //子任务个税总金额
+            Map<Long,BigDecimal> mapTaxAmount = declareTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, CollectorsUtil.summingBigDecimal(TaskSubDeclareDetailPO::getTaxAmount)));
+
+            //总人数
+            Map<Long,Long> mapheadcount = declareTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
+
+            //中方总人数
+            Map<Long,Long> mapChineseNum = declareTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                    .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
+
+            //更新子任务：个税总金额、总人数、中方人数、外放人数
+            for(Long taskSubDeclareId : mapTaxAmount.keySet()){
+
+                TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
+                taskSubDeclarePO.setId(taskSubDeclareId);
+                taskSubDeclarePO.setTaxAmount(mapTaxAmount.get(taskSubDeclareId));//个税总金额
+                taskSubDeclarePO.setHeadcount(mapheadcount.get(taskSubDeclareId).intValue());//总人数
+                taskSubDeclarePO.setChineseNum(mapChineseNum.get(taskSubDeclareId).intValue());//中方总人数
+                taskSubDeclarePO.setForeignerNum(mapheadcount.get(taskSubDeclareId).intValue() - mapChineseNum.get(taskSubDeclareId).intValue());//外方总人数
+                taskSubDeclareService.updateById(taskSubDeclarePO);
+            }
+
+
         }
         //批量新增划款子任务明细
         if(moneyTaskDetail!=null && moneyTaskDetail.size()>0){
             taskSubMoneyDetailService.insertBatch(moneyTaskDetail);
+
+            //子任务个税总金额
+            Map<Long,BigDecimal> mapTaxAmount = moneyTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, CollectorsUtil.summingBigDecimal(TaskSubMoneyDetailPO::getTaxAmount)));
+
+            //总人数
+            Map<Long,Long> mapheadcount = moneyTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
+
+            //中方总人数
+            Map<Long,Long> mapChineseNum = moneyTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                    .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
+
+            //更新子任务：个税总金额、总人数、中方人数、外放人数
+            for(Long taskSubMoneyId : mapTaxAmount.keySet()){
+
+                TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
+                taskSubMoneyPO.setId(taskSubMoneyId);
+                taskSubMoneyPO.setTaxAmount(mapTaxAmount.get(taskSubMoneyId));//个税总金额
+                taskSubMoneyPO.setHeadcount(mapheadcount.get(taskSubMoneyId).intValue());//总人数
+                taskSubMoneyPO.setChineseNum(mapChineseNum.get(taskSubMoneyId).intValue());//中方总人数
+                taskSubMoneyPO.setForeignerNum(mapheadcount.get(taskSubMoneyId).intValue() - mapChineseNum.get(taskSubMoneyId).intValue());//外方总人数
+                taskSubMoneyService.updateById(taskSubMoneyPO);
+            }
         }
         //批量新增缴纳子任务明细
         if(paymentTaskDetail!=null && paymentTaskDetail.size()>0){
             taskSubPaymentDetailService.insertBatch(paymentTaskDetail);
+
+            //子任务个税总金额
+            Map<Long,BigDecimal> mapTaxAmount = paymentTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, CollectorsUtil.summingBigDecimal(TaskSubPaymentDetailPO::getTaxAmount)));
+
+            //总人数
+            Map<Long,Long> mapheadcount = paymentTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
+
+            //中方总人数
+            Map<Long,Long> mapChineseNum = paymentTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                    .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
+
+            //更新子任务：个税总金额、总人数、中方人数、外放人数
+            for(Long taskSubPaymentId : mapTaxAmount.keySet()){
+
+                TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
+                taskSubPaymentPO.setId(taskSubPaymentId);
+                taskSubPaymentPO.setTaxAmount(mapTaxAmount.get(taskSubPaymentId));//个税总金额
+                taskSubPaymentPO.setHeadcount(mapheadcount.get(taskSubPaymentId).intValue());//总人数
+                taskSubPaymentPO.setChineseNum(mapChineseNum.get(taskSubPaymentId).intValue());//中方总人数
+                taskSubPaymentPO.setForeignerNum(mapheadcount.get(taskSubPaymentId).intValue() - mapChineseNum.get(taskSubPaymentId).intValue());//外方总人数
+                taskSubPaymentService.updateById(taskSubPaymentPO);
+            }
         }
         //批量新增供应商处理子任务明细
         if(supportTaskDetail!=null && supportTaskDetail.size()>0){
             taskSubSupplierDetailService.insertBatch(supportTaskDetail);
+
+            //子任务个税总金额
+            Map<Long,BigDecimal> mapTaxAmount = supportTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, CollectorsUtil.summingBigDecimal(TaskSubSupplierDetailPO::getTaxAmount)));
+
+            //总人数
+            Map<Long,Long> mapheadcount = supportTaskDetail.stream()
+                    .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
+
+            //中方总人数
+            Map<Long,Long> mapChineseNum = supportTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                    .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
+
+            //更新子任务：个税总金额、总人数、中方人数、外放人数
+            for(Long taskSubSupplierId : mapTaxAmount.keySet()){
+
+                TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
+                taskSubSupplierPO.setId(taskSubSupplierId);
+                taskSubSupplierPO.setTaxAmount(mapTaxAmount.get(taskSubSupplierId));//个税总金额
+                taskSubSupplierPO.setHeadcount(mapheadcount.get(taskSubSupplierId).intValue());//总人数
+                taskSubSupplierPO.setChineseNum(mapChineseNum.get(taskSubSupplierId).intValue());//中方总人数
+                taskSubSupplierPO.setForeignerNum(mapheadcount.get(taskSubSupplierId).intValue() - mapChineseNum.get(taskSubSupplierId).intValue());//外方总人数
+                taskSubSupplierService.updateById(taskSubSupplierPO);
+            }
         }
     }
 }

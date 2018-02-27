@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -98,6 +99,34 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	 *主任务id
 	 */
 	private Long taskMainId;
+
+	/**
+	 *批次任务关联
+	 */
+	@TableField(exist = false)
+	private List<CalculationBatchTaskMainPO> calculationBatchTaskMainPOs;
+
+	/**
+	 *任务编号集
+	 */
+	@TableField(exist = false)
+	private String taskNos;
+
+	public String getTaskNos() {
+		return taskNos;
+	}
+
+	public void setTaskNos(String taskNos) {
+		this.taskNos = taskNos;
+	}
+
+	public List<CalculationBatchTaskMainPO> getCalculationBatchTaskMainPOs() {
+		return calculationBatchTaskMainPOs;
+	}
+
+	public void setCalculationBatchTaskMainPOs(List<CalculationBatchTaskMainPO> calculationBatchTaskMainPOs) {
+		this.calculationBatchTaskMainPOs = calculationBatchTaskMainPOs;
+	}
 
 	public Long getId() {
 		return id;

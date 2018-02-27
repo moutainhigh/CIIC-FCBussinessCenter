@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
@@ -47,6 +48,19 @@ public class CalculationBatchTaskMainPO extends Model<CalculationBatchTaskMainPO
      */
 	private Date modifiedTime;
 
+	/**
+	 *  主任务
+	 */
+	@TableField(exist = false)
+	private TaskMainPO taskMainPOs;
+
+	public TaskMainPO getTaskMainPOs() {
+		return taskMainPOs;
+	}
+
+	public void setTaskMainPOs(TaskMainPO taskMainPOs) {
+		this.taskMainPOs = taskMainPOs;
+	}
 
 	public Long getId() {
 		return id;
