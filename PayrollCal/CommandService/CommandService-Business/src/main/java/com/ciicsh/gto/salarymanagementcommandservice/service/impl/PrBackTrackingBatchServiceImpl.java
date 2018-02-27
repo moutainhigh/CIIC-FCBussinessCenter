@@ -90,14 +90,16 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
 
     @Override
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
-
+        if(status == BatchStatusEnum.COMPUTING.getValue()){
+            return backTrackingBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+        }
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
         int approvalResult = 0;
         if(status == BatchStatusEnum.NEW.getValue()){
             approvalResult = ApprovalStatusEnum.DRAFT.getValue();
         }else if(status == BatchStatusEnum.PENDING.getValue()){
             approvalResult = ApprovalStatusEnum.AUDITING.getValue();
-        }else if(status == BatchStatusEnum.APPROVAL.getValue()){
+        }else if(status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.CLOSED.getValue()){
             approvalResult = ApprovalStatusEnum.APPROVE.getValue();
         }else if(status == BatchStatusEnum.REJECT.getValue()){
             approvalResult = ApprovalStatusEnum.DENIED.getValue();

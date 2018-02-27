@@ -18,7 +18,7 @@ public class BackTraceBatchMongoOpt extends BaseOpt {
 
     private final static Logger logger = LoggerFactory.getLogger(BackTraceBatchMongoOpt.class);
 
-    private static final String PR_BACK_TRACE_BATCH  = "pr_back_trace_batch_table";
+    public static final String PR_BACK_TRACE_BATCH  = "pr_back_trace_batch_table";
 
     public BackTraceBatchMongoOpt() {
         super(PR_BACK_TRACE_BATCH);

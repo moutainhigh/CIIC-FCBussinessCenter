@@ -196,13 +196,16 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+        if(status == BatchStatusEnum.COMPUTING.getValue()){
+            return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+        }
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
         int approvalResult = 0;
         if(status == BatchStatusEnum.NEW.getValue()){
             approvalResult = ApprovalStatusEnum.DRAFT.getValue();
         }else if(status == BatchStatusEnum.PENDING.getValue()){
             approvalResult = ApprovalStatusEnum.AUDITING.getValue();
-        }else if(status == BatchStatusEnum.APPROVAL.getValue()){
+        }else if(status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.CLOSED.getValue()){
             approvalResult = ApprovalStatusEnum.APPROVE.getValue();
         }else if(status == BatchStatusEnum.REJECT.getValue()){
             approvalResult = ApprovalStatusEnum.DENIED.getValue();
@@ -211,6 +214,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         historyPO.setBizCode(batchCode);
         historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
         historyPO.setCreatedBy("bill"); //TODO
+        historyPO.setCreatedName("bill");
         historyPO.setComments(comments);
         approvalHistoryService.addApprovalHistory(historyPO);
         return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);

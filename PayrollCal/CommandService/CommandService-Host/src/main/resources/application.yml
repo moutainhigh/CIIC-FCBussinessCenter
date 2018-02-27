@@ -23,3 +23,5 @@ spring:
 server:
   port: 7035
 
+seaweed:
+  masterHost: "172.16.9.19:9333"  #172.16.9.58:9333

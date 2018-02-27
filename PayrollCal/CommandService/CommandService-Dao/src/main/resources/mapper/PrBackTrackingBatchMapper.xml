@@ -29,7 +29,9 @@
 		SET
 		status = #{status},
 		comments = #{comments},
-		result_data = #{result},
+		<if test="result != '' and result != null">
+			result_data = #{result},
+		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE back_tracking_batch_code = #{code}

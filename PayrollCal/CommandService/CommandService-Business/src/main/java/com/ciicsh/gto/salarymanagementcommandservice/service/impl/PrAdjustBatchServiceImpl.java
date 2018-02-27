@@ -14,6 +14,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryServ
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,7 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
             if (list != null && list.size() > 0) {
 
                 list.forEach(dbObject -> {
-                    dbObject.put("_id", UUID.randomUUID().toString());
+                    dbObject.put("_id", new ObjectId());
                     dbObject.put("batch_code", adjustBatchPO.getAdjustBatchCode()); // update origin code to adjust code
                     dbObject.put("origin_code",adjustBatchPO.getOriginBatchCode());
                     DBObject catalog = (DBObject) dbObject.get("catalog");
@@ -111,13 +112,16 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+        if(status == BatchStatusEnum.COMPUTING.getValue()){
+            return adjustBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+        }
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
         int approvalResult = 0;
         if(status == BatchStatusEnum.NEW.getValue()){
             approvalResult = ApprovalStatusEnum.DRAFT.getValue();
         }else if(status == BatchStatusEnum.PENDING.getValue()){
             approvalResult = ApprovalStatusEnum.AUDITING.getValue();
-        }else if(status == BatchStatusEnum.APPROVAL.getValue()){
+        }else if(status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.CLOSED.getValue()){
             approvalResult = ApprovalStatusEnum.APPROVE.getValue();
         }else if(status == BatchStatusEnum.REJECT.getValue()){
             approvalResult = ApprovalStatusEnum.DENIED.getValue();

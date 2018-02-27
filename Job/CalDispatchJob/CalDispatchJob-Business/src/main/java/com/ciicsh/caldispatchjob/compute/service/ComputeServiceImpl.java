@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import javax.script.ScriptException;
@@ -89,26 +90,28 @@ public class ComputeServiceImpl {
     @Autowired
     private KafkaSender sender;
 
-    public void processCompute(String batchCode,int batchType) throws Exception{
+    public void processCompute(String batchCode,int batchType){
+
+        long start = System.currentTimeMillis(); //begin
 
         DroolsContext context = new DroolsContext();
 
         List<DBObject> batchList = null;
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);//.and("catalog.emp_info.is_active").is(true);
+        Query query = new Query(criteria);
+
+        query.fields().
+                include(PayItemName.EMPLOYEE_CODE_CN).
+                include("catalog.pay_items");
+
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            batchList = normalBatchMongoOpt.list(
-                    Criteria.where("batch_code").is(batchCode)
-                            .and("catalog.emp_info.is_active").is(true)
-            );
+            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
+
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            batchList = adjustBatchMongoOpt.list(
-                    Criteria.where("batch_code").is(batchCode)
-                            .and("catalog.emp_info.is_active").is(true)
-            );
+            batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, AdjustBatchMongoOpt.PR_ADJUST_BATCH);
+
         }else {
-            batchList = backTraceBatchMongoOpt.list(
-                    Criteria.where("batch_code").is(batchCode)
-                            .and("catalog.emp_info.is_active").is(true)
-            );
+            batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
 
         batchList.stream().forEach(dbObject -> {
@@ -192,12 +195,12 @@ public class ComputeServiceImpl {
 
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system","");
+            rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system","");
+            rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system",null);
 
         }else {
-            rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system","");
+            rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
         }
         if(rowAffected > 0) { // 数据库更新成功后发送消息
             ComputeMsg computeMsg = new ComputeMsg();
@@ -206,6 +209,9 @@ public class ComputeServiceImpl {
             computeMsg.setComputeStatus(BatchStatusEnum.COMPUTED.getValue()); // send kafka compute's complete status
             sender.SendComputeStatus(computeMsg);
         }
+
+        long end = System.currentTimeMillis();
+        logger.info("薪资计算总共时间 : " + String.valueOf((end - start)));
 
     }
 
