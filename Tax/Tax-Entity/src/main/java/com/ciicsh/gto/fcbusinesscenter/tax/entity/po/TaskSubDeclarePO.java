@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
@@ -93,6 +92,7 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
     /**
      * 修改时间
      */
+    @TableField(value="modified_time",fill = FieldFill.UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
