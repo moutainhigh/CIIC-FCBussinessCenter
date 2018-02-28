@@ -211,8 +211,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
-            //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
-            requestForProof.setStatus("03");
+            //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
+            requestForProof.setStatus("04");
             taskSubProofService.completeTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -240,8 +240,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
-            //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
-            requestForProof.setStatus("02");
+            //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
+            requestForProof.setStatus("03");
             taskSubProofService.rejectTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -269,8 +269,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             // TODO 临时设置修改人
             //修改人
             requestForProof.setModifiedBy("adminMain");
-            //任务状态：00:草稿，01:已提交/处理中，02:被退回，03:已完成，04:已失效
-            requestForProof.setStatus("04");
+            //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
+            requestForProof.setStatus("05");
             taskSubProofService.invalidTaskProofByRes(requestForProof);
             jr.setErrorcode("0");
             jr.setErrormsg("success");

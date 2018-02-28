@@ -9,6 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
@@ -169,7 +170,8 @@ public class TaskSubDeclareController extends BaseController {
             //导出excel
             exportExcel(response, wb, fileName);
         } catch (Exception e) {
-            logger.error("exportSubDeclare error " + e.toString());
+            String str = BaseException.exceptionToString(e);
+            logger.error("exportSubDeclare error " + str);
         } finally {
             if (wb != null) {
                 try {

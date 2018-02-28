@@ -39,7 +39,7 @@
         <poi.version>3.17</poi.version>
         <poi-ooxml.version>3.17</poi-ooxml.version>
         <payment.version>1.0.0</payment.version>
-        <!--<logservice.version>1.0.0</logservice.version>-->
+        <logservice.version>1.0.0</logservice.version>
     </properties>
 
     <distributionManagement>
@@ -225,12 +225,12 @@
             </exclusions>
         </dependency>
 
-        <!--&lt;!&ndash;日志系统&ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>com.ciicsh.gt1.logservice</groupId>-->
-            <!--<artifactId>logservice-api</artifactId>-->
-            <!--<version>${logservice.version}</version>-->
-        <!--</dependency>-->
+        <!--日志系统-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.logservice</groupId>
+            <artifactId>logservice-api</artifactId>
+            <version>${logservice.version}</version>
+        </dependency>
 
     </dependencies>
 

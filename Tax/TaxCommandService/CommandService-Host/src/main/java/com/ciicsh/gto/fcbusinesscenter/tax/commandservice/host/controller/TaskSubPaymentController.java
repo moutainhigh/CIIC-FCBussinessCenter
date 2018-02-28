@@ -71,7 +71,7 @@ public class TaskSubPaymentController extends BaseController {
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
             //任务状态:
-            requestForSubPayment.setStatus("03");
+            requestForSubPayment.setStatus("04");
             taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -100,7 +100,7 @@ public class TaskSubPaymentController extends BaseController {
             //修改人
             requestForSubPayment.setModifiedBy("adminTaskSubPayment");
             //任务状态
-            requestForSubPayment.setStatus("02");
+            requestForSubPayment.setStatus("03");
             taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
