@@ -14,6 +14,16 @@ public class RequestForTaskMain extends PageInfo {
 
     private String[] taskMainIds;
 
+    private String tabsName;
+
+    public String getTabsName() {
+        return tabsName;
+    }
+
+    public void setTabsName(String tabsName) {
+        this.tabsName = tabsName;
+    }
+
     public String[] getTaskMainIds() {
         return taskMainIds;
     }

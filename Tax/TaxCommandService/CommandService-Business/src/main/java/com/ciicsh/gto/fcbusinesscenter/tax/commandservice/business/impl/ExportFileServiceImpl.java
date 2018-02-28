@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -585,7 +586,7 @@ public class ExportFileServiceImpl implements ExportFileService {
             if (null == cellF) {
                 cellF = row.createCell(5);
             }
-            cellF.setCellValue(taskSubDeclareDetailPO.getPeriod());
+            cellF.setCellValue(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclareDetailPO.getPeriod()));
             //收入额-G列
             HSSFCell cellG = row.getCell(6);
             if (null == cellG) {

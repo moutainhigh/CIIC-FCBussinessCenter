@@ -16,6 +16,12 @@ public interface TaskMainService {
      */
     ResponseForTaskMain queryTaskMains(RequestForTaskMain requestForTaskMain);
     /**
+     * 查询主任务（草稿）
+     * @param
+     * @return
+     */
+    ResponseForTaskMain queryTaskMainsForDraft(RequestForTaskMain requestForTaskMain);
+    /**
      * 查询主任务（审核）
      * @param
      * @return
@@ -27,6 +33,12 @@ public interface TaskMainService {
      * @return
      */
     ResponseForTaskMain submitTaskMains(RequestForTaskMain requestForTaskMain);
+    /**
+     * 审批通过主任务
+     * @param
+     * @return
+     */
+    ResponseForTaskMain passTaskMains(RequestForTaskMain requestForTaskMain);
 
 }
 

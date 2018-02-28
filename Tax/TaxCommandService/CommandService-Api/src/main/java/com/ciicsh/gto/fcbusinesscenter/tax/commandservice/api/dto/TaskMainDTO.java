@@ -9,8 +9,17 @@ public class TaskMainDTO {
     private String managerName;
     private String batchNo;
     private String[] taskMainIds;
+    private String tabsName;
     private Integer currentNum;
     private Integer pageSize;
+
+    public String getTabsName() {
+        return tabsName;
+    }
+
+    public void setTabsName(String tabsName) {
+        this.tabsName = tabsName;
+    }
 
     public String[] getTaskMainIds() {
         return taskMainIds;

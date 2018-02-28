@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.util.enums;
 
 /**
+ * 页面tabs标签的name和任务的status枚举
  * @author yuantongqing on 2018/01/19
  */
 public enum BusinessStatusType {
@@ -20,7 +21,24 @@ public enum BusinessStatusType {
     /**
      * 已失效
      */
-    FAILED("04");
+    FAILED("04"),
+
+    /**
+     * 审核中(主任务)
+     */
+    TASKMAIN_CHECKING("01"),
+    /**
+     * 通过(主任务)
+     */
+    TASKMAIN_PASSED("02"),
+    /**
+     * 退回(主任务)
+     */
+    TASKMAIN_RETREATED("03"),
+    /**
+     * 失效(主任务)
+     */
+    TASKMAIN_CANCELLED("05");
 
     private String  message;
 
