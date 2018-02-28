@@ -17,13 +17,20 @@ import java.util.Map;
 public interface PrGroupTemplateService {
 
     /**
-     * 获取薪资项模板列表
+     * 获取薪资项模板列表 分页
      * @param param 查询参数
      * @param pageNum
      * @param pageSize
      * @return 薪资项模板列表
      */
-    PageInfo<PrPayrollGroupTemplatePO> getList(PrPayrollGroupTemplatePO param, Integer pageNum, Integer pageSize);
+    PageInfo<PrPayrollGroupTemplatePO> getListPage(PrPayrollGroupTemplatePO param, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取薪资项模板列表
+     * @param param
+     * @return
+     */
+    List<PrPayrollGroupTemplatePO> getList(PrPayrollGroupTemplatePO param);
 
     /**
      * 获取一个薪资项模板
@@ -87,4 +94,11 @@ public interface PrGroupTemplateService {
      * @return
      */
     PrPayrollGroupTemplateHistoryPO getLastVersion(String srcCode);
+
+    /**
+     * 获取薪资租模板名称列表
+     * @param query
+     * @return
+     */
+    List<HashMap<String, String>> getPrGroupTemplatNameList(String query);
 }

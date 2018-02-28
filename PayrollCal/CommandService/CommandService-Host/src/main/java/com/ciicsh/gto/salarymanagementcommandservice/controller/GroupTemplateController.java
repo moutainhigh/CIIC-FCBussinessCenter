@@ -45,7 +45,7 @@ public class GroupTemplateController extends BaseController implements PayrollGr
                                                 @RequestBody PrPayrollGroupTemplateDTO param) {
         PrPayrollGroupTemplatePO prPayrollGroupTemplatePO = new PrPayrollGroupTemplatePO();
         TranslatorUtils.copyNotNullProperties(param, prPayrollGroupTemplatePO);
-        PageInfo<PrPayrollGroupTemplatePO> pageInfo = prGroupTemplateService.getList(prPayrollGroupTemplatePO, pageNum, pageSize);
+        PageInfo<PrPayrollGroupTemplatePO> pageInfo = prGroupTemplateService.getListPage(prPayrollGroupTemplatePO, pageNum, pageSize);
         List<PrPayrollGroupTemplateDTO> resultList = pageInfo.getList()
                 .stream()
                 .map(GroupTemplateTranslator::toPrPayrollGroupTemplateDTO)
@@ -87,8 +87,8 @@ public class GroupTemplateController extends BaseController implements PayrollGr
     }
 
     @GetMapping(value = "/prGroupTemplateName")
-    public JsonResult getPrGroupTemplateNameList() {
-        List<HashMap<String, String>> resultList = prGroupTemplateService.getNameList();
+    public JsonResult getPrGroupTemplateNameList(@RequestParam String query) {
+        List<HashMap<String, String>> resultList = prGroupTemplateService.getPrGroupTemplatNameList(query);
         return JsonResult.success(resultList);
     }
 

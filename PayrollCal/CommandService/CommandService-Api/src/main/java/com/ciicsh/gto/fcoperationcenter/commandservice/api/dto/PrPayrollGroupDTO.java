@@ -32,9 +32,13 @@ public class PrPayrollGroupDTO {
      */
 	private String managementId;
     /**
+     * 管理方名
+     */
+	private String managementLabel;
+    /**
      * 继承薪资组模板ID
      */
-	private Integer groupTemplateId;
+	private String groupTemplateCode;
     /**
      * 薪资组名称
      */

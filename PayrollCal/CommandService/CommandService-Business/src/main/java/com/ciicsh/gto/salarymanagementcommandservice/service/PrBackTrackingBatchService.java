@@ -39,7 +39,7 @@ public interface PrBackTrackingBatchService {
      * @param status
      * @return
      */
-    int updateBatchStatus(String batchCode, int status, String modifiedBy);
+    int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result);
 
     Integer deleteBackTraceBatchByCodes(List<String> codes);
 

@@ -15,5 +15,18 @@ public interface TaskMainService {
      * @return
      */
     ResponseForTaskMain queryTaskMains(RequestForTaskMain requestForTaskMain);
+    /**
+     * 查询主任务（审核）
+     * @param
+     * @return
+     */
+    ResponseForTaskMain queryTaskMainsForCheck(RequestForTaskMain requestForTaskMain);
+    /**
+     * 提交主任务
+     * @param
+     * @return
+     */
+    ResponseForTaskMain submitTaskMains(RequestForTaskMain requestForTaskMain);
+
 }
 

@@ -18,7 +18,6 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
@@ -28,12 +27,9 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-
-import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
-import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -43,14 +39,15 @@ import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -98,8 +95,7 @@ public class NormalBatchController {
     }
 
     @PostMapping("/addNormalBatch")
-    public JsonResult addNormalBatch(@RequestBody PrNormalBatchDTO batchDTO)
-    {
+    public JsonResult addNormalBatch(@RequestBody PrNormalBatchDTO batchDTO) {
         PrNormalBatchPO prNormalBatchPO = new PrNormalBatchPO();
         prNormalBatchPO.setAccountSetCode(batchDTO.getAccountSetCode());
         prNormalBatchPO.setManagementId(batchDTO.getManagementId());
@@ -282,7 +278,7 @@ public class NormalBatchController {
 
         long start = System.currentTimeMillis(); //begin
 
-        Criteria criteria = Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true);
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);//.and("catalog.emp_info.is_active").is(true);
 
         if(StringUtils.isNotEmpty(empCode)){
             criteria.and(PayItemName.EMPLOYEE_CODE_CN).regex(empCode);
@@ -293,14 +289,32 @@ public class NormalBatchController {
         if(StringUtils.isNotEmpty(customKey) && StringUtils.isNotEmpty(customValue)){
             criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(customKey).and("item_value").regex(customValue));
         }
+        Query query = new Query(criteria);
+        query.fields().include("batch_code");
 
-        List<DBObject> list = normalBatchMongoOpt.list(criteria);
-        int totalCount = list.size();
+        long totalCount = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
         if(totalCount == 0){
             return JsonResult.success(0);
         }
 
-        list = list.stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
+        long begin = System.currentTimeMillis(); //begin 5秒
+        query.fields().
+                include(PayItemName.EMPLOYEE_CODE_CN).
+                include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
+                include("catalog.emp_info."+PayItemName.EMPLOYEE_TAX_CN).
+                include("catalog.pay_items.data_type").
+                include("catalog.pay_items.item_type").
+                include("catalog.pay_items.item_name").
+                include("catalog.pay_items.item_value")
+        ;
+        query.skip((pageNum-1) * pageSize);
+        query.limit(pageSize);
+
+        List<DBObject> list = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
+
+        //List<DBObject> list = normalBatchMongoOpt.list(criteria).stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
+
+        logger.info("获取翻页时间 : " + String.valueOf((System.currentTimeMillis() - start)));
 
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
             SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
@@ -340,11 +354,11 @@ public class NormalBatchController {
     public JsonResult doComputeAction(@RequestParam String batchCode, @RequestParam int batchType){
         try {
             if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-                batchService.updateBatchStatus(batchCode, BatchStatusEnum.COMPUTING.getValue(), "bill"); //TODO
+                batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill",""); //TODO
             }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
-                adjustBatchService.updateBatchStatus(batchCode,BatchStatusEnum.COMPUTING.getValue(), "bill");
+                adjustBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill","");
             }else if(batchType == BatchTypeEnum.BACK.getValue()){
-                backTrackingBatchService.updateBatchStatus(batchCode,BatchStatusEnum.COMPUTING.getValue(), "bill");
+                backTrackingBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill", "");
             }
             /*ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
@@ -358,27 +372,33 @@ public class NormalBatchController {
 
     }
 
-    @PostMapping("/updateBatchStatus")
-    public JsonResult updateBatchStatus(@RequestParam String batchCode, @RequestParam int status ){
-        String modifiedBy = "bill"; //TODO
-        int rowAffected = batchService.updateBatchStatus(batchCode,status,modifiedBy);
-        if(rowAffected > 0) {
-            return JsonResult.success(rowAffected);
-        }
-        else {
-            return JsonResult.faultMessage("更新失败");
-        }
-    }
-
     @PostMapping("/auditBatch")
     public JsonResult auditBatch(@RequestBody BatchAuditDTO batchAuditDTO){
         String modifiedBy = "bill"; //TODO
-        if(batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()){
-            List<DBObject> results = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()).and("catalog.emp_info.is_active").is(true));
-            String jsonReuslt = JSON.serialize(results);
-            batchAuditDTO.setResult(jsonReuslt);
+        int rowAffected = 0 ;
+        if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
+            if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
+                List<DBObject> results = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()).and("catalog.emp_info.is_active").is(true));
+                String jsonReuslt = JSON.serialize(results);
+                batchAuditDTO.setResult(jsonReuslt);
+            }
+            rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
+        }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
+            if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
+                List<DBObject> results = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()).and("catalog.emp_info.is_active").is(true));
+                String jsonReuslt = JSON.serialize(results);
+                batchAuditDTO.setResult(jsonReuslt);
+            }
+            rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
+        }else {
+            if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
+                List<DBObject> results = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()).and("catalog.emp_info.is_active").is(true));
+                String jsonReuslt = JSON.serialize(results);
+                batchAuditDTO.setResult(jsonReuslt);
+            }
+            rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
+
         }
-        int rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(),batchAuditDTO.getComments(),batchAuditDTO.getStatus(),modifiedBy,batchAuditDTO.getResult());
         if(rowAffected > 0) {
             return JsonResult.success(rowAffected);
         }

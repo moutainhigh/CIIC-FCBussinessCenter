@@ -8,6 +8,16 @@ public class BatchAuditDTO {
     private int status;
     private String comments;
     private String result;
+    private int batchType;
+
+    public int getBatchType() {
+        return batchType;
+    }
+
+    public void setBatchType(int batchType) {
+        this.batchType = batchType;
+    }
+
 
     public String getBatchCode() {
         return batchCode;

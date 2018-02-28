@@ -188,6 +188,10 @@ public class PrPayrollGroupTemplatePO extends Model<PrPayrollGroupTemplatePO> {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -196,18 +200,18 @@ public class PrPayrollGroupTemplatePO extends Model<PrPayrollGroupTemplatePO> {
 	@Override
 	public String toString() {
 		return "PrPayrollGroupTemplatePO{" +
-			"id=" + id +
-			", groupTemplateCode=" + groupTemplateCode +
-			", groupTemplateName=" + groupTemplateName +
-			", version=" + version +
-			", approvalStatus=" + approvalStatus +
-			", comments=" + comments +
-			", remark=" + remark +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+				"id=" + id +
+				", groupTemplateCode='" + groupTemplateCode + '\'' +
+				", groupTemplateName='" + groupTemplateName + '\'' +
+				", version='" + version + '\'' +
+				", approvalStatus=" + approvalStatus +
+				", comments='" + comments + '\'' +
+				", remark='" + remark + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				'}';
 	}
 }

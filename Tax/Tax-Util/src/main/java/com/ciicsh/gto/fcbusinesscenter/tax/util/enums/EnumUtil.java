@@ -38,6 +38,11 @@ public class EnumUtil {
     public static final String TASK_STATUS = "TS";
 
     /**
+     * 日志来源(log平台使用)
+     */
+    public static final String SOURCE_TYPE = "ST";
+
+    /**
      * 获取枚举中文
      *
      * @param type
@@ -61,6 +66,8 @@ public class EnumUtil {
                 return BusinessStatusType.valueOf(key).getMessage();
             } else if (type.equals(EnumUtil.TASK_STATUS)) {
                 return TaskStatus.valueOf(EnumUtil.TASK_STATUS + key).getMessage();
+            } else if (type.equals(EnumUtil.SOURCE_TYPE)) {
+                return SourceTypeForLog.valueOf(EnumUtil.SOURCE_TYPE + key).getMessage();
             }
         }
 

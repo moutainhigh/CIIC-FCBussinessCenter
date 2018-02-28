@@ -259,13 +259,13 @@
 		<if test="status !=0">
 			status = #{status},
 		</if>
-		<if test="has_advance !=0">
+		<if test="hasAdvance !=0">
 			has_advance = #{hasAdvance},
 		</if>
-		<if test="has_money !=0">
+		<if test="hasMoney !=0">
 			has_money = #{hasMoney},
 		</if>
-		<if test="result_data != '' or result_data != null">
+		<if test="resultData != '' and resultData != null">
 			result_data = #{resultData},
 		</if>
 		modified_by = #{modifiedBy},
@@ -300,23 +300,15 @@
 		</foreach>
 	</delete>
 
-	<update id="updateBatchStatus">
-		UPDATE
-			pr_normal_batch
-		SET
-		status = #{status},
-		modified_by = #{modifiedBy},
-		modified_time = sysdate()
-		WHERE code = #{code}
-	</update>
-
 	<update id="auditBatch">
 		UPDATE
 		pr_normal_batch
 		SET
 		status = #{status},
 		comments = #{comments},
-		result_data = #{result},
+		<if test="result != '' and result != null">
+			result_data = #{result},
+		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE code = #{code}

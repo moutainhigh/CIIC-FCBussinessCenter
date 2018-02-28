@@ -18,7 +18,7 @@ public class AdjustBatchMongoOpt extends BaseOpt {
 
     private final static Logger logger = LoggerFactory.getLogger(AdjustBatchMongoOpt.class);
 
-    private static final String PR_ADJUST_BATCH  = "pr_adjust_batch_table";
+    public static final String PR_ADJUST_BATCH  = "pr_adjust_batch_table";
 
     public AdjustBatchMongoOpt() {
         super(PR_ADJUST_BATCH);

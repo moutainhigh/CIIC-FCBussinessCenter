@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
@@ -169,10 +170,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             }
             //合并后的申报信息
             TaskSubDeclarePO taskSubDeclare = new TaskSubDeclarePO();
-            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-            // TODO 临时设置任务编号
             //设置任务编号
-            taskSubDeclare.setTaskNo("MSPSB" + dateTimeStr);
+            taskSubDeclare.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_DECLARE));
             //设置申报账户
             taskSubDeclare.setDeclareAccount(taskSubDeclarePOList.get(0).getDeclareAccount());
             //设置个税期间

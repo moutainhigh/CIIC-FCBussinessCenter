@@ -5,7 +5,7 @@
 
 	<update id="updateHasAdvance">
 		UPDATE
-		pr_adjust_batch
+			pr_adjust_batch
 		SET
 		has_advance = #{hasAdvance},
 		modified_by = #{modifiedBy},
@@ -15,7 +15,7 @@
 
 	<update id="updateHasMoneny">
 		UPDATE
-		pr_adjust_batch
+			pr_adjust_batch
 		SET
 		has_money = #{hasMoney},
 		modified_by = #{modifiedBy},
@@ -23,11 +23,15 @@
 		WHERE adjust_batch_code = #{code}
 	</update>
 
-	<update id="updateBatchStatus">
+	<update id="auditBatch">
 		UPDATE
-		pr_adjust_batch
+			pr_adjust_batch
 		SET
 		status = #{status},
+		comments = #{comments},
+		<if test="result != '' and result != null">
+			result_data = #{result},
+		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
 		WHERE adjust_batch_code = #{code}

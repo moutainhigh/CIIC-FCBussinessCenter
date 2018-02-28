@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -52,12 +55,27 @@ public class PayrollReceiver {
 
     }
 
+
     @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
     public void receive(ComputeMsg computeMsg){
         logger.info("received payroll compute from message: " + computeMsg);
-
         processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
+        return;
     }
+
+    /*
+    @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
+    public void receive(Message<ComputeMsg> message){
+
+        ComputeMsg computeMsg = message.getPayload();
+        logger.info("received payroll compute from message: " + computeMsg);
+        processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
+        Acknowledgment acknowledgment = message.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
+        if (acknowledgment != null) {
+            logger.info("Acknowledgment provided");
+            acknowledgment.acknowledge();
+        }
+    }*/
 
     /**
      * 订阅雇员组里面的雇员列表变化：新增或者删除
@@ -110,11 +128,6 @@ public class PayrollReceiver {
      * @param batchCode
      */
     private void processPayrollCompute(String batchCode,int batchType){
-        try {
-            computeService.processCompute(batchCode,batchType);
-        }
-        catch (Exception ex){
-            logger.error(ex.getMessage());
-        }
+        computeService.processCompute(batchCode,batchType);
     }
 }

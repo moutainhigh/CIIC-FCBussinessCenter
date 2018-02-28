@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofDetailMapper;
@@ -123,9 +124,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         TaskMainProofPO taskMainProofPO = taskMainProofMapper.selectById(taskSubProofPO.getTaskMainProofId());
         //复制新的主任务
         taskMainProofPO.setId(null);
-        // TODO 临时设置任务编号
         //设置任务编号
-        taskMainProofPO.setTaskNo("MAIN201712221314520");
+        taskMainProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN_PROOF));
         //设置任务状态为草稿
         taskMainProofPO.setStatus("00");
         //设置创建时间
@@ -138,9 +138,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         taskSubProofPO.setId(null);
         //设置主任务ID
         taskSubProofPO.setTaskMainProofId(taskMainProofPO.getId());
-        // TODO 临时设置任务编号
         //设置任务编号
-        taskSubProofPO.setTaskNo("SUB201712221314520");
+        taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
         //设置任务状态为草稿
         taskSubProofPO.setStatus("00");
         //设置创建时间
@@ -255,10 +254,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 }
             }
             TaskSubProofPO newTaskSubProof = new TaskSubProofPO();
-            String dateTimeStr = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-            // TODO 临时设置任务编号
             //设置任务编号
-            newTaskSubProof.setTaskNo("CTAX" + dateTimeStr);
+            newTaskSubProof.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
             //设置申报账户
             newTaskSubProof.setDeclareAccount(taskSubProofPOList.get(0).getDeclareAccount());
             //设置个税期间

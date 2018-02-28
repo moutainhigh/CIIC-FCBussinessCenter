@@ -5,6 +5,7 @@ import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,6 +13,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -47,20 +51,22 @@ public class TestController {
 
     }
 
-    @PostMapping("/updateEmpAgreement")
+    @PostMapping("/doBatch")
     public void updateEmpAgreement(){
-        /*String batchCode = "5bb57dfe-1dcb-447e-9179-a4d4010085f5";
-        String empGroupId = "19";
-        String groupCode = "";
-        String empId = "YYA14369";
-        List<DBObject> list = new ArrayList<>();
-        DBObject  object = new BasicDBObject();
-        object.put("产品名称", "薪酬福利计算");
-        object.put("金额",2220.8);
-        object.put("频率","次/月");
-        object.put("时间","2017-08-09");*/
+        for (int i=0; i< 1; i++){
+            List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is("GL000002-201801-0000000133"));
+            list.forEach(p-> {
+                p.put("_id", new ObjectId());
+            });
+            normalBatchMongoOpt.batchInsert(list);
+        }
 
-        //normalBatchService.associateEmpAgreements(batchCode,empGroupId,groupCode,empId,object);
+    }
+
+    @PostMapping("/delete")
+    public int delete(){
+        int rowAffected = normalBatchMongoOpt.delete(Criteria.where("_id").gt(new ObjectId("5a93d1c0f3de041c4e6fb3e0")));
+        return rowAffected;
     }
 
     @PostMapping("/doCompute")
