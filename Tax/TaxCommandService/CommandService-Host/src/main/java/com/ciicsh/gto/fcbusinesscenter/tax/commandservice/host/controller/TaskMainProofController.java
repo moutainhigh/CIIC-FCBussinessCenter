@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskMainProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
@@ -9,17 +10,21 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
+import com.ciicsh.gto.logservice.api.LogServiceProxy;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author yuantongqing
@@ -29,8 +34,16 @@ public class TaskMainProofController extends BaseController implements TaskMainP
 
     private static final Logger logger = LoggerFactory.getLogger(TaskMainProofController.class);
 
+    @Value("${app.id}")
+    public String appId;
+
     @Autowired
     public TaskMainProofService taskMainProofService;
+
+    @Autowired
+    private LogServiceProxy logServiceProxy;
+
+
 
     /**
      * 条件查询完税凭证主任务
@@ -49,7 +62,8 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             jr.setErrormsg("success");
             jr.setData(responseForMainProof);
         } catch (Exception e) {
-            logger.error("queryTaskMainProofByRes error " + e.toString());
+            String str = BaseException.exceptionToString(e);
+            logger.error(str);
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         }
@@ -102,9 +116,15 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             jr.setErrormsg("success");
             jr.setData(true);
         } catch (Exception e) {
-            logger.error("addTaskProof error " + e.toString());
+            String str = BaseException.exceptionToString(e);
+            //标签
+            Map<String,String> tags =    new HashMap<>(16);
+            tags.put("managerNo",taskProofDTO.getManagerNo());
+            LogDTO logDTO = new LogDTO(appId,"TaskMainProofController.addTaskProof",str,"完税凭证任务", LogType.APP,tags);
+            logServiceProxy.error(logDTO);
             jr.setErrorcode("1");
             jr.setErrormsg("error");
+            jr.setData(false);
         }
         return jr;
     }
@@ -158,7 +178,8 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             jr.setErrormsg("success");
             jr.setData(true);
         } catch (Exception e) {
-            logger.error("invalidTaskProof error " + e.toString());
+            String str = BaseException.exceptionToString(e);
+            logger.error(str);
             jr.setErrorcode("1");
             jr.setErrormsg("error");
         }

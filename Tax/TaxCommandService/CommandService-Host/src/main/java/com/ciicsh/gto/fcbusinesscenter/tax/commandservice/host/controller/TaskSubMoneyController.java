@@ -70,7 +70,7 @@ public class TaskSubMoneyController extends BaseController {
             //设置修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
             //任务状态
-            requestForSubMoney.setStatus("03");
+            requestForSubMoney.setStatus("04");
             taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
@@ -99,7 +99,7 @@ public class TaskSubMoneyController extends BaseController {
             //修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
             //任务状态
-            requestForSubMoney.setStatus("02");
+            requestForSubMoney.setStatus("03");
             taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
