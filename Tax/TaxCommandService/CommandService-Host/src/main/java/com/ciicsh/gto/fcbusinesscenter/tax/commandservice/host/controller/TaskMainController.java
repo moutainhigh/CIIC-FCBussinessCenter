@@ -45,6 +45,7 @@ public class TaskMainController extends BaseController{
     @Autowired
     private TaskSubSupplierServiceImpl taskSubSupplierService;
 
+
     /**
      * 查询主任务列表
      * @param taskMainDTO
@@ -59,6 +60,34 @@ public class TaskMainController extends BaseController{
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
             ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMains(requestForTaskMain);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(responseForTaskMain);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+//            logger.error(e.toString());
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+        }
+
+        return jr;
+    }
+
+    /**
+     * 查询主任务列表
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/queryTaskMainsForDraft")
+    public JsonResult queryTaskMainsForDraft(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult jr = new JsonResult();
+
+        try {
+            RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
+            BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
+            ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMainsForDraft(requestForTaskMain);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             jr.setData(responseForTaskMain);
@@ -148,6 +177,31 @@ public class TaskMainController extends BaseController{
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.submitTaskMains(requestForMainTaskMain);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            //jr.setData();
+        } catch (Exception e) {
+            logger.error(e.toString());
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+            throw e;
+        }
+
+        return jr;
+    }
+    /**
+     * 审批通过主任务
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/passMainTask")
+    public JsonResult passMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+            BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+            taskMainService.passTaskMains(requestForMainTaskMain);
             jr.setErrorcode("0");
             jr.setErrormsg("success");
             //jr.setData();

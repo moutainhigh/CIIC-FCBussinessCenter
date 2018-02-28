@@ -54,7 +54,23 @@ public enum BusinessStatusType {
     /**
      * 失效(缴纳)
      */
-    PAY_FAILED("05");
+    PAY_FAILED("05"),
+    /**
+     * 审核中(主任务)
+     */
+    TASKMAIN_CHECKING("01"),
+    /**
+     * 通过(主任务)
+     */
+    TASKMAIN_PASSED("02"),
+    /**
+     * 退回(主任务)
+     */
+    TASKMAIN_RETREATED("03"),
+    /**
+     * 失效(主任务)
+     */
+    TASKMAIN_CANCELLED("05");
 
     private String  message;
 
