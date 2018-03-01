@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yuantongqing on 2017/12/12
@@ -163,8 +164,39 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             taskSubProofDetailMapper.insert(taskSubProofDetailPO);
         }
         //重新统计复制的完税凭证任务人数
-        baseMapper.updateSubHeadcountById(taskSubProofPO.getId());
-        taskMainProofMapper.updateMainHeadcountById(taskMainProofPO.getId());
+//        baseMapper.updateSubHeadcountById(taskSubProofPO.getId());
+//            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId());
+        Map<String,Object> subNumMap = taskSubProofDetailMapper.queryPersonNumBySubProofId(taskSubProofPO.getId());
+        TaskSubProofPO taskSubProofPOUpdate = new TaskSubProofPO();
+        taskSubProofPOUpdate.setId(taskSubProofPO.getId());
+        //总人数
+        taskSubProofPOUpdate.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
+        //中方人数
+        taskSubProofPOUpdate.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
+        //外方人数
+        taskSubProofPOUpdate.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
+        //TODO 临时修改人
+        taskSubProofPOUpdate.setModifiedBy("adminCopy");
+        //修改时间
+        taskSubProofPOUpdate.setModifiedTime(LocalDateTime.now());
+        baseMapper.updateById(taskSubProofPOUpdate);
+//        taskMainProofMapper.updateMainHeadcountById(taskMainProofPO.getId());
+        //统计总任务人数
+//            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId());
+        Map<String,Object> mainNumMap = baseMapper.queryPersonNumByMainProofId(taskMainProofPO.getId());
+        TaskMainProofPO taskMainProofPOUpdate = new TaskMainProofPO();
+        taskMainProofPOUpdate.setId(taskMainProofPO.getId());
+        //总人数
+        taskMainProofPOUpdate.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
+        //中方人数
+        taskMainProofPOUpdate.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
+        //外方人数
+        taskMainProofPOUpdate.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
+        //TODO 临时修改人
+        taskMainProofPOUpdate.setModifiedBy("adminCopy");
+        //修改时间
+        taskMainProofPOUpdate.setModifiedTime(LocalDateTime.now());
+        taskMainProofMapper.updateById(taskMainProofPOUpdate);
     }
 
     /**
@@ -188,6 +220,15 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //获取完税凭证任务状态中文名
         for (TaskSubProofBO bo : taskSubProofBOList) {
             bo.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, bo.getStatus()));
+            //TODO 临时设置"城市"和"税务机构"
+            bo.setCity("上海");
+            if("蓝天科技独立户".equals(bo.getDeclareAccount())){
+                bo.setTaxOrganization("浦东局");
+            }else if("联想独立户".equals(bo.getDeclareAccount())){
+                bo.setTaxOrganization("三分局");
+            }else if("西门子独立户".equals(bo.getDeclareAccount())){
+                bo.setTaxOrganization("徐汇局");
+            }
         }
         responseForSubProof.setRowList(taskSubProofBOList);
         responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
@@ -431,6 +472,15 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     public TaskSubProofBO queryApplyDetailsBySubId(long subProofId) {
         TaskSubProofBO taskSubProofBO = baseMapper.queryApplyDetailsBySubId(subProofId);
         taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
+        //TODO 临时设置城市和税务机构
+        taskSubProofBO.setCity("上海");
+        if("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())){
+            taskSubProofBO.setTaxOrganization("浦东局");
+        }else if("联想独立户".equals(taskSubProofBO.getDeclareAccount())){
+            taskSubProofBO.setTaxOrganization("三分局");
+        }else if("西门子独立户".equals(taskSubProofBO.getDeclareAccount())){
+            taskSubProofBO.setTaxOrganization("徐汇局");
+        }
         return taskSubProofBO;
     }
 

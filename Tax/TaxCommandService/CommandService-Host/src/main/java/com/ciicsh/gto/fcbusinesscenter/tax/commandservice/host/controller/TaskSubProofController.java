@@ -350,7 +350,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> map = new HashMap<>(16);
             // TODO 测试代码："蓝天科技上海独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技无锡独立户"=>"完税凭证_浦东"
             //根据申报账户选择模板
-            if ("蓝天科技上海独立户".equals(taskSubProofBO.getDeclareAccount())) {
+            if ("联想独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_三分局.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);
@@ -368,7 +368,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 map.put("changePersonIdNo","321281199001011234");
                 //根据不同的业务需要处理wb
                 exportFileService.exportAboutSFJ(wb, map, taskSubProofDetailPOList);
-            } else if ("中智上海财务咨询公司大库".equals(taskSubProofBO.getDeclareAccount())) {
+            } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_徐汇.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);
@@ -380,7 +380,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 map.put("unitName","上海中智");
                 //根据不同的业务需要处理wb
                 exportFileService.exportAboutXH(wb,map, taskSubProofDetailPOList);
-            } else if ("蓝天科技无锡独立户".equals(taskSubProofBO.getDeclareAccount())) {
+            } else if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_浦东.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);

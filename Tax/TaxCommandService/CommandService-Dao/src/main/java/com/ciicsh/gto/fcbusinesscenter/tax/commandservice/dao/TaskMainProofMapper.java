@@ -14,10 +14,10 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface TaskMainProofMapper extends BaseMapper<TaskMainProofPO> {
 
-    /**
-     * 根据主键ID重新计算主任务总人数id
-     * @param id
-     */
-    void updateMainHeadcountById(@Param("id") Long id);
+//    /**
+//     * 根据主键ID重新计算主任务总人数id
+//     * @param id
+//     */
+//    void updateMainHeadcountById(@Param("id") Long id);
 
 }

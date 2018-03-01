@@ -108,4 +108,13 @@
         where tsp.is_active = 1 and tsp.id = #{subProofId}
     </select>
 
+    <!--根据主任务ID查询相关人数-->
+    <select id="queryPersonNumByMainProofId" resultType="java.util.HashMap">
+        select
+        sum(headcount) as headNumTotal,
+        sum(chinese_num) as chineseNumTotal,
+        sum(foreigner_num) as foreignerNumTotal
+        from tax_fc_task_sub_proof where task_main_proof_id = #{id}
+    </select>
+
 </mapper>
