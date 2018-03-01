@@ -888,13 +888,13 @@ public class ExportFileServiceImpl implements ExportFileService {
                 cellB.setCellValue(po.getEmployeeName());
                 //*证照类型-C列
                 HSSFCell cellC = row.getCell(2);
-                if(null == cellC) {
+                if (null == cellC) {
                     cellC = row.createCell(2);
                 }
                 cellC.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
                 //*证照号码-D列
                 HSSFCell cellD = row.getCell(3);
-                if(null == cellD) {
+                if (null == cellD) {
                     cellD = row.createCell(3);
                 }
                 cellD.setCellValue(po.getIdNo());
@@ -902,43 +902,43 @@ public class ExportFileServiceImpl implements ExportFileService {
 
                 //*收入额-F列
                 HSSFCell cellF = row.getCell(5);
-                if(null == cellF) {
+                if (null == cellF) {
                     cellF = row.createCell(5);
                 }
                 cellF.setCellValue(po.getIncomeTotal().toString());
                 //免税所得-G列
                 HSSFCell cellG = row.getCell(6);
-                if(null == cellG) {
+                if (null == cellG) {
                     cellG = row.createCell(6);
                 }
                 cellG.setCellValue(po.getIncomeDutyfree().toString());
                 //基本养老保险费-H列
                 HSSFCell cellH = row.getCell(7);
-                if(null == cellH) {
+                if (null == cellH) {
                     cellH = row.createCell(7);
                 }
                 cellH.setCellValue(po.getDeductRetirementInsurance().toString());
                 //基本医疗保险费-I列
                 HSSFCell cellI = row.getCell(8);
-                if(null == cellI) {
+                if (null == cellI) {
                     cellI = row.createCell(8);
                 }
                 cellI.setCellValue(po.getDeductMedicalInsurance().toString());
                 //失业保险费-J列
                 HSSFCell cellJ = row.getCell(9);
-                if(null == cellJ) {
+                if (null == cellJ) {
                     cellJ = row.createCell(9);
                 }
                 cellJ.setCellValue(po.getDeductDlenessInsurance().toString());
                 //住房公积金-K列
                 HSSFCell cellK = row.getCell(10);
-                if(null == cellK) {
+                if (null == cellK) {
                     cellK = row.createCell(10);
                 }
                 cellK.setCellValue(po.getDeductHouseFund().toString());
                 //允许扣除的税费-L列
                 HSSFCell cellL = row.getCell(11);
-                if(null == cellL) {
+                if (null == cellL) {
                     cellL = row.createCell(11);
                 }
                 cellL.setCellValue(po.getDeductTakeoff().toString());
@@ -946,13 +946,13 @@ public class ExportFileServiceImpl implements ExportFileService {
                 //商业健康保险费-N列
                 //其他扣除-O列
                 HSSFCell cellO = row.getCell(14);
-                if(null == cellO) {
+                if (null == cellO) {
                     cellO = row.createCell(14);
                 }
                 cellO.setCellValue(po.getDeductOther().toString());
                 //减除费用-P列
                 HSSFCell cellP = row.getCell(15);
-                if(null == cellP) {
+                if (null == cellP) {
                     cellP = row.createCell(15);
                 }
                 cellP.setCellValue(po.getDeduction().toString());
@@ -960,19 +960,19 @@ public class ExportFileServiceImpl implements ExportFileService {
                 //允许列支的捐赠比例-R列
                 //准予扣除的捐赠额-S列
                 HSSFCell cellS = row.getCell(18);
-                if(null == cellS) {
+                if (null == cellS) {
                     cellS = row.createCell(18);
                 }
                 cellS.setCellValue(po.getDonation().toString());
                 //减免税额-T列
                 HSSFCell cellT = row.getCell(19);
-                if(null == cellT) {
+                if (null == cellT) {
                     cellT = row.createCell(19);
                 }
                 cellT.setCellValue(po.getTaxDeduction().toString());
                 //已扣缴税额-U列
                 HSSFCell cellU = row.getCell(20);
-                if(null == cellU) {
+                if (null == cellU) {
                     cellU = row.createCell(20);
                 }
                 cellU.setCellValue(po.getTaxWithholdedAmount().toString());
@@ -1205,7 +1205,7 @@ public class ExportFileServiceImpl implements ExportFileService {
                         cellRangeAddress.getLastColumn());
                 sheet.addMergedRegionUnsafe(newCellRangeAddress);
             }
-            if(cellRangeAddress.getFirstRow() == cellRangeAddress.getLastRow() && cellRangeAddress.getFirstRow() == (startRow - 1)){
+            if (cellRangeAddress.getFirstRow() == cellRangeAddress.getLastRow() && cellRangeAddress.getFirstRow() == (startRow - 1)) {
                 startMerged.add(cellRangeAddress);
             }
         }
@@ -1226,7 +1226,7 @@ public class ExportFileServiceImpl implements ExportFileService {
                 targetCell.setCellStyle(sourceCell.getCellStyle());
             }
             //循环新增当前行的合并单元格
-            for(CellRangeAddress cellRangeAddress : startMerged){
+            for (CellRangeAddress cellRangeAddress : startMerged) {
                 CellRangeAddress newCellRangeAddress = new CellRangeAddress(startRow, startRow, cellRangeAddress.getFirstColumn(),
                         cellRangeAddress.getLastColumn());
                 sheet.addMergedRegionUnsafe(newCellRangeAddress);
