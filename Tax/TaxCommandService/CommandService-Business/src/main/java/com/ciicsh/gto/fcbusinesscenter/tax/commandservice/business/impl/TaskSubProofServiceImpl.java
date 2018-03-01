@@ -22,13 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author yuantongqing on 2017/12/12
@@ -41,6 +40,12 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
 
     @Autowired(required = false)
     private TaskSubProofDetailMapper taskSubProofDetailMapper;
+
+    @Autowired
+    private TaskSubDeclareServiceImpl taskSubDeclareService;
+
+    @Autowired
+    private TaskSubProofDetailServiceImpl taskSubProofDetailService;
 
     /**
      * 根据完税主任务ID查询其下完税子任务
@@ -555,5 +560,97 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         wrapper.andNew("is_active = {0}",true);
         taskSubProofDetailPOList = taskSubProofDetailMapper.selectList(wrapper);
         return taskSubProofDetailPOList;
+    }
+
+    /**
+     * 申报完成自动生成完税凭证任务
+     * @param
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createTaskSubProof(List<Long> taskSubDeclareIds) {
+
+
+        if(taskSubDeclareIds!=null){
+
+            for(Long taskSubDeclareId : taskSubDeclareIds){
+
+                //申报子任务
+                TaskSubDeclarePO taskSubDeclarePO = this.taskSubDeclareService.selectById(taskSubDeclareId);
+
+                //申报子任务明细
+                List<TaskSubDeclareDetailBO> taskSubDeclareDetailPOs = this.baseMapper.querySubDeclareDetailsForProof(taskSubDeclareId);
+
+                //完税凭证子任务
+                TaskSubProofPO taskSubProofPO = null;
+                //完税凭证子任务明细
+                List<TaskSubProofDetailPO> taskSubProofDetailPOs = null;
+
+                for(TaskSubDeclareDetailBO taskSubDeclareDetailBO : taskSubDeclareDetailPOs){
+
+                    //如果有完税凭证服务则创建完税凭证明细
+                    if(taskSubDeclareDetailBO.getProof()!=null && taskSubDeclareDetailBO.getProof()){
+
+                        if(taskSubProofDetailPOs == null){
+
+                            taskSubProofDetailPOs = new ArrayList<>();
+                        }
+
+                        //新建完税凭证子任务
+                        if(taskSubProofPO == null){
+                            taskSubProofPO = new TaskSubProofPO();
+                            taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
+                            taskSubProofPO.setDeclareAccount(taskSubDeclarePO.getDeclareAccount());
+                            taskSubProofPO.setPeriod(taskSubDeclarePO.getPeriod());
+                            taskSubProofPO.setStatus("01");
+                            taskSubProofPO.setTaskType("01");//任务类型：01自动
+                            taskSubProofPO.setTaskSubDeclareId(taskSubDeclareId);
+                            this.baseMapper.insert(taskSubProofPO);
+                        }
+
+                        //新建完税凭证子任务明细
+                        TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
+                        taskSubProofDetailPO.setTaskSubProofId(taskSubProofPO.getId());
+                        taskSubProofDetailPO.setEmployeeNo(taskSubDeclareDetailBO.getEmployeeNo());
+                        taskSubProofDetailPO.setEmployeeName(taskSubDeclareDetailBO.getEmployeeName());
+                        taskSubProofDetailPO.setIdType(taskSubDeclareDetailBO.getIdType());
+                        taskSubProofDetailPO.setIdNo(taskSubDeclareDetailBO.getIdNo());
+                        taskSubProofDetailPO.setDeclareAccount(taskSubDeclareDetailBO.getDeclareAccount());
+                        taskSubProofDetailPO.setIncomeSubject(taskSubDeclareDetailBO.getIncomeSubject());
+                        taskSubProofDetailPO.setIncomeStart(taskSubDeclareDetailBO.getPeriod());
+                        taskSubProofDetailPO.setIncomeForTax(taskSubDeclareDetailBO.getIncomeForTax());
+                        taskSubProofDetailPO.setWithholdedAmount(taskSubDeclareDetailBO.getTaxAmount());
+
+                        taskSubProofDetailPOs.add(taskSubProofDetailPO);
+                    }
+
+                }
+
+                if(taskSubProofDetailPOs != null){
+
+                    //批量新增明细
+                    taskSubProofDetailService.insertBatch(taskSubProofDetailPOs);
+
+                    int headcount = taskSubProofDetailPOs.size();
+                    taskSubProofPO.setHeadcount(headcount);
+                    Long chineseNum = taskSubProofDetailPOs.stream().filter(x -> "01".equals(x.getIdType())).collect(Collectors.counting());
+                    if(chineseNum != null){
+
+                        taskSubProofPO.setChineseNum(chineseNum.intValue());
+                        taskSubProofPO.setForeignerNum(headcount - chineseNum.intValue());
+                    }else{
+
+                        taskSubProofPO.setChineseNum(0);
+                        taskSubProofPO.setForeignerNum(headcount);
+                    }
+
+                    //更新完税凭证子任务：总人数、中方人数、外放人数
+                    this.baseMapper.updateById(taskSubProofPO);
+
+                }
+            }
+        }
+
     }
 }
