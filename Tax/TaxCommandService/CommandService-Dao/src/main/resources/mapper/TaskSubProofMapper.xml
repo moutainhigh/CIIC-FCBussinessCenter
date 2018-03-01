@@ -149,7 +149,7 @@
         ,t2.tax_amount
         ,t3.is_proof
         FROM tax_fc_task_sub_declare t1,tax_fc_task_sub_declare_detail t2,tax_fc_employee_service_batch t3
-        where (t1.id = #{taskSubDeclareId}or t1.task_sub_declare_id =#{taskSubDeclareId})  and t1.id = t2.task_sub_declare_id and t2.task_sub_declare_detail_id is null
+        where (t1.id = #{taskSubDeclareId} or t1.task_sub_declare_id =#{taskSubDeclareId})  and t1.id = t2.task_sub_declare_id and t2.task_sub_declare_detail_id is null
         and t2.calculation_batch_detail_id = t3.cal_batch_detail_id
         <!--<if test="startTime != null and startTime != ''">
             and date(created_time) &gt;= date(#{startTime,jdbcType=TIMESTAMP})

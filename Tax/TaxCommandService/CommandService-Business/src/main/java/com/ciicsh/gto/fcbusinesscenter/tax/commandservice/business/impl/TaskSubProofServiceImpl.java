@@ -607,6 +607,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                             taskSubProofPO.setStatus("01");
                             taskSubProofPO.setTaskType("01");//任务类型：01自动
                             taskSubProofPO.setTaskSubDeclareId(taskSubDeclareId);
+                            taskSubProofPO.setManagerNo(taskSubDeclarePO.getManagerNo());
+                            taskSubProofPO.setManagerName(taskSubDeclarePO.getManagerName());
                             this.baseMapper.insert(taskSubProofPO);
                         }
 
