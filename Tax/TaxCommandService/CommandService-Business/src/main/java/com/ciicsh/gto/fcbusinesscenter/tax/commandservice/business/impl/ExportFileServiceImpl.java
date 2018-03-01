@@ -4,6 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileSer
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import net.sf.jxls.util.Util;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +102,7 @@ public class ExportFileServiceImpl implements ExportFileService {
         if (taskSubProofDetailPOList.size() > INITIAL_XH_SIZE) {
             int rows = taskSubProofDetailPOList.size() - INITIAL_XH_SIZE;
             //插入行数据
-            insertRow(sheet, 7, rows);
+            insertRow(sheet, 8, rows);
         }
 
         // 在相应的单元格进行赋值
@@ -236,7 +238,7 @@ public class ExportFileServiceImpl implements ExportFileService {
         if (taskSubProofDetailPOList.size() > INITIAL_SFJ_SIZE) {
             int rows = taskSubProofDetailPOList.size() - INITIAL_SFJ_SIZE;
             //插入行数据
-            insertRow(sheet, 17, rows);
+            insertRow(sheet, 14, rows);
         }
         // 在相应的单元格进行赋值
         int rowIndex = 12;
@@ -351,7 +353,7 @@ public class ExportFileServiceImpl implements ExportFileService {
             //由于每行显示2条数据,所以大于36条数据部分需要没2条数据添加插入一行,
             int rows = (taskSubProofDetailPOList.size() - INITIAL_PD_SIZE) / 2;
             //插入行数据
-            insertRow(sheet, 7, rows);
+            insertRow(sheet, 8, rows);
         }
         //在相应的单元格进行赋值
         int rowIndex = 6;
@@ -504,7 +506,7 @@ public class ExportFileServiceImpl implements ExportFileService {
         if (taskSubDeclareDetailPOList.size() > INITIAL_TAX_SIZE) {
             rows = taskSubDeclareDetailPOList.size() - INITIAL_TAX_SIZE;
             //插入行数据
-            insertRow(sheet, 7, rows);
+            insertRow(sheet, 8, rows);
         }
         //在相应的单元格进行赋值
         int rowIndex = 6;
@@ -1190,6 +1192,9 @@ public class ExportFileServiceImpl implements ExportFileService {
      */
     private void insertRow(HSSFSheet sheet, int startRow, int rows) {
         sheet.shiftRows(startRow, sheet.getLastRowNum(), rows, true, false);
+        //复制行中所有的合并单元格
+        List<CellRangeAddress> startMerged = new ArrayList<>();
+        //模板中所有的合并单元格
         List<CellRangeAddress> originMerged = sheet.getMergedRegions();
         for (CellRangeAddress cellRangeAddress : originMerged) {
             //这里的startRow是插入行的index，表示原合并单元格在这之间的，需要重新合并
@@ -1201,23 +1206,34 @@ public class ExportFileServiceImpl implements ExportFileService {
                         cellRangeAddress.getLastColumn());
                 sheet.addMergedRegionUnsafe(newCellRangeAddress);
             }
+            if(cellRangeAddress.getFirstRow() == cellRangeAddress.getLastRow() && cellRangeAddress.getFirstRow() == (startRow - 1)){
+                startMerged.add(cellRangeAddress);
+            }
         }
+
         for (int i = 0; i < rows; i++) {
-            //原始位置
+            //模板样式
             HSSFRow sourceRow = null;
-            //移动后位置
+            //新插入行样式
             HSSFRow targetRow = null;
             HSSFCell sourceCell = null;
             HSSFCell targetCell = null;
-            sourceRow = sheet.getRow(startRow);
-            targetRow = sheet.getRow(startRow - 1);
-            sourceRow.setHeight(targetRow.getHeight());
-            for (int m = targetRow.getFirstCellNum(); m < targetRow.getPhysicalNumberOfCells(); m++) {
-                sourceCell = sourceRow.createCell(m);
-                targetCell = targetRow.getCell(m);
-                sourceCell.setCellStyle(targetCell.getCellStyle());
+            sourceRow = sheet.getRow(startRow - 1);
+            targetRow = sheet.createRow(startRow);
+            targetRow.setHeight(sourceRow.getHeight());
+            for (int m = sourceRow.getFirstCellNum(); m < sourceRow.getPhysicalNumberOfCells(); m++) {
+                sourceCell = sourceRow.getCell(m);
+                targetCell = targetRow.createCell(m);
+                targetCell.setCellStyle(sourceCell.getCellStyle());
+            }
+            //循环新增当前行的合并单元格
+            for(CellRangeAddress cellRangeAddress : startMerged){
+                CellRangeAddress newCellRangeAddress = new CellRangeAddress(startRow, startRow, cellRangeAddress.getFirstColumn(),
+                        cellRangeAddress.getLastColumn());
+                sheet.addMergedRegionUnsafe(newCellRangeAddress);
             }
             startRow++;
         }
+
     }
 }
