@@ -41,8 +41,20 @@
     <!--根据主键ID重新计算子任务总人数-->
     <update id="updateSubHeadcountById">
         update tax_fc_task_sub_proof tsp
-        set tsp.headcount = (select count(1) from tax_fc_task_sub_proof_detail spd where spd.is_active = 1 and  spd.task_sub_proof_id = #{id} )
-        where  tsp.is_active = 1 and tsp.id = #{id}
+        inner join
+        (select
+            task_sub_proof_id,
+            count(1) as headNumTotal,
+            sum(case when id_type = '01' then 1 else 0 end ) as chineseNumTotal,
+            sum(case when id_type != '01' then 1 else 0 end ) as foreignerNumTotal
+        from tax_fc_task_sub_proof_detail where task_sub_proof_id = #{id}) sub
+        SET
+            tsp.headcount = sub.headNumTotal,
+            tsp.chinese_num = sub.chineseNumTotal,
+            tsp.foreigner_num = sub.foreignerNumTotal,
+            tsp.modified_by = #{modifiedBy},
+            tsp.modified_time = #{modifiedTime}
+        where  tsp.is_active = 1 and tsp.id = sub.task_sub_proof_id and tsp.id = #{id}
     </update>
 
     <!--多表查询完税凭证子任务-->
@@ -108,13 +120,13 @@
         where tsp.is_active = 1 and tsp.id = #{subProofId}
     </select>
 
-    <!--根据主任务ID查询相关人数-->
-    <select id="queryPersonNumByMainProofId" resultType="java.util.HashMap">
-        select
-        sum(headcount) as headNumTotal,
-        sum(chinese_num) as chineseNumTotal,
-        sum(foreigner_num) as foreignerNumTotal
-        from tax_fc_task_sub_proof where task_main_proof_id = #{id}
-    </select>
+    <!--&lt;!&ndash;根据主任务ID查询相关人数&ndash;&gt;-->
+    <!--<select id="queryPersonNumByMainProofId" resultType="java.util.HashMap">-->
+        <!--select-->
+        <!--sum(headcount) as headNumTotal,-->
+        <!--sum(chinese_num) as chineseNumTotal,-->
+        <!--sum(foreigner_num) as foreignerNumTotal-->
+        <!--from tax_fc_task_sub_proof where task_main_proof_id = #{id}-->
+    <!--</select>-->
 
 </mapper>

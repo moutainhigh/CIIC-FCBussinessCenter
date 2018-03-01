@@ -164,39 +164,37 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             taskSubProofDetailMapper.insert(taskSubProofDetailPO);
         }
         //重新统计复制的完税凭证任务人数
-//        baseMapper.updateSubHeadcountById(taskSubProofPO.getId());
-//            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId());
-        Map<String,Object> subNumMap = taskSubProofDetailMapper.queryPersonNumBySubProofId(taskSubProofPO.getId());
-        TaskSubProofPO taskSubProofPOUpdate = new TaskSubProofPO();
-        taskSubProofPOUpdate.setId(taskSubProofPO.getId());
-        //总人数
-        taskSubProofPOUpdate.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
-        //中方人数
-        taskSubProofPOUpdate.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
-        //外方人数
-        taskSubProofPOUpdate.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
-        //TODO 临时修改人
-        taskSubProofPOUpdate.setModifiedBy("adminCopy");
-        //修改时间
-        taskSubProofPOUpdate.setModifiedTime(LocalDateTime.now());
-        baseMapper.updateById(taskSubProofPOUpdate);
-//        taskMainProofMapper.updateMainHeadcountById(taskMainProofPO.getId());
-        //统计总任务人数
-//            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId());
-        Map<String,Object> mainNumMap = baseMapper.queryPersonNumByMainProofId(taskMainProofPO.getId());
-        TaskMainProofPO taskMainProofPOUpdate = new TaskMainProofPO();
-        taskMainProofPOUpdate.setId(taskMainProofPO.getId());
-        //总人数
-        taskMainProofPOUpdate.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
-        //中方人数
-        taskMainProofPOUpdate.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
-        //外方人数
-        taskMainProofPOUpdate.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
-        //TODO 临时修改人
-        taskMainProofPOUpdate.setModifiedBy("adminCopy");
-        //修改时间
-        taskMainProofPOUpdate.setModifiedTime(LocalDateTime.now());
-        taskMainProofMapper.updateById(taskMainProofPOUpdate);
+        baseMapper.updateSubHeadcountById(taskSubProofPO.getId(),"adminCopy",LocalDateTime.now());
+//        Map<String,Object> subNumMap = taskSubProofDetailMapper.queryPersonNumBySubProofId(taskSubProofPO.getId());
+//        TaskSubProofPO taskSubProofPOUpdate = new TaskSubProofPO();
+//        taskSubProofPOUpdate.setId(taskSubProofPO.getId());
+//        //总人数
+//        taskSubProofPOUpdate.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
+//        //中方人数
+//        taskSubProofPOUpdate.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
+//        //外方人数
+//        taskSubProofPOUpdate.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
+//        //TODO 临时修改人
+//        taskSubProofPOUpdate.setModifiedBy("adminCopy");
+//        //修改时间
+//        taskSubProofPOUpdate.setModifiedTime(LocalDateTime.now());
+//        baseMapper.updateById(taskSubProofPOUpdate);
+        taskMainProofMapper.updateMainHeadcountById(taskMainProofPO.getId(),"adminCopy",LocalDateTime.now());
+//        //统计总任务人数
+//        Map<String,Object> mainNumMap = baseMapper.queryPersonNumByMainProofId(taskMainProofPO.getId());
+//        TaskMainProofPO taskMainProofPOUpdate = new TaskMainProofPO();
+//        taskMainProofPOUpdate.setId(taskMainProofPO.getId());
+//        //总人数
+//        taskMainProofPOUpdate.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
+//        //中方人数
+//        taskMainProofPOUpdate.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
+//        //外方人数
+//        taskMainProofPOUpdate.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
+//        //TODO 临时修改人
+//        taskMainProofPOUpdate.setModifiedBy("adminCopy");
+//        //修改时间
+//        taskMainProofPOUpdate.setModifiedTime(LocalDateTime.now());
+//        taskMainProofMapper.updateById(taskMainProofPOUpdate);
     }
 
     /**

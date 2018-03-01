@@ -153,30 +153,30 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             //统计子任务人数
             for (String key : subMap.keySet()) {
                 Long subId = subMap.get(key);
-                Map<String,Object> subNumMap = baseMapper.queryPersonNumBySubProofId(subId);
-                TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-                taskSubProofPO.setId(subId);
-                //总人数
-                taskSubProofPO.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
-                //中方人数
-                taskSubProofPO.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
-                //外方人数
-                taskSubProofPO.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
-                taskSubProofMapper.updateById(taskSubProofPO);
-//                taskSubProofMapper.updateSubHeadcountById(subId);
+//                Map<String,Object> subNumMap = baseMapper.queryPersonNumBySubProofId(subId);
+//                TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+//                taskSubProofPO.setId(subId);
+//                //总人数
+//                taskSubProofPO.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
+//                //中方人数
+//                taskSubProofPO.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
+//                //外方人数
+//                taskSubProofPO.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
+//                taskSubProofMapper.updateById(taskSubProofPO);
+                taskSubProofMapper.updateSubHeadcountById(subId,"adminSub",LocalDateTime.now());
             }
             //统计总任务人数
-            Map<String,Object> mainNumMap = taskSubProofMapper.queryPersonNumByMainProofId(requestForSubDetail.getTaskId());
-            TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
-            taskMainProofPO.setId(requestForSubDetail.getTaskId());
-            //总人数
-            taskMainProofPO.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
-            //中方人数
-            taskMainProofPO.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
-            //外方人数
-            taskMainProofPO.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
-            taskMainProofMapper.updateById(taskMainProofPO);
-//            taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId());
+//            Map<String,Object> mainNumMap = taskSubProofMapper.queryPersonNumByMainProofId(requestForSubDetail.getTaskId());
+//            TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
+//            taskMainProofPO.setId(requestForSubDetail.getTaskId());
+//            //总人数
+//            taskMainProofPO.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
+//            //中方人数
+//            taskMainProofPO.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
+//            //外方人数
+//            taskMainProofPO.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
+//            taskMainProofMapper.updateById(taskMainProofPO);
+            taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId(),"adminMain",LocalDateTime.now());
         } else if (subType.equals(requestForSubDetail.getDetailType())) {
             //修改申报明细为不可用状态
             updateTaskSubProofDetailActive(requestForSubDetail);
@@ -206,38 +206,38 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                 this.insertOrUpdateBatch(taskSubProofDetailPOList);
             }
             //统计子任务总人数
-//            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId());
-            Map<String,Object> subNumMap = baseMapper.queryPersonNumBySubProofId(requestForSubDetail.getTaskId());
-            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-            taskSubProofPO.setId(requestForSubDetail.getTaskId());
-            //总人数
-            taskSubProofPO.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
-            //中方人数
-            taskSubProofPO.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
-            //外方人数
-            taskSubProofPO.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
-            //TODO 临时修改人
-            taskSubProofPO.setModifiedBy("adminCopy");
-            //修改时间
-            taskSubProofPO.setModifiedTime(LocalDateTime.now());
-            taskSubProofMapper.updateById(taskSubProofPO);
+            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId(),"adminAdd",LocalDateTime.now());
+//            Map<String,Object> subNumMap = baseMapper.queryPersonNumBySubProofId(requestForSubDetail.getTaskId());
+//            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+//            taskSubProofPO.setId(requestForSubDetail.getTaskId());
+//            //总人数
+//            taskSubProofPO.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
+//            //中方人数
+//            taskSubProofPO.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
+//            //外方人数
+//            taskSubProofPO.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
+//            //TODO 临时修改人
+//            taskSubProofPO.setModifiedBy("adminAdd");
+//            //修改时间
+//            taskSubProofPO.setModifiedTime(LocalDateTime.now());
+//            taskSubProofMapper.updateById(taskSubProofPO);
             //统计总任务人数
             TaskSubProofPO taskSubProofPOInfo = taskSubProofMapper.selectById(requestForSubDetail.getTaskId());
-//            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId());
-            Map<String,Object> mainNumMap = taskSubProofMapper.queryPersonNumByMainProofId(taskSubProofPOInfo.getTaskMainProofId());
-            TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
-            taskMainProofPO.setId(taskSubProofPOInfo.getTaskMainProofId());
-            //总人数
-            taskMainProofPO.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
-            //中方人数
-            taskMainProofPO.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
-            //外方人数
-            taskMainProofPO.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
-            //TODO 临时修改人
-            taskMainProofPO.setModifiedBy("adminCopy");
-            //修改时间
-            taskMainProofPO.setModifiedTime(LocalDateTime.now());
-            taskMainProofMapper.updateById(taskMainProofPO);
+            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId(),"adminAdd",LocalDateTime.now());
+//            Map<String,Object> mainNumMap = taskSubProofMapper.queryPersonNumByMainProofId(taskSubProofPOInfo.getTaskMainProofId());
+//            TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
+//            taskMainProofPO.setId(taskSubProofPOInfo.getTaskMainProofId());
+//            //总人数
+//            taskMainProofPO.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
+//            //中方人数
+//            taskMainProofPO.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
+//            //外方人数
+//            taskMainProofPO.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
+//            //TODO 临时修改人
+//            taskMainProofPO.setModifiedBy("adminAdd");
+//            //修改时间
+//            taskMainProofPO.setModifiedTime(LocalDateTime.now());
+//            taskMainProofMapper.updateById(taskMainProofPO);
         }
     }
 

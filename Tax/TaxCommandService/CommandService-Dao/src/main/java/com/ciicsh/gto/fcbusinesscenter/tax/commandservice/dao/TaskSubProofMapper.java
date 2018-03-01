@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +20,13 @@ import java.util.Map;
  */
 public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
 
-//    /**
-//     * 根据主键ID重新计算子任务总人数
-//     * @param id
-//     */
-//    void updateSubHeadcountById(@Param("id") Long id);
+    /**
+     * 根据主键ID重新计算子任务总人数
+     * @param id
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateSubHeadcountById(@Param("id") Long id,@Param("modifiedBy") String modifiedBy,@Param("modifiedTime") LocalDateTime modifiedTime);
 
     /**
      * 查询完税凭证子任务(分页)
@@ -47,11 +50,11 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
      */
     TaskSubProofBO queryApplyDetailsBySubId(@Param("subProofId") Long subProofId);
 
-    /**
-     * 根据主任务ID查询总人数，中方人数，外方人数
-     * @param id
-     * @return
-     */
-    Map<String,Object> queryPersonNumByMainProofId(@Param("id") Long id);
+//    /**
+//     * 根据主任务ID查询总人数，中方人数，外方人数
+//     * @param id
+//     * @return
+//     */
+//    Map<String,Object> queryPersonNumByMainProofId(@Param("id") Long id);
 
 }

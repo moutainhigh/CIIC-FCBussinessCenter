@@ -33,11 +33,11 @@ public interface TaskSubProofDetailMapper extends BaseMapper<TaskSubProofDetailP
      */
     List<TaskSubProofDetailPO> queryTaskSubProofDetailBySubId(TaskSubProofDetailBO taskSubProofDetailBO);
 
-    /**
-     * 根据子任务ID查询总人数，中方人数，外方人数
-     * @param id
-     * @return
-     */
-    Map<String,Object> queryPersonNumBySubProofId(@Param("id") Long id);
+//    /**
+//     * 根据子任务ID查询总人数，中方人数，外方人数
+//     * @param id
+//     * @return
+//     */
+//    Map<String,Object> queryPersonNumBySubProofId(@Param("id") Long id);
 
 }
