@@ -32,22 +32,22 @@ public class ExportFileServiceImpl implements ExportFileService {
     /**
      * 完税凭证徐汇模板列表初始大小20
      */
-    private static final int INITIAL_XH_SIZE = 0;
+    private static final int INITIAL_XH_SIZE = 20;
 
     /**
      * 完税凭证三分局模板列表初始大小19
      */
-    private static final int INITIAL_SFJ_SIZE = 0;
+    private static final int INITIAL_SFJ_SIZE = 19;
 
     /**
      * 完税凭证浦东模板列表初始大小18*2
      */
-    private static final int INITIAL_PD_SIZE = 0;
+    private static final int INITIAL_PD_SIZE = 36;
 
     /**
      * 扣缴个人所得税报告表初始大小3
      */
-    private static final int INITIAL_TAX_SIZE = 0;
+    private static final int INITIAL_TAX_SIZE = 3;
 
     /**
      * 所得项目_正常工资薪金收入
@@ -1209,8 +1209,8 @@ public class ExportFileServiceImpl implements ExportFileService {
             HSSFRow targetRow = null;
             HSSFCell sourceCell = null;
             HSSFCell targetCell = null;
-            sourceRow = sheet.createRow(startRow);
-            targetRow = sheet.getRow(startRow + rows);
+            sourceRow = sheet.getRow(startRow);
+            targetRow = sheet.getRow(startRow - 1);
             sourceRow.setHeight(targetRow.getHeight());
             for (int m = targetRow.getFirstCellNum(); m < targetRow.getPhysicalNumberOfCells(); m++) {
                 sourceCell = sourceRow.createCell(m);

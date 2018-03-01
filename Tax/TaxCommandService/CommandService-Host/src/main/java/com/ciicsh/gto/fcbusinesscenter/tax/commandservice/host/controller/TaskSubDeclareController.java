@@ -268,4 +268,33 @@ public class TaskSubDeclareController extends BaseController {
             }
         }
     }
+
+    /**
+     * 批量完成申报任务
+     * @param taskSubDeclareDTO
+     * @return
+     */
+    @PostMapping(value = "/completeTaskSubDeclares")
+    public JsonResult completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO){
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
+            BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+            // TODO 临时设置修改人
+            //修改人
+            requestForTaskSubDeclare.setModifiedBy("adminMain");
+            //任务状态
+            requestForTaskSubDeclare.setStatus("03");
+            taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(true);
+        } catch (Exception e) {
+            logger.error("completeTaskSubDeclares error " + e.toString());
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+            jr.setData(false);
+        }
+        return jr;
+    }
 }

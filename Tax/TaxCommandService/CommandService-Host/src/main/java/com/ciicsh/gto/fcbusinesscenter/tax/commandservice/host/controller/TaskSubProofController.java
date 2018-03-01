@@ -14,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
@@ -406,7 +407,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //导出excel
             exportExcel(response, wb, fileName);
         } catch (Exception e) {
-            logger.error("exportSubTaskProof error " + e.toString());
+            String str = BaseException.exceptionToString(e);
+            logger.error("exportSubTaskProof error " + str);
+
         } finally {
             if (wb != null) {
                 try {

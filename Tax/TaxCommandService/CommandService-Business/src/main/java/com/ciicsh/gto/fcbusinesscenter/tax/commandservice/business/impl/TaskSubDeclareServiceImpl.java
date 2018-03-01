@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
@@ -12,19 +13,22 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTa
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -33,6 +37,9 @@ import java.util.List;
 public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper, TaskSubDeclarePO> implements TaskSubDeclareService, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskSubDeclareServiceImpl.class);
+
+    @Autowired
+    private TaskSubProofService taskSubProofService;
 
     /**
      * 当期
@@ -278,6 +285,38 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
     public TaskSubDeclarePO queryTaskSubDeclaresById(long subDeclareId) {
         TaskSubDeclarePO taskSubDeclarePO = baseMapper.selectById(subDeclareId);
         return taskSubDeclarePO;
+    }
+
+    /**
+     * 批量完成申报任务
+     * @param requestForTaskSubDeclare
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void completeTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
+        if (requestForTaskSubDeclare.getSubDeclareIds() != null && !"".equals(requestForTaskSubDeclare.getSubDeclareIds())){
+            TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
+            //设置任务状态
+            taskSubDeclarePO.setStatus(requestForTaskSubDeclare.getStatus());
+            //设置修改人
+            taskSubDeclarePO.setModifiedBy(requestForTaskSubDeclare.getModifiedBy());
+            //设置修改时间
+            taskSubDeclarePO.setModifiedTime(LocalDateTime.now());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubDeclarePO());
+            //任务为通过状态
+            wrapper.andNew("status = {0} ", "02");
+            //任务为可用状态
+            wrapper.andNew("is_active = {0} ", true);
+            //主任务ID IN条件
+            wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
+            //修改完税凭证子任务
+            baseMapper.update(taskSubDeclarePO, wrapper);
+            //将数组转成集合(long[])
+            List<Long> declareIdList = Arrays.asList(requestForTaskSubDeclare.getSubDeclareIds()).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            //创建完税凭证自动任务
+            taskSubProofService.createTaskSubProof(declareIdList);
+        }
     }
 
 }
