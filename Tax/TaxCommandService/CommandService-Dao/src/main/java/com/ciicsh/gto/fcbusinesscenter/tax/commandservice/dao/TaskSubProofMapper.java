@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubDeclareDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import org.apache.ibatis.annotations.Param;
@@ -45,5 +46,12 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
      * @return
      */
     TaskSubProofBO queryApplyDetailsBySubId(@Param("subProofId") Long subProofId);
+
+    /**
+     * 申报详细信息
+     * @param taskSubDeclareId
+     * @return
+     */
+    List<TaskSubDeclareDetailBO> querySubDeclareDetailsForProof(@Param("taskSubDeclareId") Long taskSubDeclareId);
 
 }

@@ -38,6 +38,20 @@
         <result column="is_combined" property="isCombined"/>
     </resultMap>
 
+    <resultMap id="BaseResultMapForProof" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubDeclareDetailBO">
+        <id column="id" property="id"/>
+        <result column="employee_no" property="employeeNo"/>
+        <result column="employee_name" property="employeeName"/>
+        <result column="id_type" property="idType"/>
+        <result column="id_no" property="idNo"/>
+        <result column="declare_account" property="declareAccount"/>
+        <result column="income_subject" property="incomeSubject"/>
+        <result column="period" property="period"/>
+        <result column="income_for_tax" property="incomeForTax"/>
+        <result column="tax_amount" property="taxAmount"/>
+        <result column="is_proof" property="proof"/>
+    </resultMap>
+
     <!--根据主键ID重新计算子任务总人数-->
     <update id="updateSubHeadcountById">
         update tax_fc_task_sub_proof tsp
@@ -106,6 +120,31 @@
         left join tax_fc_task_main_proof tmp
         on tsp.task_main_proof_id = tmp.id
         where tsp.is_active = 1 and tsp.id = #{subProofId}
+    </select>
+
+    <!-- 查询批次明细 -->
+    <select id="querySubDeclareDetailsForProof" resultMap="BaseResultMapForProof">
+        SELECT
+        t2.id
+        ,t2.employee_no
+        ,t2.employee_name
+        ,t2.id_type
+        ,t2.id_no
+        ,t2.declare_account
+        ,t2.income_subject
+        ,t2.period
+        ,t2.income_for_tax
+        ,t2.tax_amount
+        ,t3.is_proof
+        FROM tax_fc_task_sub_declare t1,tax_fc_task_sub_declare_detail t2,tax_fc_employee_service_batch t3
+        where (t1.id = #{taskSubDeclareId}or t1.task_sub_declare_id =#{taskSubDeclareId})  and t1.id = t2.task_sub_declare_id and t2.task_sub_declare_detail_id is null
+        and t2.calculation_batch_detail_id = t3.cal_batch_detail_id
+        <!--<if test="startTime != null and startTime != ''">
+            and date(created_time) &gt;= date(#{startTime,jdbcType=TIMESTAMP})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and date(created_time) &lt;= date(#{endTime,jdbcType=TIMESTAMP})
+        </if>-->
     </select>
 
 </mapper>
