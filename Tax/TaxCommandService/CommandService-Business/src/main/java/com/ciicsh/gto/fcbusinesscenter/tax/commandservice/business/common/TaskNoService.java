@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import org.slf4j.Logger;

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;

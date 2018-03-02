@@ -5,7 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskMainProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainProofService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;

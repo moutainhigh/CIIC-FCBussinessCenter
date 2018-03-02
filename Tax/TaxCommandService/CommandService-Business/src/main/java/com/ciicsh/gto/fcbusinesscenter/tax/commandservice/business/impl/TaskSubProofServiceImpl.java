@@ -3,7 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofDetailMapper;
