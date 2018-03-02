@@ -1,20 +1,20 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubDeclareDetailDTO;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForSubDeclareDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoneyDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForSubDeclareDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoneyDetail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class TaskSubDeclareDetailController extends BaseController {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubDeclareDetailController.class);
 
     @Autowired
     public TaskSubDeclareDetailService taskSubDeclareDetailService;
@@ -41,13 +39,17 @@ public class TaskSubDeclareDetailController extends BaseController {
             RequestForSubDeclareDetail requestForSubDeclareDetail = new RequestForSubDeclareDetail();
             BeanUtils.copyProperties(taskSubDeclareDetailDTO, requestForSubDeclareDetail);
             ResponseForSubDeclareDetail responseForSubDeclareDetail = taskSubDeclareDetailService.querySubDeclareDetailsByParams(requestForSubDeclareDetail);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForSubDeclareDetail);
+            jr.success(responseForSubDeclareDetail);
         } catch (Exception e) {
-            logger.error("querySubDeclareDetailsByParams error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareId", taskSubDeclareDetailDTO.getSubDeclareId().toString());
+            tags.put("employeeNo", taskSubDeclareDetailDTO.getEmployeeNo());
+            tags.put("employeeName", taskSubDeclareDetailDTO.getEmployeeName());
+            tags.put("idType", taskSubDeclareDetailDTO.getIdType());
+            tags.put("idNo", taskSubDeclareDetailDTO.getIdNo());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareDetailController.querySubDeclareDetailsByParams", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }

@@ -9,7 +9,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
@@ -54,13 +55,15 @@ public class TaskSubDeclareController extends BaseController {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
             ResponseForTaskSubDeclare responseForTaskSubDeclare = taskSubDeclareService.queryTaskSubDeclares(requestForTaskSubDeclare);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForTaskSubDeclare);
+            jr.success(responseForTaskSubDeclare);
         } catch (Exception e) {
-            logger.error("queryTaskSubDeclares error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("declareAccount", taskSubDeclareDTO.getDeclareAccount());
+            tags.put("managerName", taskSubDeclareDTO.getManagerName());
+            tags.put("statusType", taskSubDeclareDTO.getStatusType());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareController.queryTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -81,13 +84,13 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.mergeTaskSubDeclares(requestForTaskSubDeclare);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("combineSubDeclare error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareController.mergeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -108,13 +111,13 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("splitSubDeclare error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("id", taskSubDeclareDTO.getId().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareController.splitSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -152,7 +155,7 @@ public class TaskSubDeclareController extends BaseController {
                 map.put("withholdingAgentCode", "147258369");
                 //根据不同的业务需要处理wb
                 exportFileService.exportAboutTax(wb, map, taskSubDeclareDetailPOList);
-            }else{
+            } else {
                 fileName = "扣缴个人所得税报告表.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);
@@ -170,8 +173,10 @@ public class TaskSubDeclareController extends BaseController {
             //导出excel
             exportExcel(response, wb, fileName);
         } catch (Exception e) {
-            String str = BaseException.exceptionToString(e);
-            logger.error("exportSubDeclare error " + str);
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareId", subDeclareId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareController.exportSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
         } finally {
             if (wb != null) {
                 try {
@@ -202,13 +207,13 @@ public class TaskSubDeclareController extends BaseController {
         try {
             //根据申报子任务ID查询申报信息
             TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(taskSubDeclarePO);
+            jr.success(taskSubDeclarePO);
         } catch (Exception e) {
-            logger.error("queryDeclareDetailsById error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareId", subDeclareId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareController.queryDeclareDetailsById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -238,7 +243,7 @@ public class TaskSubDeclareController extends BaseController {
                 wb = getHSSFWorkbook(fs);
                 //根据不同的业务需要处理wb
                 exportFileService.exportAboutSubject(wb, taskSubDeclareDetailPOList);
-            }else{
+            } else {
                 fileName = "上海地区个税.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);
@@ -250,7 +255,10 @@ public class TaskSubDeclareController extends BaseController {
             //导出excel
             exportExcel(response, wb, fileName);
         } catch (Exception e) {
-            logger.error("exportDeclareBySubject error " + e.toString());
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareId", subDeclareId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareController.exportDeclareBySubject", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
         } finally {
             if (wb != null) {
                 try {
@@ -271,11 +279,12 @@ public class TaskSubDeclareController extends BaseController {
 
     /**
      * 批量完成申报任务
+     *
      * @param taskSubDeclareDTO
      * @return
      */
     @PostMapping(value = "/completeTaskSubDeclares")
-    public JsonResult completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO){
+    public JsonResult completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
         JsonResult jr = new JsonResult();
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
@@ -286,14 +295,13 @@ public class TaskSubDeclareController extends BaseController {
             //任务状态
             requestForTaskSubDeclare.setStatus("03");
             taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("completeTaskSubDeclares error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
-            jr.setData(false);
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }

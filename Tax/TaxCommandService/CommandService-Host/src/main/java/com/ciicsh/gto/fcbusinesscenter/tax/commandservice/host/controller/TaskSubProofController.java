@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.LogService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
@@ -15,6 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
@@ -61,13 +63,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofDTO.getStatus()));
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(taskSubProofDTOLists);
+            jr.success(taskSubProofDTOLists);
         } catch (Exception e) {
-            logger.error("queryTaskSubProofByMainId error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("mainProofIds", taskMainProofId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.queryTaskSubProofByMainId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -86,13 +88,14 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             BeanUtils.copyProperties(taskSubProofDTO, requestForProof);
             //其中管理方名称
             ResponseForSubProof responseForSubProof = taskSubProofService.queryTaskSubProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForSubProof);
+            jr.success(responseForSubProof);
         } catch (Exception e) {
-            logger.error("queryTaskSubProofByRes error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("id", taskSubProofDTO.getId().toString());
+            tags.put("declareAccount", taskSubProofDTO.getDeclareAccount());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.queryTaskSubProofByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -108,13 +111,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         JsonResult jr = new JsonResult();
         try {
             taskSubProofService.copyProofInfoBySubId(taskSubProofId);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("copyProofInfoBySubId error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskSubProofId", taskSubProofId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.copyProofInfoBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -132,13 +135,17 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForSubProof responseForSubProof = taskSubProofService.querySubProofInfoByTaskType(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForSubProof);
+            jr.success(responseForSubProof);
         } catch (Exception e) {
-            logger.error("querySubProofInfoByTaskType error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("managerName", taskProofDTO.getManagerName());
+            tags.put("declareAccount", taskProofDTO.getDeclareAccount());
+            tags.put("status", taskProofDTO.getStatus());
+            tags.put("period", taskProofDTO.getPeriod());
+            tags.put("taskType", taskProofDTO.getTaskType());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.querySubProofInfoByTaskType", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -159,13 +166,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //修改人
             requestForProof.setModifiedBy("adminMain");
             taskSubProofService.combineTaskProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("combineTaskProof error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subProofIds", taskProofDTO.getManagerName());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.combineTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -186,13 +193,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //修改人
             requestForProof.setModifiedBy("adminMain");
             taskSubProofService.splitTaskProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("splitTaskProof error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("id", taskProofDTO.getId().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.splitTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -215,13 +222,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
             requestForProof.setStatus("04");
             taskSubProofService.completeTaskProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("completeTaskProof error:" + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.completeTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -244,13 +251,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("03");
             taskSubProofService.rejectTaskProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("rejectTaskProof error:" + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.rejectTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -273,13 +280,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("05");
             taskSubProofService.invalidTaskProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("invalidTaskProof error:" + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.invalidTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -296,13 +303,13 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         JsonResult jr = new JsonResult();
         try {
             TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(taskSubProofBO);
+            jr.success(taskSubProofBO);
         } catch (Exception e) {
-            logger.error("queryApplyDetailsBySubId error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subProofId", subProofId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.queryApplyDetailsBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -320,13 +327,15 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForSubProofDetail responseForSubProofDetail = taskSubProofService.queryTaskSubProofDetail(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForSubProofDetail);
+            jr.success(responseForSubProofDetail);
         } catch (Exception e) {
-            logger.error("queryTaskSubProofDetailBySubId error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("id", taskProofDTO.getId().toString());
+            tags.put("employeeNo", taskProofDTO.getEmployeeNo());
+            tags.put("employeeName", taskProofDTO.getEmployeeName());
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.queryTaskSubProofDetailBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -364,9 +373,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 //扣缴义务人电话
                 map.put("withholdingAgentPhone", "18201880000");
                 //换开人姓名
-                map.put("changePersonName","admin");
+                map.put("changePersonName", "admin");
                 //换开人身份证号码
-                map.put("changePersonIdNo","321281199001011234");
+                map.put("changePersonIdNo", "321281199001011234");
                 //根据不同的业务需要处理wb
                 exportFileService.exportAboutSFJ(wb, map, taskSubProofDetailPOList);
             } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
@@ -376,11 +385,11 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
                 //单位税号（必填）
-                map.put("unitNumber","TEST123456");
+                map.put("unitNumber", "TEST123456");
                 //单位名称（必填）
-                map.put("unitName","上海中智");
+                map.put("unitName", "上海中智");
                 //根据不同的业务需要处理wb
-                exportFileService.exportAboutXH(wb,map, taskSubProofDetailPOList);
+                exportFileService.exportAboutXH(wb, map, taskSubProofDetailPOList);
             } else if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_浦东.xls";
                 //获取POIFSFileSystem对象
@@ -388,28 +397,27 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 //通过POIFSFileSystem对象获取WB对象
                 wb = getHSSFWorkbook(fs);
                 //扣缴单位
-                map.put("withholdingUnit","上海中智");
+                map.put("withholdingUnit", "上海中智");
                 //电脑编码
-                map.put("withholdingCode","123456789");
+                map.put("withholdingCode", "123456789");
                 //通用缴款书流水号
-                map.put("generalPaymentBook","147258369");
+                map.put("generalPaymentBook", "147258369");
                 //办税人员
-                map.put("taxationPersonnel","admin");
+                map.put("taxationPersonnel", "admin");
                 //联系电话
-                map.put("phone","18201886666");
+                map.put("phone", "18201886666");
                 //换开份数
-                map.put("changeNum","2");
+                map.put("changeNum", "2");
                 //换开原因
-                map.put("changeReason","重新申报");
+                map.put("changeReason", "重新申报");
                 //根据不同的业务需要处理wb
-                exportFileService.exportAboutPD(wb,map, taskSubProofDetailPOList);
+                exportFileService.exportAboutPD(wb, map, taskSubProofDetailPOList);
             }
             //导出excel
             exportExcel(response, wb, fileName);
         } catch (Exception e) {
-            String str = BaseException.exceptionToString(e);
-            logger.error("exportSubTaskProof error " + str);
-
+            //日志工具类返回
+            logService.error(e, "TaskSubProofController.exportSubTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, null);
         } finally {
             if (wb != null) {
                 try {

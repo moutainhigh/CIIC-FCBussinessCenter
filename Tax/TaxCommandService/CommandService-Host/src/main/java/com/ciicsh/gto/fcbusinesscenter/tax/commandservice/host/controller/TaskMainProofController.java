@@ -10,15 +10,10 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
-import com.ciicsh.gto.logservice.api.LogServiceProxy;
-import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,18 +27,8 @@ import java.util.Map;
 @RestController
 public class TaskMainProofController extends BaseController implements TaskMainProofProxy {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskMainProofController.class);
-
-    @Value("${app.id}")
-    public String appId;
-
     @Autowired
     public TaskMainProofService taskMainProofService;
-
-    @Autowired
-    private LogServiceProxy logServiceProxy;
-
-
 
     /**
      * 条件查询完税凭证主任务
@@ -58,14 +43,19 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskMainProofDTO, requestForProof);
             ResponseForMainProof responseForMainProof = taskMainProofService.queryTaskMainProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForMainProof);
+            jr.success(responseForMainProof);
         } catch (Exception e) {
-            String str = BaseException.exceptionToString(e);
-            logger.error(str);
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            //标签
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("managerName", taskMainProofDTO.getManagerName());
+            tags.put("submitTimeStart", taskMainProofDTO.getSubmitTimeStart());
+            tags.put("submitTimeEnd", taskMainProofDTO.getSubmitTimeEnd());
+            tags.put("currentNum", taskMainProofDTO.getCurrentNum() + "");
+            tags.put("pageSize", taskMainProofDTO.getPageSize() + "");
+            //日志工具类返回
+            logService.error(e, "TaskMainProofController.queryTaskMainProofByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            //错误信息返回
+            jr.error();
         }
         return jr;
     }
@@ -112,19 +102,16 @@ public class TaskMainProofController extends BaseController implements TaskMainP
                 taskSubProofPO.setTaskType("02");
             }
             taskMainProofService.addTaskProof(taskMainProofPO, taskSubProofPO);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            String str = BaseException.exceptionToString(e);
             //标签
-            Map<String,String> tags =    new HashMap<>(16);
-            tags.put("managerNo",taskProofDTO.getManagerNo());
-            LogDTO logDTO = new LogDTO(appId,"TaskMainProofController.addTaskProof",str,"完税凭证任务", LogType.APP,tags);
-            logServiceProxy.error(logDTO);
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
-            jr.setData(false);
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("managerNo", taskProofDTO.getManagerNo());
+            tags.put("managerName", taskProofDTO.getManagerName());
+            //日志工具类返回
+            logService.error(e, "TaskMainProofController.addTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            //错误信息返回
+            jr.error();
         }
         return jr;
     }
@@ -146,13 +133,13 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             //设置修改人
             requestForProof.setModifiedBy("adminMain");
             taskMainProofService.updateTaskProofByRes(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            logger.error("updateTaskProof error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("mainProofIds", taskProofDTO.getMainProofIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainProofController.updateTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -174,14 +161,13 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             taskMainProofService.invalidTaskProof(requestForProof);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success();
         } catch (Exception e) {
-            String str = BaseException.exceptionToString(e);
-            logger.error(str);
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("mainProofIds", taskProofDTO.getMainProofIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainProofController.invalidTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }

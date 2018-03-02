@@ -116,7 +116,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             //修改完税凭证主任务状态
             TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
             //设置任务状态
-            taskMainProofPO.setStatus(requestForProof.getStatus());
+            taskMainProofPO.setStatus("01");
             //设置修改人
             taskMainProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
