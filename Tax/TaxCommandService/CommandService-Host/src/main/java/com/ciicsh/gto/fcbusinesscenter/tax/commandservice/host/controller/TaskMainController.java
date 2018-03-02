@@ -9,6 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubM
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubPaymentServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubSupplierServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
@@ -217,5 +218,81 @@ public class TaskMainController extends BaseController {
 
         return jr;
     }
+    /**
+     * 失效主任务
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/invalidMainTask")
+    public JsonResult invalidMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+            BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+            taskMainService.invalidTaskMains(requestForMainTaskMain);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            //jr.setData();
+        } catch (Exception e) {
+            logger.error(e.toString());
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+            throw e;
+        }
+
+        return jr;
+    }
+    /**
+     * 退回主任务
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/rejectMainTask")
+    public JsonResult rejectMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+            BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+            taskMainService.rejectTaskMains(requestForMainTaskMain);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            //jr.setData();
+        } catch (Exception e) {
+            logger.error(e.toString());
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+            throw e;
+        }
+
+        return jr;
+    }
+    /**
+     * 查询主任务详情列表
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/queryTaskMainDetails")
+    public JsonResult queryTaskMainDetails(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult jr = new JsonResult();
+        try {
+            RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
+            BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
+            ResponseForCalBatchDetail responseForCalBatchDetail = taskMainService.queryTaskMainDetails(requestForTaskMain);
+            jr.setErrorcode("0");
+            jr.setErrormsg("success");
+            jr.setData(responseForCalBatchDetail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jr.setErrorcode("1");
+            jr.setErrormsg("error");
+            throw e;
+        }
+
+        return jr;
+    }
+
 
 }

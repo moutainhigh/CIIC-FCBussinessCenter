@@ -8,7 +8,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainPO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author wuhua
@@ -26,7 +25,7 @@ public interface CalculationBatchMapper extends BaseMapper<CalculationBatchPO> {
      * @param page
      * @return
      */
-    List<CalculationBatchPO> queryCalculationBatchs(Pagination page,Map<String,String> params);
+//    List<CalculationBatchPO> queryCalculationBatchs(Pagination page,Map<String,String> params);
     /**
      * 查询计算批次明细列表
      * @param page
