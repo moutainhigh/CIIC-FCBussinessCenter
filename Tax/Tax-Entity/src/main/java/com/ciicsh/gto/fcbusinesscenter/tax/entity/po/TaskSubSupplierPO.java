@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -85,6 +86,11 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
      */
 	private String status;
     /**
+     * 状态中文
+     */
+    @TableField(exist = false)
+	private String statusName;
+    /**
      * 是否可用
      */
     @TableLogic
@@ -123,6 +129,13 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
      */
 	private String managerName;
 
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
 
 	public Long getId() {
 		return id;
@@ -234,6 +247,11 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 
 	public void setStatus(String status) {
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.TASK_STATUS,status);
+		}
 	}
 
 	public Boolean getActive() {
