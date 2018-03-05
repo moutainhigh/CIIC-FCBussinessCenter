@@ -229,7 +229,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             taskSubDeclarePO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubDeclarePO());
-            wrapper.andNew("status = {0}", "01");
+            wrapper.andNew("status = {0}", "02");
             wrapper.andNew("is_active = {0}", true);
             //将list转为数组
             Long[] ids = unMergeIds.toArray(new Long[unMergeIds.size()]);

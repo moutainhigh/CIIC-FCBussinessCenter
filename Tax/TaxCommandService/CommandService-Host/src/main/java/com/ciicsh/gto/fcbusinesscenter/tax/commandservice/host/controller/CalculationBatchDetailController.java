@@ -97,7 +97,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
                 calculationBatchDetailService.queryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
             }
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("ids", calculationBatchDetailDTO.getIds().toString());

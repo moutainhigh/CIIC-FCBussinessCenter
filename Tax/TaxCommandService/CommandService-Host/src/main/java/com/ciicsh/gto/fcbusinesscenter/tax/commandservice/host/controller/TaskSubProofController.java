@@ -111,7 +111,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         JsonResult jr = new JsonResult();
         try {
             taskSubProofService.copyProofInfoBySubId(taskSubProofId);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubProofId", taskSubProofId.toString());
@@ -166,7 +166,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //修改人
             requestForProof.setModifiedBy("adminMain");
             taskSubProofService.combineTaskProofByRes(requestForProof);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getManagerName());
@@ -193,7 +193,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //修改人
             requestForProof.setModifiedBy("adminMain");
             taskSubProofService.splitTaskProofByRes(requestForProof);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskProofDTO.getId().toString());
@@ -222,7 +222,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
             requestForProof.setStatus("04");
             taskSubProofService.completeTaskProofByRes(requestForProof);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
@@ -251,7 +251,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("03");
             taskSubProofService.rejectTaskProofByRes(requestForProof);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
@@ -280,7 +280,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("05");
             taskSubProofService.invalidTaskProofByRes(requestForProof);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());

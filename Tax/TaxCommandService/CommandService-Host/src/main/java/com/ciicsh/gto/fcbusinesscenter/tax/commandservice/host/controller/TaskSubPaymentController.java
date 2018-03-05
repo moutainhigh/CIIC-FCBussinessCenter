@@ -74,7 +74,7 @@ public class TaskSubPaymentController extends BaseController {
             //任务状态:
             requestForSubPayment.setStatus("04");
             taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subPaymentIds", taskSubPaymentDTO.getSubPaymentIds().toString());
@@ -103,7 +103,7 @@ public class TaskSubPaymentController extends BaseController {
             //任务状态
             requestForSubPayment.setStatus("03");
             taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subPaymentIds", taskSubPaymentDTO.getSubPaymentIds().toString());

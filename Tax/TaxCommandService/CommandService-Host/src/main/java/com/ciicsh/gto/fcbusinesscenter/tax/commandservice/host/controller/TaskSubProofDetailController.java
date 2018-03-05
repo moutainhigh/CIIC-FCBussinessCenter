@@ -210,7 +210,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             }
             requestForSubDetail.setTaskSubProofDetailBOList(taskSubProofDetailBOList);
             taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("detailType", subProofDetailDTO.getDetailType());

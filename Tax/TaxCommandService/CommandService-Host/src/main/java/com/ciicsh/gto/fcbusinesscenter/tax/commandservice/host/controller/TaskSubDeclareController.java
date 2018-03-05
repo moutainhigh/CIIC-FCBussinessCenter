@@ -84,7 +84,7 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.mergeTaskSubDeclares(requestForTaskSubDeclare);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
@@ -111,7 +111,7 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskSubDeclareDTO.getId().toString());
@@ -293,9 +293,9 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             requestForTaskSubDeclare.setModifiedBy("adminMain");
             //任务状态
-            requestForTaskSubDeclare.setStatus("03");
+            requestForTaskSubDeclare.setStatus("04");
             taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());

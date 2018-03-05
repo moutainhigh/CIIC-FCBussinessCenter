@@ -99,7 +99,7 @@ public class TaskFileController extends BaseController {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);
             fileService.uploadFileByBusinessIdAndType(requestForFile, file);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("businessId", fileDTO.getBusinessId().toString());

@@ -75,7 +75,7 @@ public class TaskSubMoneyController extends BaseController {
             //任务状态
             requestForSubMoney.setStatus("04");
             taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
@@ -104,7 +104,7 @@ public class TaskSubMoneyController extends BaseController {
             //任务状态
             requestForSubMoney.setStatus("03");
             taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());

@@ -181,7 +181,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.submitTaskMains(requestForMainTaskMain);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
@@ -207,7 +207,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.passTaskMains(requestForMainTaskMain);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
@@ -231,14 +231,13 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.invalidTaskMains(requestForMainTaskMain);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            //jr.setData();
+            jr.success(true);
         } catch (Exception e) {
-            logger.error(e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
-            throw e;
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainController.invalidMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
         }
 
         return jr;
@@ -256,14 +255,13 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.rejectTaskMains(requestForMainTaskMain);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            //jr.setData();
+            jr.success(true);
         } catch (Exception e) {
-            logger.error(e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
-            throw e;
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainController.rejectMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
         }
 
         return jr;
@@ -281,14 +279,13 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
             ResponseForCalBatchDetail responseForCalBatchDetail = taskMainService.queryTaskMainDetails(requestForTaskMain);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForCalBatchDetail);
+            jr.success(responseForCalBatchDetail);
         } catch (Exception e) {
-            e.printStackTrace();
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
-            throw e;
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainId", taskMainDTO.getTaskMainId().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainController.queryTaskMainDetails", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
         }
 
         return jr;

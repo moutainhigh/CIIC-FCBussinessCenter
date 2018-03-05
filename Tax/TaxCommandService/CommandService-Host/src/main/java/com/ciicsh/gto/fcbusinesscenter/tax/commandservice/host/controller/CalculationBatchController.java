@@ -97,7 +97,7 @@ public class CalculationBatchController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(calculationBatchDTO, requestForMainTaskMain);
             calculationBatchService.createMainTask(requestForMainTaskMain);
-            jr.success();
+            jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("batchIds", calculationBatchDTO.getBatchIds().toString());
