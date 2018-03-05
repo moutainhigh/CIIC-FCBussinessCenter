@@ -89,9 +89,13 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
 
     @Override
     public Boolean addPrsPayrollTemplate(Map<String, Object> params) {
-        // TODO get current user
+      if (params.get("createdBy") == null) {
         params.put("createdBy", '1');
+      }
+
+      if (params.get("modifiedBy") == null) {
         params.put("modifiedBy", '1');
+      }
 
         if (params.get("effectiveTime") != null) {
             if (params.get("effectiveTime").equals("")) {
@@ -154,8 +158,9 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
 
     @Override
     public Boolean updatePrsPayrollTemplate(Map<String, Object> params) {
-        // TODO get current user
+      if (params.get("modifiedBy") == null) {
         params.put("modifiedBy", '1');
+      }
 
         if (params.get("effectiveTime") != null) {
             if (params.get("effectiveTime").equals("")) {

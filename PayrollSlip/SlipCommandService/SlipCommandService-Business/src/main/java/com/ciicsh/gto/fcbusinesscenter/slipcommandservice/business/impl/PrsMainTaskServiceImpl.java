@@ -19,7 +19,7 @@ import java.util.Map;
  * 工资单任务单主表 服务实现类
  *
  * @author taka
- * @since 2018-02-11
+ * @since 2018-02-28
  */
 @Service
 @Transactional
@@ -73,9 +73,14 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
     @Override
     public Boolean addPrsMainTask(Map<String, Object> params) {
-        // TODO get current user
-        params.put("createdBy", '1');
-        params.put("modifiedBy", '1');
+
+        if (params.get("createdBy") == null) {
+          params.put("createdBy", '1');
+        }
+
+        if (params.get("modifiedBy") == null) {
+          params.put("modifiedBy", '1');
+        }
 
         if (params.get("publishDate") != null) {
             if (params.get("publishDate").equals("")) {
@@ -100,8 +105,10 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
     @Override
     public Boolean updatePrsMainTask(Map<String, Object> params) {
-        // TODO get current user
+
+      if (params.get("modifiedBy") == null) {
         params.put("modifiedBy", '1');
+      }
 
         if (params.get("publishDate") != null) {
             if (params.get("publishDate").equals("")) {

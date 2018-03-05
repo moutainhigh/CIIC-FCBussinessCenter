@@ -19,7 +19,7 @@ import java.util.Map;
  * 工资单邮寄快递信息 服务实现类
  *
  * @author taka
- * @since 2018-02-24
+ * @since 2018-02-28
  */
 @Service
 @Transactional
@@ -73,9 +73,14 @@ public class PrsPayrollExpressServiceImpl implements PrsPayrollExpressService {
 
     @Override
     public Boolean addPrsPayrollExpress(Map<String, Object> params) {
-        // TODO get current user
-        params.put("createdBy", '1');
-        params.put("modifiedBy", '1');
+
+        if (params.get("createdBy") == null) {
+          params.put("createdBy", '1');
+        }
+
+        if (params.get("modifiedBy") == null) {
+          params.put("modifiedBy", '1');
+        }
 
 
 
@@ -86,8 +91,10 @@ public class PrsPayrollExpressServiceImpl implements PrsPayrollExpressService {
 
     @Override
     public Boolean updatePrsPayrollExpress(Map<String, Object> params) {
-        // TODO get current user
+
+      if (params.get("modifiedBy") == null) {
         params.put("modifiedBy", '1');
+      }
 
 
 
