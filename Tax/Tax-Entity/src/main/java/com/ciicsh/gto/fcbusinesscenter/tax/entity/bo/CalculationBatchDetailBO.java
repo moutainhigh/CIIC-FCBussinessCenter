@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -351,6 +352,11 @@ public class CalculationBatchDetailBO {
 
     public void setIdType(String idType) {
         this.idType = idType;
+
+        if(idType!=null){
+
+            this.idTypeName  = EnumUtil.getMessage(EnumUtil.IT_TYPE,idType);
+        }
     }
 
     public String getIdNo() {
@@ -375,6 +381,11 @@ public class CalculationBatchDetailBO {
 
     public void setIncomeSubject(String incomeSubject) {
         this.incomeSubject = incomeSubject;
+
+        if(incomeSubject!=null){
+
+            this.incomeSubjectName  = EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,incomeSubject);
+        }
     }
 
     public BigDecimal getIncomeTotal() {

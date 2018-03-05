@@ -1,14 +1,13 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author yuantongqing
@@ -24,7 +25,7 @@ import java.time.format.DateTimeFormatter;
  */
 @RestController
 public class TaskSubMoneyController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubMoneyController.class);
+
 
     @Autowired
     private TaskSubMoneyService taskSubMoneyService;
@@ -42,13 +43,15 @@ public class TaskSubMoneyController extends BaseController {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
             ResponseForSubMoney responseForSubMoney = taskSubMoneyService.querySubMoney(requestForSubMoney);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForSubMoney);
+            jr.success(responseForSubMoney);
         } catch (Exception e) {
-            logger.error("querySubMoney error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("paymentAccount", taskSubMoneyDTO.getPaymentAccount());
+            tags.put("managerName", taskSubMoneyDTO.getManagerName());
+            tags.put("statusType", taskSubMoneyDTO.getStatusType());
+            //日志工具类返回
+            logService.error(e, "TaskSubMoneyController.querySubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -70,15 +73,15 @@ public class TaskSubMoneyController extends BaseController {
             //设置修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
             //任务状态
-            requestForSubMoney.setStatus("03");
+            requestForSubMoney.setStatus("04");
             taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success(true);
         } catch (Exception e) {
-            logger.error("completeTaskSubMoney error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubMoneyController.completeTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -99,15 +102,15 @@ public class TaskSubMoneyController extends BaseController {
             //修改人
             requestForSubMoney.setModifiedBy("adminTaskSubMoney");
             //任务状态
-            requestForSubMoney.setStatus("02");
+            requestForSubMoney.setStatus("03");
             taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(true);
+            jr.success(true);
         } catch (Exception e) {
-            logger.error("rejectTaskSubMoney error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubMoneyController.rejectTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -127,13 +130,13 @@ public class TaskSubMoneyController extends BaseController {
             BeanUtils.copyProperties(taskSubMoneyPO, taskSubMoneyDTO);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
             taskSubMoneyDTO.setPeriod(taskSubMoneyPO.getPeriod().format(formatter));
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(taskSubMoneyDTO);
+            jr.success(taskSubMoneyDTO);
         } catch (Exception e) {
-            logger.error("querySubMoneyById error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subMoneyId", subMoneyId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubMoneyController.querySubMoneyById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskNoService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
@@ -75,23 +75,18 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 //        EntityWrapper wrapper = new EntityWrapper();
 //        wrapper.setEntity(new CalculationBatchPO());
         //查询条件
-        Map<String,String> params = new HashMap<String,String>();
+        EntityWrapper wrapper = new EntityWrapper();
         //管理方名称
         if(StrKit.isNotEmpty(requestForCalBatch.getManagerName())){
-//            wrapper.like("manager_name",requestForCalBatch.getManagerName());
-//            params.put("manager_name","'%"+requestForCalBatch.getManagerName()+"%'");
-            params.put("manager_name",requestForCalBatch.getManagerName());
+            wrapper.like("manager_name",requestForCalBatch.getManagerName());
         }
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForCalBatch.getBatchNo())){
-//            wrapper.andNew("batch_no={0}",requestForCalBatch.getBatchNo());
-            params.put("batch_no",requestForCalBatch.getBatchNo());
+            wrapper.like("batch_no",requestForCalBatch.getBatchNo());
         }
-        //wrapper.like("manager_name","恒大");
-//        wrapper.orderBy("created_time",false);
-
-        Page<CalculationBatchPO> page = new Page<CalculationBatchPO>(requestForCalBatch.getCurrentNum(),requestForCalBatch.getPageSize());
-        calculationBatchPOList = baseMapper.queryCalculationBatchs(page,params);//baseMapper.selectPage(page, wrapper);
+        wrapper.orderBy("created_time",false);
+        Page page = new Page(requestForCalBatch.getCurrentNum(),requestForCalBatch.getPageSize());
+        calculationBatchPOList = baseMapper.selectPage(page,wrapper);//baseMapper.selectPage(page, wrapper);
 
 
         for(CalculationBatchPO p: calculationBatchPOList){
@@ -164,10 +159,10 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
             batchIds[0] = calculationBatchDetailBO.getCalculationBatchId();
             List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetails(page,batchIds);
 
-            for(CalculationBatchDetailBO p : calculationBatchDetailBOList){
+            /*for(CalculationBatchDetailBO p : calculationBatchDetailBOList){
                 p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));//证件类型中文显示
                 p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));//个税所得项目中文显示
-            }
+            }*/
 
             responseForCalBatchDetail.setRowList(calculationBatchDetailBOList);
             responseForCalBatchDetail.setCurrentNum(requestForEmployees.getCurrentNum());
@@ -189,8 +184,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         //新增主任务
         TaskMainPO p = new TaskMainPO();
         p.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN));
-        p.setManagerName("中智上海");
-        p.setManagerNo("CIICSH");
+        p.setManagerName(requestForMainTask.getManagerName());
+        p.setManagerNo(requestForMainTask.getManagerNo());
         p.setStatus("00");//草稿
         p.setCreatedBy("操作员");//
         taskMainService.insert(p);

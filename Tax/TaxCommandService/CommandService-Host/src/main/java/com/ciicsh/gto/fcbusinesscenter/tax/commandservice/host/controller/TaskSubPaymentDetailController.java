@@ -1,25 +1,26 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubPaymentDetailDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author yuantongqing create on 2018/1/3
  */
 @RestController
 public class TaskSubPaymentDetailController extends BaseController {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubPaymentDetailController.class);
 
     @Autowired
     private TaskSubPaymentDetailService taskSubPaymentDetailService;
@@ -37,13 +38,17 @@ public class TaskSubPaymentDetailController extends BaseController {
             RequestForSubPaymentDetail requestForSubPaymentDetail = new RequestForSubPaymentDetail();
             BeanUtils.copyProperties(taskSubPaymentDetailDTO, requestForSubPaymentDetail);
             ResponseForSubPaymentDetail responseForSubPaymentDetail = taskSubPaymentDetailService.querySubPaymentDetailsByParams(requestForSubPaymentDetail);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForSubPaymentDetail);
+            jr.success(responseForSubPaymentDetail);
         } catch (Exception e) {
-            logger.error("querySubPaymentDetailsByParams error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskSubPaymentId", taskSubPaymentDetailDTO.getTaskSubPaymentId().toString());
+            tags.put("employeeNo", taskSubPaymentDetailDTO.getEmployeeNo());
+            tags.put("employeeName", taskSubPaymentDetailDTO.getEmployeeName());
+            tags.put("idType", taskSubPaymentDetailDTO.getIdType());
+            tags.put("idNo", taskSubPaymentDetailDTO.getIdNo());
+            //日志工具类返回
+            logService.error(e, "TaskSubPaymentDetailController.querySubPaymentDetailsByParams", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "04"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }

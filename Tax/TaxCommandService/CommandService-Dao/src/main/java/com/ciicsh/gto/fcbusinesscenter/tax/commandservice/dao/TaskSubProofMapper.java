@@ -2,11 +2,14 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubDeclareDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -21,8 +24,10 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
     /**
      * 根据主键ID重新计算子任务总人数
      * @param id
+     * @param modifiedBy
+     * @param modifiedTime
      */
-    void updateSubHeadcountById(@Param("id") Long id);
+    void updateSubHeadcountById(@Param("id") Long id,@Param("modifiedBy") String modifiedBy,@Param("modifiedTime") LocalDateTime modifiedTime);
 
     /**
      * 查询完税凭证子任务(分页)
@@ -45,5 +50,12 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
      * @return
      */
     TaskSubProofBO queryApplyDetailsBySubId(@Param("subProofId") Long subProofId);
+
+    /**
+     * 申报详细信息
+     * @param taskSubDeclareId
+     * @return
+     */
+    List<TaskSubDeclareDetailBO> querySubDeclareDetailsForProof(@Param("taskSubDeclareId") Long taskSubDeclareId);
 
 }

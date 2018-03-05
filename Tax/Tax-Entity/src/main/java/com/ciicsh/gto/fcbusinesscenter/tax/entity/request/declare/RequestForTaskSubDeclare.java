@@ -45,6 +45,11 @@ public class RequestForTaskSubDeclare extends PageInfo {
     private String periodType;
 
     /**
+     * 状态
+     */
+    private String status;
+
+    /**
      * 修改人
      */
     private String modifiedBy;
@@ -119,5 +124,13 @@ public class RequestForTaskSubDeclare extends PageInfo {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

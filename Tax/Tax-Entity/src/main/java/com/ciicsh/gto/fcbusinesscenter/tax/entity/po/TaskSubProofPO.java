@@ -107,7 +107,46 @@ public class TaskSubProofPO implements Serializable {
 	 */
 	@TableField("is_combined")
 	private Boolean isCombined;
+	/**
+	 * 管理方编号
+	 */
+	@TableField("manager_no")
+	private String managerNo;
+	/**
+	 * 管理方名称
+	 */
+	@TableField("manager_name")
+	private String managerName;
+	/**
+	 * 申报子任务id
+	 */
+	@TableField("task_sub_declare_id")
+	private Long taskSubDeclareId;
 
+
+	public Long getTaskSubDeclareId() {
+		return taskSubDeclareId;
+	}
+
+	public void setTaskSubDeclareId(Long taskSubDeclareId) {
+		this.taskSubDeclareId = taskSubDeclareId;
+	}
+
+	public String getManagerNo() {
+		return managerNo;
+	}
+
+	public void setManagerNo(String managerNo) {
+		this.managerNo = managerNo;
+	}
+
+	public String getManagerName() {
+		return managerName;
+	}
+
+	public void setManagerName(String managerName) {
+		this.managerName = managerName;
+	}
 
 	public Long getId() {
 		return id;

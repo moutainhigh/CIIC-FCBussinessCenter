@@ -7,11 +7,20 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 public class CalculationBatchDTO {
 
     private String managerName;
+    private String managerNo;
     private String batchNo;
     private String[] batchIds;
     private String[] batchNos;
     private Integer currentNum;
     private Integer pageSize;
+
+    public String getManagerNo() {
+        return managerNo;
+    }
+
+    public void setManagerNo(String managerNo) {
+        this.managerNo = managerNo;
+    }
 
     public String[] getBatchIds() {
         return batchIds;

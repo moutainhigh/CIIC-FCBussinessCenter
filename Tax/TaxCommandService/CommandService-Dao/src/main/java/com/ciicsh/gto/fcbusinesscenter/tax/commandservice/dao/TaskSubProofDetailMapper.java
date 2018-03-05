@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,5 +32,12 @@ public interface TaskSubProofDetailMapper extends BaseMapper<TaskSubProofDetailP
      * @return
      */
     List<TaskSubProofDetailPO> queryTaskSubProofDetailBySubId(TaskSubProofDetailBO taskSubProofDetailBO);
+
+//    /**
+//     * 根据子任务ID查询总人数，中方人数，外方人数
+//     * @param id
+//     * @return
+//     */
+//    Map<String,Object> queryPersonNumBySubProofId(@Param("id") Long id);
 
 }

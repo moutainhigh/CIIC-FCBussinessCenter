@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -204,6 +205,11 @@ public class TaskSubPaymentPO implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.TASK_STATUS,status);
+		}
 	}
 
 	public Boolean getActive() {

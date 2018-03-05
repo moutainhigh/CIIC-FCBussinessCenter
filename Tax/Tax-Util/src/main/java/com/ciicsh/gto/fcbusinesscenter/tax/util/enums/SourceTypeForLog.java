@@ -27,7 +27,15 @@ public enum SourceTypeForLog {
     /**
      * 完税凭证
      */
-    ST05("完税凭证");
+    ST05("完税凭证"),
+    /**
+     * 文件
+     */
+    ST06("文件"),
+    /**
+     * 供应商
+     */
+    ST07("供应商");
 
     private String  message;
 

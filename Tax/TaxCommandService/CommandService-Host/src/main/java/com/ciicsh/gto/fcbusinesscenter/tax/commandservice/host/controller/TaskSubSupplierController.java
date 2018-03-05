@@ -6,8 +6,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSuppli
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForTaskSubSupplier;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForTaskSubSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author yuantongqing  on 2018/02/09
  */
 @RestController
 public class TaskSubSupplierController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubSupplierController.class);
 
     @Autowired
     private TaskSubSupplierService taskSubSupplierService;
@@ -38,13 +40,18 @@ public class TaskSubSupplierController extends BaseController {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
             ResponseForTaskSubSupplier responseForTaskSubSupplier = taskSubSupplierService.queryTaskSubSupplier(requestForTaskSubSupplier);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForTaskSubSupplier);
+            jr.success(responseForTaskSubSupplier);
         } catch (Exception e) {
-            logger.error("queryTaskSubSupplier error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("declareAccount", taskSubSupplierDTO.getDeclareAccount());
+            tags.put("managerName", taskSubSupplierDTO.getManagerName());
+            tags.put("period", taskSubSupplierDTO.getPeriod());
+            tags.put("periodType", taskSubSupplierDTO.getPeriodType());
+            tags.put("supportName", taskSubSupplierDTO.getSupportName());
+            tags.put("statusType", taskSubSupplierDTO.getStatusType());
+            //日志工具类返回
+            logService.error(e, "TaskSubSupplierController.queryTaskSubSupplier", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }
@@ -62,13 +69,13 @@ public class TaskSubSupplierController extends BaseController {
         try {
             //根据供应商子任务ID查询供应商信息
             TaskSubSupplierPO taskSubSupplierPO = taskSubSupplierService.querySupplierDetailsById(subSupplierId);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(taskSubSupplierPO);
+            jr.success(taskSubSupplierPO);
         } catch (Exception e) {
-            logger.error("querySupplierDetailsById error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subSupplierId", subSupplierId.toString());
+            //日志工具类返回
+            logService.error(e, "TaskSubSupplierController.querySupplierDetailsById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }

@@ -60,4 +60,13 @@
         </if>
         ORDER  BY  spd.created_time desc
     </select>
+
+    <!--&lt;!&ndash;根据子任务ID查询相关人数&ndash;&gt;-->
+    <!--<select id="queryPersonNumBySubProofId" resultType="java.util.HashMap">-->
+        <!--select-->
+            <!--count(1) as headNumTotal,-->
+            <!--sum(case when id_type = '01' then 1 else 0 end ) as chineseNumTotal,-->
+            <!--sum(case when id_type != '01' then 1 else 0 end ) as foreignerNumTotal-->
+        <!--from tax_fc_task_sub_proof_detail where task_sub_proof_id = #{id}-->
+    <!--</select>-->
 </mapper>
