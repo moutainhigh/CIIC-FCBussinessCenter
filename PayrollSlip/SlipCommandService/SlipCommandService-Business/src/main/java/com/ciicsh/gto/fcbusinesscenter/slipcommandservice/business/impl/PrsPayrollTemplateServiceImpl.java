@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.apache.poi.hwpf.HWPFDocumentCore;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
 import org.apache.poi.hwpf.converter.WordToHtmlUtils;
@@ -89,13 +91,15 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
 
     @Override
     public Boolean addPrsPayrollTemplate(Map<String, Object> params) {
-      if (params.get("createdBy") == null) {
-        params.put("createdBy", '1');
-      }
 
-      if (params.get("modifiedBy") == null) {
-        params.put("modifiedBy", '1');
-      }
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("createdBy", currUser.getDisplayName());
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("createdBy", "1");
+            params.put("modifiedBy", "1");
+        }
 
         if (params.get("effectiveTime") != null) {
             if (params.get("effectiveTime").equals("")) {
@@ -158,9 +162,12 @@ public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService 
 
     @Override
     public Boolean updatePrsPayrollTemplate(Map<String, Object> params) {
-      if (params.get("modifiedBy") == null) {
-        params.put("modifiedBy", '1');
-      }
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("modifiedBy", "1");
+        }
 
         if (params.get("effectiveTime") != null) {
             if (params.get("effectiveTime").equals("")) {
