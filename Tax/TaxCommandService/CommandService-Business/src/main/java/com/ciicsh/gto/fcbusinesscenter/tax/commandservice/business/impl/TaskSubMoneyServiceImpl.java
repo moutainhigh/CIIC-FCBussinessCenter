@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubMoneyMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -149,5 +151,16 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(subMoneyId);
         taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubMoneyPO.getStatus()));
         return taskSubMoneyPO;
+    }
+
+    /**
+     * 根据划款任务BO对象修改划款任务信息
+     * @param taskSubMoneyBO
+     */
+    @Override
+    public void updateTaskSubMoneyById(TaskSubMoneyBO taskSubMoneyBO) {
+        TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
+        BeanUtils.copyProperties(taskSubMoneyBO,taskSubMoneyPO);
+        baseMapper.updateById(taskSubMoneyPO);
     }
 }

@@ -3,13 +3,13 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json;
 /**
  * Created by shil on 2017/9/20.
  */
-public class JsonResult {
+public class JsonResult<T> {
     public JsonResult(){}
     public JsonResult(String errorcode) {
         this.errorcode = errorcode;
     }
 
-    public JsonResult(Object data){
+    public JsonResult(T data){
         this.data = data;
     }
 
@@ -18,12 +18,12 @@ public class JsonResult {
         this.errormsg = errormsg;
     }
 
-    public JsonResult(String errorcode, Object data){
+    public JsonResult(String errorcode, T data){
         this.errorcode = errorcode;
         this.data = data;
     }
 
-    public JsonResult(String errorcode, String errormsg, Object data){
+    public JsonResult(String errorcode, String errormsg, T data){
         this.errorcode = errorcode;
         this.errormsg = errormsg;
         this.data = data;
@@ -31,7 +31,7 @@ public class JsonResult {
 
     private String errorcode = "0";
     private String errormsg = "";
-    private Object data = "";
+    private T data;
 
     public String getErrorcode(){
         return errorcode;
@@ -49,11 +49,11 @@ public class JsonResult {
         this.errormsg = errormsg;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
@@ -65,7 +65,7 @@ public class JsonResult {
      * @param data
      * @return
      */
-    public void fill(String successCode, String successMsg,Object data) {
+    public void fill(String successCode, String successMsg,T data) {
         this.errorcode = successCode;
         this.errormsg = successMsg;
         this.data = data;
@@ -75,7 +75,7 @@ public class JsonResult {
      * @param data
      * @return
      */
-    public void success(Object data){
+    public void success(T data){
         this.fill("0","success",data);
     }
 

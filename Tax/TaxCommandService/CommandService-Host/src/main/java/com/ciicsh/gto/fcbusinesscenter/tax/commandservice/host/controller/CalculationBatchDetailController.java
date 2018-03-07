@@ -36,8 +36,8 @@ public class CalculationBatchDetailController extends BaseController implements 
      * @return
      */
     @Override
-    public JsonResult queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForBatchDetail> queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<ResponseForBatchDetail> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -64,8 +64,8 @@ public class CalculationBatchDetailController extends BaseController implements 
      * @return
      */
     @PostMapping(value = "queryTaxBatchDetailByRes")
-    public JsonResult queryTaxBatchDetailByRes(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForCalBatchDetail> queryTaxBatchDetailByRes(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
+        JsonResult<ResponseForCalBatchDetail> jr = new JsonResult<>();
         try {
             RequestForCalBatchDetail requestForCalBatchDetail = new RequestForCalBatchDetail();
             BeanUtils.copyProperties(calculationBatchDetailDTO, requestForCalBatchDetail);
@@ -91,8 +91,8 @@ public class CalculationBatchDetailController extends BaseController implements 
      * @return
      */
     @PostMapping(value = "recoveryCalBatchDetail")
-    public JsonResult recoveryCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> recoveryCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
                 calculationBatchDetailService.queryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
