@@ -22,4 +22,6 @@ public interface PrsSubTaskService {
     Boolean addPrsSubTask(Map<String, Object> params);
 
     Boolean updatePrsSubTask(Map<String, Object> params);
+
+    Boolean updatePrsSubTaskByMainTaskId(Map<String, Object> params);
 }
