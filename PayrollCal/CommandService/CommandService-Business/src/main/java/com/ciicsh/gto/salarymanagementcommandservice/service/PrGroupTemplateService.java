@@ -101,4 +101,11 @@ public interface PrGroupTemplateService {
      * @return
      */
     List<HashMap<String, String>> getPrGroupTemplatNameList(String query);
+
+    /**
+     *
+     * @param code
+     * @return
+     */
+    boolean publishPrGroupTemplate(String code);
 }

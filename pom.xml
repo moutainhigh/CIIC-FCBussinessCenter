@@ -245,6 +245,12 @@
             <version>3.0.4.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.ciicsh.gt1.logservice</groupId>
+            <artifactId>logservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <modules>

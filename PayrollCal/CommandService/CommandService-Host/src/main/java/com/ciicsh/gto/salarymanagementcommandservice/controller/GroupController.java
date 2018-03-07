@@ -2,18 +2,16 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.*;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
@@ -76,8 +74,8 @@ public class GroupController {
         newEntity.setGroupName(newName);
         newEntity.setVersion("1.0");
         boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
-        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_COPY_SUCCESS)
-                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_COPY_FAIL);
+        return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_COPY_SUCCESS)
+                : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_COPY_FAIL);
     }
 
 
@@ -105,22 +103,6 @@ public class GroupController {
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
         return JsonResult.success(resultPage);
     }
-
-    /**
-     * 获取薪资组名列表
-     * @param managementId
-     * @param pageNum
-     * @return
-     */
-//    @GetMapping(value = "/prGroupName")
-//    public ResultEntity getPrGroupNameList(@RequestParam String managementId,
-//                                                   @RequestParam(required = false, defaultValue = "1") Integer pageNum){
-//        PrGroupEntity paramItem = new PrGroupEntity();
-//        setCommonParam(paramItem, managementId, null);
-//        List<String> resultList = prGroupService.getNameList(managementId);
-//        return ResultEntity.success(resultList);
-//    }
-
 
     /**
      * 更新薪资组
@@ -182,14 +164,6 @@ public class GroupController {
         return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
     }
 
-    @DeleteMapping(value = "/prGroup/{prGroupId}/prItem/{prItemId}")
-    public ResultEntity deletePrItemFromPrGroup(@PathVariable("prGroupId") String prGroupId,
-                                                       @PathVariable("prItemId") String prItemId,
-                                                       @RequestParam String prItemName) {
-        Map<String, Object> result =  prGroupService.deletePrItemFromGroup(prGroupId, prItemId, prItemName);
-        return ResultEntity.success(result);
-    }
-
     /**
      * 删除薪资组
      * @param code
@@ -225,8 +199,8 @@ public class GroupController {
         updateParam.setGroupCode(code);
         updateParam.setModifiedBy("system");
         boolean result = prGroupService.approvePrGroup(updateParam);
-        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_APPROVE_SUCCESS)
-                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_APPROVE_FAIL);
+        return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_APPROVE_SUCCESS)
+                : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_APPROVE_FAIL);
     }
 
     @GetMapping("/lastVersionPayrollGroupItems")

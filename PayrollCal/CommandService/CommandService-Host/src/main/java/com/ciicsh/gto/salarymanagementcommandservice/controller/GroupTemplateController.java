@@ -2,11 +2,11 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.PayrollGroupTemplateProxy;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateHistoryDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplateHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
@@ -16,7 +16,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.GroupTemplateTra
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/salaryManagement")
-public class GroupTemplateController extends BaseController implements PayrollGroupTemplateProxy{
+public class GroupTemplateController extends BaseController {
 
     @Autowired
     private PrGroupTemplateServiceImpl prGroupTemplateService;
@@ -164,7 +164,23 @@ public class GroupTemplateController extends BaseController implements PayrollGr
         updateParam.setGroupTemplateCode(code);
         updateParam.setModifiedBy("system");
         boolean result = prGroupTemplateService.approvePrGroupTemplate(updateParam);
-        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_TEMPLATE_APPROVE_SUCCESS)
-                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_TEMPLATE_APPROVE_FAIL);
+        return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_TEMPLATE_APPROVE_SUCCESS)
+                : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_TEMPLATE_APPROVE_FAIL);
+    }
+
+    @GetMapping("/publishPayrollGroupTemplate/{code}")
+    public JsonResult publishPayrollGroupTemplate(@PathVariable("code") String code) {
+
+        PrPayrollGroupTemplatePO publishItem = prGroupTemplateService.getItemByCode(code);
+        if (publishItem.getApprovalStatus() != ApprovalStatusEnum.APPROVE.getValue()) {
+            return JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_TEMPLATE_INCORRECT_APPROVAL_STATUS);
+        }
+
+        try {
+            prGroupTemplateService.publishPrGroupTemplate(code);
+            return JsonResult.success("");
+        } catch (Exception e) {
+            return JsonResult.faultMessage("Fail");
+        }
     }
 }

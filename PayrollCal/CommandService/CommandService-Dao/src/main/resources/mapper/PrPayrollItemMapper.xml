@@ -206,6 +206,9 @@
             <if test="formulaContent != null">
                 formula_content = #{formulaContent},
             </if>
+			<if test="originCondition != null">
+				origin_condition = #{originCondition},
+			</if>
             <if test="itemCondition != null">
                 item_condition = #{itemCondition},
             </if>
