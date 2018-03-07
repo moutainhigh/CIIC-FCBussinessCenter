@@ -43,7 +43,7 @@ public class TaskSubMoneyDetailController extends BaseController {
             jr.success(responseForSubMoneyDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
-            tags.put("taskSubMoneyId", taskSubMoneyDetailDTO.getTaskSubPaymentId().toString());
+            tags.put("taskSubMoneyId", taskSubMoneyDetailDTO.getTaskSubMoneyId().toString());
             tags.put("employeeNo", taskSubMoneyDetailDTO.getEmployeeNo());
             tags.put("employeeName", taskSubMoneyDetailDTO.getEmployeeName());
             tags.put("idType", taskSubMoneyDetailDTO.getIdType());

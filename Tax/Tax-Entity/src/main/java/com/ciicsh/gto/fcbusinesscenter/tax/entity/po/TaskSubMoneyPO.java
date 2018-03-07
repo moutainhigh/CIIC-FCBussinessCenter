@@ -116,6 +116,28 @@ public class TaskSubMoneyPO{
      */
 	@TableField("manager_name")
 	private String managerName;
+	/**
+	 * 划款状态
+	 */
+	@TableField("pay_status")
+	private String payStatus;
+	/**
+	 * 划款状态(中文)
+	 */
+	@TableField(exist = false)
+	private String payStatusName;
+
+	/**
+	 * 付款申请ID
+	 */
+	@TableField("pay_apply_id")
+	private Long payApplyId;
+
+	/**
+	 * 付款凭证编号(结算单编号)
+	 */
+	@TableField("pay_apply_code")
+	private String payApplyCode;
 
 
 	public Long getId() {
@@ -275,6 +297,38 @@ public class TaskSubMoneyPO{
 		this.statusName = statusName;
 	}
 
+	public String getPayStatus() {
+		return payStatus;
+	}
+
+	public void setPayStatus(String payStatus) {
+		this.payStatus = payStatus;
+	}
+
+	public String getPayStatusName() {
+		return payStatusName;
+	}
+
+	public void setPayStatusName(String payStatusName) {
+		this.payStatusName = payStatusName;
+	}
+
+	public Long getPayApplyId() {
+		return payApplyId;
+	}
+
+	public void setPayApplyId(Long payApplyId) {
+		this.payApplyId = payApplyId;
+	}
+
+	public String getPayApplyCode() {
+		return payApplyCode;
+	}
+
+	public void setPayApplyCode(String payApplyCode) {
+		this.payApplyCode = payApplyCode;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubMoneyPO{" +
@@ -297,6 +351,10 @@ public class TaskSubMoneyPO{
 				", modifiedBy='" + modifiedBy + '\'' +
 				", managerNo='" + managerNo + '\'' +
 				", managerName='" + managerName + '\'' +
+				", payStatus='" + payStatus + '\'' +
+				", payStatusName='" + payStatusName + '\'' +
+				", payApplyId=" + payApplyId +
+				", payApplyCode='" + payApplyCode + '\'' +
 				'}';
 	}
 }

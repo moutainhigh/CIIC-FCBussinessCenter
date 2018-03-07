@@ -12,9 +12,9 @@ public class TaskSubMoneyDetailDTO {
     private Long id;
 
     /**
-     * 缴纳子任务ID
+     * 划款子任务ID
      */
-    private Long taskSubPaymentId;
+    private Long taskSubMoneyId;
 
     /**
      * 雇员编号
@@ -53,12 +53,12 @@ public class TaskSubMoneyDetailDTO {
         this.id = id;
     }
 
-    public Long getTaskSubPaymentId() {
-        return taskSubPaymentId;
+    public Long getTaskSubMoneyId() {
+        return taskSubMoneyId;
     }
 
-    public void setTaskSubPaymentId(Long taskSubPaymentId) {
-        this.taskSubPaymentId = taskSubPaymentId;
+    public void setTaskSubMoneyId(Long taskSubMoneyId) {
+        this.taskSubMoneyId = taskSubMoneyId;
     }
 
     public String getEmployeeNo() {
@@ -111,9 +111,9 @@ public class TaskSubMoneyDetailDTO {
 
     @Override
     public String toString() {
-        return "TaskSubPaymentDetailDTO{" +
+        return "TaskSubMoneyDetailDTO{" +
                 "id=" + id +
-                ", taskSubPaymentId=" + taskSubPaymentId +
+                ", taskSubMoneyId=" + taskSubMoneyId +
                 ", employeeNo='" + employeeNo + '\'' +
                 ", employeeName='" + employeeName + '\'' +
                 ", idType='" + idType + '\'' +
