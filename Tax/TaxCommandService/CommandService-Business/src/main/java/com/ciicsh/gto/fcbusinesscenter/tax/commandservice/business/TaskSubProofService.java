@@ -98,4 +98,10 @@ public interface TaskSubProofService {
      * @return
      */
     List<TaskSubProofDetailPO> querySubProofDetailList(Long subProofId);
+    /**
+     * 申报完成自动生成完税凭证任务
+     * @param
+     * @return
+     */
+    void createTaskSubProof(List<Long> taskSubDeclareIds);
 }

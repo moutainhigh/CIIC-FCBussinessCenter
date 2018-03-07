@@ -7,12 +7,12 @@ import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
@@ -82,6 +82,11 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
      */
 	private String status;
     /**
+     * 状态中文
+     */
+    @TableField(exist = false)
+	private String statusName;
+    /**
      * 是否可用
      */
     @TableLogic
@@ -93,6 +98,7 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
     /**
      * 修改时间
      */
+    @TableField(value="modified_time",fill = FieldFill.UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
@@ -116,6 +122,14 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 	 */
 	@TableField("is_combined")
 	private Boolean isCombined;
+
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
 
 	public Long getId() {
 		return id;
@@ -219,6 +233,11 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 
 	public void setStatus(String status) {
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.TASK_STATUS,status);
+		}
 	}
 
 	public Boolean getActive() {

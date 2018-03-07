@@ -3,7 +3,9 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -92,7 +94,7 @@ public class TaskSubMoneyPO{
     /**
      * 修改时间
      */
-	@TableField("modified_time")
+    @TableField(value="modified_time",fill = FieldFill.UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
@@ -194,6 +196,11 @@ public class TaskSubMoneyPO{
 
 	public void setStatus(String status) {
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.TASK_STATUS,status);
+		}
 	}
 
 	public Boolean getActive() {

@@ -23,8 +23,20 @@
     <!--根据主键ID重新计算主任务总人数-->
     <update id="updateMainHeadcountById">
         update tax_fc_task_main_proof tmp
-        set tmp.headcount = (select sum(tsp.headcount) from tax_fc_task_sub_proof tsp where tsp.is_active = 1 and tsp.task_main_proof_id = #{id})
-        where tmp.is_active = 1 and tmp.id = #{id}
+        inner join
+        (select
+            task_main_proof_id,
+            sum(headcount) as headNumTotal,
+            sum(chinese_num) as chineseNumTotal,
+            sum(foreigner_num) as foreignerNumTotal
+        from tax_fc_task_sub_proof where task_main_proof_id = #{id}) sub
+        SET
+            tmp.headcount = sub.headNumTotal,
+            tmp.chinese_num = sub.chineseNumTotal,
+            tmp.foreigner_num = sub.foreignerNumTotal,
+            tmp.modified_by = #{modifiedBy},
+            tmp.modified_time = #{modifiedTime}
+        where  tmp.is_active = 1 and tmp.id = sub.task_main_proof_id and tmp.id = #{id}
     </update>
 
 </mapper>

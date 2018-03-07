@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -45,6 +47,11 @@ public class TaskMainPO extends Model<TaskMainPO> {
      */
 	private String status;
     /**
+     * 状态中文
+     */
+    @TableField(exist = false)
+	private String statusName;
+    /**
      * 备注
      */
 	private String remark;
@@ -56,11 +63,12 @@ public class TaskMainPO extends Model<TaskMainPO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
@@ -76,6 +84,13 @@ public class TaskMainPO extends Model<TaskMainPO> {
 	@TableField(exist = false)
 	private String batchIds;
 
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
 
 	public String getBatchIds() {
 		return batchIds;
@@ -122,7 +137,13 @@ public class TaskMainPO extends Model<TaskMainPO> {
 	}
 
 	public void setStatus(String status) {
+
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.TASK_STATUS,status);
+		}
 	}
 
 	public String getRemark() {
@@ -141,19 +162,19 @@ public class TaskMainPO extends Model<TaskMainPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

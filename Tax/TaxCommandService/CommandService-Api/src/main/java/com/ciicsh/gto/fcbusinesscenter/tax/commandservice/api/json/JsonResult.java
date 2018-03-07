@@ -56,4 +56,34 @@ public class JsonResult {
     public void setData(Object data) {
         this.data = data;
     }
+
+
+    /**
+     *  自定义成功编码
+     * @param successCode
+     * @param successMsg
+     * @param data
+     * @return
+     */
+    public void fill(String successCode, String successMsg,Object data) {
+        this.errorcode = successCode;
+        this.errormsg = successMsg;
+        this.data = data;
+    }
+    /**
+     * 默认成功返回结果集
+     * @param data
+     * @return
+     */
+    public void success(Object data){
+        this.fill("0","success",data);
+    }
+
+    /**
+     * 默认错误信息返回
+     * @return
+     */
+    public void error(){
+        this.fill("1","error",null);
+    }
 }

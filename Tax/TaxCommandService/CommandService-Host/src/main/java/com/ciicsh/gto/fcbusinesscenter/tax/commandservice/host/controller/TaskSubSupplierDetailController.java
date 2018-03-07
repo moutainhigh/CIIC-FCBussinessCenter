@@ -5,20 +5,22 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForSubSupplierDetail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author yuantongqing  on 2018/02/11
  */
 @RestController
 public class TaskSubSupplierDetailController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubSupplierDetailController.class);
 
     @Autowired
     private TaskSubSupplierDetailService taskSubSupplierDetailService;
@@ -36,13 +38,17 @@ public class TaskSubSupplierDetailController extends BaseController {
             RequestForSubSupplierDetail requestForSubSupplierDetail = new RequestForSubSupplierDetail();
             BeanUtils.copyProperties(taskSubSupplierDetailDTO, requestForSubSupplierDetail);
             ResponseForSubSupplierDetail responseForSubSupplierDetail = taskSubSupplierDetailService.querySubSupplierDetailsByParams(requestForSubSupplierDetail);
-            jr.setErrorcode("0");
-            jr.setErrormsg("success");
-            jr.setData(responseForSubSupplierDetail);
+            jr.success(responseForSubSupplierDetail);
         } catch (Exception e) {
-            logger.error("querySubSupplierDetailsByParams error " + e.toString());
-            jr.setErrorcode("1");
-            jr.setErrormsg("error");
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subSupplierId", taskSubSupplierDetailDTO.getSubSupplierId().toString());
+            tags.put("employeeNo", taskSubSupplierDetailDTO.getEmployeeNo());
+            tags.put("employeeName", taskSubSupplierDetailDTO.getEmployeeName());
+            tags.put("idType", taskSubSupplierDetailDTO.getIdType());
+            tags.put("idNo", taskSubSupplierDetailDTO.getIdNo());
+            //日志工具类返回
+            logService.error(e, "TaskSubSupplierDetailController.querySubSupplierDetailsByParams", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
         }
         return jr;
     }

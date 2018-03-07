@@ -24,4 +24,6 @@ public interface PrsSubTaskMapper extends BaseMapper<PrsSubTaskPO> {
     void insert(Map<String, Object> params);
 
     void update(Map<String, Object> params);
+
+    void updateByMainTaskId(Map<String, Object> params);
 }

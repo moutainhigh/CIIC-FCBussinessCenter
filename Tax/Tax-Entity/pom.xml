@@ -20,5 +20,13 @@
         <finalName>gt1.fcbusinesscenter.tax.tax-entity</finalName>
     </build>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
+            <artifactId>fcbusinesscenter-tax-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

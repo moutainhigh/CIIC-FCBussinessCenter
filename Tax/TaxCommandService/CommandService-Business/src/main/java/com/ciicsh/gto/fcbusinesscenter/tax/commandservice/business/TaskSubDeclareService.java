@@ -37,5 +37,11 @@ public interface TaskSubDeclareService {
      */
     TaskSubDeclarePO queryTaskSubDeclaresById(long subDeclareId);
 
+    /**
+     * 批量完成申报任务
+     * @param requestForTaskSubDeclare
+     */
+    void completeTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare);
+
 }
 

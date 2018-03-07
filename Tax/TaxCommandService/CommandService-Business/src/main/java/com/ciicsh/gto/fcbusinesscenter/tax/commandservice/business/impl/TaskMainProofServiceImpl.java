@@ -63,8 +63,8 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectPage(pageInfo, wrapper);
             pageInfo.setRecords(taskMainProofPOList);
             //获取完税凭证任务状态中文名
-            for(TaskMainProofPO p: taskMainProofPOList){
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS,p.getStatus()));
+            for (TaskMainProofPO p : taskMainProofPOList) {
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, p.getStatus()));
             }
             responseForMainProof.setCurrentNum(requestForProof.getCurrentNum());
             responseForMainProof.setPageSize(requestForProof.getPageSize());
@@ -73,8 +73,8 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         } else {
             List<TaskMainProofPO> taskMainProofPOList = baseMapper.selectList(wrapper);
             //获取完税凭证任务状态中文名
-            for(TaskMainProofPO p: taskMainProofPOList){
-                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS,p.getStatus()));
+            for (TaskMainProofPO p : taskMainProofPOList) {
+                p.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, p.getStatus()));
             }
             responseForMainProof.setRowList(taskMainProofPOList);
         }
@@ -116,21 +116,21 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             //修改完税凭证主任务状态
             TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
             //设置任务状态
-            taskMainProofPO.setStatus(requestForProof.getStatus());
+            taskMainProofPO.setStatus("01");
             //设置修改人
             taskMainProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
             taskMainProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
-            //任务为操作状态
+            //任务为草稿状态
             wrapperMain.andNew("status = {0} ", "00");
             //任务为可用状态
             wrapperMain.andNew("is_active = {0} ", true);
             //主任务ID IN条件
-            wrapperMain.in("id",requestForProof.getMainProofIds());
+            wrapperMain.in("id", requestForProof.getMainProofIds());
             //修改完税凭证主任务
-            baseMapper.update(taskMainProofPO,wrapperMain);
+            baseMapper.update(taskMainProofPO, wrapperMain);
 
             //修改完税凭证子任务状态
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
@@ -141,14 +141,14 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             taskSubProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
-            //任务为操作状态
+            //任务为草稿状态
             wrapperSub.andNew("status = {0} ", "00");
             //任务为可用状态
             wrapperSub.andNew("is_active = {0} ", true);
             //主任务ID IN条件
-            wrapperSub.in("task_main_proof_id",requestForProof.getMainProofIds());
+            wrapperSub.in("task_main_proof_id", requestForProof.getMainProofIds());
             //修改完税凭证子任务
-            taskSubProofMapper.update(taskSubProofPO,wrapperSub);
+            taskSubProofMapper.update(taskSubProofPO, wrapperSub);
         } else {
             if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
                 //修改完税凭证子任务状态
@@ -160,14 +160,14 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 taskSubProofPO.setModifiedTime(LocalDateTime.now());
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
-                //任务为操作状态
+                //任务为草稿状态
                 wrapperSub.andNew("status = {0} ", "00");
                 //任务为可用状态
                 wrapperSub.andNew("is_active = {0} ", true);
                 //主任务ID IN条件
-                wrapperSub.in("id",requestForProof.getSubProofIds());
+                wrapperSub.in("id", requestForProof.getSubProofIds());
                 //修改完税凭证子任务
-                taskSubProofMapper.update(taskSubProofPO,wrapperSub);
+                taskSubProofMapper.update(taskSubProofPO, wrapperSub);
             }
         }
     }
@@ -184,61 +184,61 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         if (requestForProof.getMainProofIds() != null && requestForProof.getMainProofIds().length > 0) {
             //修改完税凭证主任务状态
             TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
-            //设置任务状态, 04：为失效状态
-            taskMainProofPO.setStatus("04");
+            //设置任务状态, 05：为失效状态
+            taskMainProofPO.setStatus("05");
             //设置修改人
             taskMainProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
             taskMainProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
-            //任务为操作状态
+            //任务为草稿状态
             wrapperMain.andNew("status = {0} ", "00");
             //任务为可用状态
             wrapperMain.andNew("is_active = {0} ", true);
             //主任务ID IN条件
-            wrapperMain.in("id",requestForProof.getMainProofIds());
+            wrapperMain.in("id", requestForProof.getMainProofIds());
             //修改完税凭证主任务
-            baseMapper.update(taskMainProofPO,wrapperMain);
+            baseMapper.update(taskMainProofPO, wrapperMain);
 
             //修改完税凭证子任务状态
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-            //设置任务状态, 04：为失效状态
-            taskSubProofPO.setStatus("04");
+            //设置任务状态, 05：为失效状态
+            taskSubProofPO.setStatus("05");
             //设置修改人
             taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
             //设置修改时间
             taskSubProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
-            //任务为操作状态
+            //任务为草稿状态
             wrapperSub.andNew("status = {0} ", "00");
             //任务为可用状态
             wrapperSub.andNew("is_active = {0} ", true);
             //主任务ID IN条件
-            wrapperSub.in("task_main_proof_id",requestForProof.getMainProofIds());
+            wrapperSub.in("task_main_proof_id", requestForProof.getMainProofIds());
             //修改完税凭证子任务
-            taskSubProofMapper.update(taskSubProofPO,wrapperSub);
+            taskSubProofMapper.update(taskSubProofPO, wrapperSub);
         } else {
             if (requestForProof.getSubProofIds() != null && requestForProof.getSubProofIds().length > 0) {
                 //修改完税凭证子任务状态
                 TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-                //设置任务状态, 04：为失效状态
-                taskSubProofPO.setStatus("04");
+                //设置任务状态, 05：为失效状态
+                taskSubProofPO.setStatus("05");
                 //设置修改人
                 taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
                 //设置修改时间
                 taskSubProofPO.setModifiedTime(LocalDateTime.now());
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
-                //任务为操作状态
+                //任务为草稿状态
                 wrapperSub.andNew("status = {0} ", "00");
                 //任务为可用状态
                 wrapperSub.andNew("is_active = {0} ", true);
                 //主任务ID IN条件
-                wrapperSub.in("id",requestForProof.getSubProofIds());
+                wrapperSub.in("id", requestForProof.getSubProofIds());
                 //修改完税凭证子任务
-                taskSubProofMapper.update(taskSubProofPO,wrapperSub);
+                taskSubProofMapper.update(taskSubProofPO, wrapperSub);
             }
         }
     }

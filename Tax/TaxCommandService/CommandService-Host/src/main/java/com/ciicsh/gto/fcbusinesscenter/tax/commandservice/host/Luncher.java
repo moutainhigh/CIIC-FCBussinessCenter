@@ -11,7 +11,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 @SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcbusinesscenter.tax.commandservice"})
 @MapperScan("com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao")
 @EnableDiscoveryClient
-//@EnableFeignClients(basePackages = "com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy")
+@EnableFeignClients(basePackages = "com.ciicsh.gto.logservice.api")
 public class Luncher extends SpringBootServletInitializer {
 
     @Override

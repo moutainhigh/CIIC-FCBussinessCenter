@@ -50,6 +50,11 @@ public class PrsSubTaskController {
         return JsonResult.success(prsSubTaskService.updatePrsSubTask(params));
     }
 
+    @RequestMapping(value = "/updatePrsSubTaskByMainTaskId")
+    public JsonResult updateByMainTaskId(@RequestBody Map<String, Object> params) {
+        return JsonResult.success(prsSubTaskService.updatePrsSubTaskByMainTaskId(params));
+    }
+
 
 
 }

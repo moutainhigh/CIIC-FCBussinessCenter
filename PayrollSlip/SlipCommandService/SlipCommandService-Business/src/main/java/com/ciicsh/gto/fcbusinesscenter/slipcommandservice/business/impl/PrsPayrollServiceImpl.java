@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,9 +75,14 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
 
     @Override
     public Boolean addPrsPayroll(Map<String, Object> params) {
-        // TODO get current user
-        params.put("createdBy", '1');
-        params.put("modifiedBy", '1');
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("createdBy", currUser.getDisplayName());
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("createdBy", "1");
+            params.put("modifiedBy", "1");
+        }
 
         if (params.get("approveTime") != null) {
             if (params.get("approveTime").equals("")) {
@@ -92,8 +99,12 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
 
     @Override
     public Boolean updatePrsPayroll(Map<String, Object> params) {
-        // TODO get current user
-        params.put("modifiedBy", '1');
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("modifiedBy", "1");
+        }
 
         if (params.get("approveTime") != null) {
             if (params.get("approveTime").equals("")) {

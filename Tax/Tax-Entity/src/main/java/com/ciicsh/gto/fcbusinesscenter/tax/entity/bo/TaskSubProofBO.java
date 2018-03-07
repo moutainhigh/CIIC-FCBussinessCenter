@@ -54,6 +54,15 @@ public class TaskSubProofBO {
     private String statusName;
 
     /**
+     * 城市
+     */
+    private String city;
+
+    /**
+     * 税务机构
+     */
+    private String taxOrganization;
+    /**
      * 创建人
      */
     private String createdBy;
@@ -254,6 +263,22 @@ public class TaskSubProofBO {
         this.statusName = statusName;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getTaxOrganization() {
+        return taxOrganization;
+    }
+
+    public void setTaxOrganization(String taxOrganization) {
+        this.taxOrganization = taxOrganization;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -266,6 +291,8 @@ public class TaskSubProofBO {
                 ", foreignerNum=" + foreignerNum +
                 ", status='" + status + '\'' +
                 ", statusName='" + statusName + '\'' +
+                ", city='" + city + '\'' +
+                ", taxOrganization='" + taxOrganization + '\'' +
                 ", createdBy='" + createdBy + '\'' +
                 ", createdTime=" + createdTime +
                 ", modifiedBy='" + modifiedBy + '\'' +
