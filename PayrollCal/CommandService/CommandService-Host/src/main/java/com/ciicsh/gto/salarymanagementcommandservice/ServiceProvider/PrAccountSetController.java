@@ -1,11 +1,15 @@
 package com.ciicsh.gto.salarymanagementcommandservice.ServiceProvider;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.PayrollAccountProxy;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.AccountSetWithItemsDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
@@ -13,6 +17,9 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSe
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +30,7 @@ import java.util.stream.Collectors;
  * Created by bill on 18/2/8.
  */
 @RestController
+@RequestMapping("/api/prAccountSet")
 public class PrAccountSetController implements PayrollAccountProxy {
 
     @Autowired
@@ -31,7 +39,7 @@ public class PrAccountSetController implements PayrollAccountProxy {
     @Autowired
     private PrItemService itemService;
 
-    @Override
+    @RequestMapping("/getAccountSets")
     public JsonResult getAccountSets(@RequestParam String managementId,
                                      @RequestParam(required = false, defaultValue = "20") Integer pageSize,
                                      @RequestParam(required = false, defaultValue = "1") Integer pageNum ) {
@@ -48,7 +56,7 @@ public class PrAccountSetController implements PayrollAccountProxy {
         return JsonResult.success(resultPage);
     }
 
-    @Override
+    @RequestMapping("/getPrItemList")
     public JsonResult getPrItemList(@RequestParam String accountSetCode,
                                     @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "50") Integer pageSize) {
@@ -70,5 +78,17 @@ public class PrAccountSetController implements PayrollAccountProxy {
         PageInfo<PrPayrollItemDTO> resultPage = new PageInfo<>(resultList);
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
         return JsonResult.success(resultPage);
+    }
+
+    @Override
+    @GetMapping("/getAccountSetsByManagementId")
+    public List<AccountSetWithItemsDTO> getAccountSetsByManagementId(String managementId) {
+        if (StringUtils.isEmpty(managementId)) {
+            return null;
+        }
+        List<PrAccountSetOptPO> poList = prAccountSetService.getAccountSetWithItemsByManagementId(managementId);
+        List<AccountSetWithItemsDTO> resultList = JSON.parseObject(JSON.toJSONString(poList)
+                , new TypeReference<List<AccountSetWithItemsDTO>>(){});
+        return resultList;
     }
 }

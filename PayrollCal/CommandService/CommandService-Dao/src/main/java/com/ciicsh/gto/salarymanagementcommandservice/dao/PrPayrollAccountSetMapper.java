@@ -2,10 +2,9 @@ package com.ciicsh.gto.salarymanagementcommandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
-import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -51,7 +50,7 @@ public interface PrPayrollAccountSetMapper extends BaseMapper<PrPayrollAccountSe
      * @param optPO
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistPayrollAccountSet(PrAccountItemOptPO optPO);
+    Integer isExistPayrollAccountSet(PrAccountSetOptPO optPO);
 
     /**
      * 根据薪资账套Code获取薪资账套扩展数据
@@ -59,4 +58,11 @@ public interface PrPayrollAccountSetMapper extends BaseMapper<PrPayrollAccountSe
      * @return 薪资账套扩展数据
      */
     PrPayrollAccountSetExtensionPO getPayrollAccountSetExtByCode(@Param("accountSetCode") String accountSetCode);
+
+    /**
+     * 获取带薪资项列表的薪资帐套列表 by 管理方ID
+     * @param managementId
+     * @return 薪资账套列表带薪资项列表
+     */
+    List<PrAccountSetOptPO> selectAccountSetWithItemsByManagementId(@Param("managementId") String managementId);
 }
