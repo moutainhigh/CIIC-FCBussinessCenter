@@ -23,7 +23,7 @@ public class ApprovalHistoryServiceImpl implements ApprovalHistoryService {
     private ApprovalHistoryMapper approvalHistoryMapper;
 
     @Override
-    public List<ApprovalHistoryPO> getApprovalHistory(Integer bizType, String bizCode) {
+    public List<ApprovalHistoryPO>  getApprovalHistory(Integer bizType, String bizCode) {
         ApprovalHistoryPO param = new ApprovalHistoryPO();
         param.setBizType(bizType);
         param.setBizCode(bizCode);

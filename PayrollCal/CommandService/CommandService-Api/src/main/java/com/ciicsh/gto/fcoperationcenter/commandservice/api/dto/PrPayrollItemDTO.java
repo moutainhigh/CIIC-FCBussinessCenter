@@ -107,6 +107,10 @@ public class PrPayrollItemDTO {
      */
 	private String formulaContent;
     /**
+     * 条件原始输入值
+     */
+    private String originCondition;
+    /**
      * 薪资项取值范围的条件描述
      */
 	private String itemCondition;

@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,9 +74,14 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
 
     @Override
     public Boolean addFcPayrollCalcResult(Map<String, Object> params) {
-        // TODO get current user
-        params.put("createdBy", '1');
-        params.put("modifiedBy", '1');
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("createdBy", currUser.getDisplayName());
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("createdBy", "1");
+            params.put("modifiedBy", "1");
+        }
 
 
 
@@ -85,8 +92,12 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
 
     @Override
     public Boolean updateFcPayrollCalcResult(Map<String, Object> params) {
-        // TODO get current user
-        params.put("modifiedBy", '1');
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("modifiedBy", "1");
+        }
 
 
 

@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
@@ -10,6 +11,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollBaseItemMapper
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupHistoryMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
@@ -55,7 +57,7 @@ public class PrGroupServiceImpl implements PrGroupService {
     private PrPayrollGroupHistoryMapper prPayrollGroupHistoryMapper;
 
     @Autowired
-    private PrGroupTemplateService prGroupTemplateService;
+    private ApprovalHistoryService approvalHistoryService;
 
     @Autowired
     private CodeGenerator codeGenerator;
@@ -69,6 +71,16 @@ public class PrGroupServiceImpl implements PrGroupService {
         resultList = prPayrollGroupMapper.selectListByEntityUseLike(param);
         PageInfo<PrPayrollGroupPO> pageInfo = new PageInfo<>(resultList);
         return  pageInfo;
+    }
+
+    @Override
+    public List<PrPayrollGroupPO> getListByTemplateCode(String templateCode) {
+        PrPayrollGroupPO param = new PrPayrollGroupPO();
+        param.setGroupTemplateCode(templateCode);
+        param.setIsActive(true);
+        EntityWrapper<PrPayrollGroupPO> ew = new EntityWrapper<>(param);
+        List<PrPayrollGroupPO> resultList = prPayrollGroupMapper.selectList(ew);
+        return resultList;
     }
 
     @Override
@@ -107,7 +119,6 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setBaseItemCode(i.getBaseItemCode());
                         item.setItemType(i.getBaseItemType());
                         item.setPayrollGroupCode(paramItem.getGroupCode());
-                        item.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
                         item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
                         return item;
@@ -127,55 +138,12 @@ public class PrGroupServiceImpl implements PrGroupService {
                     item.setManagementId(paramItem.getManagementId());
                     item.setParentItemCode(i.getItemCode());
                     item.setPayrollGroupCode(paramItem.getGroupCode());
-                    item.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
                     return item;
                 })
                 .collect(Collectors.toList());
         itemService.addList(itemList);
         return result;
 
-    }
-
-    @Override
-    public Map<String, Object> deletePrItemFromGroup(String prGroupId, String prItemId, String prItemName) {
-
-        Map<String, Object> result = new HashMap<>();
-        int deleteRows = 0;
-        // 删除薪资项会影响的薪资项列表
-        List<String> failList = new ArrayList<>();
-        // 获取薪资组的参数
-        PrGroupEntity param = new PrGroupEntity();
-        param.setEntityId(prGroupId);
-        List<PrItemEntity> prItemEntityList = new ArrayList<>();
-        try {
-//            prItemEntityList = this.getItem(param).getPrItemEntityList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (prItemEntityList == null) {
-            result.put("FAILURE", failList);
-            return result;
-        }
-        prItemEntityList.stream()
-                .filter(i -> i.getType().equals(ItemTypeEnum.CALC.getValue()))
-                .forEach(i -> {
-                    List<String> prItemNames = getPayItems(i.getFormula());
-                    if (prItemNames.stream()
-                            .anyMatch(str -> str.trim().equals(prItemName))) {
-                        failList.add(i.getName());
-                    }
-                });
-        if (failList.size() == 0) {
-            try {
-//                deleteRows = itemService.deleteItemById(prItemId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            result.put("SUCCESS", deleteRows);
-        } else {
-            result.put("FAILURE", failList);
-        }
-        return result;
     }
 
     @Override
@@ -196,7 +164,6 @@ public class PrGroupServiceImpl implements PrGroupService {
         items.forEach(i -> {
             i.setPayrollGroupCode(to);
             i.setParentItemCode(null);
-            i.setItemCode(codeGenerator.genPrItemCode(toEntity.getManagementId()));
         });
         //删除原来存在于该薪资组的薪资项
         int deleteItemResult = prPayrollItemMapper.deleteItemByGroupCode(to);
@@ -239,11 +206,9 @@ public class PrGroupServiceImpl implements PrGroupService {
         if (prGroupAddResult == 0) {
             throw new RuntimeException("复制薪资组失败");
         }
-        List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(srcEntity.getGroupCode(),
-                0, 0).getList();
+        List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(srcEntity.getGroupCode());
         itemList.forEach(i -> {
             i.setPayrollGroupCode(newEntity.getGroupCode());
-            i.setItemCode(codeGenerator.genPrItemCode(srcEntity.getManagementId()));
         });
         int itemAddResult = itemService.addList(itemList);
         if (itemAddResult == 0) {
@@ -279,6 +244,13 @@ public class PrGroupServiceImpl implements PrGroupService {
             prPayrollGroupHistoryPO.setModifiedBy("system");
             prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
         }
+        // 更新审批历史
+        ApprovalHistoryPO approvalHistoryPO = new ApprovalHistoryPO();
+        approvalHistoryPO.setBizCode(paramItem.getGroupCode());
+        approvalHistoryPO.setBizType(BizTypeEnum.PR_GROUP.getValue());
+        approvalHistoryPO.setApprovalResult(paramItem.getApprovalStatus());
+        approvalHistoryPO.setComments(paramItem.getComments());
+        approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组
         int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
         result = updateResult == 1;

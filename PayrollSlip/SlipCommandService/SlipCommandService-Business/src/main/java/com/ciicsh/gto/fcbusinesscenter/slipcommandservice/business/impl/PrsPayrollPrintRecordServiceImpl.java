@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,7 @@ import java.util.Map;
  * 工资单任务单打印记录 服务实现类
  *
  * @author taka
- * @since 2018-02-24
+ * @since 2018-02-28
  */
 @Service
 @Transactional
@@ -73,9 +75,15 @@ public class PrsPayrollPrintRecordServiceImpl implements PrsPayrollPrintRecordSe
 
     @Override
     public Boolean addPrsPayrollPrintRecord(Map<String, Object> params) {
-        // TODO get current user
-        params.put("createdBy", '1');
-        params.put("modifiedBy", '1');
+
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("createdBy", currUser.getDisplayName());
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("createdBy", "1");
+            params.put("modifiedBy", "1");
+        }
 
 
 
@@ -86,8 +94,13 @@ public class PrsPayrollPrintRecordServiceImpl implements PrsPayrollPrintRecordSe
 
     @Override
     public Boolean updatePrsPayrollPrintRecord(Map<String, Object> params) {
-        // TODO get current user
-        params.put("modifiedBy", '1');
+
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("modifiedBy", "1");
+        }
 
 
 

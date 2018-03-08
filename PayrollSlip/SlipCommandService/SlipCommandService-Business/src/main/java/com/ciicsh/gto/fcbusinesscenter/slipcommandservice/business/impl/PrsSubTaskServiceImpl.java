@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,7 @@ import java.util.Map;
  * 工资单子任务单主表 服务实现类
  *
  * @author taka
- * @since 2018-02-11
+ * @since 2018-02-28
  */
 @Service
 @Transactional
@@ -73,9 +75,15 @@ public class PrsSubTaskServiceImpl implements PrsSubTaskService {
 
     @Override
     public Boolean addPrsSubTask(Map<String, Object> params) {
-        // TODO get current user
-        params.put("createdBy", '1');
-        params.put("modifiedBy", '1');
+
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("createdBy", currUser.getDisplayName());
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("createdBy", "1");
+            params.put("modifiedBy", "1");
+        }
 
         if (params.get("publishDate") != null) {
             if (params.get("publishDate").equals("")) {
@@ -100,8 +108,13 @@ public class PrsSubTaskServiceImpl implements PrsSubTaskService {
 
     @Override
     public Boolean updatePrsSubTask(Map<String, Object> params) {
-        // TODO get current user
-        params.put("modifiedBy", '1');
+
+        UserInfoBO currUser = UserContext.getUser();
+        if (currUser != null) {
+            params.put("modifiedBy", currUser.getDisplayName());
+        } else {
+            params.put("modifiedBy", "1");
+        }
 
         if (params.get("publishDate") != null) {
             if (params.get("publishDate").equals("")) {
@@ -120,6 +133,34 @@ public class PrsSubTaskServiceImpl implements PrsSubTaskService {
 
 
         prsSubTaskMapper.update(params);
+
+        return true;
+    }
+
+    @Override
+    public Boolean updatePrsSubTaskByMainTaskId(Map<String, Object> params) {
+
+      if (params.get("modifiedBy") == null) {
+        params.put("modifiedBy", '1');
+      }
+
+        if (params.get("publishDate") != null) {
+            if (params.get("publishDate").equals("")) {
+                params.put("publishDate", null);
+            } else {
+                params.put("publishDate", new Date((long) params.get("publishDate")));
+            }
+        }
+        if (params.get("approveTime") != null) {
+            if (params.get("approveTime").equals("")) {
+                params.put("approveTime", null);
+            } else {
+                params.put("approveTime", new Date((long) params.get("approveTime")));
+            }
+        }
+
+
+        prsSubTaskMapper.updateByMainTaskId(params);
 
         return true;
     }
