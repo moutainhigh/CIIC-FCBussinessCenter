@@ -16,6 +16,7 @@
         <result column="foreigner_count" property="foreignerCount" />
         <result column="publish_date" property="publishDate" />
         <result column="payroll_type" property="payrollType" />
+        <result column="selected_payroll_type" property="selectedPayrollType" />
         <result column="status" property="status" />
         <result column="comments" property="comments" />
         <result column="template_id" property="templateId" />
@@ -42,14 +43,12 @@
         WHERE is_active = 1
     </select>
 
-
-
     <select id="get"  resultMap="BaseResultMap">
-    SELECT *
-    FROM prs_main_task
-    where main_task_id = #{mainTaskId}
-    LIMIT 1
-  </select>
+        SELECT *
+        FROM prs_main_task
+        where main_task_id = #{mainTaskId}
+        LIMIT 1
+    </select>
 
     <select id="last"  resultMap="BaseResultMap">
         SELECT *
@@ -59,9 +58,9 @@
     </select>
 
     <insert id="insert" parameterType="map">
-    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, payroll_type, status, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
-    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{payrollType}, #{status}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
-  </insert>
+        INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, payroll_type, selected_payroll_type, status, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
+        VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{payrollType}, #{selectedPayrollType}, #{status}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+    </insert>
 
     <update id="update" parameterType="map">
         UPDATE prs_main_task
@@ -102,6 +101,9 @@
             </if>
             <if test="payrollType != null and payrollType != ''">
                 payroll_type = #{payrollType},
+            </if>
+            <if test="selectedPayrollType != null and selectedPayrollType != ''">
+                selected_payroll_type = #{selectedPayrollType},
             </if>
             <if test="status != null and status != ''">
                 status = #{status},
