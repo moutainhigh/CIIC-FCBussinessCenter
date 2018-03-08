@@ -194,10 +194,10 @@
     <modules>
         <module>Tax-Entity</module>
         <module>Tax-Util</module>
-        <!--<module>./TaxQueryService/QueryService-Dao</module>
+        <module>./TaxQueryService/QueryService-Dao</module>
         <module>./TaxQueryService/QueryService-Business</module>
         <module>./TaxQueryService/QueryService-Api</module>
-        <module>./TaxQueryService/QueryService-Host</module>-->
+        <module>./TaxQueryService/QueryService-Host</module>
         <module>./TaxCommandService/CommandService-Dao</module>
         <module>./TaxCommandService/CommandService-Business</module>
         <module>./TaxCommandService/CommandService-Api</module>
