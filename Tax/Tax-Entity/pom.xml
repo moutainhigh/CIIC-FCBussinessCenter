@@ -16,10 +16,6 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <build>
-        <finalName>gt1.fcbusinesscenter.tax.tax-entity</finalName>
-    </build>
-
     <dependencies>
 
         <dependency>
@@ -27,6 +23,30 @@
             <artifactId>fcbusinesscenter-tax-util</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <finalName>gt1.fcbusinesscenter.tax.tax-entity</finalName>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
