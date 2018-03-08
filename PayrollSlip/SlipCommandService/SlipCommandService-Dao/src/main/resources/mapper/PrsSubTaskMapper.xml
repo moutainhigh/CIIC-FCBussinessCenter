@@ -216,6 +216,9 @@
 
         </trim>
         WHERE main_task_id = #{mainTaskId}
+        <if test="payrollType != null and payrollType != ''">
+            and payroll_type = #{payrollType}
+        </if>
     </update>
 
     <select id="list"  resultMap="BaseResultMap">

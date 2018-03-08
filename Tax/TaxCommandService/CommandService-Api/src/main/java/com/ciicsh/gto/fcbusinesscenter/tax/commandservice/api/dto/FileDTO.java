@@ -1,7 +1,5 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-
 /**
  * @author yuantongqing
  * on create 2018/1/5

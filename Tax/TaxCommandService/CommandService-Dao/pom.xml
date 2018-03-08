@@ -22,10 +22,29 @@
             <artifactId>fcbusinesscenter-tax-entity</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-feign</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>gt1.fcbusinesscenter.tax.commandservice-dao</finalName>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 

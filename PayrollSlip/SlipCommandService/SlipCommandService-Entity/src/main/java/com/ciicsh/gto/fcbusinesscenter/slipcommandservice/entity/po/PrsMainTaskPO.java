@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单任务单主表
  *
  * @author taka
- * @since 2018-02-12
+ * @since 2018-03-08
  */
 @TableName("prs_main_task")
 public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
@@ -101,13 +101,19 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   private Integer payrollType;
 
   /**
+   * 选择的工资单类型，逗号分隔
+   */
+  @TableField("selected_payroll_type")
+  private String selectedPayrollType;
+
+  /**
    * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效
    */
   @TableField("status")
   private Integer status;
 
   /**
-   * 审核意见
+   * 修改实际发布日期原因
    */
   @TableField("comments")
   private String comments;
@@ -284,6 +290,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.payrollType = payrollType;
   }
 
+  public String getSelectedPayrollType() {
+    return selectedPayrollType;
+  }
+
+  public void setSelectedPayrollType(String selectedPayrollType) {
+    this.selectedPayrollType = selectedPayrollType;
+  }
+
   public Integer getStatus() {
     return status;
   }
@@ -411,6 +425,7 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
             ", foreignerCount=" + foreignerCount +
             ", publishDate=" + publishDate +
             ", payrollType=" + payrollType +
+            ", selectedPayrollType=" + selectedPayrollType +
             ", status=" + status +
             ", comments=" + comments +
             ", templateId=" + templateId +
