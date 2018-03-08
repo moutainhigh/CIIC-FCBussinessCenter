@@ -1,25 +1,29 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by jiangtianning on 2017/11/6.
@@ -34,7 +38,16 @@ public class PrItemServiceImpl implements PrItemService {
     @Autowired
     private PrPayrollGroupMapper prPayrollGroupMapper;
 
+    @Autowired
+    private PrPayrollGroupTemplateMapper prPayrollGroupTemplateMapper;
 
+    @Autowired
+    private CodeGenerator codeGenerator;
+
+    @Override
+    public List<PrPayrollItemPO> getListByGroupCode(String groupCode) {
+        return getListByGroupCode(groupCode, 0, 0).getList();
+    }
 
     @Override
     public PageInfo<PrPayrollItemPO> getListByGroupCode(String groupCode, Integer pageNum, Integer pageSize) {
@@ -46,6 +59,11 @@ public class PrItemServiceImpl implements PrItemService {
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
         return pageInfo;
+    }
+
+    @Override
+    public List<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode) {
+        return getListByGroupTemplateCode(groupTemplateCode, 0, 0).getList();
     }
 
     @Override
@@ -71,70 +89,58 @@ public class PrItemServiceImpl implements PrItemService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollItemPO param) {
-        // 将所在薪资组的审核状态更新为草稿
-        PrPayrollGroupPO groupParam = new PrPayrollGroupPO();
-        groupParam.setGroupCode(param.getPayrollGroupCode());
-        groupParam.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
-        prPayrollGroupMapper.updateItemByCode(groupParam);
+        // 将所在薪资组/模板的审核状态更新为草稿
+        this.updateRelatedGroupStatus(param);
         // 插入薪资项
+        param.setItemCode(codeGenerator.genPrItemCode(param.getManagementId()));
         param.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
         param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
+        param.setModifiedTime(new Date());
+        param.setCreatedTime(new Date());
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
     }
 
     @Override
     public int addList(List<PrPayrollItemPO> paramList) {
+        PrPayrollItemPO first = paramList.get(0);
+        // 将所在薪资组的审核状态更新为草稿
+        this.updateRelatedGroupStatus(first);
+        //批量插入
+        paramList.forEach(i -> {
+            i.setItemCode(codeGenerator.genPrItemCode(i.getManagementId()));
+            i.setModifiedTime(new Date());
+            i.setCreatedTime(new Date());
+        });
         int insertResult = prPayrollItemMapper.insertBatchItems(paramList);
         return insertResult;
     }
 
     @Override
-    public Map<String, Object> updateItem(PrPayrollItemPO param) {
-        Map<String, Object> result = new HashMap<>();
-        int updateResult = prPayrollItemMapper.updateItemByCode(param);
-        //TODO 继承check逻辑变更
-//        List<String> failList = new ArrayList<>();
-//        List<String> successList = new ArrayList<>();
-//        // 更新条数
-//        int i = 0;
-//        //先获取该薪资项当前详情用作check
-//        PrPayrollItemPO prPayrollItemPO = new PrPayrollItemPO();
-//        try {
-//            prPayrollItemPO = prPayrollItemMapper.selectById(param.getEntityId());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        if (prPayrollItemPO == null) {
-//            result.put("FAILURE", failList);
-//            return result;
-//        }
-//        // 如果该薪资项只存在于薪资组中，则修改无限制
-//        if (StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
-//            try {
-//                i = prItemMapper.updateItemById(param);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            result.put("SUCCESS", i);
-//            return result;
-//        }
-//        // 如果该薪资项由薪资组继承而产生，则需进行校验，不能修改薪资项名
-//        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode()) &&
-//                !StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupCode())) {
-//            if (param.getName() != null && !prPayrollItemPO.getItemName().equals(param.getName())) {
-//                result.put("FAILURE", "不能修改继承薪资组模板产生的薪资项名称");
-//                return result;
-//            }
-//            try {
-//                i = prItemMapper.updateItemById(param);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            result.put("SUCCESS", i);
-//            return result;
-//        }
-//        // 如果该薪资项是薪资项模板中的项目，则需进行校验，需要更新继承该薪资组模板的薪资组的薪资项
+    @Transactional(rollbackFor = RuntimeException.class)
+    public int updateItem(PrPayrollItemPO param) {
+        //先获取该薪资项当前详情用作check
+        PrPayrollItemPO prPayrollItemPO = this.getItemByCode(param.getItemCode());
+
+        // 如果该薪资项只存在于薪资组中，则修改无限制
+        if (StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
+//            this.realUpdateItem(param);
+        }
+
+        // 如果该薪资项由薪资组继承而产生，则需进行校验，不能修改薪资项名
+        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode()) &&
+                !StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupCode())) {
+            if (param.getItemName() != null && !prPayrollItemPO.getItemName().equals(param.getItemName())) {
+                throw new BusinessException(MessageConst.PAYROLL_ITEM_UPDATE_NAME_ERROR);
+            }
+//            this.realUpdateItem(param);
+//            return updateResult;
+        }
+        // 如果该薪资项是薪资项模板中的项
+        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
+//            updateResult = prPayrollItemMapper.updateItemByCode(param);
+//            return updateResult;
+        }
 //        if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
 //            List<PrItemEntity> prItemEntityList = new ArrayList<>();
 //            try {
@@ -176,8 +182,15 @@ public class PrItemServiceImpl implements PrItemService {
 //            result.put("FAILURE", failList);
 //            return result;
 //        }
-        result.put("SUCCESS", updateResult);
-        return result;
+        return this.realUpdateItem(param);
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class)
+    public int realUpdateItem(PrPayrollItemPO param) {
+        // 将所在薪资组/模板的审核状态更新为草稿
+        this.updateRelatedGroupStatus(param);
+        param.setModifiedTime(new Date());
+        return prPayrollItemMapper.updateItemByCode(param);
     }
 
     @Override
@@ -188,13 +201,15 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Override
     public int deleteItemByCodes(List<String> codes) {
-        int result = prPayrollItemMapper.deleteItemByCodes(codes);
-        return result;
+        //先获取该薪资项当前详情用作check
+        PrPayrollItemPO first = this.getItemByCode(codes.get(0));
+        this.updateRelatedGroupStatus(first);
+        return prPayrollItemMapper.deleteItemByCodes(codes);
     }
 
     @Override
-    public int deleteItemByPrGroupId(String prGroupId) {
-        return prPayrollItemMapper.deleteItemByGroupCode(prGroupId);
+    public int deleteItemByPrGroupCode(String groupCode) {
+        return prPayrollItemMapper.deleteItemByGroupCode(groupCode);
     }
 
     @Override
@@ -222,5 +237,25 @@ public class PrItemServiceImpl implements PrItemService {
             prPayrollItemMapper.updateItemByCode(param);
         }
         return true;
+    }
+
+    private void updateRelatedGroupStatus(PrPayrollItemPO param) {
+        // 将所在薪资组/模板的审核状态更新为草稿
+        if (!StringUtils.isEmpty(param.getPayrollGroupTemplateCode())
+                && StringUtils.isEmpty(param.getPayrollGroupCode())) {
+            PrPayrollGroupTemplatePO groupTemplatePO = new PrPayrollGroupTemplatePO();
+            groupTemplatePO.setGroupTemplateCode(param.getPayrollGroupTemplateCode());
+            groupTemplatePO.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
+            groupTemplatePO.setModifiedTime(new Date());
+            groupTemplatePO.setModifiedBy(param.getModifiedBy());
+            prPayrollGroupTemplateMapper.updateItemByCode(groupTemplatePO);
+        } else {
+            PrPayrollGroupPO groupPO = new PrPayrollGroupPO();
+            groupPO.setGroupCode(param.getPayrollGroupCode());
+            groupPO.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
+            groupPO.setModifiedTime(new Date());
+            groupPO.setModifiedBy(param.getModifiedBy());
+            prPayrollGroupMapper.updateItemByCode(groupPO);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.exception;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,14 +21,14 @@ public class RestExceptionHandler {
     @ExceptionHandler(value = {BusinessException.class})
     public Object handleSysIllegalArgumentException(BusinessException ex, WebRequest req) {
         ex.printStackTrace();
-        return ResultEntity.errorsInfo("BusinessException",ex.getMessage());
+        return JsonResult.errorsInfo("BusinessException",ex.getMessage());
     }
 
     //捕捉系统异常
     @ExceptionHandler(Exception.class)
     public Object handleException(Exception ex) {
         ex.printStackTrace();
-        return ResultEntity.errorsInfo("Exception","系统错误");
+        return JsonResult.errorsInfo("Exception","系统错误");
     }
 
 }

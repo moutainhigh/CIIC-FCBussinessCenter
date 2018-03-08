@@ -20,6 +20,13 @@ public interface PrItemService {
     /**
      * 获取薪资项列表 from 薪资组
      * @param code
+     * @return 结果列表
+     */
+    List<PrPayrollItemPO> getListByGroupCode(String groupCode);
+
+    /**
+     * 获取薪资项列表 from 薪资组 分页
+     * @param code
      * @param pageNum
      * @param pageSize
      * @return 结果列表
@@ -28,6 +35,13 @@ public interface PrItemService {
 
     /**
      * 获取薪资项列表 from 薪资组模板
+     * @param code
+     * @return 结果列表
+     */
+    List<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode);
+
+    /**
+     * 获取薪资项列表 from 薪资组模板 分页
      * @param code
      * @param pageNum
      * @param pageSize
@@ -61,7 +75,7 @@ public interface PrItemService {
      * @param param 更新薪资项实体
      * @return 更新条数
      */
-    Map<String, Object> updateItem(PrPayrollItemPO param);
+    int updateItem(PrPayrollItemPO param);
 
     /**
      * 获取薪资项类型列表
@@ -81,7 +95,7 @@ public interface PrItemService {
      * @param prGroupId
      * @return
      */
-    int deleteItemByPrGroupId(String prGroupId);
+    int deleteItemByPrGroupCode(String groupCode);
 
 
     /**

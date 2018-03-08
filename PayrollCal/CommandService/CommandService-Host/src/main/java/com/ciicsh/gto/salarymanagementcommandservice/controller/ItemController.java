@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
@@ -10,8 +11,8 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.github.pagehelper.PageInfo;
-import kafka.utils.Json;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,8 +96,14 @@ public class ItemController extends BaseController{
     public JsonResult updatePrItem(@PathVariable("code") String code,
                                             @RequestBody PrPayrollItemPO paramItem) {
         paramItem.setItemCode(code);
-        Map<String, Object> resultMap  = itemService.updateItem(paramItem);
-        return JsonResult.success(resultMap);
+        try {
+            int result = itemService.updateItem(paramItem);
+            return JsonResult.success(result);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        } catch (Exception e) {
+            return JsonResult.faultMessage(MessageConst.PAYROLL_ITEM_UPDATE_FAIL);
+        }
     }
 
     /**
@@ -119,7 +126,7 @@ public class ItemController extends BaseController{
         //TODO code、createedBy、modifiedBy的设置
         PrPayrollItemPO newParam = new PrPayrollItemPO();
         BeanUtils.copyProperties(paramItem, newParam);
-        newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
+//        newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
         if (!StringUtils.isEmpty(newParam.getPayrollGroupTemplateCode())){
             List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(
                     paramItem.getPayrollGroupTemplateCode(),0,0).getList();

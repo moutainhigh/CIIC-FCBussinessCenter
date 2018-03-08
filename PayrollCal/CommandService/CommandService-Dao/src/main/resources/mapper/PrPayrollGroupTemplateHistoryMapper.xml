@@ -28,6 +28,12 @@
 		pr_payroll_group_template_history
 		WHERE
 		payroll_group_template_code = #{code}
+		AND
+		(
+			payroll_group_code is null
+			OR
+			payroll_group_code = ''
+		)
 		ORDER BY
 		version desc
 		LIMIT 1

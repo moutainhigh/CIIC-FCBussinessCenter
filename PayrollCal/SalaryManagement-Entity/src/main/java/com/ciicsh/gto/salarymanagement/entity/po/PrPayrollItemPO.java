@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.Date;
 
 /**
@@ -18,7 +18,7 @@ import java.util.Date;
  * @since 2017-12-05
  */
 @TableName("pr_payroll_item")
-public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
+public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
@@ -159,6 +159,12 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 	 */
 	@TableField("item_value")
 	private String itemValue;
+
+    /**
+     * 条件原始输入值
+     */
+	@TableField("origin_condition")
+	private String originCondition;
 
 	public Integer getId() {
 		return id;
@@ -376,7 +382,15 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 		this.itemValue = itemValue;
 	}
 
-	@Override
+    public String getOriginCondition() {
+        return originCondition;
+    }
+
+    public void setOriginCondition(String originCondition) {
+        this.originCondition = originCondition;
+    }
+
+    @Override
 	protected Serializable pkVal() {
 		return this.id;
 	}
@@ -408,7 +422,27 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> {
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
 			", modifiedBy=" + modifiedBy +
-				", itemValue=" + this.itemValue +
+                ", itemValue=" + this.itemValue +
+                ", originCondition=" + originCondition +
 			"}";
 	}
+
+	public PrPayrollItemPO deepClone() {
+		PrPayrollItemPO outer = null;
+	    try {
+	    	// 将该对象序列化成流,因为写在流里的是对象的一个拷贝，而原对象仍然存在于JVM里面。所以利用这个特性可以实现对象的深拷贝
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(this);
+			// 将流序列化成对象
+			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			outer = (PrPayrollItemPO) ois.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return outer;
+  	}
 }
