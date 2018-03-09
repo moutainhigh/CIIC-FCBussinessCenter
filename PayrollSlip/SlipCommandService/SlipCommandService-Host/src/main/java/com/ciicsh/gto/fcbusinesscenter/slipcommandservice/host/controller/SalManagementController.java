@@ -4,6 +4,7 @@ import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.SalManagementService;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.PayrollAccountProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,9 @@ public class SalManagementController {
 
     @Autowired
     private PayrollAccountProxy payrollAccountProxy;
+
+    @Autowired
+    private BatchProxy batchProxy;
 
     @Autowired
     private SalManagementService salManagementService;
@@ -57,6 +61,15 @@ public class SalManagementController {
     @RequestMapping(value = "/listAccountSets")
     public JsonResult listAccountSets(@RequestBody Map<String, Object> params) {
         return JsonResult.success(payrollAccountProxy.getAccountSetsByManagementId((String)params.get("managementId")));
+
     }
+
+    @RequestMapping(value = "/listBatches")
+    public JsonResult listBatches(@RequestBody Map<String, Object> params) {
+        return JsonResult.success(batchProxy.getBatchListByManagementId((String)params.get("managementId")));
+
+    }
+
+
 
 }
