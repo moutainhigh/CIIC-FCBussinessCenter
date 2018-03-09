@@ -27,6 +27,7 @@ public interface BatchProxy {
      * @param batchType 批次类型：1表示正常，2表示调整，3表示回溯
      * @return
      */
+    @GetMapping("/getBatch")
     String getBatchListByCodes(List<String> batchCodes, int batchType);
 
     /**
@@ -36,6 +37,7 @@ public interface BatchProxy {
      * @param batchType 批次类型：1表示正常，2表示调整，3表示回溯
      * @return
      */
+    @GetMapping("/updateAdvanceBatch")
     int updateAdvanceBatch(String batchCode, Boolean hasAdvance, int batchType);
 
     /**
@@ -45,6 +47,7 @@ public interface BatchProxy {
      * @param batchType 批次类型：1表示正常，2表示调整，3表示回溯
      * @return
      */
+    @GetMapping("/updateHasMoneyBatch")
     int updateHasMoneyBatch(String batchCode, Boolean hasMoney, int batchType);
 
     /**
