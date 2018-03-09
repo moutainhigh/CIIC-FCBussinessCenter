@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcoperationcenter.commandservice.api;
 
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,28 +23,10 @@ public interface BatchProxy {
     String getBatchInfoByCode(@RequestParam("batchCode") String batchCode, @RequestParam("batchType") int batchType);
 
     /**
-     * 获取多个批次计算结果 BY 批次编号 JSON 格式
-     * @param batchCodes
-     * @param batchType 批次类型：1表示正常，2表示调整，3表示回溯
-     * @return
+     * 根据管理方ID获取批次列表
+     * @param managementId
+     * @return 批次ID列表
      */
-    String getBatchListByCodes(List<String> batchCodes, int batchType);
-
-    /**
-     * 设置该批次状态：true 已垫付、 false 未垫付
-     * @param batchCode
-     * @param hasAdvance
-     * @param batchType 批次类型：1表示正常，2表示调整，3表示回溯
-     * @return
-     */
-    int updateAdvanceBatch(String batchCode, Boolean hasAdvance, int batchType);
-
-    /**
-     * 设置该批次状态：true 已来款  false 未来款
-     * @param batchCode
-     * @param hasMoney
-     * @param batchType 批次类型：1表示正常，2表示调整，3表示回溯
-     * @return
-     */
-    int updateHasMoneyBatch(String batchCode, Boolean hasMoney, int batchType);
+    @GetMapping("/getBatchListByManagementId")
+    List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam("managementId") String managementId);
 }

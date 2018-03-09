@@ -1,10 +1,81 @@
-application-dev.ymlapplication-dev.ymleureka:
+eureka:
   client:
     serviceUrl:
-      defaultZone:
+      defaultZone: "http://172.16.9.24:9602/eureka/,http://172.16.9.25:9602/eureka/"
+#      defaultZone: "http://172.16.9.21:9602/eureka/,http://172.16.9.20:9602/eureka/,http://172.16.9.19:9602/eureka/" #注册中心eureka地址
+  instance:
+      lease-expiration-duration-in-seconds: 30
+      lease-renewal-interval-in-seconds: 40
+      prefer-ip-address: true
+      instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 
 spring:
   datasource:
-    url:
-    username:
-    password:
+    url: jdbc:mysql://172.16.9.15:3306/gtopayrolldb?characterEncoding=utf8&useSSL=true
+    username: root
+    password: a111111
+  application:
+    name: fcbusiness-center-compute-service
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers:  172.16.9.11:9092   #172.16.9.17:9092,172.16.9.18:9092
+          zk-nodes: 172.16.9.11:2181,172.16.9.16:2181    #172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
+          #brokers: 192.168.1.112:9092
+          #zk-nodes: 192.168.1.112:2181
+          autoAddPartitions: true
+      bindings:
+        payroll-output-channel:
+          destination: fc_payroll_normal-batch # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
+        pr_emp_group-output-channel:
+          destination: fc_payroll_empGroup # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
+        pr_compute-output-channel:
+           destination: fc_payroll_compute_result # topic name
+           content-type: application/json
+           producer:
+             partitionCount: 1
+
+        pr_compute-status-input-channel:
+          destination: fc_payroll_compute-status1 # topic name
+          content-type: application/json
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned : true
+            #resetOffsets: true # 是否重置offsets
+            #startOffset:  earliest # resetOffsets为true才有效，默认（earliest）, latest
+
+        pr_management-input-channel:
+          destination: fc_payroll_management
+          content-type: application/json
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned: true
+
+        pr_management-output-channel:
+          destination: fc_payroll_management # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 1
+
+logging:
+  file: logs/dev_app.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: DEBUG
+    com.ciicsh.zorro.salarymanagementwebservice: DEBUG
+    org.mybatis: DEBUG
+
+management:
+  security:
+   enabled: false
