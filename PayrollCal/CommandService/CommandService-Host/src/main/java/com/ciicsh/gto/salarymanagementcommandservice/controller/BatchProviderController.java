@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -115,6 +116,14 @@ public class BatchProviderController implements BatchProxy {
             rowAffected = backTraceBatchMongoOpt.update(Criteria.where("batchCode").is(batchCode), "has_money", hasMoney);
         }
         return rowAffected;
+    }
+
+    @Override
+    public List<String> getBatchListByManagementId(String managementId) {
+        if (StringUtils.isEmpty(managementId)) {
+            return null;
+        }
+        return normalBatchService.getAllBatchIdsByManagementId(managementId);
     }
 
 }

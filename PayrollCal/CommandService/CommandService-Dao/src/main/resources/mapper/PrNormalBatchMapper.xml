@@ -334,5 +334,30 @@
 		WHERE code = #{code}
 	</update>
 
+	<select id="selectAllBatchCodesByManagementId" resultType="string">
+		SELECT
+			code
+		FROM
+			pr_normal_batch
+		WHERE
+			management_id = #{managementId}
 
+		UNION
+
+		SELECT
+			adjust_batch_code as code
+		FROM
+			pr_adjust_batch
+		WHERE
+			management_id = #{managementId}
+
+		UNION
+
+		SELECT
+			back_tracking_batch_code as code
+		FROM
+			pr_back_tracking_batch
+		WHERE
+			management_id = #{managementId}
+	</select>
 </mapper>
