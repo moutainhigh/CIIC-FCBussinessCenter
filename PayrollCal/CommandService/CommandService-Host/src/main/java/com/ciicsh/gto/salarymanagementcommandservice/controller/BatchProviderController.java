@@ -67,7 +67,6 @@ public class BatchProviderController implements BatchProxy {
 
     }
 
-    @Override
     public String getBatchListByCodes(List<String> batchCodes, int batchType) {
         Gson gson = new Gson();
         List<DBObject> batchResult = null;
@@ -85,7 +84,6 @@ public class BatchProviderController implements BatchProxy {
         }
     }
 
-    @Override
     public int updateAdvanceBatch(String batchCode, Boolean hasAdvance, int batchType) {
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.NORMAL.getValue()){
@@ -102,7 +100,6 @@ public class BatchProviderController implements BatchProxy {
         return rowAffected;
     }
 
-    @Override
     public int updateHasMoneyBatch(String batchCode, Boolean hasMoney, int batchType) {
         int rowAffected = 0;
         if (batchType == BatchTypeEnum.NORMAL.getValue()) {
