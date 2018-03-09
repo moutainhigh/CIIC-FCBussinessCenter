@@ -36,8 +36,8 @@ public class TaskSubPaymentController extends BaseController {
      * @return
      */
     @PostMapping(value = "querySubPayment")
-    public JsonResult querySubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubPayment> querySubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
+        JsonResult<ResponseForSubPayment> jr = new JsonResult<>();
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
@@ -63,8 +63,8 @@ public class TaskSubPaymentController extends BaseController {
      * @return
      */
     @PostMapping(value = "completeTaskSubPayment")
-    public JsonResult completeTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> completeTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
@@ -92,8 +92,8 @@ public class TaskSubPaymentController extends BaseController {
      * @return
      */
     @PostMapping(value = "rejectTaskSubPayment")
-    public JsonResult rejectTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> rejectTaskSubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
@@ -121,8 +121,8 @@ public class TaskSubPaymentController extends BaseController {
      * @return
      */
     @PostMapping(value = "/querySubPaymentById/{subPaymentId}")
-    public JsonResult querySubPaymentById(@PathVariable Long subPaymentId) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<TaskSubPaymentDTO> querySubPaymentById(@PathVariable Long subPaymentId) {
+        JsonResult<TaskSubPaymentDTO> jr = new JsonResult<>();
         try {
             TaskSubPaymentPO taskSubPaymentPO = taskSubPaymentService.querySubPaymentById(subPaymentId);
             TaskSubPaymentDTO taskSubPaymentDTO = new TaskSubPaymentDTO();

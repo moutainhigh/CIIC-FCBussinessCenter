@@ -49,8 +49,8 @@ public class TaskSubDeclareController extends BaseController {
      * @return
      */
     @PostMapping(value = "/queryTaskSubDeclares")
-    public JsonResult queryTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForTaskSubDeclare> queryTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<ResponseForTaskSubDeclare> jr = new JsonResult<>();
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
@@ -75,8 +75,8 @@ public class TaskSubDeclareController extends BaseController {
      * @return
      */
     @PostMapping(value = "/mergeTaskSubDeclares")
-    public JsonResult mergeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> mergeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
@@ -102,8 +102,8 @@ public class TaskSubDeclareController extends BaseController {
      * @return
      */
     @PostMapping(value = "splitSubDeclare")
-    public JsonResult splitSubDeclare(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> splitSubDeclare(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
@@ -202,8 +202,8 @@ public class TaskSubDeclareController extends BaseController {
      * @return
      */
     @PostMapping(value = "/queryDeclareDetailsById/{subDeclareId}")
-    public JsonResult queryDeclareDetailsById(@PathVariable(value = "subDeclareId") Long subDeclareId) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<TaskSubDeclarePO> queryDeclareDetailsById(@PathVariable(value = "subDeclareId") Long subDeclareId) {
+        JsonResult<TaskSubDeclarePO> jr = new JsonResult<>();
         try {
             //根据申报子任务ID查询申报信息
             TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
@@ -284,8 +284,8 @@ public class TaskSubDeclareController extends BaseController {
      * @return
      */
     @PostMapping(value = "/completeTaskSubDeclares")
-    public JsonResult completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);

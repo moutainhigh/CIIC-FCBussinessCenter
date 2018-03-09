@@ -58,10 +58,10 @@
         inner join
         (select
             task_sub_proof_id,
-            count(1) as headNumTotal,
-            sum(case when id_type = '01' then 1 else 0 end ) as chineseNumTotal,
-            sum(case when id_type != '01' then 1 else 0 end ) as foreignerNumTotal
-        from tax_fc_task_sub_proof_detail where task_sub_proof_id = #{id}) sub
+            sum(case when is_active = 1 then 1 else 0 end ) as headNumTotal,
+            sum(case when id_type = '01' and is_active = 1 then 1 else 0 end ) as chineseNumTotal,
+            sum(case when id_type != '01' and  is_active = 1 then 1 else 0 end ) as foreignerNumTotal
+        from tax_fc_task_sub_proof_detail where  task_sub_proof_id =  #{id}) sub on tsp.id = sub.task_sub_proof_id
         SET
             tsp.headcount = sub.headNumTotal,
             tsp.chinese_num = sub.chineseNumTotal,

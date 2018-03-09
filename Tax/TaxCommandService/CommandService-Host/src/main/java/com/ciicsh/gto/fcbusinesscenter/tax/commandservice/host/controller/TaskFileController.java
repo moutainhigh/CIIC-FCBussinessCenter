@@ -42,8 +42,8 @@ public class TaskFileController extends BaseController {
      * @return
      */
     @PostMapping(value = "queryTaxFile")
-    public JsonResult queryTaxFile(@RequestBody FileDTO fileDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForFile> queryTaxFile(@RequestBody FileDTO fileDTO) {
+        JsonResult<ResponseForFile> jr = new JsonResult<>();
         try {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);
@@ -67,8 +67,8 @@ public class TaskFileController extends BaseController {
      * @return
      */
     @PostMapping(value = "deleteTaxFile")
-    public JsonResult deleteTaxFile(@RequestBody FileDTO fileDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> deleteTaxFile(@RequestBody FileDTO fileDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);
@@ -93,8 +93,8 @@ public class TaskFileController extends BaseController {
      * @return
      */
     @PostMapping(value = "uploadFileByBusinessIdAndType")
-    public JsonResult uploadFileByBusinessIdAndType(FileDTO fileDTO, MultipartFile file) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> uploadFileByBusinessIdAndType(FileDTO fileDTO, MultipartFile file) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);

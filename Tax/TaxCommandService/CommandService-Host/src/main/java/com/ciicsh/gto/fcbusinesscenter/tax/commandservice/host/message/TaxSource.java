@@ -9,12 +9,4 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface TaxSource {
-    String TAX_OUTPUT_TEST = "tax_output_test";
-
-    /**
-     * kafka测试
-     * @return
-     */
-    @Output(TAX_OUTPUT_TEST)
-    MessageChannel taxOutputTest();
 }
