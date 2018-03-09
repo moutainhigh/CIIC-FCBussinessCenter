@@ -13,6 +13,7 @@ import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -116,7 +117,7 @@ public class BatchProviderController implements BatchProxy {
     }
 
     @Override
-    public List<String> getBatchListByManagementId(String managementId) {
+    public List<String> getBatchListByManagementId(@RequestParam("managementId") String managementId) {
         if (StringUtils.isEmpty(managementId)) {
             return null;
         }

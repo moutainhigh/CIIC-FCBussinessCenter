@@ -345,19 +345,23 @@
 		UNION
 
 		SELECT
-			adjust_batch_code as code
+			ab.adjust_batch_code as code
 		FROM
-			pr_adjust_batch
+			pr_adjust_batch ab
+			JOIN pr_normal_batch nb
+			ON nb.code = ab.origin_batch_code
 		WHERE
-			management_id = #{managementId}
+			nb.management_id = #{managementId}
 
 		UNION
 
 		SELECT
-			back_tracking_batch_code as code
+			btb.back_tracking_batch_code as code
 		FROM
-			pr_back_tracking_batch
+			pr_back_tracking_batch btb
+			JOIN pr_normal_batch nb
+			ON nb.code = btb.origin_batch_code
 		WHERE
-			management_id = #{managementId}
+			nb.management_id = #{managementId}
 	</select>
 </mapper>
