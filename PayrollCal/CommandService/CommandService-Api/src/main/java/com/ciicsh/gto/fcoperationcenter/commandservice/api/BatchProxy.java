@@ -46,4 +46,11 @@ public interface BatchProxy {
      * @return
      */
     int updateHasMoneyBatch(String batchCode, Boolean hasMoney, int batchType);
+
+    /**
+     * 根据管理方ID获取批次列表
+     * @param managementId
+     * @return 批次ID列表
+     */
+    List<String> getBatchListByManagementId(String managementId);
 }

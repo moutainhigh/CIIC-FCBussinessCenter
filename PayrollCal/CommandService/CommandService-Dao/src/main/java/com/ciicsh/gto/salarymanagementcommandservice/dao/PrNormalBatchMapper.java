@@ -51,5 +51,5 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
                         @Param("hasMoney") boolean hasMoney,
                         @Param("modifiedBy") String modifiedBy);
 
-
+    List<String> selectAllBatchCodesByManagementId(@Param("managementId") String managementId);
 }
