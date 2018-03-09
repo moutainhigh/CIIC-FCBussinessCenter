@@ -303,6 +303,10 @@ public class TaskSubMoneyPO{
 
 	public void setPayStatus(String payStatus) {
 		this.payStatus = payStatus;
+		if(payStatus!=null){
+
+			this.payStatusName  = EnumUtil.getMessage(EnumUtil.PAY_STATUS,payStatus);
+		}
 	}
 
 	public String getPayStatusName() {

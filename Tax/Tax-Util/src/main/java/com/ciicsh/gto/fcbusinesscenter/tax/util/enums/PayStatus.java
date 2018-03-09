@@ -11,11 +11,15 @@ public enum PayStatus {
     /**
      * 划款中
      */
-    TS01("划款中"),
+    PS01("划款中"),
     /**
      * 已划款
      */
-    TS02("已划款");
+    PS02("已划款"),
+    /**
+     * 驳回
+     */
+    PS03("驳回");
 
     private String  message;
 
