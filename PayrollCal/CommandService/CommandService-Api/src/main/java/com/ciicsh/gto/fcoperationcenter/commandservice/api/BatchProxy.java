@@ -52,5 +52,6 @@ public interface BatchProxy {
      * @param managementId
      * @return 批次ID列表
      */
-    List<String> getBatchListByManagementId(String managementId);
+    @GetMapping("/getBatchListByManagementId")
+    List<String> getBatchListByManagementId(@RequestParam("managementId") String managementId);
 }
