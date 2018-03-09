@@ -1,10 +1,14 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
@@ -117,11 +121,14 @@ public class BatchProviderController implements BatchProxy {
     }
 
     @Override
-    public List<String> getBatchListByManagementId(@RequestParam("managementId") String managementId) {
+    public List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam("managementId") String managementId) {
         if (StringUtils.isEmpty(managementId)) {
             return null;
         }
-        return normalBatchService.getAllBatchIdsByManagementId(managementId);
+        List<PrNormalBatchPO> batchList = normalBatchService.getAllBatchesByManagementId(managementId);
+        List<PrNormalBatchDTO> resultList = JSON.parseObject(JSON.toJSONString(batchList)
+                , new TypeReference<List<PrNormalBatchDTO>>(){});
+        return resultList;
     }
 
 }
