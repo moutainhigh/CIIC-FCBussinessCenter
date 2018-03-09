@@ -7,7 +7,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
-import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountSetMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
@@ -165,13 +165,18 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
     }
 
     @Override
-    public Integer isExistPayrollAccountSet(PrAccountItemOptPO optPO) {
+    public Integer isExistPayrollAccountSet(PrAccountSetOptPO optPO) {
         return accountSetMapper.isExistPayrollAccountSet(optPO);
     }
 
     @Override
     public PrPayrollAccountSetExtensionPO getPayrollAccountSetExtByCode(String accountSetCode) {
         return accountSetMapper.getPayrollAccountSetExtByCode(accountSetCode);
+    }
+
+    @Override
+    public List<PrAccountSetOptPO> getAccountSetWithItemsByManagementId(String managementId) {
+        return accountSetMapper.selectAccountSetWithItemsByManagementId(managementId);
     }
 
     private PrPayrollAccountItemRelationPO toPayrollAccountItemRelationPO(PrPayrollItemPO payrollItemPO,PrPayrollAccountSetPO payrollAccountSetPO){
