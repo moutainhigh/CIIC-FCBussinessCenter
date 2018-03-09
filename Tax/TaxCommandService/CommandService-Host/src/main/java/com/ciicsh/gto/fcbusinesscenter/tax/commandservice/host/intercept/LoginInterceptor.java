@@ -4,6 +4,7 @@ import com.ciicsh.gto.commonservice.util.dto.Result;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.HttpKit;
 import com.ciicsh.gto.identityservice.api.IdentityServiceProxy;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -35,6 +36,9 @@ public class LoginInterceptor{
         if (headers == null || Stream.of(headers.split(",")).noneMatch(header ->
                 header.equalsIgnoreCase("token"))) {
             String token = request.getHeader("token");
+            if (StringUtils.isEmpty(token)) {
+                token = request.getParameter("token");
+            }
 
             //获取登录信息
             Result<UserInfoResponseDTO> result = identityServiceProxy.getUserInfoByToken(token);
