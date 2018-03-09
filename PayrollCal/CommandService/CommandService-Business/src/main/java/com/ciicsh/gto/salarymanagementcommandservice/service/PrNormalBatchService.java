@@ -77,5 +77,5 @@ public interface PrNormalBatchService {
      * @param managementId
      * @return
      */
-    List<String> getAllBatchIdsByManagementId(String managementId);
+    List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId);
 }

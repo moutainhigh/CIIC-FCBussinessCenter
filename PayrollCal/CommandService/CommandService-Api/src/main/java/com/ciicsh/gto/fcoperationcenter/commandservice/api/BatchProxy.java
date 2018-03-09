@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcoperationcenter.commandservice.api;
 
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,5 +28,5 @@ public interface BatchProxy {
      * @return 批次ID列表
      */
     @GetMapping("/getBatchListByManagementId")
-    List<String> getBatchListByManagementId(@RequestParam("managementId") String managementId);
+    List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam("managementId") String managementId);
 }

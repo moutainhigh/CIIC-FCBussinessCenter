@@ -231,7 +231,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
-    public List<String> getAllBatchIdsByManagementId(String managementId) {
+    public List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId) {
         return normalBatchMapper.selectAllBatchCodesByManagementId(managementId);
     }
 

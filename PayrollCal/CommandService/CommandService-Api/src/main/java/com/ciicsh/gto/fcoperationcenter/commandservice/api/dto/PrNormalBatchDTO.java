@@ -71,6 +71,11 @@ public class PrNormalBatchDTO{
 	private String period;
 
     /**
+     * 实际记薪年月
+     */
+	private String actualPeriod;
+
+    /**
      * 薪资计算结果
      */
 	private String resultData;
