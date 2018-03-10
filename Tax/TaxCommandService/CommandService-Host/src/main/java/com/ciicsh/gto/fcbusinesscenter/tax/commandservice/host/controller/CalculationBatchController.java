@@ -36,9 +36,9 @@ public class CalculationBatchController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryCalculationBatchs")
-    public JsonResult queryCalculationBatchs(@RequestBody CalculationBatchDTO calculationBatchDTO) {
+    public JsonResult<ResponseForCalBatch> queryCalculationBatchs(@RequestBody CalculationBatchDTO calculationBatchDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<ResponseForCalBatch> jr = new JsonResult<>();
 
         try {
             RequestForCalBatch requestForCalBatch = new RequestForCalBatch();
@@ -64,9 +64,9 @@ public class CalculationBatchController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryCalculationBatchDetails")
-    public JsonResult queryCalculationBatchDetails(@RequestBody EmployeeDTO employeeDTO) {
+    public JsonResult<ResponseForCalBatchDetail> queryCalculationBatchDetails(@RequestBody EmployeeDTO employeeDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<ResponseForCalBatchDetail> jr = new JsonResult<>();
         try {
             RequestForEmployees requestForEmployees = new RequestForEmployees();
             BeanUtils.copyProperties(employeeDTO, requestForEmployees);
@@ -90,9 +90,9 @@ public class CalculationBatchController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/createMainTask")
-    public JsonResult createMainTask(@RequestBody CalculationBatchDTO calculationBatchDTO) {
+    public JsonResult<Boolean> createMainTask(@RequestBody CalculationBatchDTO calculationBatchDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(calculationBatchDTO, requestForMainTaskMain);

@@ -32,8 +32,8 @@ public class TaskSubPaymentDetailController extends BaseController {
      * @return
      */
     @PostMapping(value = "querySubPaymentDetailsByParams")
-    public JsonResult querySubPaymentDetailsByParams(@RequestBody TaskSubPaymentDetailDTO taskSubPaymentDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubPaymentDetail> querySubPaymentDetailsByParams(@RequestBody TaskSubPaymentDetailDTO taskSubPaymentDetailDTO) {
+        JsonResult<ResponseForSubPaymentDetail> jr = new JsonResult<>();
         try {
             RequestForSubPaymentDetail requestForSubPaymentDetail = new RequestForSubPaymentDetail();
             BeanUtils.copyProperties(taskSubPaymentDetailDTO, requestForSubPaymentDetail);

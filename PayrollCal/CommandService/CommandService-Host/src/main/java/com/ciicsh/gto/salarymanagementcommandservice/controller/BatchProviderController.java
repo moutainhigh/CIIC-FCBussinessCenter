@@ -1,10 +1,14 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
@@ -12,6 +16,8 @@ import com.google.gson.Gson;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -66,7 +72,6 @@ public class BatchProviderController implements BatchProxy {
 
     }
 
-    @Override
     public String getBatchListByCodes(List<String> batchCodes, int batchType) {
         Gson gson = new Gson();
         List<DBObject> batchResult = null;
@@ -84,7 +89,6 @@ public class BatchProviderController implements BatchProxy {
         }
     }
 
-    @Override
     public int updateAdvanceBatch(String batchCode, Boolean hasAdvance, int batchType) {
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.NORMAL.getValue()){
@@ -101,7 +105,6 @@ public class BatchProviderController implements BatchProxy {
         return rowAffected;
     }
 
-    @Override
     public int updateHasMoneyBatch(String batchCode, Boolean hasMoney, int batchType) {
         int rowAffected = 0;
         if (batchType == BatchTypeEnum.NORMAL.getValue()) {
@@ -115,6 +118,17 @@ public class BatchProviderController implements BatchProxy {
             rowAffected = backTraceBatchMongoOpt.update(Criteria.where("batchCode").is(batchCode), "has_money", hasMoney);
         }
         return rowAffected;
+    }
+
+    @Override
+    public List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam("managementId") String managementId) {
+        if (StringUtils.isEmpty(managementId)) {
+            return null;
+        }
+        List<PrNormalBatchPO> batchList = normalBatchService.getAllBatchesByManagementId(managementId);
+        List<PrNormalBatchDTO> resultList = JSON.parseObject(JSON.toJSONString(batchList)
+                , new TypeReference<List<PrNormalBatchDTO>>(){});
+        return resultList;
     }
 
 }

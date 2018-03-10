@@ -34,8 +34,8 @@ public class TaskSubSupplierController extends BaseController {
      * @return
      */
     @PostMapping(value = "/queryTaskSubSupplier")
-    public JsonResult queryTaskSubSupplier(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForTaskSubSupplier> queryTaskSubSupplier(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+        JsonResult<ResponseForTaskSubSupplier> jr = new JsonResult<>();
         try {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
@@ -64,8 +64,8 @@ public class TaskSubSupplierController extends BaseController {
      * @return
      */
     @PostMapping(value = "/querySupplierDetailsById/{subSupplierId}")
-    public JsonResult querySupplierDetailsById(@PathVariable(value = "subSupplierId") Long subSupplierId) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<TaskSubSupplierPO> querySupplierDetailsById(@PathVariable(value = "subSupplierId") Long subSupplierId) {
+        JsonResult<TaskSubSupplierPO> jr = new JsonResult();
         try {
             //根据供应商子任务ID查询供应商信息
             TaskSubSupplierPO taskSubSupplierPO = taskSubSupplierService.querySupplierDetailsById(subSupplierId);

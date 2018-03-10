@@ -9,12 +9,18 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface TaxSink {
-    String TAX_INPUT_TEST = "tax_input_test";
 
     /**
-     * kafka接收测试
+     * 结算中心划款topic
+     */
+    String PAY_APPLY_PAY_STATUS_STREAM = "pay-apply-pay-status-stream";
+
+
+    /**
+     * 监听结算中心划款消息
      * @return
      */
-    @Input(TAX_INPUT_TEST)
-    MessageChannel taxInputTest();
+    @Input(PAY_APPLY_PAY_STATUS_STREAM)
+    MessageChannel moneyMessage();
+
 }

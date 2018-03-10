@@ -70,4 +70,12 @@ public interface PrNormalBatchService {
      * @return
      */
     int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy);
+
+
+    /**
+     * 根据管理方id获取批次id列表
+     * @param managementId
+     * @return
+     */
+    List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId);
 }

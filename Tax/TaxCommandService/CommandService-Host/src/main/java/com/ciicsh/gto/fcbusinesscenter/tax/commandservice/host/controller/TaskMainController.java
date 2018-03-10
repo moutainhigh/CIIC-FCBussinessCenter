@@ -53,9 +53,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryTaskMains")
-    public JsonResult queryTaskMains(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<ResponseForTaskMain> queryTaskMains(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<ResponseForTaskMain> jr = new JsonResult<>();
 
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
@@ -82,9 +82,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryTaskMainsForDraft")
-    public JsonResult queryTaskMainsForDraft(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<ResponseForTaskMain> queryTaskMainsForDraft(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<ResponseForTaskMain> jr = new JsonResult<>();
 
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
@@ -111,9 +111,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryTaskMainsForCheck")
-    public JsonResult queryTaskMainsForCheck(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<ResponseForTaskMain> queryTaskMainsForCheck(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<ResponseForTaskMain> jr = new JsonResult<>();
 
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
@@ -140,9 +140,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryTaskSubs")
-    public JsonResult queryTaskSubs(@RequestBody TaskSubsDTO taskSubsDTO) {
+    public JsonResult<Map<String, List>> queryTaskSubs(@RequestBody TaskSubsDTO taskSubsDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<Map<String, List>> jr = new JsonResult<>();
 
         try {
 
@@ -174,9 +174,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/submitMainTask")
-    public JsonResult createMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<Boolean> createMainTask(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
@@ -200,9 +200,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/passMainTask")
-    public JsonResult passMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<Boolean> passMainTask(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
@@ -224,9 +224,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/invalidMainTask")
-    public JsonResult invalidMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<Boolean> invalidMainTask(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
@@ -248,9 +248,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/rejectMainTask")
-    public JsonResult rejectMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<Boolean> rejectMainTask(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
@@ -272,9 +272,9 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryTaskMainDetails")
-    public JsonResult queryTaskMainDetails(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<ResponseForCalBatchDetail> queryTaskMainDetails(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult jr = new JsonResult();
+        JsonResult<ResponseForCalBatchDetail> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);

@@ -51,13 +51,24 @@
 		<result column="modified_by" property="modifiedBy" />
 	</resultMap>
 
+	<resultMap id="AccountSetWithItemsMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO">
+		<id column="account_set_code" property="accountSetCode" />
+		<result column="management_id" property="managementId" />
+		<result column="account_set_name" property="accountSetName" />
+		<collection property="accountItems" ofType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO">
+			<result column="payroll_item_code" property="payrollItemCode" />
+			<result column="payroll_item_alias" property="payrollItemAlias" />
+			<result column="payroll_item_name" property="payrollItemName" />
+		</collection>
+	</resultMap>
+
 	<resultMap id="getKeyValueMap"   type="KeyValuePO">
 		<result property="key" column="account_set_code" />
 		<result property="value" column="account_set_name" />
 	</resultMap>
 
 
-	<select id="isExistPayrollAccountSet" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO" resultType="int">
+	<select id="isExistPayrollAccountSet" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO" resultType="int">
 		SELECT COUNT(*) FROM pr_payroll_account_set
 		<include refid="whereIsExist" />
 	</select>
@@ -100,8 +111,7 @@
 		LEFT JOIN pr_payroll_group_template d on a.payroll_group_template_code = d.group_template_code
 		<include refid="whereExtQuery" />
 	</select>
-
-
+	
 	<select id="getPayrollAccountSetExtByCode" resultMap="BaseExtensionResultMap">
 		SELECT
 		<include refid="PayrollAccountSet_Extension_All_Columns" />
@@ -113,9 +123,7 @@
 		WHERE
 		a.account_set_code = #{accountSetCode} AND a.is_active = 1
 	</select>
-
-
-
+	
 	<sql id="PayrollAccountSet_All_Columns">
 		id,
 		management_id,
@@ -162,8 +170,7 @@
 		a.created_by,
 		a.modified_by
 	</sql>
-
-
+	
 	<sql id="whereQuery">
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
 			<if test="id != null and id != 0">
@@ -220,5 +227,27 @@
 			</if>
 		</trim>
 	</sql>
+
+	<select id="selectAccountSetWithItemsByManagementId" resultMap="AccountSetWithItemsMap">
+		SELECT
+			pas.account_set_code,
+			pas.management_id,
+			pas.account_set_name,
+			pair.payroll_item_code,
+			pair.payroll_item_alias,
+			pi.item_name as payroll_item_name
+		FROM
+			pr_payroll_account_set pas
+			LEFT JOIN pr_payroll_account_item_relation pair
+				ON pas.account_set_code = pair.account_set_code
+				AND pair.is_active = TRUE
+			LEFT JOIN pr_payroll_item pi
+				ON pair.payroll_item_code = pi.item_code
+				AND pi.is_active = TRUE
+		WHERE
+			pas.is_active = TRUE
+		AND
+			pas.management_id = #{managementId}
+	</select>
 
 </mapper>

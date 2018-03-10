@@ -33,8 +33,8 @@ public class TaskSubDeclareDetailController extends BaseController {
      * @return
      */
     @PostMapping(value = "querySubDeclareDetailsByParams")
-    public JsonResult querySubDeclareDetailsByParams(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubDeclareDetail> querySubDeclareDetailsByParams(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
+        JsonResult<ResponseForSubDeclareDetail> jr = new JsonResult<>();
         try {
             RequestForSubDeclareDetail requestForSubDeclareDetail = new RequestForSubDeclareDetail();
             BeanUtils.copyProperties(taskSubDeclareDetailDTO, requestForSubDeclareDetail);

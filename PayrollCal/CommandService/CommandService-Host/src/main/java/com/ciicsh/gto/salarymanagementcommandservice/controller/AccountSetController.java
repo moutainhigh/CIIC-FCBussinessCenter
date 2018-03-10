@@ -6,7 +6,7 @@ import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountS
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
-import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetExtensionTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetTranslator;
@@ -133,7 +133,7 @@ public class AccountSetController extends BaseController {
 
     @PostMapping("/addAccountSet")
     public JsonResult addAccountSet(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
-        PrAccountItemOptPO optPO = new PrAccountItemOptPO();
+        PrAccountSetOptPO optPO = new PrAccountSetOptPO();
         optPO.setManagementId(accountSetDTO.getManagementId());
         optPO.setAccountSetName(accountSetDTO.getAccountSetName());
         Integer val = prAccountSetService.isExistPayrollAccountSet(optPO);
@@ -167,7 +167,7 @@ public class AccountSetController extends BaseController {
 
     @PostMapping("/editAccountSet")
     public JsonResult editAccountSet(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
-        PrAccountItemOptPO optPO = new PrAccountItemOptPO();
+        PrAccountSetOptPO optPO = new PrAccountSetOptPO();
         optPO.setManagementId(accountSetDTO.getManagementId());
         optPO.setAccountSetName(accountSetDTO.getAccountSetName());
         optPO.setAccountSetCode(accountSetDTO.getAccountSetCode());

@@ -236,6 +236,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return normalBatchMapper.updateHasMoneny(batchCode,hasMoney,modifiedBy);
     }
 
+    @Override
+    public List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId) {
+        return normalBatchMapper.selectAllBatchCodesByManagementId(managementId);
+    }
+
     private BasicDBObject getEmpBaseInfo(List<BasicDBObject> prItems){
         BasicDBObject empBaseInfo = new BasicDBObject();
         empBaseInfo.put("is_active",true);

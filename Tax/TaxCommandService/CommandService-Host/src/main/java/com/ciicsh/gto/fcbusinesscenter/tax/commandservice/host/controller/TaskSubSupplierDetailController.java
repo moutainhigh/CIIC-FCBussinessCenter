@@ -32,8 +32,8 @@ public class TaskSubSupplierDetailController extends BaseController {
      * @return
      */
     @PostMapping(value = "querySubSupplierDetailsByParams")
-    public JsonResult querySubSupplierDetailsByParams(@RequestBody TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubSupplierDetail> querySubSupplierDetailsByParams(@RequestBody TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
+        JsonResult<ResponseForSubSupplierDetail> jr = new JsonResult<>();
         try {
             RequestForSubSupplierDetail requestForSubSupplierDetail = new RequestForSubSupplierDetail();
             BeanUtils.copyProperties(taskSubSupplierDetailDTO, requestForSubSupplierDetail);

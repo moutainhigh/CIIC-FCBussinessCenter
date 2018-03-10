@@ -52,8 +52,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @Override
-    public JsonResult queryTaskSubProofByMainId(@PathVariable(value = "taskMainProofId") Long taskMainProofId) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<List<TaskSubProofDTO>> queryTaskSubProofByMainId(@PathVariable(value = "taskMainProofId") Long taskMainProofId) {
+        JsonResult<List<TaskSubProofDTO>> jr = new JsonResult<>();
         try {
             List<TaskSubProofDTO> taskSubProofDTOLists = new ArrayList<>();
             List<TaskSubProofPO> taskSubProofPOLists = taskSubProofService.queryTaskSubProofByMainId(taskMainProofId);
@@ -81,8 +81,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @Override
-    public JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubProof> queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO) {
+        JsonResult<ResponseForSubProof> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskSubProofDTO, requestForProof);
@@ -107,8 +107,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @Override
-    public JsonResult copyProofInfoBySubId(@PathVariable(value = "taskSubProofId") Long taskSubProofId) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> copyProofInfoBySubId(@PathVariable(value = "taskSubProofId") Long taskSubProofId) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             taskSubProofService.copyProofInfoBySubId(taskSubProofId);
             jr.success(true);
@@ -129,8 +129,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/querySubProofInfoByTaskType")
-    public JsonResult querySubProofInfoByTaskType(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubProof> querySubProofInfoByTaskType(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<ResponseForSubProof> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -157,8 +157,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/combineSubTaskProof")
-    public JsonResult combineTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> combineTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -184,8 +184,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/splitSubTaskProof")
-    public JsonResult splitTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> splitTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -211,8 +211,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/completeSubTaskProof")
-    public JsonResult completeTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> completeTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -240,8 +240,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/rejectSubTaskProof")
-    public JsonResult rejectTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> rejectTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -269,8 +269,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/invalidSubTaskProof")
-    public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -299,8 +299,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/queryApplyDetailsBySubId/{subProofId}")
-    public JsonResult queryApplyDetailsBySubId(@PathVariable(value = "subProofId") Long subProofId) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<TaskSubProofBO> queryApplyDetailsBySubId(@PathVariable(value = "subProofId") Long subProofId) {
+        JsonResult<TaskSubProofBO> jr = new JsonResult<>();
         try {
             TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
             jr.success(taskSubProofBO);
@@ -321,8 +321,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @PostMapping(value = "/queryTaskSubProofDetailBySubId")
-    public JsonResult queryTaskSubProofDetailBySubId(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubProofDetail> queryTaskSubProofDetailBySubId(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<ResponseForSubProofDetail> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
