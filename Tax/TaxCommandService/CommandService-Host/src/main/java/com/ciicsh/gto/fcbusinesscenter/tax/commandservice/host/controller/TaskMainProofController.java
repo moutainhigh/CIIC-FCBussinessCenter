@@ -37,8 +37,8 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      * @return
      */
     @Override
-    public JsonResult queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForMainProof> queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO) {
+        JsonResult<ResponseForMainProof> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskMainProofDTO, requestForProof);
@@ -67,11 +67,11 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      * @return
      */
     @Override
-    public JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+    public JsonResult<Boolean> addTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         // TODO 临时设置创建人
         //设置创建人
         taskProofDTO.setCreatedBy("admin");
-        JsonResult jr = new JsonResult();
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             //完税凭证主任务
             TaskMainProofPO taskMainProofPO = null;
@@ -124,8 +124,8 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      */
     @Override
     @PostMapping(value = "/updateTaskProof")
-    public JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> updateTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -152,11 +152,11 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      */
     @Override
     @PostMapping(value = "/invalidTaskProof")
-    public JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
+    public JsonResult<Boolean> invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         // TODO 临时设置修改人
         //设置修改人
         taskProofDTO.setModifiedBy("admin");
-        JsonResult jr = new JsonResult();
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);

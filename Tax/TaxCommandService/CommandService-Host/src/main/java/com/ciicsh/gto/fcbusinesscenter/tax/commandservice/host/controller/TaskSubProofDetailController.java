@@ -43,8 +43,8 @@ public class TaskSubProofDetailController extends BaseController implements Task
      * @return
      */
     @Override
-    public JsonResult queryTaskSubProofDetail(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubDetail> queryTaskSubProofDetail(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<ResponseForSubDetail> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
@@ -70,10 +70,10 @@ public class TaskSubProofDetailController extends BaseController implements Task
      * @return
      */
     @Override
-    public JsonResult queryEmployee(@RequestBody TaskProofDTO taskProofDTO) {
+    public JsonResult<ResponseForEmployee> queryEmployee(@RequestBody TaskProofDTO taskProofDTO) {
         //主任务标识
         String main = "main";
-        JsonResult jr = new JsonResult();
+        JsonResult<ResponseForEmployee> jr = new JsonResult<>();
         List<EmployeeBO> employeeBOList = new ArrayList<>();
         ResponseForEmployee responseForEmployee = new ResponseForEmployee();
         try {
@@ -182,8 +182,8 @@ public class TaskSubProofDetailController extends BaseController implements Task
      * @return
      */
     @Override
-    public JsonResult saveSubProofDetail(@RequestBody SubProofDetailDTO subProofDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> saveSubProofDetail(@RequestBody SubProofDetailDTO subProofDetailDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForSubDetail requestForSubDetail = new RequestForSubDetail();
             BeanUtils.copyProperties(subProofDetailDTO, requestForSubDetail);

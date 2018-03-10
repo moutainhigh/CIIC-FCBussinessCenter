@@ -49,11 +49,11 @@ public class TestController extends BaseController implements TestProxy{
     @Autowired
     private TaxKafkaSender taxKafkaSender;
 
-    @RequestMapping("taxTest")
-    @ResponseBody
-    public void taxTest(EmployeeDTO employeeDTO){
-        taxKafkaSender.taxOutputTest(employeeDTO);
-    }
+//    @RequestMapping("taxTest")
+//    @ResponseBody
+//    public void taxTest(EmployeeDTO employeeDTO){
+//        taxKafkaSender.taxOutputTest(employeeDTO);
+//    }
 
     @RequestMapping("/kafkaTest")
     @ResponseBody

@@ -34,8 +34,8 @@ public class TaskSubMoneyDetailController extends BaseController {
      * @return
      */
     @PostMapping(value = "querySubMoneyDetailsByParams")
-    public JsonResult querySubMoneyDetailsByParams(@RequestBody TaskSubMoneyDetailDTO taskSubMoneyDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubMoneyDetail> querySubMoneyDetailsByParams(@RequestBody TaskSubMoneyDetailDTO taskSubMoneyDetailDTO) {
+        JsonResult<ResponseForSubMoneyDetail> jr = new JsonResult<>();
         try {
             RequestForSubMoneyDetail requestForSubMoneyDetail = new RequestForSubMoneyDetail();
             BeanUtils.copyProperties(taskSubMoneyDetailDTO, requestForSubMoneyDetail);
@@ -43,7 +43,7 @@ public class TaskSubMoneyDetailController extends BaseController {
             jr.success(responseForSubMoneyDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
-            tags.put("taskSubMoneyId", taskSubMoneyDetailDTO.getTaskSubPaymentId().toString());
+            tags.put("taskSubMoneyId", taskSubMoneyDetailDTO.getTaskSubMoneyId().toString());
             tags.put("employeeNo", taskSubMoneyDetailDTO.getEmployeeNo());
             tags.put("employeeName", taskSubMoneyDetailDTO.getEmployeeName());
             tags.put("idType", taskSubMoneyDetailDTO.getIdType());
