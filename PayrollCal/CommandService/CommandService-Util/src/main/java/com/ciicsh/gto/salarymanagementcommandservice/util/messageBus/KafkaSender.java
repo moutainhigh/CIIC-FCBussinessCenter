@@ -33,7 +33,13 @@ public class KafkaSender {
     }
 
     public void SendComputeAction(ComputeMsg computeMsg){
-        payrollSource.computeOutput().send(MessageBuilder.withPayload(computeMsg).build());
+        try {
+            logger.info(String.format("发送计算消息：%s",computeMsg.toString()));
+            payrollSource.computeOutput().send(MessageBuilder.withPayload(computeMsg).build());
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage());
+        }
     }
 
     // TO BE DELETED

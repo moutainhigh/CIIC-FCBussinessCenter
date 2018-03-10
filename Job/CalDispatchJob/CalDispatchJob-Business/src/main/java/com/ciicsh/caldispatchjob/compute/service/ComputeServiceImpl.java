@@ -59,7 +59,7 @@ public class ComputeServiceImpl {
 
     private final static String CONDITION_FOMULAR_SIPE = ";";
 
-    private final static String CONDITION_FUNCTION_SPLIT = "_";
+    private final static String CONDITION_FUNCTION_SPLIT = "___";
 
 
 
@@ -101,8 +101,16 @@ public class ComputeServiceImpl {
         Query query = new Query(criteria);
 
         query.fields().
-                include(PayItemName.EMPLOYEE_CODE_CN).
-                include("catalog.pay_items");
+                include(PayItemName.EMPLOYEE_CODE_CN)
+                .include("catalog.pay_items.item_type")
+                .include("catalog.pay_items.data_type")
+                .include("catalog.pay_items.cal_priority")
+                .include("catalog.pay_items.item_name")
+                .include("catalog.pay_items.item_value")
+                .include("catalog.pay_items.decimal_process_type")
+                .include("catalog.pay_items.item_condition")
+                .include("catalog.pay_items.formula_content")
+                ;
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
@@ -145,6 +153,9 @@ public class ComputeServiceImpl {
                     String formulaContent = item.get("formula_content") == null ? "" : (String)item.get("formula_content"); //计算公式
                     if(StringUtils.isEmpty(formulaContent)) return;
 
+                    if(calPriority == 48){
+                        logger.info("ok");
+                    }
                     condition = Special2Normal(condition); //特殊字符转化
                     formulaContent = Special2Normal(formulaContent); //特殊字符转化
                     String conditionFormula = replaceFormula(condition,formulaContent,context);//处理计算项的公式
@@ -161,9 +172,10 @@ public class ComputeServiceImpl {
                         }
                         item.put("item_value",result);
                         context.getEmpPayItem().getItems().put(itemName,result); //设置上下文计算项的值
+                        context.getFuncEntityList().clear(); // 清除FIRE 过的函数
 
                     }catch (ScriptException se){
-                        logger.error(String.format("雇员编号－%s | 计算失败－%s",item.get(PayItemName.EMPLOYEE_CODE_CN),se.getMessage()));
+                        logger.error(String.format("雇员编号－%s | 计算失败－%s",empCode,se.getMessage()));
                     }
                 }
             });
@@ -171,7 +183,7 @@ public class ComputeServiceImpl {
             if(batchType == BatchTypeEnum.NORMAL.getValue()) {
                 normalBatchMongoOpt.batchUpdate(
                         Criteria.where("batch_code").is(batchCode)
-                                .and("catalog.emp_info.is_active").is(true)
+                                //.and("catalog.emp_info.is_active").is(true)
                                 .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                         "catalog.pay_items",items);
 
@@ -276,7 +288,7 @@ public class ComputeServiceImpl {
         Matcher m = FUNCTION_REGEX.matcher(condition_formula);
         while (m.find()) {
             funcEntity = new FuncEntity();
-            String func = m.group(1); // 工龄([入职日期],[离职日期])
+            String func = m.group(1);
             func = func.replaceAll("\\(",",").replaceAll("\\)","")
                         .replaceAll("\\[","").replaceAll("\\]","");
             String[] funcs = func.split(",");
@@ -341,9 +353,19 @@ public class ComputeServiceImpl {
                     sb.append(" { " + formulas[1] + " }");
 
                 }else {
-                    for (int i = 0; i < conditions.length; i++) {
-                        sb.append("if ( " + conditions[i] + " )");
-                        sb.append("{ " + formulas[i] + " }");
+                    if(conditions.length == formulas.length) {
+                        for (int i = 0; i < conditions.length; i++) {
+                            sb.append("if ( " + conditions[i] + " )");
+                            sb.append("{ " + formulas[i] + " }");
+                        }
+                    }
+                    else if(conditions.length + 1 == formulas.length){
+                        for (int i = 0; i < conditions.length; i++) {
+                            sb.append("if ( " + conditions[i] + " )");
+                            sb.append("{ " + formulas[i] + " }");
+                        }
+                        sb.append(" else");
+                        sb.append(" { " + formulas[conditions.length] + " }");
                     }
                 }
             }
@@ -411,13 +433,16 @@ public class ComputeServiceImpl {
      * @return
      */
     private String Special2Normal(String inputStr){
+        if(StringUtils.isEmpty(inputStr)) return "";
         inputStr = inputStr
                 .replaceAll("［","[").replaceAll("］","]")
                 .replaceAll("｛","{").replaceAll("｝","}")
                 .replaceAll("（","(").replaceAll("）",")")
                 .replaceAll("＋","+").replaceAll("－","-")
                 .replaceAll("＊","*").replaceAll("／","/")
-                .replaceAll("，",",");
+                .replaceAll("，",",").replaceAll("'","'")
+                .replaceAll("“","\"");
+        inputStr = StringUtils.removeEnd(inputStr,";"); // 去除 ；号结尾
         return inputStr;
     }
 
@@ -427,5 +452,4 @@ public class ComputeServiceImpl {
         int count = kSession.fireAllRules();
         //kSession.delete(f);
     }
-
 }

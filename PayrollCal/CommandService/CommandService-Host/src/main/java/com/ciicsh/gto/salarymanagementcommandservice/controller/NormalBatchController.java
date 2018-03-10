@@ -18,6 +18,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
@@ -360,9 +361,10 @@ public class NormalBatchController {
             }else if(batchType == BatchTypeEnum.BACK.getValue()){
                 backTrackingBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill", "");
             }
-            /*ComputeMsg computeMsg = new ComputeMsg();
+            // 发送薪资计算消息到kafka
+            ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
-            sender.SendComputeAction(computeMsg);*/
+            sender.SendComputeAction(computeMsg);
         }
         catch (Exception e){
             logger.error(e.getMessage());
