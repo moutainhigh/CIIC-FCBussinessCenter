@@ -24,6 +24,11 @@ public class RequestForSubDetail {
      */
     private Integer[] oldDeleteIds;
 
+    /**
+     * 修改人
+     */
+    private String modifiedBy;
+
     private List<TaskSubProofDetailBO> taskSubProofDetailBOList;
 
     public Integer[] getOldDeleteIds() {
@@ -56,5 +61,13 @@ public class RequestForSubDetail {
 
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 }

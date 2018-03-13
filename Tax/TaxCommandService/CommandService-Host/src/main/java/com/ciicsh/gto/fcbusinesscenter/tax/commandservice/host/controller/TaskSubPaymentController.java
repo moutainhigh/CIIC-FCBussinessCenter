@@ -68,9 +68,6 @@ public class TaskSubPaymentController extends BaseController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
-            // TODO 临时设置修改人
-            //修改人
-            requestForSubPayment.setModifiedBy("adminTaskSubPayment");
             //任务状态:
             requestForSubPayment.setStatus("04");
             taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
@@ -97,9 +94,6 @@ public class TaskSubPaymentController extends BaseController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
-            // TODO 临时设置修改人
-            //修改人
-            requestForSubPayment.setModifiedBy("adminTaskSubPayment");
             //任务状态
             requestForSubPayment.setStatus("03");
             taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);

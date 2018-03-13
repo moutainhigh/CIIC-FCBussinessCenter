@@ -80,9 +80,6 @@ public class TaskSubDeclareController extends BaseController {
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            // TODO 临时设置修改人
-            //修改人
-            requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.mergeTaskSubDeclares(requestForTaskSubDeclare);
             jr.success(true);
         } catch (Exception e) {
@@ -107,9 +104,6 @@ public class TaskSubDeclareController extends BaseController {
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            // TODO 临时设置修改人
-            //修改人
-            requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare);
             jr.success(true);
         } catch (Exception e) {
@@ -289,9 +283,6 @@ public class TaskSubDeclareController extends BaseController {
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            // TODO 临时设置修改人
-            //修改人
-            requestForTaskSubDeclare.setModifiedBy("adminMain");
             //任务状态
             requestForTaskSubDeclare.setStatus("04");
             taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);

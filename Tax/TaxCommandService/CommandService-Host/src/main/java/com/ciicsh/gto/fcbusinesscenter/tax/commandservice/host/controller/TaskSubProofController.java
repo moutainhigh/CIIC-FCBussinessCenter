@@ -7,7 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.LogService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
@@ -15,7 +15,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
+import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -110,7 +110,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
     public JsonResult<Boolean> copyProofInfoBySubId(@PathVariable(value = "taskSubProofId") Long taskSubProofId) {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            taskSubProofService.copyProofInfoBySubId(taskSubProofId);
+            //登录信息
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            taskSubProofService.copyProofInfoBySubId(taskSubProofId, userInfoResponseDTO.getLoginName());
             jr.success(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -162,9 +164,6 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            // TODO 临时设置修改人
-            //修改人
-            requestForProof.setModifiedBy("adminMain");
             taskSubProofService.combineTaskProofByRes(requestForProof);
             jr.success(true);
         } catch (Exception e) {
@@ -189,9 +188,6 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            // TODO 临时设置修改人
-            //修改人
-            requestForProof.setModifiedBy("adminMain");
             taskSubProofService.splitTaskProofByRes(requestForProof);
             jr.success(true);
         } catch (Exception e) {
@@ -216,9 +212,6 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            // TODO 临时设置修改人
-            //修改人
-            requestForProof.setModifiedBy("adminMain");
             //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
             requestForProof.setStatus("04");
             taskSubProofService.completeTaskProofByRes(requestForProof);
@@ -245,9 +238,6 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            // TODO 临时设置修改人
-            //修改人
-            requestForProof.setModifiedBy("adminMain");
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("03");
             taskSubProofService.rejectTaskProofByRes(requestForProof);
@@ -274,9 +264,6 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            // TODO 临时设置修改人
-            //修改人
-            requestForProof.setModifiedBy("adminMain");
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("05");
             taskSubProofService.invalidTaskProofByRes(requestForProof);
