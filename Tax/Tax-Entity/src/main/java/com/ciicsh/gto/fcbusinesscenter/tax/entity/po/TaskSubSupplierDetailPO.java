@@ -5,12 +5,13 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -176,18 +177,22 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
 
@@ -463,19 +468,19 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

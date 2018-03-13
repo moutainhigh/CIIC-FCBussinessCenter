@@ -63,19 +63,22 @@ public class TaskMainPO extends Model<TaskMainPO> {
     /**
      * 创建时间
      */
+    @TableField(value="created_time",fill = FieldFill.INSERT)
 	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-    @TableField(value="modified_time",fill = FieldFill.UPDATE)
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
 	/**

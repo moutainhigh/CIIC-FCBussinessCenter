@@ -4,10 +4,11 @@ import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -42,11 +43,13 @@ public class CalculationBatchTaskMainPO extends Model<CalculationBatchTaskMainPO
     /**
      * 创建时间
      */
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
 
 	/**
 	 *  主任务
@@ -94,19 +97,19 @@ public class CalculationBatchTaskMainPO extends Model<CalculationBatchTaskMainPO
 		this.taskMainId = taskMainId;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
