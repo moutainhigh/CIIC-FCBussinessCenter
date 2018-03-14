@@ -29,6 +29,16 @@ public class RequestForSubDetail {
      */
     private String modifiedBy;
 
+    /**
+     * 管理方编号
+     */
+    private String managerNo;
+
+    /**
+     * 管理方名称
+     */
+    private String managerName;
+
     private List<TaskSubProofDetailBO> taskSubProofDetailBOList;
 
     public Integer[] getOldDeleteIds() {
@@ -69,5 +79,21 @@ public class RequestForSubDetail {
 
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
+    }
+
+    public String getManagerNo() {
+        return managerNo;
+    }
+
+    public void setManagerNo(String managerNo) {
+        this.managerNo = managerNo;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 }
