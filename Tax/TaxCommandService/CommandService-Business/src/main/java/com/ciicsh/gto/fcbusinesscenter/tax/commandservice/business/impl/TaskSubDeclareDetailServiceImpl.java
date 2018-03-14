@@ -25,7 +25,7 @@ import java.util.List;
 public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareDetailMapper, TaskSubDeclareDetailPO> implements TaskSubDeclareDetailService, Serializable {
 
 
-    @Autowired(required = false)
+    @Autowired
     private TaskSubDeclareMapper taskSubDeclareMapper;
 
 

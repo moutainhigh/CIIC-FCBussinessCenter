@@ -36,10 +36,10 @@ import java.util.stream.Collectors;
 @Service
 public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, TaskSubProofPO> implements TaskSubProofService {
 
-    @Autowired(required = false)
+    @Autowired
     private TaskMainProofMapper taskMainProofMapper;
 
-    @Autowired(required = false)
+    @Autowired
     private TaskSubProofDetailMapper taskSubProofDetailMapper;
 
     @Autowired
