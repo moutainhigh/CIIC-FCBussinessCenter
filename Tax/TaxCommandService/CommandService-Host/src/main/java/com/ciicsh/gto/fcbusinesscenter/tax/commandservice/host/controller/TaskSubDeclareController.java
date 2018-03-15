@@ -55,7 +55,7 @@ public class TaskSubDeclareController extends BaseController {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
             ResponseForTaskSubDeclare responseForTaskSubDeclare = taskSubDeclareService.queryTaskSubDeclares(requestForTaskSubDeclare);
-            jr.success(responseForTaskSubDeclare);
+            jr.fill(responseForTaskSubDeclare);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("declareAccount", taskSubDeclareDTO.getDeclareAccount());
@@ -84,7 +84,7 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.mergeTaskSubDeclares(requestForTaskSubDeclare);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
@@ -111,7 +111,7 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             requestForTaskSubDeclare.setModifiedBy("adminMain");
             taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskSubDeclareDTO.getId().toString());
@@ -207,7 +207,7 @@ public class TaskSubDeclareController extends BaseController {
         try {
             //根据申报子任务ID查询申报信息
             TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
-            jr.success(taskSubDeclarePO);
+            jr.fill(taskSubDeclarePO);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
@@ -295,7 +295,7 @@ public class TaskSubDeclareController extends BaseController {
             //任务状态
             requestForTaskSubDeclare.setStatus("04");
             taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());

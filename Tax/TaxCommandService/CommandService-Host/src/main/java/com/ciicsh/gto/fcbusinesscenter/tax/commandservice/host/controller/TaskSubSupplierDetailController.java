@@ -38,7 +38,7 @@ public class TaskSubSupplierDetailController extends BaseController {
             RequestForSubSupplierDetail requestForSubSupplierDetail = new RequestForSubSupplierDetail();
             BeanUtils.copyProperties(taskSubSupplierDetailDTO, requestForSubSupplierDetail);
             ResponseForSubSupplierDetail responseForSubSupplierDetail = taskSubSupplierDetailService.querySubSupplierDetailsByParams(requestForSubSupplierDetail);
-            jr.success(responseForSubSupplierDetail);
+            jr.fill(responseForSubSupplierDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subSupplierId", taskSubSupplierDetailDTO.getSubSupplierId().toString());

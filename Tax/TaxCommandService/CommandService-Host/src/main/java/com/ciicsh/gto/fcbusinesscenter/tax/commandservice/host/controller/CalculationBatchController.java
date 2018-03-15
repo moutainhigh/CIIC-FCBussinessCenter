@@ -44,7 +44,8 @@ public class CalculationBatchController extends BaseController {
             RequestForCalBatch requestForCalBatch = new RequestForCalBatch();
             BeanUtils.copyProperties(calculationBatchDTO, requestForCalBatch);
             ResponseForCalBatch responseForCalBatch = calculationBatchService.queryCalculationBatchs(requestForCalBatch);
-            jr.success(responseForCalBatch);
+            //jr.fill(responseForCalBatch);
+            jr.fill(JsonResult.ReturnCode.TM_ER01);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("managerName", calculationBatchDTO.getManagerName());
@@ -71,7 +72,7 @@ public class CalculationBatchController extends BaseController {
             RequestForEmployees requestForEmployees = new RequestForEmployees();
             BeanUtils.copyProperties(employeeDTO, requestForEmployees);
             ResponseForCalBatchDetail responseForCalBatchDetail = calculationBatchService.queryCalculationBatchDetails(requestForEmployees);
-            jr.success(responseForCalBatchDetail);
+            jr.fill(responseForCalBatchDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("calculationBatchId", employeeDTO.getCalculationBatchId().toString());
@@ -97,7 +98,7 @@ public class CalculationBatchController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(calculationBatchDTO, requestForMainTaskMain);
             calculationBatchService.createMainTask(requestForMainTaskMain);
-            jr.success(true);
+//            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("batchIds", calculationBatchDTO.getBatchIds().toString());

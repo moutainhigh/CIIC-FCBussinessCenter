@@ -43,7 +43,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskMainProofDTO, requestForProof);
             ResponseForMainProof responseForMainProof = taskMainProofService.queryTaskMainProofByRes(requestForProof);
-            jr.success(responseForMainProof);
+            jr.fill(responseForMainProof);
         } catch (Exception e) {
             //标签
             Map<String, String> tags = new HashMap<>(16);
@@ -102,7 +102,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
                 taskSubProofPO.setTaskType("02");
             }
             taskMainProofService.addTaskProof(taskMainProofPO, taskSubProofPO);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             //标签
             Map<String, String> tags = new HashMap<>(16);
@@ -133,7 +133,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             //设置修改人
             requestForProof.setModifiedBy("adminMain");
             taskMainProofService.updateTaskProofByRes(requestForProof);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("mainProofIds", taskProofDTO.getMainProofIds().toString());
@@ -161,7 +161,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             taskMainProofService.invalidTaskProof(requestForProof);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("mainProofIds", taskProofDTO.getMainProofIds().toString());

@@ -32,6 +32,26 @@ public class RequestForTaskMain extends PageInfo {
 
     private String taskNo;
 
+    private boolean isCombined;
+
+    private Long taskMainDetailId;
+
+    public Long getTaskMainDetailId() {
+        return taskMainDetailId;
+    }
+
+    public void setTaskMainDetailId(Long taskMainDetailId) {
+        this.taskMainDetailId = taskMainDetailId;
+    }
+
+    public boolean getIsCombined() {
+        return isCombined;
+    }
+
+    public void setIsCombined(boolean combined) {
+        isCombined = combined;
+    }
+
     public Long getTaskMainId() {
         return taskMainId;
     }

@@ -40,7 +40,7 @@ public class TaskSubMoneyDetailController extends BaseController {
             RequestForSubMoneyDetail requestForSubMoneyDetail = new RequestForSubMoneyDetail();
             BeanUtils.copyProperties(taskSubMoneyDetailDTO, requestForSubMoneyDetail);
             ResponseForSubMoneyDetail responseForSubMoneyDetail = taskSubMoneyDetailService.querySubMoneyDetailsByParams(requestForSubMoneyDetail);
-            jr.success(responseForSubMoneyDetail);
+            jr.fill(responseForSubMoneyDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubMoneyId", taskSubMoneyDetailDTO.getTaskSubMoneyId().toString());

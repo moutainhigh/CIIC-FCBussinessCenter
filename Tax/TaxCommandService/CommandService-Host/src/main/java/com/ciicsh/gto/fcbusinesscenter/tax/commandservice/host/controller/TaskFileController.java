@@ -48,7 +48,7 @@ public class TaskFileController extends BaseController {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);
             ResponseForFile responseForFile = fileService.queryTaxFile(requestForFile);
-            jr.success(responseForFile);
+            jr.fill(responseForFile);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("businessId", fileDTO.getBusinessId().toString());
@@ -73,7 +73,7 @@ public class TaskFileController extends BaseController {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);
             Boolean flag = fileService.deleteTaxFile(requestForFile);
-            jr.success(flag);
+            jr.fill(flag);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", fileDTO.getId().toString());
@@ -99,7 +99,7 @@ public class TaskFileController extends BaseController {
             RequestForFile requestForFile = new RequestForFile();
             BeanUtils.copyProperties(fileDTO, requestForFile);
             fileService.uploadFileByBusinessIdAndType(requestForFile, file);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("businessId", fileDTO.getBusinessId().toString());

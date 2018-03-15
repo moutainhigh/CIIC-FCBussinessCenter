@@ -38,7 +38,7 @@ public class TaskSubPaymentDetailController extends BaseController {
             RequestForSubPaymentDetail requestForSubPaymentDetail = new RequestForSubPaymentDetail();
             BeanUtils.copyProperties(taskSubPaymentDetailDTO, requestForSubPaymentDetail);
             ResponseForSubPaymentDetail responseForSubPaymentDetail = taskSubPaymentDetailService.querySubPaymentDetailsByParams(requestForSubPaymentDetail);
-            jr.success(responseForSubPaymentDetail);
+            jr.fill(responseForSubPaymentDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubPaymentId", taskSubPaymentDetailDTO.getTaskSubPaymentId().toString());

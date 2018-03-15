@@ -87,6 +87,20 @@ public class TaskMainPO extends Model<TaskMainPO> {
 	@TableField(exist = false)
 	private String batchIds;
 
+	/**
+	 * 是否有合并明细
+	 */
+	@TableLogic
+	private Boolean isCombined;
+
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
+	}
+
 	public String getStatusName() {
 		return statusName;
 	}

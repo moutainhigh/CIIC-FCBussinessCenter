@@ -61,7 +61,7 @@ public class TaskSubMoneyController extends BaseController {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
             ResponseForSubMoney responseForSubMoney = taskSubMoneyService.querySubMoney(requestForSubMoney);
-            jr.success(responseForSubMoney);
+            jr.fill(responseForSubMoney);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("paymentAccount", taskSubMoneyDTO.getPaymentAccount());
@@ -93,7 +93,7 @@ public class TaskSubMoneyController extends BaseController {
             //任务状态
             requestForSubMoney.setStatus("04");
             taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
@@ -122,7 +122,7 @@ public class TaskSubMoneyController extends BaseController {
             //任务状态
             requestForSubMoney.setStatus("03");
             taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
@@ -148,7 +148,7 @@ public class TaskSubMoneyController extends BaseController {
             BeanUtils.copyProperties(taskSubMoneyPO, taskSubMoneyDTO);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
             taskSubMoneyDTO.setPeriod(taskSubMoneyPO.getPeriod().format(formatter));
-            jr.success(taskSubMoneyDTO);
+            jr.fill(taskSubMoneyDTO);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyId", subMoneyId.toString());
@@ -265,7 +265,7 @@ public class TaskSubMoneyController extends BaseController {
                     logService.error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, null);
                     jr.error();
                 }
-                jr.success(true);
+                //jr.fill(true);
             } else {
                 jr.error();
             }
