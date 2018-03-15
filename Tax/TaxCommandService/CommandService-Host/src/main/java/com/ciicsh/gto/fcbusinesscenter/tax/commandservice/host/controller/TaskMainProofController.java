@@ -68,9 +68,6 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      */
     @Override
     public JsonResult<Boolean> addTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        // TODO 临时设置创建人
-        //设置创建人
-        taskProofDTO.setCreatedBy("admin");
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
             //完税凭证主任务
@@ -84,9 +81,6 @@ public class TaskMainProofController extends BaseController implements TaskMainP
                 taskMainProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN_PROOF));
                 //设置任务状态为草稿状态
                 taskMainProofPO.setStatus("00");
-                // TODO 临时设置修改人
-                //设置修改人
-                taskMainProofPO.setModifiedBy("zhangsan");
             }
             if (taskProofDTO.getDeclareAccount() != null && !"".equals(taskProofDTO.getDeclareAccount())) {
                 taskSubProofPO = new TaskSubProofPO();
@@ -95,9 +89,6 @@ public class TaskMainProofController extends BaseController implements TaskMainP
                 taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                 //设置任务状态为草稿状态
                 taskSubProofPO.setStatus("00");
-                // TODO 临时设置修改人
-                //设置修改人
-                taskSubProofPO.setModifiedBy("zhangsan");
                 //设置任务类型
                 taskSubProofPO.setTaskType("02");
             }
@@ -129,9 +120,6 @@ public class TaskMainProofController extends BaseController implements TaskMainP
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            // TODO 临时设置修改人
-            //设置修改人
-            requestForProof.setModifiedBy("adminMain");
             taskMainProofService.updateTaskProofByRes(requestForProof);
             //jr.fill(true);
         } catch (Exception e) {
@@ -153,9 +141,6 @@ public class TaskMainProofController extends BaseController implements TaskMainP
     @Override
     @PostMapping(value = "/invalidTaskProof")
     public JsonResult<Boolean> invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
-        // TODO 临时设置修改人
-        //设置修改人
-        taskProofDTO.setModifiedBy("admin");
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();

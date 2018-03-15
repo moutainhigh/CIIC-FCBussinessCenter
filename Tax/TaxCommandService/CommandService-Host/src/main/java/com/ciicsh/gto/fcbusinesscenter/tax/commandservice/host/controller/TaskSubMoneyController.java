@@ -4,12 +4,14 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDT
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.PayapplyServiceProxy;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyProxyDTO;
@@ -87,9 +89,6 @@ public class TaskSubMoneyController extends BaseController {
         try {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
-            // TODO 临时设置修改人
-            //设置修改人
-            requestForSubMoney.setModifiedBy("adminTaskSubMoney");
             //任务状态
             requestForSubMoney.setStatus("04");
             taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
@@ -116,9 +115,6 @@ public class TaskSubMoneyController extends BaseController {
         try {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
-            // TODO 临时设置修改人
-            //修改人
-            requestForSubMoney.setModifiedBy("adminTaskSubMoney");
             //任务状态
             requestForSubMoney.setStatus("03");
             taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
@@ -184,15 +180,16 @@ public class TaskSubMoneyController extends BaseController {
             payApplyProxyDTO.setPayWay(3);
             //申请支付金额
             payApplyProxyDTO.setPayAmount(taskSubMoneyPO.getTaxAmount());
-            //收款方名称
+            //TODO 收款方名称
             payApplyProxyDTO.setReceiver("中智");
             //申请人
-            payApplyProxyDTO.setApplyer("yuantq");
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            payApplyProxyDTO.setApplyer(userInfoResponseDTO.getLoginName());
             //申请日期(yyyy-MM-dd)
             payApplyProxyDTO.setApplyDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now()));
-            //付款用途
+            //TODO 付款用途
             payApplyProxyDTO.setPayPurpose("个税");
-            //付款原因
+            //TODO 付款原因
             payApplyProxyDTO.setPayReason("个税");
             //收款账号ID
             payApplyProxyDTO.setReceiveAccountId(12);
@@ -208,7 +205,6 @@ public class TaskSubMoneyController extends BaseController {
             //设置公司信息companyList
             List<PayapplyCompanyProxyDTO> companyList = new ArrayList<>();
             //根据公司ID
-            //TODO
             Map<String, List<TaskSubMoneyDetailPO>> taskSubMoneyDetailPOMap =
                     taskSubMoneyDetailPOList.stream().collect(groupingBy(TaskSubMoneyDetailPO::getIncomeSubject));
             for (String key : taskSubMoneyDetailPOMap.keySet()) {
@@ -219,7 +215,7 @@ public class TaskSubMoneyController extends BaseController {
                         //将TaskSubMoneyDetailPO对象的tax_aount取出来map为Bigdecimal
                         .map(TaskSubMoneyDetailPO::getTaxAmount)
                         //使用reduce聚合函数,实现累加器
-                        .reduce(BigDecimal.ZERO,BigDecimal::add);
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
                 PayapplyCompanyProxyDTO payapplyCompanyProxyDTO = new PayapplyCompanyProxyDTO();
                 payapplyCompanyProxyDTO.setCompanyId(key);
                 payapplyCompanyProxyDTO.setCompanyName(taskSubMoneyDetailPOS.get(0).getIncomeSubject());
@@ -230,7 +226,7 @@ public class TaskSubMoneyController extends BaseController {
             payApplyProxyDTO.setCompanyList(companyList);
             //设置雇员信息employeeList
             List<PayapplyEmployeeProxyDTO> employeeList = new ArrayList<>();
-            for( TaskSubMoneyDetailPO taskSubMoneyDetailPO : taskSubMoneyDetailPOList){
+            for (TaskSubMoneyDetailPO taskSubMoneyDetailPO : taskSubMoneyDetailPOList) {
                 PayapplyEmployeeProxyDTO payapplyEmployeeProxyDTO = new PayapplyEmployeeProxyDTO();
                 payapplyEmployeeProxyDTO.setEmployeeId(taskSubMoneyDetailPO.getEmployeeNo());
                 payapplyEmployeeProxyDTO.setEmployeeName(taskSubMoneyDetailPO.getEmployeeName());
@@ -244,7 +240,7 @@ public class TaskSubMoneyController extends BaseController {
             com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult paymentJr = payapplyServiceProxy.shIncomeTax(payApplyProxyDTO);
             if ("0".equals(paymentJr.getCode())) {
                 //更改划款任务状态以及划款凭单号
-                PayApplyProxyDTO payApplyProxyDTO1 = (PayApplyProxyDTO)paymentJr.getData();
+                PayApplyProxyDTO payApplyProxyDTO1 = (PayApplyProxyDTO) paymentJr.getData();
                 //付款申请ID
                 int payApplyId = payApplyProxyDTO1.getPayapplyId();
                 //付款凭证编号(结算单编号)
@@ -254,9 +250,7 @@ public class TaskSubMoneyController extends BaseController {
                     taskSubMoneyBO.setId(id);
                     taskSubMoneyBO.setPayStatus("01");
                     taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
-                    //TODO 临时修改人
-                    taskSubMoneyBO.setModifiedBy("yuantq");
-                    taskSubMoneyBO.setPayApplyId((long)payApplyId);
+                    taskSubMoneyBO.setPayApplyId((long) payApplyId);
                     taskSubMoneyBO.setPayApplyCode(payApplyCode);
                     taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);
                 } catch (Exception e) {

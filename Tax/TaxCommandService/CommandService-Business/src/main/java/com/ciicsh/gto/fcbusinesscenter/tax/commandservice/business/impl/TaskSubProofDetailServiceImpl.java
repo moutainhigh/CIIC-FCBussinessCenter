@@ -116,12 +116,6 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                         //设置任务为草稿状态
                         taskSubProofPO.setStatus("00");
-                        // TODO 临时设置创建人
-                        //设置创建人
-                        taskSubProofPO.setCreatedBy("adminMain");
-                        // TODO 临时设置修改人
-                        //设置修改人
-                        taskSubProofPO.setModifiedBy("adminMain");
                         //设置任务类型为手动
                         taskSubProofPO.setTaskType("02");
                         //新增完税凭证子任务
@@ -132,18 +126,9 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO.getId())) {
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
                         taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(subMap.get(taskSubProofDetailBO.getDeclareAccount()));
-                        // TODO 临时设置创建人
-                        //创建人
-                        taskSubProofDetailPO.setCreatedBy("adminMain");
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
                     }
                     taskSubProofDetailPOList.add(taskSubProofDetailPO);
                 }
@@ -155,10 +140,10 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             //统计子任务人数
             for (String key : subMap.keySet()) {
                 Long subId = subMap.get(key);
-                taskSubProofMapper.updateSubHeadcountById(subId, "adminSub", LocalDateTime.now());
+                taskSubProofMapper.updateSubHeadcountById(subId, requestForSubDetail.getModifiedBy(), LocalDateTime.now());
             }
             //统计总任务人数
-            taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId(), "adminMain", LocalDateTime.now());
+            taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
         } else if (subType.equals(requestForSubDetail.getDetailType())) {
             //修改申报明细为不可用状态
             updateTaskSubProofDetailActive(requestForSubDetail);
@@ -169,18 +154,9 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO)) {
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
                         taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(requestForSubDetail.getTaskId());
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setCreatedBy("adminMain");
-                        // TODO 临时设置创建人
-                        //创建人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
                     }
                     taskSubProofDetailPOList.add(taskSubProofDetailPO);
                 }
@@ -191,10 +167,10 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
 
             }
             //统计子任务总人数
-            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId(), "adminAdd", LocalDateTime.now());
+            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
             //统计总任务人数
             TaskSubProofPO taskSubProofPOInfo = taskSubProofMapper.selectById(requestForSubDetail.getTaskId());
-            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId(), "adminAdd", LocalDateTime.now());
+            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
         }
     }
 
@@ -209,8 +185,6 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
             //设置为不可用
             taskSubProofDetailPO.setActive(false);
-            //TODO 设置修改人
-            taskSubProofDetailPO.setModifiedBy("admin");
             //设置修改时间
             taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
