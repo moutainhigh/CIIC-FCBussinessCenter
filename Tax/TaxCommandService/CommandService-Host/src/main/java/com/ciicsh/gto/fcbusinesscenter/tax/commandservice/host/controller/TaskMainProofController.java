@@ -93,7 +93,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
                 taskSubProofPO.setTaskType("02");
             }
             taskMainProofService.addTaskProof(taskMainProofPO, taskSubProofPO);
-            //jr.fill(true);
+            ////jr.fill(true);
         } catch (Exception e) {
             //标签
             Map<String, String> tags = new HashMap<>(16);
@@ -121,7 +121,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             taskMainProofService.updateTaskProofByRes(requestForProof);
-            //jr.fill(true);
+            ////jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("mainProofIds", taskProofDTO.getMainProofIds().toString());
@@ -146,7 +146,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             taskMainProofService.invalidTaskProof(requestForProof);
-            //jr.fill(true);
+            ////jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("mainProofIds", taskProofDTO.getMainProofIds().toString());
