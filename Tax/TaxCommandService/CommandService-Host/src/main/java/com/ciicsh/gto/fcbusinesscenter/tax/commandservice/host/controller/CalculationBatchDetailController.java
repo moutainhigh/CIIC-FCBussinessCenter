@@ -42,7 +42,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForBatchDetail responseForBatchDetail = calculationBatchDetailService.queryCalculationBatchDetail(requestForProof);
-            jr.success(responseForBatchDetail);
+            jr.fill(responseForBatchDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("idType", taskProofDTO.getIdType());
@@ -70,7 +70,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             RequestForCalBatchDetail requestForCalBatchDetail = new RequestForCalBatchDetail();
             BeanUtils.copyProperties(calculationBatchDetailDTO, requestForCalBatchDetail);
             ResponseForCalBatchDetail responseForCalBatchDetail = calculationBatchDetailService.queryTaxBatchDetailByRes(requestForCalBatchDetail);
-            jr.success(responseForCalBatchDetail);
+            jr.fill(responseForCalBatchDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("employeeNo", calculationBatchDetailDTO.getEmployeeNo());
@@ -97,7 +97,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
                 calculationBatchDetailService.queryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
             }
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("ids", calculationBatchDetailDTO.getIds().toString());

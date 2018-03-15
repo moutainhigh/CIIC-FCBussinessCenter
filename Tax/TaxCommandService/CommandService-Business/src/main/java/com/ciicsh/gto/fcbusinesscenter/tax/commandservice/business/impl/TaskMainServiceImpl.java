@@ -4,18 +4,17 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,8 +51,11 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     @Autowired
     private TaskSubSupplierServiceImpl taskSubSupplierService;
 
+    /*@Autowired
+    private CalculationBatchMapper calculationBatchMapper;*/
+
     @Autowired
-    private CalculationBatchMapper calculationBatchMapper;
+    private TaskMainDetailMapper taskMainDetailMapper;
 
 
     /**
@@ -269,43 +271,40 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
      * @param requestForTaskMain
      * @return
      */
-    public ResponseForCalBatchDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain){
+    public ResponseForTaskMainDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain){
 
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("task_main_id",requestForTaskMain.getTaskMainId());
+        /*EntityWrapper wrapper = new EntityWrapper();
+        wrapper.andNew("task_main_id={0}",requestForTaskMain.getTaskMainId());
+        wrapper.isNull("task_main_detail_id");
+        wrapper.andNew("is_combined={0}",requestForTaskMain.getIsCombined());*/
+        Page<TaskMainDetailPO> page = new Page<TaskMainDetailPO>(requestForTaskMain.getCurrentNum(), requestForTaskMain.getPageSize());
 
-        List<CalculationBatchTaskMainPO> calculationBatchTaskMainPOs = calculationBatchTaskMainService.selectByMap(columnMap);
+        Map<String,Object> params = new HashMap<>();
+        params.put("taskMainId",requestForTaskMain.getTaskMainId());//主任务id
+        params.put("isCombined",requestForTaskMain.getIsCombined());//是否为合并明细
 
-        List<Long> batchIdList = new ArrayList<>();
+        List<TaskMainDetailBO> taskMainDetailBOs = taskMainDetailMapper.queryTaskMainDetails(page,params);
 
-        if(calculationBatchTaskMainPOs!=null && calculationBatchTaskMainPOs.size() > 0 ){
+        ResponseForTaskMainDetail responseForTaskMainDetail = new ResponseForTaskMainDetail();
 
-            batchIdList = new ArrayList<>();
+        responseForTaskMainDetail.setRowList(taskMainDetailBOs);
+        responseForTaskMainDetail.setCurrentNum(requestForTaskMain.getCurrentNum());
+        responseForTaskMainDetail.setPageSize(requestForTaskMain.getPageSize());
+        responseForTaskMainDetail.setTotalNum(page.getTotal());
 
-            for(CalculationBatchTaskMainPO calculationBatchTaskMainPO : calculationBatchTaskMainPOs){
+        return responseForTaskMainDetail;
+    }
 
-                batchIdList.add(calculationBatchTaskMainPO.getCalBatchId());
+    /**
+     * 查询主任务明细
+     * @param taskMainIds
+     * @return
+     */
+    public boolean combineConfirmed(Long[] taskMainIds){
 
-            }
+        boolean flag = true;
 
-        }
-
-        ResponseForCalBatchDetail responseForCalBatchDetail = new ResponseForCalBatchDetail();
-
-        Page<CalculationBatchDetailBO> page = new Page<CalculationBatchDetailBO>(requestForTaskMain.getCurrentNum(), requestForTaskMain.getPageSize());
-
-        //CalculationBatchDetailBO calculationBatchDetailBO = new CalculationBatchDetailBO();
-        //BeanUtils.copyProperties(requestForTaskMain, calculationBatchDetailBO);
-        Long[] batchIds = batchIdList.toArray(new Long[0]);
-        //batchIds[0] = calculationBatchDetailBO.getCalculationBatchId();
-        List<CalculationBatchDetailBO> calculationBatchDetailBOList = calculationBatchMapper.queryCalculationBatchDetails(page,batchIds);
-
-        responseForCalBatchDetail.setRowList(calculationBatchDetailBOList);
-        responseForCalBatchDetail.setCurrentNum(requestForTaskMain.getCurrentNum());
-        responseForCalBatchDetail.setPageSize(requestForTaskMain.getPageSize());
-        responseForCalBatchDetail.setTotalNum(page.getTotal());
-
-        return responseForCalBatchDetail;
+        return flag;
     }
 
 }

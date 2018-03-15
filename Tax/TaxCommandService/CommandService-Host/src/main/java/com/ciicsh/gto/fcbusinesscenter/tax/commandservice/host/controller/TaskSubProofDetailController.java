@@ -51,7 +51,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForSubDetail responseForSubDetail = taskSubProofDetailService.queryTaskSubProofDetail(requestForProof);
-            jr.success(responseForSubDetail);
+            jr.fill(responseForSubDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("detailType", taskProofDTO.getDetailType());
@@ -160,7 +160,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             responseForEmployee.setCurrentNum(taskProofDTO.getCurrentNum());
             responseForEmployee.setPageSize(taskProofDTO.getPageSize());
             responseForEmployee.setRowList(employeeBOList);
-            jr.success(responseForEmployee);
+            jr.fill(responseForEmployee);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("detailType", taskProofDTO.getDetailType());
@@ -215,7 +215,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             requestForSubDetail.setModifiedBy(userInfoResponseDTO.getLoginName());
             requestForSubDetail.setTaskSubProofDetailBOList(taskSubProofDetailBOList);
             taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
-            jr.success(true);
+            ////jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("detailType", subProofDetailDTO.getDetailType());

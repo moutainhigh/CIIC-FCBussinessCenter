@@ -40,7 +40,7 @@ public class TaskSubSupplierController extends BaseController {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
             ResponseForTaskSubSupplier responseForTaskSubSupplier = taskSubSupplierService.queryTaskSubSupplier(requestForTaskSubSupplier);
-            jr.success(responseForTaskSubSupplier);
+            jr.fill(responseForTaskSubSupplier);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("declareAccount", taskSubSupplierDTO.getDeclareAccount());
@@ -69,7 +69,7 @@ public class TaskSubSupplierController extends BaseController {
         try {
             //根据供应商子任务ID查询供应商信息
             TaskSubSupplierPO taskSubSupplierPO = taskSubSupplierService.querySupplierDetailsById(subSupplierId);
-            jr.success(taskSubSupplierPO);
+            jr.fill(taskSubSupplierPO);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subSupplierId", subSupplierId.toString());

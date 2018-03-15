@@ -63,7 +63,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
                 taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofDTO.getStatus()));
                 taskSubProofDTOLists.add(taskSubProofDTO);
             }
-            jr.success(taskSubProofDTOLists);
+            jr.fill(taskSubProofDTOLists);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("mainProofIds", taskMainProofId.toString());
@@ -88,7 +88,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             BeanUtils.copyProperties(taskSubProofDTO, requestForProof);
             //其中管理方名称
             ResponseForSubProof responseForSubProof = taskSubProofService.queryTaskSubProofByRes(requestForProof);
-            jr.success(responseForSubProof);
+            jr.fill(responseForSubProof);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskSubProofDTO.getId().toString());
@@ -113,7 +113,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //登录信息
             UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
             taskSubProofService.copyProofInfoBySubId(taskSubProofId, userInfoResponseDTO.getLoginName());
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubProofId", taskSubProofId.toString());
@@ -137,7 +137,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForSubProof responseForSubProof = taskSubProofService.querySubProofInfoByTaskType(requestForProof);
-            jr.success(responseForSubProof);
+            jr.fill(responseForSubProof);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("managerName", taskProofDTO.getManagerName());
@@ -165,7 +165,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             taskSubProofService.combineTaskProofByRes(requestForProof);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getManagerName());
@@ -189,7 +189,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             taskSubProofService.splitTaskProofByRes(requestForProof);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskProofDTO.getId().toString());
@@ -215,7 +215,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
             requestForProof.setStatus("04");
             taskSubProofService.completeTaskProofByRes(requestForProof);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
@@ -241,7 +241,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("03");
             taskSubProofService.rejectTaskProofByRes(requestForProof);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
@@ -267,7 +267,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("05");
             taskSubProofService.invalidTaskProofByRes(requestForProof);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
@@ -290,7 +290,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         JsonResult<TaskSubProofBO> jr = new JsonResult<>();
         try {
             TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
-            jr.success(taskSubProofBO);
+            jr.fill(taskSubProofBO);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofId", subProofId.toString());
@@ -314,7 +314,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForSubProofDetail responseForSubProofDetail = taskSubProofService.queryTaskSubProofDetail(requestForProof);
-            jr.success(responseForSubProofDetail);
+            jr.fill(responseForSubProofDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskProofDTO.getId().toString());

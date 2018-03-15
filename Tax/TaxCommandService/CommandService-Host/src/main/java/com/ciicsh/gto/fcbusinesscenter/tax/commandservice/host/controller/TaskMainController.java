@@ -1,16 +1,16 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubsDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubDeclareServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubMoneyServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubPaymentServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubSupplierServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.*;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +45,8 @@ public class TaskMainController extends BaseController {
     @Autowired
     private TaskSubSupplierServiceImpl taskSubSupplierService;
 
+    @Autowired
+    public TaskMainDetailServiceImpl taskMainDetailService;
 
     /**
      * 查询主任务列表
@@ -61,7 +63,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
             ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMains(requestForTaskMain);
-            jr.success(responseForTaskMain);
+            jr.fill(responseForTaskMain);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("managerName", taskMainDTO.getManagerName());
@@ -90,7 +92,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
             ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMainsForDraft(requestForTaskMain);
-            jr.success(responseForTaskMain);
+            jr.fill(responseForTaskMain);
 
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -119,7 +121,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
             ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMainsForCheck(requestForTaskMain);
-            jr.success(responseForTaskMain);
+            jr.fill(responseForTaskMain);
 
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -154,7 +156,7 @@ public class TaskMainController extends BaseController {
             map.put("hk", taskSubMoneyService.selectByMap(columnMap));//划款子任务
             map.put("jn", taskSubPaymentService.selectByMap(columnMap));//缴纳子任务
             map.put("su", taskSubSupplierService.selectByMap(columnMap));//供应商处理子任务
-            jr.success(map);
+            jr.fill(map);
 
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -174,14 +176,14 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/submitMainTask")
-    public JsonResult<Boolean> createMainTask(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<Boolean> submitMainTask(@RequestBody TaskMainDTO taskMainDTO) {
 
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.submitTaskMains(requestForMainTaskMain);
-            jr.success(true);
+//            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
@@ -207,7 +209,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.passTaskMains(requestForMainTaskMain);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
@@ -231,7 +233,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.invalidTaskMains(requestForMainTaskMain);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
@@ -255,7 +257,7 @@ public class TaskMainController extends BaseController {
             RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
             taskMainService.rejectTaskMains(requestForMainTaskMain);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
@@ -272,19 +274,133 @@ public class TaskMainController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryTaskMainDetails")
-    public JsonResult<ResponseForCalBatchDetail> queryTaskMainDetails(@RequestBody TaskMainDTO taskMainDTO) {
+    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetails(@RequestBody TaskMainDTO taskMainDTO) {
 
-        JsonResult<ResponseForCalBatchDetail> jr = new JsonResult<>();
+        JsonResult<ResponseForTaskMainDetail> jr = new JsonResult<>();
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
-            ResponseForCalBatchDetail responseForCalBatchDetail = taskMainService.queryTaskMainDetails(requestForTaskMain);
-            jr.success(responseForCalBatchDetail);
+            ResponseForTaskMainDetail<TaskMainDetailBO> responseForTaskMainDetail = taskMainService.queryTaskMainDetails(requestForTaskMain);
+            jr.fill(responseForTaskMainDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainId", taskMainDTO.getTaskMainId().toString());
             //日志工具类返回
             logService.error(e, "TaskMainController.queryTaskMainDetails", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+
+    /**
+     * 查询主任务合并的明细列表
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/queryTaskMainDetailsByCombined")
+    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetailsByCombined(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult<ResponseForTaskMainDetail> jr = new JsonResult<>();
+        try {
+            RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
+            BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
+            requestForTaskMain.setIsCombined(true);
+            ResponseForTaskMainDetail<TaskMainDetailBO> responseForTaskMainDetail = taskMainService.queryTaskMainDetails(requestForTaskMain);
+            jr.fill(responseForTaskMainDetail);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainId", taskMainDTO.getTaskMainId().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainController.queryTaskMainDetailsByCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+    /**
+     * 查询被合并的明细列表
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/queryTaskMainDetailsForCombined")
+    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetailsForCombined(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult<ResponseForTaskMainDetail> jr = new JsonResult<>();
+        try {
+//            RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
+//            BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
+            //requestForTaskMain.setIsCombined(true);
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.andNew("task_main_id={0}",taskMainDTO.getTaskMainId());
+            wrapper.andNew("task_main_detail_id={0}",taskMainDTO.getTaskMainDetailId());
+            wrapper.orderBy("id",true);
+
+            ResponseForTaskMainDetail<TaskMainDetailPO> responseForTaskMainDetail = new ResponseForTaskMainDetail();
+            responseForTaskMainDetail.setRowList(taskMainDetailService.selectList(wrapper));
+            jr.fill(responseForTaskMainDetail);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainId", taskMainDTO.getTaskMainId().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainController.queryTaskMainDetailsForCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+
+    /**
+     * 合并明细确认
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/confirmTaskMainDetailforCombined")
+    public JsonResult<Boolean> confirmTaskMainDetailforCombined(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.in("id",taskMainDTO.getTaskMainDetailIds());
+            TaskMainDetailPO tpo = new TaskMainDetailPO();
+            tpo.setCombineConfirmed(true);
+            this.taskMainDetailService.update(tpo,wrapper);//更新合并的明细
+            //jr.fill(true);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainDetailIds", taskMainDTO.getTaskMainDetailIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+
+    /**
+     * 合并明细确认
+     * @param taskMainDTO
+     * @return
+     */
+    @RequestMapping(value = "/unconfirmTaskMainDetailforCombined")
+    public JsonResult<Boolean> unconfirmTaskMainDetailforCombined(@RequestBody TaskMainDTO taskMainDTO) {
+
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.in("id",taskMainDTO.getTaskMainDetailIds());
+            TaskMainDetailPO tpo = new TaskMainDetailPO();
+            tpo.setCombineConfirmed(false);
+            this.taskMainDetailService.update(tpo,wrapper);//更新合并的明细
+            //jr.fill(true);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainDetailIds", taskMainDTO.getTaskMainDetailIds().toString());
+            //日志工具类返回
+            logService.error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 

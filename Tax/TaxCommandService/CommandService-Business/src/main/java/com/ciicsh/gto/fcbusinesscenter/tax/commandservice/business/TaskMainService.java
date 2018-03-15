@@ -2,8 +2,8 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 
 /**
  * @author wuhua
@@ -57,6 +57,6 @@ public interface TaskMainService {
      * @param requestForTaskMain
      * @return
      */
-    public ResponseForCalBatchDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain);
+    ResponseForTaskMainDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain);
 }
 

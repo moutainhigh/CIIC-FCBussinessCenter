@@ -3,23 +3,76 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper">
 
 	<!-- 通用查询映射结果 -->
-	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.entity.po.TaskMainPO">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO">
 		<id column="id" property="id" />
-		<result column="task_no" property="taskNo" />
-		<result column="manager_no" property="managerNo" />
-		<result column="manager_name" property="managerName" />
-		<result column="status" property="status" />
-		<result column="remark" property="remark" />
-		<result column="is_active" property="isActive" />
-		<result column="created_time" property="createdTime" />
-		<result column="modified_time" property="modifiedTime" />
-		<result column="created_by" property="createdBy" />
-		<result column="modified_by" property="modifiedBy" />
-	</resultMap>-->
+		<!--<result column="calculation_batch_id" property="calculationBatchId" />
+		<result column="version_no" property="versionNo" />
+		<result column="is_defer" property="isDefer" />-->
+		<result column="task_main_id" property="taskMainId" />
+		<result column="task_main_detail_id" property="taskMainDetailId" />
+		<result column="employee_no" property="employeeNo" />
+		<result column="employee_name" property="employeeName" />
+		<result column="id_type" property="idType" />
+		<result column="id_no" property="idNo" />
+		<result column="declare_account" property="declareAccount" />
+		<result column="pay_account" property="payAccount" />
+		<result column="period" property="period" />
+		<result column="income_subject" property="incomeSubject" />
+		<result column="income_total" property="incomeTotal" />
+		<result column="income_dutyfree" property="incomeDutyfree" />
+		<result column="deduct_retirement_insurance" property="deductRetirementInsurance" />
+		<result column="deduct_medical_insurance" property="deductMedicalInsurance" />
+		<result column="deduct_dleness_insurance" property="deductDlenessInsurance" />
+		<result column="deduct_property" property="deductProperty" />
+		<result column="deduct_house_fund" property="deductHouseFund" />
+		<result column="deduct_takeoff" property="deductTakeoff" />
+		<result column="deduct_other" property="deductOther" />
+		<result column="deduct_total" property="deductTotal" />
+		<result column="deduction" property="deduction" />
+		<result column="donation" property="donation" />
+		<result column="income_for_tax" property="incomeForTax" />
+		<result column="tax_rate" property="taxRate" />
+		<result column="quick_cal_deduct" property="quickCalDeduct" />
+		<result column="tax_amount" property="taxAmount" />
+		<result column="tax_deduction" property="taxDeduction" />
+		<result column="tax_withhold_amount" property="taxWithholdAmount" />
+		<result column="tax_withholded_amount" property="taxWithholdedAmount" />
+		<result column="tax_remedy_or_return" property="taxRemedyOrReturn" />
+		<result column="declare_account" property="declareAccount" />
+		<result column="pay_account" property="payAccount" />
+		<result column="receipt_account" property="receiptAccount" />
+		<result column="support_no" property="supportNo" />
+		<result column="support_name" property="supportName" />
+		<result column="is_support" property="support" />
+		<result column="is_supported" property="supported" />
+		<result column="is_pay" property="pay" />
+		<result column="is_payed" property="payed" />
+		<result column="is_declare" property="declare" />
+		<result column="is_declared" property="declared" />
+		<result column="is_transfer" property="tranfer" />
+		<result column="is_transferred" property="tranferred" />
+		<result column="is_pay_supported" property="paySupported" />
+		<result column="is_declare_supported" property="declareSupported" />
+		<result column="is_transfer_supported" property="transferSupported" />
+	</resultMap>
 
     <!-- 通用查询结果列 -->
     <!--<sql id="Base_Column_List">
         id, task_no, manager_no, manager_name, status, remark, is_active, created_time, modified_time, created_by, modified_by
     </sql>-->
+
+	<!-- 查询主任务明细 -->
+	<select id="queryTaskMainDetails" resultMap="BaseResultMap">
+		SELECT
+		t1.id,t1.task_main_id,t1.task_main_detail_id
+		,t1.employee_no,t1.employee_name,t1.id_type,t1.id_no,t1.period,t1.income_subject,t1.income_total,t1.income_dutyfree,t1.deduct_retirement_insurance,t1.deduct_medical_insurance
+		,t1.deduct_dleness_insurance,t1.deduct_property,t1.deduct_house_fund,t1.deduct_takeoff,t1.deduct_other,t1.deduct_total,t1.deduction,t1.donation,t1.income_for_tax
+		,t1.tax_rate,t1.quick_cal_deduct,t1.tax_amount,t1.tax_deduction,t1.tax_withhold_amount,t1.tax_withholded_amount,t1.tax_remedy_or_return
+		,t2.declare_account,t2.pay_account,t2.receipt_account,t2.support_no,t2.support_name,t2.is_support,t2.is_supported,t2.is_pay,t2.is_payed,t2.is_declare
+		,t2.is_declared,t2.is_transfer,t2.is_transferred,t2.is_declare_supported,t2.is_transfer_supported,t2.is_pay_supported
+		FROM tax_fc_task_main_detail t1,tax_fc_employee_service_batch t2 where t1.task_main_id = #{taskMainId} and t1.calculation_batch_detail_id = t2.cal_batch_detail_id
+		and t1.task_main_detail_id is null
+	</select>
 
 </mapper>

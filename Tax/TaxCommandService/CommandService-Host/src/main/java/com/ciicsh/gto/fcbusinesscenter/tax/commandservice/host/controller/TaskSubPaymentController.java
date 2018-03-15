@@ -42,7 +42,7 @@ public class TaskSubPaymentController extends BaseController {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
             ResponseForSubPayment responseForSubPayment = taskSubPaymentService.querySubPayment(requestForSubPayment);
-            jr.success(responseForSubPayment);
+            jr.fill(responseForSubPayment);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("paymentAccount", taskSubPaymentDTO.getPaymentAccount());
@@ -71,7 +71,7 @@ public class TaskSubPaymentController extends BaseController {
             //任务状态:
             requestForSubPayment.setStatus("04");
             taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subPaymentIds", taskSubPaymentDTO.getSubPaymentIds().toString());
@@ -97,7 +97,7 @@ public class TaskSubPaymentController extends BaseController {
             //任务状态
             requestForSubPayment.setStatus("03");
             taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subPaymentIds", taskSubPaymentDTO.getSubPaymentIds().toString());
@@ -124,7 +124,7 @@ public class TaskSubPaymentController extends BaseController {
             //个税期间
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
             taskSubPaymentDTO.setPeriod(taskSubPaymentPO.getPeriod().format(formatter));
-            jr.success(taskSubPaymentDTO);
+            jr.fill(taskSubPaymentDTO);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subPaymentId", subPaymentId.toString());

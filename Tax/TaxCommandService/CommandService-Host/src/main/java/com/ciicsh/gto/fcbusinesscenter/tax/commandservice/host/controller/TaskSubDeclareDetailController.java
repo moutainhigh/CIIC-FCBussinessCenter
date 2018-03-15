@@ -39,7 +39,7 @@ public class TaskSubDeclareDetailController extends BaseController {
             RequestForSubDeclareDetail requestForSubDeclareDetail = new RequestForSubDeclareDetail();
             BeanUtils.copyProperties(taskSubDeclareDetailDTO, requestForSubDeclareDetail);
             ResponseForSubDeclareDetail responseForSubDeclareDetail = taskSubDeclareDetailService.querySubDeclareDetailsByParams(requestForSubDeclareDetail);
-            jr.success(responseForSubDeclareDetail);
+            jr.fill(responseForSubDeclareDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", taskSubDeclareDetailDTO.getSubDeclareId().toString());
