@@ -118,6 +118,10 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         taskSubProofPO.setStatus("00");
                         //设置任务类型为手动
                         taskSubProofPO.setTaskType("02");
+                        //设置管理方编号
+                        taskSubProofPO.setManagerNo(requestForSubDetail.getManagerNo());
+                        //设置管理方名称
+                        taskSubProofPO.setManagerName(requestForSubDetail.getManagerName());
                         //新增完税凭证子任务
                         taskSubProofMapper.insert(taskSubProofPO);
                         subMap.put(taskSubProofDetailBO.getDeclareAccount(), taskSubProofPO.getId());
