@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclar
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
@@ -23,10 +24,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +37,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
     @Autowired
     private TaskSubProofService taskSubProofService;
+
+    @Autowired
+    private TaskSubDeclareDetailServiceImpl taskSubDeclareDetailService;
 
     /**
      * 当期
@@ -238,6 +239,110 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             baseMapper.update(taskSubDeclarePO, wrapper);
         }
 
+    }
+
+    /**
+     * 申报子任务明细合并处理
+     * @param taskSubDeclareCombinedId 合并后的申报子任务id
+     * @param taskSubDeclareIds 被合并的申报子任务ids
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void merge(Long taskSubDeclareCombinedId,String[] taskSubDeclareIds) {
+
+        List<TaskSubDeclareDetailPO>  taskSubDeclareDetailPOList = new ArrayList<>();
+
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.in("task_sub_declare_id",taskSubDeclareIds);
+
+        taskSubDeclareDetailPOList = baseMapper.selectList(wrapper);
+
+        //按照雇员、所得期间、所得项目分组
+        Map<String, List<TaskSubDeclareDetailPO>> groupbys = taskSubDeclareDetailPOList.stream()
+                .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::groupBys));
+
+        for(Map.Entry<String, List<TaskSubDeclareDetailPO>> entry : groupbys.entrySet()){
+
+            if(entry.getValue().size()>1){
+
+                TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
+                taskSubDeclareDetailPO.setCombined(true);//为合并明细
+                taskSubDeclareDetailPO.setTaskSubDeclareId(taskSubDeclareCombinedId);//申报子任务id
+                //taskSubDeclareDetailPO.setCalculationBatchDetailId(entry.getValue().get(0).getCalculationBatchDetailId());//批次明细id
+                taskSubDeclareDetailPO.setEmployeeNo(entry.getValue().get(0).getEmployeeNo());//雇员编号
+                taskSubDeclareDetailPO.setEmployeeName(entry.getValue().get(0).getEmployeeName());//雇员姓名
+                taskSubDeclareDetailPO.setIdType(entry.getValue().get(0).getIdType());//证件类型
+                taskSubDeclareDetailPO.setIdNo(entry.getValue().get(0).getIdNo());//证件编号
+                taskSubDeclareDetailPO.setDeclareAccount(entry.getValue().get(0).getDeclareAccount());//申报账号
+                taskSubDeclareDetailPO.setPayAccount(entry.getValue().get(0).getPayAccount());//缴纳账号
+                taskSubDeclareDetailPO.setPeriod(entry.getValue().get(0).getPeriod());//个税期间
+                taskSubDeclareDetailPO.setIncomeSubject(entry.getValue().get(0).getIncomeSubject());//所得项目
+                //新建合并后的明细
+                this.taskSubDeclareDetailService.insert(taskSubDeclareDetailPO);
+
+                List<Long> taskSubDeclareDetailIds = new ArrayList<>();
+
+                BigDecimal incomeTotal=new BigDecimal(0);//收入额
+                BigDecimal deductRetirementInsurance=new BigDecimal(0);//基本养老保险费（税前扣除项目）
+                BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
+                BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
+                BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
+                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
+                BigDecimal taxAmount=new BigDecimal(0);//应纳税额
+
+                List<TaskSubDeclareDetailPO> tps = entry.getValue();
+                //计算合并后的各项值
+                for(TaskSubDeclareDetailPO tp : tps){
+
+                    taskSubDeclareDetailIds.add(tp.getId());
+
+                    incomeTotal = incomeTotal.add(tp.getIncomeTotal());
+                    deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance());
+                    deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance());
+                    deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
+                    deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
+                    deduction = deduction.add(tp.getDeduction());
+                    taxAmount = taxAmount.add(tp.getTaxAmount());
+                }
+
+                taskSubDeclareDetailPO.setIncomeTotal(incomeTotal);
+                taskSubDeclareDetailPO.setDeductRetirementInsurance(deductRetirementInsurance);
+                taskSubDeclareDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
+                taskSubDeclareDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
+                taskSubDeclareDetailPO.setDeductHouseFund(deductHouseFund);
+                taskSubDeclareDetailPO.setDeduction(deduction);
+                taskSubDeclareDetailPO.setTaxAmount(taxAmount);
+                //更新合并后数据值
+                this.taskSubDeclareDetailService.updateById(taskSubDeclareDetailPO);
+
+                EntityWrapper wrapper2 = new EntityWrapper();
+                wrapper2.in("id",taskSubDeclareDetailIds);
+                TaskSubDeclareDetailPO tsddp = new TaskSubDeclareDetailPO();
+                tsddp.setTaskSubDeclareDetailId(taskSubDeclareDetailPO.getId());
+                this.taskSubDeclareDetailService.update(tsddp,wrapper2);//更新合并的明细
+
+                TaskSubDeclarePO tsp = new TaskSubDeclarePO();
+                tsp.setId(taskSubDeclareCombinedId);
+                tsp.setHasCombined(true);
+                this.baseMapper.updateById(tsp);//更新主任务信息，标记任务存在合并的明细
+            }
+        }
+    }
+
+    /**
+     * 申报子任务明细拆分处理
+     * @param taskSubDeclareCombinedId 合并后的申报子任务id
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void unmerge(Long taskSubDeclareCombinedId) {
+
+        //将合并后的明细设置为失效
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.andNew("task_sub_declare_id={0}",taskSubDeclareCombinedId);
+        TaskSubDeclareDetailPO tsddp = new TaskSubDeclareDetailPO();
+        tsddp.setActive(false);
+        this.taskSubDeclareDetailService.update(tsddp,wrapper);
     }
 
     /**

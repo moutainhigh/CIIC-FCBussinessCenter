@@ -17,7 +17,7 @@ public class JsonResult<T> {
 
         FAIL("异常"),
 
-        TM_ER01("任务内有未确认的合并明细");
+        TM_ER01("任务内有未确认的合并明细，不能提交任务");
 
         private String  message;
 

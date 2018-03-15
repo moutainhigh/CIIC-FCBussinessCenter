@@ -215,7 +215,18 @@ public class TaskSubPaymentDetailPO{
      */
     @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
+	/**
+	 * 主任务明细ID
+	 */
+	private Long taskMainDetailId;
 
+	public Long getTaskMainDetailId() {
+		return taskMainDetailId;
+	}
+
+	public void setTaskMainDetailId(Long taskMainDetailId) {
+		this.taskMainDetailId = taskMainDetailId;
+	}
 
 	public Long getId() {
 		return id;

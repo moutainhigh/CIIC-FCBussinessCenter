@@ -43,6 +43,28 @@ public class TaskSubDeclareDetailDTO {
      * 每页显示条目
      */
     private Integer pageSize;
+    /**
+     * 申报子任务明细ID
+     */
+    private Long taskSubDeclareDetailId;
+
+    private Long[] taskSubDeclareDetailIds;
+
+    public Long[] getTaskSubDeclareDetailIds() {
+        return taskSubDeclareDetailIds;
+    }
+
+    public void setTaskSubDeclareDetailIds(Long[] taskSubDeclareDetailIds) {
+        this.taskSubDeclareDetailIds = taskSubDeclareDetailIds;
+    }
+
+    public Long getTaskSubDeclareDetailId() {
+        return taskSubDeclareDetailId;
+    }
+
+    public void setTaskSubDeclareDetailId(Long taskSubDeclareDetailId) {
+        this.taskSubDeclareDetailId = taskSubDeclareDetailId;
+    }
 
     public Long getId() {
         return id;

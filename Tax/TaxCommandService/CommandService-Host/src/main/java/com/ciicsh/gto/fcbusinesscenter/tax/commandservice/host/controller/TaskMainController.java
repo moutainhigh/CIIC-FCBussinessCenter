@@ -180,9 +180,22 @@ public class TaskMainController extends BaseController {
 
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
-            BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
-            taskMainService.submitTaskMains(requestForMainTaskMain);
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.andNew("is_combine_confirmed = {0}",false);
+            wrapper.andNew("is_combined = {0}",true);
+            wrapper.in("task_main_id",taskMainDTO.getTaskMainIds());
+            int count = taskMainDetailService.selectCount(wrapper);
+            if(count>0){
+
+                jr.fill(JsonResult.ReturnCode.TM_ER01);
+            }else{
+                RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+                BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+                taskMainService.submitTaskMains(requestForMainTaskMain);
+            }
+
+
 //            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -380,7 +393,7 @@ public class TaskMainController extends BaseController {
     }
 
     /**
-     * 合并明细确认
+     * 合并明细调整
      * @param taskMainDTO
      * @return
      */

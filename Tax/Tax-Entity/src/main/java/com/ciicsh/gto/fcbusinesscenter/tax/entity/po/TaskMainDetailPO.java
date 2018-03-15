@@ -301,8 +301,6 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
 	public void setIdType(String idType) {
 		this.idType = idType;
 
-		this.idType = idType;
-
 		if(idType!=null){
 
 			this.idTypeName  = EnumUtil.getMessage(EnumUtil.IT_TYPE,idType);

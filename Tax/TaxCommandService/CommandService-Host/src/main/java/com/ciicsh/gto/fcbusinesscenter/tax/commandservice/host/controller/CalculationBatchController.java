@@ -44,8 +44,8 @@ public class CalculationBatchController extends BaseController {
             RequestForCalBatch requestForCalBatch = new RequestForCalBatch();
             BeanUtils.copyProperties(calculationBatchDTO, requestForCalBatch);
             ResponseForCalBatch responseForCalBatch = calculationBatchService.queryCalculationBatchs(requestForCalBatch);
-            //jr.fill(responseForCalBatch);
-            jr.fill(JsonResult.ReturnCode.TM_ER01);
+            jr.fill(responseForCalBatch);
+//            jr.fill(JsonResult.ReturnCode.TM_ER01);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("managerName", calculationBatchDTO.getManagerName());
