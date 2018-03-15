@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * <p>
@@ -196,6 +198,45 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
     @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
+	/**
+	 * 主任务明细ID
+	 */
+	private Long taskMainDetailId;
+
+	/**
+	 * 是否为合并明细
+	 */
+	@TableField("is_combined")
+	private Boolean isCombined;
+	/**
+	 * 合并明细是否已确认
+	 */
+	@TableField("is_combine_confirmed")
+	private Boolean isCombineConfirmed;
+
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
+	}
+
+	public Boolean getCombineConfirmed() {
+		return isCombineConfirmed;
+	}
+
+	public void setCombineConfirmed(Boolean combineConfirmed) {
+		isCombineConfirmed = combineConfirmed;
+	}
+
+	public Long getTaskMainDetailId() {
+		return taskMainDetailId;
+	}
+
+	public void setTaskMainDetailId(Long taskMainDetailId) {
+		this.taskMainDetailId = taskMainDetailId;
+	}
 
 	public Long getId() {
 		return id;
@@ -259,6 +300,11 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 
 	public void setIdType(String idType) {
 		this.idType = idType;
+
+		if(idType!=null){
+
+			this.idTypeName  = EnumUtil.getMessage(EnumUtil.IT_TYPE,idType);
+		}
 	}
 
 	public String getIdNo() {
@@ -299,6 +345,11 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 
 	public void setIncomeSubject(String incomeSubject) {
 		this.incomeSubject = incomeSubject;
+
+		if(incomeSubject!=null){
+
+			this.incomeSubjectName  = EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,incomeSubject);
+		}
 	}
 
 	public BigDecimal getIncomeTotal() {
@@ -515,6 +566,11 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 
 	public void setIncomeSubjectName(String incomeSubjectName) {
 		this.incomeSubjectName = incomeSubjectName;
+	}
+
+	public String groupBys(){
+
+		return this.employeeNo + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
 	}
 
 	@Override

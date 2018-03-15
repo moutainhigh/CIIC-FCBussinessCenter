@@ -126,6 +126,20 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 	@TableField("is_combined")
 	private Boolean isCombined;
 
+	/**
+	 * 是否有合并明细
+	 */
+	@TableField("has_combined")
+	private Boolean hasCombined;
+
+	public Boolean getHasCombined() {
+		return hasCombined;
+	}
+
+	public void setHasCombined(Boolean hasCombined) {
+		this.hasCombined = hasCombined;
+	}
+
 	public String getStatusName() {
 		return statusName;
 	}

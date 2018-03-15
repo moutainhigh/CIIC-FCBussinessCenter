@@ -234,15 +234,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 if (cbd.getDeclare() != null && cbd.getDeclare()) {
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("...有申报服务");
-                    }
                     //申报子任务关键字(申报账户，所得期间)
                     String key = cbd.getDeclareAccount() + DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                     TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
                     BeanUtils.copyProperties(cbd, taskSubDeclareDetailPO);//copy计算批次明细信息
-                    taskSubDeclareDetailPO.setCalculationBatchDetailId(cbd.getId());//计算批次明细id
+                    taskSubDeclareDetailPO.setTaskMainDetailId(cbd.getId());//计算批次明细id
 
                     //申报子任务未创建
                     if (declareTask.get(key) != null) {
@@ -270,15 +267,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 }
                 if (cbd.getTranfer() != null && cbd.getTranfer()) {
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("...有划款服务");
-                    }
                     //划款子任务关键字(缴纳账户，所得期间)
                     String key = cbd.getPayAccount() + DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                     TaskSubMoneyDetailPO taskSubMoneyDetailPO = new TaskSubMoneyDetailPO();
                     BeanUtils.copyProperties(cbd, taskSubMoneyDetailPO);//copy计算批次明细信息
-                    taskSubMoneyDetailPO.setCalculationBatchDetailId(cbd.getId());//计算批次明细id
+                    taskSubMoneyDetailPO.setTaskMainDetailId(cbd.getId());//计算批次明细id
 
                     //划款子任务未创建
                     if (moneyTask.get(key) != null) {
@@ -304,15 +298,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     moneyTaskDetail.add(taskSubMoneyDetailPO);
                 }
                 if (cbd.getPay() != null && cbd.getPay()) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("...有缴纳服务");
-                    }
                     //缴纳子任务关键字(缴纳账户，所得期间)
                     String key = cbd.getPayAccount() + DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                     TaskSubPaymentDetailPO taskSubPaymentDetailPO = new TaskSubPaymentDetailPO();
                     BeanUtils.copyProperties(cbd, taskSubPaymentDetailPO);//copy计算批次明细信息
-                    taskSubPaymentDetailPO.setCalculationBatchDetailId(cbd.getId());//计算批次明细id
+                    taskSubPaymentDetailPO.setTaskMainDetailId(cbd.getId());//计算批次明细id
 
                     //缴纳子任务未创建
                     if (paymentTask.get(key) != null) {
@@ -341,15 +332,12 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 //供应商处理
                 if (cbd.getSupport() != null && cbd.getSupport()) {
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("...供应商处理");
-                    }
                     //供应商处理子任务关键字(供应商，申报账户，所得期间)
                     String key = cbd.getSupportName() + cbd.getDeclareAccount() + DateTimeFormatter.ofPattern("yyyy-MM").format(cbd.getPeriod());
 
                     TaskSubSupplierDetailPO taskSubSupplierDetailPO = new TaskSubSupplierDetailPO();
                     BeanUtils.copyProperties(cbd, taskSubSupplierDetailPO);//copy计算批次明细信息
-                    taskSubSupplierDetailPO.setCalculationBatchDetailId(cbd.getId());//计算批次明细id
+                    taskSubSupplierDetailPO.setTaskMainDetailId(cbd.getId());//计算批次明细id
 
                     //供应商处理子任务未创建
                     if (supportTask.get(key) != null) {
