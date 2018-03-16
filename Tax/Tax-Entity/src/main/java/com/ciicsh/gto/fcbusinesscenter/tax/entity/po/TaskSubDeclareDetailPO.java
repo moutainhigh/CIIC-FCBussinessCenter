@@ -48,6 +48,7 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
     /**
      * 合并后申报明细ID（非空，则已合并，记录为合并后的明细ID）
      */
+	@TableField(value="task_sub_declare_detail_id",fill= FieldFill.UPDATE)
 	private Long taskSubDeclareDetailId;
     /**
      * 雇员编号

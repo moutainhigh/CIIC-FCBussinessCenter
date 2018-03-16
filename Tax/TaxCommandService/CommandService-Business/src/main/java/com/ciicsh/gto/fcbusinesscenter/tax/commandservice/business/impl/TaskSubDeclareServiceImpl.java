@@ -111,6 +111,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
     public void mergeTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
         List<TaskSubDeclarePO> taskSubDeclarePOList = new ArrayList<>();
         StringBuffer sbCombinedParams = new StringBuffer();
+        //被合并申报子任务ID数组
+        List<Long> mergeIds = new ArrayList<>();
         //未合并的id集合
         List<Long> unMergeIds = new ArrayList<>();
         //如果完税凭证子任务数组不为空则查询数组内ID的任务信息
@@ -170,11 +172,16 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                     foreignerNum += 0;
                 }
                 //判断是不是合并后的任务
-                if (taskSubDeclarePO.getTaskMainId() == null || "".equals(taskSubDeclarePO.getTaskMainId())) {
+                if (taskSubDeclarePO.getCombined()) {
                     sbCombinedParams.append(taskSubDeclarePO.getId() + ",");
+//                    //先将合并后的申报子任务拆分
+//                    RequestForTaskSubDeclare requestForTaskSubDeclare1 = new RequestForTaskSubDeclare();
+//                    requestForTaskSubDeclare1.setId(taskSubDeclarePO.getId());
+//                    this.splitSubDeclare(requestForTaskSubDeclare1);
                 } else {
                     unMergeIds.add(taskSubDeclarePO.getId());
                 }
+                mergeIds.add(taskSubDeclarePO.getId());
             }
             //合并后的申报信息
             TaskSubDeclarePO taskSubDeclare = new TaskSubDeclarePO();
@@ -198,8 +205,6 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             taskSubDeclare.setForeignerNum(foreignerNum);
             //设置任务状态
             taskSubDeclare.setStatus(taskSubDeclarePOList.get(0).getStatus());
-            //设置创建人
-            taskSubDeclare.setCreatedBy(requestForTaskSubDeclare.getModifiedBy());
             //设置是否为合并任务
             taskSubDeclare.setCombined(true);
             //新增申报子任务
@@ -211,7 +216,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 List<Long> mergedSubIds = baseMapper.querySubDeclareIdsByMergeIds(str);
                 if (mergedSubIds.size() > 0) {
                     unMergeIds.addAll(mergedSubIds);
+                    mergeIds.addAll(mergedSubIds);
                 }
+
                 //将合并的id置为不可用
                 TaskSubDeclarePO taskSubDeclarePOMerge = new TaskSubDeclarePO();
                 taskSubDeclarePOMerge.setActive(false);
@@ -225,8 +232,6 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
             //申报子任务ID
             taskSubDeclarePO.setTaskSubDeclareId(taskSubDeclare.getId());
-            //修改人
-            taskSubDeclarePO.setModifiedBy(requestForTaskSubDeclare.getModifiedBy());
             //修改时间
             taskSubDeclarePO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
@@ -237,6 +242,11 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             Long[] ids = unMergeIds.toArray(new Long[unMergeIds.size()]);
             wrapper.in("id", ids);
             baseMapper.update(taskSubDeclarePO, wrapper);
+
+            //将被合并申报子任务ID转成String数组
+            Long[] taskSubDeclareIds = mergeIds.toArray(new Long[mergeIds.size()]);
+            //申报子任务明细合并
+            merge(taskSubDeclare.getId(),taskSubDeclareIds);
         }
 
     }
@@ -248,14 +258,14 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public void merge(Long taskSubDeclareCombinedId,String[] taskSubDeclareIds) {
+    public void merge(Long taskSubDeclareCombinedId,Long[] taskSubDeclareIds) {
 
         List<TaskSubDeclareDetailPO>  taskSubDeclareDetailPOList = new ArrayList<>();
 
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.in("task_sub_declare_id",taskSubDeclareIds);
-
-        taskSubDeclareDetailPOList = baseMapper.selectList(wrapper);
+        taskSubDeclareDetailPOList = this.taskSubDeclareDetailService.selectList(wrapper);
+//        taskSubDeclareDetailPOList = baseMapper.selectList(wrapper);
 
         //按照雇员、所得期间、所得项目分组
         Map<String, List<TaskSubDeclareDetailPO>> groupbys = taskSubDeclareDetailPOList.stream()
@@ -319,6 +329,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 wrapper2.in("id",taskSubDeclareDetailIds);
                 TaskSubDeclareDetailPO tsddp = new TaskSubDeclareDetailPO();
                 tsddp.setTaskSubDeclareDetailId(taskSubDeclareDetailPO.getId());
+                tsddp.setActive(false);
                 this.taskSubDeclareDetailService.update(tsddp,wrapper2);//更新合并的明细
 
                 TaskSubDeclarePO tsp = new TaskSubDeclarePO();
@@ -335,14 +346,28 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public void unmerge(Long taskSubDeclareCombinedId) {
+    public void unMerge(Long taskSubDeclareCombinedId) {
 
         //将合并后的明细设置为失效
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.andNew("task_sub_declare_id={0}",taskSubDeclareCombinedId);
-        TaskSubDeclareDetailPO tsddp = new TaskSubDeclareDetailPO();
-        tsddp.setActive(false);
-        this.taskSubDeclareDetailService.update(tsddp,wrapper);
+        //获取合并后申报子任务ID明细集合
+        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = this.taskSubDeclareDetailService.selectList(wrapper);
+        TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
+        taskSubDeclareDetailPO.setActive(false);
+        this.taskSubDeclareDetailService.update(taskSubDeclareDetailPO,wrapper);
+
+        List<Long> ids = taskSubDeclareDetailPOList.stream().map(m -> m.getId()).collect(Collectors.toList());
+        TaskSubDeclareDetailPO taskSubDeclareDetailPO1 = new TaskSubDeclareDetailPO();
+        //将合并之前的明细置为有效状态
+        taskSubDeclareDetailPO1.setActive(true);
+        //把明细指向设为null
+        taskSubDeclareDetailPO1.setTaskSubDeclareDetailId(null);
+        EntityWrapper wrapperMerge = new EntityWrapper();
+        wrapperMerge.setEntity(new TaskSubDeclareDetailPO());
+        wrapperMerge.in("task_sub_declare_detail_id",ids);
+        this.taskSubDeclareDetailService.update(taskSubDeclareDetailPO1,wrapperMerge);
+
     }
 
     /**
@@ -350,6 +375,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      *
      * @param requestForTaskSubDeclare
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void splitSubDeclare(RequestForTaskSubDeclare requestForTaskSubDeclare) {
         if (requestForTaskSubDeclare.getId() != null && !"".equals(requestForTaskSubDeclare.getId())) {
@@ -371,6 +397,15 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             //根据合并的ID将原子任务的合并ID置为空
             baseMapper.update(taskSubDeclarePO, wrapper);
 
+            EntityWrapper wrapperDetails = new EntityWrapper();
+            wrapper.setEntity(new TaskSubDeclareDetailPO());
+            wrapper.andNew("task_sub_declare_id = {0}", requestForTaskSubDeclare.getId());
+            //获取合并申报子任务明细集合
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = this.taskSubDeclareDetailService.selectList(wrapperDetails);
+            //拆分申报明细任务
+            for(TaskSubDeclareDetailPO taskSubDeclareDetailPO : taskSubDeclareDetailPOList){
+                unMerge(taskSubDeclareDetailPO.getId());
+            }
         }
     }
 
