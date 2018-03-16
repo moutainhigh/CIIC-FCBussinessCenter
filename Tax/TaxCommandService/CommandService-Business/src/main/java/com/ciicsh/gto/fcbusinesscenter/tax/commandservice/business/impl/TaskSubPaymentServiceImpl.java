@@ -71,7 +71,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubPayment.getStatusType().toUpperCase()));
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
 
         //判断是否分页
         if (null != requestForSubPayment.getPageSize() && null != requestForSubPayment.getCurrentNum()) {

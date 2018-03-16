@@ -99,7 +99,7 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
             wrapper.andNew("is_combined = {0} ", requestForSubDeclareDetail.getTabType());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubDeclareDetail.getPageSize() && null != requestForSubDeclareDetail.getCurrentNum()) {
             Page<TaskSubDeclareDetailPO> pageInfo = new Page<>(requestForSubDeclareDetail.getCurrentNum(), requestForSubDeclareDetail.getPageSize());

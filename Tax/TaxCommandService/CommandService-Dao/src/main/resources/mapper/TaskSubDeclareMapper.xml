@@ -18,4 +18,42 @@
         where task_sub_declare_id in (#{sbCombinedParams})
     </select>
 
+    <!--修改申报合并任务ID为失效-->
+    <update id="updateDeclareByCombinedId">
+        update tax_fc_task_sub_declare
+        set is_active = false,
+            modified_by = #{modifiedBy},
+            modified_time = #{modifiedTime}
+        where id = #{combinedId}
+    </update>
+
+    <!--修改合并前申报子任务为有效状态-->
+    <update id="updateDeclareToActiveById">
+        update tax_fc_task_sub_declare
+        set is_active = true,
+            task_sub_declare_id = null,
+            modified_by = #{modifiedBy},
+            modified_time = #{modifiedTime}
+        where task_sub_declare_id=#{combinedId}
+    </update>
+
+    <!--修改合并前申报明细为有效状态-->
+    <update id="updateDeclareDetailToActiveById">
+        update tax_fc_task_sub_declare_detail a inner join tax_fc_task_sub_declare_detail b on a.task_sub_declare_detail_id = b.id and b.task_sub_declare_id = #{combinedId}
+        set a.is_active = true,
+            a.task_sub_declare_detail_id = null,
+            a.modified_by = #{modifiedBy},
+            a.modified_time = #{modifiedTime}
+    </update>
+
+    <!--修改合并申报明细为失效状态-->
+    <update id="updateDeclareDetailById">
+        update tax_fc_task_sub_declare_detail
+        set is_active = false,
+            modified_by = #{modifiedBy},
+            modified_time = #{modifiedTime}
+        where task_sub_declare_id=#{combinedId}
+    </update>
+
+
 </mapper>

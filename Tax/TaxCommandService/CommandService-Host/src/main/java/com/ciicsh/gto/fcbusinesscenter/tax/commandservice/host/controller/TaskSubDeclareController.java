@@ -6,11 +6,13 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileSer
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -81,6 +83,9 @@ public class TaskSubDeclareController extends BaseController {
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
             taskSubDeclareService.mergeTaskSubDeclares(requestForTaskSubDeclare);
             //jr.fill(true);
         } catch (Exception e) {
@@ -105,7 +110,10 @@ public class TaskSubDeclareController extends BaseController {
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
+            taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare,"only");
             //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);

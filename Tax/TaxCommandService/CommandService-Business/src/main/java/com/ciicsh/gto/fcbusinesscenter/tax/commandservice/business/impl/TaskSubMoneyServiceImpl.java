@@ -72,7 +72,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubMoney.getStatusType().toUpperCase()));
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
 
         //判断是否分页
         if (null != requestForSubMoney.getPageSize() && null != requestForSubMoney.getCurrentNum()) {
