@@ -14,7 +14,7 @@
 
     <!--根据合并的ID拼接的in条件查询合并前的子任务ID-->
     <select id="querySubDeclareIdsByMergeIds" resultType="java.lang.Long">
-        select id from tax_fc_task_sub_declare_detail
+        select id from tax_fc_task_sub_declare
         where task_sub_declare_id in (#{sbCombinedParams})
     </select>
 

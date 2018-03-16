@@ -89,10 +89,10 @@ public class JsonResult<T> {
      * 是否成功
      * @return
      */
-    public boolean isSuccess(){
+    /*public boolean isSuccess(){
 
         return this.code.equals("0");
-    }
+    }*/
     /**
      * 错误
      * @return
