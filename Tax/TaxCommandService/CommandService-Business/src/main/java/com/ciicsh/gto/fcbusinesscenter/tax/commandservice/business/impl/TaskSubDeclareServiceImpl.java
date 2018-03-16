@@ -319,6 +319,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 wrapper2.in("id",taskSubDeclareDetailIds);
                 TaskSubDeclareDetailPO tsddp = new TaskSubDeclareDetailPO();
                 tsddp.setTaskSubDeclareDetailId(taskSubDeclareDetailPO.getId());
+                tsddp.setActive(false);
                 this.taskSubDeclareDetailService.update(tsddp,wrapper2);//更新合并的明细
 
                 TaskSubDeclarePO tsp = new TaskSubDeclarePO();

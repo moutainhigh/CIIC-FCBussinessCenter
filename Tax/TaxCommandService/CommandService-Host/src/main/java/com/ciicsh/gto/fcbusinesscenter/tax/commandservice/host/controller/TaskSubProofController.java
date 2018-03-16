@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
@@ -68,7 +69,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("mainProofIds", taskMainProofId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.queryTaskSubProofByMainId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.queryTaskSubProofByMainId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -94,7 +95,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             tags.put("id", taskSubProofDTO.getId().toString());
             tags.put("declareAccount", taskSubProofDTO.getDeclareAccount());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.queryTaskSubProofByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.queryTaskSubProofByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -118,7 +119,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubProofId", taskSubProofId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.copyProofInfoBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.copyProofInfoBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -146,7 +147,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             tags.put("period", taskProofDTO.getPeriod());
             tags.put("taskType", taskProofDTO.getTaskType());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.querySubProofInfoByTaskType", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.querySubProofInfoByTaskType", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -170,7 +171,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getManagerName());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.combineTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.combineTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -194,7 +195,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskProofDTO.getId().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.splitTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.splitTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -220,7 +221,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.completeTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.completeTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -246,7 +247,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.rejectTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.rejectTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -272,7 +273,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofIds", taskProofDTO.getSubProofIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.invalidTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.invalidTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -295,7 +296,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subProofId", subProofId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.queryApplyDetailsBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.queryApplyDetailsBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -321,7 +322,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             tags.put("employeeNo", taskProofDTO.getEmployeeNo());
             tags.put("employeeName", taskProofDTO.getEmployeeName());
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.queryTaskSubProofDetailBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.queryTaskSubProofDetailBySubId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -404,7 +405,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             exportExcel(response, wb, fileName);
         } catch (Exception e) {
             //日志工具类返回
-            logService.error(e, "TaskSubProofController.exportSubTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofController.exportSubTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, null);
         } finally {
             if (wb != null) {
                 try {

@@ -4,6 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDT
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
@@ -70,7 +71,7 @@ public class TaskSubMoneyController extends BaseController {
             tags.put("managerName", taskSubMoneyDTO.getManagerName());
             tags.put("statusType", taskSubMoneyDTO.getStatusType());
             //日志工具类返回
-            logService.error(e, "TaskSubMoneyController.querySubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.querySubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -97,7 +98,7 @@ public class TaskSubMoneyController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubMoneyController.completeTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.completeTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -123,7 +124,7 @@ public class TaskSubMoneyController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubMoneyController.rejectTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.rejectTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -149,7 +150,7 @@ public class TaskSubMoneyController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyId", subMoneyId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubMoneyController.querySubMoneyById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.querySubMoneyById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -256,7 +257,7 @@ public class TaskSubMoneyController extends BaseController {
                 } catch (Exception e) {
 //                    Map<String, String> tags = new HashMap<>(16);
                     //日志工具类返回
-                    logService.error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, null);
+                    LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, null);
                     jr.error();
                 }
                 //jr.fill(true);
@@ -267,7 +268,7 @@ public class TaskSubMoneyController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyId", id.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -291,7 +292,7 @@ public class TaskSubMoneyController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subMoneyId", id.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubMoneyController.printVoucher", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.printVoucher", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
         }
     }
 }

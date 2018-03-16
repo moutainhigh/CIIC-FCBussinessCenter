@@ -1,7 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.LogService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -70,7 +71,7 @@ public class BaseController {
                 bos.write(buff, 0, bytesRead);
             }
         } catch (Exception e) {
-            logService.error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
         } finally {
             try {
                 bis.close();
@@ -110,7 +111,7 @@ public class BaseController {
             File file = new File(excel);
             fs = new POIFSFileSystem(new FileInputStream(file));
         } catch (Exception e) {
-            logService.error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
         }
         return fs;
     }
@@ -128,7 +129,7 @@ public class BaseController {
             // 读取excel模板
             wb = new HSSFWorkbook(fs);
         } catch (Exception e) {
-            logService.error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
         }
         return wb;
     }
@@ -164,7 +165,7 @@ public class BaseController {
                 bos.write(buff, 0, bytesRead);
             }
         } catch (Exception e) {
-            logService.error(e, "BaseController.exportExcel", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "BaseController.exportExcel", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
         } finally {
             if (os != null) {
                 try {

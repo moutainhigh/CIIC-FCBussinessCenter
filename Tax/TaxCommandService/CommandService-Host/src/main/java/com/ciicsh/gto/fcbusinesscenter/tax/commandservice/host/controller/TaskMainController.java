@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubsDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
@@ -70,7 +71,7 @@ public class TaskMainController extends BaseController {
             tags.put("batchNo", taskMainDTO.getBatchNo());
             tags.put("tabsName", taskMainDTO.getTabsName());
             //日志工具类返回
-            logService.error(e, "TaskMainController.queryTaskMains", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.queryTaskMains", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -99,7 +100,7 @@ public class TaskMainController extends BaseController {
             tags.put("managerName", taskMainDTO.getManagerName());
             tags.put("batchNo", taskMainDTO.getBatchNo());
             //日志工具类返回
-            logService.error(e, "TaskMainController.queryTaskMainsForDraft", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.queryTaskMainsForDraft", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -128,7 +129,7 @@ public class TaskMainController extends BaseController {
             tags.put("managerName", taskMainDTO.getManagerName());
             tags.put("batchNo", taskMainDTO.getBatchNo());
             //日志工具类返回
-            logService.error(e, "TaskMainController.queryTaskMainsForCheck", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.queryTaskMainsForCheck", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -162,7 +163,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainId", taskSubsDTO.getTaskMainId().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.queryTaskSubs", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.queryTaskSubs", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -201,7 +202,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.createMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.createMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -227,7 +228,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.passMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.passMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -251,7 +252,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.invalidMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.invalidMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -275,7 +276,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.rejectMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.rejectMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -299,7 +300,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainId", taskMainDTO.getTaskMainId().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.queryTaskMainDetails", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.queryTaskMainDetails", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -325,7 +326,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainId", taskMainDTO.getTaskMainId().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.queryTaskMainDetailsByCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.queryTaskMainDetailsByCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -357,7 +358,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainId", taskMainDTO.getTaskMainId().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.queryTaskMainDetailsForCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.queryTaskMainDetailsForCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -385,7 +386,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainDetailIds", taskMainDTO.getTaskMainDetailIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -413,7 +414,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainDetailIds", taskMainDTO.getTaskMainDetailIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 

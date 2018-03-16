@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
@@ -62,7 +63,7 @@ public class TaskSubDeclareController extends BaseController {
             tags.put("managerName", taskSubDeclareDTO.getManagerName());
             tags.put("statusType", taskSubDeclareDTO.getStatusType());
             //日志工具类返回
-            logService.error(e, "TaskSubDeclareController.queryTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.queryTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -86,7 +87,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubDeclareController.mergeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.mergeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -110,7 +111,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", taskSubDeclareDTO.getId().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubDeclareController.splitSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.splitSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -170,7 +171,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubDeclareController.exportSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.exportSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
         } finally {
             if (wb != null) {
                 try {
@@ -206,7 +207,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubDeclareController.queryDeclareDetailsById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.queryDeclareDetailsById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -252,7 +253,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubDeclareController.exportDeclareBySubject", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.exportDeclareBySubject", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
         } finally {
             if (wb != null) {
                 try {
@@ -291,7 +292,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;

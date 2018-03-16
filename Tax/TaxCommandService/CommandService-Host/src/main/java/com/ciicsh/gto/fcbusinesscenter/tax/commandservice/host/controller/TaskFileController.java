@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.FileDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.FileServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.file.RequestForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.file.ResponseForFile;
@@ -54,7 +55,7 @@ public class TaskFileController extends BaseController {
             tags.put("businessId", fileDTO.getBusinessId().toString());
             tags.put("businessType", fileDTO.getBusinessType());
             //日志工具类返回
-            logService.error(e, "TaskFileController.queryTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskFileController.queryTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -78,7 +79,7 @@ public class TaskFileController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("id", fileDTO.getId().toString());
             //日志工具类返回
-            logService.error(e, "TaskFileController.deleteTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskFileController.deleteTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -105,7 +106,7 @@ public class TaskFileController extends BaseController {
             tags.put("businessId", fileDTO.getBusinessId().toString());
             tags.put("businessType", fileDTO.getBusinessType());
             //日志工具类返回
-            logService.error(e, "TaskFileController.uploadFileByBusinessIdAndType", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskFileController.uploadFileByBusinessIdAndType", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -138,7 +139,7 @@ public class TaskFileController extends BaseController {
                 tags.put("businessId", fileDTO.getBusinessId().toString());
                 tags.put("businessType", fileDTO.getBusinessType());
                 //日志工具类返回
-                logService.error(e, "TaskFileController.downloadTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+                LogTaskFactory.getLogger().error(e, "TaskFileController.downloadTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
             } finally {
                 if (inputStream != null) {
                     try {

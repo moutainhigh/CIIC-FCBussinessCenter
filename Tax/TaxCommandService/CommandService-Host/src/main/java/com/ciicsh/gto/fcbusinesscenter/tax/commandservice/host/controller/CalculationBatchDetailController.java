@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.CalculationBatchDetailProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
@@ -51,7 +52,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             tags.put("submitTimeStart", taskProofDTO.getSubmitTimeStart());
             tags.put("submitTimeEnd", taskProofDTO.getSubmitTimeEnd());
             //日志工具类返回
-            logService.error(e, "CalculationBatchDetailController.queryTaxBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "CalculationBatchDetailController.queryTaxBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -78,7 +79,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             tags.put("managerName", calculationBatchDetailDTO.getManagerName());
             tags.put("batchNo", calculationBatchDetailDTO.getBatchNo());
             //日志工具类返回
-            logService.error(e, "CalculationBatchDetailController.queryTaxBatchDetailByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "CalculationBatchDetailController.queryTaxBatchDetailByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -102,7 +103,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             Map<String, String> tags = new HashMap<>(16);
             tags.put("ids", calculationBatchDetailDTO.getIds().toString());
             //日志工具类返回
-            logService.error(e, "CalculationBatchDetailController.recoveryCalBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "00"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "CalculationBatchDetailController.recoveryCalBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "00"), LogType.APP, tags);
             jr.error();
         }
         return jr;

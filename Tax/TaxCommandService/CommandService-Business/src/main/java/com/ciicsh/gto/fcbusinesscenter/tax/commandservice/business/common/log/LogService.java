@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.util.exception.BaseException;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;

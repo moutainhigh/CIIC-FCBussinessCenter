@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDe
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofDetailProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.EmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofDetailBO;
@@ -59,7 +60,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             tags.put("employeeNo", taskProofDTO.getEmployeeNo());
             tags.put("employeeName", taskProofDTO.getEmployeeName());
             //日志工具类返回
-            logService.error(e, "TaskSubProofDetailController.queryTaskSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.queryTaskSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -170,7 +171,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             tags.put("employeeNo", taskProofDTO.getEmployeeNo());
             tags.put("employeeName", taskProofDTO.getEmployeeName());
             //日志工具类返回
-            logService.error(e, "TaskSubProofDetailController.queryEmployee", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.queryEmployee", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -223,7 +224,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             tags.put("oldDeleteIds", subProofDetailDTO.getOldDeleteIds().toString());
             tags.put("taskSubProofDetailDTOList", subProofDetailDTO.getTaskSubProofDetailDTOList().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofDetailController.saveSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.saveSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;

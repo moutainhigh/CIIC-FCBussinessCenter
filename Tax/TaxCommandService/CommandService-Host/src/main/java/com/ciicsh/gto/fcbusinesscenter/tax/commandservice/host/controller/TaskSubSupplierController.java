@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubSupplierDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForTaskSubSupplier;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForTaskSubSupplier;
@@ -50,7 +51,7 @@ public class TaskSubSupplierController extends BaseController {
             tags.put("supportName", taskSubSupplierDTO.getSupportName());
             tags.put("statusType", taskSubSupplierDTO.getStatusType());
             //日志工具类返回
-            logService.error(e, "TaskSubSupplierController.queryTaskSubSupplier", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.queryTaskSubSupplier", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -74,7 +75,7 @@ public class TaskSubSupplierController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subSupplierId", subSupplierId.toString());
             //日志工具类返回
-            logService.error(e, "TaskSubSupplierController.querySupplierDetailsById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.querySupplierDetailsById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();
         }
         return jr;
