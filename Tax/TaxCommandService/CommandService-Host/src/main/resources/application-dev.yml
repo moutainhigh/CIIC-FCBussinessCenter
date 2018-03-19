@@ -53,6 +53,7 @@ mybatis-plus:
         logic-delete-value: 0
         logic-not-delete-value: 1
         meta-object-handler: com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.handler.TaxMetaObjectHandler
+#        sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
     mapper-locations: classpath*:mapper/*.xml
 #    config-location: classpath:mybatis-config.xml
 pagehelper:

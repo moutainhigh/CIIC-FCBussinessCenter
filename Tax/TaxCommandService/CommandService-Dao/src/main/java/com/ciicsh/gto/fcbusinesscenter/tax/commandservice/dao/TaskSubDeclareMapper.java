@@ -2,8 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
-import feign.Param;
-
+import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
