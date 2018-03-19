@@ -63,8 +63,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         wrapper.andNew(" task_main_proof_id = {0}", taskMainProofId);
         //是否可用
         wrapper.andNew("is_active = {0} ", true);
-        //创建时间排序
-        wrapper.orderBy("created_time", false);
+        //修改时间排序
+        wrapper.orderBy("modified_time", false);
         List<TaskSubProofPO> taskSubProofPOList = baseMapper.selectList(wrapper);
         return taskSubProofPOList;
     }

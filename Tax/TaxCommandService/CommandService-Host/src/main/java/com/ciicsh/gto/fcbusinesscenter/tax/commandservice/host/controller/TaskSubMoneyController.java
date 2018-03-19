@@ -205,7 +205,7 @@ public class TaskSubMoneyController extends BaseController {
             List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(id);
             //设置公司信息companyList
             List<PayapplyCompanyProxyDTO> companyList = new ArrayList<>();
-            //根据公司ID
+            //TODO 根据公司ID 暂时根据所得项目划分
             Map<String, List<TaskSubMoneyDetailPO>> taskSubMoneyDetailPOMap =
                     taskSubMoneyDetailPOList.stream().collect(groupingBy(TaskSubMoneyDetailPO::getIncomeSubject));
             for (String key : taskSubMoneyDetailPOMap.keySet()) {
@@ -231,6 +231,7 @@ public class TaskSubMoneyController extends BaseController {
                 PayapplyEmployeeProxyDTO payapplyEmployeeProxyDTO = new PayapplyEmployeeProxyDTO();
                 payapplyEmployeeProxyDTO.setEmployeeId(taskSubMoneyDetailPO.getEmployeeNo());
                 payapplyEmployeeProxyDTO.setEmployeeName(taskSubMoneyDetailPO.getEmployeeName());
+                //TODO 暂时使用所得项目
                 payapplyEmployeeProxyDTO.setCompanyId(taskSubMoneyDetailPO.getIncomeSubject());
                 payapplyEmployeeProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyDetailPO.getPeriod()));
                 payapplyEmployeeProxyDTO.setPayAmount(taskSubMoneyDetailPO.getTaxAmount());

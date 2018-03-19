@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +114,7 @@ public class TaskSubDeclareController extends BaseController {
             //修改人
             UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
             requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
-            taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare,"only");
+            taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare, "only");
             //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -301,6 +302,37 @@ public class TaskSubDeclareController extends BaseController {
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+    /**
+     * 根据ID查询合并之前的申报子任务
+     *
+     * @param mergeId
+     * @return
+     */
+    @PostMapping(value = "/queryTaskSubDeclareByMergeId/{mergeId}")
+    public JsonResult<List<TaskSubDeclareDTO>> queryTaskSubDeclareByMergeId(@PathVariable(value = "mergeId") Long mergeId) {
+        JsonResult<List<TaskSubDeclareDTO>> jr = new JsonResult<>();
+        try {
+            List<TaskSubDeclareDTO> taskSubProofDTOLists = new ArrayList<>();
+            List<TaskSubDeclarePO> taskSubDeclarePOLists = taskSubDeclareService.queryTaskSubDeclareByMergeId(mergeId);
+            for (TaskSubDeclarePO taskSubDeclarePO : taskSubDeclarePOLists) {
+                TaskSubDeclareDTO taskSubDeclareDTO = new TaskSubDeclareDTO();
+                BeanUtils.copyProperties(taskSubDeclarePO, taskSubDeclareDTO);
+                if (taskSubDeclarePO.getPeriod() != null) {
+                    taskSubDeclareDTO.setPeriod(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
+                }
+                taskSubProofDTOLists.add(taskSubDeclareDTO);
+            }
+            jr.fill(taskSubProofDTOLists);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("mergeId", mergeId.toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.queryTaskSubDeclareByMergeId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
             jr.error();
         }
         return jr;
