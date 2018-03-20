@@ -10,7 +10,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofS
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
@@ -18,8 +17,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -335,92 +332,14 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      */
     @RequestMapping(value = "/exportSubTaskProof/{subProofId}", method = RequestMethod.GET)
     public void exportSubTaskProof(@PathVariable(value = "subProofId") Long subProofId, HttpServletResponse response) {
-        POIFSFileSystem fs = null;
-        HSSFWorkbook wb = null;
+
+        String fileName = "完税凭证申请.xls";
         try {
-            //根据完税凭证子任务查询任务信息
-            TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
-            //根据完税凭证子任务ID查询完税凭证详情
-            List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofService.querySubProofDetailList(subProofId);
-            //文件名称
-            String fileName = "";
-            //用于存放模板列表头部
-            Map<String, String> map = new HashMap<>(16);
-            // TODO 测试代码："蓝天科技上海独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技无锡独立户"=>"完税凭证_浦东"
-            //根据申报账户选择模板
-            if ("联想独立户".equals(taskSubProofBO.getDeclareAccount())) {
-                fileName = "完税凭证_三分局.xls";
-                //获取POIFSFileSystem对象
-                fs = getFSFileSystem(fileName);
-                //通过POIFSFileSystem对象获取WB对象
-                wb = getHSSFWorkbook(fs);
-                //扣缴义务人名称
-                map.put("withholdingAgent", "上海中智");
-                //扣缴义务人代码(税务电脑编码)
-                map.put("withholdingAgentCode", "BM123456789");
-                //扣缴义务人电话
-                map.put("withholdingAgentPhone", "18201880000");
-                //换开人姓名
-                map.put("changePersonName", "admin");
-                //换开人身份证号码
-                map.put("changePersonIdNo", "321281199001011234");
-                //根据不同的业务需要处理wb
-                exportFileService.exportAboutSFJ(wb, map, taskSubProofDetailPOList);
-            } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
-                fileName = "完税凭证_徐汇.xls";
-                //获取POIFSFileSystem对象
-                fs = getFSFileSystem(fileName);
-                //通过POIFSFileSystem对象获取WB对象
-                wb = getHSSFWorkbook(fs);
-                //单位税号（必填）
-                map.put("unitNumber", "TEST123456");
-                //单位名称（必填）
-                map.put("unitName", "上海中智");
-                //根据不同的业务需要处理wb
-                exportFileService.exportAboutXH(wb, map, taskSubProofDetailPOList);
-            } else if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
-                fileName = "完税凭证_浦东.xls";
-                //获取POIFSFileSystem对象
-                fs = getFSFileSystem(fileName);
-                //通过POIFSFileSystem对象获取WB对象
-                wb = getHSSFWorkbook(fs);
-                //扣缴单位
-                map.put("withholdingUnit", "上海中智");
-                //电脑编码
-                map.put("withholdingCode", "123456789");
-                //通用缴款书流水号
-                map.put("generalPaymentBook", "147258369");
-                //办税人员
-                map.put("taxationPersonnel", "admin");
-                //联系电话
-                map.put("phone", "18201886666");
-                //换开份数
-                map.put("changeNum", "2");
-                //换开原因
-                map.put("changeReason", "重新申报");
-                //根据不同的业务需要处理wb
-                exportFileService.exportAboutPD(wb, map, taskSubProofDetailPOList);
-            }
             //导出excel
-            exportExcel(response, wb, fileName);
+            exportExcel(response, this.exportFileService.exportForProof(subProofId), fileName);
         } catch (Exception e) {
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubProofController.exportSubTaskProof", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, null);
-        } finally {
-            if (wb != null) {
-                try {
-                    wb.close();
-                } catch (Exception e) {
-                    logger.error("exportSubTaskProof wb close error" + e.toString());
-                }
-            }
-            if (fs != null) {
-                try {
-                    fs.close();
-                } catch (Exception e) {
-                    logger.error("exportSubTaskProof fs close error" + e.toString());
-                }
-            }
         }
     }
 

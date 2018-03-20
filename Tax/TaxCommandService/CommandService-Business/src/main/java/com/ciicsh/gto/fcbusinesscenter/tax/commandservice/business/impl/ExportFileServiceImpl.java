@@ -1,22 +1,30 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +34,18 @@ import static java.util.stream.Collectors.groupingBy;
  * @author wuhua
  */
 @Service
-public class ExportFileServiceImpl implements ExportFileService {
+public class ExportFileServiceImpl extends BaseService implements ExportFileService  {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportFileServiceImpl.class);
+
+    @Autowired
+    public TaskSubDeclareService taskSubDeclareService;
+
+    @Autowired
+    public TaskSubDeclareDetailService taskSubDeclareDetailService;
+
+    @Autowired
+    private TaskSubProofService taskSubProofService;
 
     /**
      * 完税凭证徐汇模板列表初始大小20
@@ -64,6 +81,196 @@ public class ExportFileServiceImpl implements ExportFileService {
      * 所得项目_劳务报酬所得
      */
     private static final String INCOME_SUBJECT_03 = "03";
+
+
+    @Override
+    public HSSFWorkbook exportForDeclareOffline(Long subDeclareId){
+
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+
+        try {
+            //根据申报子任务ID查询申报信息
+            TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
+            //根据申报子任务ID查询申报明细
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
+            //用于存放模板列表头部
+            Map<String, String> map = new HashMap<>(16);
+            //文件名称
+            String fileName = "";
+            //TODO 区分本地税务和全国委托 测试
+            if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
+                fileName = "扣缴个人所得税报告表.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //税款所属期
+                map.put("taxPeriod", DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
+                //扣缴义务人名称
+                map.put("withholdingAgent", "张三");
+                //扣缴义务人编码
+                map.put("withholdingAgentCode", "147258369");
+                //根据不同的业务需要处理wb
+                this.exportAboutTax(wb, map, taskSubDeclareDetailPOList);
+            } else {
+                fileName = "扣缴个人所得税报告表.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //税款所属期
+                map.put("taxPeriod", DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
+                //扣缴义务人名称
+                map.put("withholdingAgent", "李四");
+                //扣缴义务人编码
+                map.put("withholdingAgentCode", "147258369");
+                //根据不同的业务需要处理wb
+                this.exportAboutTax(wb, map, taskSubDeclareDetailPOList);
+            }
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    logger.error("exportSubDeclare fs close error",ee);
+                }
+            }
+            throw e;
+        }
+        return wb;
+    }
+
+    @Override
+    public HSSFWorkbook exportForDeclareOnline(Long subDeclareId){
+
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+
+        try {
+            //根据申报子任务ID查询申报信息
+            TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
+            //根据申报子任务ID查询申报明细
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
+            //文件名称
+            String fileName = "";
+            //TODO 区分本地税务和全国委托 测试
+            if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
+                fileName = "上海地区个税.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                this.exportAboutSubject(wb, taskSubDeclareDetailPOList);
+            } else {
+                fileName = "上海地区个税.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                this.exportAboutSubject(wb, taskSubDeclareDetailPOList);
+            }
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    logger.error("exportDeclareBySubject fs close error",ee);
+                }
+            }
+            throw e;
+        }
+        return wb;
+    }
+
+    /**
+     * 完税凭证导出
+     */
+    @Override
+    public HSSFWorkbook exportForProof(Long subProofId){
+
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+
+        try {
+            //根据完税凭证子任务查询任务信息
+            TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
+            //根据完税凭证子任务ID查询完税凭证详情
+            List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofService.querySubProofDetailList(subProofId);
+            //文件名称
+            String fileName = "";
+            //用于存放模板列表头部
+            Map<String, String> map = new HashMap<>(16);
+            // TODO 测试代码："蓝天科技上海独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技无锡独立户"=>"完税凭证_浦东"
+            //根据申报账户选择模板
+            if ("联想独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_三分局.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //扣缴义务人名称
+                map.put("withholdingAgent", "上海中智");
+                //扣缴义务人代码(税务电脑编码)
+                map.put("withholdingAgentCode", "BM123456789");
+                //扣缴义务人电话
+                map.put("withholdingAgentPhone", "18201880000");
+                //换开人姓名
+                map.put("changePersonName", "admin");
+                //换开人身份证号码
+                map.put("changePersonIdNo", "321281199001011234");
+                //根据不同的业务需要处理wb
+                this.exportAboutSFJ(wb, map, taskSubProofDetailPOList);
+            } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_徐汇.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //单位税号（必填）
+                map.put("unitNumber", "TEST123456");
+                //单位名称（必填）
+                map.put("unitName", "上海中智");
+                //根据不同的业务需要处理wb
+                this.exportAboutXH(wb, map, taskSubProofDetailPOList);
+            } else if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_浦东.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //扣缴单位
+                map.put("withholdingUnit", "上海中智");
+                //电脑编码
+                map.put("withholdingCode", "123456789");
+                //通用缴款书流水号
+                map.put("generalPaymentBook", "147258369");
+                //办税人员
+                map.put("taxationPersonnel", "admin");
+                //联系电话
+                map.put("phone", "18201886666");
+                //换开份数
+                map.put("changeNum", "2");
+                //换开原因
+                map.put("changeReason", "重新申报");
+                //根据不同的业务需要处理wb
+                this.exportAboutPD(wb, map, taskSubProofDetailPOList);
+            }
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    logger.error("exportSubTaskProof fs close error",ee);
+                }
+            }
+            throw e;
+        }
+
+        return wb;
+    }
 
     /**
      * 完税凭证处理(徐汇)
