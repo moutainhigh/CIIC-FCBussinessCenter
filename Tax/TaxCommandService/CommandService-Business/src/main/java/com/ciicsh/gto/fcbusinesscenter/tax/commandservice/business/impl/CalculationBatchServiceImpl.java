@@ -546,7 +546,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         columnMap.put("task_main_id",taskMainId);
         taskMainDetailPOList = taskMainDetailService.selectByMap(columnMap);
 
-        //按照雇员、所得期间、所得项目分组
+        //按照雇员、申报账户、所得期间、所得项目分组
         Map<String, List<TaskMainDetailPO>> groupbys = taskMainDetailPOList.stream()
                 .collect(Collectors.groupingBy(TaskMainDetailPO::groupBys));
 
