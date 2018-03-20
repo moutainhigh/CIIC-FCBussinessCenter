@@ -38,6 +38,8 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
     @Autowired(required = false)
     private TaskSubProofMapper taskSubProofMapper;
 
+    @Autowired
+    public TaskNoService taskNoService;
 
     /**
      * 查询完税申请明细
@@ -113,7 +115,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         //设置申报账户
                         taskSubProofPO.setDeclareAccount(taskSubProofDetailBO.getDeclareAccount());
                         //设置子任务编号
-                        taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
+                        taskSubProofPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                         //设置任务为草稿状态
                         taskSubProofPO.setStatus("00");
                         //设置任务类型为手动

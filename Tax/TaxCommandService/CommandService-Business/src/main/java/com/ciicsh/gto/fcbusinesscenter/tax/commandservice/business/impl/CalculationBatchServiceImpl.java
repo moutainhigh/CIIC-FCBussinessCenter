@@ -81,6 +81,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
     @Autowired
     private TaskMainMapper taskMainMapper;
 
+    @Autowired
+    public TaskNoService taskNoService;
+
     @Override
     public ResponseForCalBatch queryCalculationBatchs(RequestForCalBatch requestForCalBatch) {
 
@@ -248,7 +251,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     } else {
                         TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
                         taskSubDeclarePO.setTaskMainId(p.getId());
-                        taskSubDeclarePO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_DECLARE));
+                        taskSubDeclarePO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_DECLARE));
                         taskSubDeclarePO.setDeclareAccount(cbd.getDeclareAccount());//申报账户
                         taskSubDeclarePO.setPeriod(cbd.getPeriod());//个税期间
                         taskSubDeclarePO.setManagerNo(p.getManagerNo());//管理方编号
@@ -281,7 +284,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     } else {
                         TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
                         taskSubMoneyPO.setTaskMainId(p.getId());
-                        taskSubMoneyPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_TRANSFER));
+                        taskSubMoneyPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_TRANSFER));
                         taskSubMoneyPO.setPaymentAccount(cbd.getPayAccount());//缴纳账户
                         taskSubMoneyPO.setPeriod(cbd.getPeriod());//个税期间
                         taskSubMoneyPO.setManagerNo(p.getManagerNo());//管理方编号
@@ -312,7 +315,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     } else {
                         TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
                         taskSubPaymentPO.setTaskMainId(p.getId());
-                        taskSubPaymentPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PAYMENT));
+                        taskSubPaymentPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PAYMENT));
                         taskSubPaymentPO.setPaymentAccount(cbd.getPayAccount());//缴纳账户
                         taskSubPaymentPO.setPeriod(cbd.getPeriod());//个税期间
                         taskSubPaymentPO.setManagerNo(p.getManagerNo());//管理方编号
@@ -347,7 +350,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
                         taskSubSupplierPO.setTaskMainId(p.getId());
                         taskSubSupplierPO.setSupportName(cbd.getSupportName());//供应商名称
-                        taskSubSupplierPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_SUPPLIER));
+                        taskSubSupplierPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_SUPPLIER));
                         taskSubSupplierPO.setDeclareAccount(cbd.getDeclareAccount());//申报账户
                         taskSubSupplierPO.setPeriod(cbd.getPeriod());//个税期间
                         taskSubSupplierPO.setManagerNo(p.getManagerNo());//管理方编号
@@ -490,7 +493,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
         //新增主任务
         TaskMainPO p = new TaskMainPO();
-        p.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN));
+        p.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_MAIN));
         p.setManagerName(mapParams.get("ManagerName"));
         p.setManagerNo(mapParams.get("ManagerNo"));
         p.setStatus("00");//草稿

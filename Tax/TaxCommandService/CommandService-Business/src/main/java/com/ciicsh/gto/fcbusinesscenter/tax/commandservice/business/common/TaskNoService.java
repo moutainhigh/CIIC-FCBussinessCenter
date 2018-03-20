@@ -1,17 +1,21 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common;
 
-import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TasknoMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TasknoPO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 获取任务编号
  *
  */
+@Service
 public class TaskNoService {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskNoService.class);
@@ -25,8 +29,10 @@ public class TaskNoService {
     public static final String TASK_MAIN_PROOF = "TMP";//完税凭证主任务
     public static final String TASK_SUB_PROOF = "TSP";//完税凭证子任务
 
-    public static final int RANDOM_LENGTH = 2;//随机数长度
-    public static final int RANDOM_RANGE = 100;//随机数长度
+    public static final int TASK_LENGTH = 6;//任务编号数字位长度
+
+    @Autowired
+    public TasknoMapper tasknoMapper;
 
     /**
      * 一次获取多个任务编号
@@ -34,46 +40,43 @@ public class TaskNoService {
      * @param num 任务数量
      * @return
      */
-    public static String[] getTaskNos(String taskType,int num){
+    @Transactional(rollbackFor = Exception.class)
+    public synchronized String[] getTaskNos(String taskType,int num){
 
         //任务编号
-        String[] taskNo = new String[num];
+        String[] taskNos = new String[num];
 
-        //已有的随机数(随机数不可重复)
-        Set<String> s = new HashSet<>();
+        //当前最大编号
+        int taskNoDefault = 0;
 
-        for(int i=0 ; i<num ; i++){
+        EntityWrapper wrapper = new EntityWrapper();
+        TasknoPO tasknoPO = new TasknoPO();
+        tasknoPO.setTaskDate(LocalDate.now());
+        tasknoPO.setTaskType(taskType);
+        tasknoPO = tasknoMapper.selectOne(tasknoPO);
 
-            int r;
-            String rs = "";
-
-            //随机数
-            do{
-                r = (int) (Math.random() * RANDOM_RANGE);
-                rs = String.valueOf(r);
-            }while(s.contains(rs));
-
-            //长度不足补齐
-            while(rs.length() < RANDOM_LENGTH){
-                rs = rs + "0";
-            }
-
-            //记录已出现的随机数
-            s.add(rs);
-
-            //时间戳
-            String ts = DateTimeKit.format(new Date(),"yyyyMMddHHmmssSSS");
-
-            //任务编号：任务类型+时间戳+随机数
-            taskNo[i] = taskType + ts + rs;
-
-            if(logger.isDebugEnabled()){
-
-                logger.debug("任务类型："+taskType+" 编号："+taskNo[i]);
-            }
+        //当天没有任务
+        if(tasknoPO == null){
+            tasknoPO = new TasknoPO();
+            tasknoPO.setTaskType(taskType);
+            tasknoPO.setTaskDate(LocalDate.now());
+            tasknoPO.setTaskNum(null);
+            this.tasknoMapper.insert(tasknoPO);
+        }else{
+            taskNoDefault = tasknoPO.getTaskNum();
         }
 
-        return taskNo;
+        //编号
+        for(int i=0 ; i<num ; i++){
+            taskNoDefault++;
+            taskNos[i] = this.numberGenerater(taskType,taskNoDefault);
+        }
+
+        //更新最大编号
+        tasknoPO.setTaskNum(taskNoDefault);
+        this.tasknoMapper.updateById(tasknoPO);
+
+        return taskNos;
 
     }
 
@@ -82,7 +85,7 @@ public class TaskNoService {
      * @param taskType 任务类型
      * @return
      */
-    public static String getTaskNo(String taskType){
+    public String getTaskNo(String taskType){
 
         String[] taskNo = getTaskNos(taskType,1);
 
@@ -90,8 +93,25 @@ public class TaskNoService {
 
     }
 
-    /*public static void main(String[] args){
+    //编号组合
+    private String numberGenerater(String taskType ,int num){
 
-        getTaskNos(TASK_SUB_DECLARE,10);
-    }*/
+        //不足补零
+        String no = String.format("%0" + TaskNoService.TASK_LENGTH + "d", num);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(taskType)
+                .append(DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDate.now()))
+                .append(no);
+
+        return sb.toString();
+    }
+
+    public static void main(String[] args){
+
+//        getTaskNos(TASK_SUB_DECLARE,10);
+//        String t = String.format("%05d", 10);
+//        System.out.print("%%%%%%%%%t:");
+//        System.out.print(t);
+    }
 }

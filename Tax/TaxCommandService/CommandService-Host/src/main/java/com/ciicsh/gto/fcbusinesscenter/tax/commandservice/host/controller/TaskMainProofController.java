@@ -31,6 +31,9 @@ public class TaskMainProofController extends BaseController implements TaskMainP
     @Autowired
     public TaskMainProofService taskMainProofService;
 
+    @Autowired
+    public TaskNoService taskNoService;
+
     /**
      * 条件查询完税凭证主任务
      *
@@ -79,7 +82,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
                 taskMainProofPO = new TaskMainProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskMainProofPO);
                 //设置任务编号
-                taskMainProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN_PROOF));
+                taskMainProofPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_MAIN_PROOF));
                 //设置任务状态为草稿状态
                 taskMainProofPO.setStatus("00");
             }
@@ -87,7 +90,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
                 taskSubProofPO = new TaskSubProofPO();
                 BeanUtils.copyProperties(taskProofDTO, taskSubProofPO);
                 //设置任务编号
-                taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
+                taskSubProofPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                 //设置任务状态为草稿状态
                 taskSubProofPO.setStatus("00");
                 //设置任务类型
