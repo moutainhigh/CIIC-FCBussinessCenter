@@ -47,7 +47,7 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubDeclareDetailPO());
         Long[] ids = longList.toArray(new Long[longList.size()]);
-        wrapper.in("id", ids);
+        wrapper.in("task_sub_declare_id", ids);
         wrapper.andNew("is_active = {0}", true);
         taskSubProofDetailPOList = baseMapper.selectList(wrapper);
         return taskSubProofDetailPOList;
