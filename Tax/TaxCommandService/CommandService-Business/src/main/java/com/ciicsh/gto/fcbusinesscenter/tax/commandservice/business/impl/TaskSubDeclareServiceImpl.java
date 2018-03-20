@@ -54,6 +54,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      */
     private static final String CURRENT_AFTER_PAN = "currentAfterPan";
 
+    @Autowired
+    public TaskNoService taskNoService;
+
     @Override
     public ResponseForTaskSubDeclare queryTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
 
@@ -188,7 +191,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             //合并后的申报信息
             TaskSubDeclarePO taskSubDeclare = new TaskSubDeclarePO();
             //设置任务编号
-            taskSubDeclare.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_DECLARE));
+            taskSubDeclare.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_DECLARE));
             //设置申报账户
             taskSubDeclare.setDeclareAccount(taskSubDeclarePOList.get(0).getDeclareAccount());
             //设置个税期间

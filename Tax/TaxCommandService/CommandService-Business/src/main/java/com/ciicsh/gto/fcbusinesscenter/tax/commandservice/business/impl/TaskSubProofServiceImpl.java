@@ -48,6 +48,9 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     @Autowired
     private TaskSubProofDetailServiceImpl taskSubProofDetailService;
 
+    @Autowired
+    public TaskNoService taskNoService;
+
     /**
      * 根据完税主任务ID查询其下完税子任务
      *
@@ -133,7 +136,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //复制新的主任务
         taskMainProofPO.setId(null);
         //设置任务编号
-        taskMainProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_MAIN_PROOF));
+        taskMainProofPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_MAIN_PROOF));
         //设置任务状态为草稿
         taskMainProofPO.setStatus("00");
         taskMainProofMapper.insert(taskMainProofPO);
@@ -143,7 +146,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //设置主任务ID
         taskSubProofPO.setTaskMainProofId(taskMainProofPO.getId());
         //设置任务编号
-        taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
+        taskSubProofPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
         //设置任务状态为草稿
         taskSubProofPO.setStatus("00");
         baseMapper.insert(taskSubProofPO);
@@ -262,7 +265,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             }
             TaskSubProofPO newTaskSubProof = new TaskSubProofPO();
             //设置任务编号
-            newTaskSubProof.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
+            newTaskSubProof.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
             //设置申报账户
             newTaskSubProof.setDeclareAccount(taskSubProofPOList.get(0).getDeclareAccount());
             //设置个税期间
@@ -545,7 +548,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                         //新建完税凭证子任务
                         if (taskSubProofPO == null) {
                             taskSubProofPO = new TaskSubProofPO();
-                            taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
+                            taskSubProofPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                             taskSubProofPO.setDeclareAccount(taskSubDeclarePO.getDeclareAccount());
                             taskSubProofPO.setPeriod(taskSubDeclarePO.getPeriod());
                             taskSubProofPO.setStatus("01");

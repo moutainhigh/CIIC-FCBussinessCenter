@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.enums.IdType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -85,7 +84,7 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
      * 修改时间
      */
     @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
-	private Date modifiedTime;
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
@@ -226,11 +225,11 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

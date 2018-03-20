@@ -16,6 +16,7 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(TaxMetaObjectHandler.class);
 
+    @Override
     public void insertFill(MetaObject metaObject) {
 
         LocalDateTime llt = LocalDateTime.now();
@@ -28,7 +29,7 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
             //修改人
             setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
         } catch (Exception e) {
-            logger.error("TaxMetaObjectHandler.insertFill "+e.getMessage());
+            logger.error("",e);
             setFieldValByName("createdBy", "", metaObject);
             setFieldValByName("modifiedBy", "", metaObject);
         }finally {
@@ -54,7 +55,7 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
             //修改人
             setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
         } catch (Exception e) {
-            logger.error("TaxMetaObjectHandler.updateFill " + e.getMessage());
+            logger.error("",e);
             setFieldValByName("modifiedBy", "", metaObject);
         }finally {
             //修改时间
