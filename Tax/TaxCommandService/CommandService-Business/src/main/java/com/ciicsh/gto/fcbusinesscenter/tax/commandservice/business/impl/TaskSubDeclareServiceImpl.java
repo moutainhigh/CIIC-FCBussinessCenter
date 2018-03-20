@@ -426,4 +426,23 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         }
     }
 
+    /**
+     * 根据ID查询合并之前的申报子任务
+     *
+     * @param mergeId
+     * @return
+     */
+    @Override
+    public List<TaskSubDeclarePO> queryTaskSubDeclareByMergeId(long mergeId) {
+        //构造查询条件
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubDeclarePO());
+        wrapper.andNew("task_sub_declare_id = {0}", mergeId);
+        //修改时间排序
+        wrapper.orderBy("modified_time", false);
+        List<TaskSubDeclarePO> taskSubDeclarePOList = baseMapper.selectList(wrapper);
+        return taskSubDeclarePOList;
+    }
+
+
 }

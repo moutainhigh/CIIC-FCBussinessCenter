@@ -47,5 +47,12 @@ public interface TaskSubDeclareService {
      */
     void completeTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare);
 
+    /**
+     * 根据ID查询合并之前的申报子任务
+     * @param mergeId
+     * @return
+     */
+    List<TaskSubDeclarePO> queryTaskSubDeclareByMergeId(long mergeId);
+
 }
 
