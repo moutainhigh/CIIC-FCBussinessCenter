@@ -27,7 +27,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers:  ${kafka.brokers}
+          brokers: ${kafka.brokers}
           zk-nodes: ${kafka.zk-nodes}
           autoAddPartitions: true
       bindings:
@@ -50,7 +50,7 @@ spring:
              partitionCount: 1
 
         pr_compute-status-input-channel:
-          destination: fc_payroll_compute-status1 # topic name
+          destination: fc_payroll_compute-status # topic name
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:
@@ -72,3 +72,8 @@ spring:
     active: dev
 server:
   port: 7035
+
+endpoints:
+  shutdown:
+    enabled: true #服务启动后，可以通过linux的curl命令: curl -X POST host:port/shutdown发送POST请求的方式优雅的停止服务。
+

@@ -1,10 +1,13 @@
 package com.ciicsh.caldispatchjob;
 
+import com.ciicsh.caldispatchjob.compute.util.JavaScriptEngine;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+
+import javax.script.ScriptEngine;
 
 /**
  * Created by shenjian on 2017/11/14.
@@ -20,6 +23,13 @@ import org.springframework.context.annotation.ImportResource;
 //@Import(com.ciicsh.gt1.config.MongoConfig.class)
 public class App {
     public static void main(String[] args){
+        initScriptEngine(); //初始化javascript 引擎
         SpringApplication.run(App.class, args);
+    }
+
+    private static void initScriptEngine(){
+        ScriptEngine engine = JavaScriptEngine.getEngine();
+        JavaScriptEngine.setEngine(engine);
+        System.out.println("initialize script engine successfully...");
     }
 }

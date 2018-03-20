@@ -53,8 +53,9 @@ public class TestController {
 
     @PostMapping("/doBatch")
     public void updateEmpAgreement(){
-        for (int i=0; i< 1; i++){
-            List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is("GL000002-201801-0000000133"));
+        for (int i=0; i< 10; i++){
+            List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is("GL000007-201803-0000000167"));
+            int j = 0;
             list.forEach(p-> {
                 p.put("_id", new ObjectId());
             });
@@ -65,7 +66,7 @@ public class TestController {
 
     @PostMapping("/delete")
     public int delete(){
-        int rowAffected = normalBatchMongoOpt.delete(Criteria.where("_id").gt(new ObjectId("5a93d1c0f3de041c4e6fb3e0")));
+        int rowAffected = normalBatchMongoOpt.delete(Criteria.where("_id").gt(new ObjectId("5aa63094270c214517e8e8e9")));
         return rowAffected;
     }
 

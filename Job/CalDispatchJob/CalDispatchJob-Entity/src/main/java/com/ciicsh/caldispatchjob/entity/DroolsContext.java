@@ -32,6 +32,10 @@ public class DroolsContext {
         return this.funcEntityList;
     }
 
+    public boolean existFunction(String funcName){
+        return this.funcEntityList.stream().anyMatch(p->p.getFuncName().equals(funcName));
+    }
+
     /**
      * 获取薪资项值
      * @param payItemName

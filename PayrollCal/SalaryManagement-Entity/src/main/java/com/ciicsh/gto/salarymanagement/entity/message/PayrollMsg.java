@@ -38,4 +38,9 @@ public class PayrollMsg {
     public void setOperateType(int operateType) {
         this.operateType = operateType;
     }
+
+    public String toString(){
+        return String.format("批次号：%s --批次类型：%d --操作类型：%d",batchCode,batchType,operateType);
+    }
+
 }

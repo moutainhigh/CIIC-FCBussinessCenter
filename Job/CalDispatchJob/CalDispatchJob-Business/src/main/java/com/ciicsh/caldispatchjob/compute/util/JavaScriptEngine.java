@@ -10,8 +10,12 @@ import java.math.BigDecimal;
  */
 public class JavaScriptEngine {
 
-    private static ScriptEngineManager factory = new ScriptEngineManager();
-    private static ScriptEngine engine = factory.getEngineByName("nashorn");
+    //private static ScriptEngineManager factory = new ScriptEngineManager();
+    private static ScriptEngine engine;
+
+    public static void setEngine(ScriptEngine scriptEngine){
+        engine = scriptEngine;
+    }
 
     public static BigDecimal compute(String formula) throws ScriptException{
 
@@ -19,5 +23,11 @@ public class JavaScriptEngine {
         BigDecimal result = new BigDecimal(o.toString());
         return result;
 
+    }
+
+    public static ScriptEngine getEngine(){
+        ScriptEngineManager factory = new ScriptEngineManager();
+        ScriptEngine engine = factory.getEngineByName("nashorn");
+        return engine;
     }
 }

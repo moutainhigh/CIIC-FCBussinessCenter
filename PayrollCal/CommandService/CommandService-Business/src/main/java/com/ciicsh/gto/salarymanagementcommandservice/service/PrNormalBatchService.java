@@ -41,7 +41,7 @@ public interface PrNormalBatchService {
      * @param file           EXCEL 文件
      * @return INT           上传成功行数
      */
-    int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int batchType,int importType, MultipartFile file);
+    int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, String itemNames, int batchType,int importType, MultipartFile file);
 
     /**
      * 审批意见

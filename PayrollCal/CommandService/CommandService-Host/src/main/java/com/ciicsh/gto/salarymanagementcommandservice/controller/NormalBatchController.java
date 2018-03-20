@@ -118,8 +118,6 @@ public class NormalBatchController {
         prNormalBatchPO.setStartDate(dates[0]);
         prNormalBatchPO.setEndDate(dates[1]);
 
-        System.out.println("normal batch code : "+ code);
-
         int result = 0;
         try {
             result = batchService.insert(prNormalBatchPO);
@@ -130,6 +128,7 @@ public class NormalBatchController {
                 msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
                 msg.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.Send(msg);
+                System.out.println("新增薪资帐套：%s" + msg.toString());
 
                 return JsonResult.success(result);
             }
@@ -191,9 +190,9 @@ public class NormalBatchController {
     }
 
     @PostMapping("/uploadExcel")
-    public JsonResult importExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file){
+    public JsonResult importExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file){
 
-        int sucessRows = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,batchType,importType,file);
+        int sucessRows = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
         if(sucessRows == -1){
             return JsonResult.faultMessage("雇员组中已有雇员，不能用于覆盖导入");
         }
@@ -293,7 +292,7 @@ public class NormalBatchController {
         Query query = new Query(criteria);
         query.fields().include("batch_code");
 
-        long totalCount = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
+        long totalCount = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
         if(totalCount == 0){
             return JsonResult.success(0);
         }
@@ -311,7 +310,7 @@ public class NormalBatchController {
         query.skip((pageNum-1) * pageSize);
         query.limit(pageSize);
 
-        List<DBObject> list = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
+        List<DBObject> list = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH);
 
         //List<DBObject> list = normalBatchMongoOpt.list(criteria).stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 

@@ -59,8 +59,9 @@ public class PayrollReceiver {
     @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
     public void receive(ComputeMsg computeMsg){
         logger.info("received payroll compute from message: " + computeMsg);
-        processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
-        return;
+        if(computeMsg.getBatchType() > 0) {
+            processPayrollCompute(computeMsg.getBatchCode(), computeMsg.getBatchType());
+        }
     }
 
     /*
