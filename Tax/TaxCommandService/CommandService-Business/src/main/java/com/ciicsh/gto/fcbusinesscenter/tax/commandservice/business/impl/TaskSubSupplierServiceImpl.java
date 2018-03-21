@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForTaskSubSupplier;
@@ -11,10 +12,15 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForTa
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +29,9 @@ import java.util.List;
  */
 @Service
 public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMapper, TaskSubSupplierPO> implements TaskSubSupplierService, Serializable {
+
+    @Autowired
+    public TaskNoService taskNoService;
 
     /**
      * 当期
@@ -103,5 +112,177 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
     public TaskSubSupplierPO querySupplierDetailsById(long subSupplierId) {
         TaskSubSupplierPO taskSubSupplierPO = baseMapper.selectById(subSupplierId);
         return taskSubSupplierPO;
+    }
+
+    /**
+     * 合并全国委托供应商任务
+     *
+     * @param requestForTaskSubSupplier
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void mergeTaskSubSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier) {
+        List<TaskSubSupplierPO> taskSubSupplierPOList = new ArrayList<>();
+        StringBuffer sbCombinedParams = new StringBuffer();
+        //未合并的id集合
+        List<Long> unMergeIds = new ArrayList<>();
+        //如果供应商子任务数组不为空则查询数组内ID的任务信息
+        if (requestForTaskSubSupplier.getSubSupplierIds() != null && !"".equals(requestForTaskSubSupplier.getSubSupplierIds())) {
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubSupplierPO());
+            wrapper.isNull("task_sub_supplier_id");
+            wrapper.andNew("is_active = {0} ", true);
+            wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
+            wrapper.orderBy("modified_time", false);
+            wrapper.orderBy("created_time", false);
+            taskSubSupplierPOList = baseMapper.selectList(wrapper);
+        }
+        if (taskSubSupplierPOList.size() > 0) {
+            //个税总金额
+            BigDecimal taxAmount = new BigDecimal(0);
+            //滞纳金
+            BigDecimal overdue = new BigDecimal(0);
+            //罚金
+            BigDecimal fine = new BigDecimal(0);
+            //总人数
+            int headcount = 0;
+            //中方人数
+            int chineseNum = 0;
+            //外方人数
+            int foreignerNum = 0;
+            //计算总人数，中方人数，外方人数
+            for (TaskSubSupplierPO taskSubSupplierPO : taskSubSupplierPOList) {
+                //如果总金额为null,默认为0
+                if (taskSubSupplierPO.getTaxAmount() != null && !"".equals(taskSubSupplierPO.getTaxAmount())) {
+                    taxAmount = taxAmount.add(taskSubSupplierPO.getTaxAmount());
+                }
+                //如果滞纳金为null,默认为0
+                if (taskSubSupplierPO.getOverdue() != null && !"".equals(taskSubSupplierPO.getOverdue())) {
+                    overdue = overdue.add(taskSubSupplierPO.getOverdue());
+                }
+                //如果罚金为null,默认为0
+                if (taskSubSupplierPO.getFine() != null && !"".equals(taskSubSupplierPO.getFine())) {
+                    fine = fine.add(taskSubSupplierPO.getFine());
+                }
+                //如果总人数为null,默认为0 )
+                if (taskSubSupplierPO.getHeadcount() != null && !"".equals(taskSubSupplierPO.getHeadcount())) {
+                    headcount += taskSubSupplierPO.getHeadcount();
+                } else {
+                    headcount += 0;
+                }
+                //如果中方人数为null，默认为0
+                if (taskSubSupplierPO.getChineseNum() != null && !"".equals(taskSubSupplierPO.getChineseNum())) {
+                    chineseNum += taskSubSupplierPO.getChineseNum();
+                } else {
+                    chineseNum += 0;
+                }
+                //如果外方人数为null,默认为0
+                if (taskSubSupplierPO.getForeignerNum() != null && !"".equals(taskSubSupplierPO.getForeignerNum())) {
+                    foreignerNum += taskSubSupplierPO.getForeignerNum();
+                } else {
+                    foreignerNum += 0;
+                }
+                //判断是不是合并后的任务
+                if (taskSubSupplierPO.getCombined()) {
+                    sbCombinedParams.append(taskSubSupplierPO.getId() + ",");
+//                    //先将合并后的供应商子任务拆分
+//                    RequestForTaskSubSupplier requestForTaskSubSupplier1 = new RequestForTaskSubSupplier();
+//                    //设置拆分任务ID
+//                    requestForTaskSubSupplier1.setId(taskSubDeclarePO.getId());
+//                    //设置修改人
+//                    requestForTaskSubSupplier1.setModifiedBy(requestForTaskSubSupplier.getModifiedBy());
+//                    List<Long> ids = this.splitSubSupplier(requestForTaskSubSupplier1, "merge");
+//                    unMergeIds.addAll(ids);
+                } else {
+                    unMergeIds.add(taskSubSupplierPO.getId());
+                }
+            }
+            TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
+            //设置任务编号
+            taskSubSupplierPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_SUPPLIER));
+            //设置申报账户
+            taskSubSupplierPO.setDeclareAccount(taskSubSupplierPOList.get(0).getDeclareAccount());
+            //设置个税期间
+            taskSubSupplierPO.setPeriod(taskSubSupplierPOList.get(0).getPeriod());
+            //设置总金额
+            taskSubSupplierPO.setTaxAmount(taxAmount);
+            //设置滞纳金
+            taskSubSupplierPO.setOverdue(overdue);
+            //设置罚金
+            taskSubSupplierPO.setFine(fine);
+            //设置总人数
+            taskSubSupplierPO.setHeadcount(headcount);
+            //设置中方人数
+            taskSubSupplierPO.setChineseNum(chineseNum);
+            //设置外方人数
+            taskSubSupplierPO.setForeignerNum(foreignerNum);
+            //设置任务状态
+            taskSubSupplierPO.setStatus(taskSubSupplierPOList.get(0).getStatus());
+            //设置是否为合并任务
+            taskSubSupplierPO.setCombined(true);
+            //新增供应商子任务
+            baseMapper.insert(taskSubSupplierPO);
+
+            //修改供应商子任务
+            TaskSubSupplierPO taskSubSupplierPO1 = new TaskSubSupplierPO();
+            //申报子任务ID
+            taskSubSupplierPO1.setTaskSubSupplierId(taskSubSupplierPO.getId());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubSupplierPO());
+            wrapper.andNew("status = {0}", "02");
+            wrapper.andNew("is_active = {0}", true);
+            //将list转为数组
+            Long[] ids = unMergeIds.toArray(new Long[unMergeIds.size()]);
+            wrapper.in("id", ids);
+            baseMapper.update(taskSubSupplierPO1, wrapper);
+
+        }
+    }
+
+    /**
+     * 拆分供应商子任务
+     *
+     * @param requestForTaskSubSupplier
+     * @param type
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public List<Long> splitSubSupplier(RequestForTaskSubSupplier requestForTaskSubSupplier, String type) {
+        List<Long> list = new ArrayList<>();
+        if (requestForTaskSubSupplier.getId() != null && !"".equals(requestForTaskSubSupplier.getId())) {
+            if (!"only".equals(type)) {
+                List<Long> mergedSubIds = baseMapper.querySubSupplierIdsByMergeIds(requestForTaskSubSupplier.getId().toString());
+                list.addAll(mergedSubIds);
+            }
+            String modifiedBy = requestForTaskSubSupplier.getModifiedBy();
+            //修改申报合并任务ID为失效
+            baseMapper.updateSupplierByCombinedId(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
+            //修改合并前申报子任务为有效状态
+            baseMapper.updateSupplierToActiveById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
+//            //修改合并前申报明细为有效状态
+//            baseMapper.updateDeclareDetailToActiveById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
+//            //修改合并申报明细为失效状态
+//            baseMapper.updateDeclareDetailById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
+        }
+        return list;
+    }
+
+    /**
+     * 根据ID查询合并之前的申报子任务
+     *
+     * @param mergeId
+     * @return
+     */
+    @Override
+    public List<TaskSubSupplierPO> queryTaskSubSupplierByMergeId(long mergeId) {
+        //构造查询条件
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubSupplierPO());
+        wrapper.andNew("task_sub_supplier_id = {0}", mergeId);
+        //修改时间排序
+        wrapper.orderBy("modified_time", false);
+        List<TaskSubSupplierPO> taskSubSupplierPOList = baseMapper.selectList(wrapper);
+        return taskSubSupplierPOList;
     }
 }

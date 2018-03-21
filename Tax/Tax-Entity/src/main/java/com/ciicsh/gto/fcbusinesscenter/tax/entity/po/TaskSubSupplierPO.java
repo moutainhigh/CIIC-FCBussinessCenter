@@ -131,6 +131,12 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
      */
 	private String managerName;
 
+	/**
+	 * 是否为合并任务
+	 */
+	@TableField("is_combined")
+	private Boolean isCombined;
+
 	public String getStatusName() {
 		return statusName;
 	}
@@ -328,6 +334,14 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 		this.managerName = managerName;
 	}
 
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -335,28 +349,32 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 
 	@Override
 	public String toString() {
-		return "TaskSubSupplier{" +
-			"id=" + id +
-			", taskMainId=" + taskMainId +
-			", taskSubSupplierId=" + taskSubSupplierId +
-			", taskNo=" + taskNo +
-			", declareAccount=" + declareAccount +
-			", paymentAccount=" + paymentAccount +
-			", period=" + period +
-			", overdue=" + overdue +
-			", fine=" + fine +
-			", taxAmount=" + taxAmount +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			", supportNo=" + supportNo +
-			", supportName=" + supportName +
-			"}";
+		return "TaskSubSupplierPO{" +
+				"id=" + id +
+				", taskMainId=" + taskMainId +
+				", taskSubSupplierId=" + taskSubSupplierId +
+				", taskNo='" + taskNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", paymentAccount='" + paymentAccount + '\'' +
+				", period=" + period +
+				", overdue=" + overdue +
+				", fine=" + fine +
+				", taxAmount=" + taxAmount +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", statusName='" + statusName + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", supportNo='" + supportNo + '\'' +
+				", supportName='" + supportName + '\'' +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				", isCombined=" + isCombined +
+				'}';
 	}
 }

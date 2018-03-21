@@ -199,6 +199,17 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 	 */
 	private Long taskMainDetailId;
 
+	/**
+	 * 是否为合并明细
+	 */
+	@TableField("is_combined")
+	private Boolean isCombined;
+	/**
+	 * 合并明细是否已确认
+	 */
+	@TableField("is_combine_confirmed")
+	private Boolean isCombineConfirmed;
+
 	public Long getTaskMainDetailId() {
 		return taskMainDetailId;
 	}
@@ -527,6 +538,22 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 		this.incomeSubjectName = incomeSubjectName;
 	}
 
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
+	}
+
+	public Boolean getCombineConfirmed() {
+		return isCombineConfirmed;
+	}
+
+	public void setCombineConfirmed(Boolean combineConfirmed) {
+		isCombineConfirmed = combineConfirmed;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -575,6 +602,9 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 				", modifiedTime=" + modifiedTime +
 				", createdBy='" + createdBy + '\'' +
 				", modifiedBy='" + modifiedBy + '\'' +
+				", taskMainDetailId=" + taskMainDetailId +
+				", isCombined=" + isCombined +
+				", isCombineConfirmed=" + isCombineConfirmed +
 				'}';
 	}
 }

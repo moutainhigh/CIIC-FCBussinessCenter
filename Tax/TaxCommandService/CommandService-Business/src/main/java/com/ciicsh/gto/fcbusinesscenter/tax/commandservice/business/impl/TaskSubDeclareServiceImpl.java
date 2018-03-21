@@ -116,7 +116,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         StringBuffer sbCombinedParams = new StringBuffer();
         //未合并的id集合
         List<Long> unMergeIds = new ArrayList<>();
-        //如果完税凭证子任务数组不为空则查询数组内ID的任务信息
+        //如果申报子任务数组不为空则查询数组内ID的任务信息
         if (requestForTaskSubDeclare.getSubDeclareIds() != null && !"".equals(requestForTaskSubDeclare.getSubDeclareIds())) {
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubDeclarePO());
@@ -219,8 +219,6 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
             //申报子任务ID
             taskSubDeclarePO.setTaskSubDeclareId(taskSubDeclare.getId());
-            //修改时间
-            taskSubDeclarePO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubDeclarePO());
             wrapper.andNew("status = {0}", "02");

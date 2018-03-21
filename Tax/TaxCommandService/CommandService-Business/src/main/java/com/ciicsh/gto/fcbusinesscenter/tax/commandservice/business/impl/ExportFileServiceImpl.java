@@ -920,7 +920,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             if (null == cellAA) {
                 cellAA = row.createCell(26);
             }
-            cellAA.setCellValue("test");
+//            cellAA.setCellValue("test");
 
             //合计金额计算
             incomeTotal = incomeTotal.add(taskSubDeclareDetailPO.getIncomeTotal() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getIncomeTotal());
