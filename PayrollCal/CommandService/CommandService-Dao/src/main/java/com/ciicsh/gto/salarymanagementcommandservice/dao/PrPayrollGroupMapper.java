@@ -55,5 +55,5 @@ public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
      * @param name
      * @return
      */
-    List<HashMap<String, String>> selectGroupNameListByName(@Param("name") String name);
+    List<HashMap<String, String>> selectGroupNameListByName(@Param("name") String name, @Param("managementId") String managementId);
 }

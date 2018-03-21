@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by jiangtianning on 2017/11/6.
@@ -43,6 +45,8 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Autowired
     private CodeGenerator codeGenerator;
+
+    private final static Pattern PAY_ITEM_REGEX = Pattern.compile("\\[([^\\[\\]]+)\\]");
 
     @Override
     public List<PrPayrollItemPO> getListByGroupCode(String groupCode) {
@@ -97,6 +101,7 @@ public class PrItemServiceImpl implements PrItemService {
         param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
         param.setModifiedTime(new Date());
         param.setCreatedTime(new Date());
+        this.replaceItemNameWithCode(param);
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
     }
@@ -190,6 +195,7 @@ public class PrItemServiceImpl implements PrItemService {
         // 将所在薪资组/模板的审核状态更新为草稿
         this.updateRelatedGroupStatus(param);
         param.setModifiedTime(new Date());
+        this.replaceItemNameWithCode(param);
         return prPayrollItemMapper.updateItemByCode(param);
     }
 
@@ -257,5 +263,40 @@ public class PrItemServiceImpl implements PrItemService {
             groupPO.setModifiedBy(param.getModifiedBy());
             prPayrollGroupMapper.updateItemByCode(groupPO);
         }
+    }
+
+    private void replaceItemNameWithCode(PrPayrollItemPO param) {
+
+        List<PrPayrollItemPO> itemPOList;
+        if (!StringUtils.isEmpty(param.getPayrollGroupCode())) {
+            itemPOList = this.getListByGroupCode(param.getPayrollGroupCode());
+        } else {
+            itemPOList = this.getListByGroupTemplateCode(param.getPayrollGroupTemplateCode());
+        }
+        Map<String, String> nameCodeMap = new HashMap<>();
+        itemPOList.forEach(i -> nameCodeMap.put(i.getItemName(), i.getItemCode()));
+
+        if (!StringUtils.isEmpty(param.getFormulaContent())) {
+            param.setFormulaContent(this.replacePayItem(param.getFormulaContent(), PAY_ITEM_REGEX, nameCodeMap));
+        }
+
+        if (!StringUtils.isEmpty(param.getItemCondition())) {
+            param.setItemCondition(this.replacePayItem(param.getItemCondition(), PAY_ITEM_REGEX, nameCodeMap));
+        }
+
+    }
+
+    private String replacePayItem(String content, Pattern pattern, Map<String, String> nameCodeMap){
+
+        String result = content;
+        Matcher m = pattern.matcher(content);
+        while(m.find()) {
+            String payItemName = m.group(1);
+            if (StringUtils.isEmpty(nameCodeMap.get(payItemName))) {
+                throw new BusinessException("计算公式中有不存在于该薪资组的薪资项");
+            }
+            result = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
+        }
+        return result;
     }
 }

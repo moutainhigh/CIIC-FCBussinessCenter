@@ -66,15 +66,17 @@ public class GroupController {
      */
     @GetMapping(value = "/copyPrGroup")
     public JsonResult copyPrGroup(@RequestParam String srcCode,
-                                           @RequestParam String newName){
+                                  @RequestParam String newName,
+                                  @RequestParam String managementId){
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
         newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
         newEntity.setGroupName(newName);
+        newEntity.setManagementId(managementId);
         newEntity.setVersion("1.0");
         boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
-        return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_COPY_SUCCESS)
+        return result ? JsonResult.success(newEntity.getGroupCode(), MessageConst.PAYROLL_GROUP_COPY_SUCCESS)
                 : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_COPY_FAIL);
     }
 
@@ -187,8 +189,9 @@ public class GroupController {
     }
 
     @GetMapping("/prGroupName")
-    public  JsonResult getPayrollGroupNameList(@RequestParam String query){
-        List<HashMap<String, String>> nameList = prGroupService.getPrGroupNameList(query);
+    public  JsonResult getPayrollGroupNameList(@RequestParam String query,
+                                               @RequestParam(required = false, defaultValue = "") String managementId){
+        List<HashMap<String, String>> nameList = prGroupService.getPrGroupNameList(query, managementId);
         return JsonResult.success(nameList);
     }
 
