@@ -16,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -69,11 +68,11 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             }
         }
         //任务状态
-        if(StrKit.notBlank(requestForSubMoney.getStatusType())){
-            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE,requestForSubMoney.getStatusType().toUpperCase()));
+        if (StrKit.notBlank(requestForSubMoney.getStatusType())) {
+            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubMoney.getStatusType().toUpperCase()));
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
 
         //判断是否分页
         if (null != requestForSubMoney.getPageSize() && null != requestForSubMoney.getCurrentNum()) {
@@ -109,6 +108,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
     public void completeTaskSubMoney(RequestForSubMoney requestForSubMoney) {
         updateTaskSubMoneyStatus(requestForSubMoney);
     }
+
     /**
      * 批量退回划款子任务
      *
@@ -121,6 +121,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     /**
      * 修改划款任务状态
+     *
      * @param requestForSubMoney
      */
     private void updateTaskSubMoneyStatus(RequestForSubMoney requestForSubMoney) {
@@ -128,18 +129,15 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
             //任务状态
             taskSubMoneyPO.setStatus(requestForSubMoney.getStatus());
-            //修改人
-            taskSubMoneyPO.setModifiedBy(requestForSubMoney.getModifiedBy());
-            //修改时间
-            taskSubMoneyPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubMoneyPO());
-            wrapper.andNew("is_active = {0}",true);
-            wrapper.in("id",requestForSubMoney.getSubMoneyIds());
+            wrapper.andNew("is_active = {0}", true);
+            wrapper.in("id", requestForSubMoney.getSubMoneyIds());
             //修改划款子任务状态
-            baseMapper.update(taskSubMoneyPO,wrapper);
+            baseMapper.update(taskSubMoneyPO, wrapper);
         }
     }
+
     /**
      * 根据划款子任务ID查询划款子任务信息
      *
@@ -155,12 +153,13 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     /**
      * 根据划款任务BO对象修改划款任务信息
+     *
      * @param taskSubMoneyBO
      */
     @Override
     public void updateTaskSubMoneyById(TaskSubMoneyBO taskSubMoneyBO) {
         TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
-        BeanUtils.copyProperties(taskSubMoneyBO,taskSubMoneyPO);
+        BeanUtils.copyProperties(taskSubMoneyBO, taskSubMoneyPO);
         baseMapper.updateById(taskSubMoneyPO);
     }
 }

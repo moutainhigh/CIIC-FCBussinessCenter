@@ -39,6 +39,11 @@ public class RequestForSubSupplierDetail extends PageInfo {
      */
     private String idNo;
 
+    /**
+     * 供应商明细页签(1:合并列表，0:雇员列表)
+     */
+    private String tabType;
+
     public Long getId() {
         return id;
     }
@@ -87,6 +92,14 @@ public class RequestForSubSupplierDetail extends PageInfo {
         this.idNo = idNo;
     }
 
+    public String getTabType() {
+        return tabType;
+    }
+
+    public void setTabType(String tabType) {
+        this.tabType = tabType;
+    }
+
     @Override
     public String toString() {
         return "RequestForSubSupplierDetail{" +
@@ -96,6 +109,7 @@ public class RequestForSubSupplierDetail extends PageInfo {
                 ", employeeName='" + employeeName + '\'' +
                 ", idType='" + idType + '\'' +
                 ", idNo='" + idNo + '\'' +
+                ", tabType='" + tabType + '\'' +
                 '}';
     }
 }

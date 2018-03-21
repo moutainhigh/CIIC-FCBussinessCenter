@@ -61,7 +61,7 @@ public class TaskSubPaymentDetailServiceImpl extends ServiceImpl<TaskSubPaymentD
             wrapper.like("id_no", requestForSubPaymentDetail.getIdNo());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubPaymentDetail.getPageSize() && null != requestForSubPaymentDetail.getCurrentNum()) {
             Page<TaskSubPaymentDetailPO> pageInfo = new Page<>(requestForSubPaymentDetail.getCurrentNum(), requestForSubPaymentDetail.getPageSize());

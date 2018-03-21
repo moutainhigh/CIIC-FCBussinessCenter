@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
@@ -98,19 +97,22 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-    @TableField(value="modified_time",fill = FieldFill.UPDATE)
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
     /**
      * 供应商编号
@@ -128,6 +130,25 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
      * 管理方名称
      */
 	private String managerName;
+
+	/**
+	 * 是否为合并任务
+	 */
+	@TableField("is_combined")
+	private Boolean isCombined;
+
+	/**
+	 * 账户类型
+	 */
+	private String accountType;
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
 
 	public String getStatusName() {
 		return statusName;
@@ -262,11 +283,11 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
@@ -324,6 +345,14 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 
 	public void setManagerName(String managerName) {
 		this.managerName = managerName;
+	}
+
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
 	}
 
 	@Override

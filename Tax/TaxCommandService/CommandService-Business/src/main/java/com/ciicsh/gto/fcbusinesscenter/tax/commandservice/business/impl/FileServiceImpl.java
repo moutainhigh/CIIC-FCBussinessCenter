@@ -89,39 +89,33 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             filePO.setId(requestForFile.getId());
             //设置是否可用
             filePO.setActive(false);
-            // TODO 临时设置修改人
-            //设置修改人
-            filePO.setModifiedBy("adminDel");
             //设置修改时间
             filePO.setModifiedTime(LocalDateTime.now());
             //删除文件:即修改数据为不可用
-            flag =  super.insertOrUpdate(filePO);
+            flag = super.insertOrUpdate(filePO);
         }
         return flag;
     }
 
     /**
      * 文件上传
+     *
      * @param requestForFile
      * @param file
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void uploadFileByBusinessIdAndType(RequestForFile requestForFile, MultipartFile file) throws Exception{
-            String fileName = file.getOriginalFilename();
-            String url = FileHandler.uploadFile(file.getInputStream());
-            FilePO filePO = new FilePO();
-            filePO.setBusinessId(requestForFile.getBusinessId());
-            filePO.setBusinessType(requestForFile.getBusinessType());
-            //文件路径
-            filePO.setFilePath(url);
-            filePO.setFilenameSource(fileName);
-            // TODO 临时设置创建人
-            filePO.setCreatedBy("admin");
-            // TODO 临时设置修改人
-            filePO.setModifiedBy("admin");
-            super.insertOrUpdate(filePO);
+    public void uploadFileByBusinessIdAndType(RequestForFile requestForFile, MultipartFile file) throws Exception {
+        String fileName = file.getOriginalFilename();
+        String url = FileHandler.uploadFile(file.getInputStream());
+        FilePO filePO = new FilePO();
+        filePO.setBusinessId(requestForFile.getBusinessId());
+        filePO.setBusinessType(requestForFile.getBusinessType());
+        //文件路径
+        filePO.setFilePath(url);
+        filePO.setFilenameSource(fileName);
+        super.insertOrUpdate(filePO);
     }
 
 

@@ -1,4 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
-public interface TestService {
-}
+
+/**
+ * @author wuhua
+ */
+public interface TaskMainDetailService {}
+

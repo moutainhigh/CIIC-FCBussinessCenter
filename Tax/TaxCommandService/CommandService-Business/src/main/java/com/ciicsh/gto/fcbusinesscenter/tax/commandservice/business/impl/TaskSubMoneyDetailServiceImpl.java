@@ -59,7 +59,7 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
             wrapper.like("id_no", requestForSubMoneyDetail.getIdNo());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubMoneyDetail.getPageSize() && null != requestForSubMoneyDetail.getCurrentNum()) {
             Page<TaskSubMoneyDetailPO> pageInfo = new Page<>(requestForSubMoneyDetail.getCurrentNum(), requestForSubMoneyDetail.getPageSize());

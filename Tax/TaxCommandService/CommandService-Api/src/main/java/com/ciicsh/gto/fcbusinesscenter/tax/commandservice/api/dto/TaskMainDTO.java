@@ -14,6 +14,33 @@ public class TaskMainDTO {
     private String tabsName;
     private Integer currentNum;
     private Integer pageSize;
+    private boolean isCombined;
+    private Long taskMainDetailId;
+    private Long[] taskMainDetailIds;
+
+    public Long[] getTaskMainDetailIds() {
+        return taskMainDetailIds;
+    }
+
+    public void setTaskMainDetailIds(Long[] taskMainDetailIds) {
+        this.taskMainDetailIds = taskMainDetailIds;
+    }
+
+    public Long getTaskMainDetailId() {
+        return taskMainDetailId;
+    }
+
+    public void setTaskMainDetailId(Long taskMainDetailId) {
+        this.taskMainDetailId = taskMainDetailId;
+    }
+
+    public boolean getIsCombined() {
+        return isCombined;
+    }
+
+    public void setIsCombined(boolean combined) {
+        isCombined = combined;
+    }
 
     public Long getTaskMainId() {
         return taskMainId;

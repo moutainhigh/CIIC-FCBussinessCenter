@@ -1,52 +1,62 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json;
 
 /**
- * Created by shil on 2017/9/20.
+ * yuantongqing
  */
 public class JsonResult<T> {
+
+    /**
+     * TD_ 个税数据处理；
+     * TM_ 个税任务；
+     * DE_ 申报；
+     * TR_ 划款；
+     * PA_ 缴纳；
+     * PR_ 完税凭证；
+     */
+    public static enum ReturnCode{
+
+        FAIL("异常"),
+
+        TM_ER01("任务内有未确认的合并明细，不能提交任务");
+
+        private String  message;
+
+        private ReturnCode(String message)
+        {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
     public JsonResult(){}
-    public JsonResult(String errorcode) {
-        this.errorcode = errorcode;
-    }
 
-    public JsonResult(T data){
+    public JsonResult(String code, String msg, T data){
+        this.code = code;
+        this.msg = msg;
         this.data = data;
     }
 
-    public JsonResult(String errorcode, String errormsg) {
-        this.errorcode = errorcode;
-        this.errormsg = errormsg;
-    }
-
-    public JsonResult(String errorcode, T data){
-        this.errorcode = errorcode;
-        this.data = data;
-    }
-
-    public JsonResult(String errorcode, String errormsg, T data){
-        this.errorcode = errorcode;
-        this.errormsg = errormsg;
-        this.data = data;
-    }
-
-    private String errorcode = "0";
-    private String errormsg = "";
+    private String code = "0";
+    private String msg = "";
     private T data;
 
-    public String getErrorcode(){
-        return errorcode;
+    public String getCode() {
+        return code;
     }
 
-    public void setErrorcode(String errorcode){
-        this.errorcode = errorcode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getErrormsg() {
-        return errormsg;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setErrormsg(String errormsg) {
-        this.errormsg = errormsg;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public T getData() {
@@ -57,33 +67,38 @@ public class JsonResult<T> {
         this.data = data;
     }
 
-
     /**
-     *  自定义成功编码
-     * @param successCode
-     * @param successMsg
+     *  参数设置(成功)
      * @param data
      * @return
      */
-    public void fill(String successCode, String successMsg,T data) {
-        this.errorcode = successCode;
-        this.errormsg = successMsg;
+    public void fill(T data) {
         this.data = data;
     }
-    /**
-     * 默认成功返回结果集
-     * @param data
-     * @return
-     */
-    public void success(T data){
-        this.fill("0","success",data);
-    }
 
     /**
-     * 默认错误信息返回
+     *  参数设置(失败)
+     * @param rc
+     * @return
+     */
+    public void fill(ReturnCode rc) {
+        this.code = rc.toString();
+        this.msg = rc.getMessage();
+    }
+    /**
+     * 是否成功
+     * @return
+     */
+    /*public boolean isSuccess(){
+
+        return this.code.equals("0");
+    }*/
+    /**
+     * 错误
      * @return
      */
     public void error(){
-        this.fill("1","error",null);
+        this.fill(ReturnCode.FAIL);
     }
+
 }

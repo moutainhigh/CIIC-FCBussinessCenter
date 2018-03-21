@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -21,199 +23,184 @@ import java.time.LocalDateTime;
 @TableName("tax_fc_calculation_batch_detail")
 public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键ID
-     */
+	/**
+	 * 主键ID
+	 */
 	@TableId(value="id", type= IdType.AUTO)
 	private Long id;
-    /**
-     * 计算批次ID（为空，则为合并数据）
-     */
+	/**
+	 * 计算批次ID（为空，则为合并数据）
+	 */
 	@TableField("calculation_batch_id")
 	private Long calculationBatchId;
-    /**
-     * 版本号（重新计算版本号加1）
-     */
+	/**
+	 * 版本号（重新计算版本号加1）
+	 */
 	@TableField("version_no")
 	private Integer versionNo;
-    /**
-     * 是否暂缓
-     */
+	/**
+	 * 是否暂缓
+	 */
 	@TableField("is_defer")
 	private Boolean isDefer;
-    /**
-     * 雇员编号
-     */
+	/**
+	 * 雇员编号
+	 */
 	@TableField("employee_no")
 	private String employeeNo;
-    /**
-     * 雇员姓名
-     */
+	/**
+	 * 雇员姓名
+	 */
 	@TableField("employee_name")
 	private String employeeName;
-    /**
-     * 证件类型
-     */
+	/**
+	 * 证件类型
+	 */
 	@TableField("id_type")
 	private String idType;
-    /**
-     * 证件类型（中文）
-     */
-    @TableField(exist = false)
+	/**
+	 * 证件类型中文
+	 */
+	@TableField(exist = false)
 	private String idTypeName;
-    /**
-     * 证件编号
-     */
+	/**
+	 * 证件编号
+	 */
 	@TableField("id_no")
 	private String idNo;
-    /**
-     * 申报账户
-     */
+	/**
+	 * 申报账户
+	 */
 	@TableField("declare_account")
 	private String declareAccount;
-    /**
-     * 缴纳账户
-     */
+	/**
+	 * 缴纳账户
+	 */
 	@TableField("pay_account")
 	private String payAccount;
-    /**
-     * 所得期间
-     */
+	/**
+	 * 所得期间
+	 */
 	private LocalDate period;
-    /**
-     * 所得项目
-     */
-    @TableField(exist = false)
-	private String incomeSubjectName;
-    /**
-     * 所得项目（中文）
-     */
+	/**
+	 * 所得项目
+	 */
 	@TableField("income_subject")
 	private String incomeSubject;
-    /**
-     * 收入额
-     */
+	/**
+	 * 所得项目中文
+	 */
+	@TableField(exist = false)
+	private String incomeSubjectName;
+	/**
+	 * 收入额
+	 */
 	@TableField("income_total")
-	private String incomeTotal;
-    /**
-     * 免税所得
-     */
+	private BigDecimal incomeTotal;
+	/**
+	 * 免税所得
+	 */
 	@TableField("income_dutyfree")
-	private String incomeDutyfree;
-    /**
-     * 基本养老保险费（税前扣除项目）
-     */
+	private BigDecimal incomeDutyfree;
+	/**
+	 * 基本养老保险费（税前扣除项目）
+	 */
 	@TableField("deduct_retirement_insurance")
-	private String deductRetirementInsurance;
-    /**
-     * 基本医疗保险费（税前扣除项目）
-     */
+	private BigDecimal deductRetirementInsurance;
+	/**
+	 * 基本医疗保险费（税前扣除项目）
+	 */
 	@TableField("deduct_medical_insurance")
-	private String deductMedicalInsurance;
-    /**
-     * 失业保险费（税前扣除项目）
-     */
+	private BigDecimal deductMedicalInsurance;
+	/**
+	 * 失业保险费（税前扣除项目）
+	 */
 	@TableField("deduct_dleness_insurance")
-	private String deductDlenessInsurance;
-    /**
-     * 财产原值（税前扣除项目）
-     */
+	private BigDecimal deductDlenessInsurance;
+	/**
+	 * 财产原值（税前扣除项目）
+	 */
 	@TableField("deduct_property")
-	private String deductProperty;
-    /**
-     * 住房公积金（税前扣除项目）
-     */
+	private BigDecimal deductProperty;
+	/**
+	 * 住房公积金（税前扣除项目）
+	 */
 	@TableField("deduct_house_fund")
-	private String deductHouseFund;
-    /**
-     * 允许扣除的税费（税前扣除项目）
-     */
+	private BigDecimal deductHouseFund;
+	/**
+	 * 允许扣除的税费（税前扣除项目）
+	 */
 	@TableField("deduct_takeoff")
-	private String deductTakeoff;
-    /**
-     * 其他（税前扣除项目）
-     */
+	private BigDecimal deductTakeoff;
+	/**
+	 * 其他（税前扣除项目）
+	 */
 	@TableField("deduct_other")
-	private String deductOther;
-    /**
-     * 合计（税前扣除项目）
-     */
+	private BigDecimal deductOther;
+	/**
+	 * 合计（税前扣除项目）
+	 */
 	@TableField("deduct_total")
-	private String deductTotal;
-    /**
-     * 减除费用
-     */
-	private String deduction;
-    /**
-     * 准予扣除的捐赠额
-     */
-	private String donation;
-    /**
-     * 应纳税所得额
-     */
+	private BigDecimal deductTotal;
+	/**
+	 * 减除费用
+	 */
+	private BigDecimal deduction;
+	/**
+	 * 准予扣除的捐赠额
+	 */
+	private BigDecimal donation;
+	/**
+	 * 应纳税所得额
+	 */
 	@TableField("income_for_tax")
-	private String incomeForTax;
-    /**
-     * 税率
-     */
+	private BigDecimal incomeForTax;
+	/**
+	 * 税率
+	 */
 	@TableField("tax_rate")
 	private String taxRate;
-    /**
-     * 速算扣除数
-     */
+	/**
+	 * 速算扣除数
+	 */
 	@TableField("quick_cal_deduct")
 	private Integer quickCalDeduct;
-    /**
-     * 应纳税额
-     */
+	/**
+	 * 应纳税额
+	 */
 	@TableField("tax_amount")
-	private String taxAmount;
-    /**
-     * 减免税额
-     */
+	private BigDecimal taxAmount;
+	/**
+	 * 减免税额
+	 */
 	@TableField("tax_deduction")
-	private String taxDeduction;
-    /**
-     * 应扣缴税额
-     */
+	private BigDecimal taxDeduction;
+	/**
+	 * 应扣缴税额
+	 */
 	@TableField("tax_withhold_amount")
-	private String taxWithholdAmount;
-    /**
-     * 已扣缴税额
-     */
+	private BigDecimal taxWithholdAmount;
+	/**
+	 * 已扣缴税额
+	 */
 	@TableField("tax_withholded_amount")
-	private String taxWithholdedAmount;
-    /**
-     * 应补（退）税额
-     */
+	private BigDecimal taxWithholdedAmount;
+	/**
+	 * 应补（退）税额
+	 */
 	@TableField("tax_remedy_or_return")
-	private String taxRemedyOrReturn;
-    /**
-     * 是否申报
-     */
-	@TableField("is_declare")
-	private Boolean isDeclare;
-    /**
-     * 是否划款
-     */
-	@TableField("is_tranfer")
-	private Boolean isTranfer;
-    /**
-     * 是否缴纳
-     */
-	@TableField("is_pay")
-	private Boolean isPay;
-    /**
-     * 创建时间
-     */
-	@TableField("created_time")
+	private BigDecimal taxRemedyOrReturn;
+	/**
+	 * 创建时间
+	 */
+	@TableField(value="created_time",fill = FieldFill.INSERT)
 	private LocalDateTime createdTime;
-    /**
-     * 修改时间
-     */
-	@TableField("modified_time")
+	/**
+	 * 修改时间
+	 */
+	@TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
 	private LocalDateTime modifiedTime;
 
 
@@ -223,6 +210,22 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 
 	public void setIdTypeName(String idTypeName) {
 		this.idTypeName = idTypeName;
+	}
+
+	public String getIncomeSubjectName() {
+		return incomeSubjectName;
+	}
+
+	public void setIncomeSubjectName(String incomeSubjectName) {
+		this.incomeSubjectName = incomeSubjectName;
+	}
+
+	public LocalDateTime getCreatedTime() {
+		return createdTime;
+	}
+
+	public LocalDateTime getModifiedTime() {
+		return modifiedTime;
 	}
 
 	public Long getId() {
@@ -313,6 +316,14 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		this.period = period;
 	}
 
+	public void setCreatedTime(LocalDateTime createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public void setModifiedTime(LocalDateTime modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
 	public String getIncomeSubject() {
 		return incomeSubject;
 	}
@@ -321,107 +332,107 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		this.incomeSubject = incomeSubject;
 	}
 
-	public String getIncomeTotal() {
+	public BigDecimal getIncomeTotal() {
 		return incomeTotal;
 	}
 
-	public void setIncomeTotal(String incomeTotal) {
+	public void setIncomeTotal(BigDecimal incomeTotal) {
 		this.incomeTotal = incomeTotal;
 	}
 
-	public String getIncomeDutyfree() {
+	public BigDecimal getIncomeDutyfree() {
 		return incomeDutyfree;
 	}
 
-	public void setIncomeDutyfree(String incomeDutyfree) {
+	public void setIncomeDutyfree(BigDecimal incomeDutyfree) {
 		this.incomeDutyfree = incomeDutyfree;
 	}
 
-	public String getDeductRetirementInsurance() {
+	public BigDecimal getDeductRetirementInsurance() {
 		return deductRetirementInsurance;
 	}
 
-	public void setDeductRetirementInsurance(String deductRetirementInsurance) {
+	public void setDeductRetirementInsurance(BigDecimal deductRetirementInsurance) {
 		this.deductRetirementInsurance = deductRetirementInsurance;
 	}
 
-	public String getDeductMedicalInsurance() {
+	public BigDecimal getDeductMedicalInsurance() {
 		return deductMedicalInsurance;
 	}
 
-	public void setDeductMedicalInsurance(String deductMedicalInsurance) {
+	public void setDeductMedicalInsurance(BigDecimal deductMedicalInsurance) {
 		this.deductMedicalInsurance = deductMedicalInsurance;
 	}
 
-	public String getDeductDlenessInsurance() {
+	public BigDecimal getDeductDlenessInsurance() {
 		return deductDlenessInsurance;
 	}
 
-	public void setDeductDlenessInsurance(String deductDlenessInsurance) {
+	public void setDeductDlenessInsurance(BigDecimal deductDlenessInsurance) {
 		this.deductDlenessInsurance = deductDlenessInsurance;
 	}
 
-	public String getDeductProperty() {
+	public BigDecimal getDeductProperty() {
 		return deductProperty;
 	}
 
-	public void setDeductProperty(String deductProperty) {
+	public void setDeductProperty(BigDecimal deductProperty) {
 		this.deductProperty = deductProperty;
 	}
 
-	public String getDeductHouseFund() {
+	public BigDecimal getDeductHouseFund() {
 		return deductHouseFund;
 	}
 
-	public void setDeductHouseFund(String deductHouseFund) {
+	public void setDeductHouseFund(BigDecimal deductHouseFund) {
 		this.deductHouseFund = deductHouseFund;
 	}
 
-	public String getDeductTakeoff() {
+	public BigDecimal getDeductTakeoff() {
 		return deductTakeoff;
 	}
 
-	public void setDeductTakeoff(String deductTakeoff) {
+	public void setDeductTakeoff(BigDecimal deductTakeoff) {
 		this.deductTakeoff = deductTakeoff;
 	}
 
-	public String getDeductOther() {
+	public BigDecimal getDeductOther() {
 		return deductOther;
 	}
 
-	public void setDeductOther(String deductOther) {
+	public void setDeductOther(BigDecimal deductOther) {
 		this.deductOther = deductOther;
 	}
 
-	public String getDeductTotal() {
+	public BigDecimal getDeductTotal() {
 		return deductTotal;
 	}
 
-	public void setDeductTotal(String deductTotal) {
+	public void setDeductTotal(BigDecimal deductTotal) {
 		this.deductTotal = deductTotal;
 	}
 
-	public String getDeduction() {
+	public BigDecimal getDeduction() {
 		return deduction;
 	}
 
-	public void setDeduction(String deduction) {
+	public void setDeduction(BigDecimal deduction) {
 		this.deduction = deduction;
 	}
 
-	public String getDonation() {
+	public BigDecimal getDonation() {
 		return donation;
 	}
 
-	public void setDonation(String donation) {
+	public void setDonation(BigDecimal donation) {
 		this.donation = donation;
 	}
 
-	public String getIncomeForTax() {
+	public BigDecimal getIncomeForTax() {
 		return incomeForTax;
 	}
 
-	public void setIncomeForTax(String incomeForTax) {
+	public void setIncomeForTax(BigDecimal incomeForTax) {
 		this.incomeForTax = incomeForTax;
 	}
 
@@ -441,92 +452,44 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		this.quickCalDeduct = quickCalDeduct;
 	}
 
-	public String getTaxAmount() {
+	public BigDecimal getTaxAmount() {
 		return taxAmount;
 	}
 
-	public void setTaxAmount(String taxAmount) {
+	public void setTaxAmount(BigDecimal taxAmount) {
 		this.taxAmount = taxAmount;
 	}
 
-	public String getTaxDeduction() {
+	public BigDecimal getTaxDeduction() {
 		return taxDeduction;
 	}
 
-	public void setTaxDeduction(String taxDeduction) {
+	public void setTaxDeduction(BigDecimal taxDeduction) {
 		this.taxDeduction = taxDeduction;
 	}
 
-	public String getTaxWithholdAmount() {
+	public BigDecimal getTaxWithholdAmount() {
 		return taxWithholdAmount;
 	}
 
-	public void setTaxWithholdAmount(String taxWithholdAmount) {
+	public void setTaxWithholdAmount(BigDecimal taxWithholdAmount) {
 		this.taxWithholdAmount = taxWithholdAmount;
 	}
 
-	public String getTaxWithholdedAmount() {
+	public BigDecimal getTaxWithholdedAmount() {
 		return taxWithholdedAmount;
 	}
 
-	public void setTaxWithholdedAmount(String taxWithholdedAmount) {
+	public void setTaxWithholdedAmount(BigDecimal taxWithholdedAmount) {
 		this.taxWithholdedAmount = taxWithholdedAmount;
 	}
 
-	public String getTaxRemedyOrReturn() {
+	public BigDecimal getTaxRemedyOrReturn() {
 		return taxRemedyOrReturn;
 	}
 
-	public void setTaxRemedyOrReturn(String taxRemedyOrReturn) {
+	public void setTaxRemedyOrReturn(BigDecimal taxRemedyOrReturn) {
 		this.taxRemedyOrReturn = taxRemedyOrReturn;
-	}
-
-	public Boolean getDeclare() {
-		return isDeclare;
-	}
-
-	public void setDeclare(Boolean declare) {
-		isDeclare = declare;
-	}
-
-	public Boolean getTranfer() {
-		return isTranfer;
-	}
-
-	public void setTranfer(Boolean tranfer) {
-		isTranfer = tranfer;
-	}
-
-	public Boolean getPay() {
-		return isPay;
-	}
-
-	public void setPay(Boolean pay) {
-		isPay = pay;
-	}
-
-	public LocalDateTime getCreatedTime() {
-		return createdTime;
-	}
-
-	public void setCreatedTime(LocalDateTime createdTime) {
-		this.createdTime = createdTime;
-	}
-
-	public LocalDateTime getModifiedTime() {
-		return modifiedTime;
-	}
-
-	public void setModifiedTime(LocalDateTime modifiedTime) {
-		this.modifiedTime = modifiedTime;
-	}
-
-	public String getIncomeSubjectName() {
-		return incomeSubjectName;
-	}
-
-	public void setIncomeSubjectName(String incomeSubjectName) {
-		this.incomeSubjectName = incomeSubjectName;
 	}
 
 	@Override
@@ -537,43 +500,40 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 	@Override
 	public String toString() {
 		return "CalculationBatchDetail{" +
-			"id=" + id +
-			", calculationBatchId=" + calculationBatchId +
-			", versionNo=" + versionNo +
-			", isDefer=" + isDefer +
-			", employeeNo=" + employeeNo +
-			", employeeName=" + employeeName +
-			", idType=" + idType +
-			", idNo=" + idNo +
-			", declareAccount=" + declareAccount +
-			", payAccount=" + payAccount +
-			", period=" + period +
-			", incomeSubject=" + incomeSubject +
-			", incomeTotal=" + incomeTotal +
-			", incomeDutyfree=" + incomeDutyfree +
-			", deductRetirementInsurance=" + deductRetirementInsurance +
-			", deductMedicalInsurance=" + deductMedicalInsurance +
-			", deductDlenessInsurance=" + deductDlenessInsurance +
-			", deductProperty=" + deductProperty +
-			", deductHouseFund=" + deductHouseFund +
-			", deductTakeoff=" + deductTakeoff +
-			", deductOther=" + deductOther +
-			", deductTotal=" + deductTotal +
-			", deduction=" + deduction +
-			", donation=" + donation +
-			", incomeForTax=" + incomeForTax +
-			", taxRate=" + taxRate +
-			", quickCalDeduct=" + quickCalDeduct +
-			", taxAmount=" + taxAmount +
-			", taxDeduction=" + taxDeduction +
-			", taxWithholdAmount=" + taxWithholdAmount +
-			", taxWithholdedAmount=" + taxWithholdedAmount +
-			", taxRemedyOrReturn=" + taxRemedyOrReturn +
-			", isDeclare=" + isDeclare +
-			", isTranfer=" + isTranfer +
-			", isPay=" + isPay +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			"}";
+				"id=" + id +
+				", calculationBatchId=" + calculationBatchId +
+				", versionNo=" + versionNo +
+				", isDefer=" + isDefer +
+				", employeeNo=" + employeeNo +
+				", employeeName=" + employeeName +
+				", idType=" + idType +
+				", idNo=" + idNo +
+				", declareAccount=" + declareAccount +
+				", payAccount=" + payAccount +
+				", period=" + period +
+				", incomeSubject=" + incomeSubject +
+				", incomeTotal=" + incomeTotal +
+				", incomeDutyfree=" + incomeDutyfree +
+				", deductRetirementInsurance=" + deductRetirementInsurance +
+				", deductMedicalInsurance=" + deductMedicalInsurance +
+				", deductDlenessInsurance=" + deductDlenessInsurance +
+				", deductProperty=" + deductProperty +
+				", deductHouseFund=" + deductHouseFund +
+				", deductTakeoff=" + deductTakeoff +
+				", deductOther=" + deductOther +
+				", deductTotal=" + deductTotal +
+				", deduction=" + deduction +
+				", donation=" + donation +
+				", incomeForTax=" + incomeForTax +
+				", taxRate=" + taxRate +
+				", quickCalDeduct=" + quickCalDeduct +
+				", taxAmount=" + taxAmount +
+				", taxDeduction=" + taxDeduction +
+				", taxWithholdAmount=" + taxWithholdAmount +
+				", taxWithholdedAmount=" + taxWithholdedAmount +
+				", taxRemedyOrReturn=" + taxRemedyOrReturn +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				"}";
 	}
 }

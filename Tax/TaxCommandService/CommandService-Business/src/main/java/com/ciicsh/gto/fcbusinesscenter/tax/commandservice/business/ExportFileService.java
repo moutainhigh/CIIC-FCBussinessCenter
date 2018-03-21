@@ -12,6 +12,18 @@ import java.util.Map;
  */
 public interface ExportFileService {
     /**
+     * 申报导出(线下)
+     */
+    public HSSFWorkbook exportForDeclareOffline(Long subDeclareId);
+    /**
+     * 申报导出(线上)
+     */
+    public HSSFWorkbook exportForDeclareOnline(Long subDeclareId);
+    /**
+     * 完税凭证导出
+     */
+    public HSSFWorkbook exportForProof(Long subProofId);
+    /**
      * 完税凭证模板处理(徐汇)
      *
      * @param wb

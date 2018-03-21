@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO">
+
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, task_main_id, task_sub_supplier_id, task_no, declare_account, payment_account, period, overdue, fine, tax_amount, headcount, chinese_num, foreigner_num, status, is_active, created_time, modified_time, created_by, modified_by, support_no, support_name, manager_no, manager_name, is_combined
+    </sql>
+
+    <!--根据合并的ID拼接的in条件查询合并前的子任务ID-->
+    <select id="querySubSupplierIdsByMergeIds" resultType="java.lang.Long">
+        select id from tax_fc_task_sub_supplier
+        where task_sub_supplier_id in (#{sbCombinedParams})
+    </select>
+
+    <!--修改供应商合并任务ID为失效-->
+    <update id="updateSupplierByCombinedId">
+        update tax_fc_task_sub_supplier
+        set is_active = false,
+            modified_by = #{modifiedBy},
+            modified_time = #{modifiedTime}
+        where id = #{combinedId}
+    </update>
+
+    <!--修改合并前供应商子任务为有效状态-->
+    <update id="updateSupplierToActiveById">
+        update tax_fc_task_sub_supplier
+        set is_active = true,
+            task_sub_supplier_id = null,
+            modified_by = #{modifiedBy},
+            modified_time = #{modifiedTime}
+        where task_sub_supplier_id=#{combinedId}
+    </update>
+
+</mapper>

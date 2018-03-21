@@ -90,22 +90,22 @@ public class TaskSubPaymentPO implements Serializable {
     /**
      * 创建时间
      */
-	@TableField("created_time")
+    @TableField(value="created_time",fill = FieldFill.INSERT)
 	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField(value="modified_time",fill = FieldFill.UPDATE)
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
-	@TableField("created_by")
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
-	@TableField("modified_by")
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
     /**
      * 管理方编号
@@ -118,6 +118,18 @@ public class TaskSubPaymentPO implements Serializable {
 	@TableField("manager_name")
 	private String managerName;
 
+	/**
+	 * 区域类型
+	 */
+	private String areaType;
+
+	public String getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(String areaType) {
+		this.areaType = areaType;
+	}
 
 	public Long getId() {
 		return id;

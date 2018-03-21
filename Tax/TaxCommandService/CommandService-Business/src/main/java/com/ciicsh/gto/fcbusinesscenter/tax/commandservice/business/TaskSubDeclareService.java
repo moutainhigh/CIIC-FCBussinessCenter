@@ -5,6 +5,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
 
+import java.util.List;
+
 /**
  * @author wuhua
  */
@@ -27,8 +29,10 @@ public interface TaskSubDeclareService {
     /**
      * 拆分申报子任务
      * @param requestForTaskSubDeclare
+     * @param type
+     * @return
      */
-    void splitSubDeclare(RequestForTaskSubDeclare requestForTaskSubDeclare);
+    List<Long> splitSubDeclare(RequestForTaskSubDeclare requestForTaskSubDeclare, String type);
 
     /**
      * 根据申报子任务ID查询申报信息
@@ -42,6 +46,13 @@ public interface TaskSubDeclareService {
      * @param requestForTaskSubDeclare
      */
     void completeTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare);
+
+    /**
+     * 根据ID查询合并之前的申报子任务
+     * @param mergeId
+     * @return
+     */
+    List<TaskSubDeclarePO> queryTaskSubDeclareByMergeId(long mergeId);
 
 }
 

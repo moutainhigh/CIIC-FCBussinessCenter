@@ -1,22 +1,30 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +34,18 @@ import static java.util.stream.Collectors.groupingBy;
  * @author wuhua
  */
 @Service
-public class ExportFileServiceImpl implements ExportFileService {
+public class ExportFileServiceImpl extends BaseService implements ExportFileService  {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportFileServiceImpl.class);
+
+    @Autowired
+    public TaskSubDeclareService taskSubDeclareService;
+
+    @Autowired
+    public TaskSubDeclareDetailService taskSubDeclareDetailService;
+
+    @Autowired
+    private TaskSubProofService taskSubProofService;
 
     /**
      * 完税凭证徐汇模板列表初始大小20
@@ -64,6 +81,196 @@ public class ExportFileServiceImpl implements ExportFileService {
      * 所得项目_劳务报酬所得
      */
     private static final String INCOME_SUBJECT_03 = "03";
+
+
+    @Override
+    public HSSFWorkbook exportForDeclareOffline(Long subDeclareId){
+
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+
+        try {
+            //根据申报子任务ID查询申报信息
+            TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
+            //根据申报子任务ID查询申报明细
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
+            //用于存放模板列表头部
+            Map<String, String> map = new HashMap<>(16);
+            //文件名称
+            String fileName = "";
+            //TODO 区分本地税务和全国委托 测试
+            if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
+                fileName = "扣缴个人所得税报告表.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //税款所属期
+                map.put("taxPeriod", DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
+                //扣缴义务人名称
+                map.put("withholdingAgent", "张三");
+                //扣缴义务人编码
+                map.put("withholdingAgentCode", "147258369");
+                //根据不同的业务需要处理wb
+                this.exportAboutTax(wb, map, taskSubDeclareDetailPOList);
+            } else {
+                fileName = "扣缴个人所得税报告表.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //税款所属期
+                map.put("taxPeriod", DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
+                //扣缴义务人名称
+                map.put("withholdingAgent", "李四");
+                //扣缴义务人编码
+                map.put("withholdingAgentCode", "147258369");
+                //根据不同的业务需要处理wb
+                this.exportAboutTax(wb, map, taskSubDeclareDetailPOList);
+            }
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    logger.error("exportSubDeclare fs close error",ee);
+                }
+            }
+            throw e;
+        }
+        return wb;
+    }
+
+    @Override
+    public HSSFWorkbook exportForDeclareOnline(Long subDeclareId){
+
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+
+        try {
+            //根据申报子任务ID查询申报信息
+            TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
+            //根据申报子任务ID查询申报明细
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
+            //文件名称
+            String fileName = "";
+            //TODO 区分本地税务和全国委托 测试
+            if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
+                fileName = "上海地区个税.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                this.exportAboutSubject(wb, taskSubDeclareDetailPOList);
+            } else {
+                fileName = "上海地区个税.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                this.exportAboutSubject(wb, taskSubDeclareDetailPOList);
+            }
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    logger.error("exportDeclareBySubject fs close error",ee);
+                }
+            }
+            throw e;
+        }
+        return wb;
+    }
+
+    /**
+     * 完税凭证导出
+     */
+    @Override
+    public HSSFWorkbook exportForProof(Long subProofId){
+
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+
+        try {
+            //根据完税凭证子任务查询任务信息
+            TaskSubProofBO taskSubProofBO = taskSubProofService.queryApplyDetailsBySubId(subProofId);
+            //根据完税凭证子任务ID查询完税凭证详情
+            List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofService.querySubProofDetailList(subProofId);
+            //文件名称
+            String fileName = "";
+            //用于存放模板列表头部
+            Map<String, String> map = new HashMap<>(16);
+            // TODO 测试代码："蓝天科技上海独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技无锡独立户"=>"完税凭证_浦东"
+            //根据申报账户选择模板
+            if ("联想独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_三分局.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //扣缴义务人名称
+                map.put("withholdingAgent", "上海中智");
+                //扣缴义务人代码(税务电脑编码)
+                map.put("withholdingAgentCode", "BM123456789");
+                //扣缴义务人电话
+                map.put("withholdingAgentPhone", "18201880000");
+                //换开人姓名
+                map.put("changePersonName", "admin");
+                //换开人身份证号码
+                map.put("changePersonIdNo", "321281199001011234");
+                //根据不同的业务需要处理wb
+                this.exportAboutSFJ(wb, map, taskSubProofDetailPOList);
+            } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_徐汇.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //单位税号（必填）
+                map.put("unitNumber", "TEST123456");
+                //单位名称（必填）
+                map.put("unitName", "上海中智");
+                //根据不同的业务需要处理wb
+                this.exportAboutXH(wb, map, taskSubProofDetailPOList);
+            } else if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
+                fileName = "完税凭证_浦东.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //扣缴单位
+                map.put("withholdingUnit", "上海中智");
+                //电脑编码
+                map.put("withholdingCode", "123456789");
+                //通用缴款书流水号
+                map.put("generalPaymentBook", "147258369");
+                //办税人员
+                map.put("taxationPersonnel", "admin");
+                //联系电话
+                map.put("phone", "18201886666");
+                //换开份数
+                map.put("changeNum", "2");
+                //换开原因
+                map.put("changeReason", "重新申报");
+                //根据不同的业务需要处理wb
+                this.exportAboutPD(wb, map, taskSubProofDetailPOList);
+            }
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    logger.error("exportSubTaskProof fs close error",ee);
+                }
+            }
+            throw e;
+        }
+
+        return wb;
+    }
 
     /**
      * 完税凭证处理(徐汇)
@@ -593,147 +800,147 @@ public class ExportFileServiceImpl implements ExportFileService {
             if (null == cellG) {
                 cellG = row.createCell(6);
             }
-            cellG.setCellValue(taskSubDeclareDetailPO.getIncomeTotal().toString());
+            cellG.setCellValue(taskSubDeclareDetailPO.getIncomeTotal() == null ? "" : taskSubDeclareDetailPO.getIncomeTotal().toString());
             //免税所得-H列
             HSSFCell cellH = row.getCell(7);
             if (null == cellH) {
                 cellH = row.createCell(7);
             }
-            cellH.setCellValue(taskSubDeclareDetailPO.getIncomeDutyfree().toString());
+            cellH.setCellValue(taskSubDeclareDetailPO.getIncomeDutyfree() == null ? "" : taskSubDeclareDetailPO.getIncomeDutyfree().toString());
             //基本养老保险费-I列
             HSSFCell cellI = row.getCell(8);
             if (null == cellI) {
                 cellI = row.createCell(8);
             }
-            cellI.setCellValue(taskSubDeclareDetailPO.getDeductRetirementInsurance().toString());
+            cellI.setCellValue(taskSubDeclareDetailPO.getDeductRetirementInsurance() == null ? "" : taskSubDeclareDetailPO.getDeductRetirementInsurance().toString());
             //基本医疗保险费-J列
             HSSFCell cellJ = row.getCell(9);
             if (null == cellJ) {
                 cellJ = row.createCell(9);
             }
-            cellJ.setCellValue(taskSubDeclareDetailPO.getDeductMedicalInsurance().toString());
+            cellJ.setCellValue(taskSubDeclareDetailPO.getDeductMedicalInsurance() == null ? "" : taskSubDeclareDetailPO.getDeductMedicalInsurance().toString());
             //失业保险费-K列
             HSSFCell cellK = row.getCell(10);
             if (null == cellK) {
                 cellK = row.createCell(10);
             }
-            cellK.setCellValue(taskSubDeclareDetailPO.getDeductDlenessInsurance().toString());
+            cellK.setCellValue(taskSubDeclareDetailPO.getDeductDlenessInsurance() == null ? "" : taskSubDeclareDetailPO.getDeductDlenessInsurance().toString());
             //住房公积金-L列
             HSSFCell cellL = row.getCell(11);
             if (null == cellL) {
                 cellL = row.createCell(11);
             }
-            cellL.setCellValue(taskSubDeclareDetailPO.getDeductHouseFund().toString());
+            cellL.setCellValue(taskSubDeclareDetailPO.getDeductHouseFund() == null ? "" : taskSubDeclareDetailPO.getDeductHouseFund().toString());
             //财产原值-M列
             HSSFCell cellM = row.getCell(12);
             if (null == cellM) {
                 cellM = row.createCell(12);
             }
-            cellM.setCellValue(taskSubDeclareDetailPO.getDeductProperty().toString());
+            cellM.setCellValue(taskSubDeclareDetailPO.getDeductProperty() == null ? "" : taskSubDeclareDetailPO.getDeductProperty().toString());
             //允许扣除的税费-N列
             HSSFCell cellN = row.getCell(13);
             if (null == cellN) {
                 cellN = row.createCell(13);
             }
-            cellN.setCellValue(taskSubDeclareDetailPO.getDeductTakeoff().toString());
+            cellN.setCellValue(taskSubDeclareDetailPO.getDeductTakeoff() == null ? "" : taskSubDeclareDetailPO.getDeductTakeoff().toString());
             //其他-O列
             HSSFCell cellO = row.getCell(14);
             if (null == cellO) {
                 cellO = row.createCell(14);
             }
-            cellO.setCellValue(taskSubDeclareDetailPO.getDeductOther().toString());
+            cellO.setCellValue(taskSubDeclareDetailPO.getDeductOther() == null ? "" : taskSubDeclareDetailPO.getDeductOther().toString());
             //合计-P列
             HSSFCell cellP = row.getCell(15);
             if (null == cellP) {
                 cellP = row.createCell(15);
             }
-            cellP.setCellValue(taskSubDeclareDetailPO.getDeductTotal().toString());
+            cellP.setCellValue(taskSubDeclareDetailPO.getDeductTotal() == null ? "" : taskSubDeclareDetailPO.getDeductTotal().toString());
             //减除费用-Q列
             HSSFCell cellQ = row.getCell(16);
             if (null == cellQ) {
                 cellQ = row.createCell(16);
             }
-            cellQ.setCellValue(taskSubDeclareDetailPO.getDeduction().toString());
+            cellQ.setCellValue(taskSubDeclareDetailPO.getDeduction() == null ? "" : taskSubDeclareDetailPO.getDeduction().toString());
             //准予扣除的捐赠额-R列
             HSSFCell cellR = row.getCell(17);
             if (null == cellR) {
                 cellR = row.createCell(17);
             }
-            cellR.setCellValue(taskSubDeclareDetailPO.getDonation().toString());
+            cellR.setCellValue(taskSubDeclareDetailPO.getDonation() == null ? "" : taskSubDeclareDetailPO.getDonation().toString());
             //应纳税所得额-S列
             HSSFCell cellS = row.getCell(18);
             if (null == cellS) {
                 cellS = row.createCell(18);
             }
-            cellS.setCellValue(taskSubDeclareDetailPO.getIncomeForTax().toString());
+            cellS.setCellValue(taskSubDeclareDetailPO.getIncomeForTax() == null ? "" : taskSubDeclareDetailPO.getIncomeForTax().toString());
             //税率%-T列
             HSSFCell cellT = row.getCell(19);
             if (null == cellT) {
                 cellT = row.createCell(19);
             }
-            cellT.setCellValue(taskSubDeclareDetailPO.getTaxRate());
+            cellT.setCellValue(taskSubDeclareDetailPO.getTaxRate() == null ? "" : taskSubDeclareDetailPO.getTaxRate().toString());
             //速算扣除数-U列quick_cal_deduct
             HSSFCell cellU = row.getCell(20);
             if (null == cellU) {
                 cellU = row.createCell(20);
             }
-            cellU.setCellValue(taskSubDeclareDetailPO.getQuickCalDeduct());
+            cellU.setCellValue(taskSubDeclareDetailPO.getQuickCalDeduct() == null ? "" : taskSubDeclareDetailPO.getQuickCalDeduct().toString());
             //应纳税额-V列
             HSSFCell cellV = row.getCell(21);
             if (null == cellV) {
                 cellV = row.createCell(21);
             }
-            cellV.setCellValue(taskSubDeclareDetailPO.getTaxAmount().toString());
+            cellV.setCellValue(taskSubDeclareDetailPO.getTaxAmount() == null ? "" : taskSubDeclareDetailPO.getTaxAmount().toString());
             //减免税额-W列tax_deduction
             HSSFCell cellW = row.getCell(22);
             if (null == cellW) {
                 cellW = row.createCell(22);
             }
-            cellW.setCellValue(taskSubDeclareDetailPO.getTaxDeduction().toString());
+            cellW.setCellValue(taskSubDeclareDetailPO.getTaxDeduction() == null ? "" : taskSubDeclareDetailPO.getTaxDeduction().toString());
             //应扣缴税额-X列tax_withhold_amount
             HSSFCell cellX = row.getCell(23);
             if (null == cellX) {
                 cellX = row.createCell(23);
             }
-            cellX.setCellValue(taskSubDeclareDetailPO.getTaxWithholdAmount().toString());
+            cellX.setCellValue(taskSubDeclareDetailPO.getTaxWithholdAmount() == null ? "" : taskSubDeclareDetailPO.getTaxWithholdAmount().toString());
             //已扣缴税额-Y列
             HSSFCell cellY = row.getCell(24);
             if (null == cellY) {
                 cellY = row.createCell(24);
             }
-            cellY.setCellValue(taskSubDeclareDetailPO.getTaxWithholdedAmount().toString());
+            cellY.setCellValue(taskSubDeclareDetailPO.getTaxWithholdedAmount() == null ? "" : taskSubDeclareDetailPO.getTaxWithholdedAmount().toString());
             //应补（退）税额-Z列tax_remedy_or_return
             HSSFCell cellZ = row.getCell(25);
             if (null == cellZ) {
                 cellZ = row.createCell(25);
             }
-            cellZ.setCellValue(taskSubDeclareDetailPO.getTaxRemedyOrReturn().toString());
+            cellZ.setCellValue(taskSubDeclareDetailPO.getTaxRemedyOrReturn() == null ? "" : taskSubDeclareDetailPO.getTaxRemedyOrReturn().toString());
             //备注-AA列
             HSSFCell cellAA = row.getCell(26);
             if (null == cellAA) {
                 cellAA = row.createCell(26);
             }
-            cellAA.setCellValue("test");
+//            cellAA.setCellValue("test");
 
             //合计金额计算
-            incomeTotal = incomeTotal.add(taskSubDeclareDetailPO.getIncomeTotal());
-            incomeDutyfreeTotal = incomeDutyfreeTotal.add(taskSubDeclareDetailPO.getIncomeDutyfree());
-            deductRetirementInsuranceTotal = deductRetirementInsuranceTotal.add(taskSubDeclareDetailPO.getDeductRetirementInsurance());
-            deductMedicalInsuranceTotal = deductMedicalInsuranceTotal.add(taskSubDeclareDetailPO.getDeductMedicalInsurance());
-            deductDlenessInsurance = deductDlenessInsurance.add(taskSubDeclareDetailPO.getDeductDlenessInsurance());
-            deductHouseFundTotal = deductHouseFundTotal.add(taskSubDeclareDetailPO.getDeductHouseFund());
-            deductPropertyTotal = deductPropertyTotal.add(taskSubDeclareDetailPO.getDeductProperty());
-            deductTakeoffTotal = deductTakeoffTotal.add(taskSubDeclareDetailPO.getDeductTakeoff());
-            deductOtherTotal = deductOtherTotal.add(taskSubDeclareDetailPO.getDeductOther());
-            deductTotal = deductTotal.add(taskSubDeclareDetailPO.getDeductTotal());
-            deductionTotal = deductionTotal.add(taskSubDeclareDetailPO.getDeduction());
-            donationTotal = donationTotal.add(taskSubDeclareDetailPO.getDonation());
-            incomeForTaxTotal = incomeForTaxTotal.add(taskSubDeclareDetailPO.getIncomeForTax());
-            taxAmountTotal = taxAmountTotal.add(taskSubDeclareDetailPO.getTaxAmount());
-            taxDeductionTotal = taxDeductionTotal.add(taskSubDeclareDetailPO.getTaxDeduction());
-            taxWithholdAmountTotal = taxWithholdAmountTotal.add(taskSubDeclareDetailPO.getTaxWithholdAmount());
-            taxWithholdedAmountTotal = taxWithholdedAmountTotal.add(taskSubDeclareDetailPO.getTaxWithholdedAmount());
-            taxRemedyOrReturnTotal = taxRemedyOrReturnTotal.add(taskSubDeclareDetailPO.getTaxRemedyOrReturn());
+            incomeTotal = incomeTotal.add(taskSubDeclareDetailPO.getIncomeTotal() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getIncomeTotal());
+            incomeDutyfreeTotal = incomeDutyfreeTotal.add(taskSubDeclareDetailPO.getIncomeDutyfree() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getIncomeDutyfree());
+            deductRetirementInsuranceTotal = deductRetirementInsuranceTotal.add(taskSubDeclareDetailPO.getDeductRetirementInsurance() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductRetirementInsurance());
+            deductMedicalInsuranceTotal = deductMedicalInsuranceTotal.add(taskSubDeclareDetailPO.getDeductMedicalInsurance() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductMedicalInsurance());
+            deductDlenessInsurance = deductDlenessInsurance.add(taskSubDeclareDetailPO.getDeductDlenessInsurance() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductDlenessInsurance());
+            deductHouseFundTotal = deductHouseFundTotal.add(taskSubDeclareDetailPO.getDeductHouseFund() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductHouseFund());
+            deductPropertyTotal = deductPropertyTotal.add(taskSubDeclareDetailPO.getDeductProperty() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductProperty());
+            deductTakeoffTotal = deductTakeoffTotal.add(taskSubDeclareDetailPO.getDeductTakeoff() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductTakeoff());
+            deductOtherTotal = deductOtherTotal.add(taskSubDeclareDetailPO.getDeductOther() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductOther());
+            deductTotal = deductTotal.add(taskSubDeclareDetailPO.getDeductTotal() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeductTotal());
+            deductionTotal = deductionTotal.add(taskSubDeclareDetailPO.getDeduction() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDeduction());
+            donationTotal = donationTotal.add(taskSubDeclareDetailPO.getDonation() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getDonation());
+            incomeForTaxTotal = incomeForTaxTotal.add(taskSubDeclareDetailPO.getIncomeForTax() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getIncomeForTax());
+            taxAmountTotal = taxAmountTotal.add(taskSubDeclareDetailPO.getTaxAmount() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getTaxAmount());
+            taxDeductionTotal = taxDeductionTotal.add(taskSubDeclareDetailPO.getTaxDeduction() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getTaxDeduction());
+            taxWithholdAmountTotal = taxWithholdAmountTotal.add(taskSubDeclareDetailPO.getTaxWithholdAmount() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getTaxWithholdAmount());
+            taxWithholdedAmountTotal = taxWithholdedAmountTotal.add(taskSubDeclareDetailPO.getTaxWithholdedAmount() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getTaxWithholdedAmount());
+            taxRemedyOrReturnTotal = taxRemedyOrReturnTotal.add(taskSubDeclareDetailPO.getTaxRemedyOrReturn() == null ? new BigDecimal(0) : taskSubDeclareDetailPO.getTaxRemedyOrReturn());
             rowIndex++;
             num++;
         }
@@ -905,43 +1112,43 @@ public class ExportFileServiceImpl implements ExportFileService {
                 if (null == cellF) {
                     cellF = row.createCell(5);
                 }
-                cellF.setCellValue(po.getIncomeTotal().toString());
+                cellF.setCellValue(po.getIncomeTotal() == null ? "" : po.getIncomeTotal().toString());
                 //免税所得-G列
                 HSSFCell cellG = row.getCell(6);
                 if (null == cellG) {
                     cellG = row.createCell(6);
                 }
-                cellG.setCellValue(po.getIncomeDutyfree().toString());
+                cellG.setCellValue(po.getIncomeDutyfree() == null ? "" : po.getIncomeDutyfree().toString());
                 //基本养老保险费-H列
                 HSSFCell cellH = row.getCell(7);
                 if (null == cellH) {
                     cellH = row.createCell(7);
                 }
-                cellH.setCellValue(po.getDeductRetirementInsurance().toString());
+                cellH.setCellValue(po.getDeductRetirementInsurance() == null ? "" : po.getDeductRetirementInsurance().toString());
                 //基本医疗保险费-I列
                 HSSFCell cellI = row.getCell(8);
                 if (null == cellI) {
                     cellI = row.createCell(8);
                 }
-                cellI.setCellValue(po.getDeductMedicalInsurance().toString());
+                cellI.setCellValue(po.getDeductMedicalInsurance() == null ? "" : po.getDeductMedicalInsurance().toString());
                 //失业保险费-J列
                 HSSFCell cellJ = row.getCell(9);
                 if (null == cellJ) {
                     cellJ = row.createCell(9);
                 }
-                cellJ.setCellValue(po.getDeductDlenessInsurance().toString());
+                cellJ.setCellValue(po.getDeductDlenessInsurance() == null ? "" : po.getDeductDlenessInsurance().toString());
                 //住房公积金-K列
                 HSSFCell cellK = row.getCell(10);
                 if (null == cellK) {
                     cellK = row.createCell(10);
                 }
-                cellK.setCellValue(po.getDeductHouseFund().toString());
+                cellK.setCellValue(po.getDeductHouseFund() == null ? "" : po.getDeductHouseFund().toString());
                 //允许扣除的税费-L列
                 HSSFCell cellL = row.getCell(11);
                 if (null == cellL) {
                     cellL = row.createCell(11);
                 }
-                cellL.setCellValue(po.getDeductTakeoff().toString());
+                cellL.setCellValue(po.getDeductTakeoff() == null ? "" : po.getDeductTakeoff().toString());
                 //年金-M列
                 //商业健康保险费-N列
                 //其他扣除-O列
@@ -949,13 +1156,13 @@ public class ExportFileServiceImpl implements ExportFileService {
                 if (null == cellO) {
                     cellO = row.createCell(14);
                 }
-                cellO.setCellValue(po.getDeductOther().toString());
+                cellO.setCellValue(po.getDeductOther() == null ? "" : po.getDeductOther().toString());
                 //减除费用-P列
                 HSSFCell cellP = row.getCell(15);
                 if (null == cellP) {
                     cellP = row.createCell(15);
                 }
-                cellP.setCellValue(po.getDeduction().toString());
+                cellP.setCellValue(po.getDeduction() == null ? "" : po.getDeduction().toString());
                 //实际捐赠额-Q列
                 //允许列支的捐赠比例-R列
                 //准予扣除的捐赠额-S列
@@ -963,19 +1170,19 @@ public class ExportFileServiceImpl implements ExportFileService {
                 if (null == cellS) {
                     cellS = row.createCell(18);
                 }
-                cellS.setCellValue(po.getDonation().toString());
+                cellS.setCellValue(po.getDonation() == null ? "" : po.getDonation().toString());
                 //减免税额-T列
                 HSSFCell cellT = row.getCell(19);
                 if (null == cellT) {
                     cellT = row.createCell(19);
                 }
-                cellT.setCellValue(po.getTaxDeduction().toString());
+                cellT.setCellValue(po.getTaxDeduction() == null ? "" : po.getTaxDeduction().toString());
                 //已扣缴税额-U列
                 HSSFCell cellU = row.getCell(20);
                 if (null == cellU) {
                     cellU = row.createCell(20);
                 }
-                cellU.setCellValue(po.getTaxWithholdedAmount().toString());
+                cellU.setCellValue(po.getTaxWithholdedAmount() == null ? "" : po.getTaxWithholdedAmount().toString());
                 //备注-V列
                 sheet1RowIndex++;
             }
@@ -1026,31 +1233,31 @@ public class ExportFileServiceImpl implements ExportFileService {
                 if (null == cellL) {
                     cellL = row.createCell(11);
                 }
-                cellL.setCellValue(po.getDeductRetirementInsurance().toString());
+                cellL.setCellValue(po.getDeductRetirementInsurance() == null ? "" : po.getDeductRetirementInsurance().toString());
                 //基本医疗保险费-M列
                 HSSFCell cellM = row.getCell(12);
                 if (null == cellM) {
                     cellM = row.createCell(12);
                 }
-                cellM.setCellValue(po.getDeductMedicalInsurance().toString());
+                cellM.setCellValue(po.getDeductMedicalInsurance() == null ? "" : po.getDeductMedicalInsurance().toString());
                 //失业保险费-N列
                 HSSFCell cellN = row.getCell(13);
                 if (null == cellN) {
                     cellN = row.createCell(13);
                 }
-                cellN.setCellValue(po.getDeductDlenessInsurance().toString());
+                cellN.setCellValue(po.getDeductDlenessInsurance() == null ? "" : po.getDeductDlenessInsurance().toString());
                 //住房公积金-O列
                 HSSFCell cellO = row.getCell(14);
                 if (null == cellO) {
                     cellO = row.createCell(14);
                 }
-                cellO.setCellValue(po.getDeductHouseFund().toString());
+                cellO.setCellValue(po.getDeductHouseFund() == null ? "" : po.getDeductHouseFund().toString());
                 //允许扣除的税费-P列
                 HSSFCell cellP = row.getCell(15);
                 if (null == cellP) {
                     cellP = row.createCell(15);
                 }
-                cellP.setCellValue(po.getDeductTakeoff().toString());
+                cellP.setCellValue(po.getDeductTakeoff() == null ? "" : po.getDeductTakeoff().toString());
                 //年金-Q列
                 //商业健康保险费-R列
                 //其他>其他扣除-S列
@@ -1070,13 +1277,13 @@ public class ExportFileServiceImpl implements ExportFileService {
                 if (null == cellAE) {
                     cellAE = row.createCell(30);
                 }
-                cellAE.setCellValue(po.getDonation().toString());
+                cellAE.setCellValue(po.getDonation() == null ? "" : po.getDonation().toString());
                 //减免税额-AF列
                 HSSFCell cellAF = row.getCell(31);
                 if (null == cellAF) {
                     cellAF = row.createCell(31);
                 }
-                cellAF.setCellValue(po.getTaxDeduction().toString());
+                cellAF.setCellValue(po.getTaxDeduction() == null ? "" : po.getTaxDeduction().toString());
                 //备注-AG列
                 sheet2RowIndex++;
             }
@@ -1122,43 +1329,43 @@ public class ExportFileServiceImpl implements ExportFileService {
                 if (null == cellF) {
                     cellF = row.createCell(5);
                 }
-                cellF.setCellValue(po.getIncomeTotal().toString());
+                cellF.setCellValue(po.getIncomeTotal() == null ? "" : po.getIncomeTotal().toString());
                 //免税所得-G列
                 HSSFCell cellG = row.getCell(6);
                 if (null == cellG) {
                     cellG = row.createCell(6);
                 }
-                cellG.setCellValue(po.getIncomeDutyfree().toString());
+                cellG.setCellValue(po.getIncomeDutyfree() == null ? "" : po.getIncomeDutyfree().toString());
                 //基本养老保险费-H列
                 HSSFCell cellH = row.getCell(7);
                 if (null == cellH) {
                     cellH = row.createCell(7);
                 }
-                cellH.setCellValue(po.getDeductRetirementInsurance().toString());
+                cellH.setCellValue(po.getDeductRetirementInsurance() == null ? "" : po.getDeductRetirementInsurance().toString());
                 //基本医疗保险费-I列
                 HSSFCell cellI = row.getCell(8);
                 if (null == cellI) {
                     cellI = row.createCell(8);
                 }
-                cellI.setCellValue(po.getDeductMedicalInsurance().toString());
+                cellI.setCellValue(po.getDeductMedicalInsurance() == null ? "" : po.getDeductMedicalInsurance().toString());
                 //失业保险费-J列
                 HSSFCell cellJ = row.getCell(9);
                 if (null == cellJ) {
                     cellJ = row.createCell(9);
                 }
-                cellJ.setCellValue(po.getDeductDlenessInsurance().toString());
+                cellJ.setCellValue(po.getDeductDlenessInsurance() == null ? "" : po.getDeductDlenessInsurance().toString());
                 //住房公积金-K列
                 HSSFCell cellK = row.getCell(10);
                 if (null == cellK) {
                     cellK = row.createCell(10);
                 }
-                cellK.setCellValue(po.getDeductHouseFund().toString());
+                cellK.setCellValue(po.getDeductHouseFund() == null ? "" : po.getDeductHouseFund().toString());
                 //允许扣除的税费-L列
                 HSSFCell cellL = row.getCell(11);
                 if (null == cellL) {
                     cellL = row.createCell(11);
                 }
-                cellL.setCellValue(po.getDeductTakeoff().toString());
+                cellL.setCellValue(po.getDeductTakeoff() == null ? "" : po.getDeductTakeoff().toString());
                 //商业健康保险费-M列
                 //其他扣除-N列
                 //实际捐赠额-O列
@@ -1168,13 +1375,13 @@ public class ExportFileServiceImpl implements ExportFileService {
                 if (null == cellQ) {
                     cellQ = row.createCell(16);
                 }
-                cellQ.setCellValue(po.getDonation().toString());
+                cellQ.setCellValue(po.getDonation() == null ? "" : po.getDonation().toString());
                 //减免税额-R列
                 HSSFCell cellR = row.getCell(17);
                 if (null == cellR) {
                     cellR = row.createCell(17);
                 }
-                cellR.setCellValue(po.getTaxDeduction().toString());
+                cellR.setCellValue(po.getTaxDeduction() == null ? "" : po.getTaxDeduction().toString());
                 //备注-S列
                 sheet3RowIndex++;
             }
