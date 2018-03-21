@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -146,16 +147,9 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             Map<String, Object> columnMap = new HashMap<>();
             columnMap.put("task_main_id",p.getId());
             List<CalculationBatchTaskMainPO> l = calculationBatchTaskMainService.selectByMap(columnMap);
-            StringBuilder sb = new StringBuilder();
-            int k =0;
-            for(CalculationBatchTaskMainPO cp : l){
-                if(k>0){
-                    sb.append(",");
-                }
-                sb.append(cp.getBatchNo());
-                k++;
-            }
-            p.setBatchIds(sb.toString());
+            //组合批次号
+            String sb = l.stream().map(CalculationBatchTaskMainPO::getBatchNo).collect(Collectors.joining(", "));
+            p.setBatchIds(sb);
         }
         responseForTaskMain.setRowList(taskMainPOList);
         responseForTaskMain.setCurrentNum(requestForTaskMain.getCurrentNum());

@@ -139,6 +139,18 @@ public class TaskSubMoneyPO{
 	@TableField("pay_apply_code")
 	private String payApplyCode;
 
+	/**
+	 * 区域类型
+	 */
+	private String areaType;
+
+	public String getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(String areaType) {
+		this.areaType = areaType;
+	}
 
 	public Long getId() {
 		return id;

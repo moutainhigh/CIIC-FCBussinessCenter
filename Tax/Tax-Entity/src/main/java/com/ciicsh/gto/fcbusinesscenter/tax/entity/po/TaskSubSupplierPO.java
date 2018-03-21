@@ -131,6 +131,19 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
      */
 	private String managerName;
 
+	/**
+	 * 账户类型
+	 */
+	private String accountType;
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
 	public String getStatusName() {
 		return statusName;
 	}

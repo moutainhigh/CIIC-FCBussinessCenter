@@ -132,6 +132,32 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 	@TableField("has_combined")
 	private Boolean hasCombined;
 
+	/**
+	 * 账户类型
+	 */
+	private String accountType;
+
+	/**
+	 * 区域类型
+	 */
+	private String areaType;
+
+	public String getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(String areaType) {
+		this.areaType = areaType;
+	}
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
 	public Boolean getHasCombined() {
 		return hasCombined;
 	}
