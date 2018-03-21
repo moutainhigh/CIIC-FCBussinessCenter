@@ -166,6 +166,12 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 	@TableField("origin_condition")
 	private String originCondition;
 
+	/**
+	 * 完整公式结构体
+	 */
+	@TableField("full_formula")
+	private String fullFormula;
+
 	public Integer getId() {
 		return id;
 	}
@@ -390,7 +396,15 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
         this.originCondition = originCondition;
     }
 
-    @Override
+	public String getFullFormula() {
+		return fullFormula;
+	}
+
+	public void setFullFormula(String fullFormula) {
+		this.fullFormula = fullFormula;
+	}
+
+	@Override
 	protected Serializable pkVal() {
 		return this.id;
 	}
@@ -424,6 +438,7 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 			", modifiedBy=" + modifiedBy +
                 ", itemValue=" + this.itemValue +
                 ", originCondition=" + originCondition +
+				", fullFormula=" + fullFormula +
 			"}";
 	}
 

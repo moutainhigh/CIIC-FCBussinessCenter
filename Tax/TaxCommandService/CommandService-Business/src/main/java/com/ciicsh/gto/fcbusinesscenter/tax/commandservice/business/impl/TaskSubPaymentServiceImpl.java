@@ -14,7 +14,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,11 +67,11 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             }
         }
         //任务状态
-        if(StrKit.notBlank(requestForSubPayment.getStatusType())){
-            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE,requestForSubPayment.getStatusType().toUpperCase()));
+        if (StrKit.notBlank(requestForSubPayment.getStatusType())) {
+            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubPayment.getStatusType().toUpperCase()));
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
 
         //判断是否分页
         if (null != requestForSubPayment.getPageSize() && null != requestForSubPayment.getCurrentNum()) {
@@ -121,6 +120,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
 
     /**
      * 修改缴纳任务状态
+     *
      * @param requestForSubPayment
      */
     private void updateTaskSubPaymentStatus(RequestForSubPayment requestForSubPayment) {
@@ -128,16 +128,12 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
             //更新缴纳任务状态
             taskSubPaymentPO.setStatus(requestForSubPayment.getStatus());
-            //更新修改人
-            taskSubPaymentPO.setModifiedBy(requestForSubPayment.getModifiedBy());
-            //更新修改时间
-            taskSubPaymentPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubPaymentPO());
-            wrapper.andNew("is_active = {0}",true);
-            wrapper.in("id",requestForSubPayment.getSubPaymentIds());
+            wrapper.andNew("is_active = {0}", true);
+            wrapper.in("id", requestForSubPayment.getSubPaymentIds());
             //修改缴纳子任务状态
-            baseMapper.update(taskSubPaymentPO,wrapper);
+            baseMapper.update(taskSubPaymentPO, wrapper);
         }
     }
 

@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * <p>
@@ -45,6 +48,7 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
     /**
      * 合并后申报明细ID（非空，则已合并，记录为合并后的明细ID）
      */
+	@TableField(value="task_sub_declare_detail_id",fill= FieldFill.UPDATE)
 	private Long taskSubDeclareDetailId;
     /**
      * 雇员编号
@@ -177,20 +181,63 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
+	/**
+	 * 主任务明细ID
+	 */
+	private Long taskMainDetailId;
+
+	/**
+	 * 是否为合并明细
+	 */
+	@TableField("is_combined")
+	private Boolean isCombined;
+	/**
+	 * 合并明细是否已确认
+	 */
+	@TableField("is_combine_confirmed")
+	private Boolean isCombineConfirmed;
+
+	public Boolean getCombined() {
+		return isCombined;
+	}
+
+	public void setCombined(Boolean combined) {
+		isCombined = combined;
+	}
+
+	public Boolean getCombineConfirmed() {
+		return isCombineConfirmed;
+	}
+
+	public void setCombineConfirmed(Boolean combineConfirmed) {
+		isCombineConfirmed = combineConfirmed;
+	}
+
+	public Long getTaskMainDetailId() {
+		return taskMainDetailId;
+	}
+
+	public void setTaskMainDetailId(Long taskMainDetailId) {
+		this.taskMainDetailId = taskMainDetailId;
+	}
 
 	public Long getId() {
 		return id;
@@ -254,6 +301,11 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 
 	public void setIdType(String idType) {
 		this.idType = idType;
+
+		if(idType!=null){
+
+			this.idTypeName  = EnumUtil.getMessage(EnumUtil.IT_TYPE,idType);
+		}
 	}
 
 	public String getIdNo() {
@@ -294,6 +346,11 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 
 	public void setIncomeSubject(String incomeSubject) {
 		this.incomeSubject = incomeSubject;
+
+		if(incomeSubject!=null){
+
+			this.incomeSubjectName  = EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,incomeSubject);
+		}
 	}
 
 	public BigDecimal getIncomeTotal() {
@@ -464,19 +521,19 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -510,6 +567,11 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 
 	public void setIncomeSubjectName(String incomeSubjectName) {
 		this.incomeSubjectName = incomeSubjectName;
+	}
+
+	public String groupBys(){
+
+		return this.employeeNo + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
 	}
 
 	@Override

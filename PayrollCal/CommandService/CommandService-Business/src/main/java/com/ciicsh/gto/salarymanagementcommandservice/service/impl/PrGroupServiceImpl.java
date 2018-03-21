@@ -264,9 +264,9 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    public List<HashMap<String, String>> getPrGroupNameList(String query) {
+    public List<HashMap<String, String>> getPrGroupNameList(String query, String managementId) {
         List<HashMap<String, String>> result = new ArrayList<>(50);
-        result = prPayrollGroupMapper.selectGroupNameListByName(query);
+        result = prPayrollGroupMapper.selectGroupNameListByName(query, managementId);
         return result;
     }
 

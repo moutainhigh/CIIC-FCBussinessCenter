@@ -25,9 +25,8 @@ import java.util.List;
 public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareDetailMapper, TaskSubDeclareDetailPO> implements TaskSubDeclareDetailService, Serializable {
 
 
-    @Autowired(required = false)
+    @Autowired
     private TaskSubDeclareMapper taskSubDeclareMapper;
-
 
     /**
      * 根据申报ID查询申报明细集合
@@ -48,7 +47,7 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubDeclareDetailPO());
         Long[] ids = longList.toArray(new Long[longList.size()]);
-        wrapper.in("id", ids);
+        wrapper.in("task_sub_declare_id", ids);
         wrapper.andNew("is_active = {0}", true);
         taskSubProofDetailPOList = baseMapper.selectList(wrapper);
         return taskSubProofDetailPOList;
@@ -72,7 +71,12 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         }
         //判断是否包含申报子任务ID条件
         if (null != requestForSubDeclareDetail.getSubDeclareId()) {
-            wrapper.andNew("task_sub_declare_id = {0}", requestForSubDeclareDetail.getSubDeclareId());
+            //如果是合并任务，需要查询出起子任务下的明细
+            String str = requestForSubDeclareDetail.getSubDeclareId() + "";
+            //根据合并id获取子任务ID集合
+            List<Long> mergedSubIds = taskSubDeclareMapper.querySubDeclareIdsByMergeIds(str);
+            mergedSubIds.add(requestForSubDeclareDetail.getSubDeclareId());
+            wrapper.in("task_sub_declare_id", mergedSubIds);
         }
         //雇员编号模糊查询条件
         if (StrKit.notBlank(requestForSubDeclareDetail.getEmployeeNo())) {
@@ -90,17 +94,21 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         if (StrKit.notBlank(requestForSubDeclareDetail.getIdNo())) {
             wrapper.like("id_no", requestForSubDeclareDetail.getIdNo());
         }
+        //页签
+        if (StrKit.notBlank(requestForSubDeclareDetail.getTabType())) {
+            wrapper.andNew("is_combined = {0} ", requestForSubDeclareDetail.getTabType());
+        }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubDeclareDetail.getPageSize() && null != requestForSubDeclareDetail.getCurrentNum()) {
             Page<TaskSubDeclareDetailPO> pageInfo = new Page<>(requestForSubDeclareDetail.getCurrentNum(), requestForSubDeclareDetail.getPageSize());
             taskSubDeclareDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
             pageInfo.setRecords(taskSubDeclareDetailPOList);
             //获取证件类型中文名和所得项目中文名
-            for(TaskSubDeclareDetailPO p: taskSubDeclareDetailPOList){
-                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
-                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+            for (TaskSubDeclareDetailPO p : taskSubDeclareDetailPOList) {
+                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, p.getIdType()));
+                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, p.getIncomeSubject()));
             }
             responseForSubDeclareDetail.setRowList(taskSubDeclareDetailPOList);
             responseForSubDeclareDetail.setTotalNum(pageInfo.getTotal());
@@ -109,9 +117,9 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         } else {
             taskSubDeclareDetailPOList = baseMapper.selectList(wrapper);
             //获取证件类型中文名和所得项目中文名
-            for(TaskSubDeclareDetailPO p: taskSubDeclareDetailPOList){
-                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
-                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+            for (TaskSubDeclareDetailPO p : taskSubDeclareDetailPOList) {
+                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, p.getIdType()));
+                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, p.getIncomeSubject()));
             }
             responseForSubDeclareDetail.setRowList(taskSubDeclareDetailPOList);
         }

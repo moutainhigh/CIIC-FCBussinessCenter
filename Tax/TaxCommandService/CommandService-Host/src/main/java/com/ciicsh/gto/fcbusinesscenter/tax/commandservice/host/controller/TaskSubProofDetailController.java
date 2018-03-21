@@ -6,6 +6,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDe
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofDetailProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.EmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
@@ -14,6 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForEm
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
+import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +52,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForSubDetail responseForSubDetail = taskSubProofDetailService.queryTaskSubProofDetail(requestForProof);
-            jr.success(responseForSubDetail);
+            jr.fill(responseForSubDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("detailType", taskProofDTO.getDetailType());
@@ -57,7 +60,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             tags.put("employeeNo", taskProofDTO.getEmployeeNo());
             tags.put("employeeName", taskProofDTO.getEmployeeName());
             //日志工具类返回
-            logService.error(e, "TaskSubProofDetailController.queryTaskSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.queryTaskSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -158,7 +161,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             responseForEmployee.setCurrentNum(taskProofDTO.getCurrentNum());
             responseForEmployee.setPageSize(taskProofDTO.getPageSize());
             responseForEmployee.setRowList(employeeBOList);
-            jr.success(responseForEmployee);
+            jr.fill(responseForEmployee);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("detailType", taskProofDTO.getDetailType());
@@ -168,7 +171,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             tags.put("employeeNo", taskProofDTO.getEmployeeNo());
             tags.put("employeeName", taskProofDTO.getEmployeeName());
             //日志工具类返回
-            logService.error(e, "TaskSubProofDetailController.queryEmployee", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.queryEmployee", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -208,9 +211,12 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 }
                 taskSubProofDetailBOList.add(taskSubProofDetailBO);
             }
+            //登录信息
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForSubDetail.setModifiedBy(userInfoResponseDTO.getLoginName());
             requestForSubDetail.setTaskSubProofDetailBOList(taskSubProofDetailBOList);
             taskSubProofDetailService.saveSubProofDetail(requestForSubDetail);
-            jr.success(true);
+            ////jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("detailType", subProofDetailDTO.getDetailType());
@@ -218,7 +224,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
             tags.put("oldDeleteIds", subProofDetailDTO.getOldDeleteIds().toString());
             tags.put("taskSubProofDetailDTOList", subProofDetailDTO.getTaskSubProofDetailDTOList().toString());
             //日志工具类返回
-            logService.error(e, "TaskSubProofDetailController.saveSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.saveSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
             jr.error();
         }
         return jr;

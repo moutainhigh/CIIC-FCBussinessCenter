@@ -35,7 +35,11 @@ public enum SourceTypeForLog {
     /**
      * 供应商
      */
-    ST07("供应商");
+    ST07("供应商"),
+    /**
+     * 其他
+     */
+    ST08("其他");
 
     private String  message;
 

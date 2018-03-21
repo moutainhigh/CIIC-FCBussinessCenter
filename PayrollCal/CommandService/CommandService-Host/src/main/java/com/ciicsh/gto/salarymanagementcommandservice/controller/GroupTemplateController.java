@@ -87,8 +87,9 @@ public class GroupTemplateController extends BaseController {
     }
 
     @GetMapping(value = "/prGroupTemplateName")
-    public JsonResult getPrGroupTemplateNameList(@RequestParam String query) {
-        List<HashMap<String, String>> resultList = prGroupTemplateService.getPrGroupTemplatNameList(query);
+    public JsonResult getPrGroupTemplateNameList(@RequestParam String query,
+                                                 @RequestParam(required = false, defaultValue = "") String managementId) {
+        List<HashMap<String, String>> resultList = prGroupTemplateService.getPrGroupTemplateNameList(query);
         return JsonResult.success(resultList);
     }
 

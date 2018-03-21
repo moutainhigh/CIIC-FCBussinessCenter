@@ -18,6 +18,7 @@
 		<result column="default_value" property="defaultValue" />
 		<result column="decimal_process_type" property="decimalProcessType" />
 		<result column="cal_precision" property="calPrecision" />
+		<result column="full_formula" property="fullFormula" />
         <result column="origin_formula" property="originFormula" />
 		<result column="formula_content" property="formulaContent" />
 		<result column="item_condition" property="itemCondition" />
@@ -65,7 +66,10 @@
 		default_value,
 		decimal_process_type,
 		cal_precision,
+		full_formula,
+		origin_formula,
 		formula_content,
+		origin_condition,
 		item_condition,
 		cal_priority,
 		display_priority,
@@ -108,8 +112,10 @@
 			default_value,
 			decimal_process_type,
 			cal_precision,
+			full_formula,
             origin_formula,
 			formula_content,
+			origin_condition,
 			item_condition,
 			cal_priority,
 			display_priority,
@@ -136,8 +142,10 @@
                 #{item.defaultValue},
                 #{item.decimalProcessType},
                 #{item.calPrecision},
+				#{item.fullFormula},
                 #{item.originFormula},
                 #{item.formulaContent},
+				#{item.originCondition},
                 #{item.itemCondition},
                 #{item.calPriority},
                 #{item.displayPriority},
@@ -200,6 +208,9 @@
             <if test="calPrecision != null">
                 cal_precision = #{calPrecision},
             </if>
+			<if test="fullFormula != null">
+				full_formula = #{fullFormula},
+			</if>
 			<if test="originFormula != null">
 				origin_formula = #{originFormula},
 			</if>

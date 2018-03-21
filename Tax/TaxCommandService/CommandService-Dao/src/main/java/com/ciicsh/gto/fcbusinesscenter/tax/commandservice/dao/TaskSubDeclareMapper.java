@@ -2,8 +2,9 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
-import feign.Param;
+import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -17,4 +18,36 @@ public interface TaskSubDeclareMapper extends BaseMapper<TaskSubDeclarePO> {
      * @return
      */
     List<Long> querySubDeclareIdsByMergeIds(@Param("sbCombinedParams") String sbCombinedParams);
+
+    /**
+     * 修改申报合并任务ID为失效
+     * @param combinedId
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateDeclareByCombinedId(@Param("combinedId")Long combinedId,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
+    /**
+     * 修改合并前申报子任务为有效状态
+     * @param combinedId
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateDeclareToActiveById(@Param("combinedId")Long combinedId,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
+    /**
+     * 修改合并前申报明细为有效状态
+     * @param combinedId
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateDeclareDetailToActiveById(@Param("combinedId")Long combinedId,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
+    /**
+     * 修改合并申报明细为失效状态
+     * @param combinedId
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateDeclareDetailById(@Param("combinedId")Long combinedId,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
 }
