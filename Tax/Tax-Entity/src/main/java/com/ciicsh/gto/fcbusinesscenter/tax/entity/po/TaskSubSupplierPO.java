@@ -137,6 +137,19 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 	@TableField("is_combined")
 	private Boolean isCombined;
 
+	/**
+	 * 账户类型
+	 */
+	private String accountType;
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
 	public String getStatusName() {
 		return statusName;
 	}
@@ -349,32 +362,28 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 
 	@Override
 	public String toString() {
-		return "TaskSubSupplierPO{" +
-				"id=" + id +
-				", taskMainId=" + taskMainId +
-				", taskSubSupplierId=" + taskSubSupplierId +
-				", taskNo='" + taskNo + '\'' +
-				", declareAccount='" + declareAccount + '\'' +
-				", paymentAccount='" + paymentAccount + '\'' +
-				", period=" + period +
-				", overdue=" + overdue +
-				", fine=" + fine +
-				", taxAmount=" + taxAmount +
-				", headcount=" + headcount +
-				", chineseNum=" + chineseNum +
-				", foreignerNum=" + foreignerNum +
-				", status='" + status + '\'' +
-				", statusName='" + statusName + '\'' +
-				", isActive=" + isActive +
-				", createdTime=" + createdTime +
-				", modifiedTime=" + modifiedTime +
-				", createdBy='" + createdBy + '\'' +
-				", modifiedBy='" + modifiedBy + '\'' +
-				", supportNo='" + supportNo + '\'' +
-				", supportName='" + supportName + '\'' +
-				", managerNo='" + managerNo + '\'' +
-				", managerName='" + managerName + '\'' +
-				", isCombined=" + isCombined +
-				'}';
+		return "TaskSubSupplier{" +
+			"id=" + id +
+			", taskMainId=" + taskMainId +
+			", taskSubSupplierId=" + taskSubSupplierId +
+			", taskNo=" + taskNo +
+			", declareAccount=" + declareAccount +
+			", paymentAccount=" + paymentAccount +
+			", period=" + period +
+			", overdue=" + overdue +
+			", fine=" + fine +
+			", taxAmount=" + taxAmount +
+			", headcount=" + headcount +
+			", chineseNum=" + chineseNum +
+			", foreignerNum=" + foreignerNum +
+			", status=" + status +
+			", isActive=" + isActive +
+			", createdTime=" + createdTime +
+			", modifiedTime=" + modifiedTime +
+			", createdBy=" + createdBy +
+			", modifiedBy=" + modifiedBy +
+			", supportNo=" + supportNo +
+			", supportName=" + supportName +
+			"}";
 	}
 }
