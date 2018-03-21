@@ -105,22 +105,15 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         Page page = new Page(requestForCalBatch.getCurrentNum(),requestForCalBatch.getPageSize());
         calculationBatchPOList = baseMapper.selectPage(page,wrapper);//baseMapper.selectPage(page, wrapper);
 
-
         for(CalculationBatchPO p: calculationBatchPOList){
             //状态中文转化
             p.setStatusName(EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,p.getStatus()));
             List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //查询由当前批次创建的任务
-            StringBuilder sb = new StringBuilder();
-            int k =0;
-            for(TaskMainPO tp : tps){
-                if(k>0){
-                    sb.append(",");
-                }
-                sb.append(tp.getTaskNo());
-                k++;
-            }
-            p.setTaskNos(sb.toString());
+
+            //组合任务编号
+            String sb = tps.stream().map(TaskMainPO::getTaskNo).collect(Collectors.joining(","));
+            p.setTaskNos(sb);
 
         }
         responseForCalBatch.setRowList(calculationBatchPOList);
