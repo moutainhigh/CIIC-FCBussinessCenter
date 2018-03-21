@@ -27,5 +27,13 @@ public interface TaskSubDeclareDetailService {
      */
     ResponseForSubDeclareDetail querySubDeclareDetailsByParams(RequestForSubDeclareDetail requestForSubDeclareDetail);
 
+    /**
+     * 根据批量完成数组查询未确认的明细数目
+     *
+     * @param subDeclareIds
+     * @return
+     */
+    int selectCount(String[] subDeclareIds);
+
 }
 

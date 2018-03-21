@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSuppli
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -99,5 +101,43 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
             responseForSubSupplierDetail.setRowList(taskSubSupplierDetailPOList);
         }
         return responseForSubSupplierDetail;
+    }
+
+    /**
+     * 根据批量供应商ID数组查询供应商未确认的明细数目
+     *
+     * @param subSupplierIds
+     * @return
+     */
+    @Override
+    public int selectCount(String[] subSupplierIds) {
+        List<Long> ids = new ArrayList<>();
+        //根据批量ID数组查询供应商任务信息
+        if (subSupplierIds != null && !"".equals(subSupplierIds)) {
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubSupplierPO());
+            wrapper.isNull("task_sub_supplier_id");
+            wrapper.andNew("is_active = {0} ", true);
+            wrapper.in("id", subSupplierIds);
+            List<TaskSubSupplierPO> taskSubSupplierPOList = taskSubSupplierMapper.selectList(wrapper);
+            //通过stream过滤出合并任务id
+            List<Long> mergeIds = taskSubSupplierPOList.stream().filter(x -> x.getCombined()).map(m -> m.getId()).collect(Collectors.toList());
+            //根据合并任务ID查询出合并前的任务ID
+            EntityWrapper wrapper1 = new EntityWrapper();
+            wrapper1.setEntity(new TaskSubSupplierPO());
+            wrapper1.in("task_sub_supplier_id", mergeIds);
+            List<TaskSubSupplierPO> taskSubSupplierPOList1 = taskSubSupplierMapper.selectList(wrapper1);
+            List<Long> subIds = taskSubSupplierPOList1.stream().map(m -> m.getId()).collect(Collectors.toList());
+            ids.addAll(subIds);
+            //未合并任务id
+            List<Long> unMergeIds = taskSubSupplierPOList.stream().filter(x -> !x.getCombined()).map(m -> m.getId()).collect(Collectors.toList());
+            ids.addAll(unMergeIds);
+        }
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.andNew("is_combine_confirmed = {0}", false);
+        wrapper.andNew("is_combined = {0}", true);
+        wrapper.in("task_sub_supplier_id", ids);
+        int count = baseMapper.selectCount(wrapper);
+        return count;
     }
 }

@@ -21,8 +21,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -284,5 +286,33 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         wrapper.orderBy("modified_time", false);
         List<TaskSubSupplierPO> taskSubSupplierPOList = baseMapper.selectList(wrapper);
         return taskSubSupplierPOList;
+    }
+
+    /**
+     * 批量完成供应商任务
+     * @param requestForTaskSubSupplier
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void completeTaskSubSupplier(RequestForTaskSubSupplier requestForTaskSubSupplier) {
+        if (requestForTaskSubSupplier.getSubSupplierIds() != null && !"".equals(requestForTaskSubSupplier.getSubSupplierIds())) {
+            TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
+            //设置任务状态
+            taskSubSupplierPO.setStatus(requestForTaskSubSupplier.getStatus());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubSupplierPO());
+            //任务为通过状态
+            wrapper.andNew("status = {0} ", "02");
+            //任务为可用状态
+            wrapper.andNew("is_active = {0} ", true);
+            //主任务ID IN条件
+            wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
+            //修改完税凭证子任务
+            baseMapper.update(taskSubSupplierPO, wrapper);
+//            //将数组转成集合(long[])
+//            List<Long> declareIdList = Arrays.asList(requestForTaskSubSupplier.getSubSupplierIds()).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+//            //创建完税凭证自动任务
+//            taskSubProofService.createTaskSubProof(declareIdList);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubDeclareDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
@@ -138,7 +139,7 @@ public class TaskSubDeclareController extends BaseController {
 
         try {
             //导出excel
-            exportExcel(response,wb , fileName);
+            exportExcel(response, wb, fileName);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
@@ -180,7 +181,7 @@ public class TaskSubDeclareController extends BaseController {
         String fileName = "上海地区个税.xls";
         try {
             //导出excel
-            exportExcel(response, this.exportFileService.exportForDeclareOnline(subDeclareId),fileName);
+            exportExcel(response, this.exportFileService.exportForDeclareOnline(subDeclareId), fileName);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
@@ -199,12 +200,18 @@ public class TaskSubDeclareController extends BaseController {
     public JsonResult<Boolean> completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
-            BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            //任务状态
-            requestForTaskSubDeclare.setStatus("04");
-            taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
-            //jr.fill(true);
+            //根据批量完成申报ID查询未确认的申报明细数目
+            int count = taskSubDeclareDetailService.selectCount(taskSubDeclareDTO.getSubDeclareIds());
+            count = 3;
+            if (count > 0) {
+                jr.fill(JsonResult.ReturnCode.TM_ER01);
+            }else{
+                RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
+                BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+                //任务状态
+                requestForTaskSubDeclare.setStatus("04");
+                taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
+            }
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());

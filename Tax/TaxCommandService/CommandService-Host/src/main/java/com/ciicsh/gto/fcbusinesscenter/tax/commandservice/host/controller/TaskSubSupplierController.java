@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubSupplierDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
@@ -32,6 +33,9 @@ public class TaskSubSupplierController extends BaseController {
 
     @Autowired
     private TaskSubSupplierService taskSubSupplierService;
+
+    @Autowired
+    private TaskSubSupplierDetailService taskSubSupplierDetailService;
 
     /**
      * 查询供应商子任务列表
@@ -164,6 +168,38 @@ public class TaskSubSupplierController extends BaseController {
             tags.put("mergeId", mergeId.toString());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.queryTaskSubSupplierByMergeId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+    /**
+     * 批量完成供应商任务
+     *
+     * @param taskSubSupplierDTO
+     * @return
+     */
+    @PostMapping(value = "/completeTaskSuppliers")
+    public JsonResult<Boolean> completeTaskSuppliers(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            //根据批量完成供应商ID查询未确认的供应商明细数目
+            int count = taskSubSupplierDetailService.selectCount(taskSubSupplierDTO.getSubSupplierIds());
+            count = 3;
+            if (count > 0) {
+                jr.fill(JsonResult.ReturnCode.TM_ER01);
+            }else{
+                RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
+                BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+                //任务状态
+                requestForTaskSubSupplier.setStatus("04");
+                taskSubSupplierService.completeTaskSubSupplier(requestForTaskSubSupplier);
+            }
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subSupplierIds", taskSubSupplierDTO.getSubSupplierIds().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.completeTaskSuppliers", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();
         }
         return jr;
