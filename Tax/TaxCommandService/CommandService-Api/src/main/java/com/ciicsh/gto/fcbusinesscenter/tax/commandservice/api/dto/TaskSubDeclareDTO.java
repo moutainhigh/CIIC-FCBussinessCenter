@@ -133,6 +133,10 @@ public class TaskSubDeclareDTO {
      */
     private Boolean hasCombined;
 
+    /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
 
     public Long getId() {
         return id;
@@ -366,6 +370,14 @@ public class TaskSubDeclareDTO {
         this.hasCombined = hasCombined;
     }
 
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
     @Override
     public String toString() {
         return "TaskSubDeclareDTO{" +
@@ -398,6 +410,7 @@ public class TaskSubDeclareDTO {
                 ", managerNo='" + managerNo + '\'' +
                 ", isCombined=" + isCombined +
                 ", hasCombined=" + hasCombined +
+                ", areaType='" + areaType + '\'' +
                 '}';
     }
 }

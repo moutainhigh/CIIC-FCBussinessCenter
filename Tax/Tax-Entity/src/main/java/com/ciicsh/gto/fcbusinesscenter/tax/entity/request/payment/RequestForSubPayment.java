@@ -52,6 +52,11 @@ public class RequestForSubPayment extends PageInfo {
      */
     private String modifiedBy;
 
+    /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
+
     public Long getId() {
         return id;
     }
@@ -122,5 +127,13 @@ public class RequestForSubPayment extends PageInfo {
 
     public void setStatusType(String statusType) {
         this.statusType = statusType;
+    }
+
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
     }
 }

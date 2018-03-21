@@ -71,6 +71,10 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         if (StrKit.notBlank(requestForSubMoney.getStatusType())) {
             wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubMoney.getStatusType().toUpperCase()));
         }
+        //区域类型(00:本地,01:异地)
+        if (StrKit.notBlank(requestForSubMoney.getAreaType())) {
+            wrapper.andNew("area_type = {0}", requestForSubMoney.getAreaType());
+        }
         wrapper.andNew("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
 

@@ -21,10 +21,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -218,10 +216,16 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             taskSubSupplierPO.setChineseNum(chineseNum);
             //设置外方人数
             taskSubSupplierPO.setForeignerNum(foreignerNum);
+            //供应商编号supportNo
+            taskSubSupplierPO.setSupportNo(taskSubSupplierPOList.get(0).getSupportNo());
+            //供应商名称supportName
+            taskSubSupplierPO.setSupportName(taskSubSupplierPOList.get(0).getSupportName());
             //设置任务状态
             taskSubSupplierPO.setStatus(taskSubSupplierPOList.get(0).getStatus());
             //设置是否为合并任务
             taskSubSupplierPO.setCombined(true);
+            //设置账户类型(00:独立户,01:大库)
+            taskSubSupplierPO.setAccountType(taskSubSupplierPOList.get(0).getAccountType() == null ? "01" : taskSubSupplierPOList.get(0).getAccountType());
             //新增供应商子任务
             baseMapper.insert(taskSubSupplierPO);
 
@@ -290,6 +294,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
 
     /**
      * 批量完成供应商任务
+     *
      * @param requestForTaskSubSupplier
      */
     @Transactional(rollbackFor = Exception.class)
