@@ -59,6 +59,7 @@ public class TaskSubSupplierController extends BaseController {
             tags.put("periodType", taskSubSupplierDTO.getPeriodType());
             tags.put("supportName", taskSubSupplierDTO.getSupportName());
             tags.put("statusType", taskSubSupplierDTO.getStatusType());
+            tags.put("accountType", taskSubSupplierDTO.getAccountType());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.queryTaskSubSupplier", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();

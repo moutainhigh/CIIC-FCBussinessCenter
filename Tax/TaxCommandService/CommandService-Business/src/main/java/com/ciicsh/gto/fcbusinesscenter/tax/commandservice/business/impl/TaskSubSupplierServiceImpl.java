@@ -88,6 +88,10 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         if (StrKit.notBlank(requestForTaskSubSupplier.getStatusType())) {
             wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForTaskSubSupplier.getStatusType().toUpperCase()));
         }
+        //账户类型(00:独立户,01:大库)
+        if (StrKit.notBlank(requestForTaskSubSupplier.getAccountType())) {
+            wrapper.andNew("account_type = {0}", requestForTaskSubSupplier.getAccountType());
+        }
         //供应商子任务ID为空
         wrapper.isNull("task_sub_supplier_id");
         //是否可用
