@@ -250,6 +250,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubDeclarePO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubDeclarePO.setManagerName(p.getManagerName());//管理方名称
                         taskSubDeclarePO.setStatus("00");//草稿
+                        taskSubDeclarePO.setAccountType(cbd.getAccountType());//账户类型
+                        taskSubDeclarePO.setAreaType(cbd.getAreaType());//区域类型
                         //新增申报子任务
                         taskSubDeclareService.insert(taskSubDeclarePO);
                         //记录申报子任务
@@ -283,6 +285,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubMoneyPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubMoneyPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubMoneyPO.setStatus("00");//草稿
+                        taskSubMoneyPO.setAreaType(cbd.getAreaType());//区域类型
                         //新增划款子任务
                         taskSubMoneyService.insert(taskSubMoneyPO);
                         //记录划款子任务
@@ -314,6 +317,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubPaymentPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubPaymentPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubPaymentPO.setStatus("00");//草稿
+                        taskSubPaymentPO.setAreaType(cbd.getAreaType());//区域类型
                         //新增划款子任务
                         taskSubPaymentService.insert(taskSubPaymentPO);
                         //记录缴纳子任务已创建
@@ -349,6 +353,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubSupplierPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubSupplierPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubSupplierPO.setStatus("00");//草稿
+                        taskSubSupplierPO.setAccountType(cbd.getAccountType());//账户类型
                         //新增供应商处理子任务
                         taskSubSupplierService.insert(taskSubSupplierPO);
                         //记录供应商处理子任务已创建
@@ -539,7 +544,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         columnMap.put("task_main_id",taskMainId);
         taskMainDetailPOList = taskMainDetailService.selectByMap(columnMap);
 
-        //按照雇员、申报账户、所得期间、所得项目分组
+        //按照雇员、所得期间、所得项目分组
         Map<String, List<TaskMainDetailPO>> groupbys = taskMainDetailPOList.stream()
                 .collect(Collectors.groupingBy(TaskMainDetailPO::groupBys));
 
