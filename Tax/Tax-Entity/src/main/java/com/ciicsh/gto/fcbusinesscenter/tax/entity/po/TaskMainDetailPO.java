@@ -554,7 +554,7 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
 
 	public String groupBys(){
 
-		return this.employeeNo + this.declareAccount + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
+		return this.employeeNo + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
 	}
 
 	@Override
