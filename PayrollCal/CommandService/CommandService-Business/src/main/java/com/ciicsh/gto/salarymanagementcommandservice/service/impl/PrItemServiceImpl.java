@@ -293,7 +293,7 @@ public class PrItemServiceImpl implements PrItemService {
         while(m.find()) {
             String payItemName = m.group(1);
             if (StringUtils.isEmpty(nameCodeMap.get(payItemName))) {
-                throw new BusinessException("计算公式中有不存在于该薪资组的薪资项");
+                throw new BusinessException("计算公式中有不存在于该薪资组的薪资项: " + payItemName);
             }
             result = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
         }
