@@ -102,7 +102,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         wrapper.isNull("task_sub_supplier_id");
         //是否可用
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         Page<TaskSubSupplierPO> page = new Page<TaskSubSupplierPO>(requestForTaskSubSupplier.getCurrentNum(), requestForTaskSubSupplier.getPageSize());
         List<TaskSubSupplierPO> taskSubSupplierPOList = baseMapper.selectPage(page, wrapper);
         responseForTaskSubSupplier.setRowList(taskSubSupplierPOList);
@@ -195,14 +195,14 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                 //判断是不是合并后的任务
                 if (taskSubSupplierPO.getCombined()) {
                     sbCombinedParams.append(taskSubSupplierPO.getId() + ",");
-//                    //先将合并后的供应商子任务拆分
-//                    RequestForTaskSubSupplier requestForTaskSubSupplier1 = new RequestForTaskSubSupplier();
-//                    //设置拆分任务ID
-//                    requestForTaskSubSupplier1.setId(taskSubDeclarePO.getId());
-//                    //设置修改人
-//                    requestForTaskSubSupplier1.setModifiedBy(requestForTaskSubSupplier.getModifiedBy());
-//                    List<Long> ids = this.splitSubSupplier(requestForTaskSubSupplier1, "merge");
-//                    unMergeIds.addAll(ids);
+                    //先将合并后的供应商子任务拆分
+                    RequestForTaskSubSupplier requestForTaskSubSupplier1 = new RequestForTaskSubSupplier();
+                    //设置拆分任务ID
+                    requestForTaskSubSupplier1.setId(taskSubSupplierPO.getId());
+                    //设置修改人
+                    requestForTaskSubSupplier1.setModifiedBy(requestForTaskSubSupplier.getModifiedBy());
+                    List<Long> ids = this.splitSubSupplier(requestForTaskSubSupplier1, "merge");
+                    unMergeIds.addAll(ids);
                 } else {
                     unMergeIds.add(taskSubSupplierPO.getId());
                 }
@@ -252,6 +252,8 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             wrapper.in("id", ids);
             baseMapper.update(taskSubSupplierPO1, wrapper);
 
+            //供应商子任务明细合并
+            merge(taskSubSupplierPO.getId(), ids);
         }
     }
 
@@ -365,12 +367,12 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             String modifiedBy = requestForTaskSubSupplier.getModifiedBy();
             //修改申报合并任务ID为失效
             baseMapper.updateSupplierByCombinedId(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
-            //修改合并前申报子任务为有效状态
+            //修改合并前供应商子任务为有效状态
             baseMapper.updateSupplierToActiveById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
-//            //修改合并前申报明细为有效状态
-//            baseMapper.updateDeclareDetailToActiveById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
-//            //修改合并申报明细为失效状态
-//            baseMapper.updateDeclareDetailById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
+            //修改合并前供应商明细为有效状态
+            baseMapper.updateSupplierDetailToActiveById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
+            //修改合并供应商明细为失效状态
+            baseMapper.updateSupplierDetailById(requestForTaskSubSupplier.getId(), modifiedBy, LocalDateTime.now());
         }
         return list;
     }

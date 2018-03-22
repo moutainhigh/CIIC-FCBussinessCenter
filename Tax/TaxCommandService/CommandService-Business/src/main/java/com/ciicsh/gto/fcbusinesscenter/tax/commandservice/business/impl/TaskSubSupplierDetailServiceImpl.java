@@ -76,7 +76,7 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
             wrapper.andNew("is_combined = {0} ", requestForSubSupplierDetail.getTabType());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubSupplierDetail.getPageSize() && null != requestForSubSupplierDetail.getCurrentNum()) {
             Page<TaskSubSupplierDetailPO> pageInfo = new Page<>(requestForSubSupplierDetail.getCurrentNum(), requestForSubSupplierDetail.getPageSize());

@@ -56,7 +56,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             wrapper.andNew("created_time <= {0} ", requestForProof.getSubmitTimeEnd() + " 23:59:59");
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否是分页查询
         if (requestForProof.getCurrentNum() != null && requestForProof.getPageSize() != 0) {
             Page<TaskMainProofPO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());

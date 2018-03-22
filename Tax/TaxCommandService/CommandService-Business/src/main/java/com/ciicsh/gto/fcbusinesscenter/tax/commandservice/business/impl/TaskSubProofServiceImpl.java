@@ -466,7 +466,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         }
         wrapper.in("task_sub_proof_id", ids);
         wrapper.andNew("is_active = {0}", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //根据子任务ID分页查询完税凭证申报明细
         Page<TaskSubProofDetailPO> page = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
         taskSubProofDetailPOList = taskSubProofDetailMapper.selectPage(page, wrapper);
