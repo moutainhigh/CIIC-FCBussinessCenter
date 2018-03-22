@@ -104,39 +104,17 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
     }
 
     /**
-     * 根据批量供应商ID数组查询供应商未确认的明细数目
+     * 根据有合并明细的供应商ID查询未确认的数目
      *
-     * @param subSupplierIds
+     * @param subHasCombinedSupplierIds
      * @return
      */
     @Override
-    public int selectCount(String[] subSupplierIds) {
-        List<Long> ids = new ArrayList<>();
-        //根据批量ID数组查询供应商任务信息
-        if (subSupplierIds != null && !"".equals(subSupplierIds)) {
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubSupplierPO());
-            wrapper.isNull("task_sub_supplier_id");
-            wrapper.andNew("is_active = {0} ", true);
-            wrapper.in("id", subSupplierIds);
-            List<TaskSubSupplierPO> taskSubSupplierPOList = taskSubSupplierMapper.selectList(wrapper);
-            //通过stream过滤出合并任务id
-            List<Long> mergeIds = taskSubSupplierPOList.stream().filter(x -> x.getCombined()).map(m -> m.getId()).collect(Collectors.toList());
-            //根据合并任务ID查询出合并前的任务ID
-            EntityWrapper wrapper1 = new EntityWrapper();
-            wrapper1.setEntity(new TaskSubSupplierPO());
-            wrapper1.in("task_sub_supplier_id", mergeIds);
-            List<TaskSubSupplierPO> taskSubSupplierPOList1 = taskSubSupplierMapper.selectList(wrapper1);
-            List<Long> subIds = taskSubSupplierPOList1.stream().map(m -> m.getId()).collect(Collectors.toList());
-            ids.addAll(subIds);
-            //未合并任务id
-            List<Long> unMergeIds = taskSubSupplierPOList.stream().filter(x -> !x.getCombined()).map(m -> m.getId()).collect(Collectors.toList());
-            ids.addAll(unMergeIds);
-        }
+    public int selectCount(String[] subHasCombinedSupplierIds) {
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.andNew("is_combine_confirmed = {0}", false);
         wrapper.andNew("is_combined = {0}", true);
-        wrapper.in("task_sub_supplier_id", ids);
+        wrapper.in("task_sub_supplier_id", subHasCombinedSupplierIds);
         int count = baseMapper.selectCount(wrapper);
         return count;
     }

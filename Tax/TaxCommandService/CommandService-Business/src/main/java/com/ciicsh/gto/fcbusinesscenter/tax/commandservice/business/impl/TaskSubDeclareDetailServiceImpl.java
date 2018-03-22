@@ -129,41 +129,17 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
     }
 
     /**
-     * 根据批量完成申报ID查询未确认的申报明细数目
+     * 根据有合并明细的申报ID查询未确认的数目
      *
-     * @param subDeclareIds
+     * @param hasCombinedDeclareIds
      * @return
      */
     @Override
-    public int selectCount(String[] subDeclareIds) {
-        List<Long> ids = new ArrayList<>();
-        //根据批量ID数组查询申报任务信息
-        if (subDeclareIds != null && !"".equals(subDeclareIds)) {
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubDeclarePO());
-            wrapper.isNull("task_sub_declare_id");
-            wrapper.andNew("is_active = {0} ", true);
-            wrapper.in("id", subDeclareIds);
-            wrapper.orderBy("modified_time", false);
-            wrapper.orderBy("created_time", false);
-            List<TaskSubDeclarePO> taskSubDeclarePOList = taskSubDeclareMapper.selectList(wrapper);
-            //通过stream过滤出合并任务id
-            List<Long> mergeIds = taskSubDeclarePOList.stream().filter(x -> x.getCombined()).map(m -> m.getId()).collect(Collectors.toList());
-            //根据合并任务ID查询出合并前的任务ID
-            EntityWrapper wrapper1 = new EntityWrapper();
-            wrapper1.setEntity(new TaskSubDeclarePO());
-            wrapper1.in("task_sub_declare_id", mergeIds);
-            List<TaskSubDeclarePO> taskSubDeclarePOList1 = taskSubDeclareMapper.selectList(wrapper1);
-            List<Long> subIds = taskSubDeclarePOList1.stream().map(m -> m.getId()).collect(Collectors.toList());
-            ids.addAll(subIds);
-            //未合并任务id
-            List<Long> unMergeIds = taskSubDeclarePOList.stream().filter(x -> !x.getCombined()).map(m -> m.getId()).collect(Collectors.toList());
-            ids.addAll(unMergeIds);
-        }
+    public int selectCount(String[] hasCombinedDeclareIds) {
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.andNew("is_combine_confirmed = {0}", false);
         wrapper.andNew("is_combined = {0}", true);
-        wrapper.in("task_sub_declare_id", ids);
+        wrapper.in("task_sub_declare_id", hasCombinedDeclareIds);
         int count = baseMapper.selectCount(wrapper);
         return count;
     }

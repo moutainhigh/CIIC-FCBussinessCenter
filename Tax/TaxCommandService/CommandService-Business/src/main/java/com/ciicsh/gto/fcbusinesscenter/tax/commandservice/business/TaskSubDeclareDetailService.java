@@ -28,12 +28,12 @@ public interface TaskSubDeclareDetailService {
     ResponseForSubDeclareDetail querySubDeclareDetailsByParams(RequestForSubDeclareDetail requestForSubDeclareDetail);
 
     /**
-     * 根据批量完成数组查询未确认的明细数目
+     * 根据有合并明细的申报ID查询未确认的数目
      *
-     * @param subDeclareIds
+     * @param hasCombinedDeclareIds
      * @return
      */
-    int selectCount(String[] subDeclareIds);
+    int selectCount(String[] hasCombinedDeclareIds);
 
 }
 

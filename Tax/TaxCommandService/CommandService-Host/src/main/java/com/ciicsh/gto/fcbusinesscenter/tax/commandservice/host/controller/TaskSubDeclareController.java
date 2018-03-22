@@ -200,8 +200,11 @@ public class TaskSubDeclareController extends BaseController {
     public JsonResult<Boolean> completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            //根据批量完成申报ID查询未确认的申报明细数目
-            int count = taskSubDeclareDetailService.selectCount(taskSubDeclareDTO.getSubDeclareIds());
+            int count = 0;
+            if(taskSubDeclareDTO.getHasCombinedDeclareIds().length > 0){
+                //根据有合并明细的申报ID查询未确认的数目
+                count = taskSubDeclareDetailService.selectCount(taskSubDeclareDTO.getHasCombinedDeclareIds());
+            }
             if (count > 0) {
                 jr.fill(JsonResult.ReturnCode.DE_ER01);
             }else{

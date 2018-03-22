@@ -184,8 +184,11 @@ public class TaskSubSupplierController extends BaseController {
     public JsonResult<Boolean> completeTaskSuppliers(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            //根据批量完成供应商ID查询未确认的供应商明细数目
-            int count = taskSubSupplierDetailService.selectCount(taskSubSupplierDTO.getSubSupplierIds());
+            int count = 0;
+            if(taskSubSupplierDTO.getSubHasCombinedSupplierIds().length > 0){
+                //根据有合并明细的供应商ID查询未确认的数目
+                count = taskSubSupplierDetailService.selectCount(taskSubSupplierDTO.getSubHasCombinedSupplierIds());
+            }
             if (count > 0) {
                 jr.fill(JsonResult.ReturnCode.SU_ER01);
             }else{

@@ -20,9 +20,9 @@ public interface TaskSubSupplierDetailService {
     /**
      * 根据批量完成数组查询未确认的明细数目
      *
-     * @param subSupplierIds
+     * @param subHasCombinedSupplierIds
      * @return
      */
-    int selectCount(String[] subSupplierIds);
+    int selectCount(String[] subHasCombinedSupplierIds);
 }
 
