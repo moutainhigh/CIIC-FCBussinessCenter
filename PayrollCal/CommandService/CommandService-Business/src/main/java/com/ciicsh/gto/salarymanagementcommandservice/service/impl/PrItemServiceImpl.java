@@ -288,15 +288,14 @@ public class PrItemServiceImpl implements PrItemService {
 
     private String replacePayItem(String content, Pattern pattern, Map<String, String> nameCodeMap){
 
-        String result = content;
         Matcher m = pattern.matcher(content);
         while(m.find()) {
             String payItemName = m.group(1);
             if (StringUtils.isEmpty(nameCodeMap.get(payItemName))) {
                 throw new BusinessException("计算公式中有不存在于该薪资组的薪资项: " + payItemName);
             }
-            result = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
+            content = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
         }
-        return result;
+        return content;
     }
 }
