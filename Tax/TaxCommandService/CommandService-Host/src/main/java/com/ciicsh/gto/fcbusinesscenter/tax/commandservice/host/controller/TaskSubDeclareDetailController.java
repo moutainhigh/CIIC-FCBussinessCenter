@@ -139,7 +139,7 @@ public class TaskSubDeclareDetailController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubDeclareDetailIds", taskSubDeclareDetailDTO.getTaskSubDeclareDetailIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.confirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.confirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
 
@@ -167,7 +167,7 @@ public class TaskSubDeclareDetailController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubDeclareDetailIds", taskSubDeclareDetailDTO.getTaskSubDeclareDetailIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.unconfirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.unconfirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
 

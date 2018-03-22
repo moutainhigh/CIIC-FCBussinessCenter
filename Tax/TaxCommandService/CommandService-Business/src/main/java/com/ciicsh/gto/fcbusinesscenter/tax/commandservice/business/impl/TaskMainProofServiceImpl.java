@@ -117,10 +117,6 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
             //设置任务状态
             taskMainProofPO.setStatus("01");
-            //设置修改人
-            taskMainProofPO.setModifiedBy(requestForProof.getModifiedBy());
-            //设置修改时间
-            taskMainProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
             //任务为草稿状态
@@ -135,10 +131,6 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             //修改完税凭证子任务状态
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
             taskSubProofPO.setStatus(requestForProof.getStatus());
-            //设置修改人
-            taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
-            //设置修改时间
-            taskSubProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
             //任务为草稿状态
@@ -154,10 +146,6 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 //修改完税凭证子任务状态
                 TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
                 taskSubProofPO.setStatus(requestForProof.getStatus());
-                //设置修改人
-                taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
-                //设置修改时间
-                taskSubProofPO.setModifiedTime(LocalDateTime.now());
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
                 //任务为草稿状态
@@ -186,10 +174,6 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
             //设置任务状态, 05：为失效状态
             taskMainProofPO.setStatus("05");
-            //设置修改人
-            taskMainProofPO.setModifiedBy(requestForProof.getModifiedBy());
-            //设置修改时间
-            taskMainProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
             //任务为草稿状态
@@ -205,10 +189,6 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
             //设置任务状态, 05：为失效状态
             taskSubProofPO.setStatus("05");
-            //设置修改人
-            taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
-            //设置修改时间
-            taskSubProofPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
             //任务为草稿状态
@@ -225,10 +205,6 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
                 //设置任务状态, 05：为失效状态
                 taskSubProofPO.setStatus("05");
-                //设置修改人
-                taskSubProofPO.setModifiedBy(requestForProof.getModifiedBy());
-                //设置修改时间
-                taskSubProofPO.setModifiedTime(LocalDateTime.now());
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
                 //任务为草稿状态

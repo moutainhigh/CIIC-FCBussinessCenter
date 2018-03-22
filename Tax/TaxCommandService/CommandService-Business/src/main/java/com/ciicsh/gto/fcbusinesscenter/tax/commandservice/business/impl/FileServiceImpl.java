@@ -89,8 +89,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             filePO.setId(requestForFile.getId());
             //设置是否可用
             filePO.setActive(false);
-            //设置修改时间
-            filePO.setModifiedTime(LocalDateTime.now());
             //删除文件:即修改数据为不可用
             flag = super.insertOrUpdate(filePO);
         }

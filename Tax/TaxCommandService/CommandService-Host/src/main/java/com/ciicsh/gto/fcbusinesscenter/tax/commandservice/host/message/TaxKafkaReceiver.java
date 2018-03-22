@@ -36,9 +36,6 @@ public class TaxKafkaReceiver {
                 int status = payApplyPayStatusDTO.getPayStatus();
                 TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
                 taskSubMoneyBO.setId(subMoneyId);
-                taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
-                //TODO 临时修改人
-                taskSubMoneyBO.setModifiedBy("admin");
                 if (status == 9) {
                     logger.info(subMoneyId + "划款成功");
                     //修改
