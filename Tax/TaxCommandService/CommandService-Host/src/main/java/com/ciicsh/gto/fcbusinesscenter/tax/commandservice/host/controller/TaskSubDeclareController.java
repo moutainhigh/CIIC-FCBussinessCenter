@@ -202,9 +202,8 @@ public class TaskSubDeclareController extends BaseController {
         try {
             //根据批量完成申报ID查询未确认的申报明细数目
             int count = taskSubDeclareDetailService.selectCount(taskSubDeclareDTO.getSubDeclareIds());
-            count = 3;
             if (count > 0) {
-                jr.fill(JsonResult.ReturnCode.TM_ER01);
+                jr.fill(JsonResult.ReturnCode.DE_ER01);
             }else{
                 RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
                 BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);

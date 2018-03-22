@@ -186,9 +186,8 @@ public class TaskSubSupplierController extends BaseController {
         try {
             //根据批量完成供应商ID查询未确认的供应商明细数目
             int count = taskSubSupplierDetailService.selectCount(taskSubSupplierDTO.getSubSupplierIds());
-            count = 3;
             if (count > 0) {
-                jr.fill(JsonResult.ReturnCode.TM_ER01);
+                jr.fill(JsonResult.ReturnCode.SU_ER01);
             }else{
                 RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
                 BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);

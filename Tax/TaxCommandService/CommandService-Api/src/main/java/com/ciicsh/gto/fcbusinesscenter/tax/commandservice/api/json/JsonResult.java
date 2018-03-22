@@ -12,12 +12,17 @@ public class JsonResult<T> {
      * TR_ 划款；
      * PA_ 缴纳；
      * PR_ 完税凭证；
+     * SU_ 供应商；
      */
     public static enum ReturnCode{
 
         FAIL("异常"),
 
-        TM_ER01("任务内有未确认的合并明细，不能提交任务");
+        TM_ER01("任务内有未确认的合并明细，不能提交任务"),
+
+        DE_ER01("任务内有未确认的合并明细，不能提交任务DE"),
+
+        SU_ER01("任务内有未确认的合并明细，不能提交任务SU");
 
         private String  message;
 
