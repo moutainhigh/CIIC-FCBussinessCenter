@@ -138,9 +138,23 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 	private Boolean isCombined;
 
 	/**
+	 * 是否有合并明细
+	 */
+	@TableField("has_combined")
+	private Boolean hasCombined;
+
+	/**
 	 * 账户类型
 	 */
 	private String accountType;
+
+	public Boolean getHasCombined() {
+		return hasCombined;
+	}
+
+	public void setHasCombined(Boolean hasCombined) {
+		this.hasCombined = hasCombined;
+	}
 
 	public String getAccountType() {
 		return accountType;
