@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * <p>
@@ -552,6 +553,12 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setCombineConfirmed(Boolean combineConfirmed) {
 		isCombineConfirmed = combineConfirmed;
+	}
+
+
+	public String groupBys(){
+
+		return this.employeeNo + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
 	}
 
 	@Override

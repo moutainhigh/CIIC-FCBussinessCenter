@@ -148,6 +148,14 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 	 */
 	private String accountType;
 
+	public Boolean getHasCombined() {
+		return hasCombined;
+	}
+
+	public void setHasCombined(Boolean hasCombined) {
+		this.hasCombined = hasCombined;
+	}
+
 	public String getAccountType() {
 		return accountType;
 	}
