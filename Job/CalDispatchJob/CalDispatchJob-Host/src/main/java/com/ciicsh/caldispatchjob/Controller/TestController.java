@@ -53,8 +53,8 @@ public class TestController {
 
     @PostMapping("/doBatch")
     public void updateEmpAgreement(){
-        for (int i=0; i< 10; i++){
-            List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is("GL000007-201803-0000000167"));
+        for (int i=0; i< 11; i++){
+            List<DBObject> list = normalBatchMongoOpt.list(Criteria.where("batch_code").is("GL000007_201811_0000000180"));
             int j = 0;
             list.forEach(p-> {
                 p.put("_id", new ObjectId());

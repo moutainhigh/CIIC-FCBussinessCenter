@@ -23,7 +23,7 @@
         <server>
             <id>drools-workbench</id>
             <username>admin</username>
-            <password>admin</password>
+            <password>admin123</password>
             <configuration>
                 <httpConfiguration>
                     <put>
@@ -46,7 +46,7 @@
                 <repository>
                     <id>drools-workbench</id>
                     <name>Guvnor M2 Repo</name>
-                    <url>http://172.16.9.29:8080/kie-drools-wb/maven2/</url>
+                    <url>http://172.16.9.59:8080/kie-drools-wb/maven2/</url>
                     <layout>default</layout>
                     <releases>
                         <enabled>true</enabled>

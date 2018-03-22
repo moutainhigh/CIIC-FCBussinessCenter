@@ -38,11 +38,11 @@ public class DroolsContext {
 
     /**
      * 获取薪资项值
-     * @param payItemName
+     * @param itemCode
      * @return
      */
-    public Object getItemValByItemName(String payItemName){
-        return empPayItem.getItems().get(payItemName);
+    public Object getItemValByCode(String itemCode){
+        return empPayItem.getItems().get(itemCode);
     }
 
     /**
@@ -56,56 +56,6 @@ public class DroolsContext {
 
     public List<String> getParametersByFuncName(FuncEntity entity, String funcName){
         return entity.getParameters();
-    }
-
-    /**
-     * 计算工龄
-     * @param onbaordDate
-     * @param leaveDate
-     * @return
-     */
-    public BigDecimal getWorkDate(String onbaordDate, String leaveDate) {
-
-        YearMonth currentYearMonth = YearMonth.now();
-        currentYearMonth.lengthOfMonth();
-
-        /*
-        Date date = null;
-        double result = 0.0;
-        SimpleDateFormat bartDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        if(leaveDate == null || leaveDate == ""){
-            date = new Date();//获得当前日期
-        }
-        else {
-            try {
-                date = bartDateFormat.parse(leaveDate);
-            }catch (Exception ex){
-                System.out.println(ex.getMessage());
-            }
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int year = cal.get(Calendar.YEAR);//获得年份
-        int month = cal.get(Calendar.MONTH);//获得月份
-
-        try {
-            Date d = bartDateFormat.parse(onbaordDate);
-            cal.setTime(d);
-            int year2 = cal.get(Calendar.YEAR);
-            int month2 = cal.get(Calendar.MONTH);
-            int t = year - year2;//得到年差
-            int m = month - month2;//得到月差
-            if (m < 0) {
-                t = t - 1;
-                m = 12 + m;
-            }
-            result = t + m/12;
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }*/
-
-        return BigDecimal.valueOf(2);
     }
 
     public BigDecimal getBigDecimal( Object value ) {

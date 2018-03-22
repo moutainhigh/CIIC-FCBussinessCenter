@@ -1,6 +1,9 @@
 package com.ciicsh.caldispatchjob.compute.util;
 
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.math.BigDecimal;
@@ -17,6 +20,10 @@ public class JavaScriptEngine {
         engine = scriptEngine;
     }
 
+    public static ScriptEngine getEngine(){
+        return engine;
+    }
+
     public static BigDecimal compute(String formula) throws ScriptException{
 
         Object o = engine.eval(formula);
@@ -25,9 +32,21 @@ public class JavaScriptEngine {
 
     }
 
-    public static ScriptEngine getEngine(){
-        ScriptEngineManager factory = new ScriptEngineManager();
-        ScriptEngine engine = factory.getEngineByName("nashorn");
+    public static ScriptEngine createEngine(){
+        ScriptEngineManager sm = new ScriptEngineManager();
+
+        NashornScriptEngineFactory factory = null;
+        for (ScriptEngineFactory f : sm.getEngineFactories()) {
+            if (f.getEngineName().equalsIgnoreCase("Oracle Nashorn")) {
+                factory = (NashornScriptEngineFactory)f;
+                break;
+            }
+        }
+        String[] stringArray = new String[]{"-doe", "--global-per-engine"};
+        ScriptEngine engine = factory.getScriptEngine(stringArray);
+
+        //ScriptEngineManager factory = new ScriptEngineManager();
+        //ScriptEngine engine = factory.getEngineByName("nashorn");
         return engine;
     }
 }

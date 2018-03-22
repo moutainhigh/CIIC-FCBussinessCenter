@@ -352,6 +352,8 @@ public class NormalBatchController {
 
     @PostMapping("/doCompute")
     public JsonResult doComputeAction(@RequestParam String batchCode, @RequestParam int batchType){
+        logger.info(" 发送薪资计算消息到kafka : " + batchCode + "－－批次类型号：" + String.valueOf(batchType));
+
         try {
             if(batchType == BatchTypeEnum.NORMAL.getValue()) {
                 batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill",""); //TODO
@@ -363,6 +365,7 @@ public class NormalBatchController {
             // 发送薪资计算消息到kafka
             ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
+            computeMsg.setBatchType(batchType);
             sender.SendComputeAction(computeMsg);
         }
         catch (Exception e){

@@ -1,17 +1,19 @@
 package com.ciicsh.caldispatchjob.compute.service;
 
-import com.ciicsh.caldispatchjob.entity.EmpPayItem;
 import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +41,9 @@ public class NormalBatchServiceImpl {
 
     @Autowired
     private PrPayrollItemMapper prPayrollItemMapper;
+
+    @Autowired
+    private PrPayrollAccountItemRelationMapper accountItemRelationMapper;
 
     @Autowired
     private PrNormalBatchMapper normalBatchMapper;
@@ -144,6 +146,7 @@ public class NormalBatchServiceImpl {
         return dbObject;
     }
 
+    //生成薪资项列表
     private List<BasicDBObject> getPayItemList(PrCustBatchPO batchPO){
 
         List<PrPayrollItemPO> prList = null;
@@ -159,17 +162,31 @@ public class NormalBatchServiceImpl {
             payrollGroupExtPO.setPayrollGroupTemplateCode("");
 
         }
+        //获取薪资组或薪资组模版下的薪资项列表
         prList = prPayrollItemMapper.getPayrollItems(payrollGroupExtPO);
+
+        //获取薪资帐套下的薪资项列表
+        List<PayrollAccountItemRelationExtPO> itemRelationExtsList = accountItemRelationMapper.getAccountItemRelationExts(batchPO.getAccountSetCode());
+
 
         //计算顺序由小到大排列，越小计算优先级越高
         prList = prList.stream()
+                .filter(p-> itemRelationExtsList.stream().anyMatch(f -> f.getPayrollItemCode().equals(p.getItemCode()) && f.getIsActive()))
                 .sorted(Comparator.comparingInt(PrPayrollItemPO::getCalPriority))
                 .collect(Collectors.toList());
 
         prList.forEach(item ->{
             BasicDBObject dbObject = new BasicDBObject();
+            Optional<PayrollAccountItemRelationExtPO> find =
+                    itemRelationExtsList.stream().filter(r -> r.getPayrollItemCode().equals(item.getItemCode()) && StringUtils.isNotEmpty(r.getPayrollItemAlias())).findFirst();
+            if(find.isPresent()){
+                //item.setItemName(find.get().getPayrollItemAlias());
+                dbObject.put("item_name",find.get().getPayrollItemAlias()); // 设置别名
+            }else {
+                dbObject.put("item_name",item.getItemName());
+
+            }
             dbObject.put("item_code",item.getItemCode());
-            dbObject.put("item_name",item.getItemName());
             dbObject.put("item_value",item.getItemValue());
             dbObject.put("item_type",item.getItemType());
             dbObject.put("data_type",item.getDataType());

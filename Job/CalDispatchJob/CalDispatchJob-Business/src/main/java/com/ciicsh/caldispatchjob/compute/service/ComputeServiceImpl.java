@@ -9,23 +9,17 @@ import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.*;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrAdjustBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrBackTrackingBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.kie.api.cdi.KReleaseId;
 import org.kie.api.cdi.KSession;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
-import org.mvel2.util.Make;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +27,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-
-import javax.script.ScriptException;
+import javax.script.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+
 
 /**
  * Created by bill on 17/12/31.
@@ -50,7 +43,7 @@ public class ComputeServiceImpl {
 
     private final static Logger logger = LoggerFactory.getLogger(NormalBatchServiceImpl.class);
 
-    private final static Pattern PAY_ITEM_REGEX = Pattern.compile("\\[([^\\[\\]]+)\\]");
+    private final static Pattern PAY_ITEM_REGEX = Pattern.compile("\\_\\]");//Pattern.compile("\\[([^\\[\\]]+)\\]");
     private final static Pattern FUNCTION_REGEX = Pattern.compile("\\{([^\\{\\}]+)\\}");
     private final static Pattern DIGEST_REGEX = Pattern.compile("^(-?\\d+)(\\.\\d+)?$");
     private final static Pattern PARAMETER_REGEX = Pattern.compile("\\(([^\\[\\]]+)\\)");
@@ -58,6 +51,7 @@ public class ComputeServiceImpl {
 
     private final static String FUNCTION_LEFT_SIDE_PREFIX = "{";
     private final static String FUNCTION_RIGHT_SIDE_PREFIX = "}";
+    private final static String REPLACE_FUNC_PREFIX="func";
 
     private final static String CONDITION_FOMULAR_SIPE = ";";
 
@@ -103,16 +97,19 @@ public class ComputeServiceImpl {
         Query query = new Query(criteria);
 
         query.fields().
-                include(PayItemName.EMPLOYEE_CODE_CN)
+                 include(PayItemName.EMPLOYEE_CODE_CN)
                 .include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.cal_priority")
                 .include("catalog.pay_items.item_name")
+                .include("catalog.pay_items.item_code")
                 .include("catalog.pay_items.item_value")
                 .include("catalog.pay_items.decimal_process_type")
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
         ;
+
+        //query = query.skip(0).limit(1);
 
         long start1 = System.currentTimeMillis(); //begin
 
@@ -130,7 +127,7 @@ public class ComputeServiceImpl {
 
         List<BathUpdateOptions> options = new ArrayList<>();
 
-        //HashMap<String,CustPayItems> custItems = listToHashMaps(batchList);
+        Map<String,CompiledScript> scripts = new HashMap<>();
 
 
         batchList.stream().forEach(dbObject -> {
@@ -138,26 +135,42 @@ public class ComputeServiceImpl {
             //DBObject empInfo = (DBObject)calalog.get("emp_info");
             String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
             List<DBObject> items = ((List<DBObject>)calalog.get("pay_items"));
+
+            Bindings bindings = new SimpleBindings();
+
             //set drools context
             EmpPayItem empPayItem = new EmpPayItem();
-            empPayItem.setItems(listToHashMap(items));
+            empPayItem.setItems(bindings);
             empPayItem.setEmpCode(empCode);
-            context.setEmpPayItem(empPayItem);
+            context.setEmpPayItem(empPayItem); //用于规则引擎计算
 
             context.getFuncEntityList().clear(); // set each employee function result null
             //end
 
+            CompiledScript compiled = null;
             Update update = null;
             int k = 0;
 
+
             for (DBObject item: items) {
 
-                //items.forEach(item -> {
+                int dataType = item.get("data_type") == null ? 1 : (int) item.get("data_type"); // 数据格式: 1-文本,2-数字,3-日期,4-布尔
+
+                item.put("item_code",((String)item.get("item_code")).replaceAll("-","_")); // TODO remove
+
+                String itemCode = (String)item.get("item_code");
+
+                if(dataType == DataTypeEnum.NUM.getValue()){
+                    bindings.put(itemCode,new BigDecimal(String.valueOf(item.get("item_value") == null ? 0 : item.get("item_value")))); //设置导入项和固定项的值
+                }else {
+                    bindings.put(itemCode, item.get("item_value")); //设置导入项和固定项的值
+                }
+
                 int itemType = item.get("item_type") == null ? 0 : (int)item.get("item_type"); // 薪资项类型
 
                 //处理计算项
                 if(itemType == ItemTypeEnum.CALC.getValue()) {
-                    int dataType = item.get("data_type") == null ? 1 : (int) item.get("data_type"); // 数据格式: 1-文本,2-数字,3-日期,4-布尔
+
                     int calPriority = (int) item.get("cal_priority");
                     String itemName = item.get("item_name") == null ? "" : (String) item.get("item_name");
                     logger.info(String.format("薪资项目－%s | 计算优先级－%d", itemName, calPriority));
@@ -168,19 +181,47 @@ public class ComputeServiceImpl {
                     String formulaContent = item.get("formula_content") == null ? "" : (String) item.get("formula_content"); //计算公式
                     if (StringUtils.isEmpty(formulaContent)) return;
 
-                    /*if(calPriority == 49){
-                        String test ="uat";
-                    }*/
 
+                    /*if(calPriority == 49){
+                        String s ="s";
+                            Iterator iter = bindings.entrySet().iterator();
+                            while (iter.hasNext()) {
+                                Map.Entry entry = (Map.Entry) iter.next();
+                                String key = (String) entry.getKey();
+                                Object val = entry.getValue();
+                                if(copy.indexOf(key) >=0) {
+                                    copy = copy.replaceAll(key, (String) val);
+                                }
+                            }
+                    }*/
 
                     condition = Special2Normal(condition); //特殊字符转化
                     formulaContent = Special2Normal(formulaContent); //特殊字符转化
                     String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
-                    String finalResult = replacePayItem(conditionFormula, PAY_ITEM_REGEX, context);//处理薪资项的公式
+                    //String finalResult = replacePayItem(conditionFormula, PAY_ITEM_REGEX, context);//处理薪资项的公式
                     try {
-                        BigDecimal computeResult = JavaScriptEngine.compute(finalResult); // 执行JS 方法
 
-                        Object result = null;
+                        if(scripts.get(itemCode) == null){
+                            compiled = ((Compilable)JavaScriptEngine.getEngine()).compile(conditionFormula);
+                            scripts.put(itemCode,compiled);
+                        }else {
+                            compiled = scripts.get(itemCode);
+                        }
+
+                        for (FuncEntity fun : context.getFuncEntityList()) {
+                            //公式的函数名 替换成 公式的函数值
+                            bindings.put(REPLACE_FUNC_PREFIX + fun.getFuncName(), fun.getResult());
+                        }
+
+                        //setPayItemBindings(conditionFormula, PAY_ITEM_REGEX, context, bindings);
+
+                        Object compiledResult = compiled.eval(bindings); // run JS method
+
+                        BigDecimal computeResult = context.getBigDecimal(compiledResult);
+
+                        //BigDecimal computeResult = JavaScriptEngine.compute(finalResult); // 执行JS 方法
+
+                        double result ;
                         if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
                             result = Arith.round(computeResult.doubleValue(), 0);
 
@@ -188,6 +229,7 @@ public class ComputeServiceImpl {
                             result = Arith.round(computeResult.doubleValue(), 2);
                         }
                         item.put("item_value", result);
+                        bindings.put(itemCode, result); // 设置计算项的值
 
                         if (update == null) {
                             update = Update.update("catalog.pay_items."+String.valueOf(k) +".item_value", result);
@@ -195,17 +237,15 @@ public class ComputeServiceImpl {
                             update.set("catalog.pay_items." + String.valueOf(k) + ".item_value", result);
                         }
 
-                        context.getEmpPayItem().getItems().put(itemName, result); //设置上下文计算项的值
+                        //context.getEmpPayItem().getItems().put(itemCode, result); //设置上下文计算项的值(函数用)
                         context.getFuncEntityList().clear(); // 清除FIRE 过的函数
 
-                    } catch (ScriptException se) {
+                    } catch (Exception se) {
                         logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
                     }
                 }
                 k++;
             }
-
-
             BathUpdateOptions batchOpt = new BathUpdateOptions();
             batchOpt.setQuery(Query.query(
                     Criteria.where("batch_code").is(batchCode)
@@ -219,7 +259,7 @@ public class ComputeServiceImpl {
 
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            normalBatchMongoOpt.doBathUpdate(options,true);
+            //normalBatchMongoOpt.doBathUpdate(options,true);
             rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
             adjustBatchMongoOpt.doBathUpdate(options,true);
@@ -249,7 +289,11 @@ public class ComputeServiceImpl {
      */
     private HashMap<String, Object> listToHashMap(List<DBObject> payItems){
 
-        HashMap<String, Object> map = payItems.stream().collect(
+        HashMap<String, Object> map = payItems.stream()
+                .filter(p->{ int itemType = p.get("item_type") == null ? 0 : (int)p.get("item_type");
+                        return itemType != ItemTypeEnum.CALC.getValue();
+                })
+                .collect(
                 HashMap<String, Object>::new,
                 (m,c) -> m.put((String)c.get("item_name"), c.get("item_value")),
                 (m,u)-> {}
@@ -334,8 +378,9 @@ public class ComputeServiceImpl {
             return condition_formula;
         }
         for (FuncEntity fun : context.getFuncEntityList()) {
-            //公式的函数名 替换成 公式的函数值
-            condition_formula = condition_formula.replace(FUNCTION_LEFT_SIDE_PREFIX + fun.toString() + FUNCTION_RIGHT_SIDE_PREFIX, fun.getResult().toString());
+            //公式名替换
+            String funcExpress = FUNCTION_LEFT_SIDE_PREFIX + fun.toString() + FUNCTION_RIGHT_SIDE_PREFIX;
+            condition_formula = condition_formula.replace(funcExpress, REPLACE_FUNC_PREFIX + fun.getFuncName());
         }
         return condition_formula;
 
@@ -400,16 +445,16 @@ public class ComputeServiceImpl {
      * @param pattern
      * @return 最终公式结果
      */
-    private String replacePayItem(String content, Pattern pattern, DroolsContext context){
+    private void setPayItemBindings(String content, Pattern pattern, DroolsContext context,Bindings bindings){
 
-        HashMap<String,Object> payItems = context.getEmpPayItem().getItems();
         Matcher m = pattern.matcher(content);
         while(m.find()) {
-            String payItemName = m.group(1);
-            Object val = payItems.get(payItemName);
-            content = content.replace("[" + payItemName +"]",val == null ? "": Object2String(val));
+            String itemName = m.group(1);
+            Object val = context.getItemValByCode(itemName);
+            //content = content.replace("[" + payItemName +"]",val == null ? "": Object2String(val));
+            bindings.put(itemName, val);
         }
-        return content;
+        //return content;
     }
 
     /**
@@ -441,7 +486,7 @@ public class ComputeServiceImpl {
         for (FuncEntity func : context.getFuncEntityList()){
             set.add(func.getFuncName());
         }
-        FactHandle factHandle =  kSession.insert(context);
+        FactHandle factHandle =  kSession.insert(context); // 插入上下文信息
         int count = kSession.fireAllRules(new CustomAgendaFilter(set));
         kSession.delete(factHandle);
         logger.info(String.format("emp_code: %s, total excute rule counts: %d", context.getEmpPayItem().getEmpCode(),count));
@@ -463,7 +508,7 @@ public class ComputeServiceImpl {
                 .replaceAll("＊","*").replaceAll("／","/")
                 .replaceAll("，",",").replaceAll("'","'")
                 .replaceAll("“","\"");
-        //inputStr = StringUtils.removeEnd(inputStr,";"); // 去除 ；号结尾
+        inputStr = StringUtils.removeEnd(inputStr,";"); // 去除 ；号结尾
         return inputStr;
     }
 

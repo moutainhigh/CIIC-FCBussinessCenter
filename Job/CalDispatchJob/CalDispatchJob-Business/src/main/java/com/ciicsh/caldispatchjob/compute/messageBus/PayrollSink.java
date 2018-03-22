@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface PayrollSink {
+
     String INPUT = "payroll-input-channel";
 
     String EMP_GROUP_INPUT= "pr_emp_group-channel";
