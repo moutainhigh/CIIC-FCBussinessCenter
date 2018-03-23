@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -281,6 +282,11 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setIdType(String idType) {
 		this.idType = idType;
+
+		if(idType!=null){
+
+			this.idTypeName  = EnumUtil.getMessage(EnumUtil.IT_TYPE,idType);
+		}
 	}
 
 	public String getIdNo() {
@@ -321,6 +327,11 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setIncomeSubject(String incomeSubject) {
 		this.incomeSubject = incomeSubject;
+
+		if(incomeSubject!=null){
+
+			this.incomeSubjectName  = EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,incomeSubject);
+		}
 	}
 
 	public BigDecimal getIncomeTotal() {
