@@ -14,8 +14,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTa
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +30,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper, TaskSubDeclarePO> implements TaskSubDeclareService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubDeclareServiceImpl.class);
 
     @Autowired
     private TaskSubProofService taskSubProofService;

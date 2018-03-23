@@ -18,8 +18,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBa
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.collector.CollectorsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +37,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMapper, CalculationBatchPO> implements CalculationBatchService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(CalculationBatchServiceImpl.class);
 
     @Autowired
     private CalculationBatchDetailServiceImpl calculationBatchDetailServiceImpl;
