@@ -145,14 +145,14 @@ public class TaskFileController extends BaseController {
                     try {
                         inputStream.close();
                     } catch (IOException e) {
-                        logger.error("close inputStream error " + e.toString());
+                        logger.error("close inputStream error ", e);
                     }
                 }
                 if (out != null) {
                     try {
                         out.close();
                     } catch (IOException e) {
-                        logger.error("close out error " + e.toString());
+                        logger.error("close out error ", e);
                     }
                 }
 
