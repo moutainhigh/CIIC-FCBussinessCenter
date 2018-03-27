@@ -288,15 +288,16 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
     /**
      * 更新主任务状态(子任务退回)
-     * @param taskMainId
+     * @param taskMainIds
      * @return
      */
-    public void updateTaskMainStatus(Long taskMainId){
+    public void updateTaskMainStatus(Long[] taskMainIds){
 
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.in("id",taskMainIds);
         TaskMainPO tmp = new TaskMainPO();
-        tmp.setId(taskMainId);
         tmp.setStatus("03");
-        this.baseMapper.updateById(tmp);//更新主任务
+        this.update(tmp,wrapper);//更新主任务
     }
 
 }
