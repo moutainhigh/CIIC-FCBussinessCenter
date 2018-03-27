@@ -244,7 +244,7 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.rejectTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
