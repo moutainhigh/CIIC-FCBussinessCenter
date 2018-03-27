@@ -4,7 +4,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubDeclare
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubDeclareServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
@@ -206,6 +205,9 @@ public class TaskSubDeclareController extends BaseController {
             }else{
                 RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
                 BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+                //修改人
+                UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+                requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
                 //任务状态
                 requestForTaskSubDeclare.setStatus("04");
                 taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
