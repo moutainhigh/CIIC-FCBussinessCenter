@@ -60,9 +60,9 @@ public interface TaskMainService {
     ResponseForTaskMainDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain);
     /**
      * 更新主任务状态(子任务退回)
-     * @param taskMainId
+     * @param taskMainIds
      * @return
      */
-    void updateTaskMainStatus(Long taskMainId);
+    void updateTaskMainStatus(Long[] taskMainIds);
 }
 
