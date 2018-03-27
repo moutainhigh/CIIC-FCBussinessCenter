@@ -223,6 +223,34 @@ public class TaskSubDeclareController extends BaseController {
     }
 
     /**
+     * 批量退回申报任务
+     *
+     * @param taskSubDeclareDTO
+     * @return
+     */
+    @PostMapping(value = "/rejectTaskSubDeclares")
+    public JsonResult<Boolean> rejectTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
+            BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
+            //任务状态
+            requestForTaskSubDeclare.setStatus("03");
+            taskSubDeclareService.rejectTaskSubDeclares(requestForTaskSubDeclare);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+    /**
      * 根据ID查询合并之前的申报子任务
      *
      * @param mergeId
