@@ -43,6 +43,14 @@
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>seaweedFS-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>seaweedFS-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

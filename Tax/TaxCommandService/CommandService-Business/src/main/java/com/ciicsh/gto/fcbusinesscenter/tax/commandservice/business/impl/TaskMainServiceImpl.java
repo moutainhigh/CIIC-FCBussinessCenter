@@ -302,4 +302,45 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         this.update(tmp,wrapper);//更新主任务
     }
 
+    /**
+     *
+     * @param taskMainIds
+     * @param status
+     * @return
+     */
+    public boolean isStatusSame(String[] taskMainIds,String[] status){
+
+        boolean flag = true;
+
+        int i = 0;
+        for(String st : status){
+            if(st.equals("03")){
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.andNew("task_main_id={0}",taskMainIds[i]);
+                wrapper.and("status!='03'");
+                int count = this.taskSubDeclareService.selectCount(wrapper);
+                if(count>0){
+                    return false;
+                }else{
+                    count = this.taskSubMoneyService.selectCount(wrapper);
+                    if(count>0){
+                        return false;
+                    }else{
+                        count = this.taskSubPaymentService.selectCount(wrapper);
+                        if(count>0){
+                            return false;
+                        }else{
+                            count = this.taskSubSupplierService.selectCount(wrapper);
+                            if(count>0){
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return flag;
+    }
+
 }

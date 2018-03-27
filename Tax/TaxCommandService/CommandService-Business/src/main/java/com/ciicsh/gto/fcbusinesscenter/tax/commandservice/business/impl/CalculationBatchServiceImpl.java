@@ -18,6 +18,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBa
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.collector.CollectorsUtil;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -476,14 +477,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         }
 
         //组装查询条件
-        Long[] cbatchIds = new Long[batchIds.length];
-        int k = 0;
-        for(String bid : batchIds){
-            cbatchIds[k] = new Long(bid);
-            k++;
-        }
+        Long[] cbatchIds = (Long[]) ConvertUtils.convert(batchIds,Long.class);
 
-        List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetails(cbatchIds);
+        List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetailsByBatchIds(cbatchIds);
         List<TaskMainDetailPO> taskMainDetailPOList = new ArrayList<>();
         for(CalculationBatchDetailBO cb : calculationBatchDetailBOList){
             TaskMainDetailPO taskMainDetailPO = new TaskMainDetailPO();
