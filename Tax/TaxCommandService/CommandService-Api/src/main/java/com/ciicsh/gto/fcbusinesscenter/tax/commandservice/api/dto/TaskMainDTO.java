@@ -21,6 +21,15 @@ public class TaskMainDTO {
     private String employeeName;
     private String idType;
     private String idNo;
+    private String[] status;
+
+    public String[] getStatus() {
+        return status;
+    }
+
+    public void setStatus(String[] status) {
+        this.status = status;
+    }
 
     public String getEmployeeNo() {
         return employeeNo;
