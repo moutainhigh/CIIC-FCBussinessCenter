@@ -190,10 +190,10 @@ public class NormalBatchServiceImpl {
             dbObject.put("item_value",item.getItemValue());
             dbObject.put("item_type",item.getItemType());
             dbObject.put("data_type",item.getDataType());
-            dbObject.put("management_id",item.getManagementId());
+            //dbObject.put("management_id",item.getManagementId());
             dbObject.put("item_condition",item.getItemCondition());
             dbObject.put("formula_content",item.getFormulaContent());
-            dbObject.put("origin_formula",item.getOriginFormula());
+            //dbObject.put("origin_formula",item.getOriginFormula());
             dbObject.put("cal_precision",item.getCalPrecision());
             dbObject.put("cal_priority",item.getCalPriority());
             dbObject.put("default_value_style",item.getDefaultValueStyle());

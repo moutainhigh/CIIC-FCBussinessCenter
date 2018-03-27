@@ -30,4 +30,8 @@ public interface PayrollSource {
     @Output(test)
     MessageChannel managementOutput();
 
+    String PR_COMPUTE_COMPLETE = "pr_compute-complete-output-channel";
+    @Output(PR_COMPUTE_COMPLETE)
+    MessageChannel compCompleteOutput();
+
 }

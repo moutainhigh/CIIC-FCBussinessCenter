@@ -17,6 +17,8 @@ public interface PayrollSink {
 
     String PR_COMPUTE_INPUT = "pr_compute-input-channel";
 
+    String PR_COMPUTE_COMPLTE_INPUT = "pr_compute-complete-input-channel";
+
     @Input(INPUT)
     MessageChannel input();
 
@@ -25,4 +27,7 @@ public interface PayrollSink {
 
     @Input(PR_COMPUTE_INPUT)
     SubscribableChannel PayrollComputeInput();
+
+    @Input(PR_COMPUTE_COMPLTE_INPUT)
+    SubscribableChannel ComputeCompleteInput();
 }

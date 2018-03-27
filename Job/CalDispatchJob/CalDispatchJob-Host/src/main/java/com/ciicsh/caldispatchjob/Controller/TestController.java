@@ -66,7 +66,7 @@ public class TestController {
 
     @PostMapping("/delete")
     public int delete(){
-        int rowAffected = normalBatchMongoOpt.delete(Criteria.where("_id").gt(new ObjectId("5aa63094270c214517e8e8e9")));
+        int rowAffected = normalBatchMongoOpt.delete(Criteria.where("_id").gt(new ObjectId("5ab36576270c214517f50fbf")));
         return rowAffected;
     }
 

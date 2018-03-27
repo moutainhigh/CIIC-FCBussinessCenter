@@ -350,23 +350,18 @@ public class NormalBatchController {
 
     }
 
-    @PostMapping("/doCompute")
+    /*@PostMapping("/doCompute")
     public JsonResult doComputeAction(@RequestParam String batchCode, @RequestParam int batchType){
-        logger.info(" 发送薪资计算消息到kafka : " + batchCode + "－－批次类型号：" + String.valueOf(batchType));
 
+        int rowAffected = 0;
         try {
             if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-                batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill",""); //TODO
+                rowAffected = batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill",""); //TODO
             }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
-                adjustBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill","");
+                rowAffected = adjustBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill","");
             }else if(batchType == BatchTypeEnum.BACK.getValue()){
-                backTrackingBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill", "");
+                rowAffected = backTrackingBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill", "");
             }
-            // 发送薪资计算消息到kafka
-            ComputeMsg computeMsg = new ComputeMsg();
-            computeMsg.setBatchCode(batchCode);
-            computeMsg.setBatchType(batchType);
-            sender.SendComputeAction(computeMsg);
         }
         catch (Exception e){
             logger.error(e.getMessage());
@@ -374,7 +369,7 @@ public class NormalBatchController {
         }
         return JsonResult.success("发送计算任务成功");
 
-    }
+    }*/
 
     @PostMapping("/auditBatch")
     public JsonResult auditBatch(@RequestBody BatchAuditDTO batchAuditDTO){
@@ -404,6 +399,17 @@ public class NormalBatchController {
 
         }
         if(rowAffected > 0) {
+            if(batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()){
+                //审核通过后，发送消息
+                ComputeMsg computeMsg = new ComputeMsg();
+                computeMsg.setBatchType(batchAuditDTO.getBatchType());
+                computeMsg.setComputeStatus(BatchStatusEnum.CLOSED.getValue());
+                computeMsg.setBatchCode(batchAuditDTO.getBatchCode());
+
+                logger.info("审核通过 : " + computeMsg.toString());
+
+                sender.SendComputeCompleteAction(computeMsg);
+            }
             return JsonResult.success(rowAffected);
         }
         else {

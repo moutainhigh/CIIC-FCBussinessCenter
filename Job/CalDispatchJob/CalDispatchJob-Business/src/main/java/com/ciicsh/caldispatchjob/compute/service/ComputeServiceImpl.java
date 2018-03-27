@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import javax.script.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.locks.StampedLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +42,7 @@ import java.util.regex.Pattern;
 @Service
 public class ComputeServiceImpl {
 
-    private final static Logger logger = LoggerFactory.getLogger(NormalBatchServiceImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(ComputeServiceImpl.class);
 
     private final static Pattern PAY_ITEM_REGEX = Pattern.compile("\\_\\]");//Pattern.compile("\\[([^\\[\\]]+)\\]");
     private final static Pattern FUNCTION_REGEX = Pattern.compile("\\{([^\\{\\}]+)\\}");
@@ -119,22 +120,29 @@ public class ComputeServiceImpl {
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
             batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, AdjustBatchMongoOpt.PR_ADJUST_BATCH);
 
+
         }else {
             batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
         logger.info("查询mogodb时间 : " + String.valueOf((System.currentTimeMillis() - start1)));
 
-
         List<BathUpdateOptions> options = new ArrayList<>();
 
         Map<String,CompiledScript> scripts = new HashMap<>();
 
+         List<Long> totals = new ArrayList<>();
+
+        //StampedLock lock = new StampedLock();
 
         batchList.stream().forEach(dbObject -> {
-            DBObject calalog = (DBObject)dbObject.get("catalog");
+
+            //long stamp = lock.writeLock();
+
+
+            DBObject calalog = (DBObject) dbObject.get("catalog");
             //DBObject empInfo = (DBObject)calalog.get("emp_info");
             String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
-            List<DBObject> items = ((List<DBObject>)calalog.get("pay_items"));
+            List<DBObject> items = ((List<DBObject>) calalog.get("pay_items"));
 
             Bindings bindings = new SimpleBindings();
 
@@ -152,24 +160,22 @@ public class ComputeServiceImpl {
             int k = 0;
 
 
-            for (DBObject item: items) {
+            for (DBObject item : items) {
 
                 int dataType = item.get("data_type") == null ? 1 : (int) item.get("data_type"); // 数据格式: 1-文本,2-数字,3-日期,4-布尔
 
-                item.put("item_code",((String)item.get("item_code")).replaceAll("-","_")); // TODO remove
+                String itemCode = (String) item.get("item_code");
 
-                String itemCode = (String)item.get("item_code");
-
-                if(dataType == DataTypeEnum.NUM.getValue()){
-                    bindings.put(itemCode,new BigDecimal(String.valueOf(item.get("item_value") == null ? 0 : item.get("item_value")))); //设置导入项和固定项的值
-                }else {
+                if (dataType == DataTypeEnum.NUM.getValue()) {
+                    bindings.put(itemCode, new BigDecimal(String.valueOf(item.get("item_value") == null ? 0 : item.get("item_value")))); //设置导入项和固定项的值
+                } else {
                     bindings.put(itemCode, item.get("item_value")); //设置导入项和固定项的值
                 }
 
-                int itemType = item.get("item_type") == null ? 0 : (int)item.get("item_type"); // 薪资项类型
+                int itemType = item.get("item_type") == null ? 0 : (int) item.get("item_type"); // 薪资项类型
 
                 //处理计算项
-                if(itemType == ItemTypeEnum.CALC.getValue()) {
+                if (itemType == ItemTypeEnum.CALC.getValue()) {
 
                     int calPriority = (int) item.get("cal_priority");
                     String itemName = item.get("item_name") == null ? "" : (String) item.get("item_name");
@@ -182,29 +188,30 @@ public class ComputeServiceImpl {
                     if (StringUtils.isEmpty(formulaContent)) return;
 
 
-                    /*if(calPriority == 49){
-                        String s ="s";
-                            Iterator iter = bindings.entrySet().iterator();
-                            while (iter.hasNext()) {
-                                Map.Entry entry = (Map.Entry) iter.next();
-                                String key = (String) entry.getKey();
-                                Object val = entry.getValue();
-                                if(copy.indexOf(key) >=0) {
-                                    copy = copy.replaceAll(key, (String) val);
-                                }
+                /*if(calPriority == 49){
+                    String s ="s";
+                        Iterator iter = bindings.entrySet().iterator();
+                        while (iter.hasNext()) {
+                            Map.Entry entry = (Map.Entry) iter.next();
+                            String key = (String) entry.getKey();
+                            Object val = entry.getValue();
+                            if(copy.indexOf(key) >=0) {
+                                copy = copy.replaceAll(key, (String) val);
                             }
-                    }*/
+                        }
+                }*/
 
                     condition = Special2Normal(condition); //特殊字符转化
                     formulaContent = Special2Normal(formulaContent); //特殊字符转化
                     String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
-                    //String finalResult = replacePayItem(conditionFormula, PAY_ITEM_REGEX, context);//处理薪资项的公式
                     try {
 
-                        if(scripts.get(itemCode) == null){
-                            compiled = ((Compilable)JavaScriptEngine.getEngine()).compile(conditionFormula);
-                            scripts.put(itemCode,compiled);
-                        }else {
+                        if (scripts.get(itemCode) == null) {
+                            long start0 = System.currentTimeMillis();
+                            compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
+                            scripts.put(itemCode, compiled);
+                            totals.add(System.currentTimeMillis() - start0);
+                        } else {
                             compiled = scripts.get(itemCode);
                         }
 
@@ -221,7 +228,7 @@ public class ComputeServiceImpl {
 
                         //BigDecimal computeResult = JavaScriptEngine.compute(finalResult); // 执行JS 方法
 
-                        double result ;
+                        double result;
                         if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
                             result = Arith.round(computeResult.doubleValue(), 0);
 
@@ -231,11 +238,12 @@ public class ComputeServiceImpl {
                         item.put("item_value", result);
                         bindings.put(itemCode, result); // 设置计算项的值
 
+                        /*
                         if (update == null) {
-                            update = Update.update("catalog.pay_items."+String.valueOf(k) +".item_value", result);
+                            update = Update.update("catalog.pay_items." + String.valueOf(k) + ".item_value", result);
                         } else {
                             update.set("catalog.pay_items." + String.valueOf(k) + ".item_value", result);
-                        }
+                        }*/
 
                         //context.getEmpPayItem().getItems().put(itemCode, result); //设置上下文计算项的值(函数用)
                         context.getFuncEntityList().clear(); // 清除FIRE 过的函数
@@ -246,7 +254,7 @@ public class ComputeServiceImpl {
                 }
                 k++;
             }
-            BathUpdateOptions batchOpt = new BathUpdateOptions();
+            /*BathUpdateOptions batchOpt = new BathUpdateOptions();
             batchOpt.setQuery(Query.query(
                     Criteria.where("batch_code").is(batchCode)
                             .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode)
@@ -254,7 +262,11 @@ public class ComputeServiceImpl {
             batchOpt.setUpdate(update);
             batchOpt.setUpsert(false);
             batchOpt.setMulti(true);
-            options.add(batchOpt);
+            options.add(batchOpt);*/
+            normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode)
+                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode),"catalog.pay_items",items);
+            //normalBatchMongoOpt.doBathUpdate(options,true);
+
         });
 
         int rowAffected = 0;
@@ -278,6 +290,11 @@ public class ComputeServiceImpl {
         }
 
         long end = System.currentTimeMillis();
+        long sum = totals.stream().mapToLong(Long::longValue).sum();
+
+        logger.info("Compiled time: " + String.valueOf(sum));
+
+        batchList = null;
         logger.info("薪资计算总共时间 : " + String.valueOf((end - start)));
 
     }

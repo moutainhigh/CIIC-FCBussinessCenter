@@ -18,12 +18,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class NormalBatchMongoOpt extends BaseOpt {
 
-    private final static Logger logger = LoggerFactory.getLogger(EmpGroupMongoOpt.class);
+    private final static Logger logger = LoggerFactory.getLogger(NormalBatchMongoOpt.class);
 
     public static final String PR_NORMAL_BATCH  = "pr_normal_batch_table";
-
-    @Autowired
-    private EmpGroupMongoOpt empGroupOpt;
 
     public NormalBatchMongoOpt() {
         super(PR_NORMAL_BATCH);
@@ -34,6 +31,13 @@ public class NormalBatchMongoOpt extends BaseOpt {
     }
 
     public void createIndex(){
-        MongoUtil.createIndex(mongoTemplate,PR_NORMAL_BATCH);
+        DBObject indexOptions = new BasicDBObject();
+        indexOptions.put("batch_code",1);    //批次编号
+        //indexOptions.put("emp_group_code",1);  //雇员组编号
+        //indexOptions.put("pr_group_code", 1);     //薪资组或者薪资组模版CODE
+        //indexOptions.put("catalog.emp_info.is_active", 1);     //雇员是否可用
+
+        CompoundIndexDefinition indexDefinition = new CompoundIndexDefinition(indexOptions);
+        mongoTemplate.indexOps(PR_NORMAL_BATCH).ensureIndex(indexDefinition);
     }
 }

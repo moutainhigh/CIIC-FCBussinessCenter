@@ -25,4 +25,7 @@ public class PayItemName {
 
     public static final String EMPLOYEE_TAX_CN = "个税期间";
 
+    public static final String EMPLOYEE_SERVICE_AGREE = "雇员服务协议";
+
+
 }
