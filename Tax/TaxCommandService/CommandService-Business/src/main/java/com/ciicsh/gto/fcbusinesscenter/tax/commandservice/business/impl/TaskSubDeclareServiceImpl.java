@@ -14,8 +14,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTa
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +30,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper, TaskSubDeclarePO> implements TaskSubDeclareService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubDeclareServiceImpl.class);
 
     @Autowired
     private TaskSubProofService taskSubProofService;
@@ -89,6 +85,10 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         //任务状态
         if (StrKit.notBlank(requestForTaskSubDeclare.getStatusType())) {
             wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForTaskSubDeclare.getStatusType().toUpperCase()));
+        }
+        //区域类型(00:本地,01:异地)
+        if(StrKit.notBlank(requestForTaskSubDeclare.getAreaType())){
+            wrapper.andNew("area_type = {0} ", requestForTaskSubDeclare.getAreaType());
         }
         //申报子任务ID为空
         wrapper.isNull("task_sub_declare_id");
@@ -212,6 +212,10 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             taskSubDeclare.setStatus(taskSubDeclarePOList.get(0).getStatus());
             //设置是否为合并任务
             taskSubDeclare.setCombined(true);
+            //区域类型(00:本地,01:异地)
+            taskSubDeclare.setAreaType(taskSubDeclarePOList.get(0).getAreaType() == null ? "00" : taskSubDeclarePOList.get(0).getAreaType());
+            //设置账户类型(00:独立户,01:大库)
+            taskSubDeclare.setAccountType(taskSubDeclarePOList.get(0).getAccountType() == null ? "01" : taskSubDeclarePOList.get(0).getAccountType());
             //新增申报子任务
             baseMapper.insert(taskSubDeclare);
 
@@ -333,25 +337,25 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
     @Transactional(rollbackFor = Exception.class)
     public void unMerge(Long taskSubDeclareCombinedId) {
 
-        //将合并后的明细设置为失效
-        EntityWrapper wrapper = new EntityWrapper();
-        wrapper.andNew("task_sub_declare_id={0}", taskSubDeclareCombinedId);
-        //获取合并后申报子任务ID明细集合
-        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = this.taskSubDeclareDetailService.selectList(wrapper);
-        TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
-        taskSubDeclareDetailPO.setActive(false);
-        this.taskSubDeclareDetailService.update(taskSubDeclareDetailPO, wrapper);
-
-        List<Long> ids = taskSubDeclareDetailPOList.stream().map(m -> m.getId()).collect(Collectors.toList());
-        TaskSubDeclareDetailPO taskSubDeclareDetailPO1 = new TaskSubDeclareDetailPO();
-        //将合并之前的明细置为有效状态
-        taskSubDeclareDetailPO1.setActive(true);
-        //把明细指向设为null
-        taskSubDeclareDetailPO1.setTaskSubDeclareDetailId(null);
-        EntityWrapper wrapperMerge = new EntityWrapper();
-        wrapperMerge.setEntity(new TaskSubDeclareDetailPO());
-        wrapperMerge.in("task_sub_declare_detail_id", ids);
-        this.taskSubDeclareDetailService.update(taskSubDeclareDetailPO1, wrapperMerge);
+//        //将合并后的明细设置为失效
+//        EntityWrapper wrapper = new EntityWrapper();
+//        wrapper.andNew("task_sub_declare_id={0}", taskSubDeclareCombinedId);
+//        //获取合并后申报子任务ID明细集合
+//        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = this.taskSubDeclareDetailService.selectList(wrapper);
+//        TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
+//        taskSubDeclareDetailPO.setActive(false);
+//        this.taskSubDeclareDetailService.update(taskSubDeclareDetailPO, wrapper);
+//
+//        List<Long> ids = taskSubDeclareDetailPOList.stream().map(m -> m.getId()).collect(Collectors.toList());
+//        TaskSubDeclareDetailPO taskSubDeclareDetailPO1 = new TaskSubDeclareDetailPO();
+//        //将合并之前的明细置为有效状态
+//        taskSubDeclareDetailPO1.setActive(true);
+//        //把明细指向设为null
+//        taskSubDeclareDetailPO1.setTaskSubDeclareDetailId(null);
+//        EntityWrapper wrapperMerge = new EntityWrapper();
+//        wrapperMerge.setEntity(new TaskSubDeclareDetailPO());
+//        wrapperMerge.in("task_sub_declare_detail_id", ids);
+//        this.taskSubDeclareDetailService.update(taskSubDeclareDetailPO1, wrapperMerge);
 
     }
 

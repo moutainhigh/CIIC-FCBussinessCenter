@@ -210,9 +210,60 @@ public class TaskMainDetailBO {
      */
     private Boolean isPaySupported;
     /**
+     * 是否有完税凭证服务
+     */
+    private Boolean isProof;
+    /**
+     * 是否完税凭证服务完成
+     */
+    private Boolean isProofed;
+
+    /**
      * 是否合并已确认
      */
     private Boolean isCombineConfirmed;
+
+    /**
+     * 账户类型
+     */
+    private String accountType;
+
+    /**
+     * 区域类型
+     */
+    private String areaType;
+
+    public Boolean getProof() {
+        return isProof;
+    }
+
+    public void setProof(Boolean proof) {
+        isProof = proof;
+    }
+
+    public Boolean getProofed() {
+        return isProofed;
+    }
+
+    public void setProofed(Boolean proofed) {
+        isProofed = proofed;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
 
     public Boolean getCombineConfirmed() {
         return isCombineConfirmed;

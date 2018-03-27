@@ -10,14 +10,11 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.FilePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.file.RequestForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.file.ResponseForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +24,6 @@ import java.util.List;
  */
 @Service
 public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements FileService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
     /**
      * 条件查询文件
@@ -89,8 +84,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
             filePO.setId(requestForFile.getId());
             //设置是否可用
             filePO.setActive(false);
-            //设置修改时间
-            filePO.setModifiedTime(LocalDateTime.now());
             //删除文件:即修改数据为不可用
             flag = super.insertOrUpdate(filePO);
         }

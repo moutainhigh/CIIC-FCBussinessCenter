@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * <p>
@@ -280,6 +282,11 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setIdType(String idType) {
 		this.idType = idType;
+
+		if(idType!=null){
+
+			this.idTypeName  = EnumUtil.getMessage(EnumUtil.IT_TYPE,idType);
+		}
 	}
 
 	public String getIdNo() {
@@ -320,6 +327,11 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setIncomeSubject(String incomeSubject) {
 		this.incomeSubject = incomeSubject;
+
+		if(incomeSubject!=null){
+
+			this.incomeSubjectName  = EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,incomeSubject);
+		}
 	}
 
 	public BigDecimal getIncomeTotal() {
@@ -552,6 +564,12 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setCombineConfirmed(Boolean combineConfirmed) {
 		isCombineConfirmed = combineConfirmed;
+	}
+
+
+	public String groupBys(){
+
+		return this.employeeNo + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
 	}
 
 	@Override

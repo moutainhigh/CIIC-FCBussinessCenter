@@ -49,6 +49,10 @@ public class TaskSubSupplierDTO {
     private Integer pageSize;
 
     /**
+     * 批量完成供应商合并子任务ID
+     */
+    private String[] subHasCombinedSupplierIds;
+    /**
      * 批量完成/批量退回供应商子任务ID
      */
     private String[] subSupplierIds;
@@ -132,6 +136,11 @@ public class TaskSubSupplierDTO {
      * 是否为合并任务
      */
     private Boolean isCombined;
+
+    /**
+     * 账户类型(00:独立户,01:大库)
+     */
+    private String accountType;
 
     public Long getId() {
         return id;
@@ -373,6 +382,22 @@ public class TaskSubSupplierDTO {
         isCombined = combined;
     }
 
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public String[] getSubHasCombinedSupplierIds() {
+        return subHasCombinedSupplierIds;
+    }
+
+    public void setSubHasCombinedSupplierIds(String[] subHasCombinedSupplierIds) {
+        this.subHasCombinedSupplierIds = subHasCombinedSupplierIds;
+    }
+
     @Override
     public String toString() {
         return "TaskSubSupplierDTO{" +
@@ -385,6 +410,7 @@ public class TaskSubSupplierDTO {
                 ", periodType='" + periodType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
+                ", subHasCombinedSupplierIds=" + Arrays.toString(subHasCombinedSupplierIds) +
                 ", subSupplierIds=" + Arrays.toString(subSupplierIds) +
                 ", taskMainId=" + taskMainId +
                 ", taskSubSupplierId=" + taskSubSupplierId +
@@ -406,6 +432,7 @@ public class TaskSubSupplierDTO {
                 ", supportNo='" + supportNo + '\'' +
                 ", managerNo='" + managerNo + '\'' +
                 ", isCombined=" + isCombined +
+                ", accountType='" + accountType + '\'' +
                 '}';
     }
 }

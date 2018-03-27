@@ -46,6 +46,16 @@ public class RequestForTaskSubSupplier extends PageInfo {
     private String periodType;
 
     /**
+     * 账户类型(00:独立户,01:大库)
+     */
+    private String accountType;
+
+    /**
+     * 状态
+     */
+    private String status;
+
+    /**
      * 修改人
      */
     private String modifiedBy;
@@ -120,5 +130,21 @@ public class RequestForTaskSubSupplier extends PageInfo {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
     }
 }

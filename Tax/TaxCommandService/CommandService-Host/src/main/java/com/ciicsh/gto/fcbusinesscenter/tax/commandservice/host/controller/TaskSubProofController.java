@@ -17,8 +17,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +32,6 @@ import java.util.Map;
  */
 @RestController
 public class TaskSubProofController extends BaseController implements TaskSubProofProxy {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubProofController.class);
 
     @Autowired
     private TaskSubProofService taskSubProofService;

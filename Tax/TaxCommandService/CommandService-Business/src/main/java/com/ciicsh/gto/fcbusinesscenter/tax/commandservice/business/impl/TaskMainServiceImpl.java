@@ -32,11 +32,6 @@ import java.util.stream.Collectors;
 @Service
 public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO> implements TaskMainService, Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskMainServiceImpl.class);
-
-    /*@Autowired(required = false)
-    private TaskMainMapper taskMainMapper;*/
-
     @Autowired
     private CalculationBatchTaskMainServiceImpl calculationBatchTaskMainService;
 
@@ -276,6 +271,10 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         Map<String,Object> params = new HashMap<>();
         params.put("taskMainId",requestForTaskMain.getTaskMainId());//主任务id
         params.put("isCombined",requestForTaskMain.getIsCombined());//是否为合并明细
+        params.put("employeeNo",requestForTaskMain.getEmployeeNo());
+        params.put("employeeName",requestForTaskMain.getEmployeeName());
+        params.put("idType",requestForTaskMain.getIdType());
+        params.put("idNo",requestForTaskMain.getIdNo());
 
         List<TaskMainDetailBO> taskMainDetailBOs = taskMainDetailMapper.queryTaskMainDetails(page,params);
 
@@ -290,15 +289,17 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     }
 
     /**
-     * 查询主任务明细
+     * 更新主任务状态(子任务退回)
      * @param taskMainIds
      * @return
      */
-    public boolean combineConfirmed(Long[] taskMainIds){
+    public void updateTaskMainStatus(Long[] taskMainIds){
 
-        boolean flag = true;
-
-        return flag;
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.in("id",taskMainIds);
+        TaskMainPO tmp = new TaskMainPO();
+        tmp.setStatus("03");
+        this.update(tmp,wrapper);//更新主任务
     }
 
 }

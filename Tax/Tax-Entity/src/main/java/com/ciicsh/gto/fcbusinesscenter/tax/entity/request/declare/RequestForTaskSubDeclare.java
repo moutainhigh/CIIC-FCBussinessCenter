@@ -45,6 +45,11 @@ public class RequestForTaskSubDeclare extends PageInfo {
     private String periodType;
 
     /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
+
+    /**
      * 状态
      */
     private String status;
@@ -132,5 +137,13 @@ public class RequestForTaskSubDeclare extends PageInfo {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
     }
 }

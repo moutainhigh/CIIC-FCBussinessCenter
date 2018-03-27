@@ -49,6 +49,29 @@ public class TaskSubSupplierDetailDTO {
      */
     private Integer pageSize;
 
+    /**
+     * 申报子任务明细ID
+     */
+    private Long taskSubSupplierDetailId;
+
+    private Long[] taskSubSupplierDetailIds;
+
+    public Long getTaskSubSupplierDetailId() {
+        return taskSubSupplierDetailId;
+    }
+
+    public void setTaskSubSupplierDetailId(Long taskSubSupplierDetailId) {
+        this.taskSubSupplierDetailId = taskSubSupplierDetailId;
+    }
+
+    public Long[] getTaskSubSupplierDetailIds() {
+        return taskSubSupplierDetailIds;
+    }
+
+    public void setTaskSubSupplierDetailIds(Long[] taskSubSupplierDetailIds) {
+        this.taskSubSupplierDetailIds = taskSubSupplierDetailIds;
+    }
+
     public Long getId() {
         return id;
     }

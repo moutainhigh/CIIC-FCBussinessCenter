@@ -70,6 +70,10 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         if (StrKit.notBlank(requestForSubPayment.getStatusType())) {
             wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubPayment.getStatusType().toUpperCase()));
         }
+        //区域类型(00:本地,01:异地)
+        if (StrKit.notBlank(requestForSubPayment.getAreaType())) {
+            wrapper.andNew("area_type = {0}", requestForSubPayment.getAreaType());
+        }
         wrapper.andNew("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
 

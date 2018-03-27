@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclar
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -124,5 +126,21 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
             responseForSubDeclareDetail.setRowList(taskSubDeclareDetailPOList);
         }
         return responseForSubDeclareDetail;
+    }
+
+    /**
+     * 根据有合并明细的申报ID查询未确认的数目
+     *
+     * @param hasCombinedDeclareIds
+     * @return
+     */
+    @Override
+    public int selectCount(String[] hasCombinedDeclareIds) {
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.andNew("is_combine_confirmed = {0}", false);
+        wrapper.andNew("is_combined = {0}", true);
+        wrapper.in("task_sub_declare_id", hasCombinedDeclareIds);
+        int count = baseMapper.selectCount(wrapper);
+        return count;
     }
 }

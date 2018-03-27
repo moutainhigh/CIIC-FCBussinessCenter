@@ -10,8 +10,6 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 /**
  * @author yuantongqing on 2018/1/31
  */
@@ -36,9 +34,6 @@ public class TaxKafkaReceiver {
                 int status = payApplyPayStatusDTO.getPayStatus();
                 TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
                 taskSubMoneyBO.setId(subMoneyId);
-                taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
-                //TODO 临时修改人
-                taskSubMoneyBO.setModifiedBy("admin");
                 if (status == 9) {
                     logger.info(subMoneyId + "划款成功");
                     //修改
@@ -46,7 +41,7 @@ public class TaxKafkaReceiver {
                     try {
                         taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);
                     } catch (Exception e) {
-                        logger.info("根据结算中心返回划款信息,更新状态为成功失败!");
+                        logger.error("根据结算中心返回划款信息,更新状态为成功失败!",e);
                     }
                 }
                 if(status == -1){
@@ -55,12 +50,12 @@ public class TaxKafkaReceiver {
                     try {
                         taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);
                     } catch (Exception e) {
-                        logger.info("根据结算中心返回划款信息,更新状态为失败失败!");
+                        logger.error("根据结算中心返回划款信息,更新状态为失败失败!",e);
                     }
                 }
             }
         } catch (Exception e) {
-            logger.info("结算中心划款返回信息异常!");
+            logger.error("结算中心划款返回信息异常!",e);
         }
     }
 }

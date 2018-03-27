@@ -55,6 +55,11 @@ public class TaskSubDeclareDTO {
     private String[] subDeclareIds;
 
     /**
+     * 批量完成有合并明细的申报ID
+     */
+    private String[] hasCombinedDeclareIds;
+
+    /**
      * 主任务ID（为空，则为合并任务，被合并的申报子任务可能来自不同的主任务）
      */
     private Long taskMainId;
@@ -133,6 +138,10 @@ public class TaskSubDeclareDTO {
      */
     private Boolean hasCombined;
 
+    /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
 
     public Long getId() {
         return id;
@@ -366,6 +375,22 @@ public class TaskSubDeclareDTO {
         this.hasCombined = hasCombined;
     }
 
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
+    public String[] getHasCombinedDeclareIds() {
+        return hasCombinedDeclareIds;
+    }
+
+    public void setHasCombinedDeclareIds(String[] hasCombinedDeclareIds) {
+        this.hasCombinedDeclareIds = hasCombinedDeclareIds;
+    }
+
     @Override
     public String toString() {
         return "TaskSubDeclareDTO{" +
@@ -379,6 +404,7 @@ public class TaskSubDeclareDTO {
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
                 ", subDeclareIds=" + Arrays.toString(subDeclareIds) +
+                ", hasCombinedDeclareIds=" + Arrays.toString(hasCombinedDeclareIds) +
                 ", taskMainId=" + taskMainId +
                 ", taskSubDeclareId=" + taskSubDeclareId +
                 ", taskNo='" + taskNo + '\'' +
@@ -398,6 +424,7 @@ public class TaskSubDeclareDTO {
                 ", managerNo='" + managerNo + '\'' +
                 ", isCombined=" + isCombined +
                 ", hasCombined=" + hasCombined +
+                ", areaType='" + areaType + '\'' +
                 '}';
     }
 }

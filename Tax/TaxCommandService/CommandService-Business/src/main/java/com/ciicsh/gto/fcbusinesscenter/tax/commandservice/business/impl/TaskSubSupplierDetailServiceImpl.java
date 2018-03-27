@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSuppli
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -74,7 +76,7 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
             wrapper.andNew("is_combined = {0} ", requestForSubSupplierDetail.getTabType());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubSupplierDetail.getPageSize() && null != requestForSubSupplierDetail.getCurrentNum()) {
             Page<TaskSubSupplierDetailPO> pageInfo = new Page<>(requestForSubSupplierDetail.getCurrentNum(), requestForSubSupplierDetail.getPageSize());
@@ -99,5 +101,21 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
             responseForSubSupplierDetail.setRowList(taskSubSupplierDetailPOList);
         }
         return responseForSubSupplierDetail;
+    }
+
+    /**
+     * 根据有合并明细的供应商ID查询未确认的数目
+     *
+     * @param subHasCombinedSupplierIds
+     * @return
+     */
+    @Override
+    public int selectCount(String[] subHasCombinedSupplierIds) {
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.andNew("is_combine_confirmed = {0}", false);
+        wrapper.andNew("is_combined = {0}", true);
+        wrapper.in("task_sub_supplier_id", subHasCombinedSupplierIds);
+        int count = baseMapper.selectCount(wrapper);
+        return count;
     }
 }

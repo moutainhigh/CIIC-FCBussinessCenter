@@ -69,6 +69,11 @@ public class TaskSubMoneyDTO {
 
     private Integer foreignerNum;
 
+    /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
+
     public Long getId() {
         return id;
     }
@@ -197,6 +202,14 @@ public class TaskSubMoneyDTO {
         this.statusType = statusType;
     }
 
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
     @Override
     public String toString() {
         return "TaskSubMoneyDTO{" +
@@ -216,6 +229,7 @@ public class TaskSubMoneyDTO {
                 ", headcount=" + headcount +
                 ", chineseNum=" + chineseNum +
                 ", foreignerNum=" + foreignerNum +
+                ", areaType='" + areaType + '\'' +
                 '}';
     }
 }
