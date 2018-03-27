@@ -209,6 +209,30 @@ public class CalculationBatchDetailBO {
      * 是否供应商缴纳
      */
     private Boolean isPaySupported;
+    /**
+     * 是否有完税凭证服务
+     */
+    private Boolean isProof;
+    /**
+     * 是否完税凭证服务完成
+     */
+    private Boolean isProofed;
+
+    public Boolean getProof() {
+        return isProof;
+    }
+
+    public void setProof(Boolean proof) {
+        isProof = proof;
+    }
+
+    public Boolean getProofed() {
+        return isProofed;
+    }
+
+    public void setProofed(Boolean proofed) {
+        isProofed = proofed;
+    }
 
     public String getIdTypeName() {
         return idTypeName;

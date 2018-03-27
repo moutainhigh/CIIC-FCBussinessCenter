@@ -128,47 +128,17 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
     public ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees) {
         {
             ResponseForCalBatchDetail responseForCalBatchDetail = new ResponseForCalBatchDetail();
-            //EntityWrapper wrapper = new EntityWrapper();
-            //wrapper.setEntity(new CalculationBatchDetailPO());
-            //批次主表id
-            /*if (requestForEmployees.getBatchid() != null) {
-                wrapper.andNew("calculation_batch_id = {0}", requestForEmployees.getBatchid());
-            }else{
-                return responseForCalBatchDetail;
-            }
-            //证件类型
-            if (StrKit.isNotEmpty(requestForEmployees.getIdType())) {
-                wrapper.andNew("id_type = {0}", requestForEmployees.getIdType());
-            }
-            //证件号
-            if (StrKit.isNotEmpty(requestForEmployees.getIdNo())) {
-                wrapper.andNew("id_no = {0}", requestForEmployees.getIdNo());
-            }
-            //雇员编号
-            if (StrKit.isNotEmpty(requestForEmployees.getEmployeeNo())) {
-                wrapper.andNew("employee_no = {0}", requestForEmployees.getEmployeeNo());
-            }
-            //雇员姓名
-            if (StrKit.isNotEmpty(requestForEmployees.getEmployeeName())) {
-                wrapper.andNew("employee_name = {0}", requestForEmployees.getEmployeeName());
-            }
-            //查询已申报的
-            wrapper.orderBy("id", true);*/
 
-            //Page<CalculationBatchDetailBO> page = new Page<CalculationBatchDetailBO>(0,10);
+            Map<String, Object> params = new HashMap<>();
+            params.put("batchId",requestForEmployees.getCalculationBatchId());
+            params.put("employeeNo",requestForEmployees.getEmployeeNo());
+            params.put("employeeName",requestForEmployees.getEmployeeName());
+            params.put("idType",requestForEmployees.getIdType());
+            params.put("idNo",requestForEmployees.getIdNo());
 
             Page<CalculationBatchDetailBO> page = new Page<CalculationBatchDetailBO>(requestForEmployees.getCurrentNum(), requestForEmployees.getPageSize());
 
-            CalculationBatchDetailBO calculationBatchDetailBO = new CalculationBatchDetailBO();
-            BeanUtils.copyProperties(requestForEmployees, calculationBatchDetailBO);
-            Long[] batchIds = new Long[1];
-            batchIds[0] = calculationBatchDetailBO.getCalculationBatchId();
-            List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetails(page,batchIds);
-
-            /*for(CalculationBatchDetailBO p : calculationBatchDetailBOList){
-                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));//证件类型中文显示
-                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));//个税所得项目中文显示
-            }*/
+            List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetails(page,params);
 
             responseForCalBatchDetail.setRowList(calculationBatchDetailBOList);
             responseForCalBatchDetail.setCurrentNum(requestForEmployees.getCurrentNum());
