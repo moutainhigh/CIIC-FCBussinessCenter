@@ -46,6 +46,11 @@ public class RequestForSubMoney extends PageInfo {
     private String[] subMoneyIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 修改人
      */
     private String modifiedBy;
@@ -133,5 +138,13 @@ public class RequestForSubMoney extends PageInfo {
 
     public void setAreaType(String areaType) {
         this.areaType = areaType;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
     }
 }

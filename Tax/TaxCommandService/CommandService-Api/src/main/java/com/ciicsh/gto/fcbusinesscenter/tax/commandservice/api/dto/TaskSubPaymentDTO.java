@@ -56,6 +56,11 @@ public class TaskSubPaymentDTO {
     private String[] subPaymentIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 修改人
      */
     private String modifiedBy;
@@ -211,6 +216,14 @@ public class TaskSubPaymentDTO {
         this.areaType = areaType;
     }
 
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
+    }
+
     @Override
     public String toString() {
         return "TaskSubPaymentDTO{" +
@@ -224,6 +237,7 @@ public class TaskSubPaymentDTO {
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
                 ", subPaymentIds=" + Arrays.toString(subPaymentIds) +
+                ", mainIds=" + Arrays.toString(mainIds) +
                 ", modifiedBy='" + modifiedBy + '\'' +
                 ", taskNo='" + taskNo + '\'' +
                 ", taxAmount=" + taxAmount +

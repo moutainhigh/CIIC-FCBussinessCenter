@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
@@ -11,7 +12,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,6 +26,9 @@ import java.util.List;
  */
 @Service
 public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper, TaskSubPaymentPO> implements TaskSubPaymentService, Serializable {
+
+    @Autowired
+    private TaskMainService taskMainService;
 
     /**
      * 条件查询缴纳子任务
@@ -117,9 +123,11 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      *
      * @param requestForSubPayment
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
         updateTaskSubPaymentStatus(requestForSubPayment);
+        taskMainService.updateTaskMainStatus(requestForSubPayment.getMainIds());
     }
 
     /**

@@ -19,6 +19,11 @@ public class RequestForTaskSubSupplier extends PageInfo {
     private String[] subSupplierIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 缴纳账户
      */
     private String declareAccount;
@@ -146,5 +151,13 @@ public class RequestForTaskSubSupplier extends PageInfo {
 
     public void setAccountType(String accountType) {
         this.accountType = accountType;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
     }
 }
