@@ -4,7 +4,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubDeclare
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubDeclareServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
@@ -206,10 +205,41 @@ public class TaskSubDeclareController extends BaseController {
             }else{
                 RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
                 BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+                //修改人
+                UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+                requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
                 //任务状态
                 requestForTaskSubDeclare.setStatus("04");
                 taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
             }
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+    /**
+     * 批量退回申报任务
+     *
+     * @param taskSubDeclareDTO
+     * @return
+     */
+    @PostMapping(value = "/rejectTaskSubDeclares")
+    public JsonResult<Boolean> rejectTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
+            BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
+            //任务状态
+            requestForTaskSubDeclare.setStatus("03");
+            taskSubDeclareService.rejectTaskSubDeclares(requestForTaskSubDeclare);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());

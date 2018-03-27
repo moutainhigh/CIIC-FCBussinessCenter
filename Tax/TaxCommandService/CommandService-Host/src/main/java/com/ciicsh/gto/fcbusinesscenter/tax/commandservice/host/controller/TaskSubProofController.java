@@ -206,6 +206,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
             requestForProof.setStatus("04");
             taskSubProofService.completeTaskProofByRes(requestForProof);
@@ -232,6 +235,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("03");
             taskSubProofService.rejectTaskProofByRes(requestForProof);
@@ -258,6 +264,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("05");
             taskSubProofService.invalidTaskProofByRes(requestForProof);

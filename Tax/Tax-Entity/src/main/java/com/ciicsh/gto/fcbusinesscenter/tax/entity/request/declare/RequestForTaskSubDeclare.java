@@ -21,6 +21,11 @@ public class RequestForTaskSubDeclare extends PageInfo {
     private String[] subDeclareIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 缴纳账户
      */
     private String declareAccount;
@@ -145,5 +150,13 @@ public class RequestForTaskSubDeclare extends PageInfo {
 
     public void setAreaType(String areaType) {
         this.areaType = areaType;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
     }
 }

@@ -20,6 +20,16 @@ public interface TaskSubDeclareMapper extends BaseMapper<TaskSubDeclarePO> {
     List<Long> querySubDeclareIdsByMergeIds(@Param("sbCombinedParams") String sbCombinedParams);
 
     /**
+     * 修改申报子任务合并ID为数组ID的任务状态
+     *
+     * @param subDeclareIds
+     * @param status
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateBeforeMergeDeclareStatus(@Param("subDeclareIds")String[] subDeclareIds,@Param("status") String status ,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
+    /**
      * 修改申报合并任务ID为失效
      * @param combinedId
      * @param modifiedBy
