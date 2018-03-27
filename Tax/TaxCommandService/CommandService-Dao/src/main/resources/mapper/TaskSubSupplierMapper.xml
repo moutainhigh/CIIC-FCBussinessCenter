@@ -56,4 +56,15 @@
         where task_sub_supplier_id=#{combinedId}
     </update>
 
+    <!--修改合并前供应商子任务状态-->
+    <update id="updateTaskSubSupplierStatus">
+        update tax_fc_task_sub_supplier
+        set status = #{status},
+        modified_by = #{modifiedBy},
+        modified_time = #{modifiedTime}
+        where task_sub_supplier_id in
+        <foreach collection="subSupplierIds" item="subSupplierId" open="(" separator="," close=")">
+            #{subSupplierId}
+        </foreach>
+    </update>
 </mapper>

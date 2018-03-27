@@ -58,5 +58,12 @@ public interface TaskSubSupplierService {
      */
     void completeTaskSubSupplier(RequestForTaskSubSupplier requestForTaskSubSupplier);
 
+    /**
+     * 批量退回供应商任务
+     *
+     * @param requestForTaskSubSupplier
+     */
+    void rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier);
+
 }
 

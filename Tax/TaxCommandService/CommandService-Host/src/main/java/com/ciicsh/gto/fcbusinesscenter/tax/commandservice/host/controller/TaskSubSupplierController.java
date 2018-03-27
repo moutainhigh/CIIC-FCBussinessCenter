@@ -194,6 +194,9 @@ public class TaskSubSupplierController extends BaseController {
             }else{
                 RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
                 BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+                //修改人
+                UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+                requestForTaskSubSupplier.setModifiedBy(userInfoResponseDTO.getLoginName());
                 //任务状态
                 requestForTaskSubSupplier.setStatus("04");
                 taskSubSupplierService.completeTaskSubSupplier(requestForTaskSubSupplier);
@@ -201,8 +204,35 @@ public class TaskSubSupplierController extends BaseController {
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subSupplierIds", taskSubSupplierDTO.getSubSupplierIds().toString());
+            tags.put("subHasCombinedSupplierIds", taskSubSupplierDTO.getSubHasCombinedSupplierIds().toString());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.completeTaskSuppliers", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+
+    /**
+     * 批量退回供应商任务
+     *
+     * @param taskSubSupplierDTO
+     * @return
+     */
+    @PostMapping(value = "/rejectTaskSuppliers")
+    public JsonResult<Boolean> rejectTaskSuppliers(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
+            BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+            //任务状态
+            requestForTaskSubSupplier.setStatus("03");
+            taskSubSupplierService.rejectTaskSuppliers(requestForTaskSubSupplier);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subSupplierIds", taskSubSupplierDTO.getSubSupplierIds().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.rejectTaskSuppliers", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();
         }
         return jr;

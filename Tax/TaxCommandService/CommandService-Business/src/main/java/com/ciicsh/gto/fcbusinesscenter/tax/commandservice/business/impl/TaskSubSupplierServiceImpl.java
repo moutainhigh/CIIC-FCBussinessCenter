@@ -415,12 +415,40 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             wrapper.andNew("is_active = {0} ", true);
             //主任务ID IN条件
             wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
-            //修改完税凭证子任务
+            //修改供应商子任务
             baseMapper.update(taskSubSupplierPO, wrapper);
+            //修改合并前供应商子任务状态
+            baseMapper.updateTaskSubSupplierStatus(requestForTaskSubSupplier.getSubSupplierIds(),requestForTaskSubSupplier.getStatus(),requestForTaskSubSupplier.getModifiedBy(),LocalDateTime.now());
 //            //将数组转成集合(long[])
 //            List<Long> declareIdList = Arrays.asList(requestForTaskSubSupplier.getSubSupplierIds()).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
 //            //创建完税凭证自动任务
 //            taskSubProofService.createTaskSubProof(declareIdList);
+        }
+    }
+
+
+    /**
+     * 批量退回供应商任务
+     *
+     * @param requestForTaskSubSupplier
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier) {
+        if (requestForTaskSubSupplier.getSubSupplierIds() != null && !"".equals(requestForTaskSubSupplier.getSubSupplierIds())) {
+            TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
+            //设置任务状态
+            taskSubSupplierPO.setStatus(requestForTaskSubSupplier.getStatus());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubSupplierPO());
+            //任务为通过状态
+            wrapper.andNew("status = {0} ", "02");
+            //任务为可用状态
+            wrapper.andNew("is_active = {0} ", true);
+            //主任务ID IN条件
+            wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
+            //修改供应商子任务
+            baseMapper.update(taskSubSupplierPO, wrapper);
         }
     }
 }
