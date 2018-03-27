@@ -63,4 +63,11 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      */
     Integer updateItemByCode(PrPayrollItemPO prPayrollItemPO);
 
+    /**
+     * 获取当前薪资组中的最大计算顺序
+     * @param groupCode
+     * @return
+     */
+    Integer selectMaxCalPriorityOfGroup(@Param("groupCode")String groupCode);
+
 }

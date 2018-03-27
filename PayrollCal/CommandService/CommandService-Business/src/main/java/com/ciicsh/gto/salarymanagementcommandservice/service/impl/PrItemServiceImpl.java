@@ -20,6 +20,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -91,7 +92,10 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    @Transactional(rollbackFor = RuntimeException.class)
+    @Transactional(
+            rollbackFor = RuntimeException.class,
+            isolation = Isolation.SERIALIZABLE
+    )
     public int addItem(PrPayrollItemPO param) {
         // 将所在薪资组/模板的审核状态更新为草稿
         this.updateRelatedGroupStatus(param);
@@ -101,6 +105,7 @@ public class PrItemServiceImpl implements PrItemService {
         param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
         param.setModifiedTime(new Date());
         param.setCreatedTime(new Date());
+        param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(param.getPayrollGroupCode()) + 1);
         this.replaceItemNameWithCode(param);
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
@@ -273,26 +278,36 @@ public class PrItemServiceImpl implements PrItemService {
         } else {
             itemPOList = this.getListByGroupTemplateCode(param.getPayrollGroupTemplateCode());
         }
-        Map<String, String> nameCodeMap = new HashMap<>();
-        itemPOList.forEach(i -> nameCodeMap.put(i.getItemName(), i.getItemCode()));
 
         if (!StringUtils.isEmpty(param.getFormulaContent())) {
-            param.setFormulaContent(this.replacePayItem(param.getFormulaContent(), PAY_ITEM_REGEX, nameCodeMap));
+            param.setFormulaContent(this.replacePayItem(param.getFormulaContent(), itemPOList, param.getCalPriority()));
         }
 
         if (!StringUtils.isEmpty(param.getItemCondition())) {
-            param.setItemCondition(this.replacePayItem(param.getItemCondition(), PAY_ITEM_REGEX, nameCodeMap));
+            param.setItemCondition(this.replacePayItem(param.getItemCondition(), itemPOList, param.getCalPriority()));
         }
 
     }
 
-    private String replacePayItem(String content, Pattern pattern, Map<String, String> nameCodeMap){
+    private String replacePayItem(String content, List<PrPayrollItemPO> itemPOList, Integer thisCalPriority){
 
-        Matcher m = pattern.matcher(content);
+        // 薪资项名称-Code map
+        Map<String, String> nameCodeMap = new HashMap<>();
+        // 薪资项名称-计算顺序 map
+        Map<String, Integer> nameCalPrioMap = new HashMap<>();
+        itemPOList.forEach(i -> {
+            nameCodeMap.put(i.getItemName(), i.getItemCode());
+            nameCalPrioMap.put(i.getItemName(), i.getCalPriority());
+        });
+
+        Matcher m = PAY_ITEM_REGEX.matcher(content);
         while(m.find()) {
             String payItemName = m.group(1);
             if (StringUtils.isEmpty(nameCodeMap.get(payItemName))) {
                 throw new BusinessException("计算公式中有不存在于该薪资组的薪资项: " + payItemName);
+            }
+            if (nameCalPrioMap.get(payItemName) > thisCalPriority) {
+                throw new BusinessException("计算公式中依赖了计算优先级较低的薪资项: " + payItemName);
             }
             content = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
         }

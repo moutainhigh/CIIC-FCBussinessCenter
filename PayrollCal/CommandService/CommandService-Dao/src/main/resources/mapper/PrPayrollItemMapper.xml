@@ -244,4 +244,13 @@
         item_code = #{itemCode}
     </update>
 
+	<select id="selectMaxCalPriorityOfGroup" resultType="int">
+		SELECT
+			max(cal_priority)
+		FROM
+			pr_payroll_item
+		WHERE
+			payroll_group_code = #{groupCode}
+	</select>
+
 </mapper>
