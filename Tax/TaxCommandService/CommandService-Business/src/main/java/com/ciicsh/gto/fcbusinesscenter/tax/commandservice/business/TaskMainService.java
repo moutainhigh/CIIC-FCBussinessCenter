@@ -64,5 +64,11 @@ public interface TaskMainService {
      * @return
      */
     void updateTaskMainStatus(Long[] taskMainIds);
+    /**
+     * 子任务状态是否和主任务状态一致
+     * @param taskMainIds
+     * @return
+     */
+    boolean isStatusSame(String[] taskMainIds,String[] status);
 }
 

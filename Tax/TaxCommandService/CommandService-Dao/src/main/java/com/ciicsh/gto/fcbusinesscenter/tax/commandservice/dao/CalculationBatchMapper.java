@@ -39,7 +39,7 @@ public interface CalculationBatchMapper extends BaseMapper<CalculationBatchPO> {
      * @param batchIds
      * @return
      */
-    List<CalculationBatchDetailBO> queryCalculationBatchDetails(@Param("batchIds")Long[] batchIds);
+    List<CalculationBatchDetailBO> queryCalculationBatchDetailsByBatchIds(@Param("batchIds")Long[] batchIds);
     /**
      * 根据批次id查询对应的任务集合
      * @param calBatchId
