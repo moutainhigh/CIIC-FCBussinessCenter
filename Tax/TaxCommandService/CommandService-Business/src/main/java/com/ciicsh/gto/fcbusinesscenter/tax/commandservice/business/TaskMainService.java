@@ -58,5 +58,11 @@ public interface TaskMainService {
      * @return
      */
     ResponseForTaskMainDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain);
+    /**
+     * 更新主任务状态(子任务退回)
+     * @param taskMainId
+     * @return
+     */
+    void updateTaskMainStatus(Long taskMainId);
 }
 
