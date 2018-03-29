@@ -76,7 +76,7 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
                     dbObject.put("_id", new ObjectId());
                     dbObject.put("batch_code", adjustBatchPO.getAdjustBatchCode()); // update origin code to adjust code
                     dbObject.put("origin_code",adjustBatchPO.getOriginBatchCode());
-                    DBObject catalog = (DBObject) dbObject.get("catalog");
+                    /*DBObject catalog = (DBObject) dbObject.get("catalog");
                     List<DBObject> payItems = (List<DBObject>) catalog.get("pay_items");
 
                     payItems.forEach(item -> {
@@ -84,7 +84,7 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
                         if (itemType == ItemTypeEnum.CALC.getValue()) {
                             item.put("item_value", 0.0); //清除计算项结果
                         }
-                    });
+                    });*/
                 });
             }
             adjustBatchMongoOpt.createIndex();

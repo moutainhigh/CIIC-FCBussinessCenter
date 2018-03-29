@@ -51,7 +51,7 @@
 		SELECT
 			COUNT(*)
 		FROM pr_adjust_batch
-		WHERE origin_batch_code = #{originBatchCode} and status != 8;
+		WHERE origin_batch_code = #{originBatchCode}
 	</select>
 
 </mapper>

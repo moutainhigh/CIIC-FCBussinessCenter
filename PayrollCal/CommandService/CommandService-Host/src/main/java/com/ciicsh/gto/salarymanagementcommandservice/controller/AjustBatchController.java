@@ -70,13 +70,20 @@ public class AjustBatchController {
     private CodeGenerator codeGenerator;
 
     @PostMapping("/addAdjustBatch")
-    public JsonResult addNormalBatch(@RequestParam String batchCode) {
+    public JsonResult addNormalBatch(@RequestParam String batchCode, @RequestParam(required = false, defaultValue = "") String originCode) {
 
-        PrNormalBatchPO batchPO = batchService.getBatchByCode(batchCode);
+        String orgCode = "" ;
+        if(StringUtils.isNotEmpty(originCode)){
+            orgCode = originCode;
+        }else {
+            orgCode = batchCode;
+        }
+
+        PrNormalBatchPO batchPO = batchService.getBatchByCode(orgCode);
         String code = codeGenerator.genPrNormalBatchCode(batchPO.getManagementId(),batchPO.getActualPeriod());
         PrAdjustBatchPO adjustBatchPO = new PrAdjustBatchPO();
         adjustBatchPO.setAdjustBatchCode(code);
-        adjustBatchPO.setOriginBatchCode(batchCode);
+        adjustBatchPO.setOriginBatchCode(orgCode);
         adjustBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
         adjustBatchPO.setCreatedBy("bill");
         adjustBatchPO.setModifiedBy("bill");

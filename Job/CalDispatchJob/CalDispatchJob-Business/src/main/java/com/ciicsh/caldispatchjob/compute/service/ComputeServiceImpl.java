@@ -110,7 +110,7 @@ public class ComputeServiceImpl {
                 .include("catalog.pay_items.formula_content")
         ;
 
-        //query = query.skip(0).limit(1);
+        //query = query.skip(pageindex*size).limit(size);
 
         long start1 = System.currentTimeMillis(); //begin
 
