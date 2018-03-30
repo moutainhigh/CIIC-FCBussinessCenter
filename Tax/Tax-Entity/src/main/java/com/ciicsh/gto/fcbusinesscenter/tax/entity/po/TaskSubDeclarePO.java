@@ -94,19 +94,22 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
     /**
      * 创建时间
      */
+    @TableField(value="created_time",fill = FieldFill.INSERT)
 	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-    @TableField(value="modified_time",fill = FieldFill.UPDATE)
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
     /**
      * 管理方编号
@@ -122,6 +125,46 @@ public class TaskSubDeclarePO extends Model<TaskSubDeclarePO> {
 	 */
 	@TableField("is_combined")
 	private Boolean isCombined;
+
+	/**
+	 * 是否有合并明细
+	 */
+	@TableField("has_combined")
+	private Boolean hasCombined;
+
+	/**
+	 * 账户类型
+	 */
+	private String accountType;
+
+	/**
+	 * 区域类型
+	 */
+	private String areaType;
+
+	public String getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(String areaType) {
+		this.areaType = areaType;
+	}
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
+	public Boolean getHasCombined() {
+		return hasCombined;
+	}
+
+	public void setHasCombined(Boolean hasCombined) {
+		this.hasCombined = hasCombined;
+	}
 
 	public String getStatusName() {
 		return statusName;

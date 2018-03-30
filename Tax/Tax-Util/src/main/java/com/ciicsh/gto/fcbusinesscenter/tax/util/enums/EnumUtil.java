@@ -43,6 +43,11 @@ public class EnumUtil {
     public static final String SOURCE_TYPE = "ST";
 
     /**
+     * 划款状态(记录结算中心划款状态使用)
+     */
+    public static final String PAY_STATUS = "PS";
+
+    /**
      * 获取枚举中文
      *
      * @param type
@@ -68,6 +73,8 @@ public class EnumUtil {
                 return TaskStatus.valueOf(EnumUtil.TASK_STATUS + key).getMessage();
             } else if (type.equals(EnumUtil.SOURCE_TYPE)) {
                 return SourceTypeForLog.valueOf(EnumUtil.SOURCE_TYPE + key).getMessage();
+            } else if(type.equals(EnumUtil.PAY_STATUS)){
+                return PayStatus.valueOf(EnumUtil.PAY_STATUS + key).getMessage();
             }
         }
 

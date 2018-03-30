@@ -58,10 +58,10 @@
         inner join
         (select
             task_sub_proof_id,
-            count(1) as headNumTotal,
-            sum(case when id_type = '01' then 1 else 0 end ) as chineseNumTotal,
-            sum(case when id_type != '01' then 1 else 0 end ) as foreignerNumTotal
-        from tax_fc_task_sub_proof_detail where task_sub_proof_id = #{id}) sub
+            sum(case when is_active = 1 then 1 else 0 end ) as headNumTotal,
+            sum(case when id_type = '01' and is_active = 1 then 1 else 0 end ) as chineseNumTotal,
+            sum(case when id_type != '01' and  is_active = 1 then 1 else 0 end ) as foreignerNumTotal
+        from tax_fc_task_sub_proof_detail where  task_sub_proof_id =  #{id}) sub on tsp.id = sub.task_sub_proof_id
         SET
             tsp.headcount = sub.headNumTotal,
             tsp.chinese_num = sub.chineseNumTotal,
@@ -159,4 +159,15 @@
         </if>-->
     </select>
 
+    <!--修改完税凭证子任务合并任务ID在子任务数组ID的状态-->
+    <update id="updateTaskProofStatus">
+      update tax_fc_task_sub_proof
+        set status = #{status},
+        modified_by = #{modifiedBy},
+        modified_time = #{modifiedTime}
+        where task_sub_proof_id in
+        <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
+            #{subProofId}
+        </foreach>
+    </update>
 </mapper>

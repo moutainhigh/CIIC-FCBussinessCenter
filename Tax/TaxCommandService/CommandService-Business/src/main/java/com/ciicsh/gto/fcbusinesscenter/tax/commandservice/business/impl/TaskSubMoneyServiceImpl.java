@@ -3,18 +3,22 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubMoneyMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +28,9 @@ import java.util.List;
  */
 @Service
 public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, TaskSubMoneyPO> implements TaskSubMoneyService, Serializable {
+
+    @Autowired
+    private TaskMainService taskMainService;
 
     /**
      * 条件查询划款子任务
@@ -67,11 +74,15 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             }
         }
         //任务状态
-        if(StrKit.notBlank(requestForSubMoney.getStatusType())){
-            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE,requestForSubMoney.getStatusType().toUpperCase()));
+        if (StrKit.notBlank(requestForSubMoney.getStatusType())) {
+            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubMoney.getStatusType().toUpperCase()));
+        }
+        //区域类型(00:本地,01:异地)
+        if (StrKit.notBlank(requestForSubMoney.getAreaType())) {
+            wrapper.andNew("area_type = {0}", requestForSubMoney.getAreaType());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
 
         //判断是否分页
         if (null != requestForSubMoney.getPageSize() && null != requestForSubMoney.getCurrentNum()) {
@@ -107,18 +118,22 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
     public void completeTaskSubMoney(RequestForSubMoney requestForSubMoney) {
         updateTaskSubMoneyStatus(requestForSubMoney);
     }
+
     /**
      * 批量退回划款子任务
      *
      * @param requestForSubMoney
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
         updateTaskSubMoneyStatus(requestForSubMoney);
+        taskMainService.updateTaskMainStatus(requestForSubMoney.getMainIds());
     }
 
     /**
      * 修改划款任务状态
+     *
      * @param requestForSubMoney
      */
     private void updateTaskSubMoneyStatus(RequestForSubMoney requestForSubMoney) {
@@ -126,18 +141,15 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
             //任务状态
             taskSubMoneyPO.setStatus(requestForSubMoney.getStatus());
-            //修改人
-            taskSubMoneyPO.setModifiedBy(requestForSubMoney.getModifiedBy());
-            //修改时间
-            taskSubMoneyPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubMoneyPO());
-            wrapper.andNew("is_active = {0}",true);
-            wrapper.in("id",requestForSubMoney.getSubMoneyIds());
+            wrapper.andNew("is_active = {0}", true);
+            wrapper.in("id", requestForSubMoney.getSubMoneyIds());
             //修改划款子任务状态
-            baseMapper.update(taskSubMoneyPO,wrapper);
+            baseMapper.update(taskSubMoneyPO, wrapper);
         }
     }
+
     /**
      * 根据划款子任务ID查询划款子任务信息
      *
@@ -149,5 +161,17 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(subMoneyId);
         taskSubMoneyPO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubMoneyPO.getStatus()));
         return taskSubMoneyPO;
+    }
+
+    /**
+     * 根据划款任务BO对象修改划款任务信息
+     *
+     * @param taskSubMoneyBO
+     */
+    @Override
+    public void updateTaskSubMoneyById(TaskSubMoneyBO taskSubMoneyBO) {
+        TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
+        BeanUtils.copyProperties(taskSubMoneyBO, taskSubMoneyPO);
+        baseMapper.updateById(taskSubMoneyPO);
     }
 }

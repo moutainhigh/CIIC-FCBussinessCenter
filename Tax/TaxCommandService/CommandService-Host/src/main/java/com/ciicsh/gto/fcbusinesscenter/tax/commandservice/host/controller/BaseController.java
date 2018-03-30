@@ -1,14 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.LogService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.ServletOutputStream;
@@ -27,18 +25,7 @@ import java.net.URLEncoder;
 @RequestMapping("/tax")
 public class BaseController {
 
-    @Autowired
-    public LogService logService;
-
     private static final Logger logger = LoggerFactory.getLogger(BaseController.class);
-
-    /**
-     * 模板文件目录
-     */
-    public static final String TEMPLATE_FILE_PATH =
-            Thread.currentThread().getContextClassLoader()
-                    .getResource("template/file/")
-                    .getPath().substring(1);
 
     /**
      * 下载文件
@@ -70,67 +57,30 @@ public class BaseController {
                 bos.write(buff, 0, bytesRead);
             }
         } catch (Exception e) {
-            logService.error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
         } finally {
             try {
                 bis.close();
             } catch (Exception e) {
-                logger.error("close bis error " + e.toString());
+                logger.error("close bis error " ,e);
             }
             try {
                 bos.close();
             } catch (Exception e) {
-                logger.error("close bos error " + e.toString());
+                logger.error("close bos error "  ,e);
             }
             try {
                 outputStream.flush();
             } catch (Exception e) {
-                logger.error("flush outputStream error " + e.toString());
+                logger.error("flush outputStream error " ,e);
             }
             try {
                 outputStream.close();
             } catch (Exception e) {
-                logger.error("close outputStream error " + e.toString());
+                logger.error("close outputStream error " ,e);
             }
         }
 
-    }
-
-    /**
-     * 通过文件名获取POIFSFileSystem对象
-     *
-     * @param fileName
-     * @return
-     */
-    protected POIFSFileSystem getFSFileSystem(String fileName) {
-        POIFSFileSystem fs = null;
-        //excel全路径
-        try {
-            String excel = TEMPLATE_FILE_PATH + fileName;
-            File file = new File(excel);
-            fs = new POIFSFileSystem(new FileInputStream(file));
-        } catch (Exception e) {
-            logService.error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
-        }
-        return fs;
-    }
-
-    /**
-     * 通过POIFSFileSystem对象获取wb
-     *
-     * @param fs
-     * @return
-     */
-    protected HSSFWorkbook getHSSFWorkbook(POIFSFileSystem fs) {
-        HSSFWorkbook wb = null;
-        //excel全路径
-        try {
-            // 读取excel模板
-            wb = new HSSFWorkbook(fs);
-        } catch (Exception e) {
-            logService.error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
-        }
-        return wb;
     }
 
     /**
@@ -141,6 +91,34 @@ public class BaseController {
      * @param fileName
      */
     protected void exportExcel(HttpServletResponse response, HSSFWorkbook wb, String fileName) {
+
+
+        /*OutputStream out = null;
+        try {
+            response.reset();
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" + new String((fileName).getBytes(), "iso-8859-1"));
+            out = response.getOutputStream();
+            wb.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(out!=null){
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(wb!=null){
+                try {
+                    wb.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }*/
+
         ByteArrayOutputStream os = null;
         InputStream is = null;
         BufferedInputStream bis = null;
@@ -164,34 +142,41 @@ public class BaseController {
                 bos.write(buff, 0, bytesRead);
             }
         } catch (Exception e) {
-            logService.error(e, "BaseController.exportExcel", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "BaseController.exportExcel", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
         } finally {
             if (os != null) {
                 try {
                     os.close();
                 } catch (IOException e) {
-                    logger.error("exportExcel os close error " + e.toString());
+                    logger.error("exportExcel os close error " ,e);
                 }
             }
             if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    logger.error("exportExcel is close error " + e.toString());
+                    logger.error("exportExcel is close error " ,e);
                 }
             }
             if (bis != null) {
                 try {
                     bis.close();
                 } catch (IOException e) {
-                    logger.error("exportExcel bis close error " + e.toString());
+                    logger.error("exportExcel bis close error " ,e);
                 }
             }
             if (bos != null) {
                 try {
                     bos.close();
                 } catch (IOException e) {
-                    logger.error("exportExcel bos close error " + e.toString());
+                    logger.error("exportExcel bos close error " ,e);
+                }
+            }
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception e) {
+                    logger.error("exportSubDeclare wb close error" ,e);
                 }
             }
         }

@@ -5,22 +5,30 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierDetailMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
  */
 @Service
 public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplierDetailMapper, TaskSubSupplierDetailPO> implements TaskSubSupplierDetailService, Serializable {
+
+
+    @Autowired
+    private TaskSubSupplierMapper taskSubSupplierMapper;
 
     /**
      * 查询供应商申报明细
@@ -38,9 +46,14 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
         if (null != requestForSubSupplierDetail.getId()) {
             wrapper.andNew("id = {0}", requestForSubSupplierDetail.getId());
         }
-        //判断是否包含申报子任务ID条件
+        //判断是否包含供应商子任务ID条件
         if (null != requestForSubSupplierDetail.getSubSupplierId()) {
-            wrapper.andNew("task_sub_supplier_id = {0}", requestForSubSupplierDetail.getSubSupplierId());
+            //如果是合并任务，需要查询出起子任务下的明细
+            String str = requestForSubSupplierDetail.getSubSupplierId() + "";
+            //根据合并id获取子任务ID集合
+            List<Long> mergedSubIds = taskSubSupplierMapper.querySubSupplierIdsByMergeIds(str);
+            mergedSubIds.add(requestForSubSupplierDetail.getSubSupplierId());
+            wrapper.in("task_sub_supplier_id", mergedSubIds);
         }
         //雇员编号模糊查询条件
         if (StrKit.notBlank(requestForSubSupplierDetail.getEmployeeNo())) {
@@ -58,17 +71,21 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
         if (StrKit.notBlank(requestForSubSupplierDetail.getIdNo())) {
             wrapper.like("id_no", requestForSubSupplierDetail.getIdNo());
         }
+        //页签
+        if (StrKit.notBlank(requestForSubSupplierDetail.getTabType())) {
+            wrapper.andNew("is_combined = {0} ", requestForSubSupplierDetail.getTabType());
+        }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubSupplierDetail.getPageSize() && null != requestForSubSupplierDetail.getCurrentNum()) {
             Page<TaskSubSupplierDetailPO> pageInfo = new Page<>(requestForSubSupplierDetail.getCurrentNum(), requestForSubSupplierDetail.getPageSize());
             taskSubSupplierDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
             pageInfo.setRecords(taskSubSupplierDetailPOList);
             //获取证件类型中文名和所得项目中文名
-            for(TaskSubSupplierDetailPO p: taskSubSupplierDetailPOList){
-                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
-                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+            for (TaskSubSupplierDetailPO p : taskSubSupplierDetailPOList) {
+                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, p.getIdType()));
+                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, p.getIncomeSubject()));
             }
             responseForSubSupplierDetail.setRowList(taskSubSupplierDetailPOList);
             responseForSubSupplierDetail.setTotalNum(pageInfo.getTotal());
@@ -77,12 +94,28 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
         } else {
             taskSubSupplierDetailPOList = baseMapper.selectList(wrapper);
             //获取证件类型中文名和所得项目中文名
-            for(TaskSubSupplierDetailPO p: taskSubSupplierDetailPOList){
-                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));
-                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));
+            for (TaskSubSupplierDetailPO p : taskSubSupplierDetailPOList) {
+                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, p.getIdType()));
+                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, p.getIncomeSubject()));
             }
             responseForSubSupplierDetail.setRowList(taskSubSupplierDetailPOList);
         }
         return responseForSubSupplierDetail;
+    }
+
+    /**
+     * 根据有合并明细的供应商ID查询未确认的数目
+     *
+     * @param subHasCombinedSupplierIds
+     * @return
+     */
+    @Override
+    public int selectCount(String[] subHasCombinedSupplierIds) {
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.andNew("is_combine_confirmed = {0}", false);
+        wrapper.andNew("is_combined = {0}", true);
+        wrapper.in("task_sub_supplier_id", subHasCombinedSupplierIds);
+        int count = baseMapper.selectCount(wrapper);
+        return count;
     }
 }

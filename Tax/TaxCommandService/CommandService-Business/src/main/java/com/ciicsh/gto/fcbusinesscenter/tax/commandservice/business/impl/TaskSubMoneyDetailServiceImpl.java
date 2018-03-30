@@ -59,7 +59,7 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
             wrapper.like("id_no", requestForSubMoneyDetail.getIdNo());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubMoneyDetail.getPageSize() && null != requestForSubMoneyDetail.getCurrentNum()) {
             Page<TaskSubMoneyDetailPO> pageInfo = new Page<>(requestForSubMoneyDetail.getCurrentNum(), requestForSubMoneyDetail.getPageSize());
@@ -84,5 +84,24 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
             responseForSubMoneyDetail.setRowList(taskSubMoneyDetailPOList);
         }
         return responseForSubMoneyDetail;
+    }
+
+    /**
+     * 根据划款子任务ID查询划款子任务明细
+     * @param subMoneyId
+     * @return
+     */
+    @Override
+    public List<TaskSubMoneyDetailPO> querySubMonetDetailsBySubMoneyId(Long subMoneyId) {
+        List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = new ArrayList<>();
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubMoneyDetailPO());
+        //判断是否包含划款子任务ID条件
+        if (null != subMoneyId) {
+            wrapper.andNew("task_sub_money_id = {0}", subMoneyId);
+        }
+        wrapper.andNew("is_active = {0} ", true);
+        taskSubMoneyDetailPOList = baseMapper.selectList(wrapper);
+        return taskSubMoneyDetailPOList;
     }
 }

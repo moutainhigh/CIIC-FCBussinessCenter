@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.CalculationBatchDetailProxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
@@ -36,13 +37,13 @@ public class CalculationBatchDetailController extends BaseController implements 
      * @return
      */
     @Override
-    public JsonResult queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForBatchDetail> queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO) {
+        JsonResult<ResponseForBatchDetail> jr = new JsonResult<>();
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             ResponseForBatchDetail responseForBatchDetail = calculationBatchDetailService.queryCalculationBatchDetail(requestForProof);
-            jr.success(responseForBatchDetail);
+            jr.fill(responseForBatchDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("idType", taskProofDTO.getIdType());
@@ -51,7 +52,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             tags.put("submitTimeStart", taskProofDTO.getSubmitTimeStart());
             tags.put("submitTimeEnd", taskProofDTO.getSubmitTimeEnd());
             //日志工具类返回
-            logService.error(e, "CalculationBatchDetailController.queryTaxBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "CalculationBatchDetailController.queryTaxBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -64,13 +65,13 @@ public class CalculationBatchDetailController extends BaseController implements 
      * @return
      */
     @PostMapping(value = "queryTaxBatchDetailByRes")
-    public JsonResult queryTaxBatchDetailByRes(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForCalBatchDetail> queryTaxBatchDetailByRes(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
+        JsonResult<ResponseForCalBatchDetail> jr = new JsonResult<>();
         try {
             RequestForCalBatchDetail requestForCalBatchDetail = new RequestForCalBatchDetail();
             BeanUtils.copyProperties(calculationBatchDetailDTO, requestForCalBatchDetail);
             ResponseForCalBatchDetail responseForCalBatchDetail = calculationBatchDetailService.queryTaxBatchDetailByRes(requestForCalBatchDetail);
-            jr.success(responseForCalBatchDetail);
+            jr.fill(responseForCalBatchDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("employeeNo", calculationBatchDetailDTO.getEmployeeNo());
@@ -78,7 +79,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             tags.put("managerName", calculationBatchDetailDTO.getManagerName());
             tags.put("batchNo", calculationBatchDetailDTO.getBatchNo());
             //日志工具类返回
-            logService.error(e, "CalculationBatchDetailController.queryTaxBatchDetailByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "CalculationBatchDetailController.queryTaxBatchDetailByRes", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -91,18 +92,18 @@ public class CalculationBatchDetailController extends BaseController implements 
      * @return
      */
     @PostMapping(value = "recoveryCalBatchDetail")
-    public JsonResult recoveryCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<Boolean> recoveryCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
         try {
             if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
                 calculationBatchDetailService.queryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
             }
-            jr.success(true);
+            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("ids", calculationBatchDetailDTO.getIds().toString());
             //日志工具类返回
-            logService.error(e, "CalculationBatchDetailController.recoveryCalBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "00"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "CalculationBatchDetailController.recoveryCalBatchDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "00"), LogType.APP, tags);
             jr.error();
         }
         return jr;

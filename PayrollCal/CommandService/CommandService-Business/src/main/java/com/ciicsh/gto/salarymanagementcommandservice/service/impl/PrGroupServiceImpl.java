@@ -119,6 +119,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setBaseItemCode(i.getBaseItemCode());
                         item.setItemType(i.getBaseItemType());
                         item.setPayrollGroupCode(paramItem.getGroupCode());
+                        item.setManagementId(paramItem.getManagementId());
                         item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
                         return item;
@@ -264,9 +265,9 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    public List<HashMap<String, String>> getPrGroupNameList(String query) {
+    public List<HashMap<String, String>> getPrGroupNameList(String query, String managementId) {
         List<HashMap<String, String>> result = new ArrayList<>(50);
-        result = prPayrollGroupMapper.selectGroupNameListByName(query);
+        result = prPayrollGroupMapper.selectGroupNameListByName(query, managementId);
         return result;
     }
 

@@ -55,9 +55,7 @@ public class FuncEntity {
             sb.append("(");
             for (String para : this.parameters) {
                 count++;
-                sb.append("[");
                 sb.append(para);
-                sb.append("]");
                 if(count < total) {
                     sb.append(",");
                 }

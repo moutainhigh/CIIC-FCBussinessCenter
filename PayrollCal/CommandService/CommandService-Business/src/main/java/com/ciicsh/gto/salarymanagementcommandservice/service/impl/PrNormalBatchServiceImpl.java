@@ -107,17 +107,27 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
-    public int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file) {
+    public int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file) {
 
         List<DBObject> batchList = null;
+
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);// ItemTypeEnum.CALC.getValue()
+        Query query = new Query(criteria);
+        query.fields().include("batch_code");
+        query.fields().
+                include(PayItemName.EMPLOYEE_CODE_CN).
+                include("catalog.pay_items.item_type").
+                include("catalog.pay_items.item_name").
+                include("catalog.pay_items.item_value")
+        ;
+
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
-            batchList = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
+            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            batchList = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
+            batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
         }else {
-            batchList = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("emp_group_code").is(empGroupCode).and("catalog.emp_info.is_active").in(true));
-
+            batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
 
         //如果当前批次相关的雇员组里面有雇员，并且该导入属于覆盖导入，则不能进行覆盖导入
@@ -127,18 +137,20 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
         List<List<BasicDBObject>> payItems = new ArrayList<>(); //多个雇员薪资项
 
-        String pr_group_code = "";
+        //String pr_group_code = "";
 
         for (DBObject batchItem: batchList) {
-            if(StringUtils.isEmpty(pr_group_code)){
-                pr_group_code = (String) batchItem.get("pr_group_code");
-            }
             DBObject catalog = (DBObject)batchItem.get("catalog");
             List<BasicDBObject> items = (List<BasicDBObject>)catalog.get("pay_items");
+            items = items.stream().filter(p-> {
+                int itemType = p.get("item_type") == null ? -1 : (int)p.get("item_type");
+                return itemType != ItemTypeEnum.CALC.getValue();
+            }).collect(Collectors.toList());
+
             payItems.add(items);
         }
 
-        DBObject dbObject = null;
+        //DBObject dbObject = null;
         try {
             InputStream stream = file.getInputStream();
             PoiItemReader<List<BasicDBObject>> reader = excelReader.getPrGroupReader(stream, importType, payItems);
@@ -158,34 +170,48 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                     }
                     BathUpdateOptions opt = new BathUpdateOptions();
                     String empCode = (String) row.get(0).get("emp_code"); // row 的第一列为雇员编码
-                    opt.setQuery(Query.query(Criteria.where("batch_code").is(batchCode)
-                                    .andOperator(
-                                            Criteria.where("pr_group_code").is(pr_group_code),
-                                            Criteria.where("emp_group_code").is(empGroupCode),
-                                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode)
-                                    )
-                    ));
+                    opt.setQuery(Query.query(Criteria.where("batch_code").is(batchCode)));
 
-                    dbObject = new BasicDBObject();
+                    //dbObject = new BasicDBObject();
                     row.remove(0); // 删除row 的第一列为雇员编码
-                    dbObject.put("pay_items", row);
-                    dbObject.put("emp_info",getEmpBaseInfo(row));
+                    //dbObject.put("pay_items", row);
+                    //dbObject.put("emp_info",getEmpBaseInfo(row));
 
-                    opt.setUpdate(Update.update("catalog", dbObject));
+                    //opt.setUpdate(Update.update("catalog", dbObject));
+                    /*row = row.stream()
+                            .filter(p-> {
+                                int itemType = p.get("item_type") == null ? 0 : (int)p.get("item_type"); // 薪资项类型
+                                return itemType == ItemTypeEnum.INPUT.getValue() || itemType == ItemTypeEnum.INPUT.getValue();
+                            }).collect(Collectors.toList());*/
+                    //opt.setUpdate(Update.update("catalog.pay_items.$.item_value",row));
+                    Update update = null;
+                    for(int i =0; i < row.size(); i++){
+                        if(i == 0) {
+                            update = Update.update("catalog.pay_items.0.item_value", row.get(0).get("item_value"));
+                        }else {
+                            update.set("catalog.pay_items." + String.valueOf(i) + ".item_value", row.get(i).get("item_value"));
+                        }
+                    }
+
+                    opt.setUpdate(update);
                     opt.setMulti(true);
-                    opt.setUpsert(true);
+                    opt.setUpsert(false);
                     options.add(opt);
                 }
             } while (row != null);
 
+            int rowAffected = 0;
+
             if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-                //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
-                return normalBatchMongoOpt.doBathUpdate(options,true);
+                rowAffected = normalBatchMongoOpt.doBathUpdate(options,true);
             }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-                return adjustBatchMongoOpt.doBathUpdate(options,true);
+                rowAffected = adjustBatchMongoOpt.doBathUpdate(options,true);
             }else {
-                return backTraceBatchMongoOpt.doBathUpdate(options,true);
+                rowAffected = backTraceBatchMongoOpt.doBathUpdate(options,true);
             }
+
+            logger.info("上传成功纪录条数：" + String.valueOf(rowAffected));
+            return rowAffected;
 
         }catch (Exception ex){
             logger.error(ex.getMessage());
@@ -259,29 +285,4 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         });
         return empBaseInfo;
     }
-
-    /*
-    private BasicDBObject getEmpBaseInfos(List<BasicDBObject> prItems){
-        BasicDBObject empBaseInfo = new BasicDBObject();
-        empBaseInfo.put("is_active",true);
-        empBaseInfo.put(PayItemName.EMPLOYEE_NAME_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_NAME_CN));
-        empBaseInfo.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_BIRTHDAY_CN));
-        empBaseInfo.put(PayItemName.EMPLOYEE_DEP_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_DEP_CN));
-        empBaseInfo.put(PayItemName.EMPLOYEE_ID_NUM_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_ID_NUM_CN));
-        empBaseInfo.put(PayItemName.EMPLOYEE_ID_TYPE_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_ID_TYPE_CN));
-        empBaseInfo.put(PayItemName.EMPLOYEE_ONBOARD_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_ONBOARD_CN));
-        empBaseInfo.put(PayItemName.EMPLOYEE_POSITION_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_POSITION_CN));
-        empBaseInfo.put(PayItemName.EMPLOYEE_SEX_CN,getPRItemValue(prItems,PayItemName.EMPLOYEE_SEX_CN));
-        return empBaseInfo;
-    }
-
-    private Object getPRItemValue(List<BasicDBObject> prItems, String itemName){
-        List<DBObject> findItems = prItems.stream().filter(item-> item.get("item_name").equals(itemName)).collect(Collectors.toList());
-        if(findItems != null && findItems.size() > 0){
-            return findItems.get(0).get("item_value");
-        }
-        return null;
-
-    }*/
-
 }

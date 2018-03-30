@@ -10,9 +10,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
  * Created by houwanhua on 2017/7/28.
  */
 @SpringBootApplication(scanBasePackages =
-        {"com.ciicsh.gt1",
-        "com.ciicsh.gto.fcbusinesscenter.util",
-                "com.ciicsh.gto.salarymanagementcommandservice"})
+        {"com.ciicsh.gt1", "com.ciicsh.gto.fcbusinesscenter.util", "com.ciicsh.gto.salarymanagementcommandservice"})
 @EnableDiscoveryClient
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
 @EnableFeignClients({"com.ciicsh.gto.afsystemmanagecenter", "com.ciicsh.gto.salecenter.apiservice.api"})// 指定对应中心的 @FeignClient 所在对应的包

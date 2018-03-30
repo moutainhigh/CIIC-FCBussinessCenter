@@ -100,7 +100,7 @@ public interface PrGroupTemplateService {
      * @param query
      * @return
      */
-    List<HashMap<String, String>> getPrGroupTemplatNameList(String query);
+    List<HashMap<String, String>> getPrGroupTemplateNameList(String query);
 
     /**
      *

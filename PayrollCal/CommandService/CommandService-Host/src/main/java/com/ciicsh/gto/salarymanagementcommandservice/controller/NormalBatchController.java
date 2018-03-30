@@ -18,6 +18,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
@@ -117,8 +118,6 @@ public class NormalBatchController {
         prNormalBatchPO.setStartDate(dates[0]);
         prNormalBatchPO.setEndDate(dates[1]);
 
-        System.out.println("normal batch code : "+ code);
-
         int result = 0;
         try {
             result = batchService.insert(prNormalBatchPO);
@@ -129,6 +128,7 @@ public class NormalBatchController {
                 msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
                 msg.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.Send(msg);
+                System.out.println("新增薪资帐套：%s" + msg.toString());
 
                 return JsonResult.success(result);
             }
@@ -190,9 +190,9 @@ public class NormalBatchController {
     }
 
     @PostMapping("/uploadExcel")
-    public JsonResult importExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file){
+    public JsonResult importExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file){
 
-        int sucessRows = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,batchType,importType,file);
+        int sucessRows = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
         if(sucessRows == -1){
             return JsonResult.faultMessage("雇员组中已有雇员，不能用于覆盖导入");
         }
@@ -292,7 +292,7 @@ public class NormalBatchController {
         Query query = new Query(criteria);
         query.fields().include("batch_code");
 
-        long totalCount = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
+        long totalCount = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
         if(totalCount == 0){
             return JsonResult.success(0);
         }
@@ -310,7 +310,7 @@ public class NormalBatchController {
         query.skip((pageNum-1) * pageSize);
         query.limit(pageSize);
 
-        List<DBObject> list = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
+        List<DBObject> list = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH);
 
         //List<DBObject> list = normalBatchMongoOpt.list(criteria).stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 
@@ -350,19 +350,18 @@ public class NormalBatchController {
 
     }
 
-    @PostMapping("/doCompute")
+    /*@PostMapping("/doCompute")
     public JsonResult doComputeAction(@RequestParam String batchCode, @RequestParam int batchType){
+
+        int rowAffected = 0;
         try {
             if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-                batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill",""); //TODO
+                rowAffected = batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill",""); //TODO
             }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
-                adjustBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill","");
+                rowAffected = adjustBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill","");
             }else if(batchType == BatchTypeEnum.BACK.getValue()){
-                backTrackingBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill", "");
+                rowAffected = backTrackingBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill", "");
             }
-            /*ComputeMsg computeMsg = new ComputeMsg();
-            computeMsg.setBatchCode(batchCode);
-            sender.SendComputeAction(computeMsg);*/
         }
         catch (Exception e){
             logger.error(e.getMessage());
@@ -370,7 +369,7 @@ public class NormalBatchController {
         }
         return JsonResult.success("发送计算任务成功");
 
-    }
+    }*/
 
     @PostMapping("/auditBatch")
     public JsonResult auditBatch(@RequestBody BatchAuditDTO batchAuditDTO){
@@ -400,6 +399,17 @@ public class NormalBatchController {
 
         }
         if(rowAffected > 0) {
+            if(batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()){
+                //审核通过后，发送消息
+                ComputeMsg computeMsg = new ComputeMsg();
+                computeMsg.setBatchType(batchAuditDTO.getBatchType());
+                computeMsg.setComputeStatus(BatchStatusEnum.CLOSED.getValue());
+                computeMsg.setBatchCode(batchAuditDTO.getBatchCode());
+
+                logger.info("审核通过 : " + computeMsg.toString());
+
+                sender.SendComputeCompleteAction(computeMsg);
+            }
             return JsonResult.success(rowAffected);
         }
         else {

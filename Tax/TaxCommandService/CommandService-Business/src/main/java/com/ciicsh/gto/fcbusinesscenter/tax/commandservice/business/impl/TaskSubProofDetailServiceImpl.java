@@ -2,8 +2,8 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper;
@@ -21,7 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author yuantongqing on 2017/12/14
@@ -35,6 +38,8 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
     @Autowired(required = false)
     private TaskSubProofMapper taskSubProofMapper;
 
+    @Autowired
+    public TaskNoService taskNoService;
 
     /**
      * 查询完税申请明细
@@ -110,17 +115,15 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         //设置申报账户
                         taskSubProofPO.setDeclareAccount(taskSubProofDetailBO.getDeclareAccount());
                         //设置子任务编号
-                        taskSubProofPO.setTaskNo(TaskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
+                        taskSubProofPO.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
                         //设置任务为草稿状态
                         taskSubProofPO.setStatus("00");
-                        // TODO 临时设置创建人
-                        //设置创建人
-                        taskSubProofPO.setCreatedBy("adminMain");
-                        // TODO 临时设置修改人
-                        //设置修改人
-                        taskSubProofPO.setModifiedBy("adminMain");
                         //设置任务类型为手动
                         taskSubProofPO.setTaskType("02");
+                        //设置管理方编号
+                        taskSubProofPO.setManagerNo(requestForSubDetail.getManagerNo());
+                        //设置管理方名称
+                        taskSubProofPO.setManagerName(requestForSubDetail.getManagerName());
                         //新增完税凭证子任务
                         taskSubProofMapper.insert(taskSubProofPO);
                         subMap.put(taskSubProofDetailBO.getDeclareAccount(), taskSubProofPO.getId());
@@ -129,51 +132,25 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO.getId())) {
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
-                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedBy(requestForSubDetail.getModifiedBy());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(subMap.get(taskSubProofDetailBO.getDeclareAccount()));
-                        // TODO 临时设置创建人
-                        //创建人
-                        taskSubProofDetailPO.setCreatedBy("adminMain");
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
                     }
                     taskSubProofDetailPOList.add(taskSubProofDetailPO);
                 }
             }
             //mybatisPlus批量插入或者修改
-            this.insertOrUpdateBatch(taskSubProofDetailPOList);
+            if (taskSubProofDetailPOList.size() > 0) {
+                this.insertOrUpdateBatch(taskSubProofDetailPOList);
+            }
             //统计子任务人数
             for (String key : subMap.keySet()) {
                 Long subId = subMap.get(key);
-//                Map<String,Object> subNumMap = baseMapper.queryPersonNumBySubProofId(subId);
-//                TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-//                taskSubProofPO.setId(subId);
-//                //总人数
-//                taskSubProofPO.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
-//                //中方人数
-//                taskSubProofPO.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
-//                //外方人数
-//                taskSubProofPO.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
-//                taskSubProofMapper.updateById(taskSubProofPO);
-                taskSubProofMapper.updateSubHeadcountById(subId,"adminSub",LocalDateTime.now());
+                taskSubProofMapper.updateSubHeadcountById(subId, requestForSubDetail.getModifiedBy(), LocalDateTime.now());
             }
             //统计总任务人数
-//            Map<String,Object> mainNumMap = taskSubProofMapper.queryPersonNumByMainProofId(requestForSubDetail.getTaskId());
-//            TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
-//            taskMainProofPO.setId(requestForSubDetail.getTaskId());
-//            //总人数
-//            taskMainProofPO.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
-//            //中方人数
-//            taskMainProofPO.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
-//            //外方人数
-//            taskMainProofPO.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
-//            taskMainProofMapper.updateById(taskMainProofPO);
-            taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId(),"adminMain",LocalDateTime.now());
+            taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
         } else if (subType.equals(requestForSubDetail.getDetailType())) {
             //修改申报明细为不可用状态
             updateTaskSubProofDetailActive(requestForSubDetail);
@@ -184,57 +161,24 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO)) {
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
-                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedBy(requestForSubDetail.getModifiedBy());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(requestForSubDetail.getTaskId());
-                        // TODO 临时设置修改人
-                        //修改人
-                        taskSubProofDetailPO.setCreatedBy("adminMain");
-                        // TODO 临时设置创建人
-                        //创建人
-                        taskSubProofDetailPO.setModifiedBy("adminMain");
                     }
                     taskSubProofDetailPOList.add(taskSubProofDetailPO);
                 }
                 //mybatisPlus批量插入或者修改
-                this.insertOrUpdateBatch(taskSubProofDetailPOList);
+                if (taskSubProofDetailPOList.size() > 0) {
+                    this.insertOrUpdateBatch(taskSubProofDetailPOList);
+                }
+
             }
             //统计子任务总人数
-            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId(),"adminAdd",LocalDateTime.now());
-//            Map<String,Object> subNumMap = baseMapper.queryPersonNumBySubProofId(requestForSubDetail.getTaskId());
-//            TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-//            taskSubProofPO.setId(requestForSubDetail.getTaskId());
-//            //总人数
-//            taskSubProofPO.setHeadcount(Integer.parseInt(String.valueOf(subNumMap.get("headNumTotal"))));
-//            //中方人数
-//            taskSubProofPO.setChineseNum(Integer.parseInt(String.valueOf(subNumMap.get("chineseNumTotal"))));
-//            //外方人数
-//            taskSubProofPO.setForeignerNum(Integer.parseInt(String.valueOf(subNumMap.get("foreignerNumTotal"))));
-//            //TODO 临时修改人
-//            taskSubProofPO.setModifiedBy("adminAdd");
-//            //修改时间
-//            taskSubProofPO.setModifiedTime(LocalDateTime.now());
-//            taskSubProofMapper.updateById(taskSubProofPO);
+            taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
             //统计总任务人数
             TaskSubProofPO taskSubProofPOInfo = taskSubProofMapper.selectById(requestForSubDetail.getTaskId());
-            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId(),"adminAdd",LocalDateTime.now());
-//            Map<String,Object> mainNumMap = taskSubProofMapper.queryPersonNumByMainProofId(taskSubProofPOInfo.getTaskMainProofId());
-//            TaskMainProofPO taskMainProofPO = new TaskMainProofPO();
-//            taskMainProofPO.setId(taskSubProofPOInfo.getTaskMainProofId());
-//            //总人数
-//            taskMainProofPO.setHeadcount(Integer.parseInt(String.valueOf(mainNumMap.get("headNumTotal"))));
-//            //中方人数
-//            taskMainProofPO.setChineseNum(Integer.parseInt(String.valueOf(mainNumMap.get("chineseNumTotal"))));
-//            //外方人数
-//            taskMainProofPO.setForeignerNum(Integer.parseInt(String.valueOf(mainNumMap.get("foreignerNumTotal"))));
-//            //TODO 临时修改人
-//            taskMainProofPO.setModifiedBy("adminAdd");
-//            //修改时间
-//            taskMainProofPO.setModifiedTime(LocalDateTime.now());
-//            taskMainProofMapper.updateById(taskMainProofPO);
+            taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
         }
     }
 

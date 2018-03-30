@@ -1,5 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
+import java.util.Arrays;
+
 /**
  * @author yuantongqing
  * on create 2018/2/8
@@ -36,6 +38,11 @@ public class TaskSubDeclareDetailDTO {
     private String idNo;
 
     /**
+     * 申报明细页签(1:合并列表，0:雇员列表)
+     */
+    private String tabType;
+
+    /**
      * 当前页数
      */
     private Integer currentNum;
@@ -43,6 +50,28 @@ public class TaskSubDeclareDetailDTO {
      * 每页显示条目
      */
     private Integer pageSize;
+    /**
+     * 申报子任务明细ID
+     */
+    private Long taskSubDeclareDetailId;
+
+    private Long[] taskSubDeclareDetailIds;
+
+    public Long[] getTaskSubDeclareDetailIds() {
+        return taskSubDeclareDetailIds;
+    }
+
+    public void setTaskSubDeclareDetailIds(Long[] taskSubDeclareDetailIds) {
+        this.taskSubDeclareDetailIds = taskSubDeclareDetailIds;
+    }
+
+    public Long getTaskSubDeclareDetailId() {
+        return taskSubDeclareDetailId;
+    }
+
+    public void setTaskSubDeclareDetailId(Long taskSubDeclareDetailId) {
+        this.taskSubDeclareDetailId = taskSubDeclareDetailId;
+    }
 
     public Long getId() {
         return id;
@@ -108,6 +137,14 @@ public class TaskSubDeclareDetailDTO {
         this.pageSize = pageSize;
     }
 
+    public String getTabType() {
+        return tabType;
+    }
+
+    public void setTabType(String tabType) {
+        this.tabType = tabType;
+    }
+
     @Override
     public String toString() {
         return "TaskSubDeclareDetailDTO{" +
@@ -117,8 +154,11 @@ public class TaskSubDeclareDetailDTO {
                 ", employeeName='" + employeeName + '\'' +
                 ", idType='" + idType + '\'' +
                 ", idNo='" + idNo + '\'' +
+                ", tabType='" + tabType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
+                ", taskSubDeclareDetailId=" + taskSubDeclareDetailId +
+                ", taskSubDeclareDetailIds=" + Arrays.toString(taskSubDeclareDetailIds) +
                 '}';
     }
 }

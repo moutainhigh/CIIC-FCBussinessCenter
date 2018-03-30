@@ -20,10 +20,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by jiangtianning on 2017/11/6.
@@ -43,6 +46,8 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Autowired
     private CodeGenerator codeGenerator;
+
+    private final static Pattern PAY_ITEM_REGEX = Pattern.compile("\\[([^\\[\\]]+)\\]");
 
     @Override
     public List<PrPayrollItemPO> getListByGroupCode(String groupCode) {
@@ -87,7 +92,10 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    @Transactional(rollbackFor = RuntimeException.class)
+    @Transactional(
+            rollbackFor = RuntimeException.class,
+            isolation = Isolation.SERIALIZABLE
+    )
     public int addItem(PrPayrollItemPO param) {
         // 将所在薪资组/模板的审核状态更新为草稿
         this.updateRelatedGroupStatus(param);
@@ -97,6 +105,8 @@ public class PrItemServiceImpl implements PrItemService {
         param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
         param.setModifiedTime(new Date());
         param.setCreatedTime(new Date());
+        param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(param.getPayrollGroupCode()) + 1);
+        this.replaceItemNameWithCode(param);
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
     }
@@ -190,6 +200,7 @@ public class PrItemServiceImpl implements PrItemService {
         // 将所在薪资组/模板的审核状态更新为草稿
         this.updateRelatedGroupStatus(param);
         param.setModifiedTime(new Date());
+        this.replaceItemNameWithCode(param);
         return prPayrollItemMapper.updateItemByCode(param);
     }
 
@@ -257,5 +268,49 @@ public class PrItemServiceImpl implements PrItemService {
             groupPO.setModifiedBy(param.getModifiedBy());
             prPayrollGroupMapper.updateItemByCode(groupPO);
         }
+    }
+
+    private void replaceItemNameWithCode(PrPayrollItemPO param) {
+
+        List<PrPayrollItemPO> itemPOList;
+        if (!StringUtils.isEmpty(param.getPayrollGroupCode())) {
+            itemPOList = this.getListByGroupCode(param.getPayrollGroupCode());
+        } else {
+            itemPOList = this.getListByGroupTemplateCode(param.getPayrollGroupTemplateCode());
+        }
+
+        if (!StringUtils.isEmpty(param.getFormulaContent())) {
+            param.setFormulaContent(this.replacePayItem(param.getFormulaContent(), itemPOList, param.getCalPriority()));
+        }
+
+        if (!StringUtils.isEmpty(param.getItemCondition())) {
+            param.setItemCondition(this.replacePayItem(param.getItemCondition(), itemPOList, param.getCalPriority()));
+        }
+
+    }
+
+    private String replacePayItem(String content, List<PrPayrollItemPO> itemPOList, Integer thisCalPriority){
+
+        // 薪资项名称-Code map
+        Map<String, String> nameCodeMap = new HashMap<>();
+        // 薪资项名称-计算顺序 map
+        Map<String, Integer> nameCalPrioMap = new HashMap<>();
+        itemPOList.forEach(i -> {
+            nameCodeMap.put(i.getItemName(), i.getItemCode());
+            nameCalPrioMap.put(i.getItemName(), i.getCalPriority());
+        });
+
+        Matcher m = PAY_ITEM_REGEX.matcher(content);
+        while(m.find()) {
+            String payItemName = m.group(1);
+            if (StringUtils.isEmpty(nameCodeMap.get(payItemName))) {
+                throw new BusinessException("计算公式中有不存在于该薪资组的薪资项: " + payItemName);
+            }
+            if (nameCalPrioMap.get(payItemName) > thisCalPriority) {
+                throw new BusinessException("计算公式中依赖了计算优先级较低的薪资项: " + payItemName);
+            }
+            content = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
+        }
+        return content;
     }
 }

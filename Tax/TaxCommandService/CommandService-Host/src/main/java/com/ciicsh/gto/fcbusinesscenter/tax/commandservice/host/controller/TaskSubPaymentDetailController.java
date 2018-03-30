@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubPaymentDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentDetailService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -32,13 +33,13 @@ public class TaskSubPaymentDetailController extends BaseController {
      * @return
      */
     @PostMapping(value = "querySubPaymentDetailsByParams")
-    public JsonResult querySubPaymentDetailsByParams(@RequestBody TaskSubPaymentDetailDTO taskSubPaymentDetailDTO) {
-        JsonResult jr = new JsonResult();
+    public JsonResult<ResponseForSubPaymentDetail> querySubPaymentDetailsByParams(@RequestBody TaskSubPaymentDetailDTO taskSubPaymentDetailDTO) {
+        JsonResult<ResponseForSubPaymentDetail> jr = new JsonResult<>();
         try {
             RequestForSubPaymentDetail requestForSubPaymentDetail = new RequestForSubPaymentDetail();
             BeanUtils.copyProperties(taskSubPaymentDetailDTO, requestForSubPaymentDetail);
             ResponseForSubPaymentDetail responseForSubPaymentDetail = taskSubPaymentDetailService.querySubPaymentDetailsByParams(requestForSubPaymentDetail);
-            jr.success(responseForSubPaymentDetail);
+            jr.fill(responseForSubPaymentDetail);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubPaymentId", taskSubPaymentDetailDTO.getTaskSubPaymentId().toString());
@@ -47,7 +48,7 @@ public class TaskSubPaymentDetailController extends BaseController {
             tags.put("idType", taskSubPaymentDetailDTO.getIdType());
             tags.put("idNo", taskSubPaymentDetailDTO.getIdNo());
             //日志工具类返回
-            logService.error(e, "TaskSubPaymentDetailController.querySubPaymentDetailsByParams", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "04"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubPaymentDetailController.querySubPaymentDetailsByParams", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "04"), LogType.APP, tags);
             jr.error();
         }
         return jr;

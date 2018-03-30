@@ -11,9 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -42,6 +39,9 @@ public class PayrollReceiver {
     @Autowired
     private ComputeServiceImpl computeService;
 
+    @Autowired
+    private CompleteComputeServiceImpl completeComputeService;
+
     @StreamListener(PayrollSink.INPUT)
     public void receive(PayrollMsg message){
         logger.info("received from batchCode : " + message.getBatchCode());
@@ -59,8 +59,17 @@ public class PayrollReceiver {
     @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
     public void receive(ComputeMsg computeMsg){
         logger.info("received payroll compute from message: " + computeMsg);
-        processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
-        return;
+        if(computeMsg.getBatchType() > 0) {
+            processPayrollCompute(computeMsg.getBatchCode(), computeMsg.getBatchType());
+        }
+    }
+
+    @StreamListener(PayrollSink.PR_COMPUTE_COMPLTE_INPUT)
+    public void receiveComplete(ComputeMsg computeMsg){
+        logger.info("received payroll compute from message: " + computeMsg);
+        if(computeMsg.getBatchType() > 0) {
+            completeComputeService.processCompleteCompute(computeMsg.getBatchCode(), computeMsg.getBatchType());
+        }
     }
 
     /*

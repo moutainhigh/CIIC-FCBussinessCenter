@@ -215,8 +215,8 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             for (int i = 0; i < columNames.length; i++) { //索引从1开始，0 为 emp_code
                 cloName = columNames[i];
                 String excelVal = rs.getProperties().getProperty(cloName); // 外部文件系统值
-                String prItemName = prItem.get("item_name") == null ? "" : (String) prItem.get("item_name");
-                if (!prItemName.equals(cloName)) {
+                String prItemName = prItem.get("item_name") == null ? "" : ((String) prItem.get("item_name")).trim();
+                if (!prItemName.equals(cloName.trim())) {
                     continue;
                 }
                 if (hasSameName) //使用外部系统的值

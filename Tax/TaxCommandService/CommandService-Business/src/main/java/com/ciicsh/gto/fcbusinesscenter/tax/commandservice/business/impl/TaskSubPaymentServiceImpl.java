@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentPO;
@@ -11,10 +12,11 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +26,9 @@ import java.util.List;
  */
 @Service
 public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper, TaskSubPaymentPO> implements TaskSubPaymentService, Serializable {
+
+    @Autowired
+    private TaskMainService taskMainService;
 
     /**
      * 条件查询缴纳子任务
@@ -68,11 +73,15 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             }
         }
         //任务状态
-        if(StrKit.notBlank(requestForSubPayment.getStatusType())){
-            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE,requestForSubPayment.getStatusType().toUpperCase()));
+        if (StrKit.notBlank(requestForSubPayment.getStatusType())) {
+            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubPayment.getStatusType().toUpperCase()));
+        }
+        //区域类型(00:本地,01:异地)
+        if (StrKit.notBlank(requestForSubPayment.getAreaType())) {
+            wrapper.andNew("area_type = {0}", requestForSubPayment.getAreaType());
         }
         wrapper.andNew("is_active = {0} ", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
 
         //判断是否分页
         if (null != requestForSubPayment.getPageSize() && null != requestForSubPayment.getCurrentNum()) {
@@ -114,13 +123,16 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      *
      * @param requestForSubPayment
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
         updateTaskSubPaymentStatus(requestForSubPayment);
+        taskMainService.updateTaskMainStatus(requestForSubPayment.getMainIds());
     }
 
     /**
      * 修改缴纳任务状态
+     *
      * @param requestForSubPayment
      */
     private void updateTaskSubPaymentStatus(RequestForSubPayment requestForSubPayment) {
@@ -128,16 +140,12 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
             //更新缴纳任务状态
             taskSubPaymentPO.setStatus(requestForSubPayment.getStatus());
-            //更新修改人
-            taskSubPaymentPO.setModifiedBy(requestForSubPayment.getModifiedBy());
-            //更新修改时间
-            taskSubPaymentPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubPaymentPO());
-            wrapper.andNew("is_active = {0}",true);
-            wrapper.in("id",requestForSubPayment.getSubPaymentIds());
+            wrapper.andNew("is_active = {0}", true);
+            wrapper.in("id", requestForSubPayment.getSubPaymentIds());
             //修改缴纳子任务状态
-            baseMapper.update(taskSubPaymentPO,wrapper);
+            baseMapper.update(taskSubPaymentPO, wrapper);
         }
     }
 

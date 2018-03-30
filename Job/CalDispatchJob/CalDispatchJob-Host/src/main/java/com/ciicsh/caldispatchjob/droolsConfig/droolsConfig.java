@@ -1,4 +1,4 @@
-package com.ciicsh.caldispatchjob.droolsConfig;
+package com.ciicsh.caldispatchjob.DroolsConfig;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;

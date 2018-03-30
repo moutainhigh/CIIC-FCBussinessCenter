@@ -1,89 +1,113 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json;
 
 /**
- * Created by shil on 2017/9/20.
+ * yuantongqing
  */
-public class JsonResult {
+public class JsonResult<T> {
+
+    /**
+     * TD_ 个税数据处理；
+     * TM_ 个税任务；
+     * DE_ 申报；
+     * TR_ 划款；
+     * PA_ 缴纳；
+     * PR_ 完税凭证；
+     * SU_ 供应商；
+     */
+    public static enum ReturnCode{
+
+        FAIL("异常"),
+
+        TM_ER01("任务内有未确认的合并明细，不能提交任务"),
+
+        TM_ER02("有未退回的子任务，不能提交"),
+
+        TM_ER03("有未退回的子任务，不能失效"),
+
+        DE_ER01("任务内有未确认的合并明细，不能提交任务"),
+
+        SU_ER01("任务内有未确认的合并明细，不能提交任务");
+
+        private String  message;
+
+        private ReturnCode(String message)
+        {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
     public JsonResult(){}
-    public JsonResult(String errorcode) {
-        this.errorcode = errorcode;
-    }
 
-    public JsonResult(Object data){
+    public JsonResult(String code, String msg, T data){
+        this.code = code;
+        this.msg = msg;
         this.data = data;
     }
 
-    public JsonResult(String errorcode, String errormsg) {
-        this.errorcode = errorcode;
-        this.errormsg = errormsg;
+    private String code = "0";
+    private String msg = "";
+    private T data;
+
+    public String getCode() {
+        return code;
     }
 
-    public JsonResult(String errorcode, Object data){
-        this.errorcode = errorcode;
-        this.data = data;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public JsonResult(String errorcode, String errormsg, Object data){
-        this.errorcode = errorcode;
-        this.errormsg = errormsg;
-        this.data = data;
+    public String getMsg() {
+        return msg;
     }
 
-    private String errorcode = "0";
-    private String errormsg = "";
-    private Object data = "";
-
-    public String getErrorcode(){
-        return errorcode;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
-    public void setErrorcode(String errorcode){
-        this.errorcode = errorcode;
-    }
-
-    public String getErrormsg() {
-        return errormsg;
-    }
-
-    public void setErrormsg(String errormsg) {
-        this.errormsg = errormsg;
-    }
-
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
-
     /**
-     *  自定义成功编码
-     * @param successCode
-     * @param successMsg
+     *  参数设置(成功)
      * @param data
      * @return
      */
-    public void fill(String successCode, String successMsg,Object data) {
-        this.errorcode = successCode;
-        this.errormsg = successMsg;
+    public void fill(T data) {
         this.data = data;
     }
-    /**
-     * 默认成功返回结果集
-     * @param data
-     * @return
-     */
-    public void success(Object data){
-        this.fill("0","success",data);
-    }
 
     /**
-     * 默认错误信息返回
+     *  参数设置(失败)
+     * @param rc
+     * @return
+     */
+    public void fill(ReturnCode rc) {
+        this.code = rc.toString();
+        this.msg = rc.getMessage();
+    }
+    /**
+     * 是否成功
+     * @return
+     */
+    /*public boolean isSuccess(){
+
+        return this.code.equals("0");
+    }*/
+    /**
+     * 错误
      * @return
      */
     public void error(){
-        this.fill("1","error",null);
+        this.fill(ReturnCode.FAIL);
     }
+
 }

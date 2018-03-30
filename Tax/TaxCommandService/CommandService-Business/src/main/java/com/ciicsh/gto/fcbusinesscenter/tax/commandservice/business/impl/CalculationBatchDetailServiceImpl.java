@@ -202,7 +202,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             //是否暂缓
             calculationBatchDetailPO.setDefer(false);
             //修改时间
-            calculationBatchDetailPO.setModifiedTime(LocalDateTime.now());
+//            calculationBatchDetailPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper= new EntityWrapper();
             wrapper.setEntity(new CalculationBatchDetailPO());
             wrapper.in("id", ids);

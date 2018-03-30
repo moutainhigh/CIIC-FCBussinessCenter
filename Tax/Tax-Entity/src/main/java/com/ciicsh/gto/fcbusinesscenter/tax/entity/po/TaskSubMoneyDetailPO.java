@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.math.BigDecimal;
@@ -197,24 +198,35 @@ public class TaskSubMoneyDetailPO{
     /**
      * 创建时间
      */
-	@TableField("created_time")
+    @TableField(value="created_time",fill = FieldFill.INSERT)
 	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField("modified_time")
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
 	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
-	@TableField("created_by")
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
-	@TableField("modified_by")
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
+	/**
+	 * 主任务明细ID
+	 */
+	private Long taskMainDetailId;
 
+	public Long getTaskMainDetailId() {
+		return taskMainDetailId;
+	}
+
+	public void setTaskMainDetailId(Long taskMainDetailId) {
+		this.taskMainDetailId = taskMainDetailId;
+	}
 
 	public Long getId() {
 		return id;

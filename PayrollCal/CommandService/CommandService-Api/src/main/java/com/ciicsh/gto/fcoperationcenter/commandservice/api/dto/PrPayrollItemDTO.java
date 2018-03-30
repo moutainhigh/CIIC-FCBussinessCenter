@@ -99,6 +99,10 @@ public class PrPayrollItemDTO {
      */
 	private Integer calPrecision;
     /**
+     * 原始完整公式结构体
+     */
+    private String fullFormula;
+    /**
      * 公式原始内容
      */
     private String originFormula;

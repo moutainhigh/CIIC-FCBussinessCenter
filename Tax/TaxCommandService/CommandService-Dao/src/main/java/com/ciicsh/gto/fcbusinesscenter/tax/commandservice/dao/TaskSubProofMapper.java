@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -57,5 +56,15 @@ public interface TaskSubProofMapper extends BaseMapper<TaskSubProofPO> {
      * @return
      */
     List<TaskSubDeclareDetailBO> querySubDeclareDetailsForProof(@Param("taskSubDeclareId") Long taskSubDeclareId);
+
+    /**
+     * 修改完税凭证子任务合并任务ID在子任务数组ID的状态
+     *
+     * @param subProofIds
+     * @param status
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateTaskProofStatus(@Param("subProofIds")String[] subProofIds,@Param("status") String status ,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
 
 }

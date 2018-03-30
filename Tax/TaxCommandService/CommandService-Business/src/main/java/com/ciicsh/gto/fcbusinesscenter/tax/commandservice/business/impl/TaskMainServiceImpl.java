@@ -4,18 +4,15 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +22,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
  */
 @Service
 public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO> implements TaskMainService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskMainServiceImpl.class);
-
-    /*@Autowired(required = false)
-    private TaskMainMapper taskMainMapper;*/
 
     @Autowired
     private CalculationBatchTaskMainServiceImpl calculationBatchTaskMainService;
@@ -52,8 +45,11 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     @Autowired
     private TaskSubSupplierServiceImpl taskSubSupplierService;
 
+    /*@Autowired
+    private CalculationBatchMapper calculationBatchMapper;*/
+
     @Autowired
-    private CalculationBatchMapper calculationBatchMapper;
+    private TaskMainDetailMapper taskMainDetailMapper;
 
 
     /**
@@ -144,16 +140,9 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             Map<String, Object> columnMap = new HashMap<>();
             columnMap.put("task_main_id",p.getId());
             List<CalculationBatchTaskMainPO> l = calculationBatchTaskMainService.selectByMap(columnMap);
-            StringBuilder sb = new StringBuilder();
-            int k =0;
-            for(CalculationBatchTaskMainPO cp : l){
-                if(k>0){
-                    sb.append(",");
-                }
-                sb.append(cp.getBatchNo());
-                k++;
-            }
-            p.setBatchIds(sb.toString());
+            //组合批次号
+            String sb = l.stream().map(CalculationBatchTaskMainPO::getBatchNo).collect(Collectors.joining(", "));
+            p.setBatchIds(sb);
         }
         responseForTaskMain.setRowList(taskMainPOList);
         responseForTaskMain.setCurrentNum(requestForTaskMain.getCurrentNum());
@@ -173,13 +162,13 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"01");
+        this.updateTaskMainsStatus(taskMainIds,"01",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
 
     /**
-     * 提交主任务
+     * 审批通过主任务
      * @param
      * @return
      */
@@ -190,7 +179,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"02");
+        this.updateTaskMainsStatus(taskMainIds,"02",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
@@ -206,7 +195,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"05");
+        this.updateTaskMainsStatus(taskMainIds,"05",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
@@ -222,13 +211,13 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"03");
+        this.updateTaskMainsStatus(taskMainIds,"03",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
 
     //更新主任务状态
-    private void updateTaskMainsStatus(String[] taskMainIds,String status){
+    private void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus){
 
         List<TaskMainPO> tps = new ArrayList<>();
         for(String taskMainId : taskMainIds){
@@ -241,6 +230,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             //更新子任务状态
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.andNew("task_main_id={0}",Long.valueOf(taskMainId));
+            //只更新与主任务状态相同的子任务
+            wrapper.andNew("status={0}",currentStatus);
             //申报
             TaskSubDeclarePO taskSubDeclarePO =  new TaskSubDeclarePO();
             taskSubDeclarePO.setStatus(status);
@@ -269,43 +260,87 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
      * @param requestForTaskMain
      * @return
      */
-    public ResponseForCalBatchDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain){
+    public ResponseForTaskMainDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain){
 
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("task_main_id",requestForTaskMain.getTaskMainId());
+        /*EntityWrapper wrapper = new EntityWrapper();
+        wrapper.andNew("task_main_id={0}",requestForTaskMain.getTaskMainId());
+        wrapper.isNull("task_main_detail_id");
+        wrapper.andNew("is_combined={0}",requestForTaskMain.getIsCombined());*/
+        Page<TaskMainDetailPO> page = new Page<TaskMainDetailPO>(requestForTaskMain.getCurrentNum(), requestForTaskMain.getPageSize());
 
-        List<CalculationBatchTaskMainPO> calculationBatchTaskMainPOs = calculationBatchTaskMainService.selectByMap(columnMap);
+        Map<String,Object> params = new HashMap<>();
+        params.put("taskMainId",requestForTaskMain.getTaskMainId());//主任务id
+        params.put("isCombined",requestForTaskMain.getIsCombined());//是否为合并明细
+        params.put("employeeNo",requestForTaskMain.getEmployeeNo());
+        params.put("employeeName",requestForTaskMain.getEmployeeName());
+        params.put("idType",requestForTaskMain.getIdType());
+        params.put("idNo",requestForTaskMain.getIdNo());
 
-        List<Long> batchIdList = new ArrayList<>();
+        List<TaskMainDetailBO> taskMainDetailBOs = taskMainDetailMapper.queryTaskMainDetails(page,params);
 
-        if(calculationBatchTaskMainPOs!=null && calculationBatchTaskMainPOs.size() > 0 ){
+        ResponseForTaskMainDetail responseForTaskMainDetail = new ResponseForTaskMainDetail();
 
-            batchIdList = new ArrayList<>();
+        responseForTaskMainDetail.setRowList(taskMainDetailBOs);
+        responseForTaskMainDetail.setCurrentNum(requestForTaskMain.getCurrentNum());
+        responseForTaskMainDetail.setPageSize(requestForTaskMain.getPageSize());
+        responseForTaskMainDetail.setTotalNum(page.getTotal());
 
-            for(CalculationBatchTaskMainPO calculationBatchTaskMainPO : calculationBatchTaskMainPOs){
+        return responseForTaskMainDetail;
+    }
 
-                batchIdList.add(calculationBatchTaskMainPO.getCalBatchId());
+    /**
+     * 更新主任务状态(子任务退回)
+     * @param taskMainIds
+     * @return
+     */
+    public void updateTaskMainStatus(Long[] taskMainIds){
 
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.in("id",taskMainIds);
+        TaskMainPO tmp = new TaskMainPO();
+        tmp.setStatus("03");
+        this.update(tmp,wrapper);//更新主任务
+    }
+
+    /**
+     *
+     * @param taskMainIds
+     * @param status
+     * @return
+     */
+    public boolean isStatusSame(String[] taskMainIds,String[] status){
+
+        boolean flag = true;
+
+        int i = 0;
+        for(String st : status){
+            if(st.equals("03")){
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.andNew("task_main_id={0}",taskMainIds[i]);
+                wrapper.and("status!='03'");
+                int count = this.taskSubDeclareService.selectCount(wrapper);
+                if(count>0){
+                    return false;
+                }else{
+                    count = this.taskSubMoneyService.selectCount(wrapper);
+                    if(count>0){
+                        return false;
+                    }else{
+                        count = this.taskSubPaymentService.selectCount(wrapper);
+                        if(count>0){
+                            return false;
+                        }else{
+                            count = this.taskSubSupplierService.selectCount(wrapper);
+                            if(count>0){
+                                return false;
+                            }
+                        }
+                    }
+                }
             }
-
         }
 
-        ResponseForCalBatchDetail responseForCalBatchDetail = new ResponseForCalBatchDetail();
-
-        Page<CalculationBatchDetailBO> page = new Page<CalculationBatchDetailBO>(requestForTaskMain.getCurrentNum(), requestForTaskMain.getPageSize());
-
-        //CalculationBatchDetailBO calculationBatchDetailBO = new CalculationBatchDetailBO();
-        //BeanUtils.copyProperties(requestForTaskMain, calculationBatchDetailBO);
-        Long[] batchIds = batchIdList.toArray(new Long[0]);
-        //batchIds[0] = calculationBatchDetailBO.getCalculationBatchId();
-        List<CalculationBatchDetailBO> calculationBatchDetailBOList = calculationBatchMapper.queryCalculationBatchDetails(page,batchIds);
-
-        responseForCalBatchDetail.setRowList(calculationBatchDetailBOList);
-        responseForCalBatchDetail.setCurrentNum(requestForTaskMain.getCurrentNum());
-        responseForCalBatchDetail.setPageSize(requestForTaskMain.getPageSize());
-        responseForCalBatchDetail.setTotalNum(page.getTotal());
-
-        return responseForCalBatchDetail;
+        return flag;
     }
 
 }

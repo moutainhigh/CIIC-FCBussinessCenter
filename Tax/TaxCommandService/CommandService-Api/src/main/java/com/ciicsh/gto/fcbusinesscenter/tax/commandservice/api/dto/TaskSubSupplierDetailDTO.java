@@ -36,6 +36,11 @@ public class TaskSubSupplierDetailDTO {
     private String idNo;
 
     /**
+     * 供应商明细页签(1:合并列表，0:雇员列表)
+     */
+    private String tabType;
+
+    /**
      * 当前页数
      */
     private Integer currentNum;
@@ -43,6 +48,29 @@ public class TaskSubSupplierDetailDTO {
      * 每页显示条目
      */
     private Integer pageSize;
+
+    /**
+     * 申报子任务明细ID
+     */
+    private Long taskSubSupplierDetailId;
+
+    private Long[] taskSubSupplierDetailIds;
+
+    public Long getTaskSubSupplierDetailId() {
+        return taskSubSupplierDetailId;
+    }
+
+    public void setTaskSubSupplierDetailId(Long taskSubSupplierDetailId) {
+        this.taskSubSupplierDetailId = taskSubSupplierDetailId;
+    }
+
+    public Long[] getTaskSubSupplierDetailIds() {
+        return taskSubSupplierDetailIds;
+    }
+
+    public void setTaskSubSupplierDetailIds(Long[] taskSubSupplierDetailIds) {
+        this.taskSubSupplierDetailIds = taskSubSupplierDetailIds;
+    }
 
     public Long getId() {
         return id;
@@ -108,6 +136,14 @@ public class TaskSubSupplierDetailDTO {
         this.pageSize = pageSize;
     }
 
+    public String getTabType() {
+        return tabType;
+    }
+
+    public void setTabType(String tabType) {
+        this.tabType = tabType;
+    }
+
     @Override
     public String toString() {
         return "TaskSubSupplierDetailDTO{" +
@@ -117,6 +153,7 @@ public class TaskSubSupplierDetailDTO {
                 ", employeeName='" + employeeName + '\'' +
                 ", idType='" + idType + '\'' +
                 ", idNo='" + idNo + '\'' +
+                ", tabType='" + tabType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
                 '}';

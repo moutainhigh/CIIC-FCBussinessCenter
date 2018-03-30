@@ -43,7 +43,7 @@
 
 	<select id="selectBatchListByUseLike" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" resultMap="CustBatchResultMap">
 
-		SELECT
+		SELECT * from ( SELECT
 		a.code,
 		a.management_id,
 		a.management_name,
@@ -52,6 +52,7 @@
 		a.status,
 		a.start_date,
 		a.end_date,
+		a.created_time,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
 		c.name as empGroupName,
@@ -86,106 +87,112 @@
 			</if>
 
 		UNION
-			SELECT
-			a.code,
-			a.management_id,
-			a.management_name,
-			a.account_set_code,
-			a.period,
-			a.status,
-			a.start_date,
-			a.end_date,
-			b.account_set_name as accountSetName,
-			b.payroll_period,
-			c.name as empGroupName,
-			b.pr_group_code,
-			b.is_template,
-			c.emp_group_code,
-			b.group_name
-			FROM
-			pr_normal_batch a , normal_batch_view b, pr_emp_group c
-			where
-			a.account_set_code = b.account_set_code
-			and b.emp_group_code = c.emp_group_code
-			and c.is_active = 1
+		SELECT
+		a.code,
+		a.management_id,
+		a.management_name,
+		a.account_set_code,
+		a.period,
+		a.status,
+		a.start_date,
+		a.end_date,
+		a.created_time,
+		b.account_set_name as accountSetName,
+		b.payroll_period,
+		c.name as empGroupName,
+		b.pr_group_code,
+		b.is_template,
+		c.emp_group_code,
+		b.group_name
+		FROM
+		pr_normal_batch a , normal_batch_view b, pr_emp_group c
+		where
+		a.account_set_code = b.account_set_code
+		and b.emp_group_code = c.emp_group_code
+		and c.is_active = 1
 
-			<if test="period != null and period !=''">
-				AND a.period = #{period}
-			</if>
-			<if test="managementName != null and managementName !=''">
-				AND a.management_name LIKE concat(#{managementName},'%')
-			</if>
-			<if test="accountSetName != null and accountSetName != ''">
-				AND b.account_set_name LIKE concat(#{accountSetName},'%')
-			</if>
-			<if test="empGroupName != null and empGroupName !=''">
-				AND c.name LIKE concat(#{empGroupName},'%')
-			</if>
-			<if test="code != null and code != '' and status == 0" >
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE adjust_batch_code LIKE concat(#{code},'%'))
-			</if>
-			<if test="code != null and code != '' and status != 0" >
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status} and adjust_batch_code LIKE concat(#{code},'%'))
-			</if>
-			<if test="(code == null or code == '') and status == 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch)
-			</if>
-			<if test="(code == null or code == '') and status != 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status})
-			</if>
-		UNION
-			SELECT
-			a.code,
-			a.management_id,
-			a.management_name,
-			a.account_set_code,
-			a.period,
-			a.status,
-			a.start_date,
-			a.end_date,
-			b.account_set_name as accountSetName,
-			b.payroll_period,
-			c.name as empGroupName,
-			b.pr_group_code,
-			b.is_template,
-			c.emp_group_code,
-			b.group_name
-			FROM
-			pr_normal_batch a , normal_batch_view b, pr_emp_group c
-			where
-			a.account_set_code = b.account_set_code
-			and b.emp_group_code = c.emp_group_code
-			and c.is_active = 1
-			<if test="period != null and period !=''" >
-				AND a.period = #{period}
-			</if>
-			<if test="managementName != null and managementName !=''">
-				AND a.management_name LIKE concat(#{managementName},'%')
-			</if>
-			<if test="status != 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
-			</if>
-			<if test="status == 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
-			</if>
-			<if test="accountSetName != null and accountSetName != ''">
-				AND b.account_set_name LIKE concat(#{accountSetName},'%')
-			</if>
-			<if test="empGroupName != null and empGroupName !=''">
-				AND c.name LIKE concat(#{empGroupName},'%')
-			</if>
-			<if test="code != null and code != '' and status == 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE back_tracking_batch_code LIKE concat(#{code},'%'))
-			</if>
-			<if test="code != null and code != '' and status != 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status} AND back_tracking_batch_code LIKE concat(#{code},'%'))
-			</if>
-			<if test="(code == null or code == '') and status != 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
-			</if>
-			<if test="(code == null or code == '') and status == 0">
-				AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
-			</if>
+		<if test="period != null and period !=''">
+			AND a.period = #{period}
+		</if>
+		<if test="managementName != null and managementName !=''">
+			AND a.management_name LIKE concat(#{managementName},'%')
+		</if>
+		<if test="accountSetName != null and accountSetName != ''">
+			AND b.account_set_name LIKE concat(#{accountSetName},'%')
+		</if>
+		<if test="empGroupName != null and empGroupName !=''">
+			AND c.name LIKE concat(#{empGroupName},'%')
+		</if>
+		<if test="code != null and code != '' and status == 0" >
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE adjust_batch_code LIKE concat(#{code},'%'))
+		</if>
+		<if test="code != null and code != '' and status != 0" >
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status} and adjust_batch_code LIKE concat(#{code},'%'))
+		</if>
+		<if test="(code == null or code == '') and status == 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch)
+		</if>
+		<if test="(code == null or code == '') and status != 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_adjust_batch WHERE status=#{status})
+		</if>
+
+	UNION
+		SELECT
+		a.code,
+		a.management_id,
+		a.management_name,
+		a.account_set_code,
+		a.period,
+		a.status,
+		a.start_date,
+		a.end_date,
+		a.created_time,
+		b.account_set_name as accountSetName,
+		b.payroll_period,
+		c.name as empGroupName,
+		b.pr_group_code,
+		b.is_template,
+		c.emp_group_code,
+		b.group_name
+		FROM
+		pr_normal_batch a , normal_batch_view b, pr_emp_group c
+		where
+		a.account_set_code = b.account_set_code
+		and b.emp_group_code = c.emp_group_code
+		and c.is_active = 1
+		<if test="period != null and period !=''" >
+			AND a.period = #{period}
+		</if>
+		<if test="managementName != null and managementName !=''">
+			AND a.management_name LIKE concat(#{managementName},'%')
+		</if>
+		<if test="status != 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
+		</if>
+		<if test="status == 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
+		</if>
+		<if test="accountSetName != null and accountSetName != ''">
+			AND b.account_set_name LIKE concat(#{accountSetName},'%')
+		</if>
+		<if test="empGroupName != null and empGroupName !=''">
+			AND c.name LIKE concat(#{empGroupName},'%')
+		</if>
+		<if test="code != null and code != '' and status == 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE back_tracking_batch_code LIKE concat(#{code},'%'))
+		</if>
+		<if test="code != null and code != '' and status != 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status} AND back_tracking_batch_code LIKE concat(#{code},'%'))
+		</if>
+		<if test="(code == null or code == '') and status != 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
+		</if>
+		<if test="(code == null or code == '') and status == 0">
+			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch)
+		</if> ) result
+
+		ORDER by result.created_time desc
+
 	</select>
 
 

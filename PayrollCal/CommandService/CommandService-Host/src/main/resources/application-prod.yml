@@ -1,10 +1,27 @@
-application-dev.ymlapplication-dev.ymleureka:
+eureka:
   client:
     serviceUrl:
-      defaultZone:
+      defaultZone: "http://172.16.9.56:9602/eureka"
+  instance:
+      lease-expiration-duration-in-seconds: 30
+      lease-renewal-interval-in-seconds: 40
+      prefer-ip-address: true
+      instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 
-spring:
-  datasource:
-    url:
-    username:
-    password:
+management:
+  security:
+   enabled: false
+
+seaweed:
+  masterHost: "172.16.22.110:9333"
+
+database:
+  host: 172.16.22.108
+  port: 3306
+  databasename: gtopayrolldb
+  username: root
+  password: a111111
+
+kafka:
+  brokers: 172.16.100.101:9092
+  zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.108:2181

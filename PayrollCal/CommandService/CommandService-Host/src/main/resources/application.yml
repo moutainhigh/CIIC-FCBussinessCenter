@@ -16,12 +16,70 @@ mybatis-plus:
 
 spring:
   datasource:
-      type: com.alibaba.druid.pool.DruidDataSource
-      driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?characterEncoding=utf8&useSSL=true
+    username: ${database.username}
+    password: ${database.password}
+  application:
+      name: fcbusiness-center-compute-service
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${kafka.brokers}
+          zk-nodes: ${kafka.zk-nodes}
+          autoAddPartitions: true
+      bindings:
+        payroll-output-channel:
+          destination: fc_payroll_normal-batch # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
+        pr_emp_group-output-channel:
+          destination: fc_payroll_empGroup # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
+        pr_compute-complete-output-channel:
+          destination: fc_payroll_compute-complete # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
+        pr_compute-output-channel:
+           destination: fc_payroll_compute_result # topic name
+           content-type: application/json
+           producer:
+             partitionCount: 1
+
+        pr_compute-status-input-channel:
+          destination: fc_payroll_compute-status # topic name
+          content-type: application/json
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned : true
+
+        pr_management-input-channel:
+          destination: fc_payroll_management
+          content-type: application/json
+          group: ${spring.application.name} # consumer group
+          consumer:
+            partitioned: true
+
+        pr_management-output-channel:
+          destination: fc_payroll_management # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 1
   profiles:
     active: dev
 server:
   port: 7035
 
-seaweed:
-  masterHost: "172.16.9.19:9333"  #172.16.9.58:9333
+endpoints:
+  shutdown:
+    enabled: true #服务启动后，可以通过linux的curl命令: curl -X POST host:port/shutdown发送POST请求的方式优雅的停止服务。
+
