@@ -30,6 +30,12 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
     /**
      * 参考批次，即被调整的正常批次
      */
+	@TableField("root_batch_code")
+	private String rootBatchCode;
+
+	/**
+	 * 参考批次，正常批次CODE
+	 */
 	@TableField("origin_batch_code")
 	private String originBatchCode;
     /**
@@ -110,6 +116,14 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getRootBatchCode() {
+		return rootBatchCode;
+	}
+
+	public void setRootBatchCode(String rootBatchCode) {
+		this.rootBatchCode = rootBatchCode;
 	}
 
 	public String getOriginBatchCode() {

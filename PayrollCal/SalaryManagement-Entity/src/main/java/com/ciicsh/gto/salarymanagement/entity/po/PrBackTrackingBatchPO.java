@@ -24,6 +24,13 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	@TableId(value="id", type= IdType.AUTO)
 	private Long id;
+
+	/**
+	 * 参考批次，正常批次
+	 */
+	@TableField("root_batch_code")
+	private String rootBatchCode;
+
     /**
      * 参考批次，即被回溯的批次ID
      */
@@ -107,6 +114,14 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getRootBatchCode() {
+		return rootBatchCode;
+	}
+
+	public void setRootBatchCode(String rootBatchCode) {
+		this.rootBatchCode = rootBatchCode;
 	}
 
 	public String getOriginBatchCode() {

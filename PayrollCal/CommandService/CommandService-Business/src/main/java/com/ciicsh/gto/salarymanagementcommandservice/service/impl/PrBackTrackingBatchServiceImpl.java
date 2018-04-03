@@ -1,11 +1,9 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
-import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.*;
 import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrBackTrackingBatchMapper;
@@ -14,6 +12,8 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryServ
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,37 +54,53 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
 
     @Override
     public int insert(PrBackTrackingBatchPO prBackTrackingBatchPO) {
-        return backTrackingBatchMapper.insert(prBackTrackingBatchPO);
-    }
+        List<DBObject> list = null;
+        int rowAffected = 0;
+        String jsonResult = "";
+        PrNormalBatchPO normalBatchPO = new PrNormalBatchPO();
+        normalBatchPO.setCode(prBackTrackingBatchPO.getRootBatchCode());
+        PrNormalBatchPO find = normalBatchMapper.selectOne(normalBatchPO);
+        if(find == null){ // 正常批次没有找到 ， 说明是基于原回溯批次的新回溯批次
+            PrBackTrackingBatchPO origin = new PrBackTrackingBatchPO();
+            origin.setBackTrackingBatchCode(prBackTrackingBatchPO.getBackTrackingBatchCode());
+            origin = backTrackingBatchMapper.selectOne(origin);
+            jsonResult = origin.getBackEmpResult();
 
-    @Override
-    public List<DBObject> getBackTrackingBatch(String backTraceBatchCode, String originCode) {
-        List<DBObject> list = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(backTraceBatchCode));
-        if(list == null || list.size() == 0) {
-            PrNormalBatchPO normalBatchPO = new PrNormalBatchPO();
-            normalBatchPO.setCode(originCode);
-            normalBatchPO = normalBatchMapper.selectOne(normalBatchPO);
-            String jsonResult = normalBatchPO.getResultData();
+        }else { // 正常批次找到 ， 说明是基于原回溯批次的正常批次
+            jsonResult = find.getResultData();
+        }
+        if(StringUtils.isEmpty(jsonResult)){
+            logger.error("计算结果不能为空");
+            return 0;
+        }
+        rowAffected = backTrackingBatchMapper.insert(prBackTrackingBatchPO);
+        if(rowAffected > 0){
+
             list = (List<DBObject>) JSON.parse(jsonResult);
-            if(list != null && list.size() > 0){
-
+            if (list != null && list.size() > 0) {
                 list.forEach(dbObject -> {
-                    dbObject.put("batch_code",backTraceBatchCode); // update origin code to adjust code
+                    dbObject.put("_id", new ObjectId());
+                    dbObject.put("batch_code", prBackTrackingBatchPO.getBackTrackingBatchCode()); // update origin code to adjust code
+                    dbObject.put("origin_batch_code",prBackTrackingBatchPO.getOriginBatchCode());
+                    dbObject.put("root_batch_code",prBackTrackingBatchPO.getRootBatchCode());
                     DBObject catalog = (DBObject)dbObject.get("catalog");
-                    List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
+                    DBObject batchInfo = (DBObject)catalog.get("batch_info");
+                    batchInfo.put("payroll_type", BatchTypeEnum.BACK.getValue());
 
-                    payItems.forEach(item ->{
-                        int itemType = item.get("item_type") == null ? 0 : (int)item.get("item_type"); // 薪资项类型
-                        if(itemType == ItemTypeEnum.CALC.getValue()) {
-                            item.put("item_value", 0.0); //清除计算项结果
-                        }
-                    });
                 });
             }
             backTraceBatchMongoOpt.createIndex();
-            int rowAffected = backTraceBatchMongoOpt.batchInsert(list); // batch insert to mongodb
-            logger.info(String.format("adjust batch row affected %d", rowAffected));
+            rowAffected = backTraceBatchMongoOpt.batchInsert(list); // batch insert to mongodb
         }
+
+        logger.info(String.format("back trace batch row affected %d", rowAffected));
+
+        return rowAffected;
+    }
+
+    @Override
+    public List<DBObject> getBackTrackingBatch(String backTraceBatchCode) {
+        List<DBObject> list = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(backTraceBatchCode));
         return list;
     }
 
@@ -122,4 +138,10 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
     public int checkBackTraceBatch(String originBatchCode) {
         return backTrackingBatchMapper.checkBackTraceBatch(originBatchCode);
     }
+
+    @Override
+    public PrBackTrackingBatchPO getPrBackTrackingBatchPO(PrBackTrackingBatchPO prBackTrackingBatchPO){
+        return backTrackingBatchMapper.selectOne(prBackTrackingBatchPO);
+    }
+
 }
