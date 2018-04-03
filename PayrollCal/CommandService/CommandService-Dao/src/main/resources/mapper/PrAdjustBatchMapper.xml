@@ -30,7 +30,7 @@
 		status = #{status},
 		comments = #{comments},
 		<if test="result != '' and result != null">
-			result_data = #{result},
+			adjust_result = #{result},
 		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
@@ -40,8 +40,6 @@
 	<delete id="deleteBatchByCodes">
 		DELETE FROM pr_adjust_batch
 		WHERE
-		status = 1
-		AND
 		adjust_batch_code IN
 		<foreach item="item" index="index" collection="codes"
 				 open="(" separator="," close=")">

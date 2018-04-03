@@ -156,8 +156,8 @@ public class ComputeServiceImpl {
             //end
 
             CompiledScript compiled = null;
-            Update update = null;
-            int k = 0;
+            //Update update = null;
+            //int k = 0;
 
 
             for (DBObject item : items) {
@@ -210,7 +210,7 @@ public class ComputeServiceImpl {
                             long start0 = System.currentTimeMillis();
                             compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
                             scripts.put(itemCode, compiled);
-                            totals.add(System.currentTimeMillis() - start0);
+                            //totals.add(System.currentTimeMillis() - start0);
                         } else {
                             compiled = scripts.get(itemCode);
                         }
@@ -220,13 +220,9 @@ public class ComputeServiceImpl {
                             bindings.put(REPLACE_FUNC_PREFIX + fun.getFuncName(), fun.getResult());
                         }
 
-                        //setPayItemBindings(conditionFormula, PAY_ITEM_REGEX, context, bindings);
-
                         Object compiledResult = compiled.eval(bindings); // run JS method
 
                         BigDecimal computeResult = context.getBigDecimal(compiledResult);
-
-                        //BigDecimal computeResult = JavaScriptEngine.compute(finalResult); // 执行JS 方法
 
                         double result;
                         if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
@@ -252,7 +248,7 @@ public class ComputeServiceImpl {
                         logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
                     }
                 }
-                k++;
+                //k++;
             }
             /*BathUpdateOptions batchOpt = new BathUpdateOptions();
             batchOpt.setQuery(Query.query(
@@ -263,10 +259,17 @@ public class ComputeServiceImpl {
             batchOpt.setUpsert(false);
             batchOpt.setMulti(true);
             options.add(batchOpt);*/
-            normalBatchMongoOpt.batchUpdate(Criteria.where("batch_code").is(batchCode)
-                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode),"catalog.pay_items",items);
+            if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+                normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+            }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+                adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+            }else {
+                backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+            }
             //normalBatchMongoOpt.doBathUpdate(options,true);
-
         });
 
         int rowAffected = 0;
@@ -274,11 +277,11 @@ public class ComputeServiceImpl {
             //normalBatchMongoOpt.doBathUpdate(options,true);
             rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            adjustBatchMongoOpt.doBathUpdate(options,true);
+            //adjustBatchMongoOpt.doBathUpdate(options,true);
             rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system",null);
 
         }else {
-            backTraceBatchMongoOpt.doBathUpdate(options,true);
+            //backTraceBatchMongoOpt.doBathUpdate(options,true);
             rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
         }
         if(rowAffected > 0) { // 数据库更新成功后发送消息

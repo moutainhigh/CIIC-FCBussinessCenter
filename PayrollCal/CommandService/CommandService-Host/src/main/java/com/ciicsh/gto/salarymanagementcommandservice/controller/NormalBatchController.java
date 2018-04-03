@@ -377,23 +377,23 @@ public class NormalBatchController {
         int rowAffected = 0 ;
         if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
             if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()).and("catalog.emp_info.is_active").is(true));
-                String jsonReuslt = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonReuslt);
+                List<DBObject> results = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode())); //.and("catalog.emp_info.is_active").is(true));
+                String jsonResult = JSON.serialize(results);
+                batchAuditDTO.setResult(jsonResult);
             }
             rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
         }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
             if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()).and("catalog.emp_info.is_active").is(true));
-                String jsonReuslt = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonReuslt);
+                List<DBObject> results = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
+                String jsonResult = JSON.serialize(results);
+                batchAuditDTO.setResult(jsonResult);
             }
             rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
         }else {
             if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()).and("catalog.emp_info.is_active").is(true));
-                String jsonReuslt = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonReuslt);
+                List<DBObject> results = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
+                String jsonResult = JSON.serialize(results);
+                batchAuditDTO.setResult(jsonResult);
             }
             rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
 
