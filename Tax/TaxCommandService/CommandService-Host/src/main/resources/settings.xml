@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <localRepository>~/.m2/repository/</localRepository>
+
+    <pluginGroups>
+        <!-- pluginGroup
+         | Specifies a further group identifier to use for plugin lookup.
+        <pluginGroup>com.your.plugins</pluginGroup>
+        -->
+    </pluginGroups>
+
+    <proxies>
+
+    </proxies>
+
+
+    <servers>
+
+        <server>
+            <id>drools-workbench</id>
+            <username>admin</username>
+            <password>admin123</password>
+            <configuration>
+                <httpConfiguration>
+                    <put>
+                        <usePreemptive>true</usePreemptive>
+                    </put>
+                </httpConfiguration>
+            </configuration>
+        </server>
+
+    </servers>
+
+    <mirrors>
+
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>internal</id>
+            <repositories>
+                <repository>
+                    <id>drools-workbench</id>
+                    <name>Guvnor M2 Repo</name>
+                    <url>http://172.16.9.59:8080/kie-drools-wb/maven2/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <activation>
+                <activeByDefault>true</activeByDefault>    <!--这里要设置成true -->
+            </activation>
+        </profile>
+
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>internal</activeProfile>
+    </activeProfiles>
+
+</settings>
