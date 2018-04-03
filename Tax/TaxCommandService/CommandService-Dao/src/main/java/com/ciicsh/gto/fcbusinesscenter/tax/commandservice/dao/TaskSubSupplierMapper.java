@@ -37,4 +37,31 @@ public interface TaskSubSupplierMapper extends BaseMapper<TaskSubSupplierPO> {
      * @param modifiedTime
      */
     void updateSupplierToActiveById(@Param("combinedId") Long combinedId, @Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
+    /**
+     * 修改合并前供应商明细为有效状态
+     * @param combinedId
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateSupplierDetailToActiveById(@Param("combinedId")Long combinedId,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
+    /**
+     * 修改合并供应商明细为失效状态
+     * @param combinedId
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateSupplierDetailById(@Param("combinedId")Long combinedId,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
+    /**
+     * 修改合并前供应商子任务状态
+     *
+     * @param subSupplierIds
+     * @param status
+     * @param modifiedBy
+     * @param modifiedTime
+     */
+    void updateTaskSubSupplierStatus(@Param("subSupplierIds")String[] subSupplierIds,@Param("status") String status ,@Param("modifiedBy") String modifiedBy, @Param("modifiedTime") LocalDateTime modifiedTime);
+
 }

@@ -182,27 +182,31 @@ public class TaskMainController extends BaseController {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
 
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.andNew("is_combine_confirmed = {0}",false);
-            wrapper.andNew("is_combined = {0}",true);
-            wrapper.in("task_main_id",taskMainDTO.getTaskMainIds());
-            int count = taskMainDetailService.selectCount(wrapper);
-            if(count>0){
+            //子任务与主任务的状态是否一致
+            boolean flag = this.taskMainService.isStatusSame(taskMainDTO.getTaskMainIds(),taskMainDTO.getStatus());
+            if(flag){
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.andNew("is_combine_confirmed = {0}",false);
+                wrapper.andNew("is_combined = {0}",true);
+                wrapper.in("task_main_id",taskMainDTO.getTaskMainIds());
+                int count = taskMainDetailService.selectCount(wrapper);
+                if(count>0){
 
-                jr.fill(JsonResult.ReturnCode.TM_ER01);
+                    jr.fill(JsonResult.ReturnCode.TM_ER01);
+                }else{
+                    RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+                    BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+                    taskMainService.submitTaskMains(requestForMainTaskMain);
+                }
             }else{
-                RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
-                BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
-                taskMainService.submitTaskMains(requestForMainTaskMain);
+                jr.fill(JsonResult.ReturnCode.TM_ER02);
             }
-
-
 //            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskMainController.createMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.submitMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -244,9 +248,16 @@ public class TaskMainController extends BaseController {
 
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
-            BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
-            taskMainService.invalidTaskMains(requestForMainTaskMain);
+
+            //子任务与主任务的状态是否一致
+            boolean flag = this.taskMainService.isStatusSame(taskMainDTO.getTaskMainIds(),taskMainDTO.getStatus());
+            if(flag){
+                RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+                BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+                taskMainService.invalidTaskMains(requestForMainTaskMain);
+            }else{
+                jr.fill(JsonResult.ReturnCode.TM_ER03);
+            }
             //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -414,7 +425,7 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainDetailIds", taskMainDTO.getTaskMainDetailIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.unconfirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 

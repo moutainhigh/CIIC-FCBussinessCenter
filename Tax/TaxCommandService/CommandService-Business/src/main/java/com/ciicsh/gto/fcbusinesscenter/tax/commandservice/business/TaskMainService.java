@@ -58,5 +58,17 @@ public interface TaskMainService {
      * @return
      */
     ResponseForTaskMainDetail queryTaskMainDetails(RequestForTaskMain requestForTaskMain);
+    /**
+     * 更新主任务状态(子任务退回)
+     * @param taskMainIds
+     * @return
+     */
+    void updateTaskMainStatus(Long[] taskMainIds);
+    /**
+     * 子任务状态是否和主任务状态一致
+     * @param taskMainIds
+     * @return
+     */
+    boolean isStatusSame(String[] taskMainIds,String[] status);
 }
 

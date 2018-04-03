@@ -19,6 +19,11 @@ public class RequestForTaskSubSupplier extends PageInfo {
     private String[] subSupplierIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 缴纳账户
      */
     private String declareAccount;
@@ -44,6 +49,16 @@ public class RequestForTaskSubSupplier extends PageInfo {
      * 页签类型：currentPan,currentBeforePan,currentAfterPan
      */
     private String periodType;
+
+    /**
+     * 账户类型(00:独立户,01:大库)
+     */
+    private String accountType;
+
+    /**
+     * 状态
+     */
+    private String status;
 
     /**
      * 修改人
@@ -120,5 +135,29 @@ public class RequestForTaskSubSupplier extends PageInfo {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
     }
 }

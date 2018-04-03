@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubSupplierDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
@@ -33,6 +34,9 @@ public class TaskSubSupplierController extends BaseController {
     @Autowired
     private TaskSubSupplierService taskSubSupplierService;
 
+    @Autowired
+    private TaskSubSupplierDetailService taskSubSupplierDetailService;
+
     /**
      * 查询供应商子任务列表
      *
@@ -55,6 +59,7 @@ public class TaskSubSupplierController extends BaseController {
             tags.put("periodType", taskSubSupplierDTO.getPeriodType());
             tags.put("supportName", taskSubSupplierDTO.getSupportName());
             tags.put("statusType", taskSubSupplierDTO.getStatusType());
+            tags.put("accountType", taskSubSupplierDTO.getAccountType());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.queryTaskSubSupplier", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();
@@ -164,6 +169,70 @@ public class TaskSubSupplierController extends BaseController {
             tags.put("mergeId", mergeId.toString());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.queryTaskSubSupplierByMergeId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+    /**
+     * 批量完成供应商任务
+     *
+     * @param taskSubSupplierDTO
+     * @return
+     */
+    @PostMapping(value = "/completeTaskSuppliers")
+    public JsonResult<Boolean> completeTaskSuppliers(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            int count = 0;
+            if(taskSubSupplierDTO.getSubHasCombinedSupplierIds().length > 0){
+                //根据有合并明细的供应商ID查询未确认的数目
+                count = taskSubSupplierDetailService.selectCount(taskSubSupplierDTO.getSubHasCombinedSupplierIds());
+            }
+            if (count > 0) {
+                jr.fill(JsonResult.ReturnCode.SU_ER01);
+            }else{
+                RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
+                BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+                //修改人
+                UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+                requestForTaskSubSupplier.setModifiedBy(userInfoResponseDTO.getLoginName());
+                //任务状态
+                requestForTaskSubSupplier.setStatus("04");
+                taskSubSupplierService.completeTaskSubSupplier(requestForTaskSubSupplier);
+            }
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subSupplierIds", taskSubSupplierDTO.getSubSupplierIds().toString());
+            tags.put("subHasCombinedSupplierIds", taskSubSupplierDTO.getSubHasCombinedSupplierIds().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.completeTaskSuppliers", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+
+    /**
+     * 批量退回供应商任务
+     *
+     * @param taskSubSupplierDTO
+     * @return
+     */
+    @PostMapping(value = "/rejectTaskSuppliers")
+    public JsonResult<Boolean> rejectTaskSuppliers(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
+            BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+            //任务状态
+            requestForTaskSubSupplier.setStatus("03");
+            taskSubSupplierService.rejectTaskSuppliers(requestForTaskSubSupplier);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subSupplierIds", taskSubSupplierDTO.getSubSupplierIds().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubSupplierController.rejectTaskSuppliers", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();
         }
         return jr;

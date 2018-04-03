@@ -74,6 +74,7 @@
 		cal_priority,
 		display_priority,
 		remark,
+		can_lock,
 		is_active,
 		created_time,
 		modified_time,
@@ -120,6 +121,7 @@
 			cal_priority,
 			display_priority,
 			remark,
+			can_lock,
 			is_active,
 			created_time,
 			modified_time,
@@ -150,6 +152,7 @@
                 #{item.calPriority},
                 #{item.displayPriority},
                 #{item.remark},
+				#{item.canLock},
                 #{item.isActive},
                 sysdate(),
                 sysdate(),
@@ -232,6 +235,9 @@
             <if test="remark != null">
                 remark = #{remark},
             </if>
+			<if test="canLock != null">
+				can_lock = #{canLock},
+			</if>
             <if test="isActive != null">
                 is_active = #{isActive},
             </if>

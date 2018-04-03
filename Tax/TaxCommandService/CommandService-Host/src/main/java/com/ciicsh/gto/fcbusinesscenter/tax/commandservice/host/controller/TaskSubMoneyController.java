@@ -251,7 +251,7 @@ public class TaskSubMoneyController extends BaseController {
                     TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
                     taskSubMoneyBO.setId(id);
                     taskSubMoneyBO.setPayStatus("01");
-                    taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
+//                    taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
                     taskSubMoneyBO.setPayApplyId((long) payApplyId);
                     taskSubMoneyBO.setPayApplyCode(payApplyCode);
                     taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);

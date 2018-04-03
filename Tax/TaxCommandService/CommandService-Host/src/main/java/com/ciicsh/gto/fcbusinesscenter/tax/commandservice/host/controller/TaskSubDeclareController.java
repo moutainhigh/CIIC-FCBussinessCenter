@@ -4,8 +4,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubDeclare
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubDeclareServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
@@ -14,8 +14,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +31,8 @@ import java.util.Map;
 @RestController
 public class TaskSubDeclareController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubDeclareController.class);
-
     @Autowired
-    public TaskSubDeclareService taskSubDeclareService;
+    public TaskSubDeclareServiceImpl taskSubDeclareService;
 
     @Autowired
     public TaskSubDeclareDetailService taskSubDeclareDetailService;
@@ -138,12 +134,12 @@ public class TaskSubDeclareController extends BaseController {
 
         try {
             //导出excel
-            exportExcel(response,wb , fileName);
+            exportExcel(response, wb, fileName);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.exportSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.exportSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
         }
     }
 
@@ -180,12 +176,12 @@ public class TaskSubDeclareController extends BaseController {
         String fileName = "上海地区个税.xls";
         try {
             //导出excel
-            exportExcel(response, this.exportFileService.exportForDeclareOnline(subDeclareId),fileName);
+            exportExcel(response, this.exportFileService.exportForDeclareOnline(subDeclareId), fileName);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareId", subDeclareId.toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.exportDeclareBySubject", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.exportDeclareBySubject", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
         }
     }
 
@@ -199,17 +195,56 @@ public class TaskSubDeclareController extends BaseController {
     public JsonResult<Boolean> completeTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
-            BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            //任务状态
-            requestForTaskSubDeclare.setStatus("04");
-            taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
-            //jr.fill(true);
+            int count = 0;
+            if(taskSubDeclareDTO.getHasCombinedDeclareIds().length > 0){
+                //根据有合并明细的申报ID查询未确认的数目
+                count = taskSubDeclareDetailService.selectCount(taskSubDeclareDTO.getHasCombinedDeclareIds());
+            }
+            if (count > 0) {
+                jr.fill(JsonResult.ReturnCode.DE_ER01);
+            }else{
+                RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
+                BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+                //修改人
+                UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+                requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
+                //任务状态
+                requestForTaskSubDeclare.setStatus("04");
+                taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
+            }
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.completeTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+    /**
+     * 批量退回申报任务
+     *
+     * @param taskSubDeclareDTO
+     * @return
+     */
+    @PostMapping(value = "/rejectTaskSubDeclares")
+    public JsonResult<Boolean> rejectTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
+            BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
+            //任务状态
+            requestForTaskSubDeclare.setStatus("03");
+            taskSubDeclareService.rejectTaskSubDeclares(requestForTaskSubDeclare);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareIds", taskSubDeclareDTO.getSubDeclareIds().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.rejectTaskSubDeclares", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;
@@ -240,7 +275,31 @@ public class TaskSubDeclareController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("mergeId", mergeId.toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.queryTaskSubDeclareByMergeId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.queryTaskSubDeclareByMergeId", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
+        }
+        return jr;
+    }
+
+    /**
+     * 更新滞纳金、罚金
+     *
+     * @param taskSubDeclareDTO
+     * @return
+     */
+    @PostMapping(value = "/updateTaskSubDeclare")
+    public JsonResult<Boolean> updateTaskSubDeclare(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+            TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.selectById(taskSubDeclareDTO.getId());
+            taskSubDeclarePO.setOverdue(taskSubDeclareDTO.getOverdue());
+            taskSubDeclarePO.setFine(taskSubDeclareDTO.getFine());
+            taskSubDeclareService.updateById(taskSubDeclarePO);
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("subDeclareId", taskSubDeclareDTO.getTaskSubDeclareId().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareController.updateTaskSubDeclare", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
         return jr;

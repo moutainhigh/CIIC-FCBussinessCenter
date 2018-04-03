@@ -21,6 +21,11 @@ public class RequestForTaskSubDeclare extends PageInfo {
     private String[] subDeclareIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 缴纳账户
      */
     private String declareAccount;
@@ -43,6 +48,11 @@ public class RequestForTaskSubDeclare extends PageInfo {
      * 页签类型：currentPan,currentBeforePan,currentAfterPan
      */
     private String periodType;
+
+    /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
 
     /**
      * 状态
@@ -132,5 +142,21 @@ public class RequestForTaskSubDeclare extends PageInfo {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
     }
 }

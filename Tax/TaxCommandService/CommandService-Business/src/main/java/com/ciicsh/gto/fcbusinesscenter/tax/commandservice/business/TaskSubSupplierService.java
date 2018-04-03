@@ -51,5 +51,19 @@ public interface TaskSubSupplierService {
      */
     List<TaskSubSupplierPO> queryTaskSubSupplierByMergeId(long mergeId);
 
+    /**
+     * 批量完成供应商任务
+     *
+     * @param requestForTaskSubSupplier
+     */
+    void completeTaskSubSupplier(RequestForTaskSubSupplier requestForTaskSubSupplier);
+
+    /**
+     * 批量退回供应商任务
+     *
+     * @param requestForTaskSubSupplier
+     */
+    void rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier);
+
 }
 

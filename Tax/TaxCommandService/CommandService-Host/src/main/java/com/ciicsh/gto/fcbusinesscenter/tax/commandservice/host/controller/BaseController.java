@@ -5,7 +5,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.Lo
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,22 +62,22 @@ public class BaseController {
             try {
                 bis.close();
             } catch (Exception e) {
-                logger.error("close bis error " + e.toString());
+                logger.error("close bis error " ,e);
             }
             try {
                 bos.close();
             } catch (Exception e) {
-                logger.error("close bos error " + e.toString());
+                logger.error("close bos error "  ,e);
             }
             try {
                 outputStream.flush();
             } catch (Exception e) {
-                logger.error("flush outputStream error " + e.toString());
+                logger.error("flush outputStream error " ,e);
             }
             try {
                 outputStream.close();
             } catch (Exception e) {
-                logger.error("close outputStream error " + e.toString());
+                logger.error("close outputStream error " ,e);
             }
         }
 

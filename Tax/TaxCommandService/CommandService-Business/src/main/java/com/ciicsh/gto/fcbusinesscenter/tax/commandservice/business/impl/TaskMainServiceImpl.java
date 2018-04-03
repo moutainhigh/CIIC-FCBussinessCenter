@@ -13,8 +13,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskM
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +29,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO> implements TaskMainService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskMainServiceImpl.class);
-
-    /*@Autowired(required = false)
-    private TaskMainMapper taskMainMapper;*/
 
     @Autowired
     private CalculationBatchTaskMainServiceImpl calculationBatchTaskMainService;
@@ -169,13 +162,13 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"01");
+        this.updateTaskMainsStatus(taskMainIds,"01",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
 
     /**
-     * 提交主任务
+     * 审批通过主任务
      * @param
      * @return
      */
@@ -186,7 +179,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"02");
+        this.updateTaskMainsStatus(taskMainIds,"02",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
@@ -202,7 +195,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"05");
+        this.updateTaskMainsStatus(taskMainIds,"05",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
@@ -218,13 +211,13 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
 
-        this.updateTaskMainsStatus(taskMainIds,"03");
+        this.updateTaskMainsStatus(taskMainIds,"03",requestForTaskMain.getStatus());
 
         return responseForTaskMain;
     }
 
     //更新主任务状态
-    private void updateTaskMainsStatus(String[] taskMainIds,String status){
+    private void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus){
 
         List<TaskMainPO> tps = new ArrayList<>();
         for(String taskMainId : taskMainIds){
@@ -237,6 +230,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             //更新子任务状态
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.andNew("task_main_id={0}",Long.valueOf(taskMainId));
+            //只更新与主任务状态相同的子任务
+            wrapper.andNew("status={0}",currentStatus);
             //申报
             TaskSubDeclarePO taskSubDeclarePO =  new TaskSubDeclarePO();
             taskSubDeclarePO.setStatus(status);
@@ -276,6 +271,10 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         Map<String,Object> params = new HashMap<>();
         params.put("taskMainId",requestForTaskMain.getTaskMainId());//主任务id
         params.put("isCombined",requestForTaskMain.getIsCombined());//是否为合并明细
+        params.put("employeeNo",requestForTaskMain.getEmployeeNo());
+        params.put("employeeName",requestForTaskMain.getEmployeeName());
+        params.put("idType",requestForTaskMain.getIdType());
+        params.put("idNo",requestForTaskMain.getIdNo());
 
         List<TaskMainDetailBO> taskMainDetailBOs = taskMainDetailMapper.queryTaskMainDetails(page,params);
 
@@ -290,13 +289,56 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     }
 
     /**
-     * 查询主任务明细
+     * 更新主任务状态(子任务退回)
      * @param taskMainIds
      * @return
      */
-    public boolean combineConfirmed(Long[] taskMainIds){
+    public void updateTaskMainStatus(Long[] taskMainIds){
+
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.in("id",taskMainIds);
+        TaskMainPO tmp = new TaskMainPO();
+        tmp.setStatus("03");
+        this.update(tmp,wrapper);//更新主任务
+    }
+
+    /**
+     *
+     * @param taskMainIds
+     * @param status
+     * @return
+     */
+    public boolean isStatusSame(String[] taskMainIds,String[] status){
 
         boolean flag = true;
+
+        int i = 0;
+        for(String st : status){
+            if(st.equals("03")){
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.andNew("task_main_id={0}",taskMainIds[i]);
+                wrapper.and("status!='03'");
+                int count = this.taskSubDeclareService.selectCount(wrapper);
+                if(count>0){
+                    return false;
+                }else{
+                    count = this.taskSubMoneyService.selectCount(wrapper);
+                    if(count>0){
+                        return false;
+                    }else{
+                        count = this.taskSubPaymentService.selectCount(wrapper);
+                        if(count>0){
+                            return false;
+                        }else{
+                            count = this.taskSubSupplierService.selectCount(wrapper);
+                            if(count>0){
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return flag;
     }

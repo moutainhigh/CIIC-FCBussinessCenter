@@ -17,8 +17,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +32,6 @@ import java.util.Map;
  */
 @RestController
 public class TaskSubProofController extends BaseController implements TaskSubProofProxy {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaskSubProofController.class);
 
     @Autowired
     private TaskSubProofService taskSubProofService;
@@ -210,6 +206,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
             requestForProof.setStatus("04");
             taskSubProofService.completeTaskProofByRes(requestForProof);
@@ -236,6 +235,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("03");
             taskSubProofService.rejectTaskProofByRes(requestForProof);
@@ -262,6 +264,9 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            //修改人
+            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("05");
             taskSubProofService.invalidTaskProofByRes(requestForProof);

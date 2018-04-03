@@ -138,6 +138,12 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 	private Boolean isCombined;
 
 	/**
+	 * 是否有合并明细
+	 */
+	@TableField("has_combined")
+	private Boolean hasCombined;
+
+	/**
 	 * 账户类型
 	 */
 	private String accountType;
@@ -355,6 +361,14 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 		isCombined = combined;
 	}
 
+	public Boolean getHasCombined() {
+		return hasCombined;
+	}
+
+	public void setHasCombined(Boolean hasCombined) {
+		this.hasCombined = hasCombined;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -362,28 +376,34 @@ public class TaskSubSupplierPO extends Model<TaskSubSupplierPO> {
 
 	@Override
 	public String toString() {
-		return "TaskSubSupplier{" +
-			"id=" + id +
-			", taskMainId=" + taskMainId +
-			", taskSubSupplierId=" + taskSubSupplierId +
-			", taskNo=" + taskNo +
-			", declareAccount=" + declareAccount +
-			", paymentAccount=" + paymentAccount +
-			", period=" + period +
-			", overdue=" + overdue +
-			", fine=" + fine +
-			", taxAmount=" + taxAmount +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			", supportNo=" + supportNo +
-			", supportName=" + supportName +
-			"}";
+		return "TaskSubSupplierPO{" +
+				"id=" + id +
+				", taskMainId=" + taskMainId +
+				", taskSubSupplierId=" + taskSubSupplierId +
+				", taskNo='" + taskNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", paymentAccount='" + paymentAccount + '\'' +
+				", period=" + period +
+				", overdue=" + overdue +
+				", fine=" + fine +
+				", taxAmount=" + taxAmount +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", statusName='" + statusName + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", supportNo='" + supportNo + '\'' +
+				", supportName='" + supportName + '\'' +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				", isCombined=" + isCombined +
+				", hasCombined=" + hasCombined +
+				", accountType='" + accountType + '\'' +
+				'}';
 	}
 }
