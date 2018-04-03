@@ -53,7 +53,7 @@ public class EmployeeController implements EmployeeProxy{
                 .collect(Collectors.toList());
 
         PageInfo<EmployeeExtensionDTO> result = new PageInfo<>(employeeExtensions);
-        BeanUtils.copyProperties(pageInfo,result,"list");
+        BeanUtils.copyProperties(pageInfo, result,"list");
         return JsonResult.success(result);
     }
 
