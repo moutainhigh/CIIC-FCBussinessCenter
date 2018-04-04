@@ -128,6 +128,11 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
      * 备注
      */
 	private String remark;
+	/**
+	 * 是否可以上锁
+	 */
+	@TableField("can_lock")
+	private Boolean canLock;
     /**
      * 是否有效
      */
@@ -402,6 +407,14 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 
 	public void setFullFormula(String fullFormula) {
 		this.fullFormula = fullFormula;
+	}
+
+	public Boolean getCanLock() {
+		return canLock;
+	}
+
+	public void setCanLock(Boolean canLock) {
+		this.canLock = canLock;
 	}
 
 	@Override

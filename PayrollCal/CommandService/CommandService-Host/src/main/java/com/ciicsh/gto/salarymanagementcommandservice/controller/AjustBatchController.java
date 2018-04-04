@@ -110,11 +110,10 @@ public class AjustBatchController {
             @RequestParam(required = false, defaultValue = "") String customValue,
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
-            @RequestParam String batchCode,
-            @RequestParam String originCode) {
+            @RequestParam String batchCode) {
 
 
-        Criteria criteria = Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true);
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);
 
         if(StringUtils.isNotEmpty(empCode)){
             criteria.and(PayItemName.EMPLOYEE_CODE_CN).regex(empCode);
@@ -126,13 +125,28 @@ public class AjustBatchController {
             criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(customKey).and("item_value").regex(customValue));
         }
 
-        List<DBObject> list = adjustBatchMongoOpt.list(criteria);
-        int totalCount = list.size();
+        Query query = new Query(criteria);
+        query.fields().include("batch_code");
+
+        long totalCount = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH).stream().count();
         if(totalCount == 0){
             return JsonResult.success(0);
         }
 
-        list = list.stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
+        query.fields().
+                include(PayItemName.EMPLOYEE_CODE_CN).
+                include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
+                include("catalog.emp_info."+PayItemName.EMPLOYEE_TAX_CN).
+                include("catalog.pay_items.data_type").
+                include("catalog.pay_items.item_type").
+                include("catalog.pay_items.item_name").
+                include("catalog.pay_items.item_value")
+        ;
+        query.skip((pageNum-1) * pageSize);
+        query.limit(pageSize);
+
+        List<DBObject> list = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
+
 
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
             SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
