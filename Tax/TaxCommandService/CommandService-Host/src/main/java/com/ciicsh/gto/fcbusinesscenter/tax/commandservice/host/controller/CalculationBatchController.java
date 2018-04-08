@@ -6,15 +6,13 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.CalculationBatchServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatch;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatch;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
-import org.kie.api.cdi.KReleaseId;
-import org.kie.api.cdi.KSession;
-import org.kie.api.runtime.KieSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,10 +34,6 @@ public class CalculationBatchController extends BaseController {
     @Autowired
     public TaskNoService taskNoService;
 
-    @KSession("defaultKieSession")
-    @KReleaseId(groupId = "com.ciicsh.gt1.fcbusinesscenter.tax", artifactId = "fcbusinesscenter_tax_commandservice_drools", version = "1.0.0-SNAPSHOT")
-    private KieSession kSession;
-
     /**
      * 查询计算批次列表
      *
@@ -51,29 +45,7 @@ public class CalculationBatchController extends BaseController {
 
         JsonResult<ResponseForCalBatch> jr = new JsonResult<>();
 
-        /*try {
-
-            ReleaseIdImpl releaseId = new ReleaseIdImpl("com.ciicsh.gt1.fcbusinesscenter.tax", "fcbusinesscenter-tax-commandservice-drools","LATEST");
-            KieServices ks = KieServices.Factory.get();
-            KieContainer container = ks.newKieContainer(releaseId);
-            KieScanner scanner = ks.newKieScanner(container);
-            scanner.start(1000);
-            StatelessKieSession session = container.newStatelessKieSession();
-
-            FactType factType = session.getKieBase().getFactType("com.ciicsh.gt1.fcbusinesscenter.tax.fcbusinesscenter-tax-commandservice-drools", "CalculationContext");
-            Object cc = factType.newInstance();
-            //factType.set(cc, "name", "张三");
-            //factType.set(cc, "age", 17);
-            session.execute(cc);
-            Object o = factType.get(cc,"incomeForTax");
-
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }*/
-
-        /*try {
+        try {
             RequestForCalBatch requestForCalBatch = new RequestForCalBatch();
             BeanUtils.copyProperties(calculationBatchDTO, requestForCalBatch);
             ResponseForCalBatch responseForCalBatch = calculationBatchService.queryCalculationBatchs(requestForCalBatch);
@@ -86,7 +58,7 @@ public class CalculationBatchController extends BaseController {
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "CalculationBatchController.queryCalculationBatchs", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "00"), LogType.APP, tags);
             jr.error();
-        }*/
+        }
 
         return jr;
     }

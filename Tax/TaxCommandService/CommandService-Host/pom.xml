@@ -146,10 +146,10 @@
             <artifactId>mongo-client</artifactId>
         </dependency>-->
         <!--drools-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-ci</artifactId>
