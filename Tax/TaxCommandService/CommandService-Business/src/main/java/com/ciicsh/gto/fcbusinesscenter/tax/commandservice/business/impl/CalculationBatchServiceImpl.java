@@ -105,9 +105,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         for(CalculationBatchPO p: calculationBatchPOList){
             //状态中文转化
             p.setStatusName(EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,p.getStatus()));
-            List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //查询由当前批次创建的任务
-
+            List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //组合任务编号
             String sb = tps.stream().map(TaskMainPO::getTaskNo).collect(Collectors.joining(","));
             p.setTaskNos(sb);

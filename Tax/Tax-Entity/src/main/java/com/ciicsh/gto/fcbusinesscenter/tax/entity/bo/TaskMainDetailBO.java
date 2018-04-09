@@ -233,6 +233,16 @@ public class TaskMainDetailBO {
      */
     private String areaType;
 
+    private String managerNo;
+
+    public String getManagerNo() {
+        return managerNo;
+    }
+
+    public void setManagerNo(String managerNo) {
+        this.managerNo = managerNo;
+    }
+
     public Boolean getProof() {
         return isProof;
     }

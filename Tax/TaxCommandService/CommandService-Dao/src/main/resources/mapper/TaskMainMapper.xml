@@ -3,7 +3,6 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper">
 
 	<!-- 通用查询映射结果 -->
-	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO">
 		<id column="id" property="id" />
 		<!--<result column="calculation_batch_id" property="calculationBatchId" />
@@ -57,6 +56,8 @@
 		<result column="is_transfer_supported" property="transferSupported" />
 		<result column="account_type" property="accountType" />
 		<result column="area_type" property="areaType" />
+		<result column="manager_no" property="managerNo" />
+		<result column="manager_name" property="managerName" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
@@ -73,8 +74,9 @@
 		,t1.tax_rate,t1.quick_cal_deduct,t1.tax_amount,t1.tax_deduction,t1.tax_withhold_amount,t1.tax_withholded_amount,t1.tax_remedy_or_return
 		,t2.declare_account,t2.pay_account,t2.receipt_account,t2.support_no,t2.support_name,t2.is_support,t2.is_supported,t2.is_pay,t2.is_payed,t2.is_declare
 		,t2.is_declared,t2.is_transfer,t2.is_transferred,t2.is_declare_supported,t2.is_transfer_supported,t2.is_pay_supported
-		,t2.account_type,t2.area_type
-		FROM tax_fc_task_main_detail t1,tax_fc_employee_service_batch t2 where t1.task_main_id = #{taskMainId} and t1.calculation_batch_detail_id = t2.cal_batch_detail_id
+		,t2.account_type,t2.area_type,t3.manager_no,t3.manager_name
+		FROM tax_fc_task_main_detail t1,tax_fc_employee_service_batch t2,tax_fc_task_main t3
+		where t1.task_main_id = #{taskMainId} and t1.calculation_batch_detail_id = t2.cal_batch_detail_id and t1.task_main_id = t3.id
 		and t1.task_main_detail_id is null
 	</select>
 
