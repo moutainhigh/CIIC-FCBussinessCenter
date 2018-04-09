@@ -15,6 +15,7 @@ import javax.script.ScriptEngine;
         "com.ciicsh.gt1",
         "com.ciicsh.gto.fcbusinesscenter.util",
         "com.ciicsh.gto.salarymanagementcommandservice.dao",
+        "com.ciicsh.gto.salarymanagementcommandservice.service.common",
         "com.ciicsh.caldispatchjob"}
         )
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")

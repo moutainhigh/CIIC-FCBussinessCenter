@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.excel;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.excel.poi.PoiItemReader;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bill on 17/12/15.
@@ -23,13 +25,14 @@ public class PRItemExcelReader {
     @Autowired
     private PRItemExcelMapper mapper;
 
-    public PoiItemReader<List<BasicDBObject>> getPrGroupReader(InputStream stream, int importType, List<List<BasicDBObject>> payItems) throws  Exception{
+    public PoiItemReader<List<BasicDBObject>> getPrGroupReader(InputStream stream, int importType, Map<String,List<BasicDBObject>> payItems, List<String> identities) throws  Exception{
         PoiItemReader<List<BasicDBObject>> itemReader = new PoiItemReader<>();
         itemReader.setLinesToSkip(1);  //First line is column names
         PushbackInputStream stream1 = new PushbackInputStream(stream);
         itemReader.setResource(new InputStreamResource(stream1));
         mapper.setList(payItems); //多个雇员薪资项列表
-        mapper.setImportType(importType);
+        mapper.setImportType(importType); // 导入类型
+        mapper.setIdentities(identities); // 验证唯一性字段列表
         itemReader.setRowMapper(mapper);
         itemReader.setSkippedRowsCallback( rowSet ->{
             logger.info(rowSet.getCurrentRow().toString());

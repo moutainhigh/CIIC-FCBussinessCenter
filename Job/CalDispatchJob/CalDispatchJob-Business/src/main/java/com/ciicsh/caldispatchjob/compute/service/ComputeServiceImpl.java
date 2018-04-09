@@ -94,203 +94,12 @@ public class ComputeServiceImpl {
     @Autowired
     private KafkaSender sender;
 
-    /*
-    public void processCompute1(String batchCode,int batchType){
-
-        long start = System.currentTimeMillis(); //begin
-
-        DroolsContext context = new DroolsContext();
-
-        List<DBObject> batchList = null;
-        Criteria criteria = Criteria.where("batch_code").is(batchCode);//.and("catalog.emp_info.is_active").is(true);
-        Query query = new Query(criteria);
-
-        query.fields().
-                 include(PayItemName.EMPLOYEE_CODE_CN)
-                .include("catalog.pay_items.item_type")
-                .include("catalog.pay_items.data_type")
-                .include("catalog.pay_items.cal_priority")
-                .include("catalog.pay_items.item_name")
-                .include("catalog.pay_items.item_code")
-                .include("catalog.pay_items.item_value")
-                .include("catalog.pay_items.decimal_process_type")
-                .include("catalog.pay_items.item_condition")
-                .include("catalog.pay_items.formula_content")
-        ;
-
-        //query = query.skip(pageindex*size).limit(size);
-
-        long start1 = System.currentTimeMillis(); //begin
-
-        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
-
-        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, AdjustBatchMongoOpt.PR_ADJUST_BATCH);
-
-
-        }else {
-            batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
-        }
-        logger.info("查询mogodb时间 : " + String.valueOf((System.currentTimeMillis() - start1)));
-
-        List<BathUpdateOptions> options = new ArrayList<>();
-
-        Map<String,CompiledScript> scripts = new HashMap<>();
-
-         List<Long> totals = new ArrayList<>();
-
-        //StampedLock lock = new StampedLock();
-
-        batchList.stream().forEach(dbObject -> {
-
-            //long stamp = lock.writeLock();
-
-
-            DBObject calalog = (DBObject) dbObject.get("catalog");
-            //DBObject empInfo = (DBObject)calalog.get("emp_info");
-            String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
-            List<DBObject> items = ((List<DBObject>) calalog.get("pay_items"));
-
-            Bindings bindings = new SimpleBindings();
-
-            //set drools context
-            EmpPayItem empPayItem = new EmpPayItem();
-            empPayItem.setItems(bindings);
-            empPayItem.setEmpCode(empCode);
-            context.setEmpPayItem(empPayItem); //用于规则引擎计算
-
-            context.getFuncEntityList().clear(); // set each employee function result null
-            //end
-
-            CompiledScript compiled = null;
-            //Update update = null;
-            //int k = 0;
-
-
-            for (DBObject item : items) {
-
-                int dataType = item.get("data_type") == null ? 1 : (int) item.get("data_type"); // 数据格式: 1-文本,2-数字,3-日期,4-布尔
-
-                String itemCode = (String) item.get("item_code");
-
-                if (dataType == DataTypeEnum.NUM.getValue()) {
-                    bindings.put(itemCode, new BigDecimal(String.valueOf(item.get("item_value") == null ? 0 : item.get("item_value")))); //设置导入项和固定项的值
-                } else {
-                    bindings.put(itemCode, item.get("item_value")); //设置导入项和固定项的值
-                }
-
-                int itemType = item.get("item_type") == null ? 0 : (int) item.get("item_type"); // 薪资项类型
-
-                //处理计算项
-                if (itemType == ItemTypeEnum.CALC.getValue()) {
-
-                    int calPriority = (int) item.get("cal_priority");
-                    String itemName = item.get("item_name") == null ? "" : (String) item.get("item_name");
-                    logger.info(String.format("薪资项目－%s | 计算优先级－%d", itemName, calPriority));
-
-                    int processType = item.get("decimal_process_type") == null ? DecimalProcessTypeEnum.ROUND.getValue() : (int) item.get("decimal_process_type");//小数处理方式 1 - 四舍五入 2 - 简单去位
-
-                    String condition = item.get("item_condition") == null ? "" : (String) item.get("item_condition");//计算条件
-                    String formulaContent = item.get("formula_content") == null ? "" : (String) item.get("formula_content"); //计算公式
-                    if (StringUtils.isEmpty(formulaContent)) return;
-
-                    condition = Special2Normal(condition); //特殊字符转化
-                    formulaContent = Special2Normal(formulaContent); //特殊字符转化
-                    String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
-                    try {
-
-                        if (scripts.get(itemCode) == null) {
-                            long start0 = System.currentTimeMillis();
-                            compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
-                            scripts.put(itemCode, compiled);
-                            //totals.add(System.currentTimeMillis() - start0);
-                        } else {
-                            compiled = scripts.get(itemCode);
-                        }
-
-                        for (FuncEntity fun : context.getFuncEntityList()) {
-                            //公式的函数名 替换成 公式的函数值
-                            bindings.put(REPLACE_FUNC_PREFIX + fun.getFuncName(), fun.getResult());
-                        }
-
-                        Object compiledResult = compiled.eval(bindings); // run JS method
-
-                        BigDecimal computeResult = context.getBigDecimal(compiledResult);
-
-                        double result;
-                        if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
-                            result = Arith.round(computeResult.doubleValue(), 0);
-
-                        } else { // 四舍五入
-                            result = Arith.round(computeResult.doubleValue(), 2);
-                        }
-                        item.put("item_value", result);
-                        bindings.put(itemCode, result); // 设置计算项的值
-
-                        //context.getEmpPayItem().getItems().put(itemCode, result); //设置上下文计算项的值(函数用)
-                        context.getFuncEntityList().clear(); // 清除FIRE 过的函数
-
-                    } catch (Exception se) {
-                        logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
-                    }
-                }
-                //k++;
-            }
-            if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-                normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
-            }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-                adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
-            }else {
-                backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
-            }
-            //normalBatchMongoOpt.doBathUpdate(options,true);
-        });
-
-        int rowAffected = 0;
-        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            //normalBatchMongoOpt.doBathUpdate(options,true);
-            rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
-        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            //adjustBatchMongoOpt.doBathUpdate(options,true);
-            rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system",null);
-
-        }else {
-            //backTraceBatchMongoOpt.doBathUpdate(options,true);
-            rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
-        }
-        if(rowAffected > 0) { // 数据库更新成功后发送消息
-            ComputeMsg computeMsg = new ComputeMsg();
-            computeMsg.setBatchCode(batchCode);
-            computeMsg.setBatchType(batchType);
-            computeMsg.setComputeStatus(BatchStatusEnum.COMPUTED.getValue()); // send kafka compute's complete status
-            sender.SendComputeStatus(computeMsg);
-        }
-
-        long end = System.currentTimeMillis();
-        long sum = totals.stream().mapToLong(Long::longValue).sum();
-
-        logger.info("Compiled time: " + String.valueOf(sum));
-
-        batchList = null;
-        logger.info("薪资计算总共时间 : " + String.valueOf((end - start)));
-
-    }
-
-    */
-
     public void processCompute(String batchCode,int batchType){
 
         long start = System.currentTimeMillis(); //begin
 
-        DroolsContext context = new DroolsContext();
-
-
         List<DBObject> batchList = null;
-        Criteria criteria = Criteria.where("batch_code").is(batchCode);//.and("catalog.emp_info.is_active").is(true);
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);
         Query query = new Query(criteria);
 
         query.fields().
@@ -310,10 +119,6 @@ public class ComputeServiceImpl {
 
         int cores = Runtime.getRuntime().availableProcessors() - 1;
         final ForkJoinPool pool = new ForkJoinPool(cores);
-        //final ForkJoinPool pool = new ForkJoinPool(4);
-
-        //List<Integer> cost = Lists.newArrayList(1, 3, 7, 9, 34);
-        //pool.submit(() -> cost.parallelStream().map(x -> x += 1).reduce((y, z) -> y + z).get());
 
         long start1 = System.currentTimeMillis(); //begin
 
@@ -329,28 +134,22 @@ public class ComputeServiceImpl {
         logger.info("查询mogodb时间 : " + String.valueOf((System.currentTimeMillis() - start1)));
 
 
-        Map<String,CompiledScript> scripts = new HashMap<>();
-
         List<DBObject> finalBatchList = batchList;
         List<DBObject> others = null;
 
         try {
             others = pool.submit(()-> finalBatchList.parallelStream().map(dbObject -> runCompute(dbObject,batchCode,batchType)).collect(Collectors.toList())).get();
-            //pool.awaitTermination(60, TimeUnit.SECONDS);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
 
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            //normalBatchMongoOpt.doBathUpdate(options,true);
             rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            //adjustBatchMongoOpt.doBathUpdate(options,true);
             rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system",null);
 
         }else {
-            //backTraceBatchMongoOpt.doBathUpdate(options,true);
             rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
         }
         if(rowAffected > 0) { // 数据库更新成功后发送消息
@@ -362,7 +161,6 @@ public class ComputeServiceImpl {
         }
 
         long end = System.currentTimeMillis();
-        //long sum = totals.stream().mapToLong(Long::longValue).sum();
 
         logger.info("get total: " + String.valueOf(others.size()));
         logger.info("actual total: " + String.valueOf(finalBatchList.size()));
@@ -428,10 +226,8 @@ public class ComputeServiceImpl {
                 try {
 
                     if (scripts.get(itemCode) == null) {
-                        //long start0 = System.currentTimeMillis();
                         compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
                         scripts.put(itemCode, compiled);
-                        //totals.add(System.currentTimeMillis() - start0);
                     } else {
                         compiled = scripts.get(itemCode);
                     }
@@ -478,25 +274,7 @@ public class ComputeServiceImpl {
     }
 
 
-    /**
-     * transfer List to HashMap
-     * @param payItems
-     * @return
-     */
-    private HashMap<String, Object> listToHashMap(List<DBObject> payItems){
 
-        HashMap<String, Object> map = payItems.stream()
-                .filter(p->{ int itemType = p.get("item_type") == null ? 0 : (int)p.get("item_type");
-                        return itemType != ItemTypeEnum.CALC.getValue();
-                })
-                .collect(
-                HashMap<String, Object>::new,
-                (m,c) -> m.put((String)c.get("item_name"), c.get("item_value")),
-                (m,u)-> {}
-        );
-
-        return map;
-    }
 
     /**
      * 找出formulaContent包含函数名称的列表 -- 函数存在规则引擎里面

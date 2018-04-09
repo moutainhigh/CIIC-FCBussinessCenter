@@ -331,7 +331,38 @@
 		has_advance = #{hasAdvance},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
-		WHERE code = #{code}
+		WHERE code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_adjust_batch
+		SET
+		has_advance = #{hasAdvance},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE adjust_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_back_tracking_batch
+		SET
+		has_advance = #{hasAdvance},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE back_tracking_batch_code  IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
 	</update>
 
 	<update id="updateHasMoneny">
@@ -341,7 +372,38 @@
 		has_money = #{hasMoney},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
-		WHERE code = #{code}
+		WHERE code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_adjust_batch
+		SET
+		has_money = #{hasMoney},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE adjust_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_back_tracking_batch
+		SET
+		has_money = #{hasMoney},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE back_tracking_batch_code  IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
 	</update>
 
 	<select id="selectAllBatchCodesByManagementId" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">

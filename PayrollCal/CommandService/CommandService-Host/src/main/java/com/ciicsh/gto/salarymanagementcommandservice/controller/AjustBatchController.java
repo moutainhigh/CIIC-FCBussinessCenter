@@ -27,6 +27,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -94,6 +96,9 @@ public class AjustBatchController {
         adjustBatchPO.setAdjustBatchCode(code);
         adjustBatchPO.setRootBatchCode(rootCode);
         adjustBatchPO.setOriginBatchCode(batchCode); // normal or adjust code
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMM");
+        adjustBatchPO.setPeriod(today.format(dtf));
 
         adjustBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
         adjustBatchPO.setCreatedBy("bill");

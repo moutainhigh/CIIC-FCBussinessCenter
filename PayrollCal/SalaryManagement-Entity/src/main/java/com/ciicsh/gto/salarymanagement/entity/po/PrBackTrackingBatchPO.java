@@ -107,6 +107,16 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 	@TableField("has_money")
 	private Boolean hasMoney;
 
+	@TableField("period")
+	private String period;
+
+	public String getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(String period) {
+		this.period = period;
+	}
 
 	public Long getId() {
 		return id;

@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -94,6 +96,11 @@ public class BackTraceBatchController {
         backTrackingBatchPO.setBackTrackingBatchCode(code);
         backTrackingBatchPO.setRootBatchCode(rootCode);
         backTrackingBatchPO.setOriginBatchCode(batchCode); // normal or adjust code
+
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMM");
+        backTrackingBatchPO.setPeriod(today.format(dtf));
+
 
         backTrackingBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
         backTrackingBatchPO.setCreatedBy("bill");
