@@ -10,6 +10,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,12 @@ public class TaskSubSupplierDetailController extends BaseController {
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.andNew("task_sub_supplier_id={0}",taskSubSupplierDetailDTO.getSubSupplierId());
             wrapper.andNew("is_combined={0}",true);
+            if(StrKit.isNotEmpty(taskSubSupplierDetailDTO.getEmployeeNo())){
+                wrapper.like("employee_no",taskSubSupplierDetailDTO.getEmployeeNo());
+            }
+            if(StrKit.isNotEmpty(taskSubSupplierDetailDTO.getEmployeeName())){
+                wrapper.like("employee_name",taskSubSupplierDetailDTO.getEmployeeName());
+            }
             Page<TaskSubSupplierDetailPO> pageInfo = new Page<>(taskSubSupplierDetailDTO.getCurrentNum(), taskSubSupplierDetailDTO.getPageSize());
             List<TaskSubSupplierDetailPO> taskSubSupplierDetailPOList = new ArrayList<>();
             taskSubSupplierDetailPOList = this.taskSubSupplierDetailService.selectPage(pageInfo, wrapper).getRecords();
@@ -170,6 +177,37 @@ public class TaskSubSupplierDetailController extends BaseController {
             tags.put("taskSubSupplierDetailIds", taskSubSupplierDetailDTO.getTaskSubSupplierDetailIds().toString());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskSubSupplierDetailController.unconfirmTaskSubSupplierDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+
+    /**
+     * 更新供应商子任务明细
+     * @param taskSubSupplierDetailDTO
+     * @return
+     */
+    @RequestMapping(value = "/updateSubSupplierDetail")
+    public JsonResult<Boolean> updateSubSupplierDetail(@RequestBody TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
+
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.andNew("id={0}",taskSubSupplierDetailDTO.getTaskSubSupplierDetailId());
+            TaskSubSupplierDetailPO tssdp = new TaskSubSupplierDetailPO();
+            tssdp.setDeductRetirementInsurance(taskSubSupplierDetailDTO.getDeductRetirementInsurance());
+            tssdp.setDeductMedicalInsurance(taskSubSupplierDetailDTO.getDeductMedicalInsurance());
+            tssdp.setDeductDlenessInsurance(taskSubSupplierDetailDTO.getDeductDlenessInsurance());
+            tssdp.setDeductHouseFund(taskSubSupplierDetailDTO.getDeductHouseFund());
+            tssdp.setIncomeTotal(taskSubSupplierDetailDTO.getIncomeTotal());
+            this.taskSubSupplierDetailService.update(tssdp,wrapper);//更新明细
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskSubSupplierDetailId", taskSubSupplierDetailDTO.getTaskSubSupplierDetailId().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubSupplierDetailController.updateSubSupplierDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "07"), LogType.APP, tags);
             jr.error();
         }
 

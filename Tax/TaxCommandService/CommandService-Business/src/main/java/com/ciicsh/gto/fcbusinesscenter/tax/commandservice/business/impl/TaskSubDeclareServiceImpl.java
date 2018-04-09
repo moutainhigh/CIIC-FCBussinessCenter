@@ -289,7 +289,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 BigDecimal deductMedicalInsurance = new BigDecimal(0);//基本医疗保险费（税前扣除项目）
                 BigDecimal deductDlenessInsurance = new BigDecimal(0);//失业保险费（税前扣除项目）
                 BigDecimal deductHouseFund = new BigDecimal(0);//住房公积金（税前扣除项目）
-                BigDecimal deduction = new BigDecimal(0);//减除费用(3500;4800)
+//                BigDecimal deduction = new BigDecimal(0);//减除费用(3500;4800)
                 BigDecimal taxAmount = new BigDecimal(0);//应纳税额
 
                 List<TaskSubDeclareDetailPO> tps = entry.getValue();
@@ -303,7 +303,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                     deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance());
                     deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
                     deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
-                    deduction = deduction.add(tp.getDeduction());
+//                    deduction = deduction.add(tp.getDeduction());
                     taxAmount = taxAmount.add(tp.getTaxAmount());
                 }
 
@@ -312,7 +312,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 taskSubDeclareDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
                 taskSubDeclareDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
                 taskSubDeclareDetailPO.setDeductHouseFund(deductHouseFund);
-                taskSubDeclareDetailPO.setDeduction(deduction);
+                taskSubDeclareDetailPO.setDeduction(new BigDecimal(3500));
                 taskSubDeclareDetailPO.setTaxAmount(taxAmount);
                 //更新合并后数据值
                 this.taskSubDeclareDetailService.updateById(taskSubDeclareDetailPO);
