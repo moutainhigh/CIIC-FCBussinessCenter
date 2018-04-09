@@ -113,5 +113,7 @@ public class TaskNoService {
 //        String t = String.format("%05d", 10);
 //        System.out.print("%%%%%%%%%t:");
 //        System.out.print(t);
+
+        Double.parseDouble("");
     }
 }

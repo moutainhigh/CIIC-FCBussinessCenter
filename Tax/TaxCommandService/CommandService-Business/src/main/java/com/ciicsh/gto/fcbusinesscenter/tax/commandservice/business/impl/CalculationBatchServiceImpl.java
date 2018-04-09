@@ -544,7 +544,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
                 BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
                 BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
-                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
+//                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
                 BigDecimal taxAmount=new BigDecimal(0);//应纳税额
 
                 List<TaskMainDetailPO> tps = entry.getValue();
@@ -558,7 +558,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance());
                     deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
                     deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
-                    deduction = deduction.add(tp.getDeduction());
+//                    deduction = deduction.add(tp.getDeduction());
                     taxAmount = taxAmount.add(tp.getTaxAmount());
                 }
 
@@ -567,7 +567,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 taskMainDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
                 taskMainDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
                 taskMainDetailPO.setDeductHouseFund(deductHouseFund);
-                taskMainDetailPO.setDeduction(deduction);
+                taskMainDetailPO.setDeduction(new BigDecimal(3500));
                 taskMainDetailPO.setTaxAmount(taxAmount);
                 //更新合并后数据值
                 this.taskMainDetailService.updateById(taskMainDetailPO);
