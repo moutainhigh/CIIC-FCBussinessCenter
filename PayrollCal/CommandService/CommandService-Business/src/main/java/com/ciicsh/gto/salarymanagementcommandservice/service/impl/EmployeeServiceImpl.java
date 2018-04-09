@@ -90,6 +90,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<EmployeeExtensionPO> getAllEmployees(String empGroupCode, String empCode, String empName) {
+        return employeeMapper.getEmployees(empGroupCode,empCode,empName);
+    }
+
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public Integer batchDelete(List<String> ids,List<String> employeeIds,String empGroupCode) {
         Integer result = empGroupEmpRelationMapper.deleteBatchIds(ids);

@@ -38,7 +38,7 @@ spring:
             partitioned: true
 
         pr_compute-status-output-channel:
-          destination: fc_payroll_compute-status01 # topic name
+          destination: fc_payroll_compute-status # topic name
           content-type: application/json
           producer:
             partitionCount: 1

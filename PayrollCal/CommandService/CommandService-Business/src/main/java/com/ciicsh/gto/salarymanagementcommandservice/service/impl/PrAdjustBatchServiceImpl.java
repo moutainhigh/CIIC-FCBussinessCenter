@@ -1,10 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
-import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.*;
 import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
@@ -14,6 +11,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryServ
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,47 +59,53 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
     @Override
     public int insert(PrAdjustBatchPO adjustBatchPO) {
 
-        List<DBObject> list = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(adjustBatchPO.getAdjustBatchCode()));
-
+        List<DBObject> list = null;
         int rowAffected = 0;
-        if (list == null || list.size() == 0) {
-            PrNormalBatchPO normalBatchPO = new PrNormalBatchPO();
-            normalBatchPO.setCode(adjustBatchPO.getOriginBatchCode());
-            normalBatchPO = normalBatchMapper.selectOne(normalBatchPO);
-            String jsonResult = normalBatchPO.getResultData();
+        String jsonResult = "";
+        PrNormalBatchPO normalBatchPO = new PrNormalBatchPO();
+        normalBatchPO.setCode(adjustBatchPO.getRootBatchCode());
+        PrNormalBatchPO find = normalBatchMapper.selectOne(normalBatchPO);
+        if(find == null){ // 正常批次没有找到 ， 说明是基于原调整批次的新调整批次
+            PrAdjustBatchPO originAdjust = new PrAdjustBatchPO();
+            originAdjust.setAdjustBatchCode(adjustBatchPO.getAdjustBatchCode());
+            originAdjust = adjustBatchMapper.selectOne(originAdjust);
+            jsonResult = originAdjust.getAdjustResult();
+
+        }else { // 正常批次找到 ， 说明是基于原调整批次的正常批次
+            jsonResult = find.getResultData();
+        }
+        if(StringUtils.isEmpty(jsonResult)){
+            logger.error("计算结果不能为空");
+            return 0;
+        }
+        rowAffected = adjustBatchMapper.insert(adjustBatchPO);
+        if(rowAffected > 0){
+
             list = (List<DBObject>) JSON.parse(jsonResult);
             if (list != null && list.size() > 0) {
-
                 list.forEach(dbObject -> {
                     dbObject.put("_id", new ObjectId());
                     dbObject.put("batch_code", adjustBatchPO.getAdjustBatchCode()); // update origin code to adjust code
-                    dbObject.put("origin_code",adjustBatchPO.getOriginBatchCode());
-                    DBObject catalog = (DBObject) dbObject.get("catalog");
-                    List<DBObject> payItems = (List<DBObject>) catalog.get("pay_items");
+                    dbObject.put("origin_batch_code",adjustBatchPO.getOriginBatchCode());
+                    dbObject.put("root_batch_code",adjustBatchPO.getRootBatchCode());
+                    DBObject catalog = (DBObject)dbObject.get("catalog");
+                    DBObject batchInfo = (DBObject)catalog.get("batch_info");
+                    batchInfo.put("payroll_type", BatchTypeEnum.ADJUST.getValue());
 
-                    payItems.forEach(item -> {
-                        int itemType = item.get("item_type") == null ? 0 : (int) item.get("item_type"); // 薪资项类型
-                        if (itemType == ItemTypeEnum.CALC.getValue()) {
-                            item.put("item_value", 0.0); //清除计算项结果
-                        }
-                    });
                 });
             }
             adjustBatchMongoOpt.createIndex();
             rowAffected = adjustBatchMongoOpt.batchInsert(list); // batch insert to mongodb
-            if (rowAffected > 0) {
-                rowAffected += adjustBatchMapper.insert(adjustBatchPO);
-            }else {
-                Map<String,Object> map = new HashMap<>();
-                map.put("origin_batch_code",adjustBatchPO.getOriginBatchCode());
-                map.put("adjust_batch_code",adjustBatchPO.getAdjustBatchCode());
-                adjustBatchMapper.deleteByMap(map);
-                rowAffected = 0;
-            }
-            logger.info(String.format("adjust batch row affected %d", rowAffected));
         }
 
+        logger.info(String.format("adjust batch row affected %d", rowAffected));
+
         return rowAffected;
+    }
+
+    @Override
+    public PrAdjustBatchPO getAdjustBatchPO(PrAdjustBatchPO adjustBatchPO) {
+        return adjustBatchMapper.selectOne(adjustBatchPO);
     }
 
     @Override

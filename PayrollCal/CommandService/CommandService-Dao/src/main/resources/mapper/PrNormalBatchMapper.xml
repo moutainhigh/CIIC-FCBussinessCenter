@@ -198,6 +198,7 @@
 
 	<resultMap id="CustSubBatchMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO" >
 		<result column="code" property="code"/>
+		<result column="originCode" property="originCode"/>
 		<result column="batch_type" property="batchType"/>
 		<result column="status" property="status"/>
 	</resultMap>
@@ -205,21 +206,23 @@
 	<select id="selectSubBatchList" resultMap="CustSubBatchMap">
 		SELECT
 			adjust_batch_code as code,
+			origin_batch_code as originCode,
 			2 as batch_type,
 			status
 		FROM
 			pr_adjust_batch
 		where
-			origin_batch_code = #{code}
+			root_batch_code = #{code}
 		UNION
 		SELECT
 			back_tracking_batch_code as code,
+			origin_batch_code as originCode,
 			3 as batch_type,
 			status
 		FROM
 			pr_back_tracking_batch
 		where
-			origin_batch_code = #{code}
+			root_batch_code = #{code}
 	</select>
 
 
@@ -328,7 +331,38 @@
 		has_advance = #{hasAdvance},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
-		WHERE code = #{code}
+		WHERE code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_adjust_batch
+		SET
+		has_advance = #{hasAdvance},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE adjust_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_back_tracking_batch
+		SET
+		has_advance = #{hasAdvance},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE back_tracking_batch_code  IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
 	</update>
 
 	<update id="updateHasMoneny">
@@ -338,7 +372,38 @@
 		has_money = #{hasMoney},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
-		WHERE code = #{code}
+		WHERE code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_adjust_batch
+		SET
+		has_money = #{hasMoney},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE adjust_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+		UPDATE
+		pr_back_tracking_batch
+		SET
+		has_money = #{hasMoney},
+		modified_by = #{modifiedBy},
+		modified_time = sysdate()
+		WHERE back_tracking_batch_code  IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
 	</update>
 
 	<select id="selectAllBatchCodesByManagementId" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
@@ -358,7 +423,7 @@
 		FROM
 			pr_adjust_batch ab
 			JOIN pr_normal_batch nb
-			ON nb.code = ab.origin_batch_code
+			ON nb.code = ab.root_batch_code
 		WHERE
 			nb.management_id = #{managementId}
 
@@ -370,7 +435,7 @@
 		FROM
 			pr_back_tracking_batch btb
 			JOIN pr_normal_batch nb
-			ON nb.code = btb.origin_batch_code
+			ON nb.code = btb.root_batch_code
 		WHERE
 			nb.management_id = #{managementId}
 	</select>

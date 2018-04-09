@@ -27,6 +27,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,13 +72,34 @@ public class AjustBatchController {
     private CodeGenerator codeGenerator;
 
     @PostMapping("/addAdjustBatch")
-    public JsonResult addNormalBatch(@RequestParam String batchCode) {
+    public JsonResult addAdjustBatch(@RequestParam String batchCode, @RequestParam(required = false, defaultValue = "") String originCode) {
 
-        PrNormalBatchPO batchPO = batchService.getBatchByCode(batchCode);
-        String code = codeGenerator.genPrNormalBatchCode(batchPO.getManagementId(),batchPO.getActualPeriod());
         PrAdjustBatchPO adjustBatchPO = new PrAdjustBatchPO();
+
+        String rootCode = "";
+
+        if(StringUtils.isNotEmpty(originCode)){
+            rootCode = originCode;
+
+        }else {
+            rootCode = batchCode;
+        }
+
+        PrNormalBatchPO batchPO = batchService.getBatchByCode(rootCode);
+        if(batchPO == null){
+            adjustBatchPO.setAdjustBatchCode(batchCode);
+            PrAdjustBatchPO find = adjustBatchService.getAdjustBatchPO(adjustBatchPO);
+            rootCode = find.getRootBatchCode();
+            batchPO = batchService.getBatchByCode(rootCode);
+        }
+        String code = codeGenerator.genPrNormalBatchCode(batchPO.getManagementId(),batchPO.getActualPeriod());
         adjustBatchPO.setAdjustBatchCode(code);
-        adjustBatchPO.setOriginBatchCode(batchCode);
+        adjustBatchPO.setRootBatchCode(rootCode);
+        adjustBatchPO.setOriginBatchCode(batchCode); // normal or adjust code
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMM");
+        adjustBatchPO.setPeriod(today.format(dtf));
+
         adjustBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
         adjustBatchPO.setCreatedBy("bill");
         adjustBatchPO.setModifiedBy("bill");
@@ -309,20 +332,20 @@ public class AjustBatchController {
     @PostMapping("/deleteNew")
     public JsonResult deleteNew(@RequestParam String batchCodes, @RequestParam int batchType) {
         String[] codes = batchCodes.split(",");
-        int i = 0;
+        int rowAffected = 0;
         if(batchType == BatchTypeEnum.ADJUST.getValue()){
-            i = adjustBatchService.deleteAdjustBatchByCodes(Arrays.asList(codes));
+            rowAffected = adjustBatchService.deleteAdjustBatchByCodes(Arrays.asList(codes));
         }else {
-            i = backTrackingBatchService.deleteBackTraceBatchByCodes(Arrays.asList(codes));
+            rowAffected = backTrackingBatchService.deleteBackTraceBatchByCodes(Arrays.asList(codes));
         }
-        if (i >= 1){
+        if (rowAffected >= 1){
             //send message to kafka
             PayrollMsg msg = new PayrollMsg();
             msg.setBatchCode(batchCodes);
             msg.setBatchType(batchType);
             msg.setOperateType(OperateTypeEnum.DELETE.getValue());
             sender.Send(msg);
-            return JsonResult.success(i,"删除成功");
+            return JsonResult.success(rowAffected,"删除成功");
         }else {
             return JsonResult.faultMessage();
         }

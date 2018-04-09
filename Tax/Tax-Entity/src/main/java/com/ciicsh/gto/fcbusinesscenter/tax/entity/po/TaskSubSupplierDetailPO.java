@@ -212,6 +212,26 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 	@TableField("is_combine_confirmed")
 	private Boolean isCombineConfirmed;
 
+	private String managerNo;
+
+	private String managerName;
+
+	public String getManagerNo() {
+		return managerNo;
+	}
+
+	public void setManagerNo(String managerNo) {
+		this.managerNo = managerNo;
+	}
+
+	public String getManagerName() {
+		return managerName;
+	}
+
+	public void setManagerName(String managerName) {
+		this.managerName = managerName;
+	}
+
 	public Long getTaskMainDetailId() {
 		return taskMainDetailId;
 	}
