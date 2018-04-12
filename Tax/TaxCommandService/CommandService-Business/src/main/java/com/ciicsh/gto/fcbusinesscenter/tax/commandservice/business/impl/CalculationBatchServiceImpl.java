@@ -579,7 +579,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 TaskMainPO tmp = new TaskMainPO();
                 tmp.setId(taskMainId);
-                tmp.setCombined(true);
+                tmp.setHasCombined(true);
                 this.taskMainMapper.updateById(tmp);//更新主任务信息，标记任务存在合并的明细
 
             }
