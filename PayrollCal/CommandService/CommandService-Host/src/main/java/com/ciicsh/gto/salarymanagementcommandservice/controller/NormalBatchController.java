@@ -429,11 +429,11 @@ public class NormalBatchController {
 
         List<DBObject> dbObjects = null;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            dbObjects = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+            dbObjects = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode));
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            dbObjects = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+            dbObjects = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode));
         }else {
-            dbObjects = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true));
+            dbObjects = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchCode));
         }
 
         List<ExcelExportEntity> excelExportEntities = new ArrayList<ExcelExportEntity>();

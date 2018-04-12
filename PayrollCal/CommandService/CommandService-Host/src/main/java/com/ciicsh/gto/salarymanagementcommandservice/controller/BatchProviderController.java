@@ -7,9 +7,11 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.AdvanceBatchDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.MoneyBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
@@ -91,10 +93,10 @@ public class BatchProviderController implements BatchProxy {
     }
 
     @Override
-    public List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam("managementId") String managementId) {
-        if (StringUtils.isEmpty(managementId)) {
+    public List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam(value = "managementId", required = false) String managementId) {
+        /*if (StringUtils.isEmpty(managementId)) {
             return null;
-        }
+        }*/
         List<PrNormalBatchPO> batchList = normalBatchService.getAllBatchesByManagementId(managementId);
         List<PrNormalBatchDTO> resultList = JSON.parseObject(JSON.toJSONString(batchList)
                 , new TypeReference<List<PrNormalBatchDTO>>(){});
@@ -143,6 +145,19 @@ public class BatchProviderController implements BatchProxy {
         batchDTO.setEndData(normalBatchPO.getEndDate());
 
         return batchDTO;
+    }
+
+    @Override
+    public int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO) {
+        int rowAffected = 0;
+        if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
+            rowAffected = normalBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getResult());
+        }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
+            rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getResult());
+        }else {
+            rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getResult());
+        }
+        return rowAffected;
     }
 
 }

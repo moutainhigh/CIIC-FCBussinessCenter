@@ -413,7 +413,10 @@
 		FROM
 			pr_normal_batch
 		WHERE
-			management_id = #{managementId}
+			1=1
+			<if test="managementId != '' and managementId != null">
+			   AND management_id = #{managementId}
+			</if>
 
 		UNION
 
@@ -425,7 +428,10 @@
 			JOIN pr_normal_batch nb
 			ON nb.code = ab.root_batch_code
 		WHERE
-			nb.management_id = #{managementId}
+			1=1
+			<if test="managementId != '' and managementId != null">
+				AND nb.management_id = #{managementId}
+			</if>
 
 		UNION
 
@@ -437,6 +443,9 @@
 			JOIN pr_normal_batch nb
 			ON nb.code = btb.root_batch_code
 		WHERE
-			nb.management_id = #{managementId}
+			1=1
+			<if test="managementId != '' and managementId != null">
+				AND nb.management_id = #{managementId}
+			</if>
 	</select>
 </mapper>
