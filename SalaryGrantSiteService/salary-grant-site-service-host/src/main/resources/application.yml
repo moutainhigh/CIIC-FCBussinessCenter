@@ -1,0 +1,119 @@
+info:
+  app:
+    name: 薪资发放
+    version: 1.0-SNAPSHOT
+    description: 提供服务操作接口
+app:
+  id: 10007005
+endpoints:
+  shutdown:
+    #启用shutdown
+    enabled: true
+    #禁用密码验证
+    sensitive: false
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${eureka.serviceurl}
+###################  项目启动端口  ###################
+server:
+  port: 7009
+  context-path: /
+###################  spring 配置  ###################
+spring:
+  application:
+    name: salary-grant-site-service
+  http:
+    encoding:
+      force: true
+  converters:
+    preferred-json-mapper: jackson
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: true
+#    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+#    joda-date-time-format: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://${database.host}:${database.port}/gtobusinessdb?useUnicode=true&characterEncoding=utf8&useSSL=false&tinyInt1isBit=false
+    username: ${database.username}
+    password: ${database.password}
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat,wall
+    database: MySQL
+    druid:
+      initial-size: 5
+      max-active: 20
+      min-idle: 5
+      max-wait: 60000
+      validation-query: select 1
+      validation-query-timeout: 30
+      test-while-idle: true
+      keep-alive: true
+      filters: stat,wall
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      test-on-borrow: true
+      test-on-return: false
+      min-evictable-idle-time-millis: 3600000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 300000
+      remove-abandoned: true #是否自动回收超时连接
+      remove-abandoned-timeout: 180 #超时时间(以秒数为单位)
+  jmx:
+    enabled: false
+
+###################  mybatis 配置  ###################
+mybatis-plus:
+  type-aliases-package: com.ciicsh.gto.fcbusinesscenter.site.service.entity,com.ciicsh.gto.fcbusinesscenter.site.service.entity.po
+  mapper-locations: classpath*:mapping*/*.xml
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 3
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+  #plugins:
+  #  - catMybatisInterceptor
+
+logging:
+  file: logs/dev_app.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: DEBUG
+    com.ciicsh.zorro.salarymanagementwebservice: DEBUG
+    org.mybatis: DEBUG
+
+    org.springframework.web: DEBUG
+    org.mybatis: DEBUG
+    com.ciicsh.gto.fcbusinesscenter.site.service.dao: DEBUG
+    com.ciicsh.gto.fcbusinesscenter.site.service.host.controller: DEBUG
+    com.ciicsh.gto.fcsupportcenter.site.service.business.impl: DEBUG
+
+    #驼峰转换
+    #map-underscore-to-camel-case: true
+# https://github.com/abel533/Mapper/tree/master/wiki/mapper3
+#mapper:
+#  mappers: tk.mybatis.mapper.common.Mapper,tk.mybatis.mapper.common.special.InsertListMapper
+## https://github.com/pagehelper/Mybatis-PageHelper/blob/master/wikis/zh/HowToUse.md
+#pagehelper:
+#  helper-dialect: mysql
+
+
+
+
+management:
+  port: 7010
+  context-path: /admin
+  security:
+    enabled: false
