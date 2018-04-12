@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.site.service.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.site.service.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.site.service.api.dto.SalaryGrantMainTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.site.service.api.dto.SalaryGrantMainTaskTaskRequestDTO;
+import com.ciicsh.gto.fcbusinesscenter.site.service.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.site.service.business.SalaryGrantMainTaskService;
 import com.ciicsh.gto.fcbusinesscenter.site.service.entity.bo.SalaryGrantMainTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.util.common.CommonTransform;
-import com.ciicsh.gto.fcbusinesscenter.util.common.PageUtil;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
@@ -42,7 +40,7 @@ public class SalaryGrantMainTaskController {
     //查询薪资发放任务单列表（待提交、已处理-审批中、已处理-审批通过、已处理-审批拒绝、已处理-审批失效）
     //包括查询雇员列表信息
     public Result querySalaryGrantMainTaskPage(@RequestBody SalaryGrantMainTaskDTO salaryGrantMainTaskDTO){
-        try {
+        /*try {
             Page<SalaryGrantMainTaskBO> page = new Page<>(salaryGrantMainTaskDTO.getCurrentPage(), salaryGrantMainTaskDTO.getSize());
             SalaryGrantMainTaskBO salaryGrantMainTaskBO = CommonTransform.convertToEntity(salaryGrantMainTaskDTO, SalaryGrantMainTaskBO.class);
             page = salaryGrantMainTaskService.querySalaryGrantMainTaskPage(page, salaryGrantMainTaskBO);
@@ -50,7 +48,8 @@ public class SalaryGrantMainTaskController {
             return ResultGenerator.genSuccessResult(dtoPage);
         }catch (Exception e){
             return ResultGenerator.genServerFailResult();
-        }
+        }*/
+        return null;
     }
 
     //todo
@@ -75,7 +74,7 @@ public class SalaryGrantMainTaskController {
     //todo
     //薪资发放任务单提交（点击提交按钮）
     @PostMapping(value="/task/complete",consumes = {"application/json"})
-    public Result completeTask(@RequestBody SalaryGrantMainTaskTaskRequestDTO salaryGrantMainTaskTaskRequestDTO) throws Exception {
+    public Result completeTask(@RequestBody SalaryGrantTaskRequestDTO salaryGrantMainTaskTaskRequestDTO) throws Exception {
        // logger.info("customer系统调用完成任务接口："+custTaskRequestDTO.toString());
         TaskRequestDTO taskRequestDTO = new TaskRequestDTO();
         taskRequestDTO.setTaskId(salaryGrantMainTaskTaskRequestDTO.getTaskId());
