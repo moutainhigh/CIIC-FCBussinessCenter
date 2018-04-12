@@ -36,8 +36,9 @@ public class CodeGenerator {
     private static final String PR_ACCOUNT_SET_PREFIX = "XZZT";
     private static final String PR_EMP_GROUP_PREFIX = "GYZ";
 
-    private static final String CODE_TEMPLATE = "${prefix}-${managementId}-${seq}";
-    private static final String PR_GROUP_TEMPLATE_CODE_TEMPLATE = "${prefix}-${seq}";
+    private static final String CODE_TEMPLATE_NO_MANAGEMENT = "${prefix}_${seq}";
+    private static final String CODE_TEMPLATE = "${prefix}_${managementId}_${seq}";
+    private static final String PR_GROUP_TEMPLATE_CODE_TEMPLATE = "${prefix}_${seq}";
 
     public String genPrItemCode(String managementId) {
         long seq = prCodeSeqService.getCode(PR_ITEM_SEQ);
@@ -91,6 +92,9 @@ public class CodeGenerator {
         StrSubstitutor sub = new StrSubstitutor(queryMap);
         if (PR_GROUP_TEMPLATE_PREFIX.equals(prefix)) {
             return sub.replace(PR_GROUP_TEMPLATE_CODE_TEMPLATE);
+        }
+        if (queryMap.get("managementId") == null) {
+            return sub.replace(CODE_TEMPLATE_NO_MANAGEMENT);
         }
         return sub.replace(CODE_TEMPLATE);
     }

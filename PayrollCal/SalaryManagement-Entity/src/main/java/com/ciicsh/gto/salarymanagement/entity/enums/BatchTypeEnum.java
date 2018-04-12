@@ -4,7 +4,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
  * Created by bill on 17/12/8.
  * 批次类型
  */
-public enum BatchTypeEnum implements IValuedEnum {
+public enum BatchTypeEnum implements ValuedEnum {
 
     NORMAL(1, "正常批次"),
 

@@ -5,18 +5,20 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
  * 计算批次
  * </p>
  *
- * @author wuhua
+· * @author wuhua
  * @since 2017-12-26
  */
 @TableName("tax_fc_calculation_batch")
@@ -76,20 +78,56 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
+	/**
+	 *主任务id
+	 */
+	private Long taskMainId;
+
+	/**
+	 *批次任务关联
+	 */
+	@TableField(exist = false)
+	private List<CalculationBatchTaskMainPO> calculationBatchTaskMainPOs;
+
+	/**
+	 *任务编号集
+	 */
+	@TableField(exist = false)
+	private String taskNos;
+
+	public String getTaskNos() {
+		return taskNos;
+	}
+
+	public void setTaskNos(String taskNos) {
+		this.taskNos = taskNos;
+	}
+
+	public List<CalculationBatchTaskMainPO> getCalculationBatchTaskMainPOs() {
+		return calculationBatchTaskMainPOs;
+	}
+
+	public void setCalculationBatchTaskMainPOs(List<CalculationBatchTaskMainPO> calculationBatchTaskMainPOs) {
+		this.calculationBatchTaskMainPOs = calculationBatchTaskMainPOs;
+	}
 
 	public Long getId() {
 		return id;
@@ -171,19 +209,27 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	/*public Date getCreatedTime() {
 		return createdTime;
 	}
 
 	public void setCreatedTime(Date createdTime) {
 		this.createdTime = createdTime;
+	}*/
+
+	public LocalDateTime getCreatedTime() {
+		return createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public void setCreatedTime(LocalDateTime createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -209,6 +255,14 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 
 	public void setStatusName(String statusName) {
 		this.statusName = statusName;
+	}
+
+	public Long getTaskMainId() {
+		return taskMainId;
+	}
+
+	public void setTaskMainId(Long taskMainId) {
+		this.taskMainId = taskMainId;
 	}
 
 	@Override

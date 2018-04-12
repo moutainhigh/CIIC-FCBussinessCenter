@@ -27,7 +27,7 @@ public interface PrNormalBatchService {
 
     int update(PrNormalBatchPO normalBatchPO);
 
-    List<PrCustSubBatchPO> selectSubBatchList(String code, Integer status);
+    List<PrCustSubBatchPO> selectSubBatchList(String code);
 
     Integer deleteBatchByCodes(List<String> codes);
 
@@ -41,6 +41,40 @@ public interface PrNormalBatchService {
      * @param file           EXCEL 文件
      * @return INT           上传成功行数
      */
-    int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int importType, MultipartFile file);
+    int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, String itemNames, int batchType,int importType, MultipartFile file);
 
+    /**
+     * 审批意见
+     * @param batchCode
+     * @param comments
+     * @param status
+     * @param modifiedBy
+     * @return
+     */
+    int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result);
+
+    /**
+     * 更新批次是否来款
+     * @param batchCodes
+     * @param hasAdvance
+     * @param modifiedBy
+     * @return
+     */
+    int updateHasAdvance(List<String> batchCodes, boolean hasAdvance, String modifiedBy);
+
+    /**
+     * 更新批次是否垫付
+     * @param hasMoney
+     * @param modifiedBy
+     * @return
+     */
+    int updateHasMoneny(List<String> batchCodes, boolean hasMoney, String modifiedBy);
+
+
+    /**
+     * 根据管理方id获取批次id列表
+     * @param managementId
+     * @return
+     */
+    List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId);
 }

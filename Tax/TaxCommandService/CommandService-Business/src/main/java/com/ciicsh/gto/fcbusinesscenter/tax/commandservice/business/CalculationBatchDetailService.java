@@ -1,8 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmployees;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForBatchDetail;
 
@@ -23,5 +23,18 @@ public interface CalculationBatchDetailService {
      * @param
      * @return
      */
-    ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees);
+//    ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees);
+
+    /**
+     * 条件查询计算批次明细
+     * @param requestForCalBatchDetail
+     * @return
+     */
+    ResponseForCalBatchDetail queryTaxBatchDetailByRes(RequestForCalBatchDetail requestForCalBatchDetail);
+
+    /**
+     * 批量恢复计算批次明细
+     * @param ids
+     */
+    void queryCalculationBatchDetail(String[] ids);
 }

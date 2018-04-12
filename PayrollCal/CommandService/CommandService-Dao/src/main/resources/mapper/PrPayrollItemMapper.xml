@@ -18,6 +18,7 @@
 		<result column="default_value" property="defaultValue" />
 		<result column="decimal_process_type" property="decimalProcessType" />
 		<result column="cal_precision" property="calPrecision" />
+		<result column="full_formula" property="fullFormula" />
         <result column="origin_formula" property="originFormula" />
 		<result column="formula_content" property="formulaContent" />
 		<result column="item_condition" property="itemCondition" />
@@ -65,11 +66,15 @@
 		default_value,
 		decimal_process_type,
 		cal_precision,
+		full_formula,
+		origin_formula,
 		formula_content,
+		origin_condition,
 		item_condition,
 		cal_priority,
 		display_priority,
 		remark,
+		can_lock,
 		is_active,
 		created_time,
 		modified_time,
@@ -108,12 +113,15 @@
 			default_value,
 			decimal_process_type,
 			cal_precision,
+			full_formula,
             origin_formula,
 			formula_content,
+			origin_condition,
 			item_condition,
 			cal_priority,
 			display_priority,
 			remark,
+			can_lock,
 			is_active,
 			created_time,
 			modified_time,
@@ -136,12 +144,15 @@
                 #{item.defaultValue},
                 #{item.decimalProcessType},
                 #{item.calPrecision},
+				#{item.fullFormula},
                 #{item.originFormula},
                 #{item.formulaContent},
+				#{item.originCondition},
                 #{item.itemCondition},
                 #{item.calPriority},
                 #{item.displayPriority},
                 #{item.remark},
+				#{item.canLock},
                 #{item.isActive},
                 sysdate(),
                 sysdate(),
@@ -200,9 +211,18 @@
             <if test="calPrecision != null">
                 cal_precision = #{calPrecision},
             </if>
+			<if test="fullFormula != null">
+				full_formula = #{fullFormula},
+			</if>
+			<if test="originFormula != null">
+				origin_formula = #{originFormula},
+			</if>
             <if test="formulaContent != null">
                 formula_content = #{formulaContent},
             </if>
+			<if test="originCondition != null">
+				origin_condition = #{originCondition},
+			</if>
             <if test="itemCondition != null">
                 item_condition = #{itemCondition},
             </if>
@@ -215,6 +235,9 @@
             <if test="remark != null">
                 remark = #{remark},
             </if>
+			<if test="canLock != null">
+				can_lock = #{canLock},
+			</if>
             <if test="isActive != null">
                 is_active = #{isActive},
             </if>
@@ -226,5 +249,14 @@
     WHERE
         item_code = #{itemCode}
     </update>
+
+	<select id="selectMaxCalPriorityOfGroup" resultType="int">
+		SELECT
+			max(cal_priority)
+		FROM
+			pr_payroll_item
+		WHERE
+			payroll_group_code = #{groupCode}
+	</select>
 
 </mapper>

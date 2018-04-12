@@ -15,7 +15,6 @@ public interface PayrollSource {
     @Output(OUTPUT)
     MessageChannel output();
 
-
     String EMP_GROUP_OUTPUT = "pr_emp_group-output-channel";
 
     @Output(EMP_GROUP_OUTPUT)
@@ -25,5 +24,14 @@ public interface PayrollSource {
 
     @Output(PR_COMPUTE_OUTPUT)
     MessageChannel computeOutput();
+
+    String test = "pr_management-output-channel";
+
+    @Output(test)
+    MessageChannel managementOutput();
+
+    String PR_COMPUTE_COMPLETE = "pr_compute-complete-output-channel";
+    @Output(PR_COMPUTE_COMPLETE)
+    MessageChannel compCompleteOutput();
 
 }

@@ -2,27 +2,26 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplateHistoryPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
+import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateHistoryMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,12 +40,21 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     private PrPayrollItemMapper prPayrollItemMapper;
 
     @Autowired
+    private PrItemService prItemService;
+
+    @Autowired
+    private PrGroupService prGroupService;
+
+    @Autowired
     private PrPayrollGroupTemplateHistoryMapper prPayrollGroupTemplateHistoryMapper;
+
+    @Autowired
+    private ApprovalHistoryService approvalHistoryService;
 
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
     @Override
-    public PageInfo<PrPayrollGroupTemplatePO> getList(PrPayrollGroupTemplatePO param, Integer pageNum, Integer pageSize) {
+    public PageInfo<PrPayrollGroupTemplatePO> getListPage(PrPayrollGroupTemplatePO param, Integer pageNum, Integer pageSize) {
         List<PrPayrollGroupTemplatePO> resultList = new ArrayList<>();
         PageHelper.startPage(pageNum, pageSize);
         try {
@@ -56,6 +64,12 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         }
         PageInfo<PrPayrollGroupTemplatePO> pageInfo = new PageInfo<>(resultList);
         return  pageInfo;
+    }
+
+    @Override
+    public List<PrPayrollGroupTemplatePO> getList(PrPayrollGroupTemplatePO param) {
+        List<PrPayrollGroupTemplatePO> resultList = prPayrollGroupTemplateMapper.selectListByEntityUseLike(param);
+        return resultList;
     }
 
     @Override
@@ -83,6 +97,9 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateItemByCode(PrPayrollGroupTemplatePO param) {
+        if (param.getApprovalStatus() == null) {
+            param.setApprovalStatus(0);
+        }
         EntityWrapper<PrPayrollGroupTemplatePO> ew = new EntityWrapper<>();
         ew.setEntity(param);
         int result = prPayrollGroupTemplateMapper.updateItemByCode(param);
@@ -166,6 +183,13 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
             prPayrollGroupTemplateHistoryPO.setModifiedBy("system");
             prPayrollGroupTemplateHistoryMapper.insert(prPayrollGroupTemplateHistoryPO);
         }
+        // 更新审批历史
+        ApprovalHistoryPO approvalHistoryPO = new ApprovalHistoryPO();
+        approvalHistoryPO.setBizCode(paramItem.getGroupTemplateCode());
+        approvalHistoryPO.setBizType(BizTypeEnum.PR_GROUP_TEMPLATE.getValue());
+        approvalHistoryPO.setApprovalResult(paramItem.getApprovalStatus());
+        approvalHistoryPO.setComments(paramItem.getComments());
+        approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组模板
         int updateResult = prPayrollGroupTemplateMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
@@ -196,6 +220,71 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
                     }
                 });
         return result;
+    }
+
+    @Override
+    public List<HashMap<String, String>> getPrGroupTemplateNameList(String query) {
+        List<HashMap<String, String>> result = new ArrayList<>(50);
+        result = prPayrollGroupTemplateMapper.selectGroupTemplateNameListByName(query);
+        return result;
+    }
+
+    @Override
+    public boolean publishPrGroupTemplate(String code) {
+
+        //获取薪资组模板下的薪资项
+        List<PrPayrollItemPO> prItemsInTemplate = prItemService.getListByGroupTemplateCode(code);
+
+        //获取所有继承该模板的薪资组
+        List<PrPayrollGroupPO> prGroups = prGroupService.getListByTemplateCode(code);
+
+        //根据每个薪资组做处理
+        prGroups.forEach(i -> {
+            List<PrPayrollItemPO> itemsInGroup = prItemService.getListByGroupCode(i.getGroupCode());
+            // 删除已经不存在在薪资组模板中的继承项
+            List<String> needDeleteItemCodes = new LinkedList<>();
+            itemsInGroup.forEach(j -> {
+                if (!StringUtils.isEmpty(j.getParentItemCode())
+                        && prItemsInTemplate.stream().noneMatch(k -> j.getParentItemCode().equals(k.getItemCode()))) {
+                    needDeleteItemCodes.add(j.getItemCode());
+                }
+            });
+            if (needDeleteItemCodes.size() > 0) {
+                prItemService.deleteItemByCodes(needDeleteItemCodes);
+            }
+            // 更新，添加继承项
+            prItemsInTemplate.forEach(j -> {
+                Optional<PrPayrollItemPO> prItemInGroupOpt =
+                        itemsInGroup.parallelStream()
+                                .filter(k -> j.getItemCode().equals(k.getParentItemCode()))
+                                .findFirst();
+
+                if (prItemInGroupOpt.isPresent()) {
+                    // 存在则更新
+                    PrPayrollItemPO updateParam = j.deepClone();
+                    updateParam.setId(null);
+                    updateParam.setItemCode(prItemInGroupOpt.get().getItemCode());
+                    updateParam.setPayrollGroupCode(i.getGroupCode());
+                    updateParam.setParentItemCode(null);
+                    updateParam.setDisplayPriority(null);
+                    updateParam.setCalPriority(null);
+                    updateParam.setModifiedBy("sys");
+                    prItemService.updateItem(updateParam);
+                } else {
+                    // 不存在则插入
+                    PrPayrollItemPO insertParam = j.deepClone();
+                    insertParam.setId(null);
+                    insertParam.setManagementId(i.getManagementId());
+                    insertParam.setPayrollGroupCode(i.getGroupCode());
+                    insertParam.setParentItemCode(j.getItemCode());
+                    insertParam.setModifiedBy("sys");
+                    insertParam.setCreatedBy("sys");
+                    prItemService.addItem(insertParam);
+                }
+            });
+        });
+
+        return true;
     }
 
     // 从公式中获取薪资项名称列表

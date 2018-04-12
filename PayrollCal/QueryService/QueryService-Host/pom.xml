@@ -19,7 +19,11 @@
     <packaging>jar</packaging>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salarymanagement-commandservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
     </dependencies>
 

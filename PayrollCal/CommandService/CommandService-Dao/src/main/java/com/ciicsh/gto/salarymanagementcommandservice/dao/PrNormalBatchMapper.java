@@ -27,7 +27,7 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
 
     int updateNormalBatch(PrNormalBatchPO normalBatchPO);
 
-    List<PrCustSubBatchPO> selectSubBatchList(@Param("code") String code, @Param("status") Integer status);
+    List<PrCustSubBatchPO> selectSubBatchList(@Param("code") String code);
 
     /**
      * delete batch by code
@@ -36,4 +36,20 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
      */
     Integer deleteBatchByCodes(@Param("codes") List<String> codes);
 
+    int auditBatch(@Param("code") String batchCode,
+                   @Param("comments") String comments,
+                   @Param("status") int status,
+                   @Param("modifiedBy") String modifiedBy,
+                   @Param("result") String result);
+
+
+    int updateHasAdvance(@Param("codes") List<String> batchCodes,
+                         @Param("hasAdvance") boolean hasAdvance,
+                         @Param("modifiedBy") String modifiedBy);
+
+    int updateHasMoneny(@Param("codes") List<String> batchCodes,
+                        @Param("hasMoney") boolean hasMoney,
+                        @Param("modifiedBy") String modifiedBy);
+
+    List<PrNormalBatchPO> selectAllBatchCodesByManagementId(@Param("managementId") String managementId);
 }

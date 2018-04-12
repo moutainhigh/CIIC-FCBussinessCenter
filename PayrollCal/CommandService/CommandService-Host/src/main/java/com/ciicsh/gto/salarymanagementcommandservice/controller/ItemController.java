@@ -1,13 +1,19 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,17 +26,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by jiangtianning on 2017/11/6.
  */
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping(value = "/api/salaryManagement")
 public class ItemController extends BaseController{
 
     @Autowired
@@ -92,24 +95,24 @@ public class ItemController extends BaseController{
     @PutMapping(value = "/prItem/{code}")
     public JsonResult updatePrItem(@PathVariable("code") String code,
                                             @RequestBody PrPayrollItemPO paramItem) {
-
         paramItem.setItemCode(code);
-        Map<String, Object> resultMap  = itemService.updateItem(paramItem);
-        return JsonResult.success(resultMap);
+        try {
+            int result = itemService.updateItem(paramItem);
+            return JsonResult.success(result);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        } catch (Exception e) {
+            return JsonResult.faultMessage(MessageConst.PAYROLL_ITEM_UPDATE_FAIL);
+        }
     }
 
-    @GetMapping(value = "/prItemName")
-    public ResultEntity getPrItemNameList(@RequestParam("managementId") String managementId) {
-
-        List<String> resultList = itemService.getNameList(managementId);
-        return ResultEntity.success(resultList);
-    }
-
+    /**
+     * 获取薪资项类型列表
+     * @return
+     */
     @GetMapping(value = "/prItemType")
-    public ResultEntity getPrItemTypeList(@RequestParam("managementId") String managementId) {
-
-        List<Integer> resultList = itemService.getTypeList(managementId);
-        return ResultEntity.success(resultList);
+    public JsonResult getPrItemTypeList() {
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(ItemTypeEnum.class));
     }
 
     /**
@@ -123,7 +126,7 @@ public class ItemController extends BaseController{
         //TODO code、createedBy、modifiedBy的设置
         PrPayrollItemPO newParam = new PrPayrollItemPO();
         BeanUtils.copyProperties(paramItem, newParam);
-        newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
+//        newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
         if (!StringUtils.isEmpty(newParam.getPayrollGroupTemplateCode())){
             List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(
                     paramItem.getPayrollGroupTemplateCode(),0,0).getList();
@@ -147,7 +150,12 @@ public class ItemController extends BaseController{
         //临时参数
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");
-        int resultId = itemService.addItem(newParam);
+        int resultId = 0;
+        try {
+            resultId = itemService.addItem(newParam);
+        } catch (BusinessException be) {
+            JsonResult.faultMessage(be.getMessage());
+        }
         return resultId > 0 ? JsonResult.success(newParam.getItemCode()) : JsonResult.faultMessage("新建薪资项失败");
     }
 
@@ -192,4 +200,18 @@ public class ItemController extends BaseController{
 //        return "添加成功!";
 //    }
 
+    @GetMapping("/decimalProcessType")
+    public JsonResult getDecimalProcessTypeEnums() {
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(DecimalProcessTypeEnum.class));
+    }
+
+    @GetMapping("/defaultValueStyle")
+    public JsonResult getDefaultValueStyleEnums() {
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(DefaultValueStyleEnum.class));
+    }
+
+    @GetMapping("/dataType")
+    public JsonResult getDataTypeEnums() {
+        return JsonResult.success(EnumHelpUtil.getLabelValueList(DataTypeEnum.class));
+    }
 }

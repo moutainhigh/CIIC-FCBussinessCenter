@@ -61,58 +61,12 @@
         ORDER  BY  spd.created_time desc
     </select>
 
-    <!--根据主键ID，将完税申请明细置为失效状态-->
-    <update id="invalidSubProofDetailByIds">
-        update tax_fc_task_sub_proof_detail set is_active = false
-        WHERE id in
-        <foreach collection="subProofDetailIds" item="subProofDetailId" open="(" separator="," close=")">
-            #{subProofDetailId}
-        </foreach>
-    </update>
-
-    <!--根据子任务ID查询申报明细-->
-    <select id="querySubProofDetailBySubId" resultMap="BaseResultMap">
-        select
-        spd.id,spd.task_sub_proof_id,spd.employee_no,spd.employee_name,spd.id_type,spd.id_no,spd.declare_account,spd.income_subject,spd.income_start,spd.income_end,spd.income_for_tax,spd.withholded_amount,spd.created_time
-        from tax_fc_task_sub_proof_detail spd
-        WHERE spd.is_active = 1
-            and spd.task_sub_proof_id = #{subProofId}
-        ORDER  BY  spd.created_time desc
-    </select>
-
-    <!--根据子任务ID分页查询完税凭证申报明细-->
-    <select id="queryApplyDetailsBySubIdsAndEmp"  resultMap="BaseResultMap">
-        select
-        spd.id,spd.task_sub_proof_id,spd.employee_no,spd.employee_name,spd.id_type,spd.id_no,spd.declare_account,spd.income_subject,spd.income_start,spd.income_end,spd.income_for_tax,spd.withholded_amount,spd.created_time
-        from tax_fc_task_sub_proof_detail spd
-        WHERE spd.is_active = 1 and  spd.task_sub_proof_id in
-        <foreach collection="longList" item="subProofId" open="(" separator="," close=")">
-            #{subProofId}
-        </foreach>
-        <if test = "employeeNo != null and employeeNo != ''">
-            and spd.employee_no LIKE concat('%', #{employeeNo, jdbcType=VARCHAR},'%')
-        </if>
-        <if test = "employeeName != null and employeeName != ''">
-            and spd.employee_name LIKE concat('%', #{employeeName, jdbcType=VARCHAR},'%')
-        </if>
-        ORDER  BY  spd.created_time desc
-    </select>
-
-    <!--根据子任务ID查询完税凭证申报明细总数-->
-    <select id="queryApplyDetailsTotalNumBySubIdsAndEmp"  resultType="java.lang.Integer">
-        select
-        count(1)
-        from tax_fc_task_sub_proof_detail spd
-        WHERE spd.is_active = 1 and  spd.task_sub_proof_id in
-        <foreach collection="longList" item="subProofId" open="(" separator="," close=")">
-            #{subProofId}
-        </foreach>
-        <if test = "employeeNo != null and employeeNo != ''">
-            and spd.employee_no LIKE concat('%', #{employeeNo, jdbcType=VARCHAR},'%')
-        </if>
-        <if test = "employeeName != null and employeeName != ''">
-            and spd.employee_name LIKE concat('%', #{employeeName, jdbcType=VARCHAR},'%')
-        </if>
-    </select>
-
+    <!--&lt;!&ndash;根据子任务ID查询相关人数&ndash;&gt;-->
+    <!--<select id="queryPersonNumBySubProofId" resultType="java.util.HashMap">-->
+        <!--select-->
+            <!--count(1) as headNumTotal,-->
+            <!--sum(case when id_type = '01' then 1 else 0 end ) as chineseNumTotal,-->
+            <!--sum(case when id_type != '01' then 1 else 0 end ) as foreignerNumTotal-->
+        <!--from tax_fc_task_sub_proof_detail where task_sub_proof_id = #{id}-->
+    <!--</select>-->
 </mapper>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsSubTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsSubTaskPO">
+        <id column="sub_task_id" property="subTaskId" />
+        <result column="title" property="title" />
+        <result column="main_task_id" property="mainTaskId" />
+        <result column="management_id" property="managementId" />
+        <result column="management_name" property="managementName" />
+        <result column="batch_id" property="batchId" />
+        <result column="period" property="period" />
+        <result column="personnel_income_year_month" property="personnelIncomeYearMonth" />
+        <result column="employees" property="employees" />
+        <result column="total_count" property="totalCount" />
+        <result column="chinese_count" property="chineseCount" />
+        <result column="foreigner_count" property="foreignerCount" />
+        <result column="publish_date" property="publishDate" />
+        <result column="payroll_type" property="payrollType" />
+        <result column="remark" property="remark" />
+        <result column="approver" property="approver" />
+        <result column="approve_time" property="approveTime" />
+        <result column="approve_remark" property="approveRemark" />
+        <result column="status" property="status" />
+        <result column="comments" property="comments" />
+        <result column="template_id" property="templateId" />
+        <result column="template_name" property="templateName" />
+        <result column="is_active" property="isActive" />
+        <result column="created_by" property="createdBy" />
+        <result column="created_time" property="createdTime" />
+        <result column="modified_by" property="modifiedBy" />
+        <result column="modified_time" property="modifiedTime" />
+    </resultMap>
+
+    <select id="total"  resultType="int">
+        SELECT COUNT(*) FROM prs_sub_task
+        WHERE is_active = 1
+    </select>
+
+    <select id="all"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_sub_task
+        WHERE is_active = 1
+    </select>
+
+    <select id="get"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_sub_task
+        where sub_task_id = #{subTaskId}
+        LIMIT 1
+    </select>
+
+    <select id="last"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_sub_task
+        ORDER by sub_task_id desc
+        LIMIT 1;
+    </select>
+
+    <insert id="insert" parameterType="map">
+        INSERT INTO prs_sub_task(sub_task_id, title, main_task_id, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, payroll_type, remark, approver, approve_time, approve_remark, status, comments, template_id, template_name, created_by, modified_by)
+        VALUES (#{subTaskId}, #{title}, #{mainTaskId}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{payrollType}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{status}, #{comments}, #{templateId}, #{templateName}, #{createdBy}, #{modifiedBy})
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE prs_sub_task
+        SET modified_time = CURRENT_TIMESTAMP,
+        <trim suffixOverrides=",">
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="mainTaskId != null and mainTaskId != ''">
+                main_task_id = #{mainTaskId},
+            </if>
+            <if test="managementId != null and managementId != ''">
+                management_id = #{managementId},
+            </if>
+            <if test="managementName != null and managementName != ''">
+                management_name = #{managementName},
+            </if>
+            <if test="batchId != null and batchId != ''">
+                batch_id = #{batchId},
+            </if>
+            <if test="period != null and period != ''">
+                period = #{period},
+            </if>
+            <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+                personnel_income_year_month = #{personnelIncomeYearMonth},
+            </if>
+            <if test="employees != null and employees != ''">
+                employees = #{employees},
+            </if>
+            <if test="totalCount != null and totalCount != ''">
+                total_count = #{totalCount},
+            </if>
+            <if test="chineseCount != null and chineseCount != ''">
+                chinese_count = #{chineseCount},
+            </if>
+            <if test="foreignerCount != null and foreignerCount != ''">
+                foreigner_count = #{foreignerCount},
+            </if>
+            <if test="publishDate != null">
+                publish_date = #{publishDate},
+            </if>
+            <if test="payrollType != null and payrollType != ''">
+                payroll_type = #{payrollType},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="approver != null and approver != ''">
+                approver = #{approver},
+            </if>
+            <if test="approveTime != null">
+                approve_time = #{approveTime},
+            </if>
+            <if test="approveRemark != null and approveRemark != ''">
+                approve_remark = #{approveRemark},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="comments != null and comments != ''">
+                comments = #{comments},
+            </if>
+            <if test="templateId != null and templateId != ''">
+                template_id = #{templateId},
+            </if>
+            <if test="templateName != null and templateName != ''">
+                template_name = #{templateName},
+            </if>
+            <if test="isActive != null">
+                is_active = #{isActive},
+            </if>
+            <if test="modifiedBy != null and modifiedBy != ''">
+                modified_by = #{modifiedBy},
+            </if>
+
+        </trim>
+        WHERE sub_task_id = #{subTaskId}
+    </update>
+
+    <update id="updateByMainTaskId" parameterType="map">
+        UPDATE prs_sub_task
+        SET modified_time = CURRENT_TIMESTAMP,
+        <trim suffixOverrides=",">
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="mainTaskId != null and mainTaskId != ''">
+                main_task_id = #{mainTaskId},
+            </if>
+            <if test="managementId != null and managementId != ''">
+                management_id = #{managementId},
+            </if>
+            <if test="managementName != null and managementName != ''">
+                management_name = #{managementName},
+            </if>
+            <if test="batchId != null and batchId != ''">
+                batch_id = #{batchId},
+            </if>
+            <if test="period != null and period != ''">
+                period = #{period},
+            </if>
+            <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+                personnel_income_year_month = #{personnelIncomeYearMonth},
+            </if>
+            <if test="employees != null and employees != ''">
+                employees = #{employees},
+            </if>
+            <if test="totalCount != null and totalCount != ''">
+                total_count = #{totalCount},
+            </if>
+            <if test="chineseCount != null and chineseCount != ''">
+                chinese_count = #{chineseCount},
+            </if>
+            <if test="foreignerCount != null and foreignerCount != ''">
+                foreigner_count = #{foreignerCount},
+            </if>
+            <if test="publishDate != null">
+                publish_date = #{publishDate},
+            </if>
+            <if test="payrollType != null and payrollType != ''">
+                payroll_type = #{payrollType},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="approver != null and approver != ''">
+                approver = #{approver},
+            </if>
+            <if test="approveTime != null">
+                approve_time = #{approveTime},
+            </if>
+            <if test="approveRemark != null and approveRemark != ''">
+                approve_remark = #{approveRemark},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="comments != null and comments != ''">
+                comments = #{comments},
+            </if>
+            <if test="templateId != null and templateId != ''">
+                template_id = #{templateId},
+            </if>
+            <if test="templateName != null and templateName != ''">
+                template_name = #{templateName},
+            </if>
+            <if test="isActive != null">
+                is_active = #{isActive},
+            </if>
+            <if test="modifiedBy != null and modifiedBy != ''">
+                modified_by = #{modifiedBy},
+            </if>
+
+        </trim>
+        WHERE main_task_id = #{mainTaskId}
+        <if test="payrollType != null and payrollType != ''">
+            and payroll_type = #{payrollType}
+        </if>
+    </update>
+
+    <select id="list"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_sub_task
+        WHERE is_active = 1
+        <if test="mainTaskId != null and mainTaskId != ''">
+            and main_task_id = #{mainTaskId}
+        </if>
+        <if test="subTaskId != null and subTaskId != ''">
+            and sub_task_id = #{subTaskId}
+        </if>
+        <if test="payrollType != null and payrollType != ''">
+            and payroll_type = #{payrollType}
+        </if>
+        <if test="title != null and title != ''">
+            and title like concat('%', #{title}, '%')
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id = #{managementId}
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+        ORDER BY sub_task_id DESC
+        <if test="limit != null and limit != ''">
+            LIMIT #{limit}
+        </if>
+        <if test="offset != null and offset != ''">
+            OFFSET #{offset}
+        </if>
+    </select>
+
+</mapper>

@@ -33,6 +33,11 @@ public class TaskSubPaymentDTO {
     private String status;
 
     /**
+     * 页签状态类别handling,completed,retreated,failed
+     */
+    private String statusType;
+
+    /**
      * 页签类型：currentPan,currentBeforePan,currentAfterPan
      */
     private String periodType;
@@ -51,6 +56,11 @@ public class TaskSubPaymentDTO {
     private String[] subPaymentIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 修改人
      */
     private String modifiedBy;
@@ -64,6 +74,11 @@ public class TaskSubPaymentDTO {
     private Integer chineseNum;
 
     private Integer foreignerNum;
+
+    /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
 
     public Long getId() {
         return id;
@@ -185,6 +200,30 @@ public class TaskSubPaymentDTO {
         this.periodType = periodType;
     }
 
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
+    }
+
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
+    }
+
     @Override
     public String toString() {
         return "TaskSubPaymentDTO{" +
@@ -193,16 +232,19 @@ public class TaskSubPaymentDTO {
                 ", managerName='" + managerName + '\'' +
                 ", period='" + period + '\'' +
                 ", status='" + status + '\'' +
+                ", statusType='" + statusType + '\'' +
                 ", periodType='" + periodType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
                 ", subPaymentIds=" + Arrays.toString(subPaymentIds) +
+                ", mainIds=" + Arrays.toString(mainIds) +
                 ", modifiedBy='" + modifiedBy + '\'' +
                 ", taskNo='" + taskNo + '\'' +
                 ", taxAmount=" + taxAmount +
                 ", headcount=" + headcount +
                 ", chineseNum=" + chineseNum +
                 ", foreignerNum=" + foreignerNum +
+                ", areaType='" + areaType + '\'' +
                 '}';
     }
 }

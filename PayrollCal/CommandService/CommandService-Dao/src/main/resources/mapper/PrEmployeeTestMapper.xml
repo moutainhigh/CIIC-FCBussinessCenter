@@ -54,6 +54,9 @@
 
 	<sql id="whereQuery">
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="employeeName != null and employeeName != ''">
+				AND employee_name = #{employeeName}
+			</if>
 			<if test="managementId != null and managementId != ''">
 				AND management_id = #{managementId}
 			</if>

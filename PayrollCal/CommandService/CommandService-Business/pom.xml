@@ -34,19 +34,7 @@
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>mongo-client</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-ci</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-spring</artifactId>
-            <version>${drools.version}</version>
+            <version>1.1.0</version>
         </dependency>
 
         <dependency>

@@ -3,12 +3,12 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
@@ -36,7 +36,7 @@ public class TaskSubProofPO implements Serializable {
     /**
      * 凭证子任务ID（非空，则记录合并后的任务ID）
      */
-	@TableField("task_sub_proof_id")
+	@TableField(value="task_sub_proof_id",fill= FieldFill.UPDATE)
 	private Long taskSubProofId;
     /**
      * 任务编号
@@ -78,22 +78,22 @@ public class TaskSubProofPO implements Serializable {
     /**
      * 创建时间
      */
-	@TableField("created_time")
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField("modified_time")
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
-	@TableField("created_by")
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
-	@TableField("modified_by")
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
 	/**
@@ -107,7 +107,46 @@ public class TaskSubProofPO implements Serializable {
 	 */
 	@TableField("is_combined")
 	private Boolean isCombined;
+	/**
+	 * 管理方编号
+	 */
+	@TableField("manager_no")
+	private String managerNo;
+	/**
+	 * 管理方名称
+	 */
+	@TableField("manager_name")
+	private String managerName;
+	/**
+	 * 申报子任务id
+	 */
+	@TableField("task_sub_declare_id")
+	private Long taskSubDeclareId;
 
+
+	public Long getTaskSubDeclareId() {
+		return taskSubDeclareId;
+	}
+
+	public void setTaskSubDeclareId(Long taskSubDeclareId) {
+		this.taskSubDeclareId = taskSubDeclareId;
+	}
+
+	public String getManagerNo() {
+		return managerNo;
+	}
+
+	public void setManagerNo(String managerNo) {
+		this.managerNo = managerNo;
+	}
+
+	public String getManagerName() {
+		return managerName;
+	}
+
+	public void setManagerName(String managerName) {
+		this.managerName = managerName;
+	}
 
 	public Long getId() {
 		return id;
@@ -197,19 +236,19 @@ public class TaskSubProofPO implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 

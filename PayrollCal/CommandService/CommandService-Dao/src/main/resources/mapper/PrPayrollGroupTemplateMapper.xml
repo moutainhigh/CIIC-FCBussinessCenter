@@ -48,6 +48,9 @@
 			<if test="approvalStatus != null">
 				AND approval_status = #{managementId}
 			</if>
+			<if test="isActive != null">
+				AND is_active = #{isActive}
+			</if>
 		</trim>
 	</select>
 
@@ -109,5 +112,19 @@
 		WHERE
 		group_template_code = #{groupTemplateCode}
 	</update>
+
+    <select id="selectGroupTemplateNameListByName" resultType="hashmap">
+        SELECT
+        group_template_name as groupTemplateName,
+        group_template_code as groupTemplateCode
+        FROM
+        pr_payroll_group_template
+        WHERE
+        is_active = 1
+        <if test="name != null and name != ''">
+            AND group_template_name LIKE concat(#{name},'%')
+        </if>
+        LIMIT 50
+    </select>
 
 </mapper>

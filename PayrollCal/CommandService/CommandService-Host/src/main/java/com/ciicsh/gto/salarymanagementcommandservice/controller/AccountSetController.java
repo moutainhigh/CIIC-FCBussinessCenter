@@ -1,16 +1,13 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmpGroupDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetExtensionDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
-import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountItemOptPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetExtensionTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
@@ -63,7 +60,7 @@ public class AccountSetController extends BaseController {
         workCalendar = new WorkCalendar("GL170001","蓝天科技工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
         workCalendars.add(workCalendar);
 
-        workCalendar = new WorkCalendar("GL170001","蓝天科技工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
+        workCalendar = new WorkCalendar("GL000007","蓝天科技工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
         workCalendars.add(workCalendar);
 
         workCalendar = new WorkCalendar("glf-0009","上海微软中国工作日历A","1,2,3,4,5,6,7,8,9,10");
@@ -136,7 +133,7 @@ public class AccountSetController extends BaseController {
 
     @PostMapping("/addAccountSet")
     public JsonResult addAccountSet(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
-        PrAccountItemOptPO optPO = new PrAccountItemOptPO();
+        PrAccountSetOptPO optPO = new PrAccountSetOptPO();
         optPO.setManagementId(accountSetDTO.getManagementId());
         optPO.setAccountSetName(accountSetDTO.getAccountSetName());
         Integer val = prAccountSetService.isExistPayrollAccountSet(optPO);
@@ -170,7 +167,7 @@ public class AccountSetController extends BaseController {
 
     @PostMapping("/editAccountSet")
     public JsonResult editAccountSet(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
-        PrAccountItemOptPO optPO = new PrAccountItemOptPO();
+        PrAccountSetOptPO optPO = new PrAccountSetOptPO();
         optPO.setManagementId(accountSetDTO.getManagementId());
         optPO.setAccountSetName(accountSetDTO.getAccountSetName());
         optPO.setAccountSetCode(accountSetDTO.getAccountSetCode());

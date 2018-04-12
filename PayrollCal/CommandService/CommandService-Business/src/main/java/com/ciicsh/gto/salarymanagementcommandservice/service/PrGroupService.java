@@ -6,6 +6,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,13 @@ public interface PrGroupService {
      * @return 薪资组列表
      */
     PageInfo<PrPayrollGroupPO> getList(PrPayrollGroupPO param, Integer pageNum, Integer pageSize);
+
+    /**
+     * 根据薪资组模板获取薪资组列表
+     * @param param 查询参数
+     * @return 薪资组列表
+     */
+    List<PrPayrollGroupPO> getListByTemplateCode(String templateCode);
 
     /**
      * 获取一个薪资组 By code
@@ -42,21 +50,6 @@ public interface PrGroupService {
      * @return 薪资组code
      */
     int addItem(PrPayrollGroupPO paramItem);
-
-    /**
-     * 获取薪资组名称列表
-     * @param managementId 管理方ID
-     * @return 薪资组名称列表
-     */
-    List<String> getNameList(String managementId);
-
-    /**
-     * 从薪资组里删除薪资项
-     * @param prItemId 薪资项id
-     * @param prGroupId 薪资组id
-     * @return 若删除成功返回(SUCCESS, 删除条数),否则返回(FAILURE, 导致删除失败的薪资项名称列表String List)
-     */
-    Map<String, Object> deletePrItemFromGroup(String prItemName, String prItemId, String prGroupId);
 
     /**
      * 导入薪资组
@@ -101,4 +94,10 @@ public interface PrGroupService {
      * @return
      */
     PrPayrollGroupHistoryPO getLastVersion(String srcCode);
+
+    /**
+     * 获取薪资组名称列表
+     * @return
+     */
+    List<HashMap<String, String>> getPrGroupNameList(String query, String managementId);
 }

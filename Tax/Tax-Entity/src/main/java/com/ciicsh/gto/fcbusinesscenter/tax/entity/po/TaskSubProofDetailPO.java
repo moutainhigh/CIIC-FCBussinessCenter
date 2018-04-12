@@ -3,13 +3,13 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
@@ -49,6 +49,11 @@ public class TaskSubProofDetailPO implements Serializable {
      */
 	@TableField("id_type")
 	private String idType;
+	/**
+	 * 证件类型（中文）
+	 */
+	@TableField(exist = false)
+	private String idTypeName;
     /**
      * 证件编号
      */
@@ -64,16 +69,21 @@ public class TaskSubProofDetailPO implements Serializable {
      */
 	@TableField("income_subject")
 	private String incomeSubject;
+	/**
+	 * 所得项目(中文)
+	 */
+	@TableField(exist = false)
+	private String incomeSubjectName;
     /**
      * 所得期间起
      */
 	@TableField("income_start")
-	private Date incomeStart;
+	private LocalDate incomeStart;
     /**
      * 所得期间止
      */
 	@TableField("income_end")
-	private Date incomeEnd;
+	private LocalDate incomeEnd;
     /**
      * 应纳税所得额
      */
@@ -92,22 +102,22 @@ public class TaskSubProofDetailPO implements Serializable {
     /**
      * 创建时间
      */
-	@TableField("created_time")
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField("modified_time")
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
-	@TableField("created_by")
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
-	@TableField("modified_by")
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
 
@@ -175,19 +185,19 @@ public class TaskSubProofDetailPO implements Serializable {
 		this.incomeSubject = incomeSubject;
 	}
 
-	public Date getIncomeStart() {
+	public LocalDate getIncomeStart() {
 		return incomeStart;
 	}
 
-	public void setIncomeStart(Date incomeStart) {
+	public void setIncomeStart(LocalDate incomeStart) {
 		this.incomeStart = incomeStart;
 	}
 
-	public Date getIncomeEnd() {
+	public LocalDate getIncomeEnd() {
 		return incomeEnd;
 	}
 
-	public void setIncomeEnd(Date incomeEnd) {
+	public void setIncomeEnd(LocalDate incomeEnd) {
 		this.incomeEnd = incomeEnd;
 	}
 
@@ -215,19 +225,19 @@ public class TaskSubProofDetailPO implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -247,26 +257,44 @@ public class TaskSubProofDetailPO implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getIdTypeName() {
+		return idTypeName;
+	}
+
+	public void setIdTypeName(String idTypeName) {
+		this.idTypeName = idTypeName;
+	}
+
+	public String getIncomeSubjectName() {
+		return incomeSubjectName;
+	}
+
+	public void setIncomeSubjectName(String incomeSubjectName) {
+		this.incomeSubjectName = incomeSubjectName;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubProofDetailPO{" +
-			"id=" + id +
-			", taskSubProofId=" + taskSubProofId +
-			", employeeNo=" + employeeNo +
-			", employeeName=" + employeeName +
-			", idType=" + idType +
-			", idNo=" + idNo +
-			", declareAccount=" + declareAccount +
-			", incomeSubject=" + incomeSubject +
-			", incomeStart=" + incomeStart +
-			", incomeEnd=" + incomeEnd +
-			", incomeForTax=" + incomeForTax +
-			", withholdedAmount=" + withholdedAmount +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+				"id=" + id +
+				", taskSubProofId=" + taskSubProofId +
+				", employeeNo='" + employeeNo + '\'' +
+				", employeeName='" + employeeName + '\'' +
+				", idType='" + idType + '\'' +
+				", idTypeName='" + idTypeName + '\'' +
+				", idNo='" + idNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", incomeSubject='" + incomeSubject + '\'' +
+				", incomeSubjectName='" + incomeSubjectName + '\'' +
+				", incomeStart=" + incomeStart +
+				", incomeEnd=" + incomeEnd +
+				", incomeForTax=" + incomeForTax +
+				", withholdedAmount=" + withholdedAmount +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				'}';
 	}
 }

@@ -21,7 +21,7 @@
 		<result column="modified_by" property="modifiedBy" />
 	</resultMap>
 
-	<resultMap id="getKeyValueMap"   type="KeyValuePO">
+	<resultMap id="getKeyValueMap" type="KeyValuePO">
 		<result property="key" column="group_code" />
 		<result property="value" column="group_name" />
 	</resultMap>
@@ -118,5 +118,22 @@
             #{item}
         </foreach>
     </delete>
+
+	<select id="selectGroupNameListByName" resultType="hashmap">
+		SELECT
+			group_name as groupName,
+			group_code as groupCode
+		FROM
+			pr_payroll_group
+		WHERE
+			is_active = 1
+		<if test="name != null and name != ''">
+			AND group_name LIKE concat(#{name},'%')
+		</if>
+		<if test="managementId != null and managementId != ''">
+			AND management_id = #{managementId}
+		</if>
+		LIMIT 50
+	</select>
 
 </mapper>

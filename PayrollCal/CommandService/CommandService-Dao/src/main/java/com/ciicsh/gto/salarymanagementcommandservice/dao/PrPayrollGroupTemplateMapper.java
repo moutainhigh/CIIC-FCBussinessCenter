@@ -54,4 +54,11 @@ public interface PrPayrollGroupTemplateMapper extends BaseMapper<PrPayrollGroupT
      * @return
      */
     Integer deleteByCodes(@Param("codes") List<String> codes);
+
+    /**
+     * 获取薪资组模板名称,code by name
+     * @param name
+     * @return
+     */
+    List<HashMap<String, String>> selectGroupTemplateNameListByName(@Param("name") String name);
 }

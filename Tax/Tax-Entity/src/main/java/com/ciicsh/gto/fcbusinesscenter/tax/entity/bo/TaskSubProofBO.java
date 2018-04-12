@@ -1,9 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
-import com.baomidou.mybatisplus.plugins.Page;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import java.util.Date;
-
+/**
+ * @author yuantongqing
+ */
 public class TaskSubProofBO {
 
     /**
@@ -47,6 +49,20 @@ public class TaskSubProofBO {
     private String status;
 
     /**
+     * 状态(中文)
+     */
+    private String statusName;
+
+    /**
+     * 城市
+     */
+    private String city;
+
+    /**
+     * 税务机构
+     */
+    private String taxOrganization;
+    /**
      * 创建人
      */
     private String createdBy;
@@ -54,7 +70,7 @@ public class TaskSubProofBO {
     /**
      * 创建时间
      */
-    private Date createdTime;
+    private LocalDateTime createdTime;
 
     /**
      * 修改人
@@ -64,7 +80,7 @@ public class TaskSubProofBO {
     /**
      * 修改时间
      */
-    private Date modifiedTime;
+    private LocalDateTime modifiedTime;
 
     /**
      * 是否可用
@@ -83,7 +99,7 @@ public class TaskSubProofBO {
     /**
      * 个税期间
      */
-    private Date  period;
+    private LocalDate period;
 
     /**
      * 任务类型(01:自动,02:人工)
@@ -94,11 +110,6 @@ public class TaskSubProofBO {
      * 是否为合并任务
      */
     private Boolean isCombined;
-
-    /**
-     * 分页page对象
-     */
-    private Page page;
 
     public Long getId() {
         return id;
@@ -172,11 +183,11 @@ public class TaskSubProofBO {
         this.createdBy = createdBy;
     }
 
-    public Date getCreatedTime() {
+    public LocalDateTime getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(Date createdTime) {
+    public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 
@@ -188,20 +199,12 @@ public class TaskSubProofBO {
         this.modifiedBy = modifiedBy;
     }
 
-    public Date getModifiedTime() {
+    public LocalDateTime getModifiedTime() {
         return modifiedTime;
     }
 
-    public void setModifiedTime(Date modifiedTime) {
+    public void setModifiedTime(LocalDateTime modifiedTime) {
         this.modifiedTime = modifiedTime;
-    }
-
-    public Page getPage() {
-        return page;
-    }
-
-    public void setPage(Page page) {
-        this.page = page;
     }
 
     public Boolean getActive() {
@@ -212,11 +215,11 @@ public class TaskSubProofBO {
         isActive = active;
     }
 
-    public Date getPeriod() {
+    public LocalDate getPeriod() {
         return period;
     }
 
-    public void setPeriod(Date period) {
+    public void setPeriod(LocalDate period) {
         this.period = period;
     }
 
@@ -252,6 +255,30 @@ public class TaskSubProofBO {
         isCombined = combined;
     }
 
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getTaxOrganization() {
+        return taxOrganization;
+    }
+
+    public void setTaxOrganization(String taxOrganization) {
+        this.taxOrganization = taxOrganization;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -263,6 +290,9 @@ public class TaskSubProofBO {
                 ", chineseNum=" + chineseNum +
                 ", foreignerNum=" + foreignerNum +
                 ", status='" + status + '\'' +
+                ", statusName='" + statusName + '\'' +
+                ", city='" + city + '\'' +
+                ", taxOrganization='" + taxOrganization + '\'' +
                 ", createdBy='" + createdBy + '\'' +
                 ", createdTime=" + createdTime +
                 ", modifiedBy='" + modifiedBy + '\'' +
@@ -273,7 +303,6 @@ public class TaskSubProofBO {
                 ", period=" + period +
                 ", taskType='" + taskType + '\'' +
                 ", isCombined=" + isCombined +
-                ", page=" + page +
                 '}';
     }
 }

@@ -49,5 +49,5 @@ public interface PrEmpGroupMapper extends BaseMapper<PrEmpGroupPO> {
      * @param empGroupCode 雇员组Code
      * @return 返回雇员组
      */
-    PrEmpGroupPO getEmployeeGroupByCode(@Param("empGroupCode") String empGroupCode);
+    PrEmpGroupPO selectEmployeeGroupByCode(@Param("empGroupCode") String empGroupCode);
 }

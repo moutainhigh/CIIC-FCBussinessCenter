@@ -7,7 +7,7 @@ public class PayItemName {
 
     public static final String EMPLOYEE_CODE_CN = "雇员编号";
 
-    public static final String EMPLOYEE_NAME_CN = "雇员姓名";
+    public static final String EMPLOYEE_NAME_CN = "雇员名称";
 
     public static final String EMPLOYEE_BIRTHDAY_CN = "出生日期";
 
@@ -23,6 +23,17 @@ public class PayItemName {
 
     public static final String EMPLOYEE_POSITION_CN = "职位";
 
+    public static final String EMPLOYEE_FORMER_CN = "曾用名";
+
+    public static final String EMPLOYEE_COUNTRY_CODE_CN = "国家代码";
+
+    public static final String EMPLOYEE_PROVINCE_CODE_CN = "省份代码";
+
+    public static final String EMPLOYEE_CITY_CODE_CN = "城市代码";
+
     public static final String EMPLOYEE_TAX_CN = "个税期间";
+
+    public static final String EMPLOYEE_SERVICE_AGREE = "雇员服务协议";
+
 
 }

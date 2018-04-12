@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
@@ -19,7 +20,7 @@ public interface TaskSubProofService {
      * @param taskMainProofId
      * @return
      */
-    List<TaskSubProofPO> queryTaskSubProofByMainId(Long taskMainProofId);
+    List<TaskSubProofPO> queryTaskSubProofByMainId(long taskMainProofId);
 
     /**
      * 根据请求参数查询完税子任务信息
@@ -33,8 +34,9 @@ public interface TaskSubProofService {
      * 根据子任务ID复制相关数据
      *
      * @param taskSubProofId
+     * @param modifiedBy
      */
-    void copyProofInfoBySubId(Long taskSubProofId);
+    void copyProofInfoBySubId(long taskSubProofId, String modifiedBy);
 
     /**
      * 多表查询完税凭证子任务
@@ -67,28 +69,47 @@ public interface TaskSubProofService {
 
     /**
      * 批量退回完税凭证子任务
+     *
      * @param requestForProof
      */
     void rejectTaskProofByRes(RequestForProof requestForProof);
 
     /**
      * 批量失效完税凭证子任务
+     *
      * @param requestForProof
      */
     void invalidTaskProofByRes(RequestForProof requestForProof);
 
     /**
      * 根据子任务ID查询子任务详细信息
+     *
      * @param subProofId
      * @return
      */
-    TaskSubProofBO queryApplyDetailsBySubId(Long subProofId);
+    TaskSubProofBO queryApplyDetailsBySubId(long subProofId);
 
     /**
      * 根据子任务ID分页查询完税凭证子任务申请明细
+     *
      * @param requestForProof
      * @return
      */
     ResponseForSubProofDetail queryTaskSubProofDetail(RequestForProof requestForProof);
 
+    /**
+     * 根据子任务ID查询申请明细列表
+     *
+     * @param subProofId
+     * @return
+     */
+    List<TaskSubProofDetailPO> querySubProofDetailList(Long subProofId);
+
+    /**
+     * 申报完成自动生成完税凭证任务
+     *
+     * @param
+     * @return
+     */
+    void createTaskSubProof(List<Long> taskSubDeclareIds);
 }

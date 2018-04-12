@@ -33,7 +33,32 @@ public class KafkaSender {
     }
 
     public void SendComputeAction(ComputeMsg computeMsg){
-        payrollSource.computeOutput().send(MessageBuilder.withPayload(computeMsg).build());
+        try {
+            logger.info(String.format("发送计算消息：%s",computeMsg.toString()));
+            payrollSource.computeOutput().send(MessageBuilder.withPayload(computeMsg).build());
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage());
+        }
+    }
+
+    /**
+     * 发送计算状态完成
+     * @param computeMsg
+     */
+    public void SendComputeCompleteAction(ComputeMsg computeMsg){
+        try {
+            logger.info(String.format("发送计算消息：%s",computeMsg.toString()));
+            payrollSource.compCompleteOutput().send(MessageBuilder.withPayload(computeMsg).build());
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage());
+        }
+    }
+
+    // TO BE DELETED
+    public void SendManagement(String str) {
+        payrollSource.managementOutput().send(MessageBuilder.withPayload(str).build());
     }
 
 }

@@ -332,8 +332,8 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 			", resultData=" + resultData +
 			", isImplCal=" + isImplCal +
 			", isActive=" + isActive +
-				", hasMoney=" + hasMoney +
-				", hasAdvance=" + hasAdvance +
+			", hasMoney=" + hasMoney +
+			", hasAdvance=" + hasAdvance +
 				", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +

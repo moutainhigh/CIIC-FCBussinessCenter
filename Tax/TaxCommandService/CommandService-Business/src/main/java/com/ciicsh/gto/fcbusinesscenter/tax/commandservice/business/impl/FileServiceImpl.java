@@ -10,16 +10,12 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.FilePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.file.RequestForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.file.ResponseForFile;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,8 +24,6 @@ import java.util.List;
  */
 @Service
 public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements FileService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
     /**
      * 条件查询文件
@@ -62,10 +56,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
         if (null != requestForFile.getPageSize() && null != requestForFile.getCurrentNum()) {
             Page<FilePO> pageInfo = new Page<>(requestForFile.getCurrentNum(), requestForFile.getPageSize());
             filePOList = baseMapper.selectPage(pageInfo, wrapper);
-            //获取查询总数目
-            int total = baseMapper.selectCount(wrapper);
+            pageInfo.setRecords(filePOList);
             responseForFile.setRowList(filePOList);
-            responseForFile.setTotalNum(total);
+            responseForFile.setTotalNum(pageInfo.getTotal());
             responseForFile.setCurrentNum(requestForFile.getCurrentNum());
             responseForFile.setPageSize(requestForFile.getPageSize());
         } else {
@@ -81,49 +74,41 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FilePO> implements 
      * @param requestForFile
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean deleteTaxFile(RequestForFile requestForFile) {
         Boolean flag = true;
-        try {
-            if (requestForFile.getId() != null) {
-                FilePO filePO = new FilePO();
-                filePO.setId(requestForFile.getId());
-                filePO.setActive(false);
-                filePO.setModifiedBy("adminDel");
-                filePO.setModifiedTime(new Date());
-                //删除文件:即修改数据为不可用
-                flag = super.insertOrUpdate(filePO);
-            }
-        } catch (Exception e) {
-            logger.error("deleteTaxFile error " + e.toString());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            flag = false;
+        if (requestForFile.getId() != null) {
+            FilePO filePO = new FilePO();
+            //设置主键ID
+            filePO.setId(requestForFile.getId());
+            //设置是否可用
+            filePO.setActive(false);
+            //删除文件:即修改数据为不可用
+            flag = super.insertOrUpdate(filePO);
         }
         return flag;
     }
 
-    @Transactional
+    /**
+     * 文件上传
+     *
+     * @param requestForFile
+     * @param file
+     * @throws Exception
+     */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean uploadFileByBusinessIdAndType(RequestForFile requestForFile, MultipartFile file) {
-        Boolean flag = true;
-        try {
-            String fileName = file.getOriginalFilename();
-            String url = FileHandler.uploadFile(file.getInputStream());
-            FilePO filePO = new FilePO();
-            filePO.setBusinessId(requestForFile.getBusinessId());
-            filePO.setBusinessType(requestForFile.getBusinessType());
-            filePO.setFilePath(url);
-            filePO.setFilenameSource(fileName);
-            filePO.setCreatedBy("admin");
-            filePO.setModifiedBy("admin");
-            super.insertOrUpdate(filePO);
-        } catch (Exception e) {
-            logger.error("uploadFileByBusinessIdAndType error " + e.toString());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            flag = false;
-        }
-        return flag;
+    public void uploadFileByBusinessIdAndType(RequestForFile requestForFile, MultipartFile file) throws Exception {
+        String fileName = file.getOriginalFilename();
+        String url = FileHandler.uploadFile(file.getInputStream());
+        FilePO filePO = new FilePO();
+        filePO.setBusinessId(requestForFile.getBusinessId());
+        filePO.setBusinessType(requestForFile.getBusinessType());
+        //文件路径
+        filePO.setFilePath(url);
+        filePO.setFilenameSource(fileName);
+        super.insertOrUpdate(filePO);
     }
 
 

@@ -31,6 +31,10 @@ public class TaskSubMoneyDTO {
      * 状态
      */
     private String status;
+    /**
+     * 页签状态类别handling,completed,retreated,failed
+     */
+    private String statusType;
 
     /**
      * 页签类型：currentPan,currentBeforePan,currentAfterPan
@@ -51,6 +55,11 @@ public class TaskSubMoneyDTO {
     private String[] subMoneyIds;
 
     /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
+    /**
      * 修改人
      */
     private String modifiedBy;
@@ -64,6 +73,11 @@ public class TaskSubMoneyDTO {
     private Integer chineseNum;
 
     private Integer foreignerNum;
+
+    /**
+     * 区域类型(00:本地,01:异地)
+     */
+    private String areaType;
 
     public Long getId() {
         return id;
@@ -185,24 +199,51 @@ public class TaskSubMoneyDTO {
         this.periodType = periodType;
     }
 
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
+    }
+
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
+    }
+
     @Override
     public String toString() {
-        return "TaskSubPaymentDTO{" +
+        return "TaskSubMoneyDTO{" +
                 "id=" + id +
                 ", paymentAccount='" + paymentAccount + '\'' +
                 ", managerName='" + managerName + '\'' +
                 ", period='" + period + '\'' +
                 ", status='" + status + '\'' +
+                ", statusType='" + statusType + '\'' +
                 ", periodType='" + periodType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
-                ", subPaymentIds=" + Arrays.toString(subMoneyIds) +
+                ", subMoneyIds=" + Arrays.toString(subMoneyIds) +
+                ", mainIds=" + Arrays.toString(mainIds) +
                 ", modifiedBy='" + modifiedBy + '\'' +
                 ", taskNo='" + taskNo + '\'' +
                 ", taxAmount=" + taxAmount +
                 ", headcount=" + headcount +
                 ", chineseNum=" + chineseNum +
                 ", foreignerNum=" + foreignerNum +
+                ", areaType='" + areaType + '\'' +
                 '}';
     }
 }

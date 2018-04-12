@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,38 +33,11 @@ public interface TaskSubProofDetailMapper extends BaseMapper<TaskSubProofDetailP
      */
     List<TaskSubProofDetailPO> queryTaskSubProofDetailBySubId(TaskSubProofDetailBO taskSubProofDetailBO);
 
-
-    /**
-     * 根据主键ID，将完税申请明细置为失效状态
-     * @param subProofDetailIds
-     * @return
-     */
-    Boolean invalidSubProofDetailByIds(@Param("subProofDetailIds") Integer[] subProofDetailIds);
-
-    /**
-     * 根据子任务ID查询申报明细
-     * @param subProofId
-     * @return
-     */
-    List<TaskSubProofDetailPO> querySubProofDetailBySubId(@Param("subProofId") Long subProofId);
-
-    /**
-     * 根据子任务ID分页查询完税凭证申报明细
-     * @param page
-     * @param longList
-     * @param employeeNo
-     * @param employeeName
-     * @return
-     */
-    List<TaskSubProofDetailPO> queryApplyDetailsBySubIdsAndEmp(Pagination page,@Param("longList") List<Long> longList,@Param("employeeNo") String employeeNo,@Param("employeeName") String employeeName);
-
-    /**
-     * 根据子任务ID查询完税凭证申报明细总数
-     * @param longList
-     * @param employeeNo
-     * @param employeeName
-     * @return
-     */
-    int queryApplyDetailsTotalNumBySubIdsAndEmp(@Param("longList") List<Long> longList,@Param("employeeNo") String employeeNo,@Param("employeeName") String employeeName);
+//    /**
+//     * 根据子任务ID查询总人数，中方人数，外方人数
+//     * @param id
+//     * @return
+//     */
+//    Map<String,Object> queryPersonNumBySubProofId(@Param("id") Long id);
 
 }

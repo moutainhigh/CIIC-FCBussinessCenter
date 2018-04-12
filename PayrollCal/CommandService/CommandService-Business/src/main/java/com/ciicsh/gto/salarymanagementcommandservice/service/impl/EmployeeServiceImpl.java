@@ -76,17 +76,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, Integer pageNum, Integer pageSize) {
+    public PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, String empCode, String empName,Integer pageNum, Integer pageSize) {
         List<EmployeeExtensionPO> employeeExtensionPOS = new ArrayList<>();
         PageHelper.startPage(pageNum,pageSize);
         try{
-            employeeExtensionPOS = employeeMapper.getEmployees(empGroupCode);
+            employeeExtensionPOS = employeeMapper.getEmployees(empGroupCode,empCode,empName);
         }
         catch (Exception e){
             e.printStackTrace();
         }
         PageInfo<EmployeeExtensionPO> pageInfo = new PageInfo<>(employeeExtensionPOS);
         return pageInfo;
+    }
+
+    @Override
+    public List<EmployeeExtensionPO> getAllEmployees(String empGroupCode, String empCode, String empName) {
+        return employeeMapper.getEmployees(empGroupCode,empCode,empName);
     }
 
     @Override
@@ -103,6 +108,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
         return result;
+    }
+
+    @Override
+    public int hasEmployees(String empGroupCode) {
+        return employeeMapper.hasEmployees(empGroupCode);
     }
 
 

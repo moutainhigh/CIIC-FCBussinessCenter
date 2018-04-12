@@ -41,5 +41,5 @@ public interface TaskSubPaymentService {
      * @param subPaymentId
      * @return
      */
-    TaskSubPaymentPO querySubPaymentById(Long subPaymentId);
+    TaskSubPaymentPO querySubPaymentById(long subPaymentId);
 }

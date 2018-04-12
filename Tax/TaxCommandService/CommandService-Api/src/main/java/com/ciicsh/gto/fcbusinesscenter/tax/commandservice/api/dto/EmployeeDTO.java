@@ -44,14 +44,36 @@ public class EmployeeDTO {
      */
     private String declareAcount;
 
-    private Long batchid;//计算批次主表id
+    /**
+     * 计算批次主表id
+     */
+    private Long calculationBatchId;
 
-    public Long getBatchid() {
-        return batchid;
+    private Integer currentNum;
+    private Integer pageSize;
+
+    public Integer getCurrentNum() {
+        return currentNum;
     }
 
-    public void setBatchid(Long batchid) {
-        this.batchid = batchid;
+    public void setCurrentNum(Integer currentNum) {
+        this.currentNum = currentNum;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public Long getCalculationBatchId() {
+        return calculationBatchId;
+    }
+
+    public void setCalculationBatchId(Long calculationBatchId) {
+        this.calculationBatchId = calculationBatchId;
     }
 
     public Long getId() {

@@ -3,11 +3,14 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -50,7 +53,7 @@ public class TaskSubPaymentPO implements Serializable {
     /**
      * 个税期间
      */
-	private Date period;
+	private LocalDate period;
     /**
      * 个税总金额
      */
@@ -74,6 +77,11 @@ public class TaskSubPaymentPO implements Serializable {
      * 状态
      */
 	private String status;
+	/**
+	 * 状态中文
+	 */
+	@TableField(exist = false)
+	private String statusName;
     /**
      * 是否可用
      */
@@ -82,22 +90,22 @@ public class TaskSubPaymentPO implements Serializable {
     /**
      * 创建时间
      */
-	@TableField("created_time")
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField("modified_time")
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
-	@TableField("created_by")
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
-	@TableField("modified_by")
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
     /**
      * 管理方编号
@@ -110,6 +118,18 @@ public class TaskSubPaymentPO implements Serializable {
 	@TableField("manager_name")
 	private String managerName;
 
+	/**
+	 * 区域类型
+	 */
+	private String areaType;
+
+	public String getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(String areaType) {
+		this.areaType = areaType;
+	}
 
 	public Long getId() {
 		return id;
@@ -151,11 +171,11 @@ public class TaskSubPaymentPO implements Serializable {
 		this.paymentAccount = paymentAccount;
 	}
 
-	public Date getPeriod() {
+	public LocalDate getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Date period) {
+	public void setPeriod(LocalDate period) {
 		this.period = period;
 	}
 
@@ -197,6 +217,11 @@ public class TaskSubPaymentPO implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.TASK_STATUS,status);
+		}
 	}
 
 	public Boolean getActive() {
@@ -207,19 +232,19 @@ public class TaskSubPaymentPO implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -255,28 +280,36 @@ public class TaskSubPaymentPO implements Serializable {
 		this.managerName = managerName;
 	}
 
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
 
 	@Override
 	public String toString() {
-		return "TaskSubPayment{" +
-			"id=" + id +
-			", taskMainId=" + taskMainId +
-			", taskSubPaymentId=" + taskSubPaymentId +
-			", taskNo=" + taskNo +
-			", paymentAccount=" + paymentAccount +
-			", period=" + period +
-			", taxAmount=" + taxAmount +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			", managerNo=" + managerNo +
-			", managerName=" + managerName +
-			"}";
+		return "TaskSubPaymentPO{" +
+				"id=" + id +
+				", taskMainId=" + taskMainId +
+				", taskSubPaymentId=" + taskSubPaymentId +
+				", taskNo='" + taskNo + '\'' +
+				", paymentAccount='" + paymentAccount + '\'' +
+				", period=" + period +
+				", taxAmount=" + taxAmount +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", statusName='" + statusName + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				'}';
 	}
 }

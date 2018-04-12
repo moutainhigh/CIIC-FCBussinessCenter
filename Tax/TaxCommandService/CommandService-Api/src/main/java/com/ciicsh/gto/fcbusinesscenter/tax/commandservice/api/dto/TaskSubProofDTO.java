@@ -27,11 +27,27 @@ public class TaskSubProofDTO{
 
     private String sendStatus;
 
+    /**
+     *  状态
+     */
     private String status;
+
+    /**
+     * 状态(中文)
+     */
+    private String statusName;
 
     private String createdBy;
 
     private Date createdTime;
+    /**
+     * 管理方编号
+     */
+    private String managerNo;
+    /**
+     * 管理方名称
+     */
+    private String managerName;
 
     public Long getId() {
         return id;
@@ -137,6 +153,29 @@ public class TaskSubProofDTO{
         this.createdTime = createdTime;
     }
 
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getManagerNo() {
+        return managerNo;
+    }
+
+    public void setManagerNo(String managerNo) {
+        this.managerNo = managerNo;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
 
     @Override
     public String toString() {
@@ -152,8 +191,11 @@ public class TaskSubProofDTO{
                 ", foreignerNum=" + foreignerNum +
                 ", sendStatus='" + sendStatus + '\'' +
                 ", status='" + status + '\'' +
+                ", statusName='" + statusName + '\'' +
                 ", createdBy='" + createdBy + '\'' +
                 ", createdTime=" + createdTime +
+                ", managerNo='" + managerNo + '\'' +
+                ", managerName='" + managerName + '\'' +
                 '}';
     }
 }

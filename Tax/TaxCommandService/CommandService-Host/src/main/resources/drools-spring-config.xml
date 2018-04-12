@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:kie="http://drools.org/schema/kie-spring"
+       xsi:schemaLocation="
+       http://drools.org/schema/kie-spring
+       http://drools.org/schema/kie-spring.xsd
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--<kie:kmodule id="kmodule" >  &lt;!&ndash; 起名规范就可以 &ndash;&gt;
+        <kie:kbase name="kbase" packages="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller">&lt;!&ndash; 起名规范就可以    packages=/指到最后一层文件夹/  &ndash;&gt;
+            <kie:ksession name="ksession"  type="stateful"/> &lt;!&ndash; 起名规则就可以，这个的name 是要在下面的测试类中用到的 &ndash;&gt;
+        </kie:kbase>
+    </kie:kmodule>-->
+
+    <!-- 每2秒钟扫描是否有新版本文件  enableScanner表示是否扫描   scannerInterval表示扫描间隔-->
+    <kie:import releaseId-ref="tax_drools" enableScanner="true" scannerInterval="2000"/>
+    <!--使用 drools workbench 生成的JAR 包-->
+    <kie:releaseId id="tax_drools" groupId="com.ciicsh.gt1.fcbusinesscenter.tax" artifactId="fcbusinesscenter_tax_commandservice_drools" version="1.0.0-SNAPSHOT"/>
+    <bean id="kiePostProcessor" class="org.kie.spring.annotations.KModuleAnnotationPostProcessor"/>
+
+    <!--<kie:kmodule id="kmodule" >  &lt;!&ndash; 起名规范就可以 &ndash;&gt;
+        <kie:kbase name="PointDomainKB" packages="com.ciicsh.gt1.fcbusinesscenter.tax.fcbusinesscenter_tax_commandservice_drools">&lt;!&ndash; 起名规范就可以    packages=/指到最后一层文件夹/  &ndash;&gt;
+
+            <kie:ksession name="PointDomainKS" type="stateless"> &lt;!&ndash; 起名规则就可以，这个的name 是要在下面的测试类中用到的 &ndash;&gt;
+            </kie:ksession>
+        </kie:kbase>
+    </kie:kmodule>-->
+
+</beans>

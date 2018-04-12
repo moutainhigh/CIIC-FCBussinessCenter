@@ -1,28 +1,49 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * @author yuantongqing on 2017/12/19
  */
 public class CalculationBatchDetailBO {
+
     private Long id;
 
+    private Long calculationBatchId;
+
+    private String employeeNo;
+
+    private String employeeName;
+
     private String idType;
+
+    private String idTypeName;
 
     private String idNo;
 
     /**
+     * 管理方名称
+     */
+    private String managerName;
+
+    /**
+     * 薪酬计算批次
+     */
+    private String batchNo;
+
+    /**
      * 所得期间
      */
-    private Date period;
+    private LocalDate period;
     /**
      * 所得项目
      */
     private String incomeSubject;
+    private String incomeSubjectName;
     /**
      * 收入额
      */
@@ -112,6 +133,235 @@ public class CalculationBatchDetailBO {
      */
     private Page page;
 
+    /**
+     * 申报账户
+     */
+    private String declareAccount;
+
+    /**
+     * 缴纳账户
+     */
+    private String payAccount;
+
+    /**
+     * 收款账户
+     */
+    private String receiptAccount;
+
+    /**
+     * 供应商编号
+     */
+    private String supportNo;
+
+    /**
+     * 供应商名称
+     */
+    private String supportName;
+
+    /**
+     * 是否供应商处理
+     */
+    private Boolean isSupport;
+
+    /**
+     * 是否供应商处理完成
+     */
+    private Boolean isSupported;
+
+    /**
+     * 是否有缴纳服务
+     */
+    private Boolean isPay;
+
+    /**
+     * 是否缴纳完成
+     */
+    private Boolean isPayed;
+
+    /**
+     * 是否有申报服务
+     */
+    private Boolean isDeclare;
+
+    /**
+     * 是否申报完成
+     */
+    private Boolean isDeclared;
+
+    /**
+     * 是否有划款服务
+     */
+    private Boolean isTranfer;
+
+    /**
+     * 是否划款完成
+     */
+    private Boolean isTranferred;
+    /**
+     * 是否供应商申报
+     */
+    private Boolean isDeclareSupported;
+    /**
+     * 是否供应商划款
+     */
+    private Boolean isTransferSupported;
+    /**
+     * 是否供应商缴纳
+     */
+    private Boolean isPaySupported;
+    /**
+     * 是否有完税凭证服务
+     */
+    private Boolean isProof;
+    /**
+     * 是否完税凭证服务完成
+     */
+    private Boolean isProofed;
+
+    public Boolean getProof() {
+        return isProof;
+    }
+
+    public void setProof(Boolean proof) {
+        isProof = proof;
+    }
+
+    public Boolean getProofed() {
+        return isProofed;
+    }
+
+    public void setProofed(Boolean proofed) {
+        isProofed = proofed;
+    }
+
+    public String getIdTypeName() {
+        return idTypeName;
+    }
+
+    public void setIdTypeName(String idTypeName) {
+        this.idTypeName = idTypeName;
+    }
+
+    public String getIncomeSubjectName() {
+        return incomeSubjectName;
+    }
+
+    public void setIncomeSubjectName(String incomeSubjectName) {
+        this.incomeSubjectName = incomeSubjectName;
+    }
+
+    public Long getCalculationBatchId() {
+        return calculationBatchId;
+    }
+
+    public void setCalculationBatchId(Long calculationBatchId) {
+        this.calculationBatchId = calculationBatchId;
+    }
+
+    public String getDeclareAccount() {
+        return declareAccount;
+    }
+
+    public void setDeclareAccount(String declareAccount) {
+        this.declareAccount = declareAccount;
+    }
+
+    public String getPayAccount() {
+        return payAccount;
+    }
+
+    public void setPayAccount(String payAccount) {
+        this.payAccount = payAccount;
+    }
+
+    public String getReceiptAccount() {
+        return receiptAccount;
+    }
+
+    public void setReceiptAccount(String receiptAccount) {
+        this.receiptAccount = receiptAccount;
+    }
+
+    public String getSupportNo() {
+        return supportNo;
+    }
+
+    public void setSupportNo(String supportNo) {
+        this.supportNo = supportNo;
+    }
+
+    public String getSupportName() {
+        return supportName;
+    }
+
+    public void setSupportName(String supportName) {
+        this.supportName = supportName;
+    }
+
+    public Boolean getSupport() {
+        return isSupport;
+    }
+
+    public void setSupport(Boolean support) {
+        isSupport = support;
+    }
+
+    public Boolean getSupported() {
+        return isSupported;
+    }
+
+    public void setSupported(Boolean supported) {
+        isSupported = supported;
+    }
+
+    public Boolean getPay() {
+        return isPay;
+    }
+
+    public void setPay(Boolean pay) {
+        isPay = pay;
+    }
+
+    public Boolean getPayed() {
+        return isPayed;
+    }
+
+    public void setPayed(Boolean payed) {
+        isPayed = payed;
+    }
+
+    public Boolean getDeclare() {
+        return isDeclare;
+    }
+
+    public void setDeclare(Boolean declare) {
+        isDeclare = declare;
+    }
+
+    public Boolean getDeclared() {
+        return isDeclared;
+    }
+
+    public void setDeclared(Boolean declared) {
+        isDeclared = declared;
+    }
+
+    public Boolean getTranfer() {
+        return isTranfer;
+    }
+
+    public void setTranfer(Boolean tranfer) {
+        isTranfer = tranfer;
+    }
+
+    public Boolean getTranferred() {
+        return isTranferred;
+    }
+
+    public void setTranferred(Boolean tranferred) {
+        isTranferred = tranferred;
+    }
+
     public Long getId() {
         return id;
     }
@@ -126,6 +376,11 @@ public class CalculationBatchDetailBO {
 
     public void setIdType(String idType) {
         this.idType = idType;
+
+        if(idType!=null){
+
+            this.idTypeName  = EnumUtil.getMessage(EnumUtil.IT_TYPE,idType);
+        }
     }
 
     public String getIdNo() {
@@ -136,11 +391,11 @@ public class CalculationBatchDetailBO {
         this.idNo = idNo;
     }
 
-    public Date getPeriod() {
+    public LocalDate getPeriod() {
         return period;
     }
 
-    public void setPeriod(Date period) {
+    public void setPeriod(LocalDate period) {
         this.period = period;
     }
 
@@ -150,6 +405,11 @@ public class CalculationBatchDetailBO {
 
     public void setIncomeSubject(String incomeSubject) {
         this.incomeSubject = incomeSubject;
+
+        if(incomeSubject!=null){
+
+            this.incomeSubjectName  = EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,incomeSubject);
+        }
     }
 
     public BigDecimal getIncomeTotal() {
@@ -320,14 +580,77 @@ public class CalculationBatchDetailBO {
         this.page = page;
     }
 
+    public String getEmployeeNo() {
+        return employeeNo;
+    }
+
+    public void setEmployeeNo(String employeeNo) {
+        this.employeeNo = employeeNo;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public Boolean getDeclareSupported() {
+        return isDeclareSupported;
+    }
+
+    public void setDeclareSupported(Boolean declareSupported) {
+        isDeclareSupported = declareSupported;
+    }
+
+    public Boolean getTransferSupported() {
+        return isTransferSupported;
+    }
+
+    public void setTransferSupported(Boolean transferSupported) {
+        isTransferSupported = transferSupported;
+    }
+
+    public Boolean getPaySupported() {
+        return isPaySupported;
+    }
+
+    public void setPaySupported(Boolean paySupported) {
+        isPaySupported = paySupported;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
     @Override
     public String toString() {
         return "CalculationBatchDetailBO{" +
                 "id=" + id +
+                ", calculationBatchId=" + calculationBatchId +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
                 ", idType='" + idType + '\'' +
+                ", idTypeName='" + idTypeName + '\'' +
                 ", idNo='" + idNo + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", batchNo='" + batchNo + '\'' +
                 ", period=" + period +
                 ", incomeSubject='" + incomeSubject + '\'' +
+                ", incomeSubjectName='" + incomeSubjectName + '\'' +
                 ", incomeTotal=" + incomeTotal +
                 ", incomeDutyfree=" + incomeDutyfree +
                 ", deductRetirementInsurance=" + deductRetirementInsurance +
@@ -349,6 +672,22 @@ public class CalculationBatchDetailBO {
                 ", taxWithholdedAmount=" + taxWithholdedAmount +
                 ", taxRemedyOrReturn=" + taxRemedyOrReturn +
                 ", page=" + page +
+                ", declareAccount='" + declareAccount + '\'' +
+                ", payAccount='" + payAccount + '\'' +
+                ", receiptAccount='" + receiptAccount + '\'' +
+                ", supportNo='" + supportNo + '\'' +
+                ", supportName='" + supportName + '\'' +
+                ", isSupport=" + isSupport +
+                ", isSupported=" + isSupported +
+                ", isPay=" + isPay +
+                ", isPayed=" + isPayed +
+                ", isDeclare=" + isDeclare +
+                ", isDeclared=" + isDeclared +
+                ", isTranfer=" + isTranfer +
+                ", isTranferred=" + isTranferred +
+                ", isDeclareSupported=" + isDeclareSupported +
+                ", isTransferSupported=" + isTransferSupported +
+                ", isPaySupported=" + isPaySupported +
                 '}';
     }
 }

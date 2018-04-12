@@ -1,16 +1,14 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
-import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
@@ -60,6 +58,11 @@ public class TaskSubMoneyDetailPO{
      */
 	@TableField("id_type")
 	private String idType;
+	/**
+	 * 证件类型（中文）
+	 */
+	@TableField(exist = false)
+	private String idTypeName;
     /**
      * 证件编号
      */
@@ -78,12 +81,17 @@ public class TaskSubMoneyDetailPO{
     /**
      * 个税期间
      */
-	private Date period;
+	private LocalDate period;
     /**
      * 所得项目
      */
 	@TableField("income_subject")
 	private String incomeSubject;
+	/**
+	 * 所得项目(中文)
+	 */
+	@TableField(exist = false)
+	private String incomeSubjectName;
     /**
      * 收入额
      */
@@ -190,24 +198,35 @@ public class TaskSubMoneyDetailPO{
     /**
      * 创建时间
      */
-	@TableField("created_time")
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField("modified_time")
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
-	@TableField("created_by")
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
-	@TableField("modified_by")
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
+	/**
+	 * 主任务明细ID
+	 */
+	private Long taskMainDetailId;
 
+	public Long getTaskMainDetailId() {
+		return taskMainDetailId;
+	}
+
+	public void setTaskMainDetailId(Long taskMainDetailId) {
+		this.taskMainDetailId = taskMainDetailId;
+	}
 
 	public Long getId() {
 		return id;
@@ -466,27 +485,27 @@ public class TaskSubMoneyDetailPO{
 		this.isActive = isActive;
 	}
 
-	public Date getPeriod() {
+	public LocalDate getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Date period) {
+	public void setPeriod(LocalDate period) {
 		this.period = period;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -506,46 +525,64 @@ public class TaskSubMoneyDetailPO{
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getIdTypeName() {
+		return idTypeName;
+	}
+
+	public void setIdTypeName(String idTypeName) {
+		this.idTypeName = idTypeName;
+	}
+
+	public String getIncomeSubjectName() {
+		return incomeSubjectName;
+	}
+
+	public void setIncomeSubjectName(String incomeSubjectName) {
+		this.incomeSubjectName = incomeSubjectName;
+	}
+
 	@Override
 	public String toString() {
-		return "TaskSubMoneyDetail{" +
-			"id=" + id +
-			", taskSubMoneyId=" + taskSubMoneyId +
-			", calculationBatchDetailId=" + calculationBatchDetailId +
-			", versionNo=" + versionNo +
-			", employeeNo=" + employeeNo +
-			", employeeName=" + employeeName +
-			", idType=" + idType +
-			", idNo=" + idNo +
-			", declareAccount=" + declareAccount +
-			", payAccount=" + payAccount +
-			", period=" + period +
-			", incomeSubject=" + incomeSubject +
-			", incomeTotal=" + incomeTotal +
-			", incomeDutyfree=" + incomeDutyfree +
-			", deductRetirementInsurance=" + deductRetirementInsurance +
-			", deductMedicalInsurance=" + deductMedicalInsurance +
-			", deductDlenessInsurance=" + deductDlenessInsurance +
-			", deductProperty=" + deductProperty +
-			", deductHouseFund=" + deductHouseFund +
-			", deductTakeoff=" + deductTakeoff +
-			", deductOther=" + deductOther +
-			", deductTotal=" + deductTotal +
-			", deduction=" + deduction +
-			", donation=" + donation +
-			", incomeForTax=" + incomeForTax +
-			", taxRate=" + taxRate +
-			", quickCalDeduct=" + quickCalDeduct +
-			", taxAmount=" + taxAmount +
-			", taxDeduction=" + taxDeduction +
-			", taxWithholdAmount=" + taxWithholdAmount +
-			", taxWithholdedAmount=" + taxWithholdedAmount +
-			", taxRemedyOrReturn=" + taxRemedyOrReturn +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+		return "TaskSubMoneyDetailPO{" +
+				"id=" + id +
+				", taskSubMoneyId=" + taskSubMoneyId +
+				", calculationBatchDetailId=" + calculationBatchDetailId +
+				", versionNo=" + versionNo +
+				", employeeNo='" + employeeNo + '\'' +
+				", employeeName='" + employeeName + '\'' +
+				", idType='" + idType + '\'' +
+				", idTypeName='" + idTypeName + '\'' +
+				", idNo='" + idNo + '\'' +
+				", declareAccount='" + declareAccount + '\'' +
+				", payAccount='" + payAccount + '\'' +
+				", period=" + period +
+				", incomeSubject='" + incomeSubject + '\'' +
+				", incomeSubjectName='" + incomeSubjectName + '\'' +
+				", incomeTotal=" + incomeTotal +
+				", incomeDutyfree=" + incomeDutyfree +
+				", deductRetirementInsurance=" + deductRetirementInsurance +
+				", deductMedicalInsurance=" + deductMedicalInsurance +
+				", deductDlenessInsurance=" + deductDlenessInsurance +
+				", deductProperty=" + deductProperty +
+				", deductHouseFund=" + deductHouseFund +
+				", deductTakeoff=" + deductTakeoff +
+				", deductOther=" + deductOther +
+				", deductTotal=" + deductTotal +
+				", deduction=" + deduction +
+				", donation=" + donation +
+				", incomeForTax=" + incomeForTax +
+				", taxRate='" + taxRate + '\'' +
+				", quickCalDeduct=" + quickCalDeduct +
+				", taxAmount=" + taxAmount +
+				", taxDeduction=" + taxDeduction +
+				", taxWithholdAmount=" + taxWithholdAmount +
+				", taxWithholdedAmount=" + taxWithholdedAmount +
+				", taxRemedyOrReturn=" + taxRemedyOrReturn +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				'}';
 	}
 }

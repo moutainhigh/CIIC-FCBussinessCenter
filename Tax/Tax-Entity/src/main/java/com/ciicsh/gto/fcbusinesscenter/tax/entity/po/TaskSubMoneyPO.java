@@ -3,10 +3,13 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -49,7 +52,7 @@ public class TaskSubMoneyPO{
     /**
      * 个税期间
      */
-	private Date period;
+	private LocalDate period;
     /**
      * 个税总金额
      */
@@ -73,6 +76,11 @@ public class TaskSubMoneyPO{
      * 状态
      */
 	private String status;
+	/**
+	 * 状态中文
+	 */
+	@TableField(exist = false)
+	private String statusName;
     /**
      * 是否可用
      */
@@ -81,22 +89,22 @@ public class TaskSubMoneyPO{
     /**
      * 创建时间
      */
-	@TableField("created_time")
-	private Date createdTime;
+    @TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	@TableField("modified_time")
-	private Date modifiedTime;
+    @TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
-	@TableField("created_by")
+    @TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
     /**
      * 修改人
      */
-	@TableField("modified_by")
+    @TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
     /**
      * 管理方编号
@@ -108,7 +116,41 @@ public class TaskSubMoneyPO{
      */
 	@TableField("manager_name")
 	private String managerName;
+	/**
+	 * 划款状态
+	 */
+	@TableField("pay_status")
+	private String payStatus;
+	/**
+	 * 划款状态(中文)
+	 */
+	@TableField(exist = false)
+	private String payStatusName;
 
+	/**
+	 * 付款申请ID
+	 */
+	@TableField("pay_apply_id")
+	private Long payApplyId;
+
+	/**
+	 * 付款凭证编号(结算单编号)
+	 */
+	@TableField("pay_apply_code")
+	private String payApplyCode;
+
+	/**
+	 * 区域类型
+	 */
+	private String areaType;
+
+	public String getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(String areaType) {
+		this.areaType = areaType;
+	}
 
 	public Long getId() {
 		return id;
@@ -188,6 +230,11 @@ public class TaskSubMoneyPO{
 
 	public void setStatus(String status) {
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.TASK_STATUS,status);
+		}
 	}
 
 	public Boolean getActive() {
@@ -198,27 +245,27 @@ public class TaskSubMoneyPO{
 		this.isActive = isActive;
 	}
 
-	public Date getPeriod() {
+	public LocalDate getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Date period) {
+	public void setPeriod(LocalDate period) {
 		this.period = period;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -254,27 +301,76 @@ public class TaskSubMoneyPO{
 		this.managerName = managerName;
 	}
 
+	public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
+
+	public String getPayStatus() {
+		return payStatus;
+	}
+
+	public void setPayStatus(String payStatus) {
+		this.payStatus = payStatus;
+		if(payStatus!=null){
+
+			this.payStatusName  = EnumUtil.getMessage(EnumUtil.PAY_STATUS,payStatus);
+		}
+	}
+
+	public String getPayStatusName() {
+		return payStatusName;
+	}
+
+	public void setPayStatusName(String payStatusName) {
+		this.payStatusName = payStatusName;
+	}
+
+	public Long getPayApplyId() {
+		return payApplyId;
+	}
+
+	public void setPayApplyId(Long payApplyId) {
+		this.payApplyId = payApplyId;
+	}
+
+	public String getPayApplyCode() {
+		return payApplyCode;
+	}
+
+	public void setPayApplyCode(String payApplyCode) {
+		this.payApplyCode = payApplyCode;
+	}
+
 	@Override
 	public String toString() {
-		return "TaskSubMoney{" +
-			"id=" + id +
-			", taskMainId=" + taskMainId +
-			", taskSubMoneyId=" + taskSubMoneyId +
-			", taskNo=" + taskNo +
-			", paymentAccount=" + paymentAccount +
-			", period=" + period +
-			", taxAmount=" + taxAmount +
-			", headcount=" + headcount +
-			", chineseNum=" + chineseNum +
-			", foreignerNum=" + foreignerNum +
-			", status=" + status +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			", managerNo=" + managerNo +
-			", managerName=" + managerName +
-			"}";
+		return "TaskSubMoneyPO{" +
+				"id=" + id +
+				", taskMainId=" + taskMainId +
+				", taskSubMoneyId=" + taskSubMoneyId +
+				", taskNo='" + taskNo + '\'' +
+				", paymentAccount='" + paymentAccount + '\'' +
+				", period=" + period +
+				", taxAmount=" + taxAmount +
+				", headcount=" + headcount +
+				", chineseNum=" + chineseNum +
+				", foreignerNum=" + foreignerNum +
+				", status='" + status + '\'' +
+				", statusName='" + statusName + '\'' +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				", payStatus='" + payStatus + '\'' +
+				", payStatusName='" + payStatusName + '\'' +
+				", payApplyId=" + payApplyId +
+				", payApplyCode='" + payApplyCode + '\'' +
+				'}';
 	}
 }

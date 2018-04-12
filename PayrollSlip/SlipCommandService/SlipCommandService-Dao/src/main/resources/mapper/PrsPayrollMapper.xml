@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsPayrollMapper">
+
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO">
+        <id column="id" property="id" />
+        <result column="payroll_code" property="payrollCode" />
+        <result column="title" property="title" />
+        <result column="management_id" property="managementId" />
+        <result column="management_name" property="managementName" />
+        <result column="employee_id" property="employeeId" />
+        <result column="period" property="period" />
+        <result column="personnel_income_year_month" property="personnelIncomeYearMonth" />
+        <result column="batch_id" property="batchId" />
+        <result column="template_id" property="templateId" />
+        <result column="template_name" property="templateName" />
+        <result column="channel" property="channel" />
+        <result column="data_object" property="dataObject" />
+        <result column="remark" property="remark" />
+        <result column="status" property="status" />
+        <result column="approver" property="approver" />
+        <result column="approve_time" property="approveTime" />
+        <result column="approve_remark" property="approveRemark" />
+        <result column="is_active" property="isActive" />
+        <result column="created_time" property="createdTime" />
+        <result column="modified_time" property="modifiedTime" />
+        <result column="created_by" property="createdBy" />
+        <result column="modified_by" property="modifiedBy" />
+    </resultMap>
+
+    <select id="total"  resultType="int">
+        SELECT COUNT(*) FROM prs_payroll
+        WHERE is_active = 1
+    </select>
+
+    <select id="all"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_payroll
+        WHERE is_active = 1
+    </select>
+
+    <select id="list"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_payroll
+        WHERE is_active = 1
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id = #{managementId}
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
+        <if test="period != null and period != ''">
+            and period = #{period}
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
+        ORDER BY payroll_id DESC
+        <if test="limit != null and limit != ''">
+            LIMIT #{limit}
+        </if>
+        <if test="offset != null and offset != ''">
+            OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="get"  resultMap="BaseResultMap">
+    SELECT *
+    FROM prs_payroll
+    where id = #{id}
+    LIMIT 1
+  </select>
+
+    <select id="last"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_payroll
+        ORDER by id desc
+        LIMIT 1;
+    </select>
+
+    <insert id="insert" parameterType="map">
+    INSERT INTO prs_payroll(payroll_code, title, management_id, management_name, employee_id, period, personnel_income_year_month, batch_id, template_id, template_name, channel, data_object, remark, status, approver, approve_time, approve_remark, created_by, modified_by)
+    VALUES (#{payrollCode}, #{title}, #{managementId}, #{managementName}, #{employeeId}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{dataObject}, #{remark}, #{status}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+  </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE prs_payroll
+        SET modified_time = CURRENT_TIMESTAMP,
+        <trim suffixOverrides=",">
+            <if test="payrollCode != null and payrollCode != ''">
+                payroll_code = #{payrollCode},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="managementId != null and managementId != ''">
+                management_id = #{managementId},
+            </if>
+            <if test="managementName != null and managementName != ''">
+                management_name = #{managementName},
+            </if>
+            <if test="employeeId != null and employeeId != ''">
+                employee_id = #{employeeId},
+            </if>
+            <if test="period != null and period != ''">
+                period = #{period},
+            </if>
+            <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+                personnel_income_year_month = #{personnelIncomeYearMonth},
+            </if>
+            <if test="batchId != null and batchId != ''">
+                batch_id = #{batchId},
+            </if>
+            <if test="templateId != null and templateId != ''">
+                template_id = #{templateId},
+            </if>
+            <if test="templateName != null and templateName != ''">
+                template_name = #{templateName},
+            </if>
+            <if test="channel != null and channel != ''">
+                channel = #{channel},
+            </if>
+            <if test="dataObject != null and dataObject != ''">
+                data_object = #{dataObject},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="approver != null and approver != ''">
+                approver = #{approver},
+            </if>
+            <if test="approveTime != null">
+                approve_time = #{approveTime},
+            </if>
+            <if test="approveRemark != null and approveRemark != ''">
+                approve_remark = #{approveRemark},
+            </if>
+            <if test="isActive != null">
+                is_active = #{isActive},
+            </if>
+            <if test="modifiedBy != null and modifiedBy != ''">
+                modified_by = #{modifiedBy},
+            </if>
+
+        </trim>
+        WHERE id = #{id}
+    </update>
+</mapper>

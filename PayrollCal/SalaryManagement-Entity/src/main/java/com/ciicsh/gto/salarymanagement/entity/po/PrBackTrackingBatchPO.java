@@ -24,6 +24,13 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	@TableId(value="id", type= IdType.AUTO)
 	private Long id;
+
+	/**
+	 * 参考批次，正常批次
+	 */
+	@TableField("root_batch_code")
+	private String rootBatchCode;
+
     /**
      * 参考批次，即被回溯的批次ID
      */
@@ -34,11 +41,7 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
      */
 	@TableField("back_tracking_batch_code")
 	private String backTrackingBatchCode;
-    /**
-     * 所属管理方ID
-     */
-	@TableField("management_id")
-	private String managementId;
+
     /**
      * 备注
      */
@@ -96,6 +99,24 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 	@TableField("modified_by")
 	private String modifiedBy;
 
+	/*是否垫付：0 表示未垫付，1表示已经垫付*/
+	@TableField("has_advance")
+	private Boolean hasAdvance;
+
+	/*是否来款：0表示未来款，1表示已来款*/
+	@TableField("has_money")
+	private Boolean hasMoney;
+
+	@TableField("period")
+	private String period;
+
+	public String getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(String period) {
+		this.period = period;
+	}
 
 	public Long getId() {
 		return id;
@@ -103,6 +124,14 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getRootBatchCode() {
+		return rootBatchCode;
+	}
+
+	public void setRootBatchCode(String rootBatchCode) {
+		this.rootBatchCode = rootBatchCode;
 	}
 
 	public String getOriginBatchCode() {
@@ -119,14 +148,6 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	public void setBackTrackingBatchCode(String backTrackingBatchCode) {
 		this.backTrackingBatchCode = backTrackingBatchCode;
-	}
-
-	public String getManagementId() {
-		return managementId;
-	}
-
-	public void setManagementId(String managementId) {
-		this.managementId = managementId;
 	}
 
 	public String getRemark() {
@@ -209,6 +230,22 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public Boolean getHasAdvance() {
+		return hasAdvance;
+	}
+
+	public void setHasAdvance(Boolean hasAdvance) {
+		this.hasAdvance = hasAdvance;
+	}
+
+	public Boolean getHasMoney() {
+		return hasMoney;
+	}
+
+	public void setHasMoney(Boolean hasMoney) {
+		this.hasMoney = hasMoney;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -220,13 +257,14 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 			"id=" + id +
 			", originBatchCode=" + originBatchCode +
 			", backTrackingBatchCode=" + backTrackingBatchCode +
-			", managementId=" + managementId +
 			", remark=" + remark +
 			", status=" + status +
 			", backEmpAdjustFields=" + backEmpAdjustFields +
 			", backEmpSpecFields=" + backEmpSpecFields +
 			", backEmpResult=" + backEmpResult +
 			", isActive=" + isActive +
+			", hasMoney=" + hasMoney +
+			", hasAdvance=" + hasAdvance +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +

@@ -1,8 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
@@ -11,13 +11,14 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollBaseItemMapper
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupHistoryMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salarymanagementcommandservice.util.constants.PayrollGroupHistoryKey;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,9 @@ public class PrGroupServiceImpl implements PrGroupService {
     private PrPayrollGroupHistoryMapper prPayrollGroupHistoryMapper;
 
     @Autowired
+    private ApprovalHistoryService approvalHistoryService;
+
+    @Autowired
     private CodeGenerator codeGenerator;
 
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
@@ -67,6 +71,16 @@ public class PrGroupServiceImpl implements PrGroupService {
         resultList = prPayrollGroupMapper.selectListByEntityUseLike(param);
         PageInfo<PrPayrollGroupPO> pageInfo = new PageInfo<>(resultList);
         return  pageInfo;
+    }
+
+    @Override
+    public List<PrPayrollGroupPO> getListByTemplateCode(String templateCode) {
+        PrPayrollGroupPO param = new PrPayrollGroupPO();
+        param.setGroupTemplateCode(templateCode);
+        param.setIsActive(true);
+        EntityWrapper<PrPayrollGroupPO> ew = new EntityWrapper<>(param);
+        List<PrPayrollGroupPO> resultList = prPayrollGroupMapper.selectList(ew);
+        return resultList;
     }
 
     @Override
@@ -89,72 +103,48 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollGroupPO paramItem) {
-        int result = prPayrollGroupMapper.insert(paramItem);
-        List<PrPayrollBaseItemPO> paramList = prPayrollBaseItemMapper.selectList(
-                new EntityWrapper<>(new PrPayrollBaseItemPO()));
-        List<PrPayrollItemPO> itemList = paramList.stream()
+        paramItem.setGroupCode(codeGenerator.genPrGroupCode(paramItem.getManagementId()));
+        paramItem.setVersion("1.0");
+        int result = prPayrollGroupMapper.insert(paramItem);;
+
+        if (StringUtils.isEmpty(paramItem.getGroupTemplateCode())) {
+            List<PrPayrollBaseItemPO> paramList = prPayrollBaseItemMapper.selectList(
+                    new EntityWrapper<>(new PrPayrollBaseItemPO()));
+            List<PrPayrollItemPO> itemList = paramList.stream()
+                    .map(i -> {
+                        PrPayrollItemPO item = new PrPayrollItemPO();
+                        BeanUtils.copyProperties(i, item);
+                        item.setId(null);
+                        item.setItemName(i.getBaseItemName());
+                        item.setBaseItemCode(i.getBaseItemCode());
+                        item.setItemType(i.getBaseItemType());
+                        item.setPayrollGroupCode(paramItem.getGroupCode());
+                        item.setManagementId(paramItem.getManagementId());
+                        item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
+                        item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
+                        return item;
+                    })
+                    .collect(Collectors.toList());
+            itemService.addList(itemList);
+            return result;
+        }
+
+        List<PrPayrollItemPO> prItemListFromGroupTemplate =
+                itemService.getListByGroupTemplateCode(paramItem.getGroupTemplateCode(),0,0).getList();
+        List<PrPayrollItemPO> itemList = prItemListFromGroupTemplate.stream()
                 .map(i -> {
                     PrPayrollItemPO item = new PrPayrollItemPO();
                     BeanUtils.copyProperties(i, item);
                     item.setId(null);
-                    item.setItemName(i.getBaseItemName());
-                    item.setBaseItemCode(i.getBaseItemCode());
-                    item.setItemType(i.getBaseItemType());
+                    item.setManagementId(paramItem.getManagementId());
+                    item.setParentItemCode(i.getItemCode());
                     item.setPayrollGroupCode(paramItem.getGroupCode());
-                    item.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
                     return item;
                 })
                 .collect(Collectors.toList());
         itemService.addList(itemList);
         return result;
-    }
 
-    @Override
-    public List<String> getNameList(String managementId) {
-//        List<String> nameList = prGroupMapper.selectNameList(managementId);
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> deletePrItemFromGroup(String prGroupId, String prItemId, String prItemName) {
-
-        Map<String, Object> result = new HashMap<>();
-        int deleteRows = 0;
-        // 删除薪资项会影响的薪资项列表
-        List<String> failList = new ArrayList<>();
-        // 获取薪资组的参数
-        PrGroupEntity param = new PrGroupEntity();
-        param.setEntityId(prGroupId);
-        List<PrItemEntity> prItemEntityList = new ArrayList<>();
-        try {
-//            prItemEntityList = this.getItem(param).getPrItemEntityList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (prItemEntityList == null) {
-            result.put("FAILURE", failList);
-            return result;
-        }
-        prItemEntityList.stream()
-                .filter(i -> i.getType().equals(ItemTypeEnum.CALC.getValue()))
-                .forEach(i -> {
-                    List<String> prItemNames = getPayItems(i.getFormula());
-                    if (prItemNames.stream()
-                            .anyMatch(str -> str.trim().equals(prItemName))) {
-                        failList.add(i.getName());
-                    }
-                });
-        if (failList.size() == 0) {
-            try {
-//                deleteRows = itemService.deleteItemById(prItemId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            result.put("SUCCESS", deleteRows);
-        } else {
-            result.put("FAILURE", failList);
-        }
-        return result;
     }
 
     @Override
@@ -174,14 +164,13 @@ public class PrGroupServiceImpl implements PrGroupService {
         }
         items.forEach(i -> {
             i.setPayrollGroupCode(to);
-            i.setItemCode(codeGenerator.genPrItemCode(toEntity.getManagementId()));
+            i.setParentItemCode(null);
         });
         //删除原来存在于该薪资组的薪资项
         int deleteItemResult = prPayrollItemMapper.deleteItemByGroupCode(to);
         if (deleteItemResult == 0) {
             throw new RuntimeException("导入目标薪资组中薪资项删除失败");
         }
-        // TODO 修改了插入批量薪资项API
         int insertItemResult = itemService.addList(items);
         if (insertItemResult == 0) {
             throw new RuntimeException("导入薪资组中薪资项时失败");
@@ -218,11 +207,9 @@ public class PrGroupServiceImpl implements PrGroupService {
         if (prGroupAddResult == 0) {
             throw new RuntimeException("复制薪资组失败");
         }
-        List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(srcEntity.getGroupCode(),
-                0, 0).getList();
+        List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(srcEntity.getGroupCode());
         itemList.forEach(i -> {
             i.setPayrollGroupCode(newEntity.getGroupCode());
-            i.setItemCode(codeGenerator.genPrItemCode(srcEntity.getManagementId()));
         });
         int itemAddResult = itemService.addList(itemList);
         if (itemAddResult == 0) {
@@ -258,6 +245,13 @@ public class PrGroupServiceImpl implements PrGroupService {
             prPayrollGroupHistoryPO.setModifiedBy("system");
             prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
         }
+        // 更新审批历史
+        ApprovalHistoryPO approvalHistoryPO = new ApprovalHistoryPO();
+        approvalHistoryPO.setBizCode(paramItem.getGroupCode());
+        approvalHistoryPO.setBizType(BizTypeEnum.PR_GROUP.getValue());
+        approvalHistoryPO.setApprovalResult(paramItem.getApprovalStatus());
+        approvalHistoryPO.setComments(paramItem.getComments());
+        approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组
         int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
@@ -268,6 +262,13 @@ public class PrGroupServiceImpl implements PrGroupService {
     public PrPayrollGroupHistoryPO getLastVersion(String srcCode) {
         PrPayrollGroupHistoryPO lastVersionData = prPayrollGroupHistoryMapper.selectLastVersionByCode(srcCode);
         return lastVersionData;
+    }
+
+    @Override
+    public List<HashMap<String, String>> getPrGroupNameList(String query, String managementId) {
+        List<HashMap<String, String>> result = new ArrayList<>(50);
+        result = prPayrollGroupMapper.selectGroupNameListByName(query, managementId);
+        return result;
     }
 
     // 从公式中获取薪资项名称列表

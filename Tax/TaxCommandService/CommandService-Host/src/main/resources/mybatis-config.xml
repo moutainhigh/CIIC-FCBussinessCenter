@@ -23,4 +23,7 @@
     <!--<mapper resource="mapper/OrderPOMapper.xml"/>-->
 
     <!--</mappers>-->
+    <typeHandlers>
+             <package name="com.ciicsh.gto.fcbusinesscenter.tax.util.typehandler"/>
+     </typeHandlers>
 </configuration>

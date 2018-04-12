@@ -2,18 +2,19 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.ResultEntity;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.*;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
-import com.ciicsh.gto.salarymanagementcommandservice.util.constants.ResultMessages;
+import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +36,7 @@ import java.util.stream.Collectors;
  * @author jiangtianning
  */
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping(value = "/api/salaryManagement")
 public class GroupController {
 
     @Autowired
@@ -48,7 +46,7 @@ public class GroupController {
     private CodeGenerator codeGenerator;
 
     @Autowired
-    private PrItemService prItemService;
+    private ManagementProxy managementProxy;
 
     @GetMapping(value = "/importPrGroup")
     public JsonResult importPrGroup(@RequestParam String from,
@@ -68,16 +66,18 @@ public class GroupController {
      */
     @GetMapping(value = "/copyPrGroup")
     public JsonResult copyPrGroup(@RequestParam String srcCode,
-                                           @RequestParam String newName){
+                                  @RequestParam String newName,
+                                  @RequestParam String managementId){
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
         newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
         newEntity.setGroupName(newName);
+        newEntity.setManagementId(managementId);
         newEntity.setVersion("1.0");
         boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
-        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_COPY_SUCCESS)
-                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_COPY_FAIL);
+        return result ? JsonResult.success(newEntity.getGroupCode(), MessageConst.PAYROLL_GROUP_COPY_SUCCESS)
+                : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_COPY_FAIL);
     }
 
 
@@ -107,22 +107,6 @@ public class GroupController {
     }
 
     /**
-     * 获取薪资组名列表
-     * @param managementId
-     * @param pageNum
-     * @return
-     */
-    @GetMapping(value = "/prGroupName")
-    public ResultEntity getPrGroupNameList(@RequestParam String managementId,
-                                                   @RequestParam(required = false, defaultValue = "1") Integer pageNum){
-        PrGroupEntity paramItem = new PrGroupEntity();
-        setCommonParam(paramItem, managementId, null);
-        List<String> resultList = prGroupService.getNameList(managementId);
-        return ResultEntity.success(resultList);
-    }
-
-
-    /**
      * 更新薪资组
      * @return
      */
@@ -146,7 +130,24 @@ public class GroupController {
     public JsonResult getPrGroup(@PathVariable("code") String code) {
 
         PrPayrollGroupPO result =  prGroupService.getItemByCode(code);
-        return JsonResult.success(result);
+        PrPayrollGroupDTO prPayrollGroupDTO = GroupTranslator.toPrPayrollGroupDTO(result);
+        GetManagementRequestDTO param = new GetManagementRequestDTO();
+        String managementLabel;
+        param.setQueryWords(prPayrollGroupDTO.getManagementId());
+        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<DetailResponseDTO>> managementResult
+                = managementProxy.getManagement(param);
+        if (managementResult == null) {
+            managementLabel = "";
+        } else {
+            List<DetailResponseDTO> managementList = managementResult.getObject();
+            if (managementList == null || managementList.size() == 0) {
+                managementLabel = "";
+            } else {
+                managementLabel = managementList.get(0).getTitle();
+            }
+        }
+        prPayrollGroupDTO.setManagementLabel(managementLabel);
+        return JsonResult.success(prPayrollGroupDTO);
     }
 
     /**
@@ -159,21 +160,10 @@ public class GroupController {
 
         PrPayrollGroupPO newParam = new PrPayrollGroupPO();
         BeanUtils.copyProperties(paramItem, newParam);
-        newParam.setGroupCode(codeGenerator.genPrGroupCode(newParam.getManagementId()));
         newParam.setCreatedBy("jiang");
         newParam.setModifiedBy("jiang");
-        // Version 生成
-        newParam.setVersion("1.0");
         int result= prGroupService.addItem(newParam);
         return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
-    }
-
-    @DeleteMapping(value = "/prGroup/{prGroupId}/prItem/{prItemId}")
-    public ResultEntity deletePrItemFromPrGroup(@PathVariable("prGroupId") String prGroupId,
-                                                       @PathVariable("prItemId") String prItemId,
-                                                       @RequestParam String prItemName) {
-        Map<String, Object> result =  prGroupService.deletePrItemFromGroup(prGroupId, prItemId, prItemName);
-        return ResultEntity.success(result);
     }
 
     /**
@@ -198,6 +188,13 @@ public class GroupController {
         return JsonResult.success(keyValues);
     }
 
+    @GetMapping("/prGroupName")
+    public  JsonResult getPayrollGroupNameList(@RequestParam String query,
+                                               @RequestParam(required = false, defaultValue = "") String managementId){
+        List<HashMap<String, String>> nameList = prGroupService.getPrGroupNameList(query, managementId);
+        return JsonResult.success(nameList);
+    }
+
     @PutMapping("/approvePayrollGroup/{code}")
     public JsonResult approvePayrollGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
@@ -205,8 +202,8 @@ public class GroupController {
         updateParam.setGroupCode(code);
         updateParam.setModifiedBy("system");
         boolean result = prGroupService.approvePrGroup(updateParam);
-        return result ? JsonResult.success(null, ResultMessages.PAYROLL_GROUP_APPROVE_SUCCESS)
-                : JsonResult.faultMessage(ResultMessages.PAYROLL_GROUP_APPROVE_FAIL);
+        return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_APPROVE_SUCCESS)
+                : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_APPROVE_FAIL);
     }
 
     @GetMapping("/lastVersionPayrollGroupItems")

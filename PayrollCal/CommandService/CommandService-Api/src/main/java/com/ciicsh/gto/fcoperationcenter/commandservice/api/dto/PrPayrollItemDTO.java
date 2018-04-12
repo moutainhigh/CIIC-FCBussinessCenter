@@ -99,6 +99,10 @@ public class PrPayrollItemDTO {
      */
 	private Integer calPrecision;
     /**
+     * 原始完整公式结构体
+     */
+    private String fullFormula;
+    /**
      * 公式原始内容
      */
     private String originFormula;
@@ -106,6 +110,10 @@ public class PrPayrollItemDTO {
      * 公式内容
      */
 	private String formulaContent;
+    /**
+     * 条件原始输入值
+     */
+    private String originCondition;
     /**
      * 薪资项取值范围的条件描述
      */
@@ -122,6 +130,10 @@ public class PrPayrollItemDTO {
      * 备注
      */
 	private String remark;
+    /**
+     * 是否可以上锁
+     */
+    private Boolean canLock;
     /**
      * 是否有效
      */
