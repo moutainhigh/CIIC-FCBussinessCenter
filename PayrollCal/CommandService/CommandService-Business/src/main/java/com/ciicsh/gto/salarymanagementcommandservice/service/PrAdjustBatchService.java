@@ -30,6 +30,8 @@ public interface PrAdjustBatchService {
 
     int insert(PrAdjustBatchPO adjustBatchPO);
 
+    PrAdjustBatchPO getAdjustBatchPO(PrAdjustBatchPO adjustBatchPO);
+
     List<DBObject> getAdjustBatch(String batchCode, String originCode);
 
     /**

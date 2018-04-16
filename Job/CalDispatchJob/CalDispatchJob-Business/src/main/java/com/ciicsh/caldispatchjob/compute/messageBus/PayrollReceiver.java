@@ -6,6 +6,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,9 +54,7 @@ public class PayrollReceiver {
     public void receive(PayrollEmpGroup message){
         //logger.info("received employee group from message: " + message.getIds().size());
         processEmployees(message);
-
     }
-
 
     @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
     public void receive(ComputeMsg computeMsg){
@@ -91,13 +91,15 @@ public class PayrollReceiver {
      * @param message
      */
     private void processEmployees(PayrollEmpGroup message){
-        List<String> empIds = message.getIds();
-        List<String> groupIds = message.getEmpGroupIds();
+        List<String> empIds = StringUtils.isNotEmpty(message.getIds())? null : Arrays.asList(message.getIds().split(","));
+        List<String> groupIds = StringUtils.isNotEmpty(message.getEmpGroupIds())? null :Arrays.asList(message.getEmpGroupIds().split(","));
 
-        logger.info("Opt Operation Type :" + message.getOperateType());
-
+        if(groupIds == null || empIds == null){
+            logger.info("groupIds or empIds should not be empty");
+            return;
+        }
         if(message.getOperateType() == OperateTypeEnum.ADD.getValue()){
-            String empGroupId = String.valueOf(groupIds.toArray()[0]);
+            String empGroupId = groupIds.get(0);
             logger.info("ADD Opt");
             logger.info("emp group id:" + empGroupId);
             empGroupService.batchInsertOrUpdateGroupEmployees(empGroupId,empIds);

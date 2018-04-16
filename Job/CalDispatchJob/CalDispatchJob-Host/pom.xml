@@ -63,6 +63,12 @@
             <version>${mybatisplus.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.ciicsh.gt1.companycenter</groupId>
+            <artifactId>webcommandservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
 
     </dependencies>
 

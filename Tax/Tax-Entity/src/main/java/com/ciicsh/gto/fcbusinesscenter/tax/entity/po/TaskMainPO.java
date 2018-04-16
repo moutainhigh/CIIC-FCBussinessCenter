@@ -1,10 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableLogic;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotations.*;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -90,15 +87,15 @@ public class TaskMainPO extends Model<TaskMainPO> {
 	/**
 	 * 是否有合并明细
 	 */
-	@TableLogic
-	private Boolean isCombined;
+	@TableField("has_combined")
+	private Boolean hasCombined;
 
-	public Boolean getCombined() {
-		return isCombined;
+	public Boolean getHasCombined() {
+		return hasCombined;
 	}
 
-	public void setCombined(Boolean combined) {
-		isCombined = combined;
+	public void setHasCombined(Boolean hasCombined) {
+		this.hasCombined = hasCombined;
 	}
 
 	public String getStatusName() {

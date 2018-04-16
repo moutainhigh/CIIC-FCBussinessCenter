@@ -82,4 +82,49 @@
 				AND b.is_active = 1
 	</select>
 
+	<insert id="upsertEmployee" parameterType="PrEmployeePO">
+		REPLACE INTO
+		pr_employee (
+			employee_id,
+			id_card_type,
+			id_num,
+			employee_name,
+			former_name,
+			management_id,
+			gender,
+			birthday,
+			country_code,
+			country_name,
+			province_code,
+			province_name,
+			city_code,
+			city_name,
+			modified_time,
+			created_by,
+			modified_by,
+			is_active
+		)
+		VALUES
+		(
+			#{employeeId},
+			#{idCardType},
+			#{idNum},
+			#{employeeName},
+			#{formerName},
+			#{managementId},
+			#{gender},
+			#{birthday},
+			#{countryCode},
+			#{countryName},
+			#{provinceCode},
+			#{provinceName},
+			#{cityCode},
+			#{cityName},
+			#{modifiedTime},
+			created_by,
+			modified_by,
+			1
+		)
+	</insert>
+
 </mapper>

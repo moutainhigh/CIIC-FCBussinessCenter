@@ -137,7 +137,7 @@
 		t2.task_no
 		FROM tax_fc_calculation_batch_task_main t1
 		left join tax_fc_task_main t2 on t1.task_main_id = t2.id
-		where 1=1 and t2.is_active=true
+		where 1=1 and t2.is_active=true and t2.status!='05'
 		<if test="calBatchId!=null and calBatchId!=''"> and t1.cal_batch_id = #{calBatchId}</if>
 		ORDER BY t2.created_time desc
 	</select>

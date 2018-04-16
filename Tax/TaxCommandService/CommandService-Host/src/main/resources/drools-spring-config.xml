@@ -21,7 +21,7 @@
     <bean id="kiePostProcessor" class="org.kie.spring.annotations.KModuleAnnotationPostProcessor"/>
 
     <!--<kie:kmodule id="kmodule" >  &lt;!&ndash; 起名规范就可以 &ndash;&gt;
-        <kie:kbase name="PointDomainKB" packages="com.ciicsh.gt1.fcbusinesscenter.tax.fcbusinesscenter-tax-commandservice-drools">&lt;!&ndash; 起名规范就可以    packages=/指到最后一层文件夹/  &ndash;&gt;
+        <kie:kbase name="PointDomainKB" packages="com.ciicsh.gt1.fcbusinesscenter.tax.fcbusinesscenter_tax_commandservice_drools">&lt;!&ndash; 起名规范就可以    packages=/指到最后一层文件夹/  &ndash;&gt;
 
             <kie:ksession name="PointDomainKS" type="stateless"> &lt;!&ndash; 起名规则就可以，这个的name 是要在下面的测试类中用到的 &ndash;&gt;
             </kie:ksession>
