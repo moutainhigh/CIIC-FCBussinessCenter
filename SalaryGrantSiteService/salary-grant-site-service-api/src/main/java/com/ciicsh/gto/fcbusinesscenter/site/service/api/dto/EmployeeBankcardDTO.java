@@ -66,6 +66,14 @@ public class EmployeeBankcardDTO extends CommonListDTO implements Serializable {
      * 默认卡汇率
      */
     private BigDecimal defaultCardExchange;
+    /**
+     * 省份代码
+     */
+    private String provinceCode;
+    /**
+     * 城市代码
+     */
+    private String cityCode;
 
     public Long getBankcardId() {
         return bankcardId;
@@ -169,5 +177,21 @@ public class EmployeeBankcardDTO extends CommonListDTO implements Serializable {
 
     public void setDefaultCardExchange(BigDecimal defaultCardExchange) {
         this.defaultCardExchange = defaultCardExchange;
+    }
+
+    public String getProvinceCode() {
+        return provinceCode;
+    }
+
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
     }
 }
