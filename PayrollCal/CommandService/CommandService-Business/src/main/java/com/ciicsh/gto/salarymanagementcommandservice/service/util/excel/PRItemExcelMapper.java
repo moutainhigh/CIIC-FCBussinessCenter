@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by bill on 17/12/15.
@@ -136,7 +135,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
      */
     private PrEmployeePO checkEmpDBExist(String empCode){
         PrEmployeePO employeePO = new PrEmployeePO();
-        employeePO.setEmpId(empCode);
+        employeePO.setEmployeeId(empCode);
         employeePO = employeeMapper.selectOne(employeePO);
         return employeePO;
     }
@@ -209,7 +208,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         String empName = rs.getProperties().getProperty(PayItemName.EMPLOYEE_NAME_CN);
         //如果姓名相同，使用系统里的值
         //如果姓名不相同，使用外部文件里的值，并且在计算结果中显示警告信息
-        boolean hasSameName = empName == employeePO.getEmpName();
+        boolean hasSameName = empName .equals( employeePO.getEmployeeName() );
 
         for (DBObject prItem: overrideList) {
             for (int i = 0; i < columNames.length; i++) { //索引从1开始，0 为 emp_code
@@ -223,9 +222,9 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
                     prItem.put("item_value", excelVal);
                 else { // 使用系统内部数据
                     if (prItemName.equals(PayItemName.EMPLOYEE_NAME_CN)) {
-                        prItem.put("item_value", employeePO.getEmpName());
+                        prItem.put("item_value", employeePO.getEmployeeName());
                     } else if (prItemName.equals(PayItemName.EMPLOYEE_CODE_CN)) {
-                        prItem.put("item_value", employeePO.getEmpId());
+                        prItem.put("item_value", employeePO.getEmployeeId());
                     } else if (prItemName.equals(PayItemName.EMPLOYEE_DEP_CN)) {
                         prItem.put("item_value", employeePO.getDepartment());
                     } else if (prItemName.equals(PayItemName.EMPLOYEE_BIRTHDAY_CN)) {

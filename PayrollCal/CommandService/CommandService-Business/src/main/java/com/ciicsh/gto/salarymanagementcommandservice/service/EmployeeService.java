@@ -2,7 +2,6 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeeTestPO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public interface EmployeeService {
      * @param employeeTestPOS 雇员主表数据
      * @return 是否增加成功
      */
-    Boolean addEmployees(List<PrEmployeeTestPO> employeeTestPOS, String empGroupCode);
+    Boolean addEmployees(List<PrEmployeePO> employeeTestPOS, String empGroupCode);
 
     /**
      * 获取雇员组雇员列表
@@ -45,4 +44,11 @@ public interface EmployeeService {
      * @return
      */
     int hasEmployees(String empGroupCode);
+
+    /**
+     * 更新插入本地雇员表雇员
+     * @param employeePO
+     * @return
+     */
+    int upsertEmployee(PrEmployeePO employeePO);
 }

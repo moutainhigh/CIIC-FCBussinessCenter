@@ -53,6 +53,12 @@
             <artifactId>apiservice-api</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1.companycenter</groupId>
+            <artifactId>webcommandservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!--二方库依赖 ED-->
 
         <!--三方库依赖 ST-->

@@ -42,4 +42,8 @@ public interface PrEmployeeMapper extends BaseMapper<PrEmployeePO> {
      */
     int hasEmployees(@Param("empGroupCode") String empGroupCode);
 
+    /**
+     * 插入（更新）本地雇员冗余表
+     */
+    int upsertEmployee(PrEmployeePO prEmployeePO);
 }

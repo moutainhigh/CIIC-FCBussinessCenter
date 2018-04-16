@@ -1,21 +1,20 @@
 package com.ciicsh.gto.salarymanagement.entity.po;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
-
 import java.io.Serializable;
+
 import java.util.Date;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
 
 /**
  * <p>
- * 配置表，雇员个人基本信息表。
+ * 雇员主数据册数
  * </p>
  *
  * @author Neo Jiang
- * @since 2017-12-05
+ * @since 2017-12-08
  */
 @TableName("pr_employee")
 public class PrEmployeePO extends Model<PrEmployeePO> {
@@ -23,50 +22,43 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 自增ID号
+     * 终身雇员ID
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Long id;
+    @TableId("employee_id")
+	private String employeeId;
     /**
-     * 雇员ID
+     * 证件类别  
+1:身份证 2:护照 3:军(警)官证 4:士兵证 5:台胞证 6:回乡证 7:其他
      */
-	@TableField("emp_id")
-	private String empId;
-    /**
-     * 雇员名称
-     */
-	@TableField("emp_name")
-	private String empName;
-    /**
-     * 雇员英文名称
-     */
-	@TableField("emp_name_en")
-	private String empNameEn;
-
-	/**
-	 * 曾用名
-	 */
-	@TableField("former_name")
-	private String formerName;
-
-	/**
-	 * 证件类别
-	 1:身份证 2:护照 3:军(警)官证 4:士兵证 5:台胞证 6:回乡证 7:其他
-	 */
 	@TableField("id_card_type")
 	private Integer idCardType;
-	/**
-	 * 证件号
-	 */
+    /**
+     * 证件号
+     */
 	@TableField("id_num")
 	private String idNum;
-	/**
-	 * 性别  1:男 0:女
-	 */
+    /**
+     * 雇员姓名
+     */
+	@TableField("employee_name")
+	private String employeeName;
+    /**
+     * 曾用名
+     */
+	@TableField("former_name")
+	private String formerName;
+    /**
+     * 所属管理方ID
+     */
+	@TableField("management_id")
+	private String managementId;
+    /**
+     * 性别  1:男 0:女
+     */
 	private Boolean gender;
-	/**
-	 * 生日
-	 */
+    /**
+     * 生日
+     */
 	private Date birthday;
 
 	/**
@@ -80,82 +72,70 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 	@TableField("country_code")
 	private String countryCode;
 	/**
+	 * 国家名
+	 */
+	@TableField("country_name")
+	private String countryName;
+	/**
 	 * 省份代码
 	 */
 	@TableField("province_code")
 	private String provinceCode;
+	/**
+	 * 省份
+	 */
+	@TableField("province_name")
+	private String provinceName;
 	/**
 	 * 城市代码
 	 */
 	@TableField("city_code")
 	private String cityCode;
 	/**
-	 * 部门
+	 * 城市代码
 	 */
+	@TableField("city_name")
+	private String cityName;
+    /**
+     * 部门
+     */
 	private String department;
-	/**
-	 * 职位
-	 */
+    /**
+     * 职位
+     */
 	private String position;
-
-	/**
-	 * 备注
-	 */
-	private String remark;
-
+    /**
+     * 数据创建时间
+     */
+	@TableField("created_time")
+	private Date createdTime;
+    /**
+     * 最后修改时间
+     */
+	@TableField("modified_time")
+	private Date modifiedTime;
+    /**
+     * 数据创建人
+     */
+	@TableField("created_by")
+	private String createdBy;
+    /**
+     * 最后修改人
+     */
+	@TableField("modified_by")
+	private String modifiedBy;
 	/**
 	 * 是否有效
 	 */
 	@TableField("is_active")
 	private Boolean isActive;
-	/**
-	 * 数据创建时间
-	 */
-	@TableField("created_time")
-	private Date createdTime;
-	/**
-	 * 最后修改时间
-	 */
-	@TableField("modified_time")
-	private Date modifiedTime;
-	/**
-	 * 创建人
-	 */
-	@TableField("created_by")
-	private String createdBy;
-	/**
-	 * 最后修改人
-	 */
-	@TableField("modified_by")
-	private String modifiedBy;
 
-
-	public Long getId() {
-		return id;
+	public String getEmployeeId() {
+		return employeeId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getEmpId() {
-		return empId;
-	}
-
-	public void setEmpId(String empId) {
-		this.empId = empId;
-	}
-
-	public String getEmpName() {
-		return empName;
-	}
-
-	public void setEmpName(String empName) {
-		this.empName = empName;
-	}
-
-	public String getEmpNameEn() {
-		return empNameEn;
+	public void setEmployeeId(String employeeId) {
+		this.employeeId = employeeId;
 	}
 
 	public Integer getIdCardType() {
@@ -174,12 +154,28 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 		this.idNum = idNum;
 	}
 
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
 	public String getFormerName() {
 		return formerName;
 	}
 
 	public void setFormerName(String formerName) {
 		this.formerName = formerName;
+	}
+
+	public String getManagementId() {
+		return managementId;
+	}
+
+	public void setManagementId(String managementId) {
+		this.managementId = managementId;
 	}
 
 	public Boolean getGender() {
@@ -246,35 +242,6 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 		this.position = position;
 	}
 
-	public String getRemark() {
-		return remark;
-	}
-
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-
-
-	public void setEmpNameEn(String empNameEn) {
-		this.empNameEn = empNameEn;
-	}
-
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public Boolean getActive() {
-		return isActive;
-	}
-
-	public void setActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
 	public Date getCreatedTime() {
 		return createdTime;
 	}
@@ -307,23 +274,44 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getCountryName() {
+		return countryName;
+	}
 
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+
+	public String getProvinceName() {
+		return provinceName;
+	}
+
+	public void setProvinceName(String provinceName) {
+		this.provinceName = provinceName;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
 
 	@Override
 	protected Serializable pkVal() {
-		return this.id;
+		return this.employeeId;
 	}
 
 	@Override
 	public String toString() {
 		return "PrEmployeePO{" +
-			"id=" + id +
-			", empId=" + empId +
-			", empName=" + empName +
-			", empNameEn=" + empNameEn +
-			", formerName=" + formerName +
+			"employeeId=" + employeeId +
 			", idCardType=" + idCardType +
 			", idNum=" + idNum +
+			", employeeName=" + employeeName +
+			", formerName=" + formerName +
+			", managementId=" + managementId +
 			", gender=" + gender +
 			", birthday=" + birthday +
 			", countryCode=" + countryCode +
@@ -331,8 +319,6 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 			", cityCode=" + cityCode +
 			", department=" + department +
 			", position=" + position +
-			", remark=" + remark +
-			", isActive=" + isActive +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
