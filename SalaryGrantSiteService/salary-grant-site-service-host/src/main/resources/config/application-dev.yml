@@ -1,0 +1,8 @@
+database:
+  host: 172.16.9.15
+  port: 3306
+  databasename: gtobusinessdb
+  username: root
+  password: a111111
+eureka:
+  serviceurl: http://172.16.9.21:9602/eureka
