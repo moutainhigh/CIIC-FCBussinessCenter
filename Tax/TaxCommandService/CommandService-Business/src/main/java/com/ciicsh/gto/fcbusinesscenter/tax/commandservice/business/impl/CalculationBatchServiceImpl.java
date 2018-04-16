@@ -105,9 +105,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         for(CalculationBatchPO p: calculationBatchPOList){
             //状态中文转化
             p.setStatusName(EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,p.getStatus()));
-            List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //查询由当前批次创建的任务
-
+            List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //组合任务编号
             String sb = tps.stream().map(TaskMainPO::getTaskNo).collect(Collectors.joining(","));
             p.setTaskNos(sb);
@@ -544,7 +543,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
                 BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
                 BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
-                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
+//                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
                 BigDecimal taxAmount=new BigDecimal(0);//应纳税额
 
                 List<TaskMainDetailPO> tps = entry.getValue();
@@ -558,7 +557,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance());
                     deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
                     deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
-                    deduction = deduction.add(tp.getDeduction());
+//                    deduction = deduction.add(tp.getDeduction());
                     taxAmount = taxAmount.add(tp.getTaxAmount());
                 }
 
@@ -567,7 +566,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 taskMainDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
                 taskMainDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
                 taskMainDetailPO.setDeductHouseFund(deductHouseFund);
-                taskMainDetailPO.setDeduction(deduction);
+                taskMainDetailPO.setDeduction(new BigDecimal(3500));
                 taskMainDetailPO.setTaxAmount(taxAmount);
                 //更新合并后数据值
                 this.taskMainDetailService.updateById(taskMainDetailPO);
@@ -580,7 +579,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 TaskMainPO tmp = new TaskMainPO();
                 tmp.setId(taskMainId);
-                tmp.setCombined(true);
+                tmp.setHasCombined(true);
                 this.taskMainMapper.updateById(tmp);//更新主任务信息，标记任务存在合并的明细
 
             }

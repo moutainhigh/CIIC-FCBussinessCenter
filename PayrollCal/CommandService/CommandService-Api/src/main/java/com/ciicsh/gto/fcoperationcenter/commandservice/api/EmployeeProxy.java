@@ -33,13 +33,13 @@ public interface EmployeeProxy {
     @PostMapping("/addEmployees")
     JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS,@RequestParam String empGroupCode);
 
-
-    @PostMapping("/getEmployees")
-    JsonResult getEmployees(@RequestParam String empGroupCode,
-                            @RequestParam(required = false, defaultValue = "") String empCode,
-                            @RequestParam(required = false, defaultValue = "") String empName,
-                            @RequestParam(required = false, defaultValue = "1",value = "pageNum") Integer pageNum,
-                            @RequestParam(required = false, defaultValue = "50",value = "pageSize")  Integer pageSize);
+//
+//    @PostMapping("/getEmployees")
+//    JsonResult getEmployees(@RequestParam String empGroupCode,
+//                            @RequestParam(required = false, defaultValue = "") String empCode,
+//                            @RequestParam(required = false, defaultValue = "") String empName,
+//                            @RequestParam(required = false, defaultValue = "1",value = "pageNum") Integer pageNum,
+//                            @RequestParam(required = false, defaultValue = "50",value = "pageSize")  Integer pageSize);
 
 
     @DeleteMapping("/batchDelete/{ids}")

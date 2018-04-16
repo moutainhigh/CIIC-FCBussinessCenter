@@ -98,8 +98,9 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             Map<String, String> map = new HashMap<>(16);
             //文件名称
             String fileName = "";
-            //TODO 区分本地税务和全国委托 测试
-            if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
+            //TODO 异地模板还没有
+            //00-本地,01-异地
+            if ("00".equals(taskSubDeclarePO.getAreaType())) {
                 fileName = "扣缴个人所得税报告表.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);
@@ -154,8 +155,9 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
             //文件名称
             String fileName = "";
-            //TODO 区分本地税务和全国委托 测试
-            if ("中智上海财务咨询公司大库".equals(taskSubDeclarePO.getDeclareAccount())) {
+            //TODO 异地模板还没有
+            //00-本地,01-异地
+            if ("00".equals(taskSubDeclarePO.getAreaType())) {
                 fileName = "上海地区个税.xls";
                 //获取POIFSFileSystem对象
                 fs = getFSFileSystem(fileName);

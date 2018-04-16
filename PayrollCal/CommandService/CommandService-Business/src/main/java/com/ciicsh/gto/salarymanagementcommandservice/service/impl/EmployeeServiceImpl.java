@@ -4,11 +4,8 @@ import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupEmpRelationPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeeBaseItemRelationPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeeTestPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupEmpRelationMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeBaseItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeService;
 import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
@@ -39,7 +36,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private KafkaSender sender;
 
-
     @Override
     public Integer addEmployee(PrEmployeePO employeePO) {
         return employeeMapper.insert(employeePO);
@@ -47,7 +43,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Boolean addEmployees(List<PrEmployeeTestPO> employeeTestPOS,String empGroupCode) {
+    public Boolean addEmployees(List<PrEmployeePO> employeeTestPOS, String empGroupCode) {
         try {
             List<String> ids = new ArrayList<>();
             employeeTestPOS.forEach(employeeTestPO -> {
@@ -56,7 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     Integer isExist = employeeMapper.isExistEmployee(employeeTestPO.getEmployeeId());
                     if(isExist <= 0)
                     {
-                        employeeMapper.insert(this.toEmployeePO(employeeTestPO));
+//                        employeeMapper.insert(this.toEmployeePO(employeeTestPO));
                     }
                     empGroupEmpRelationMapper.insert(this.toEmpGroupEmpRelationPO(employeeTestPO,empGroupCode));
                     ids.add(employeeTestPO.getEmployeeId());
@@ -115,32 +111,38 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.hasEmployees(empGroupCode);
     }
 
+    @Override
+    public int upsertEmployee(PrEmployeePO employeePO) {
 
-    private PrEmployeePO toEmployeePO(PrEmployeeTestPO employeeTestPO){
-        PrEmployeePO employeePO = new PrEmployeePO();
-        employeePO.setEmpId(employeeTestPO.getEmployeeId());
-        employeePO.setEmpName(employeeTestPO.getEmployeeName());
-        employeePO.setEmpNameEn(employeeTestPO.getEmployeeName());
-        employeePO.setFormerName(employeeTestPO.getFormerName());
-        employeePO.setIdCardType(employeeTestPO.getIdCardType());
-        employeePO.setIdNum(employeeTestPO.getIdNum());
-        employeePO.setGender(employeeTestPO.getGender());
-        employeePO.setBirthday(employeeTestPO.getBirthday());
-        employeePO.setJoinDate(employeeTestPO.getJoinDate());
-        employeePO.setCountryCode(employeeTestPO.getCountryCode());
-        employeePO.setProvinceCode(employeeTestPO.getProvinceCode());
-        employeePO.setCityCode(employeeTestPO.getCityCode());
-        employeePO.setDepartment(employeeTestPO.getDepartment());
-        employeePO.setPosition(employeeTestPO.getPosition());
-        employeePO.setActive(true);
-        employeePO.setCreatedTime(new Date());
-        employeePO.setCreatedBy("macor");
-        employeePO.setModifiedTime(new Date());
-        employeePO.setModifiedBy("macor");
-        return employeePO;
+        employeeMapper.upsertEmployee(employeePO);
+        return 0;
     }
 
-    private PrEmpGroupEmpRelationPO toEmpGroupEmpRelationPO(PrEmployeeTestPO employeeTestPO,String empGroupCode){
+//    private PrEmployeePO toEmployeePO(PrEmployeePO employeeTestPO){
+//        PrEmployeePO employeePO = new PrEmployeePO();
+//        employeePO.setEmpId(employeeTestPO.getEmployeeId());
+//        employeePO.setEmpName(employeeTestPO.getEmployeeName());
+//        employeePO.setEmpNameEn(employeeTestPO.getEmployeeName());
+//        employeePO.setFormerName(employeeTestPO.getFormerName());
+//        employeePO.setIdCardType(employeeTestPO.getIdCardType());
+//        employeePO.setIdNum(employeeTestPO.getIdNum());
+//        employeePO.setGender(employeeTestPO.getGender());
+//        employeePO.setBirthday(employeeTestPO.getBirthday());
+//        employeePO.setJoinDate(employeeTestPO.getJoinDate());
+//        employeePO.setCountryCode(employeeTestPO.getCountryCode());
+//        employeePO.setProvinceCode(employeeTestPO.getProvinceCode());
+//        employeePO.setCityCode(employeeTestPO.getCityCode());
+//        employeePO.setDepartment(employeeTestPO.getDepartment());
+//        employeePO.setPosition(employeeTestPO.getPosition());
+//        employeePO.setActive(true);
+//        employeePO.setCreatedTime(new Date());
+//        employeePO.setCreatedBy("macor");
+//        employeePO.setModifiedTime(new Date());
+//        employeePO.setModifiedBy("macor");
+//        return employeePO;
+//    }
+
+    private PrEmpGroupEmpRelationPO toEmpGroupEmpRelationPO(PrEmployeePO employeeTestPO, String empGroupCode){
         PrEmpGroupEmpRelationPO empGroupEmpRelationPO = new PrEmpGroupEmpRelationPO();
         empGroupEmpRelationPO.setEmpGroupCode(empGroupCode);
         empGroupEmpRelationPO.setEmpId(employeeTestPO.getEmployeeId());
