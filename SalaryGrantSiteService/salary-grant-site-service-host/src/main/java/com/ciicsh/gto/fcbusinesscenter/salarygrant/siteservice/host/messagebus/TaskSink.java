@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.site.service.host.messagebus;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
 import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import org.springframework.cloud.stream.annotation.Input;

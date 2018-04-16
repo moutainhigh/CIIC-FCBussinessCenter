@@ -1,22 +1,18 @@
-package com.ciicsh.gto.fcbusinesscenter.site.service.host.controller;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
-import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.site.service.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.site.service.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.site.service.api.dto.SalaryGrantMainTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.site.service.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.site.service.business.SalaryGrantMainTaskService;
-import com.ciicsh.gto.fcbusinesscenter.site.service.entity.bo.SalaryGrantMainTaskBO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
-import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -26,6 +22,7 @@ import java.util.Map;
  * @author gaoyang
  * @since 2018-1-16
  */
+@Api
 @RestController
 @RequestMapping(value = "/salarygrantMainTask")
 public class SalaryGrantMainTaskController {

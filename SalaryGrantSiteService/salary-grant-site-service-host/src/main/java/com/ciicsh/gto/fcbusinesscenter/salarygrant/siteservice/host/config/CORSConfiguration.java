@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.site.service.host.config;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.config;
 
 
 import org.springframework.context.annotation.Bean;
