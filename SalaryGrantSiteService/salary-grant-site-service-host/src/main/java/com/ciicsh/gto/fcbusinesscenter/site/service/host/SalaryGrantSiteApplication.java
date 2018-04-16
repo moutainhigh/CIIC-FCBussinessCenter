@@ -11,10 +11,14 @@ import org.springframework.context.annotation.ComponentScan;
  * @author gaoyang
  * @since 2018-01-19
  */
-@ComponentScan(basePackages = {"com.ciicsh.gto.fcbusinesscenter.site.service"})
 @MapperScan(basePackages = {"com.ciicsh.gto.fcbusinesscenter.site.service.dao"})
 @EnableFeignClients("**.api")
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages =
+        {
+                "com.ciicsh.gt1",
+                "com.ciicsh.gto.fcbusinesscenter.util",
+                "com.ciicsh.gto.fcbusinesscenter.site.service",
+        })
 public class SalaryGrantSiteApplication {
     //private final static Logger logger = LoggerFactory.getLogger(SalaryGrantSiteApplication.class);
 
