@@ -1,35 +1,98 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>salecenter-parent</artifactId>
+        <groupId>com.ciicsh.gt1.salecenter</groupId>
+        <version>1.0.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-    <artifactId>fcbusinesscenter-parent</artifactId>
+    <artifactId>salary-grant-site-service-host</artifactId>
     <version>1.0.0</version>
-    <relativePath>../../pom.xml</relativePath>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
 
-  <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-  <artifactId>salary-grant-site-service-host</artifactId>
-  <packaging>jar</packaging>
+    <dependencies>
+        <!-- 外部依赖 -->
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>mongo-client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <!-- 内部模块依赖 -->
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salary-grant-site-service-business</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salary-grant-site-service-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- 内部模块依赖 -->
+    </dependencies>
 
-  <build>
-    <finalName>gt1.fcbusinesscenter.salary-grant-site-service-host</finalName>
-  </build>
+    <build>
+        <finalName>gt1.salarygrant.siteservice-host</finalName>
+        <resources>
+            <resource>
+                <directory>../salary-grant-site-service-dao/src/main/resources/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/mapper/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-      <artifactId>salary-grant-site-service-business</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-      <artifactId>salary-grant-site-service-api</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-      <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot</artifactId>
-      </dependency>
-  </dependencies>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources/</directory>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- 这是spring boot devtool plugin -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!--fork :  如果没有该项配置，devtools不会起作用，即应用不会restart -->
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
