@@ -76,6 +76,8 @@
 		<result column="is_pay_supported" property="paySupported" />
 		<result column="is_declare_supported" property="declareSupported" />
 		<result column="is_transfer_supported" property="transferSupported" />
+		<result column="is_proof" property="proof" />
+		<result column="is_proofed" property="proofed" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
@@ -85,7 +87,36 @@
 
 
 	<!-- 查询批次明细 -->
-	<select id="queryCalculationBatchDetails" resultMap="BaseResultMap">
+	<select id="queryCalculationBatchDetails" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT
+		t2.id,t1.batch_no
+		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
+		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
+		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return
+		,t3.declare_account,t3.pay_account,t3.receipt_account,t3.support_no,t3.support_name,t3.is_support,t3.is_supported,t3.is_pay,t3.is_payed,t3.is_declare
+		,t3.is_declared,t3.is_transfer,t3.is_transferred,t3.is_declare_supported,t3.is_transfer_supported,t3.is_pay_supported,t3.is_proof,t3.is_proofed
+		FROM tax_fc_calculation_batch t1,tax_fc_calculation_batch_detail t2,tax_fc_employee_service_batch t3
+		where t1.is_active = true and t2.is_defer !=true and t1.id = t2.calculation_batch_id and t2.id = t3.cal_batch_detail_id
+		<if test="batchId != null and batchId != ''">
+			and t1.id = #{batchId}
+		</if>
+		<if test="employeeNo != null and employeeNo != ''">
+			and t2.employee_no like concat('%', #{employeeNo, jdbcType=VARCHAR},'%')
+		</if>
+		<if test="employeeName != null and employeeName != ''">
+			and t2.employee_name like concat('%', #{employeeName, jdbcType=VARCHAR},'%')
+		</if>
+		<if test="idType != null and idType != ''">
+			and t2.id_type = #{idType, jdbcType=CHAR}
+		</if>
+		<if test="idNo != null and idNo != ''">
+			and t2.id_no  like concat('%', #{idNo, jdbcType=VARCHAR},'%')
+		</if>
+
+	</select>
+
+	<!-- 查询批次明细 -->
+	<select id="queryCalculationBatchDetailsByBatchIds" resultMap="BaseResultMap">
 		SELECT
 		t2.id,t1.batch_no
 		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
@@ -98,12 +129,6 @@
 		<foreach collection="batchIds" item="batchId" open="(" separator="," close=")">
 			#{batchId}
 		</foreach>
-		<!--<if test="startTime != null and startTime != ''">
-			and date(created_time) &gt;= date(#{startTime,jdbcType=TIMESTAMP})
-		</if>
-		<if test="endTime != null and endTime != ''">
-			and date(created_time) &lt;= date(#{endTime,jdbcType=TIMESTAMP})
-		</if>-->
 	</select>
 
 	<!-- 查询批次对应的任务 -->
@@ -112,7 +137,7 @@
 		t2.task_no
 		FROM tax_fc_calculation_batch_task_main t1
 		left join tax_fc_task_main t2 on t1.task_main_id = t2.id
-		where 1=1
+		where 1=1 and t2.is_active=true and t2.status!='05'
 		<if test="calBatchId!=null and calBatchId!=''"> and t1.cal_batch_id = #{calBatchId}</if>
 		ORDER BY t2.created_time desc
 	</select>

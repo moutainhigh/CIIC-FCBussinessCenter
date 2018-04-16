@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubMoneyMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
@@ -13,7 +14,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -25,6 +28,9 @@ import java.util.List;
  */
 @Service
 public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, TaskSubMoneyPO> implements TaskSubMoneyService, Serializable {
+
+    @Autowired
+    private TaskMainService taskMainService;
 
     /**
      * 条件查询划款子任务
@@ -71,6 +77,10 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         if (StrKit.notBlank(requestForSubMoney.getStatusType())) {
             wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubMoney.getStatusType().toUpperCase()));
         }
+        //区域类型(00:本地,01:异地)
+        if (StrKit.notBlank(requestForSubMoney.getAreaType())) {
+            wrapper.andNew("area_type = {0}", requestForSubMoney.getAreaType());
+        }
         wrapper.andNew("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
 
@@ -114,9 +124,11 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      *
      * @param requestForSubMoney
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
         updateTaskSubMoneyStatus(requestForSubMoney);
+        taskMainService.updateTaskMainStatus(requestForSubMoney.getMainIds());
     }
 
     /**

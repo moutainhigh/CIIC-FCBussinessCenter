@@ -50,8 +50,8 @@
 	<select id="checkBackTraceBatch" resultType="int">
 		SELECT
 		COUNT(*)
-		FROM back_tracking_batch_code
-		WHERE origin_batch_code = #{originBatchCode} and status != 9;
+		FROM pr_back_tracking_batch
+		WHERE origin_batch_code = #{originBatchCode}
 	</select>
 
 </mapper>

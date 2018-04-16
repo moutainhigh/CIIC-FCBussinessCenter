@@ -18,7 +18,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?characterEncoding=utf8&useSSL=true
+    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?characterEncoding=utf8&useSSL=true&allowMultiQueries=true
     username: ${database.username}
     password: ${database.password}
   application:
@@ -56,7 +56,7 @@ spring:
              partitionCount: 1
 
         pr_compute-status-input-channel:
-          destination: fc_payroll_compute-status01 # topic name
+          destination: fc_payroll_compute-status # topic name
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:

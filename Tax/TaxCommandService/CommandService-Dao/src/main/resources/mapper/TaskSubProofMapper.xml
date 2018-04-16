@@ -159,4 +159,15 @@
         </if>-->
     </select>
 
+    <!--修改完税凭证子任务合并任务ID在子任务数组ID的状态-->
+    <update id="updateTaskProofStatus">
+      update tax_fc_task_sub_proof
+        set status = #{status},
+        modified_by = #{modifiedBy},
+        modified_time = #{modifiedTime}
+        where task_sub_proof_id in
+        <foreach collection="subProofIds" item="subProofId" open="(" separator="," close=")">
+            #{subProofId}
+        </foreach>
+    </update>
 </mapper>

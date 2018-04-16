@@ -36,6 +36,56 @@ public class RequestForTaskMain extends PageInfo {
 
     private Long taskMainDetailId;
 
+    private String employeeNo;
+
+    private String employeeName;
+
+    private String idType;
+
+    private String idNo;
+
+    private String[] status;
+
+    public String[] getStatus() {
+        return status;
+    }
+
+    public void setStatus(String[] status) {
+        this.status = status;
+    }
+
+    public String getEmployeeNo() {
+        return employeeNo;
+    }
+
+    public void setEmployeeNo(String employeeNo) {
+        this.employeeNo = employeeNo;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public String getIdType() {
+        return idType;
+    }
+
+    public void setIdType(String idType) {
+        this.idType = idType;
+    }
+
+    public String getIdNo() {
+        return idNo;
+    }
+
+    public void setIdNo(String idNo) {
+        this.idNo = idNo;
+    }
+
     public Long getTaskMainDetailId() {
         return taskMainDetailId;
     }

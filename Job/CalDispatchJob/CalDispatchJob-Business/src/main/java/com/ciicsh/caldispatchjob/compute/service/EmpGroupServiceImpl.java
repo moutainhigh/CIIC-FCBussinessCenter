@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +52,8 @@ public class EmpGroupServiceImpl {
             }).collect(Collectors.toList());
         }
 
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+
         List<BathUpdateOptions> options = new ArrayList<>();
         DBObject basicDBObject = null;
 
@@ -57,16 +61,21 @@ public class EmpGroupServiceImpl {
             BathUpdateOptions opt = new BathUpdateOptions();
             opt.setQuery(Query.query(Criteria.where("emp_group_code").is(item.getEmpGroupCode()).andOperator(Criteria.where("雇员编号").is(item.getEmployeeId()))));
             basicDBObject = new BasicDBObject();
-            basicDBObject.put("is_active", true);
             basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());
             basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,item.getEmployeeName());
-            basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,item.getBirthday());
+            basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,formatter.format(item.getBirthday()));
             basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,item.getDepartment());
             basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN,item.getGender() == true ? "男":"女");
             basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.getIdCardType());
-            basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,item.getJoinDate());
+            basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,formatter.format(item.getJoinDate()));
             basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.getIdNum());
             basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,item.getPosition());
+
+            basicDBObject.put(PayItemName.EMPLOYEE_FORMER_CN,"");
+            basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN,"");
+            basicDBObject.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN,"");
+            basicDBObject.put(PayItemName.EMPLOYEE_CITY_CODE_CN,"");
+
 
             //TODO 获取雇员服务协议和雇员扩展字段接口
             String emp_json_agreement = "{'薪资计算':{'薪资类型':{'复杂度':'复杂'}},'频率':'人月','金额':'1800／天'}";

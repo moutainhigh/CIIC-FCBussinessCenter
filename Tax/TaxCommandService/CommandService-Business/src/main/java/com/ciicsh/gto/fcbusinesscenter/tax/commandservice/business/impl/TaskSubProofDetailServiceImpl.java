@@ -132,7 +132,8 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO.getId())) {
-                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedBy(requestForSubDetail.getModifiedBy());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(subMap.get(taskSubProofDetailBO.getDeclareAccount()));
                     }
@@ -160,7 +161,8 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                     TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
                     BeanUtils.copyProperties(taskSubProofDetailBO, taskSubProofDetailPO);
                     if (taskSubProofDetailPO.getId() != null && !"".equals(taskSubProofDetailPO)) {
-                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
+//                        taskSubProofDetailPO.setModifiedBy(requestForSubDetail.getModifiedBy());
                     } else {
                         taskSubProofDetailPO.setTaskSubProofId(requestForSubDetail.getTaskId());
                     }
@@ -191,8 +193,6 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             TaskSubProofDetailPO taskSubProofDetailPO = new TaskSubProofDetailPO();
             //设置为不可用
             taskSubProofDetailPO.setActive(false);
-            //设置修改时间
-            taskSubProofDetailPO.setModifiedTime(LocalDateTime.now());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofDetailPO());
             //任务为可用状态

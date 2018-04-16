@@ -1,7 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -49,9 +48,19 @@ public class TaskSubSupplierDTO {
     private Integer pageSize;
 
     /**
+     * 批量完成供应商合并子任务ID
+     */
+    private String[] subHasCombinedSupplierIds;
+    /**
      * 批量完成/批量退回供应商子任务ID
      */
     private String[] subSupplierIds;
+
+    /**
+     * 批量退回主任务ID
+     */
+    private Long[] mainIds;
+
     /**
      * 主任务ID（为空，则为合并任务，被合并的子任务可能来自不同的主任务）
      */
@@ -132,6 +141,11 @@ public class TaskSubSupplierDTO {
      * 是否为合并任务
      */
     private Boolean isCombined;
+
+    /**
+     * 账户类型(00:独立户,01:大库)
+     */
+    private String accountType;
 
     public Long getId() {
         return id;
@@ -373,6 +387,30 @@ public class TaskSubSupplierDTO {
         isCombined = combined;
     }
 
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public String[] getSubHasCombinedSupplierIds() {
+        return subHasCombinedSupplierIds;
+    }
+
+    public void setSubHasCombinedSupplierIds(String[] subHasCombinedSupplierIds) {
+        this.subHasCombinedSupplierIds = subHasCombinedSupplierIds;
+    }
+
+    public Long[] getMainIds() {
+        return mainIds;
+    }
+
+    public void setMainIds(Long[] mainIds) {
+        this.mainIds = mainIds;
+    }
+
     @Override
     public String toString() {
         return "TaskSubSupplierDTO{" +
@@ -385,7 +423,9 @@ public class TaskSubSupplierDTO {
                 ", periodType='" + periodType + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
+                ", subHasCombinedSupplierIds=" + Arrays.toString(subHasCombinedSupplierIds) +
                 ", subSupplierIds=" + Arrays.toString(subSupplierIds) +
+                ", mainIds=" + Arrays.toString(mainIds) +
                 ", taskMainId=" + taskMainId +
                 ", taskSubSupplierId=" + taskSubSupplierId +
                 ", taskNo='" + taskNo + '\'' +
@@ -406,6 +446,7 @@ public class TaskSubSupplierDTO {
                 ", supportNo='" + supportNo + '\'' +
                 ", managerNo='" + managerNo + '\'' +
                 ", isCombined=" + isCombined +
+                ", accountType='" + accountType + '\'' +
                 '}';
     }
 }

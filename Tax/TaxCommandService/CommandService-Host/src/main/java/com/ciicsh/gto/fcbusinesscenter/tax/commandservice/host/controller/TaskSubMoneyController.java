@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,7 +169,7 @@ public class TaskSubMoneyController extends BaseController {
             //调用结算中心上海个税接口
             PayApplyProxyDTO payApplyProxyDTO = new PayApplyProxyDTO();
             //部门名称
-            payApplyProxyDTO.setDepartmentManager("财务咨询业务中心");
+            payApplyProxyDTO.setDepartmentName("财务咨询业务中心");
             //是否财务部
             payApplyProxyDTO.setIsFinancedept(0);
             //业务类型
@@ -251,7 +250,7 @@ public class TaskSubMoneyController extends BaseController {
                     TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
                     taskSubMoneyBO.setId(id);
                     taskSubMoneyBO.setPayStatus("01");
-                    taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
+//                    taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
                     taskSubMoneyBO.setPayApplyId((long) payApplyId);
                     taskSubMoneyBO.setPayApplyCode(payApplyCode);
                     taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);

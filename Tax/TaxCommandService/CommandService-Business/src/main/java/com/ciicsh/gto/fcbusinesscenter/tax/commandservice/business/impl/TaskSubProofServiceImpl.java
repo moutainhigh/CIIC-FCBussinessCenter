@@ -389,12 +389,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             wrapperId.andNew("is_active = {0}", true);
             //修改完税凭证子任务合并任务ID为空的状态为退回
             baseMapper.update(taskSubProofPO, wrapperId);
-            EntityWrapper wrapperSub = new EntityWrapper();
-            wrapperSub.setEntity(new TaskSubProofPO());
-            wrapperSub.in("task_sub_proof_id", requestForProof.getSubProofIds());
-            wrapperSub.andNew("is_active = {0}", true);
-            //修改完税凭证子任务合并任务ID在子任务数组ID的状态为退回
-            baseMapper.update(taskSubProofPO, wrapperSub);
+            //修改完税凭证子任务合并任务ID在子任务数组ID的状态
+            baseMapper.updateTaskProofStatus(requestForProof.getSubProofIds(),requestForProof.getStatus(),requestForProof.getModifiedBy(),LocalDateTime.now());
         }
     }
 
@@ -466,7 +462,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         }
         wrapper.in("task_sub_proof_id", ids);
         wrapper.andNew("is_active = {0}", true);
-        wrapper.orderBy("created_time", false);
+        wrapper.orderBy("modified_time", false);
         //根据子任务ID分页查询完税凭证申报明细
         Page<TaskSubProofDetailPO> page = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
         taskSubProofDetailPOList = taskSubProofDetailMapper.selectPage(page, wrapper);

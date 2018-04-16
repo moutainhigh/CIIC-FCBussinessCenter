@@ -10,6 +10,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,12 @@ public class TaskSubDeclareDetailController extends BaseController {
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.andNew("task_sub_declare_id={0}",taskSubDeclareDetailDTO.getSubDeclareId());
             wrapper.andNew("is_combined={0}",true);
+            if(StrKit.isNotEmpty(taskSubDeclareDetailDTO.getEmployeeNo())){
+                wrapper.like("employee_no",taskSubDeclareDetailDTO.getEmployeeNo());
+            }
+            if(StrKit.isNotEmpty(taskSubDeclareDetailDTO.getEmployeeName())){
+                wrapper.like("employee_name",taskSubDeclareDetailDTO.getEmployeeName());
+            }
             Page<TaskSubDeclareDetailPO> pageInfo = new Page<>(taskSubDeclareDetailDTO.getCurrentNum(), taskSubDeclareDetailDTO.getPageSize());
             List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = new ArrayList<>();
             taskSubDeclareDetailPOList = this.taskSubDeclareDetailService.selectPage(pageInfo, wrapper).getRecords();
@@ -139,7 +146,7 @@ public class TaskSubDeclareDetailController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubDeclareDetailIds", taskSubDeclareDetailDTO.getTaskSubDeclareDetailIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.confirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.confirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
 
@@ -167,7 +174,38 @@ public class TaskSubDeclareDetailController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskSubDeclareDetailIds", taskSubDeclareDetailDTO.getTaskSubDeclareDetailIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.unconfirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.unconfirmTaskSubDeclareDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+
+    /**
+     * 更新申报子任务明细
+     * @param taskSubDeclareDetailDTO
+     * @return
+     */
+    @RequestMapping(value = "/updateSubDeclareDetail")
+    public JsonResult<Boolean> updateSubDeclareDetail(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
+
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.andNew("id={0}",taskSubDeclareDetailDTO.getTaskSubDeclareDetailId());
+            TaskSubDeclareDetailPO tsddp = new TaskSubDeclareDetailPO();
+            tsddp.setDeductRetirementInsurance(taskSubDeclareDetailDTO.getDeductRetirementInsurance());
+            tsddp.setDeductMedicalInsurance(taskSubDeclareDetailDTO.getDeductMedicalInsurance());
+            tsddp.setDeductDlenessInsurance(taskSubDeclareDetailDTO.getDeductDlenessInsurance());
+            tsddp.setDeductHouseFund(taskSubDeclareDetailDTO.getDeductHouseFund());
+            tsddp.setIncomeTotal(taskSubDeclareDetailDTO.getIncomeTotal());
+            this.taskSubDeclareDetailService.update(tsddp,wrapper);//更新明细
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskSubDeclareDetailId", taskSubDeclareDetailDTO.getTaskSubDeclareDetailId().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskSubDeclareDetailController.updateSubDeclareDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "02"), LogType.APP, tags);
             jr.error();
         }
 

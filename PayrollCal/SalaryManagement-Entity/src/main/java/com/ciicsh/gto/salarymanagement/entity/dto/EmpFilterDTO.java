@@ -15,15 +15,15 @@ public class EmpFilterDTO {
         this.batchCode = batchCode;
     }
 
-    public String getEmpCodes() {
-        return empCodes;
+    public String getEmpGroupCode() {
+        return empGroupCode;
     }
 
-    public void setEmpCodes(String empCodes) {
-        this.empCodes = empCodes;
+    public void setEmpGroupCode(String empGroupCode) {
+        this.empGroupCode = empGroupCode;
     }
 
-    private String empCodes;
+    private String empGroupCode;
 
 
 

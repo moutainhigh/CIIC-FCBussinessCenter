@@ -18,8 +18,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBa
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.collector.CollectorsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +38,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMapper, CalculationBatchPO> implements CalculationBatchService, Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(CalculationBatchServiceImpl.class);
 
     @Autowired
     private CalculationBatchDetailServiceImpl calculationBatchDetailServiceImpl;
@@ -108,9 +105,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         for(CalculationBatchPO p: calculationBatchPOList){
             //状态中文转化
             p.setStatusName(EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,p.getStatus()));
-            List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //查询由当前批次创建的任务
-
+            List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //组合任务编号
             String sb = tps.stream().map(TaskMainPO::getTaskNo).collect(Collectors.joining(","));
             p.setTaskNos(sb);
@@ -132,47 +128,17 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
     public ResponseForCalBatchDetail queryCalculationBatchDetails(RequestForEmployees requestForEmployees) {
         {
             ResponseForCalBatchDetail responseForCalBatchDetail = new ResponseForCalBatchDetail();
-            //EntityWrapper wrapper = new EntityWrapper();
-            //wrapper.setEntity(new CalculationBatchDetailPO());
-            //批次主表id
-            /*if (requestForEmployees.getBatchid() != null) {
-                wrapper.andNew("calculation_batch_id = {0}", requestForEmployees.getBatchid());
-            }else{
-                return responseForCalBatchDetail;
-            }
-            //证件类型
-            if (StrKit.isNotEmpty(requestForEmployees.getIdType())) {
-                wrapper.andNew("id_type = {0}", requestForEmployees.getIdType());
-            }
-            //证件号
-            if (StrKit.isNotEmpty(requestForEmployees.getIdNo())) {
-                wrapper.andNew("id_no = {0}", requestForEmployees.getIdNo());
-            }
-            //雇员编号
-            if (StrKit.isNotEmpty(requestForEmployees.getEmployeeNo())) {
-                wrapper.andNew("employee_no = {0}", requestForEmployees.getEmployeeNo());
-            }
-            //雇员姓名
-            if (StrKit.isNotEmpty(requestForEmployees.getEmployeeName())) {
-                wrapper.andNew("employee_name = {0}", requestForEmployees.getEmployeeName());
-            }
-            //查询已申报的
-            wrapper.orderBy("id", true);*/
 
-            //Page<CalculationBatchDetailBO> page = new Page<CalculationBatchDetailBO>(0,10);
+            Map<String, Object> params = new HashMap<>();
+            params.put("batchId",requestForEmployees.getCalculationBatchId());
+            params.put("employeeNo",requestForEmployees.getEmployeeNo());
+            params.put("employeeName",requestForEmployees.getEmployeeName());
+            params.put("idType",requestForEmployees.getIdType());
+            params.put("idNo",requestForEmployees.getIdNo());
 
             Page<CalculationBatchDetailBO> page = new Page<CalculationBatchDetailBO>(requestForEmployees.getCurrentNum(), requestForEmployees.getPageSize());
 
-            CalculationBatchDetailBO calculationBatchDetailBO = new CalculationBatchDetailBO();
-            BeanUtils.copyProperties(requestForEmployees, calculationBatchDetailBO);
-            Long[] batchIds = new Long[1];
-            batchIds[0] = calculationBatchDetailBO.getCalculationBatchId();
-            List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetails(page,batchIds);
-
-            /*for(CalculationBatchDetailBO p : calculationBatchDetailBOList){
-                p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,p.getIdType()));//证件类型中文显示
-                p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT,p.getIncomeSubject()));//个税所得项目中文显示
-            }*/
+            List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetails(page,params);
 
             responseForCalBatchDetail.setRowList(calculationBatchDetailBOList);
             responseForCalBatchDetail.setCurrentNum(requestForEmployees.getCurrentNum());
@@ -250,6 +216,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubDeclarePO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubDeclarePO.setManagerName(p.getManagerName());//管理方名称
                         taskSubDeclarePO.setStatus("00");//草稿
+                        taskSubDeclarePO.setAccountType(cbd.getAccountType());//账户类型
+                        taskSubDeclarePO.setAreaType(cbd.getAreaType());//区域类型
                         //新增申报子任务
                         taskSubDeclareService.insert(taskSubDeclarePO);
                         //记录申报子任务
@@ -283,6 +251,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubMoneyPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubMoneyPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubMoneyPO.setStatus("00");//草稿
+                        taskSubMoneyPO.setAreaType(cbd.getAreaType());//区域类型
                         //新增划款子任务
                         taskSubMoneyService.insert(taskSubMoneyPO);
                         //记录划款子任务
@@ -314,6 +283,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubPaymentPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubPaymentPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubPaymentPO.setStatus("00");//草稿
+                        taskSubPaymentPO.setAreaType(cbd.getAreaType());//区域类型
                         //新增划款子任务
                         taskSubPaymentService.insert(taskSubPaymentPO);
                         //记录缴纳子任务已创建
@@ -349,6 +319,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubSupplierPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubSupplierPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubSupplierPO.setStatus("00");//草稿
+                        taskSubSupplierPO.setAccountType(cbd.getAccountType());//账户类型
                         //新增供应商处理子任务
                         taskSubSupplierService.insert(taskSubSupplierPO);
                         //记录供应商处理子任务已创建
@@ -505,14 +476,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         }
 
         //组装查询条件
-        Long[] cbatchIds = new Long[batchIds.length];
-        int k = 0;
-        for(String bid : batchIds){
-            cbatchIds[k] = new Long(bid);
-            k++;
-        }
+        Long[] cbatchIds = (Long[]) ConvertUtils.convert(batchIds,Long.class);
 
-        List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetails(cbatchIds);
+        List<CalculationBatchDetailBO> calculationBatchDetailBOList = baseMapper.queryCalculationBatchDetailsByBatchIds(cbatchIds);
         List<TaskMainDetailPO> taskMainDetailPOList = new ArrayList<>();
         for(CalculationBatchDetailBO cb : calculationBatchDetailBOList){
             TaskMainDetailPO taskMainDetailPO = new TaskMainDetailPO();
@@ -539,7 +505,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         columnMap.put("task_main_id",taskMainId);
         taskMainDetailPOList = taskMainDetailService.selectByMap(columnMap);
 
-        //按照雇员、申报账户、所得期间、所得项目分组
+        //按照雇员、所得期间、所得项目分组
         Map<String, List<TaskMainDetailPO>> groupbys = taskMainDetailPOList.stream()
                 .collect(Collectors.groupingBy(TaskMainDetailPO::groupBys));
 
@@ -577,7 +543,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
                 BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
                 BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
-                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
+//                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
                 BigDecimal taxAmount=new BigDecimal(0);//应纳税额
 
                 List<TaskMainDetailPO> tps = entry.getValue();
@@ -591,7 +557,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance());
                     deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
                     deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
-                    deduction = deduction.add(tp.getDeduction());
+//                    deduction = deduction.add(tp.getDeduction());
                     taxAmount = taxAmount.add(tp.getTaxAmount());
                 }
 
@@ -600,7 +566,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 taskMainDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
                 taskMainDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
                 taskMainDetailPO.setDeductHouseFund(deductHouseFund);
-                taskMainDetailPO.setDeduction(deduction);
+                taskMainDetailPO.setDeduction(new BigDecimal(3500));
                 taskMainDetailPO.setTaxAmount(taxAmount);
                 //更新合并后数据值
                 this.taskMainDetailService.updateById(taskMainDetailPO);
@@ -613,7 +579,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 TaskMainPO tmp = new TaskMainPO();
                 tmp.setId(taskMainId);
-                tmp.setCombined(true);
+                tmp.setHasCombined(true);
                 this.taskMainMapper.updateById(tmp);//更新主任务信息，标记任务存在合并的明细
 
             }

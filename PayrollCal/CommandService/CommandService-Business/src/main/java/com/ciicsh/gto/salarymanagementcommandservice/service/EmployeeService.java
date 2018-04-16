@@ -31,6 +31,9 @@ public interface EmployeeService {
     PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, String empCode, String empName, Integer pageNum, Integer pageSize);
 
 
+    List<EmployeeExtensionPO> getAllEmployees(String empGroupCode, String empCode, String empName);
+
+
     /**
      * 批量删除
      * @param ids 雇员和雇员组关系ID

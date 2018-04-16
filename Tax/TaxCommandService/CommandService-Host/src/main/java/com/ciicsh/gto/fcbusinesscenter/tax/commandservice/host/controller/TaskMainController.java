@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubsDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
@@ -182,27 +183,31 @@ public class TaskMainController extends BaseController {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
 
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.andNew("is_combine_confirmed = {0}",false);
-            wrapper.andNew("is_combined = {0}",true);
-            wrapper.in("task_main_id",taskMainDTO.getTaskMainIds());
-            int count = taskMainDetailService.selectCount(wrapper);
-            if(count>0){
+            //子任务与主任务的状态是否一致
+            boolean flag = this.taskMainService.isStatusSame(taskMainDTO.getTaskMainIds(),taskMainDTO.getStatus());
+            if(flag){
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.andNew("is_combine_confirmed = {0}",false);
+                wrapper.andNew("is_combined = {0}",true);
+                wrapper.in("task_main_id",taskMainDTO.getTaskMainIds());
+                int count = taskMainDetailService.selectCount(wrapper);
+                if(count>0){
 
-                jr.fill(JsonResult.ReturnCode.TM_ER01);
+                    jr.fill(JsonResult.ReturnCode.TM_ER01);
+                }else{
+                    RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+                    BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+                    taskMainService.submitTaskMains(requestForMainTaskMain);
+                }
             }else{
-                RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
-                BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
-                taskMainService.submitTaskMains(requestForMainTaskMain);
+                jr.fill(JsonResult.ReturnCode.TM_ER02);
             }
-
-
 //            //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainIds", taskMainDTO.getTaskMainIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskMainController.createMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.submitMainTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 
@@ -244,9 +249,16 @@ public class TaskMainController extends BaseController {
 
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
-            RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
-            BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
-            taskMainService.invalidTaskMains(requestForMainTaskMain);
+
+            //子任务与主任务的状态是否一致
+            boolean flag = this.taskMainService.isStatusSame(taskMainDTO.getTaskMainIds(),taskMainDTO.getStatus());
+            if(flag){
+                RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
+                BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
+                taskMainService.invalidTaskMains(requestForMainTaskMain);
+            }else{
+                jr.fill(JsonResult.ReturnCode.TM_ER03);
+            }
             //jr.fill(true);
         } catch (Exception e) {
             Map<String, String> tags = new HashMap<>(16);
@@ -414,7 +426,38 @@ public class TaskMainController extends BaseController {
             Map<String, String> tags = new HashMap<>(16);
             tags.put("taskMainDetailIds", taskMainDTO.getTaskMainDetailIds().toString());
             //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskMainController.confirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            LogTaskFactory.getLogger().error(e, "TaskMainController.unconfirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+
+    /**
+     * 更新主任务明细
+     * @param taskMainDetailDTO
+     * @return
+     */
+    @RequestMapping(value = "/updateTaskMainDetail")
+    public JsonResult<Boolean> updateTaskMainDetail(@RequestBody TaskMainDetailDTO taskMainDetailDTO) {
+
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.andNew("id={0}",taskMainDetailDTO.getTaskMainDetailId());
+            TaskMainDetailPO tmdp = new TaskMainDetailPO();
+            tmdp.setDeductRetirementInsurance(taskMainDetailDTO.getDeductRetirementInsurance());
+            tmdp.setDeductMedicalInsurance(taskMainDetailDTO.getDeductMedicalInsurance());
+            tmdp.setDeductDlenessInsurance(taskMainDetailDTO.getDeductDlenessInsurance());
+            tmdp.setDeductHouseFund(taskMainDetailDTO.getDeductHouseFund());
+            tmdp.setIncomeTotal(taskMainDetailDTO.getIncomeTotal());
+            this.taskMainDetailService.update(tmdp,wrapper);//更新明细
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainDetailId", taskMainDetailDTO.getTaskMainDetailId().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskMainController.updateTaskMainDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 

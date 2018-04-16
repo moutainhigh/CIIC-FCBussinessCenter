@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.util.excel;
 
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.salarymanagement.entity.enums.CompExcelImportEmum;
+import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 /**
  * Created by bill on 17/12/15.
@@ -24,11 +26,11 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
     private final static Logger logger = LoggerFactory.getLogger(PRItemExcelMapper.class);
 
-    public List<List<BasicDBObject>> getList() {
+    public Map<String,List<BasicDBObject>> getList() {
         return list;
     }
 
-    public void setList(List<List<BasicDBObject>> list) {
+    public void setList(Map<String,List<BasicDBObject>> list) {
         this.list = list;
     }
 
@@ -40,9 +42,21 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         this.importType = importType;
     }
 
-    private List<List<BasicDBObject>> list;
+    private Map<String,List<BasicDBObject>> list;
 
     private int importType;
+
+    public List<String> getIdentities() {
+        return identities;
+    }
+
+    public void setIdentities(List<String> identities) {
+        this.identities = identities;
+    }
+
+    private List<String> identities;
+
+
 
     @Autowired
     private PrEmployeeMapper employeeMapper;
@@ -51,10 +65,10 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
     @Override
     public List<BasicDBObject> mapRow(RowSet rs) throws Exception {
 
-        int columnCount = rs.getMetaData().getColumnCount();
-        String[] columNames = rs.getMetaData().getColumnNames();
+        //int columnCount = rs.getMetaData().getColumnCount();
+        String[] colNames = rs.getMetaData().getColumnNames();
         int rowIndex = rs.getCurrentRowIndex();
-        String sheetName = rs.getMetaData().getSheetName();
+        //String sheetName = rs.getMetaData().getSheetName();
 
         if(rs.getProperties().get(PayItemName.EMPLOYEE_CODE_CN) == null ){
             List<BasicDBObject> dbObjects = new ArrayList<>();
@@ -77,25 +91,25 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         }
 
         if(importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue()){
-           return overrideImport(empCode,employeePO,columNames,rs);
+           return overrideImport(rowIndex, rs, empCode, colNames);
         }else if(importType == CompExcelImportEmum.MODIFY_EXPORT.getValue()){
             List<BasicDBObject> dbObjects = getDbObjects(empCode);
             if(dbObjects == null){
                 return processMissEmpCode(rowIndex,empCode);
             }else {
-                return modifyImport(dbObjects,rs,empCode);
+                return modifyImport(dbObjects,rs,colNames);
             }
         } else if(importType == CompExcelImportEmum.APPEND_EXPORT.getValue()){
             List<BasicDBObject> dbObjects = getDbObjects(empCode);
             if(dbObjects == null){
-                return overrideImport(empCode,employeePO,columNames,rs);
+                return overrideImport(rowIndex, rs, empCode, colNames);
             }else {
-                return modifyImport(dbObjects,rs,empCode);
+                return modifyImport(dbObjects,rs,colNames);
             }
         } else if(importType == CompExcelImportEmum.DIFF_EXPORT.getValue()){
             List<BasicDBObject> dbObjects = getDbObjects(empCode);
             if(dbObjects == null){
-                return processMissEmpCode(rowIndex,empCode);
+                return processMissEmpCode(rowIndex, empCode);
             }else {
                //TODO
             }
@@ -104,30 +118,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
     }
 
     private List<BasicDBObject> getDbObjects(String empCode){
-
-        List<BasicDBObject> findedList = null;
-        for (List<BasicDBObject> dbObjects: list) {
-           boolean hasFound = dbObjects.stream().anyMatch(
-                   item -> {
-                       return (item.get("item_name").equals(PayItemName.EMPLOYEE_CODE_CN) && item.get("item_value").equals(empCode));
-                   }
-           );
-           if(hasFound){
-               findedList = dbObjects;
-               break;
-           }
-        }
-        return findedList;
-
-    }
-
-    /**
-     * 检查该雇员是否在该批次上存在（雇员组存在）
-     * @param empCode
-     * @return
-     */
-    private boolean checkEmpCodeExist(String empCode){
-        return list.stream().anyMatch(items -> items.stream().anyMatch(item -> String.valueOf(item.get(PayItemName.EMPLOYEE_CODE_CN)).equals(empCode)));
+        return list.get(empCode);
     }
 
     /**
@@ -166,19 +157,10 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
      * @param
      */
-    private List<BasicDBObject> modifyImport(List<BasicDBObject> dbObjects,RowSet rs,String empCode){
+    private List<BasicDBObject> modifyImport(List<BasicDBObject> dbObjects,RowSet rs, String[] columNames){
 
-        dbObjects.forEach(item -> {
-            Object prName = item.get("item_name");          // 薪资项名称
-            Object val = rs.getProperties().get(prName);    // 薪资项值
-            item.put("item_value",val);                  // 薪资项值
-        });
-
-        //雇员薪资项编码
-        BasicDBObject empCodeObj = new BasicDBObject();
-        empCodeObj.put("emp_code",empCode);
-        dbObjects.add(0,empCodeObj);
-        //end
+        List<String> listNames = Arrays.asList(columNames);
+        setImportVal(dbObjects,listNames,rs);
         return dbObjects;
     }
 
@@ -187,70 +169,48 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
      场景：计算批次雇员组中没有雇员，全部从外部文件导入。导入后系统将文件内雇员加入当前批次中雇员组，并且验证雇员基本信息，如果和系统信息不一致：
      1）. 如果不是姓名不一致则使用系统里的值
      2）. 如果是姓名不一致则使用外部文件里的值，并且在计算结果中显示警告信息。
-     * @param empCode
-     * @param columNames
+     * @param
+     * @param
      * @param rs
      * @return
      */
-    private List<BasicDBObject> overrideImport(String empCode,PrEmployeePO employeePO, String[] columNames,RowSet rs){
-        List<BasicDBObject> overrideList = null;
-        String cloName = null;
+    private List<BasicDBObject> overrideImport(int rowIndex,RowSet rs, String empCode, String[] columNames){
 
-        //雇员信息：雇员信息，雇员服务协议，雇员扩展字段
-        /*DBObject empInfoObj = new BasicDBObject();
-        List<DBObject> empBasicFields = new ArrayList<>();
-        empInfoObj.put("emp_info",empBasicFields);
-        overrideList.add(1,empInfoObj);*/
-        //end
+        List<BasicDBObject> existList = list.get(empCode);
+        if(existList == null) {
 
-        overrideList = cloneListDBObject(list.get(0)); // clone 薪资项 LIST
+            List<BasicDBObject> overrideList = null;
 
-        String empName = rs.getProperties().getProperty(PayItemName.EMPLOYEE_NAME_CN);
-        //如果姓名相同，使用系统里的值
-        //如果姓名不相同，使用外部文件里的值，并且在计算结果中显示警告信息
-        boolean hasSameName = empName .equals( employeePO.getEmployeeName() );
-
-        for (DBObject prItem: overrideList) {
-            for (int i = 0; i < columNames.length; i++) { //索引从1开始，0 为 emp_code
-                cloName = columNames[i];
-                String excelVal = rs.getProperties().getProperty(cloName); // 外部文件系统值
-                String prItemName = prItem.get("item_name") == null ? "" : ((String) prItem.get("item_name")).trim();
-                if (!prItemName.equals(cloName.trim())) {
-                    continue;
-                }
-                if (hasSameName) //使用外部系统的值
-                    prItem.put("item_value", excelVal);
-                else { // 使用系统内部数据
-                    if (prItemName.equals(PayItemName.EMPLOYEE_NAME_CN)) {
-                        prItem.put("item_value", employeePO.getEmployeeName());
-                    } else if (prItemName.equals(PayItemName.EMPLOYEE_CODE_CN)) {
-                        prItem.put("item_value", employeePO.getEmployeeId());
-                    } else if (prItemName.equals(PayItemName.EMPLOYEE_DEP_CN)) {
-                        prItem.put("item_value", employeePO.getDepartment());
-                    } else if (prItemName.equals(PayItemName.EMPLOYEE_BIRTHDAY_CN)) {
-                        prItem.put("item_value", employeePO.getBirthday());
-                    } else if (prItemName.equals(PayItemName.EMPLOYEE_ID_NUM_CN)) {
-                        prItem.put("item_value", employeePO.getIdNum());
-                    } else if (prItemName.equals(PayItemName.EMPLOYEE_ID_TYPE_CN)) {
-                        prItem.put("item_value", employeePO.getIdCardType());
-                    } else if (prItemName.equals(PayItemName.EMPLOYEE_POSITION_CN)) {
-                        prItem.put("item_value", employeePO.getPosition());
-                    } else if (prItemName.equals(PayItemName.EMPLOYEE_SEX_CN)) {
-                        prItem.put("item_value", employeePO.getGender());
-                    } else {
-                        prItem.put("item_value", excelVal);
-                    }
-                }
-                continue;
+            for (Map.Entry<String, List<BasicDBObject>> entry : list.entrySet()) {
+                 overrideList = entry.getValue();
+                 break;
             }
+
+            List<BasicDBObject> cloneList = cloneListDBObject(overrideList);
+
+            List<String> listNames = Arrays.asList(columNames);
+
+            setImportVal(cloneList,listNames,rs);
+            return cloneList;
+        }else {
+            return processMissEmpCode(rowIndex,empCode,"该雇员在雇员组中已经存在");
         }
-        //雇员薪资项编码
-        BasicDBObject empCodeObj = new BasicDBObject();
-        empCodeObj.put("emp_code",empCode);
-        overrideList.add(0,empCodeObj);
-        //end
-        return overrideList;
     }
+
+    private void setImportVal(List<BasicDBObject> list, List<String> listNames,RowSet rs){
+
+        list.forEach(item -> {
+            int itemType = item.get("item_type") == null ? 0 : (int)item.get("item_type");
+            if (itemType != ItemTypeEnum.CALC.getValue()) {
+                Object itemName = item.get("item_name");
+                Optional<String> findCol = listNames.stream().filter(f -> f.trim().equals(itemName)).findFirst();
+                if(findCol.isPresent()){
+                    item.put("item_value", rs.getProperties().get(findCol.get()));
+                }
+            }
+        });
+    }
+
 
     /**
      * 处理当前批次薪资组中雇员不存在该empCode
@@ -267,11 +227,59 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         return dbObjects;
     }
 
+    private List<BasicDBObject> processMissEmpCode(int rowIndex, String empCode, String errorMsg){
+        List<BasicDBObject> dbObjects = new ArrayList<>();
+        BasicDBObject dbObject = new BasicDBObject();
+        dbObject.put("row_index",rowIndex);
+        dbObject.put("error_msg",String.format("雇员编号:%s %s",empCode,errorMsg));
+        dbObjects.add(dbObject);
+        return dbObjects;
+    }
+
     private List<BasicDBObject> cloneListDBObject(List<BasicDBObject> source){
         List<BasicDBObject> cloneList = new ArrayList<>();
         for (BasicDBObject basicDBObject: source) {
             cloneList.add((BasicDBObject)basicDBObject.copy());
         }
         return cloneList;
+    }
+
+    /**
+     * 验证多个字段雇员唯一性
+     * @param identities
+     * @param rs
+     * @param employeePO
+     * @return
+     */
+    private boolean IdentityEmployee(List<String> identities, RowSet rs, PrEmployeePO employeePO){
+        //TODO
+        boolean identity = true;
+        Map<String,Object> rsMap = new HashMap<>();
+        Iterator<String> iter =  identities.iterator();
+        String fieldName = "";
+        Object fieldVal = null;
+        while (iter.hasNext()){
+            fieldName = iter.next();
+            fieldVal = rs.getProperties().get(fieldName);
+            if( fieldVal == null){ // 判断一致性字段是否为空
+                return false;
+            }else {
+                if(fieldName.equals(PayItemName.EMPLOYEE_CODE_CN) && !employeePO.getEmployeeId().equals(fieldVal)){
+                    return false;
+                }else if(fieldName.equals(PayItemName.EMPLOYEE_NAME_CN) && !employeePO.getEmployeeName().equals(fieldVal)){
+                    return false;
+                }else if(fieldName.equals(PayItemName.EMPLOYEE_BIRTHDAY_CN) && !employeePO.getBirthday().equals(fieldVal)){
+                    return false;
+                }else if(fieldName.equals(PayItemName.EMPLOYEE_CITY_CODE_CN) && !employeePO.getCityCode().equals(fieldVal)){
+                    return false;
+                }else if(fieldName.equals(PayItemName.EMPLOYEE_COUNTRY_CODE_CN) && !employeePO.getCountryCode().equals(fieldVal)){
+                    return false;
+                }else if(fieldName.equals(PayItemName.EMPLOYEE_DEP_CN) && !employeePO.getDepartment().equals(fieldVal)){
+                    return false;
+                }
+            }
+        }
+
+        return identity;
     }
 }
