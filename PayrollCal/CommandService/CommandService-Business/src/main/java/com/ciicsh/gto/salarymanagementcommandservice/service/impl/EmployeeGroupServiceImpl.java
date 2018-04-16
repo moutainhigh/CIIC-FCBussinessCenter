@@ -114,7 +114,7 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
             empGroupMapper.deleteBatchIds(ids);
             if(empGroupCodes.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                payrollEmpGroup.setEmpGroupIds(empGroupCodes);
+                //payrollEmpGroup.setEmpGroupIds(empGroupCodes);
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }

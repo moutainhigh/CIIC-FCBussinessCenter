@@ -64,8 +64,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             });
             if(ids.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupCode));
-                payrollEmpGroup.setIds(ids);
+                //payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupCode));
+                //payrollEmpGroup.setIds(ids);
                 payrollEmpGroup.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }
@@ -101,8 +101,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(result > 0){
             if(employeeIds != null && employeeIds.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupCode));
-                payrollEmpGroup.setIds(employeeIds);
+                //payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupCode));
+                //payrollEmpGroup.setIds(employeeIds);
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }

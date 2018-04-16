@@ -174,8 +174,11 @@ public class ComputeServiceImpl {
 
     private DBObject runCompute(DBObject dbObject,String batchCode,int batchType) {
         DroolsContext context = new DroolsContext();
-        Map<String, CompiledScript> scripts = new HashMap<>();
+        Map<String, CompiledScript> scripts = null;
 
+        if(scripts == null){
+            scripts = new HashMap<>();
+        }
         DBObject calalog = (DBObject) dbObject.get("catalog");
         String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
         List<DBObject> items = ((List<DBObject>) calalog.get("pay_items"));
