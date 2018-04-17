@@ -125,7 +125,7 @@ public class BackTraceBatchController {
             return JsonResult.success(0);
         }
 
-        Criteria criteria = Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true);
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);
 
         if(StringUtils.isNotEmpty(empCode)){
             criteria.and(PayItemName.EMPLOYEE_CODE_CN).regex(empCode);

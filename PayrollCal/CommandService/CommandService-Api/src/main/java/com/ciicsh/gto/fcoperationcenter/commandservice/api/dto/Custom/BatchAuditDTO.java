@@ -10,6 +10,16 @@ public class BatchAuditDTO {
     private String result;
     private int batchType;
 
+    private String modifyBy;
+    public String getModifyBy() {
+        return modifyBy;
+    }
+
+    public void setModifyBy(String modifyBy) {
+        this.modifyBy = modifyBy;
+    }
+
+
     public int getBatchType() {
         return batchType;
     }

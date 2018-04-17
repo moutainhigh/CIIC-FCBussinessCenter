@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcoperationcenter.commandservice.api;
 
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.AdvanceBatchDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.MoneyBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface BatchProxy {
 
     /**
-     *
+     * 更新垫付
      * @param advanceBatchDTO
      * @return
      */
@@ -26,7 +27,7 @@ public interface BatchProxy {
 
 
     /**
-     *
+     * 更新来款
      * @param moneyBatchDTO
      * @return
      */
@@ -39,7 +40,7 @@ public interface BatchProxy {
      * @return 批次ID列表
      */
     @GetMapping("/getBatchListByManagementId")
-    List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam("managementId") String managementId);
+    List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam(value = "managementId", required = false) String managementId);
 
     /**
      * 获取一个批次计算结果 BY 批次编号 JSON 格式
@@ -49,4 +50,12 @@ public interface BatchProxy {
      */
     @GetMapping("/getBatchInfo")
     PrBatchDTO getBatchInfo(@RequestParam("batchCode") String batchCode, @RequestParam("batchType") int batchType);
+
+    /**
+     * 更新批次状态
+     * @param batchAuditDTO
+     * @return
+     */
+    @PostMapping("/updateBatchStatus")
+    int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO);
 }

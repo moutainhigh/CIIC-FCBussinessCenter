@@ -14,6 +14,8 @@ import org.springframework.batch.item.excel.support.rowset.RowSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.*;
 
 /**
@@ -124,7 +126,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
      */
     private PrEmployeePO checkEmpDBExist(String empCode){
         PrEmployeePO employeePO = new PrEmployeePO();
-        employeePO.setEmpId(empCode);
+        employeePO.setEmployeeId(empCode);
         employeePO = employeeMapper.selectOne(employeePO);
         return employeePO;
     }
@@ -172,8 +174,6 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
      * @param rs
      * @return
      */
-
-
     private List<BasicDBObject> overrideImport(int rowIndex,RowSet rs, String empCode, String[] columNames){
 
         List<BasicDBObject> existList = list.get(empCode);
@@ -264,9 +264,9 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             if( fieldVal == null){ // 判断一致性字段是否为空
                 return false;
             }else {
-                if(fieldName.equals(PayItemName.EMPLOYEE_CODE_CN) && !employeePO.getEmpId().equals(fieldVal)){
+                if(fieldName.equals(PayItemName.EMPLOYEE_CODE_CN) && !employeePO.getEmployeeId().equals(fieldVal)){
                     return false;
-                }else if(fieldName.equals(PayItemName.EMPLOYEE_NAME_CN) && !employeePO.getEmpName().equals(fieldVal)){
+                }else if(fieldName.equals(PayItemName.EMPLOYEE_NAME_CN) && !employeePO.getEmployeeName().equals(fieldVal)){
                     return false;
                 }else if(fieldName.equals(PayItemName.EMPLOYEE_BIRTHDAY_CN) && !employeePO.getBirthday().equals(fieldVal)){
                     return false;
