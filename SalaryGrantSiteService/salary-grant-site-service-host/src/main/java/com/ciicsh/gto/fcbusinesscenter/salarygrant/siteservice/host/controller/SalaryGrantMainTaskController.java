@@ -8,7 +8,6 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGra
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantMainTaskService;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gaoyang
  * @since 2018-1-16
  */
-@Api
 @RestController
 @RequestMapping(value = "/salarygrantMainTask")
 public class SalaryGrantMainTaskController {
