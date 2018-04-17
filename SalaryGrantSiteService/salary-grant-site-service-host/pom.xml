@@ -16,7 +16,6 @@
     <packaging>jar</packaging>
 
     <dependencies>
-
         <!-- 外部依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
@@ -70,7 +69,6 @@
             <version>1.0.0</version>
         </dependency>
         <!-- 内部模块依赖 -->
-
     </dependencies>
 
     <build>
