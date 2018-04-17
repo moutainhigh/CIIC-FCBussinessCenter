@@ -1,0 +1,27 @@
+package com.ciicsh.gt1.fcbusinesscenter.tax.fcbusinesscenter_tax_commandservice_drools;
+import java.math.BigDecimal
+import java.util.ArrayList
+import java.util.List
+import java.util.stream.Stream
+
+declare CalculationContext
+    taxAmount : BigDecimal//税金
+    incomeForTax : BigDecimal//应纳税所得额
+end
+
+rule "test"
+    when
+        $context : CalculationContext()
+    then
+        List<Double> dlist = new ArrayList<Double>();
+        dlist.add($context.getTaxAmount().divide(new BigDecimal(0.03),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+        dlist.add($context.getTaxAmount().add(new BigDecimal(105)).divide(new BigDecimal(0.1),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+        dlist.add($context.getTaxAmount().add(new BigDecimal(555)).divide(new BigDecimal(0.2),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+        dlist.add($context.getTaxAmount().add(new BigDecimal(1005)).divide(new BigDecimal(0.25),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+        dlist.add($context.getTaxAmount().add(new BigDecimal(2755)).divide(new BigDecimal(0.3),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+        dlist.add($context.getTaxAmount().add(new BigDecimal(5505)).divide(new BigDecimal(0.35),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+        dlist.add($context.getTaxAmount().add(new BigDecimal(13505)).divide(new BigDecimal(0.45),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+
+        Double minValue = dlist.stream().reduce(Double.MAX_VALUE,Double::min);
+        $context.setIncomeForTax(new BigDecimal(minValue));
+end
