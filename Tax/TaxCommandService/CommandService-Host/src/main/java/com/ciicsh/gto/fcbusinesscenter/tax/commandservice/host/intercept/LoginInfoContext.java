@@ -3,6 +3,10 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept;
 import com.ciicsh.gto.commonservice.util.dto.Result;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 
+/**
+ * 登录上下文
+ * @author wuhua
+ */
 public class LoginInfoContext {
 
     private Result<UserInfoResponseDTO> result;
