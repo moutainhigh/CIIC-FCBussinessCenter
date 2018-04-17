@@ -1,0 +1,44 @@
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business;
+
+import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 薪资发放雇员信息查询 服务类
+ * </p>
+ *
+ * @author gaoyang
+ * @since 2018-04-17
+ */
+public interface SalaryGrantEmployeeQueryService {
+
+    /**
+     * 查询主表的雇员信息
+     * 主要根据主表任务单编号查询
+     * @param page
+     * @param salaryGrantEmployeeBO
+     * @return Page<SalaryGrantEmployeeBO>
+     */
+    Page<SalaryGrantEmployeeBO> queryEmployeeForMainTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+
+    /**
+     * 查询子表的雇员信息
+     * 主要根据子表任务单编号查询
+     * @param page
+     * @param salaryGrantEmployeeBO
+     * @return Page<SalaryGrantEmployeeBO>
+     */
+    Page<SalaryGrantEmployeeBO> queryEmployeeForSubTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+
+    /**
+     * 调整信息-对于发放类型是调整/回溯发放。
+     * 查询调整/回溯批次、基于的计算批次，查询2条计算结果数据，再进行数据合并生成第三条合并数据。（调用计算批次接口，查询第3个方法）
+     * @param salaryGrantEmployeePO
+     * @return List
+     */
+    List listAdjustCalcInfo(SalaryGrantEmployeePO salaryGrantEmployeePO);
+}

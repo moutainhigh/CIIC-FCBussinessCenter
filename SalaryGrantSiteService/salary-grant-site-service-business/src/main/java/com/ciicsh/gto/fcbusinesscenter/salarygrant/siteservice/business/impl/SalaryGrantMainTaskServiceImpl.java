@@ -842,6 +842,8 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
         salaryGrantEmployeePO.setSwiftCode(employeeBankcardDTO.getSwiftCode());
         salaryGrantEmployeePO.setIban(employeeBankcardDTO.getIban());
         salaryGrantEmployeePO.setBankcardType(employeeBankcardDTO.getBankcardType());
+        salaryGrantEmployeePO.setBankcardProvinceCode(employeeBankcardDTO.getProvinceCode());
+        salaryGrantEmployeePO.setBankcardCityCode(employeeBankcardDTO.getCityCode());
         salaryGrantEmployeePO.setDefaultCard(employeeBankcardDTO.getDefaultCard());
         return salaryGrantEmployeePO;
     }
@@ -2269,64 +2271,14 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
 
     // todo 查询雇员服务协议（调用FC客服中心接口，计算币种的汇率--客户约定汇率/实时汇率，当服务协议有变更需查询。）
 
+    // todo 调用账单中心提供接口查询雇员的薪酬服务费
+
+    // todo 根据查询的雇员的薪酬服务费修改薪资发放雇员的薪酬服务费字段信息
+
     @Override
     public Page<SalaryGrantMainTaskBO> querySalaryGrantMainTaskPage(Page<SalaryGrantMainTaskBO> page, SalaryGrantMainTaskBO salaryGrantMainTaskBO) {
         page.setRecords(salaryGrantMainTaskMapper.querySalaryGrantMainTaskList(page, salaryGrantMainTaskBO));
         return page;
-    }
-
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantEmployeeBO> queryEmployeeForMainTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantEmployeeBO> queryEmployeeForSubTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        // todo
-        return null;
     }
 
     @Override
@@ -2380,63 +2332,6 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
     public Boolean toRetreatSubTask(SalaryGrantSubTaskPO salaryGrantSubTaskPO) {
         // todo
         return null;
-    }
-
-    @Override
-    public Boolean toReprieveEmployee(SalaryGrantEmployeePO salaryGrantEmployeePO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toRecoverEmployee(SalaryGrantEmployeePO salaryGrantEmployeePO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toBatchReprieveEmployee(List<SalaryGrantEmployeePO> salaryGrantEmployeePOList) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toBatchRecoverEmployee(List<SalaryGrantEmployeePO> salaryGrantEmployeePOList) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public List listAdjustCalcInfo(SalaryGrantEmployeePO salaryGrantEmployeePO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toCreatePayrollForBusiness(String salaryGrantMainTaskCode) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toCreatePayrollForFinance(String salaryGrantMainTaskCode) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public void toPreviewForPayroll(List reviewInfo) {
-        // todo
-    }
-
-    @Override
-    public void toPrintForPayroll(List printInfo) {
-        // todo
-    }
-
-    @Override
-    public void toExportEmployee(String salaryGrantMainTaskCode) {
-        // todo
     }
 
     private Map<String, Object> transBean2Map(Object obj){
