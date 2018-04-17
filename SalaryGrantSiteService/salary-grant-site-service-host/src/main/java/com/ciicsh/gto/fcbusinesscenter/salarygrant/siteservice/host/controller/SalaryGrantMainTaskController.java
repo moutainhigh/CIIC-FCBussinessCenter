@@ -1,10 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
-import com.ciicsh.gto.fcbusinesscenter.site.service.api.core.Result;
-import com.ciicsh.gto.fcbusinesscenter.site.service.api.core.ResultGenerator;
-import com.ciicsh.gto.fcbusinesscenter.site.service.api.dto.SalaryGrantMainTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.site.service.api.dto.SalaryGrantTaskRequestDTO;
-import com.ciicsh.gto.fcbusinesscenter.site.service.business.SalaryGrantMainTaskService;
+
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantMainTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantMainTaskService;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 import io.swagger.annotations.Api;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ciicsh.gto.fcbusinesscenter.site.service.dao.SalaryGrantMainTaskMapper">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.site.service.entity.po.SalaryGrantMainTaskPO">
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO">
 		<id column="salary_grant_main_task_id" property="salaryGrantMainTaskId" />
 		<result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode" />
 		<result column="work_flow_task_id" property="workFlowTaskId" />

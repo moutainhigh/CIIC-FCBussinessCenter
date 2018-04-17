@@ -1,6 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
-import com.ciicsh.gto.fcbusinesscenter.site.service.business.SalaryGrantMainTaskService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantMainTaskService;
 import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCompleteMsgDTO;

@@ -37,7 +37,7 @@ server:
     uri-encoding: UTF-8
 spring:
   application:
-    name: sale-center-site-service
+    name: fcbusiness-center-salarygrant-site-service
   profiles:
     active: dev
   http:
