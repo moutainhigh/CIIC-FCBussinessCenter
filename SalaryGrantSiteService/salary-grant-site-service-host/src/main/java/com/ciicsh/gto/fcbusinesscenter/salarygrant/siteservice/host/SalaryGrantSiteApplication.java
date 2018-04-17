@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
 /**
  * SpringBoot 方式启动类
@@ -11,11 +12,15 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * @since 2018-01-19
  */
 @EnableDiscoveryClient
-@MapperScan(basePackages = {"com.ciicsh.gto.fcbusinesscenter.site.service.dao"})
+@EnableFeignClients({
+        "com.ciicsh.gto.entityidservice.api",
+        "com.ciicsh.gto.sheetservice.api",
+})
+@MapperScan(basePackages = {"com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao"})
 @SpringBootApplication(scanBasePackages = {
-    "com.ciicsh.gt1",
-    "com.ciicsh.gto.fcbusinesscenter.util",
-    "com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice",
+        "com.ciicsh.gt1",
+        "com.ciicsh.gto.fcbusinesscenter.util",
+        "com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice",
 })
 public class SalaryGrantSiteApplication {
     public static void main(String[] args) {

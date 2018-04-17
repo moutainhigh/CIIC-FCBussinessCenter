@@ -19,5 +19,4 @@ import java.util.List;
 @Component
 public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTaskPO> {
     List<SalaryGrantMainTaskBO> querySalaryGrantMainTaskList(Pagination page, SalaryGrantMainTaskBO salaryGrantMainTaskBO);
-
 }

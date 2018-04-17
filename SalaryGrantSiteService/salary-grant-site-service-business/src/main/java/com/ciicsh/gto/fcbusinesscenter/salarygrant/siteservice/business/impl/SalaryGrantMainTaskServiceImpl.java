@@ -2271,7 +2271,7 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
 
     @Override
     public Page<SalaryGrantMainTaskBO> querySalaryGrantMainTaskPage(Page<SalaryGrantMainTaskBO> page, SalaryGrantMainTaskBO salaryGrantMainTaskBO) {
-        page.setRecords(salaryGrantMainTaskMapper.querySalaryGrantMainTaskList(page,salaryGrantMainTaskBO));
+        page.setRecords(salaryGrantMainTaskMapper.querySalaryGrantMainTaskList(page, salaryGrantMainTaskBO));
         return page;
     }
 
