@@ -26,14 +26,14 @@ public interface PrEmployeeMapper extends BaseMapper<PrEmployeePO> {
      * @param empGroupCode 雇员组Code
      * @return 雇员组雇员列表
      */
-    List<EmployeeExtensionPO> getEmployees(@Param("empGroupCode") String empGroupCode,@Param("empCode") String empCode,@Param("empName") String empName);
+    List<PrEmployeePO> getEmployeesByGroupCode(@Param("empGroupCode") String empGroupCode);
 
     /**
      * 判断雇员是否已经存在
      * @param empId 雇员ID
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmployee(@Param("empId") String empId);
+    Integer isExistEmployee(@Param("employeeId") String employeeId);
 
     /**
      * 检查雇员是否在该雇员组上存在

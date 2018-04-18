@@ -22,10 +22,10 @@ public interface PrEmpGroupEmpRelationMapper extends BaseMapper<PrEmpGroupEmpRel
     /**
      * 判断雇员组雇员关系是否已经存在
      * @param empGroupCode 雇员组编号
-     * @param empId 雇员ID
+     * @param employeeId 雇员ID
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmpGroupEmpRelation(@Param("empGroupCode") String empGroupCode,@Param("empId") String empId);
+    Integer isExistEmpGroupEmpRelation(@Param("empGroupCode") String empGroupCode, @Param("employeeId") String employeeId);
 
     /**
      * 根据雇员组Code删除雇员组和雇员关系表数据
