@@ -12,6 +12,21 @@
 	<artifactId>salary-grant-api-service-business</artifactId>
 	<packaging>jar</packaging>
 
+	<dependencies>
+		<!-- 内部模块依赖 -->
+		<dependency>
+			<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+			<artifactId>salary-grant-api-service-dao</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+			<artifactId>salary-grant-api-service-entity</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!-- 内部模块依赖 -->
+	</dependencies>
+
 	<build>
 		<finalName>gt1.fcbusinesscenter.salary-grant-api-service-business</finalName>
 	</build>

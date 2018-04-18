@@ -98,14 +98,14 @@ public class MapperGenerator {
 //        focList.add(new FileOutConfig("/templates/service.java.vm") {
 //            @Override
 //            public String outputFile(TableInfo tableInfo) {
-//                return dirRootPath + "/ApiService/ApiService-Business/" + srcRootPath + modulePath + "/business/projectservice/" + tableInfo.getEntityName() + "Service.java";
+//                return dirRootPath + "/ApiService/ApiService-Business/" + srcRootPath + modulePath + "/business/vendor/" + tableInfo.getEntityName() + "Service.java";
 //            }
 //        });
 //        // serviceImpl
 //        focList.add(new FileOutConfig("/templates/serviceImpl.java.vm") {
 //            @Override
 //            public String outputFile(TableInfo tableInfo) {
-//                return dirRootPath + "/ApiService/ApiService-Business/" + srcRootPath + modulePath + "/business/projectservice/impl/" + tableInfo.getEntityName() + "ServiceImpl.java";
+//                return dirRootPath + "/ApiService/ApiService-Business/" + srcRootPath + modulePath + "/business/vendor/impl/" + tableInfo.getEntityName() + "ServiceImpl.java";
 //            }
 //        });
 //
