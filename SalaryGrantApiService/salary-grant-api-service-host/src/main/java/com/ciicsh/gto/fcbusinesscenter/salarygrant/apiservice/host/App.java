@@ -1,19 +1,25 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
 /**
+ * SpringBoot 方式启动类
  * @author chenpb
- * @date 2018-04-18
+ * @since 2018-04-18
  */
-
-@SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcbusinesscenter.salarygrant"})
 @EnableDiscoveryClient
+@MapperScan(basePackages = {"com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao"})
+@EnableFeignClients({})
+@SpringBootApplication(scanBasePackages = {
+        "com.ciicsh.gt1",
+        "com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice",
+})
 public class App {
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
-
 }

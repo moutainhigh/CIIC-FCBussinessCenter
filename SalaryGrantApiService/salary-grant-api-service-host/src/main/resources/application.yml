@@ -1,10 +1,10 @@
 info:
   app:
-    name: 薪资发放-SITE
+    name: 薪资发放-API
     version: 1.0.0
-    description: 薪资发放站点
+    description: 薪资发放对外服务
 app:
-  id: 10007005
+  id: 10007006
 endpoints:
   shutdown:
     #启用shutdown
@@ -19,14 +19,14 @@ logging:
   file: /tmp/logs/salcenterservice.log
 management:
   context-path: /admin
-  port: 7010
+  port: 7012
   #禁用安全验证
   security:
     enabled: false
 #pagehelper:
 #  reasonable: true
 server:
-  port: 7009
+  port: 7011
   session-timeout: "# session timeout in seconds"
   tomcat:
     background-processor-delay: 30
@@ -60,11 +60,11 @@ spring:
     password: ${database.password}
     driver-class-name: com.mysql.jdbc.Driver
   cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: ${kafka.brokers}
-          zk-nodes: ${kafka.zk-nodes}
+   stream:
+     kafka:
+       binder:
+         brokers: ${kafka.brokers}
+         zk-nodes: ${kafka.zk-nodes}
 mybatis-plus:
   configuration:
     cache-enabled: false
