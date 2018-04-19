@@ -9,6 +9,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>-->
     <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+    <artifactId>salarymanagement-commandservice-api</artifactId>
+    <version>1.0.0</version>
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -17,8 +19,6 @@
         <version>1.5.7.RELEASE</version>
     </parent>
 
-    <artifactId>salarymanagement-commandservice-api</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <dependencyManagement>
