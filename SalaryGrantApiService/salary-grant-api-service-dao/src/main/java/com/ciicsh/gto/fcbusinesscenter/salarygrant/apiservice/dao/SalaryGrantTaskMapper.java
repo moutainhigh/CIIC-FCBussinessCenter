@@ -18,6 +18,5 @@ import java.util.List;
  */
 @Component
 public interface SalaryGrantTaskMapper extends BaseMapper<SalaryGrantTaskPO> {
-
     List<SalaryGrantTaskBO> listTask(SalaryGrantTaskBO salaryGrantTaskBO);
 }

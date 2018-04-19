@@ -16,7 +16,9 @@ eureka:
     serviceUrl:
       defaultZone: ${eureka.serviceurl}
 logging:
-  file: /tmp/logs/salcenterservice.log
+  level:
+    com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao: trace #mapper文件路径
+  #file: /tmp/logs/s.log
 management:
   context-path: /admin
   port: 7012
