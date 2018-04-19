@@ -1,7 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy;
 
+
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.requestTaskDTO;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,6 @@ public interface SalaryGrantProxy {
      * @return
      */
     @RequestMapping(value = "/getTask", method = RequestMethod.POST)
-    public JsonResult<Object> getTask(@RequestBody requestTaskDTO dto);
+    public Result<Object> getTask(@RequestBody requestTaskDTO dto);
 
 }

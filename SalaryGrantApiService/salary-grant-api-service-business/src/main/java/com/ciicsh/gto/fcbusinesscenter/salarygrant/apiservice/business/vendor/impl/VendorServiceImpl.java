@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.vendor.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.vendor.VendorService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
@@ -19,7 +19,7 @@ import java.util.List;
  * @since 2018-04-18
  */
 @Service
-public class VendorServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, SalaryGrantTaskPO> implements SalaryGrantService {
+public class VendorServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, SalaryGrantTaskPO> implements VendorService {
     /**
      *  任务单
      */

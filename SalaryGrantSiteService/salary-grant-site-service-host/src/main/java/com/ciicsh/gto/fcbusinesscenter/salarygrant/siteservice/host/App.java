@@ -22,8 +22,8 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
         "com.ciicsh.gto.fcbusinesscenter.util",
         "com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice",
 })
-public class SalaryGrantSiteApplication {
+public class App {
     public static void main(String[] args) {
-        SpringApplication.run(SalaryGrantSiteApplication.class, args);
+        SpringApplication.run(App.class, args);
     }
 }
