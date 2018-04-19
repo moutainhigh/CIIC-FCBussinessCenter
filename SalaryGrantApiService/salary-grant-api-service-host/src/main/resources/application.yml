@@ -84,5 +84,7 @@ mybatis-plus:
     #自定义SQL注入器
     sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
   mapper-locations: mapper/*Mapper.xml
+  plugins:
+      - catMybatisInterceptor
 seaweed:
   masterHost: ${seaweed.masterHost}

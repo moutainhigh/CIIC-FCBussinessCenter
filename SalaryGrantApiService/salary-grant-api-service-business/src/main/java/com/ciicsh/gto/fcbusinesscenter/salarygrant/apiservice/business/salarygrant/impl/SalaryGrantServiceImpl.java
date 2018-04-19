@@ -35,6 +35,15 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
      */
     @Override
     public List<SalaryGrantTaskBO> getTask(SalaryGrantTaskBO bo) {
+        String splitStr = ",";
+        String batchCodeStr = bo.getBatchCode();
+        StringBuffer sb = new StringBuffer("");
+        // 如果有多个薪资计算批次号用逗号分隔，需要进行转换添加单引号，生成对应查询条件。
+        if(batchCodeStr.indexOf(splitStr) > 0){
+            batchCodeStr = batchCodeStr.replaceAll(",","','");
+            sb.append("'").append(batchCodeStr).append(",");
+            bo.setBatchCode(sb.toString());
+        }
         return  salaryGrantTaskMapper.listTask(bo);
     }
 }
