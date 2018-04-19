@@ -1,11 +1,17 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.Result;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.requestTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.ResultGenerator;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.transform.CommonTransform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -31,9 +37,13 @@ public class SalaryGrantController implements SalaryGrantProxy {
      */
     @Override
     @RequestMapping(value = "/getTask", method = RequestMethod.POST)
-    public Result<Object> getTask(@RequestBody requestTaskDTO dto) {
-        salaryGrantService.getTask(null);
-        return null;
+    public Result<ReponseTaskDTO> getTask(@RequestBody RequestTaskDTO dto) {
+        try {
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            List<SalaryGrantTaskBO> list = salaryGrantService.getTask(bo);
+            return ResultGenerator.genSuccessResult(list);
+        } catch (Exception e) {
+            return ResultGenerator.genServerFailResult("处理失败");
+        }
     }
-
 }

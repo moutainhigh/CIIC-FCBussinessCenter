@@ -20,8 +20,8 @@ public interface SalaryGrantService extends IService<SalaryGrantTaskPO> {
      * 根据批次号查相关任务单
      * @author chenpb
      * @date 2018-04-18
-     * @param po
+     * @param bo
      * @return
      */
-    List<SalaryGrantTaskBO> getTask(SalaryGrantTaskPO po);
+    List<SalaryGrantTaskBO> getTask(SalaryGrantTaskBO bo);
 }

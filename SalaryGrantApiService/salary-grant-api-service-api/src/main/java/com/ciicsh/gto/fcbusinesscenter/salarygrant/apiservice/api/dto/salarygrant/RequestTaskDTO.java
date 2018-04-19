@@ -8,6 +8,9 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class requestTaskDTO {
-
+public class RequestTaskDTO {
+    /**
+     * 薪酬计算批次号
+     */
+    private String batchCode;
 }

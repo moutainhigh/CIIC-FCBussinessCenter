@@ -1,7 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
 import org.springframework.stereotype.Component;
@@ -19,5 +18,5 @@ import java.util.List;
  */
 @Component
 public interface SalaryGrantTaskMapper extends BaseMapper<SalaryGrantTaskPO> {
-    List<SalaryGrantTaskBO> tasks(Pagination page, SalaryGrantTaskPO salaryGrantTaskPO);
+    List<SalaryGrantTaskBO> listTask(SalaryGrantTaskBO salaryGrantTaskBO);
 }

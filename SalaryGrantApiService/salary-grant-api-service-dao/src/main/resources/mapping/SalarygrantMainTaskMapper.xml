@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantTaskMapper">
 
@@ -30,8 +29,8 @@
 		<result column="task_status" property="taskStatus" />
 		<result column="task_type" property="taskType" />
 		<result column="is_include_foreign_currency" property="isIncludeForeignCurrency" />
-        <result column="operator_user_id" property="operatorUserId" />
-        <result column="approve_user_id" property="approveUserId" />
+		<result column="operator_user_id" property="operatorUserId" />
+		<result column="approve_user_id" property="approveUserId" />
 		<result column="is_active" property="isActive" />
 		<result column="created_by" property="createdBy" />
 		<result column="created_time" property="createdTime" />
@@ -39,34 +38,131 @@
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
 
-    <!-- query task page list,include main task and sub task -->
-    <resultMap id="pageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO">
-        <result column="task_id" property="taskId" />
-        <result column="task_code" property="taskCode" />
-        <result column="management_id" property="managementId" />
-        <result column="management_name" property="managementName" />
-        <result column="batch_code" property="batchCode" />
-        <result column="grant_cycle" property="grantCycle" />
-        <result column="payment_total_sum" property="paymentTotalSum" />
-        <result column="total_person_count" property="totalPersonCount" />
-        <result column="chinese_count" property="chineseCount" />
-        <result column="foreigner_count" property="foreignerCount" />
-        <result column="grant_date" property="grantDate" />
-        <result column="grant_type" property="grantType" />
-        <result column="grant_type_name" property="grantTypeName" />
-        <result column="grant_mode" property="grantMode" />
-        <result column="grant_mode_name" property="grantModeName" />
-        <result column="grant_account_code" property="grantAccountCode" />
-        <result column="grant_account_name" property="grantAccountName" />
-        <result column="remark" property="remark" />
-        <result column="invalid_reason" property="invalidReason" />
-        <result column="approved_opinion" property="approvedOpinion" />
-        <result column="task_status" property="taskStatus" />
-        <result column="task_status_name" property="taskStatusName" />
-    </resultMap>
+	<!-- query task page list,include main task and sub task -->
+	<resultMap id="pageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO">
+		<result column="task_id" property="taskId" />
+		<result column="task_code" property="taskCode" />
+		<result column="management_id" property="managementId" />
+		<result column="management_name" property="managementName" />
+		<result column="batch_code" property="batchCode" />
+		<result column="grant_cycle" property="grantCycle" />
+		<result column="payment_total_sum" property="paymentTotalSum" />
+		<result column="total_person_count" property="totalPersonCount" />
+		<result column="chinese_count" property="chineseCount" />
+		<result column="foreigner_count" property="foreignerCount" />
+		<result column="grant_date" property="grantDate" />
+		<result column="grant_type" property="grantType" />
+		<result column="grant_type_name" property="grantTypeName" />
+		<result column="grant_mode" property="grantMode" />
+		<result column="grant_mode_name" property="grantModeName" />
+		<result column="grant_account_code" property="grantAccountCode" />
+		<result column="grant_account_name" property="grantAccountName" />
+		<result column="remark" property="remark" />
+		<result column="invalid_reason" property="invalidReason" />
+		<result column="approved_opinion" property="approvedOpinion" />
+		<result column="task_status" property="taskStatus" />
+		<result column="task_status_name" property="taskStatusName" />
+	</resultMap>
 
-	<select id="tasks" resultMap="BaseResultMap">
-        SELECT * FROM hm_af_pe_task
+	<select id="listTask" resultMap="pageResultMap">
+		SELECT
+		t.task_id,
+		t.task_code,
+		t.management_name,
+		t.management_id,
+		t.batch_code,
+		t.grant_cycle,
+		t.payment_total_sum,
+		t.total_person_count,
+		t.chinese_count,
+		t.foreigner_count,
+		t.grant_date,
+		t.grant_type,
+		t.grant_type_name,
+		t.task_status,
+		t.task_status_name
+		FROM
+		(
+		SELECT
+		t1.salary_grant_main_task_id task_id,
+		t1.salary_grant_main_task_code task_code,
+		t1.management_name,
+		t1.management_id,
+		t1.batch_code,
+		t1.grant_cycle,
+		t1.payment_total_sum,
+		t1.total_person_count,
+		t1.chinese_count,
+		t1.foreigner_count,
+		t1.grant_date,
+		t1.grant_type,
+		(
+		SELECT
+		t2.type_name
+		FROM
+		sg_dic t2
+		WHERE
+		t2.field_name = 'grant_type'
+		AND t2.type_value = t1.grant_type
+		) grant_type_name,
+		t1.task_status,
+		(
+		SELECT
+		t2.type_name
+		FROM
+		sg_dic t2
+		WHERE
+		t2.field_name = 'task_status'
+		AND t2.type_value = t1.task_status
+		) task_status_name
+		FROM
+		sg_salary_grant_main_task t1
+		WHERE
+		t1.is_active = 1
+		AND t1.batch_code IN (#{batchCode})
+		UNION
+		SELECT
+		t1.task_id,
+		t1.task_code,
+		t1.management_name,
+		t1.management_id,
+		t1.batch_code,
+		t1.grant_cycle,
+		t1.payment_total_sum,
+		t1.total_person_count,
+		t1.chinese_count,
+		t1.foreigner_count,
+		t1.grant_date,
+		t1.grant_type,
+		(
+		SELECT
+		t2.type_name
+		FROM
+		sg_dic t2
+		WHERE
+		t2.field_name = 'grant_type'
+		AND t2.type_value = t1.grant_type
+		) grant_type_name,
+		t1.task_status,
+		(
+		SELECT
+		t2.type_name
+		FROM
+		sg_dic t2
+		WHERE
+		t2.field_name = 'task_status'
+		AND t2.type_value = t1.task_status
+		) task_status_name
+		FROM
+		sg_salary_grant_task_history t1
+		WHERE
+		t1.is_active = 1
+		AND t1.task_status = '4'
+		AND t1.task_type = 0
+		AND t1.batch_code IN (#{batchCode})
+		) t
+		ORDER BY
+		t.task_code
 	</select>
 
 </mapper>

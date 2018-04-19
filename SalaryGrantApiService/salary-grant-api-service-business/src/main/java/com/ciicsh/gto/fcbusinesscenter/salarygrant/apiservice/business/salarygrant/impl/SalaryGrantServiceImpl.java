@@ -30,12 +30,12 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
      * 根据批次号查相关任务单
      * @author chenpb
      * @date 2018-04-18
-     * @param po
+     * @param bo
      * @return
      */
     @Override
-    public List<SalaryGrantTaskBO> getTask(SalaryGrantTaskPO po) {
-        return  salaryGrantTaskMapper.tasks(null,po);
+    public List<SalaryGrantTaskBO> getTask(SalaryGrantTaskBO bo) {
+        return  salaryGrantTaskMapper.listTask(bo);
     }
 
 }
