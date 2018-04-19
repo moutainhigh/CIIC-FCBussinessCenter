@@ -13,6 +13,11 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.6</version>
+		</dependency>
 		<!-- 内部模块依赖 -->
 		<dependency>
 			<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
