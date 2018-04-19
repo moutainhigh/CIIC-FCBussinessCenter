@@ -1,6 +1,5 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy;
 
-
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestTaskDTO;

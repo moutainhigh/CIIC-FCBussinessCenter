@@ -23,5 +23,5 @@ public interface VendorService extends IService<SalaryGrantTaskPO> {
      * @param po
      * @return
      */
-    List<SalaryGrantTaskBO> getTask(SalaryGrantTaskPO po);
+    List<SalaryGrantTaskBO> getTask(SalaryGrantTaskBO bo);
 }
