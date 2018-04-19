@@ -209,6 +209,10 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 if (taskSubProofDetailDTO.getIncomeStart() != null && !"".equals(taskSubProofDetailDTO.getIncomeStart()) && taskSubProofDetailDTO.getIncomeEnd() == null) {
                     taskSubProofDetailBO.setIncomeEnd(DateTimeKit.dateToLocalDate(taskSubProofDetailDTO.getIncomeStart()));
                 }
+                //如果申报账户为空，则抛出异常，提示申报账户不为空
+                if (taskSubProofDetailDTO.getDeclareAccount() == null || "".equals(taskSubProofDetailDTO.getDeclareAccount())) {
+                    throw new Exception(taskSubProofDetailDTO.getEmployeeNo() + " 申报账户为空");
+                }
                 taskSubProofDetailBOList.add(taskSubProofDetailBO);
             }
             //登录信息

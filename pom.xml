@@ -287,6 +287,18 @@
         <module>PayrollGrant/GrantCommandService/GrantCommandService-Entity</module>
         <module>PayrollGrant/GrantCommandService/GrantCommandService-Host</module>
 
+        <module>SalaryGrantSiteService/salary-grant-site-service-api</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-business</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-dao</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-entity</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-host</module>
+
+        <module>SalaryGrantApiService/salary-grant-api-service-api</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-business</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-dao</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-entity</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-host</module>
+
         <module>PayrollGrant/GrantQueryService/GrantQueryService-Api</module>
         <module>PayrollGrant/GrantQueryService/GrantQueryService-Business</module>
         <module>PayrollGrant/GrantQueryService/GrantQueryService-Dao</module>

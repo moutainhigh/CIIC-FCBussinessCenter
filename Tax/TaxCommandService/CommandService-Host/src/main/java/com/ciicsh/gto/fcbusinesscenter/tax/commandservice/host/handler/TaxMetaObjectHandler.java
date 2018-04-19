@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 
 /**
+ * 公共字段自动填充
  * @author wuhua
  */
 public class TaxMetaObjectHandler extends MetaObjectHandler {

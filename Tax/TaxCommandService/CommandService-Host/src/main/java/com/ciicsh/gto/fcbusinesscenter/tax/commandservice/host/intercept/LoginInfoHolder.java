@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept;
 
 /**
  * 获取当前session的工具类
+ * @author wuhua
  */
 public class LoginInfoHolder {
 
