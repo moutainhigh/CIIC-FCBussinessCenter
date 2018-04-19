@@ -298,6 +298,14 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 		this.cityName = cityName;
 	}
 
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean active) {
+		isActive = active;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.employeeId;
