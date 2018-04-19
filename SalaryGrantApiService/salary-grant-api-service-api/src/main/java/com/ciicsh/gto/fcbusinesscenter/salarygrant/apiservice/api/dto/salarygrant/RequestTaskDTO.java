@@ -8,6 +8,6 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class requestTaskDTO {
-
+public class RequestTaskDTO {
+    private String batchCode;
 }

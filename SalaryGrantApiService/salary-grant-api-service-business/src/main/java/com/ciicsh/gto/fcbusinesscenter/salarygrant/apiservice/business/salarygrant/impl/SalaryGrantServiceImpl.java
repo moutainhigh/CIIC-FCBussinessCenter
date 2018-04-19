@@ -35,7 +35,7 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
      */
     @Override
     public List<SalaryGrantTaskBO> getTask(SalaryGrantTaskPO po) {
-        return  salaryGrantTaskMapper.tasks(null,po);
+        return  salaryGrantTaskMapper.listTask(po);
     }
 
 }

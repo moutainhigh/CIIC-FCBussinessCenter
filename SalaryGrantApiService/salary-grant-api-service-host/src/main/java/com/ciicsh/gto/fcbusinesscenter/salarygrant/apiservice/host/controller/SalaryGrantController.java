@@ -1,11 +1,15 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.Result;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.requestTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -31,7 +35,7 @@ public class SalaryGrantController implements SalaryGrantProxy {
      */
     @Override
     @RequestMapping(value = "/getTask", method = RequestMethod.POST)
-    public Result<Object> getTask(@RequestBody requestTaskDTO dto) {
+    public Result<ReponseTaskDTO> getTask(@RequestBody RequestTaskDTO dto) {
         salaryGrantService.getTask(null);
         return null;
     }
