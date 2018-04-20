@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygr
 
 
 import com.baomidou.mybatisplus.service.IService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
 
@@ -24,4 +25,11 @@ public interface SalaryGrantService extends IService<SalaryGrantTaskPO> {
      * @return
      */
     List<SalaryGrantTaskBO> getTask(SalaryGrantTaskBO bo);
+
+    /**
+     *  根据主表任务单编号查询薪资发放任务单子表
+     * @param subTaskBO
+     * @return List<SalaryGrantSubTaskBO>
+     */
+    List<SalaryGrantSubTaskBO> getSubTask(SalaryGrantSubTaskBO subTaskBO);
 }

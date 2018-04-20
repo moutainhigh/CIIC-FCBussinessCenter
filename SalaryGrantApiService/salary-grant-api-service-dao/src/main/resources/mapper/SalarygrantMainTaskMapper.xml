@@ -64,6 +64,20 @@
 		<result column="task_status_name" property="taskStatusName" />
 	</resultMap>
 
+	<resultMap id="subTaskResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO">
+		<result column="task_id" property="taskId" />
+		<result column="task_code" property="taskCode" />
+		<result column="grant_mode" property="grantMode" />
+		<result column="grant_mode_name" property="grantModeName" />
+		<result column="grant_account_code" property="grantAccountCode" />
+		<result column="payment_total_sum" property="paymentTotalSum" />
+		<result column="total_person_count" property="totalPersonCount" />
+		<result column="chinese_count" property="chineseCount" />
+		<result column="foreigner_count" property="foreignerCount" />
+		<result column="task_status" property="taskStatus" />
+		<result column="task_status_name" property="taskStatusName" />
+	</resultMap>
+
 	<select id="listTask" resultMap="pageResultMap">
         SELECT
 			t.task_id,
@@ -119,7 +133,10 @@
 					sg_salary_grant_main_task t1
 				WHERE
 					t1.is_active = 1
-				AND t1.batch_code IN (#{batchCode})
+				AND t1.batch_code IN
+					<foreach item="batchCodeList" index="index" collection="list"
+							 open="(" separator="," close=")"> #{batchCodeList}
+					</foreach>
 				UNION
 					SELECT
 						t1.task_id,
@@ -159,10 +176,52 @@
 						t1.is_active = 1
 					AND t1.task_status = '4'
 					AND t1.task_type = 0
-					AND t1.batch_code IN (#{batchCode})
+					AND t1.batch_code IN
+						<foreach item="batchCodeList" index="index" collection="list"
+								 open="(" separator="," close=")"> #{batchCodeList}
+						</foreach>
 			) t
 		ORDER BY
 			t.task_code
+	</select>
+
+	<select id="listSubTask" resultMap="subTaskResultMap">
+		SELECT
+			t.salary_grant_sub_task_id task_id,
+			t.salary_grant_sub_task_code task_code,
+			t.grant_mode,
+			(
+				SELECT
+					t1.type_name
+				FROM
+					sg_dic t1
+				WHERE
+					t1.field_name = 'grant_mode'
+				AND t1.type_value = t.grant_mode
+			) grant_mode_name,
+			t.grant_account_code,
+			t.payment_total_sum,
+			t.total_person_count,
+			t.chinese_count,
+			t.foreigner_count,
+			t.task_status,
+			(
+				SELECT
+					t1.type_name
+				FROM
+					sg_dic t1
+				WHERE
+					t1.field_name = 'task_status'
+				AND t1.type_value = t.task_status
+			) task_status_name
+		FROM
+			sg_salary_grant_sub_task t
+		WHERE
+			t.salary_grant_main_task_code = #{taskCode}
+		AND t.is_active = 1
+		ORDER BY
+			t.grant_mode,
+			t.salary_grant_sub_task_code ASC
 	</select>
 
 </mapper>
