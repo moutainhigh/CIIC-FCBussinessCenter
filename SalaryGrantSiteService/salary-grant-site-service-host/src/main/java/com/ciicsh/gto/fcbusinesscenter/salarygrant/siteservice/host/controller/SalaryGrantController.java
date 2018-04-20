@@ -1,51 +1,58 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantMainTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantMainTaskService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.salarygrant.SalaryTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.LinkmanDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
- * 薪资发放任务单主表 控制类
+ * 薪资发放任务单 控制类
  * </p>
  *
  * @author gaoyang
  * @since 2018-1-16
  */
 @RestController
-@RequestMapping(value = "/salarygrantMainTask")
-public class SalaryGrantMainTaskController {
+@RequestMapping(value="/api/sg")
+public class SalaryGrantController {
 
     @Autowired
-    private SalaryGrantMainTaskService salaryGrantMainTaskService;
+    private SalaryGrantService salaryGrantService;
 
     @Autowired
     private SheetServiceProxy sheetServiceProxy;
 
-    //todo
-    //查询薪资发放任务单列表（待提交、已处理-审批中、已处理-审批通过、已处理-审批拒绝、已处理-审批失效）
-    //包括查询雇员列表信息
-    public Result querySalaryGrantMainTaskPage(@RequestBody SalaryGrantMainTaskDTO salaryGrantMainTaskDTO){
-        /*try {
-            Page<SalaryGrantMainTaskBO> page = new Page<>(salaryGrantMainTaskDTO.getCurrentPage(), salaryGrantMainTaskDTO.getSize());
-            SalaryGrantMainTaskBO salaryGrantMainTaskBO = CommonTransform.convertToEntity(salaryGrantMainTaskDTO, SalaryGrantMainTaskBO.class);
-            page = salaryGrantMainTaskService.querySalaryGrantMainTaskPage(page, salaryGrantMainTaskBO);
-            Page<SalaryGrantMainTaskDTO> dtoPage = PageUtil.changeWapper(page, SalaryGrantMainTaskDTO.class);
-            return ResultGenerator.genSuccessResult(dtoPage);
-        }catch (Exception e){
-            return ResultGenerator.genServerFailResult();
-        }*/
-        return null;
+    /**
+     * 薪资发放任务单一览
+     * @author chenpb
+     * @date 2018-04-20
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    public Result<SalaryTaskDTO> getTask(@RequestBody SalaryTaskDTO dto) {
+        try {
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            Page page = salaryGrantService.list(bo);
+            List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
+            page.setRecords(list);
+            return ResultGenerator.genSuccessResult(list);
+        } catch (Exception e) {
+            return ResultGenerator.genServerFailResult("处理失败");
+        }
     }
 
     //todo

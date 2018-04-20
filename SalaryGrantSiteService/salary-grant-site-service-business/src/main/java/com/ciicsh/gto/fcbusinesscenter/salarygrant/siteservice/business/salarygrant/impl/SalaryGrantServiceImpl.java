@@ -1,15 +1,15 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.impl;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.CommonService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantMainTaskService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.JsonParseConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
@@ -20,7 +20,6 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
-
 import com.github.pagehelper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,19 +29,22 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * <p>
- * 薪资发放任务单主表 服务实现类
+ * 任务单 服务实现类
  * </p>
  *
- * @author gaoyang
- * @since 2018-01-22
+ * @author chenpb
+ * @since 2018-04-18
  */
 @Service
-public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainTaskMapper, SalaryGrantMainTaskPO> implements SalaryGrantMainTaskService {
+public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMapper, SalaryGrantMainTaskPO> implements SalaryGrantService {
     @Autowired
     SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
@@ -53,6 +55,19 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
     CommonService commonService;
     @Autowired
     SalaryGrantWorkFlowService salaryGrantWorkFlowService;
+
+    /**
+     * 查询薪资发放任务单
+     * @author chenpb
+     * @date 2018-04-20
+     * @param bo
+     * @return
+     */
+    @Override
+    public Page list(SalaryGrantTaskBO bo) {
+        Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
+        return page;
+    }
 
     @Override
     public Boolean isExistSalaryGrantMainTask(Map batchParam) {
@@ -220,9 +235,9 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
     /**
      *  创建薪资发放任务单主表，解析雇员计算结果数据，过滤薪资发放的雇员信息，汇总相关数据。
      *  新建薪资发放任务单，把查询的批次业务表中数据赋值到主表明细对应字段中。
-        插入新增记录，包括entityId、批次信息、雇员数据汇总信息
-        字段包括：管理方编号、管理方名称、薪酬计算批次号、参考批次号、薪资周期、薪资发放日期、发放类型（默认0）、状态（默认0）、任务单类型（0）、是否有效（1）、创建人、创建时间、修改人、修改时间。
-        汇总信息：薪资发放总金额（RMB）--直接从计算批次汇总、发薪人数、中方发薪人数、外方发薪人数、中智上海发薪人数--包括大库和独立库、委托机构发薪人数、发放方式。
+     插入新增记录，包括entityId、批次信息、雇员数据汇总信息
+     字段包括：管理方编号、管理方名称、薪酬计算批次号、参考批次号、薪资周期、薪资发放日期、发放类型（默认0）、状态（默认0）、任务单类型（0）、是否有效（1）、创建人、创建时间、修改人、修改时间。
+     汇总信息：薪资发放总金额（RMB）--直接从计算批次汇总、发薪人数、中方发薪人数、外方发薪人数、中智上海发薪人数--包括大库和独立库、委托机构发薪人数、发放方式。
      * @param payrollCalcResultDTOList
      * @param salaryGrantMainTaskPO
      * @return SalaryGrantMainTaskPO
@@ -359,15 +374,15 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
     /**
      * 生成薪资发放雇员信息
      * 1、分别对批次计算结果数据及雇员服务协议信息进行json转换解析
-       2、查询服务周期规则信息:cmy_fc_cycle_rule 服务周期规则表  薪资发放日_日salary_day_date varchar(2) 薪资发放日_时段：1上午 2下午salary_day_time char(1)
-       3、把薪资发放日、时段回填到薪资发放任务主表中
-       4、查询雇员的银行卡信息
-       5、查询雇员的薪资发放规则
-       6、查询币种对应的汇率
-       7、查询雇员服务协议
-       8、调用后台接口方法创建薪资发放雇员信息，带入任务单编号salaryGrantMainTaskCode
-       9、新增薪资发放雇员信息表SalaryGrantEmployeePO（记录任务单主表编号）
-       10、根据计算批次数据拆分雇员数据，插入到薪资发放雇员信息表，银行卡信息、薪资发放规则、多币种对应的汇率（拆分发放金额）
+     2、查询服务周期规则信息:cmy_fc_cycle_rule 服务周期规则表  薪资发放日_日salary_day_date varchar(2) 薪资发放日_时段：1上午 2下午salary_day_time char(1)
+     3、把薪资发放日、时段回填到薪资发放任务主表中
+     4、查询雇员的银行卡信息
+     5、查询雇员的薪资发放规则
+     6、查询币种对应的汇率
+     7、查询雇员服务协议
+     8、调用后台接口方法创建薪资发放雇员信息，带入任务单编号salaryGrantMainTaskCode
+     9、新增薪资发放雇员信息表SalaryGrantEmployeePO（记录任务单主表编号）
+     10、根据计算批次数据拆分雇员数据，插入到薪资发放雇员信息表，银行卡信息、薪资发放规则、多币种对应的汇率（拆分发放金额）
      * @param salaryGrantMainTaskPO
      * @return boolean
      */
@@ -1622,9 +1637,9 @@ public class SalaryGrantMainTaskServiceImpl extends ServiceImpl<SalaryGrantMainT
         }
 
         // 2、新增银行卡，按照新增银行卡进行拆分，并查询是否有对应的发放规则，一并拆分。其实新增的银行卡，要么是删除原默认卡新增一个默认卡，要么对新增卡添加发放规则，否则没有规则没法拆分发放金额。
-           // 2.1、根据新银行卡id，查询银行卡信息，赋值到雇员信息中
-           // 2.2、根据新银行卡id，查询关联的薪资发放规则
-           // 2.3、根据发放规则，对雇员的发放金额进行拆分
+        // 2.1、根据新银行卡id，查询银行卡信息，赋值到雇员信息中
+        // 2.2、根据新银行卡id，查询关联的薪资发放规则
+        // 2.3、根据发放规则，对雇员的发放金额进行拆分
         if(SalaryGrantBizConsts.CHANGE_OPERATION_INSERT.equals(changeOperation)){
             EmployeeBankcardDTO employeeBankcardDTO = this.getEmployeeBankcardInfo(bankcardId, employeeId, salaryGrantEmployeePO.getCompanyId());
             SalaryGrantEmployeePO salaryGrantEmployeePONew = salaryGrantEmployeePO;

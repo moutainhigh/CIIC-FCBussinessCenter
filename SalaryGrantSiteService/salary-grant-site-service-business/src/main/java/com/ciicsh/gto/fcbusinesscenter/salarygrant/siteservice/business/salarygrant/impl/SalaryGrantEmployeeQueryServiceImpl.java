@@ -1,7 +1,7 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.impl;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantEmployeeQueryService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;

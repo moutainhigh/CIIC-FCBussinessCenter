@@ -5,15 +5,13 @@ import java.math.BigDecimal;
 
 /**
  * <p>
- * 薪资发放任务单
+ * 薪资发放
  * </p>
  *
- * @author gaoyang
- * @since 2018-03-28
+ * @author chenpb
+ * @since 2018-04-20
  */
-public class SalaryGrantTaskBO implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class SalaryGrantTaskBO extends PagingBO implements Serializable {
     /**
      * 任务单ID
      */
@@ -277,5 +275,33 @@ public class SalaryGrantTaskBO implements Serializable {
 
     public void setTaskStatusName(String taskStatusName) {
         this.taskStatusName = taskStatusName;
+    }
+
+    @Override
+    public String toString() {
+        return "SalaryGrantTaskBO{" +
+                "taskId=" + taskId +
+                ", taskCode='" + taskCode + '\'' +
+                ", managementId='" + managementId + '\'' +
+                ", managementName='" + managementName + '\'' +
+                ", batchCode='" + batchCode + '\'' +
+                ", grantCycle='" + grantCycle + '\'' +
+                ", paymentTotalSum=" + paymentTotalSum +
+                ", totalPersonCount=" + totalPersonCount +
+                ", chineseCount=" + chineseCount +
+                ", foreignerCount=" + foreignerCount +
+                ", grantDate='" + grantDate + '\'' +
+                ", grantType=" + grantType +
+                ", grantTypeName='" + grantTypeName + '\'' +
+                ", grantMode='" + grantMode + '\'' +
+                ", grantModeName='" + grantModeName + '\'' +
+                ", grantAccountCode='" + grantAccountCode + '\'' +
+                ", grantAccountName='" + grantAccountName + '\'' +
+                ", remark='" + remark + '\'' +
+                ", invalidReason='" + invalidReason + '\'' +
+                ", approvedOpinion='" + approvedOpinion + '\'' +
+                ", taskStatus='" + taskStatus + '\'' +
+                ", taskStatusName='" + taskStatusName + '\'' +
+                '}';
     }
 }

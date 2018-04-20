@@ -16,9 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author yuantongqing
@@ -45,8 +44,10 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         if (requestForProof.getId() != null && !"".equals(requestForProof.getId())) {
             wrapper.andNew("id = {0}", requestForProof.getId());
         }
-        //管理方名称模糊查询条件
-        wrapper.like("manager_name", requestForProof.getManagerName());
+        //管理方名称
+        Optional.ofNullable(requestForProof.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //判断是否包含起始时间条件
         if (requestForProof.getSubmitTimeStart() != null && !"".equals(requestForProof.getSubmitTimeStart())) {
             wrapper.andNew("created_time >= {0}", requestForProof.getSubmitTimeStart() + "00:00:00");

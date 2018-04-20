@@ -1,9 +1,9 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
+
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.PayrollBatchDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantMainTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
@@ -15,13 +15,22 @@ import java.util.Map;
 
 /**
  * <p>
- * 薪资发放任务单主表 服务类
+ * 薪资发放 服务类
  * </p>
  *
- * @author gaoyang
- * @since 2018-01-22
+ * @author chenpb
+ * @since 2018-02-27
  */
-public interface SalaryGrantMainTaskService extends IService<SalaryGrantMainTaskPO> {
+public interface SalaryGrantService extends IService<SalaryGrantMainTaskPO> {
+
+    /**
+     * 查询薪资发放任务单
+     * @author chenpb
+     * @date 2018-04-20
+     * @param bo
+     * @return
+     */
+    Page list(SalaryGrantTaskBO bo);
 
     /**
      *  根据计算批次编号判断薪资发放任务单主表是否已存在
@@ -67,18 +76,18 @@ public interface SalaryGrantMainTaskService extends IService<SalaryGrantMainTask
      */
     PayrollBatchDTO getBatchInfo(Map paramMap);
 
-	/**
-	 * 查询薪资发放任务单主表列表
+    /**
+     * 查询薪资发放任务单主表列表
      * 根据查询条件及任务单状态，待提交列表查询草稿状态的任务单；
      * 已处理-审批中列表查询审批中状态的任务单；
      * 已处理-审批通过列表查询审批通过、待支付、未支付、已支付状态的任务单；
      * 已处理-审批拒绝列表查询审批拒绝状态的任务单，查询历史表；
      * 已处理-审批失效列表查询失效状态的任务单，查询历史表。
-	 * @param page
-	 * @param salaryGrantMainTaskBO
-	 * @return Page<SalaryGrantMainTaskBO>
-	 */
-	Page<SalaryGrantMainTaskBO> querySalaryGrantMainTaskPage(Page<SalaryGrantMainTaskBO> page, SalaryGrantMainTaskBO salaryGrantMainTaskBO);
+     * @param page
+     * @param salaryGrantMainTaskBO
+     * @return Page<SalaryGrantMainTaskBO>
+     */
+    Page<SalaryGrantMainTaskBO> querySalaryGrantMainTaskPage(Page<SalaryGrantMainTaskBO> page, SalaryGrantMainTaskBO salaryGrantMainTaskBO);
 
 
     /**

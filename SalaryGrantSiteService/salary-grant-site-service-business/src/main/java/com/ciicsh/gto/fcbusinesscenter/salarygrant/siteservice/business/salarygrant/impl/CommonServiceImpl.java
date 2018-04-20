@@ -1,7 +1,7 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.impl;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.CommonService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
