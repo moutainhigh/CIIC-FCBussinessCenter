@@ -66,6 +66,8 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMappe
     @Override
     public Page list(SalaryGrantTaskBO bo) {
         Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
+        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.list(page, bo);
+        page.setRecords(list);
         return page;
     }
 
