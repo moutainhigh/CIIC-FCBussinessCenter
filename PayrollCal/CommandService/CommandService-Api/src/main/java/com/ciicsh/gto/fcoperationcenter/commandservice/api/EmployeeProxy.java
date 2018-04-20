@@ -26,12 +26,12 @@ public interface EmployeeProxy {
 //    @GetMapping("/importemployee")
 //    JsonResult getImportedEmployeeList(@RequestParam String managementId);
 
-    /**
-     * 添加测试雇员方法
-     * @return
-     */
-    @PostMapping("/addEmployees")
-    JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS,@RequestParam String empGroupCode);
+//    /**
+//     * 添加测试雇员方法
+//     * @return
+//     */
+//    @PostMapping("/addEmployees")
+//    JsonResult addEmployees(@RequestBody List<PrEmployeeTestDTO> employeeTestDTOS,@RequestParam String empGroupCode);
 
 //
 //    @PostMapping("/getEmployees")
@@ -42,6 +42,6 @@ public interface EmployeeProxy {
 //                            @RequestParam(required = false, defaultValue = "50",value = "pageSize")  Integer pageSize);
 
 
-    @DeleteMapping("/batchDelete/{ids}")
-    JsonResult batchDelete(@PathVariable("ids") String ids,@RequestParam String employeeIds,@RequestParam String empGroupCode);
+//    @DeleteMapping("/batchDelete/{ids}")
+//    JsonResult batchDelete(@PathVariable("ids") String ids,@RequestParam String employeeIds,@RequestParam String empGroupCode);
 }

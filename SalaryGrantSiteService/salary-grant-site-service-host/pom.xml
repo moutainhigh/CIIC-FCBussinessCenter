@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>salecenter-parent</artifactId>
-        <groupId>com.ciicsh.gt1.salecenter</groupId>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+        <artifactId>fcbusinesscenter-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -20,18 +20,55 @@
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>mongo-client</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.6</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.dianping.cat</groupId>
+            <artifactId>cat-core</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dianping.cat</groupId>
+            <artifactId>cat-client</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.8.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mapstruct</groupId>
+                    <artifactId>mapstruct</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+
         <!-- 内部模块依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salary-grant-site-service-business</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salary-grant-site-service-api</artifactId>
@@ -41,7 +78,7 @@
     </dependencies>
 
     <build>
-        <finalName>gt1.salarygrant.siteservice-host</finalName>
+        <finalName>gt1.fcbusinesscenter.salary-grant-site-service-host</finalName>
         <resources>
             <resource>
                 <directory>../salary-grant-site-service-dao/src/main/resources/</directory>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO">
+		<id column="salary_grant_main_task_id" property="salaryGrantMainTaskId" />
+		<result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode" />
+		<!--<result column="work_flow_task_id" property="workFlowTaskId" />-->
+		<result column="management_id" property="managementId" />
+		<result column="management_name" property="managementName" />
+		<result column="batch_code" property="batchCode" />
+		<result column="origin_batch_code" property="originBatchCode" />
+		<result column="grant_cycle" property="grantCycle" />
+		<result column="payment_total_sum" property="paymentTotalSum" />
+		<result column="total_person_count" property="totalPersonCount" />
+		<result column="chinese_count" property="chineseCount" />
+		<result column="foreigner_count" property="foreignerCount" />
+		<result column="local_grant_count" property="localGrantCount" />
+		<result column="supplier_grant_count" property="supplierGrantCount" />
+		<result column="grant_date" property="grantDate" />
+		<result column="grant_time" property="grantTime" />
+		<result column="grant_type" property="grantType" />
+		<result column="grant_mode" property="grantMode" />
+		<result column="is_adversion" property="isAdversion" />
+		<result column="adversion_type" property="adversionType" />
+		<result column="remark" property="remark" />
+		<result column="invalid_reason" property="invalidReason" />
+		<result column="approved_opinion" property="approvedOpinion" />
+		<result column="task_status" property="taskStatus" />
+		<result column="task_type" property="taskType" />
+		<result column="is_include_foreign_currency" property="isIncludeForeignCurrency" />
+        <result column="operator_user_id" property="operatorUserId" />
+        <result column="approve_user_id" property="approveUserId" />
+		<result column="is_active" property="isActive" />
+		<result column="created_by" property="createdBy" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_by" property="modifiedBy" />
+		<result column="modified_time" property="modifiedTime" />
+	</resultMap>
+
+    <!-- query task page list,include main task and sub task -->
+    <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        <result column="task_id" property="taskId" />
+        <result column="task_code" property="taskCode" />
+        <result column="management_id" property="managementId" />
+        <result column="management_name" property="managementName" />
+        <result column="batch_code" property="batchCode" />
+        <result column="grant_cycle" property="grantCycle" />
+        <result column="payment_total_sum" property="paymentTotalSum" />
+        <result column="total_person_count" property="totalPersonCount" />
+        <result column="chinese_count" property="chineseCount" />
+        <result column="foreigner_count" property="foreignerCount" />
+        <result column="grant_date" property="grantDate" />
+        <result column="grant_type" property="grantType" />
+        <result column="grant_type_name" property="grantTypeName" />
+        <result column="grant_mode" property="grantMode" />
+        <result column="grant_mode_name" property="grantModeName" />
+        <result column="grant_account_code" property="grantAccountCode" />
+        <result column="grant_account_name" property="grantAccountName" />
+        <result column="remark" property="remark" />
+        <result column="invalid_reason" property="invalidReason" />
+        <result column="approved_opinion" property="approvedOpinion" />
+        <result column="task_status" property="taskStatus" />
+        <result column="task_status_name" property="taskStatusName" />
+    </resultMap>
+
+    <sql id="listField">
+      t.salary_grant_main_task_id AS task_id, t.salary_grant_main_task_code AS task_code, t.management_id, t.management_name, t.batch_code, t.grant_cycle
+    </sql>
+
+	<select id="list" resultMap="PageResultMap">
+        SELECT
+            <include refid="listField"/>
+        FROM
+          sg_salary_grant_main_task t
+            <where>
+                <if test="taskCode != null and taskCode != ''">
+                    AND t.salary_grant_main_task_code = #{taskCode}
+                </if>
+                <if test="managementId != null and managementId != ''">
+                    AND t.management_id = #{managementId}
+                </if>
+                <if test="managementName != null and managementName != ''">
+                    AND t.management_name = #{managementName}
+                </if>
+                <if test="batchCode != null and batchCode != ''">
+                    AND t.batch_code = #{batchCode}
+                </if>
+                <if test="grantMode != null and grantMode != ''">
+                    AND t.grant_mode = #{grantMode}
+                </if>
+                <if test="grantCycle != null and grantCycle != ''">
+                    AND t.grant_cycle = #{grantCycle}
+                </if>
+            </where>
+        ORDER BY
+          t.salary_grant_main_task_id DESC
+	</select>
+
+	<select id="querySalaryGrantMainTaskList" resultMap="PageResultMap">
+
+	</select>
+
+</mapper>

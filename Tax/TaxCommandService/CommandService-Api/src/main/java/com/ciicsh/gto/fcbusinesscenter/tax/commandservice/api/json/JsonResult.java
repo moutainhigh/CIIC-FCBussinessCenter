@@ -16,6 +16,8 @@ public class JsonResult<T> {
      */
     public static enum ReturnCode{
 
+        TOKEN_ERROR("登录异常"),
+
         FAIL("异常"),
 
         TM_ER01("任务内有未确认的合并明细，不能提交任务"),

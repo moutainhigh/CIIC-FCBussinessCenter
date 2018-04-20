@@ -35,8 +35,8 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
     /**
      * 雇员ID
      */
-	@TableField("emp_id")
-	private String empId;
+	@TableField("employee_id")
+	private String employeeId;
     /**
      * 是否有效
      */
@@ -80,12 +80,12 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
 		this.empGroupCode = empGroupCode;
 	}
 
-	public String getEmpId() {
-		return empId;
+	public String getEmployeeId() {
+		return employeeId;
 	}
 
-	public void setEmpId(String empId) {
-		this.empId = empId;
+	public void setEmployeeId(String employeeId) {
+		this.employeeId = employeeId;
 	}
 
 	public Boolean getActive() {
@@ -138,7 +138,7 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
 		return "PrEmpGroupEmpRelationPO{" +
 			"id=" + id +
 			", empGroupCode=" + empGroupCode +
-			", empId=" + empId +
+			", employeeId=" + employeeId +
 			", isActive=" + isActive +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
