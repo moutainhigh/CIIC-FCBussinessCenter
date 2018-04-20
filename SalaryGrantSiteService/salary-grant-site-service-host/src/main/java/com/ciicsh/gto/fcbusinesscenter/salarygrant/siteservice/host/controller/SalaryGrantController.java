@@ -43,13 +43,13 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    public Result<SalaryTaskDTO> getTask(@RequestBody SalaryTaskDTO dto) {
+    public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
         try {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             Page page = salaryGrantService.list(bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
             page.setRecords(list);
-            return ResultGenerator.genSuccessResult(list);
+            return ResultGenerator.genSuccessResult(page);
         } catch (Exception e) {
             return ResultGenerator.genServerFailResult("处理失败");
         }

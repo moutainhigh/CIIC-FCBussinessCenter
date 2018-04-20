@@ -33,6 +33,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String batchCode;
     /**
+     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
+     */
+    private String grantMode;
+    /**
      * 薪资周期
      */
     private String grantCycle;
@@ -64,10 +68,6 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      * 发放类型名称
      */
     private String grantTypeName;
-    /**
-     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
-     */
-    private String grantMode;
     /**
      * 发放方式名称
      */

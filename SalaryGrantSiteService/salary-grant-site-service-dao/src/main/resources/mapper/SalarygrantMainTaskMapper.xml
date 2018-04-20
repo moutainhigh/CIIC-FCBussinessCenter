@@ -40,7 +40,7 @@
 	</resultMap>
 
     <!-- query task page list,include main task and sub task -->
-    <resultMap id="pageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+    <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
         <result column="task_id" property="taskId" />
         <result column="task_code" property="taskCode" />
         <result column="management_id" property="managementId" />
@@ -65,7 +65,40 @@
         <result column="task_status_name" property="taskStatusName" />
     </resultMap>
 
-	<select id="querySalaryGrantMainTaskList" resultMap="pageResultMap">
+    <sql id="listField">
+      t.salary_grant_main_task_id AS task_id, t.salary_grant_main_task_code AS task_code, t.management_id, t.management_name, t.batch_code, t.grant_cycle
+    </sql>
+
+	<select id="list" resultMap="PageResultMap">
+        SELECT
+            <include refid="listField"/>
+        FROM
+          sg_salary_grant_main_task t
+            <where>
+                <if test="taskCode != null and taskCode != ''">
+                    AND t.salary_grant_main_task_code = #{taskCode}
+                </if>
+                <if test="managementId != null and managementId != ''">
+                    AND t.management_id = #{managementId}
+                </if>
+                <if test="managementName != null and managementName != ''">
+                    AND t.management_name = #{managementName}
+                </if>
+                <if test="batchCode != null and batchCode != ''">
+                    AND t.batch_code = #{batchCode}
+                </if>
+                <if test="grantMode != null and grantMode != ''">
+                    AND t.grant_mode = #{grantMode}
+                </if>
+                <if test="grantCycle != null and grantCycle != ''">
+                    AND t.grant_cycle = #{grantCycle}
+                </if>
+            </where>
+        ORDER BY
+          t.salary_grant_main_task_id DESC
+	</select>
+
+	<select id="querySalaryGrantMainTaskList" resultMap="PageResultMap">
 
 	</select>
 
