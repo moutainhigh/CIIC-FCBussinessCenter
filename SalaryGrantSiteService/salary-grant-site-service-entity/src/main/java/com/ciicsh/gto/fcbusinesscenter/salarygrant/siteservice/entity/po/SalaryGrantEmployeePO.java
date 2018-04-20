@@ -152,6 +152,16 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
      */
 	@TableField("bankcard_type")
 	private Integer bankcardType;
+	/**
+	 * 银行卡省份代码
+	 */
+	@TableField("bankcard_province_code")
+	private String bankcardProvinceCode;
+	/**
+	 * 银行卡城市代码
+	 */
+	@TableField("bankcard_city_code")
+	private String bankcardCityCode;
     /**
      * 是否默认卡:1-是，0-否
      */
@@ -241,6 +251,11 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
      */
     @TableField("is_welfare_included")
     private Boolean isWelfareIncluded;
+	/**
+	 * 薪酬服务费
+	 */
+	@TableField("service_fee_amount")
+	private BigDecimal serviceFeeAmount;
     /**
      * 备注
      */
@@ -724,7 +739,31 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
         isWelfareIncluded = welfareIncluded;
     }
 
-    @Override
+	public String getBankcardProvinceCode() {
+		return bankcardProvinceCode;
+	}
+
+	public void setBankcardProvinceCode(String bankcardProvinceCode) {
+		this.bankcardProvinceCode = bankcardProvinceCode;
+	}
+
+	public String getBankcardCityCode() {
+		return bankcardCityCode;
+	}
+
+	public void setBankcardCityCode(String bankcardCityCode) {
+		this.bankcardCityCode = bankcardCityCode;
+	}
+
+	public BigDecimal getServiceFeeAmount() {
+		return serviceFeeAmount;
+	}
+
+	public void setServiceFeeAmount(BigDecimal serviceFeeAmount) {
+		this.serviceFeeAmount = serviceFeeAmount;
+	}
+
+	@Override
 	protected Serializable pkVal() {
 		return this.salaryGrantEmployeeId;
 	}
@@ -764,6 +803,8 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 			", swiftCode=" + swiftCode +
 			", iban=" + iban +
 			", bankcardType=" + bankcardType +
+			", bankcardProvinceCode=" + bankcardProvinceCode +
+			", bankcardCityCode=" + bankcardCityCode +
 			", isDefaultCard=" + isDefaultCard +
 			", wagePayable=" + wagePayable +
 			", personalSocialSecurity=" + personalSocialSecurity +
@@ -782,6 +823,7 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
             ", contractId=" + contractId +
             ", contractFirstParty=" + contractFirstParty +
             ", isWelfareIncluded=" + isWelfareIncluded +
+			", serviceFeeAmount=" + serviceFeeAmount +
 			", remark=" + remark +
 			", changeLog=" + changeLog +
             ", adjustCompareInfo=" + adjustCompareInfo +

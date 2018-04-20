@@ -21,17 +21,17 @@ public interface EmployeeService {
      * @param employeeTestPOS 雇员主表数据
      * @return 是否增加成功
      */
-    Boolean addEmployees(List<PrEmployeePO> employeeTestPOS, String empGroupCode);
+    Boolean addEmployees(List<String> empIds, String empGroupCode);
 
     /**
      * 获取雇员组雇员列表
      * @param empGroupCode 雇员组Code
      * @return 雇员组雇员列表
      */
-    PageInfo<EmployeeExtensionPO> getEmployees(String empGroupCode, String empCode, String empName, Integer pageNum, Integer pageSize);
+    PageInfo<PrEmployeePO> getEmployees(String empGroupCode, Integer pageNum, Integer pageSize);
 
 
-    List<EmployeeExtensionPO> getAllEmployees(String empGroupCode, String empCode, String empName);
+    List<PrEmployeePO> getAllEmployees(String empGroupCode);
 
 
     /**

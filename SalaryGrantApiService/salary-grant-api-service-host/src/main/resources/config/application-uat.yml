@@ -1,0 +1,20 @@
+database:
+  host: 172.16.9.53
+  port: 3306
+  databasename: gtobusinessdb
+  username: root
+  password: ciicit!#%
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://172.16.9.56:9602/eureka"
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 10
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+kafka:
+  brokers: 172.16.9.55:9092
+  zk-nodes: 172.16.9.55:2181,172.16.9.56:2181,172.16.9.57:2181
+seaweed:
+  masterHost: "172.16.9.58:9333"

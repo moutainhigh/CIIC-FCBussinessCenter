@@ -24,6 +24,6 @@ public class EmpGroupEmpRelationServiceImpl implements EmpGroupEmpRelationServic
 
     @Override
     public Integer isExistEmpGroupEmpRelation(String empGroupCode, String empId) {
-        return empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode,empId);
+        return empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode, empId);
     }
 }

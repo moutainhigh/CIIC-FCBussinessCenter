@@ -131,6 +131,14 @@ public class SalaryGrantEmployeeBO  implements Serializable {
      */
     private Integer bankcardType;
     /**
+     * 银行卡省份代码
+     */
+    private String bankcardProvinceCode;
+    /**
+     * 银行卡城市代码
+     */
+    private String bankcardCityCode;
+    /**
      * 是否默认卡
      */
     private Boolean isDefaultCard;
@@ -218,6 +226,10 @@ public class SalaryGrantEmployeeBO  implements Serializable {
      * 付社保/公积金标识:0-否，1-是
      */
     private Boolean isWelfareIncluded;
+    /**
+     * 薪酬服务费
+     */
+    private BigDecimal serviceFeeAmount;
     /**
      * 备注
      */
@@ -709,5 +721,29 @@ public class SalaryGrantEmployeeBO  implements Serializable {
 
     public void setWelfareIncluded(Boolean welfareIncluded) {
         isWelfareIncluded = welfareIncluded;
+    }
+
+    public String getBankcardProvinceCode() {
+        return bankcardProvinceCode;
+    }
+
+    public void setBankcardProvinceCode(String bankcardProvinceCode) {
+        this.bankcardProvinceCode = bankcardProvinceCode;
+    }
+
+    public String getBankcardCityCode() {
+        return bankcardCityCode;
+    }
+
+    public void setBankcardCityCode(String bankcardCityCode) {
+        this.bankcardCityCode = bankcardCityCode;
+    }
+
+    public BigDecimal getServiceFeeAmount() {
+        return serviceFeeAmount;
+    }
+
+    public void setServiceFeeAmount(BigDecimal serviceFeeAmount) {
+        this.serviceFeeAmount = serviceFeeAmount;
     }
 }

@@ -8,6 +8,7 @@ import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmployeeC
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -52,7 +53,7 @@ public class EmpGroupServiceImpl {
      */
     public int batchInsertOrUpdateGroupEmployees(String empGroupCode, List<String> empIds) {
 
-        List<EmployeeExtensionPO> employees = employeeMapper.getEmployees(empGroupCode,"","");
+        List<PrEmployeePO> employees = employeeMapper.getEmployeesByGroupCode(empGroupCode);
         HashMap<String,EmployeeContractResponseDTO> mapList = new HashMap<>();
         if (empIds != null ) {
             employees = employees.stream().filter(emp -> {
@@ -83,9 +84,9 @@ public class EmpGroupServiceImpl {
         List<BathUpdateOptions> options = new ArrayList<>();
         DBObject basicDBObject = null;
 
-        for (EmployeeExtensionPO item : employees) {
+        for (PrEmployeePO item : employees) {
             BathUpdateOptions opt = new BathUpdateOptions();
-            opt.setQuery(Query.query(Criteria.where("emp_group_code").is(item.getEmpGroupCode())
+            opt.setQuery(Query.query(Criteria.where("emp_group_code").is(empGroupCode)
                     .andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.getEmployeeId()))));
             basicDBObject = new BasicDBObject();
             basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());

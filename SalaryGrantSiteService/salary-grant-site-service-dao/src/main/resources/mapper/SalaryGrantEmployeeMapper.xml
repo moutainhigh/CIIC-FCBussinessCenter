@@ -30,6 +30,8 @@
 		<result column="swift_code" property="swiftCode" />
 		<result column="iban" property="iban" />
 		<result column="bankcard_type" property="bankcardType" />
+		<result column="bankcard_province_code" property="bankcardProvinceCode" />
+		<result column="bankcard_city_code" property="bankcardCityCode" />
 		<result column="is_default_card" property="isDefaultCard" />
 		<result column="wage_payable" property="wagePayable" />
 		<result column="personal_social_security" property="personalSocialSecurity" />
@@ -48,6 +50,7 @@
 		<result column="contract_id" property="contractId" />
 		<result column="contract_first_party" property="contractFirstParty" />
 		<result column="is_welfare_included" property="isWelfareIncluded" />
+		<result column="service_fee_amount" property="serviceFeeAmount" />
 		<result column="remark" property="remark" />
 		<result column="change_log" property="changeLog" />
 		<result column="adjust_compare_info" property="adjustCompareInfo" />
