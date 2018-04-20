@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 

@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;

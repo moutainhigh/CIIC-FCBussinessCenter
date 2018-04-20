@@ -1,6 +1,6 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.impl;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.SalaryGrantPayrollService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantPayrollService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

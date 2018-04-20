@@ -1,5 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.PagingDTO;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -11,7 +13,7 @@ import java.math.BigDecimal;
  * @author gaoyang
  * @since 2018-02-02
  */
-public class ExchangeDTO extends CommonListDTO implements Serializable {
+public class ExchangeDTO extends PagingDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
