@@ -1,22 +1,23 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.AdjustBatchMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -101,8 +102,8 @@ public class AjustBatchController {
         adjustBatchPO.setPeriod(today.format(dtf));
 
         adjustBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
-        adjustBatchPO.setCreatedBy("bill");
-        adjustBatchPO.setModifiedBy("bill");
+        adjustBatchPO.setCreatedBy(UserContext.getName());
+        adjustBatchPO.setModifiedBy(UserContext.getName());
         adjustBatchService.insert(adjustBatchPO);
 
         return JsonResult.success(code);
@@ -111,15 +112,15 @@ public class AjustBatchController {
     @DeleteMapping("/deleteAdjustBatch/{codes}")
     public JsonResult deleteBatch(@PathVariable("codes") String batchCodes) {
         String[] codes = batchCodes.split(",");
-        int i = adjustBatchService.deleteAdjustBatchByCodes(Arrays.asList(codes));
-        if (i >= 1){
+        int rowAffected = adjustBatchService.deleteAdjustBatchByCodes(Arrays.asList(codes));
+        if (rowAffected > 0){
             //send message to kafka
-            PayrollMsg msg = new PayrollMsg();
-            msg.setBatchCode(batchCodes);
-            msg.setOperateType(OperateTypeEnum.DELETE.getValue());
-            sender.Send(msg);
+            AdjustBatchMsg msg = new AdjustBatchMsg();
+            msg.setOperateTypeEnum(OperateTypeEnum.DELETE);
+            msg.setAdjustBatchCode(batchCodes);
+            sender.SendAdjustBatch(msg);
 
-            return JsonResult.success(i,"删除成功");
+            return JsonResult.success(rowAffected,"删除成功");
         }else {
             return JsonResult.faultMessage();
         }
@@ -349,6 +350,24 @@ public class AjustBatchController {
         }else {
             return JsonResult.faultMessage();
         }
+    }
+
+    @GetMapping("/showAdjustInfo")
+    public JsonResult showAdjustInfo(@RequestParam String batchCode, @RequestParam(required = false) int batchType){
+        int findFlag = 0;
+        if(batchType == BatchTypeEnum.ADJUST.getValue()){
+            Criteria criteria = Criteria.where("batch_code").is(batchCode);
+            criteria.and("show_adj").is(true);
+
+            //DBObject find = adjustBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode).andOperator(Criteria.where("show_adj")).is(true));
+            Query query = Query.query(criteria);
+            query.fields().include("batch_code");
+            DBObject find = adjustBatchMongoOpt.getMongoTemplate().findOne(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
+            if(find != null){
+                findFlag = 1;
+            }
+        }
+        return JsonResult.success(findFlag);
     }
 
 }

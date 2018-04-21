@@ -261,8 +261,13 @@
             <artifactId>cat-client</artifactId>
             <version>2.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>common-auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
-    </dependencies>
+ </dependencies>
 
     <modules>
         <module>FCBusinessCenter-Entity</module>
@@ -345,6 +350,7 @@
         <module>Job/CalDispatchJob/CalDispatchJob-Dao</module>
         <module>Job/CalDispatchJob/CalDispatchJob-Entity</module>
         <module>Job/CalDispatchJob/CalDispatchJob-Host</module>
+        <module>Job/CalDispatchJob/SalaryCompute</module>
 
     </modules>
 

@@ -31,8 +31,8 @@ spring:
           zk-nodes: ${kafka.zk-nodes}
           autoAddPartitions: true
       bindings:
-        payroll-output-channel:
-          destination: fc_payroll_normal-batch # topic name
+        pr-normal-batch-output-channel:
+          destination: fc_payroll_normal_batch # topic name
           content-type: application/json
           producer:
             partitionCount: 2
@@ -44,16 +44,22 @@ spring:
             partitionCount: 2
 
         pr_compute-complete-output-channel:
-          destination: fc_payroll_compute-complete # topic name
+          destination: fc_payroll_compute-complete # 计算完成，审核通过，批次自动关帐
           content-type: application/json
           producer:
             partitionCount: 2
 
         pr_compute-output-channel:
-           destination: fc_payroll_compute_result # topic name
+           destination: fc_payroll_compute_result_01 # topic name
            content-type: application/json
            producer:
              partitionCount: 1
+
+        pr_adjust_batch-output-channel:
+          destination: fc_payroll_adjust_batch # 调整批次新增／删除
+          content-type: application/json
+          producer:
+            partitionCount: 1
 
         pr_compute-status-input-channel:
           destination: fc_payroll_compute-status # topic name

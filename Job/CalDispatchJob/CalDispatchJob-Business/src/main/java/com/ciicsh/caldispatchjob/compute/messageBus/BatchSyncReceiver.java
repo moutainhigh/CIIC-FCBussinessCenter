@@ -1,8 +1,10 @@
 package com.ciicsh.caldispatchjob.compute.messageBus;
 
+import com.ciicsh.caldispatchjob.compute.Cal.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.AdjustBatchMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
@@ -22,9 +24,9 @@ import java.util.List;
  */
 @EnableBinding(value = PayrollSink.class)
 @Component
-public class PayrollReceiver {
+public class BatchSyncReceiver {
 
-    private final static Logger logger = LoggerFactory.getLogger(PayrollReceiver.class);
+    private final static Logger logger = LoggerFactory.getLogger(BatchSyncReceiver.class);
 
     @Autowired
     private EmpGroupServiceImpl empGroupService;
@@ -44,9 +46,9 @@ public class PayrollReceiver {
     @Autowired
     private CompleteComputeServiceImpl completeComputeService;
 
-    @StreamListener(PayrollSink.INPUT)
+    @StreamListener(PayrollSink.PR_NORMAL_BATCH_INPUT)
     public void receive(PayrollMsg message){
-        logger.info("received from batchCode : " + message.getBatchCode());
+        logger.info("received from normal batchCode : " + message.getBatchCode());
         processBatchInfo(message.getBatchCode(), message.getOperateType(),message.getBatchType());
     }
 
@@ -56,13 +58,6 @@ public class PayrollReceiver {
         processEmployees(message);
     }
 
-    @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
-    public void receive(ComputeMsg computeMsg){
-        logger.info("received payroll compute from message: " + computeMsg);
-        if(computeMsg.getBatchType() > 0) {
-            processPayrollCompute(computeMsg.getBatchCode(), computeMsg.getBatchType());
-        }
-    }
 
     @StreamListener(PayrollSink.PR_COMPUTE_COMPLTE_INPUT)
     public void receiveComplete(ComputeMsg computeMsg){
@@ -72,19 +67,19 @@ public class PayrollReceiver {
         }
     }
 
-    /*
-    @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
-    public void receive(Message<ComputeMsg> message){
+    @StreamListener(PayrollSink.PR_ADJUST_BATCH_INPUT)
+    public void receiveAdjustBatch(AdjustBatchMsg adjustBatchMsg){
+        logger.info("received adjust batch change from message: " + adjustBatchMsg);
+        if(adjustBatchMsg.getOperateTypeEnum() == OperateTypeEnum.ADD){
+            String rootBatchCode = adjustBatchMsg.getRootBatchCode();
+            String originBatchCode = adjustBatchMsg.getOriginBatchCode();
+            String adjustCode = adjustBatchMsg.getAdjustBatchCode();
+            adjustBatchService.addAdjustBatch(rootBatchCode,originBatchCode,adjustCode);
 
-        ComputeMsg computeMsg = message.getPayload();
-        logger.info("received payroll compute from message: " + computeMsg);
-        processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
-        Acknowledgment acknowledgment = message.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
-        if (acknowledgment != null) {
-            logger.info("Acknowledgment provided");
-            acknowledgment.acknowledge();
+        }else {
+            adjustBatchService.deleteAdjustBatch(adjustBatchMsg.getAdjustBatchCode());
         }
-    }*/
+    }
 
     /**
      * 订阅雇员组里面的雇员列表变化：新增或者删除
@@ -123,10 +118,6 @@ public class PayrollReceiver {
             } else if (optType == OperateTypeEnum.DELETE.getValue()) {
                 batchService.deleteNormalBatch(batchCode);
             }
-        }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
-            if (optType == OperateTypeEnum.DELETE.getValue()) {
-                adjustBatchService.deleteAdjustBatch(batchCode);
-            }
         }else {
             if (optType == OperateTypeEnum.DELETE.getValue()) {
                 backTraceBatchService.deleteBackTraceBatch(batchCode);
@@ -134,11 +125,4 @@ public class PayrollReceiver {
         }
     }
 
-    /**
-     * 接收薪资计算消息
-     * @param batchCode
-     */
-    private void processPayrollCompute(String batchCode,int batchType){
-        computeService.processCompute(batchCode,batchType);
-    }
 }

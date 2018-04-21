@@ -11,23 +11,23 @@ import org.springframework.stereotype.Service;
 @Service
 public interface PayrollSink {
 
-    String INPUT = "payroll-input-channel";
+    String PR_NORMAL_BATCH_INPUT = "pr-normal-batch-input-channel";
 
     String EMP_GROUP_INPUT= "pr_emp_group-channel";
 
-    String PR_COMPUTE_INPUT = "pr_compute-input-channel";
-
     String PR_COMPUTE_COMPLTE_INPUT = "pr_compute-complete-input-channel";
 
-    @Input(INPUT)
+    String PR_ADJUST_BATCH_INPUT = "pr_adjust_batch-input-channel";
+
+    @Input(PR_NORMAL_BATCH_INPUT)
     MessageChannel input();
 
     @Input(EMP_GROUP_INPUT)
     MessageChannel empGroupInput();
 
-    @Input(PR_COMPUTE_INPUT)
-    SubscribableChannel PayrollComputeInput();
-
     @Input(PR_COMPUTE_COMPLTE_INPUT)
     SubscribableChannel ComputeCompleteInput();
+
+    @Input(PR_ADJUST_BATCH_INPUT)
+    SubscribableChannel AdjustBatchInput();
 }

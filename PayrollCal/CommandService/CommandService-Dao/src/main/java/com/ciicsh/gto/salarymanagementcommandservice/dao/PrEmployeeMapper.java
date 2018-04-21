@@ -30,7 +30,7 @@ public interface PrEmployeeMapper extends BaseMapper<PrEmployeePO> {
 
     /**
      * 判断雇员是否已经存在
-     * @param empId 雇员ID
+     * @param employeeId 雇员ID
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
     Integer isExistEmployee(@Param("employeeId") String employeeId);
