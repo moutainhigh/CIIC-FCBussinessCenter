@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
@@ -26,16 +27,15 @@ import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -106,8 +106,8 @@ public class NormalBatchController {
         prNormalBatchPO.setManagementName(batchDTO.getManagementName());
         prNormalBatchPO.setPeriod(batchDTO.getPeriod());
         prNormalBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
-        prNormalBatchPO.setCreatedBy("bill");
-        prNormalBatchPO.setModifiedBy("bill");
+        prNormalBatchPO.setCreatedBy(UserContext.getName());
+        prNormalBatchPO.setModifiedBy(UserContext.getName());
 
         PrPayrollAccountSetPO accountSetPO = accountSetService.getAccountSetInfo(batchDTO.getAccountSetCode());
 
@@ -165,7 +165,7 @@ public class NormalBatchController {
         prNormalBatchPO.setManagementName(batchDTO.getManagementName());
         prNormalBatchPO.setPeriod(batchDTO.getPeriod());
         prNormalBatchPO.setCode(batchDTO.getCode());
-        prNormalBatchPO.setModifiedBy("bill");
+        prNormalBatchPO.setModifiedBy(UserContext.getName());
 
         PrPayrollAccountSetPO accountSetPO = accountSetService.getAccountSetInfo(batchDTO.getAccountSetCode());
 
@@ -380,28 +380,33 @@ public class NormalBatchController {
 
     @PostMapping("/auditBatch")
     public JsonResult auditBatch(@RequestBody BatchAuditDTO batchAuditDTO){
-        String modifiedBy = "bill"; //TODO
+        String modifiedBy = UserContext.getName();
         int rowAffected = 0 ;
         if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
-            if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
+            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
                 List<DBObject> results = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode())); //.and("catalog.emp_info.is_active").is(true));
                 String jsonResult = JSON.serialize(results);
                 batchAuditDTO.setResult(jsonResult);
-            }
+            }*/
             rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
         }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
-            if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
+            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
                 List<DBObject> results = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
                 String jsonResult = JSON.serialize(results);
                 batchAuditDTO.setResult(jsonResult);
-            }
+            }*/
             rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
+            if(rowAffected > 0){
+                //处理 调整是否显示逻辑
+                adjustBatchService.processAdjustFields(batchAuditDTO.getBatchCode());
+            }
+
         }else {
-            if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
+            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
                 List<DBObject> results = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
                 String jsonResult = JSON.serialize(results);
                 batchAuditDTO.setResult(jsonResult);
-            }
+            }*/
             rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
 
         }

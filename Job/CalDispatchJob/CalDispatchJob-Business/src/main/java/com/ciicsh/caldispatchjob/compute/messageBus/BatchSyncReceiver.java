@@ -1,5 +1,6 @@
 package com.ciicsh.caldispatchjob.compute.messageBus;
 
+import com.ciicsh.caldispatchjob.compute.Cal.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
@@ -56,13 +57,6 @@ public class PayrollReceiver {
         processEmployees(message);
     }
 
-    @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
-    public void receive(ComputeMsg computeMsg){
-        logger.info("received payroll compute from message: " + computeMsg);
-        if(computeMsg.getBatchType() > 0) {
-            processPayrollCompute(computeMsg.getBatchCode(), computeMsg.getBatchType());
-        }
-    }
 
     @StreamListener(PayrollSink.PR_COMPUTE_COMPLTE_INPUT)
     public void receiveComplete(ComputeMsg computeMsg){
@@ -72,19 +66,6 @@ public class PayrollReceiver {
         }
     }
 
-    /*
-    @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
-    public void receive(Message<ComputeMsg> message){
-
-        ComputeMsg computeMsg = message.getPayload();
-        logger.info("received payroll compute from message: " + computeMsg);
-        processPayrollCompute(computeMsg.getBatchCode(),computeMsg.getBatchType());
-        Acknowledgment acknowledgment = message.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
-        if (acknowledgment != null) {
-            logger.info("Acknowledgment provided");
-            acknowledgment.acknowledge();
-        }
-    }*/
 
     /**
      * 订阅雇员组里面的雇员列表变化：新增或者删除
@@ -134,11 +115,4 @@ public class PayrollReceiver {
         }
     }
 
-    /**
-     * 接收薪资计算消息
-     * @param batchCode
-     */
-    private void processPayrollCompute(String batchCode,int batchType){
-        computeService.processCompute(batchCode,batchType);
-    }
 }

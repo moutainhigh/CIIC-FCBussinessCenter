@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 /**
  * Created by bill on 17/12/5.
  */
+
 @Service
-public interface PayrollSink {
-    String INPUT = "payroll-input-channel";
+public interface PayCalSink {
+    String INPUT = "pr-normal-batch-output-channel";
 
     @Input(INPUT)
     MessageChannel input();
