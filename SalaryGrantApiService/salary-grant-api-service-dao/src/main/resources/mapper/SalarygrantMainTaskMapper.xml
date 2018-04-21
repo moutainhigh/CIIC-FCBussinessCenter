@@ -116,7 +116,7 @@
 						FROM
 							sg_dic t2
 						WHERE
-							t2.field_name = 'grant_type'
+                            t2.field_name = 'grant_type'
 						AND t2.type_value = t1.grant_type
 					) grant_type_name,
 					t1.task_status,
@@ -126,7 +126,8 @@
 						FROM
 							sg_dic t2
 						WHERE
-							t2.field_name = 'task_status'
+                            t2.table_name = 'sg_salary_grant_main_task'
+                        AND t2.field_name = 'task_status'
 						AND t2.type_value = t1.task_status
 					) task_status_name
 				FROM
@@ -167,7 +168,8 @@
 							FROM
 								sg_dic t2
 							WHERE
-								t2.field_name = 'task_status'
+                                t2.table_name = 'sg_salary_grant_main_task'
+                            AND t2.field_name = 'task_status'
 							AND t2.type_value = t1.task_status
 						) task_status_name
 					FROM
@@ -211,7 +213,8 @@
 				FROM
 					sg_dic t1
 				WHERE
-					t1.field_name = 'task_status'
+				    t1.table_name='sg_salary_grant_sub_task'
+				AND t1.field_name = 'task_status'
 				AND t1.type_value = t.task_status
 			) task_status_name
 		FROM
