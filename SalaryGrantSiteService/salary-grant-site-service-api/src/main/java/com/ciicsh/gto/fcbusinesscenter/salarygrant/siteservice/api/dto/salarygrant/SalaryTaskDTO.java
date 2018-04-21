@@ -42,6 +42,10 @@ public class SalaryTaskDTO extends PagingDTO {
      */
     private String grantCycle;
     /**
+     * 发放方式
+     */
+    private String grantMode;
+    /**
      * 薪资发放总金额（RMB）
      */
     private BigDecimal paymentTotalSum;
