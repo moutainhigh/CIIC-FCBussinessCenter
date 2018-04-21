@@ -51,10 +51,4 @@ public interface PrAdjustBatchService {
      */
     int checkAdjustBatch(String originBatchCode);
 
-    /**
-     * 如果该调整批次中的实发工资与上次比较小于0，需要显示
-     * @param adjustBatchCode
-     */
-    void processAdjustFields(String adjustBatchCode);
-
 }

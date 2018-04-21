@@ -396,10 +396,6 @@ public class NormalBatchController {
                 batchAuditDTO.setResult(jsonResult);
             }*/
             rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
-            if(rowAffected > 0){
-                //处理 调整是否显示逻辑
-                adjustBatchService.processAdjustFields(batchAuditDTO.getBatchCode());
-            }
 
         }else {
             /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {

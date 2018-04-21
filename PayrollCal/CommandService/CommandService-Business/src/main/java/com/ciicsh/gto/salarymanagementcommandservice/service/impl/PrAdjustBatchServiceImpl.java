@@ -132,37 +132,4 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
     public int checkAdjustBatch(String originBatchCode) {
         return adjustBatchMapper.checkAdjustBatch(originBatchCode);
     }
-
-    @Override
-    public void processAdjustFields(String adjustBatchCode) {
-        List<DBObject> list = getAdjustBatch(adjustBatchCode);
-        list.stream().forEach(p -> {
-            DBObject catalog = (DBObject) p.get("catalog");
-            String empCode = (String) p.get(PayItemName.EMPLOYEE_CODE_CN);
-            Object netPay = findValByName(catalog,PayItemName.EMPLOYEE_NET_PAY); // 先实发工资
-            Object originNetPay = p.get("net_pay");                              // 原实发工资
-
-            BigDecimal nowNetPay = new BigDecimal(String.valueOf(netPay));
-            BigDecimal orgNetPay = new BigDecimal(String.valueOf(originNetPay));
-
-            if(nowNetPay.compareTo(orgNetPay) < 0){ //原实发工资 比 先实发工资 大
-                adjustBatchMongoOpt.update(Criteria.where("batch_code").is(adjustBatchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "show_adj", true);
-            }
-
-        });
-    }
-
-    private Object findValByName(DBObject catalog, String payItemName) {
-        List<DBObject> list = (List<DBObject>) catalog.get("pay_items");
-        return findValByName(list,payItemName);
-    }
-
-    private Object findValByName(List<DBObject> list, String payItemName) {
-        Optional<DBObject> find = list.stream().filter(p -> p.get("item_name").equals(payItemName)).findFirst();
-        if (find.isPresent()) {
-            return find.get().get(payItemName);
-        }
-        return null;
-    }
 }
