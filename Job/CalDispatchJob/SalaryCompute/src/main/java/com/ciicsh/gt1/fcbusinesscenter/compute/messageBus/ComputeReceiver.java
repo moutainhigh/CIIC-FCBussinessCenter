@@ -1,7 +1,6 @@
-package com.ciicsh.gt1.fcbusinesscenter.messageBus;
+package com.ciicsh.gt1.fcbusinesscenter.compute.messageBus;
 
-import com.ciicsh.caldispatchjob.compute.messageBus.PayrollSink;
-import com.ciicsh.caldispatchjob.compute.service.ComputeServiceImpl;
+import com.ciicsh.caldispatchjob.compute.Cal.ComputeServiceImpl;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ public class ComputeReceiver {
     @Autowired
     private ComputeServiceImpl computeService;
 
-    @StreamListener(PayrollSink.PR_COMPUTE_INPUT)
+    @StreamListener(ComputeSink.PR_COMPUTE_INPUT)
     public void receive(ComputeMsg computeMsg){
         logger.info("获取页面计算运行消息： " + computeMsg);
         if(computeMsg.getBatchType() > 0) {

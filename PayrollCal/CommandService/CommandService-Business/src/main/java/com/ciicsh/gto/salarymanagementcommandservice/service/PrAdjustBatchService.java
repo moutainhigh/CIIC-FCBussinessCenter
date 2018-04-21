@@ -32,7 +32,7 @@ public interface PrAdjustBatchService {
 
     PrAdjustBatchPO getAdjustBatchPO(PrAdjustBatchPO adjustBatchPO);
 
-    List<DBObject> getAdjustBatch(String batchCode, String originCode);
+    List<DBObject> getAdjustBatch(String batchCode);
 
     /**
      * 更新批次状态
@@ -50,5 +50,11 @@ public interface PrAdjustBatchService {
      * @return
      */
     int checkAdjustBatch(String originBatchCode);
+
+    /**
+     * 如果该调整批次中的实发工资与上次比较小于0，需要显示
+     * @param adjustBatchCode
+     */
+    void processAdjustFields(String adjustBatchCode);
 
 }

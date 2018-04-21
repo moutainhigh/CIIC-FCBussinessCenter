@@ -1,4 +1,4 @@
-package com.ciicsh.caldispatchjob.compute.messageBus;
+package com.ciicsh.caldispatchjob.compute.Cal;
 
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.messaging.MessageChannel;

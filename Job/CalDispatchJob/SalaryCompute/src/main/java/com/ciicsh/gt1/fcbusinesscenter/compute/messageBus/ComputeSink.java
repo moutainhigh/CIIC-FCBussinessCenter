@@ -1,4 +1,4 @@
-package com.ciicsh.gt1.fcbusinesscenter.messageBus;
+package com.ciicsh.gt1.fcbusinesscenter.compute.messageBus;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.messaging.SubscribableChannel;

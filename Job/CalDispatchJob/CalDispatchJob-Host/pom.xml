@@ -73,7 +73,7 @@
     </dependencies>
 
     <build>
-        <finalName>salary-compute-task</finalName>
+        <finalName>salary-data-sync-task</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>

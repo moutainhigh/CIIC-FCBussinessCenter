@@ -1,4 +1,4 @@
-package com.ciicsh.caldispatchjob.compute.messageBus;
+package com.ciicsh.caldispatchjob.compute.Cal;
 
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import org.slf4j.Logger;

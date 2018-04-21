@@ -1,7 +1,9 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
+import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.IPrEmployeeMapper;
 import com.ciicsh.gto.salarymanagement.entity.PrEmployeeEntity;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class PrEmployeeServiceImpl implements com.ciicsh.gto.salarymanagementcom
     @Autowired
     private IPrEmployeeMapper prEmployeeMapper;
 
+    @Autowired
+    private PrEmployeeMapper employeeMapper;
+
     final static int PAGE_SIZE = 10;
 
     @Override
@@ -33,6 +38,11 @@ public class PrEmployeeServiceImpl implements com.ciicsh.gto.salarymanagementcom
         }
         PageInfo<PrEmployeeEntity> pageInfo = new PageInfo<>(resultList);
         return pageInfo;
+    }
+
+    @Override
+    public List<PrEmployeePO> getEmployeesByGroupCode(String empGroupCode) {
+        return employeeMapper.getEmployeesByGroupCode(empGroupCode);
     }
 
 }

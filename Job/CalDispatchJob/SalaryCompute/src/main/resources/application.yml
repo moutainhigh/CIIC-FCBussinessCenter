@@ -6,7 +6,7 @@ spring:
     username: root
     password: a111111
   application:
-    name: fcbusiness-center-compute-task
+    name: fcbusiness-center-salary-compute
   cloud:
     stream:
       kafka:
@@ -16,22 +16,9 @@ spring:
           autoAddPartitions: true
 
       bindings:
-        payroll-input-channel:
-          destination: fc_payroll_normal-batch # topic name
-          content-type: application/json
-          group: ${spring.application.name} # consumer group
-          consumer:
-            partitioned: true
-
-        pr_emp_group-channel:
-          destination: fc_payroll_empGroup # 雇员组 topic
-          content-type: application/json
-          group: ${spring.application.name} # consumer group
-          consumer:
-            partitioned: true
 
         pr_compute-input-channel:
-          destination: fc_payroll_compute_result02 # 薪资计算 topic
+          destination: fc_payroll_compute_result_01 # 薪资计算 topic
           content-type: application/json
           group: ${spring.application.name} # consumer group
           consumer:
@@ -43,18 +30,11 @@ spring:
           producer:
             partitionCount: 1
 
-        pr_compute-complete-input-channel:
-          destination: fc_payroll_compute-complete # topic name
-          content-type: application/json
-          group: ${spring.application.name} # consumer group
-          consumer:
-            partitioned: true
-
       #instance-count: 2
       #instance-index: 1
 
 server:
-  port: 7033
+  port: 7034
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/**.xml

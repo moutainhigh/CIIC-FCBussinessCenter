@@ -4,6 +4,7 @@ import com.ciicsh.caldispatchjob.compute.Cal.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.message.AdjustBatchMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
@@ -23,9 +24,9 @@ import java.util.List;
  */
 @EnableBinding(value = PayrollSink.class)
 @Component
-public class PayrollReceiver {
+public class BatchSyncReceiver {
 
-    private final static Logger logger = LoggerFactory.getLogger(PayrollReceiver.class);
+    private final static Logger logger = LoggerFactory.getLogger(BatchSyncReceiver.class);
 
     @Autowired
     private EmpGroupServiceImpl empGroupService;
@@ -45,9 +46,9 @@ public class PayrollReceiver {
     @Autowired
     private CompleteComputeServiceImpl completeComputeService;
 
-    @StreamListener(PayrollSink.INPUT)
+    @StreamListener(PayrollSink.PR_NORMAL_BATCH_INPUT)
     public void receive(PayrollMsg message){
-        logger.info("received from batchCode : " + message.getBatchCode());
+        logger.info("received from normal batchCode : " + message.getBatchCode());
         processBatchInfo(message.getBatchCode(), message.getOperateType(),message.getBatchType());
     }
 
@@ -66,6 +67,19 @@ public class PayrollReceiver {
         }
     }
 
+    @StreamListener(PayrollSink.PR_ADJUST_BATCH_INPUT)
+    public void receiveAdjustBatch(AdjustBatchMsg adjustBatchMsg){
+        logger.info("received adjust batch change from message: " + adjustBatchMsg);
+        if(adjustBatchMsg.getOperateTypeEnum() == OperateTypeEnum.ADD){
+            String rootBatchCode = adjustBatchMsg.getRootBatchCode();
+            String originBatchCode = adjustBatchMsg.getOriginBatchCode();
+            String adjustCode = adjustBatchMsg.getAdjustBatchCode();
+            adjustBatchService.addAdjustBatch(rootBatchCode,originBatchCode,adjustCode);
+
+        }else {
+            adjustBatchService.deleteAdjustBatch(adjustBatchMsg.getAdjustBatchCode());
+        }
+    }
 
     /**
      * 订阅雇员组里面的雇员列表变化：新增或者删除
@@ -103,10 +117,6 @@ public class PayrollReceiver {
                 batchService.batchInsertOrUpdateNormalBatch(batchCode);
             } else if (optType == OperateTypeEnum.DELETE.getValue()) {
                 batchService.deleteNormalBatch(batchCode);
-            }
-        }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
-            if (optType == OperateTypeEnum.DELETE.getValue()) {
-                adjustBatchService.deleteAdjustBatch(batchCode);
             }
         }else {
             if (optType == OperateTypeEnum.DELETE.getValue()) {

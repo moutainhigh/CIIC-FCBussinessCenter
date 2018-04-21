@@ -35,5 +35,7 @@ public class PayItemName {
 
     public static final String EMPLOYEE_SERVICE_AGREE = "雇员服务协议";
 
+    public static final String EMPLOYEE_NET_PAY = "实发工资";
+
 
 }

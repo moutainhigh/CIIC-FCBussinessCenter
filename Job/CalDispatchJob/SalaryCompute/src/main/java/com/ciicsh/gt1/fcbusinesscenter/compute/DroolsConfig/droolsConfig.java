@@ -1,4 +1,4 @@
-package com.ciicsh.gt1.fcbusinesscenter.DroolsConfig;
+package com.ciicsh.gt1.fcbusinesscenter.compute.DroolsConfig;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
