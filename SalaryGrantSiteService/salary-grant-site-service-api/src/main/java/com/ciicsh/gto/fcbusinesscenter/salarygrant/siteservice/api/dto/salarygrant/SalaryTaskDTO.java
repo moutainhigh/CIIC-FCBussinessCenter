@@ -77,4 +77,9 @@ public class SalaryTaskDTO extends PagingDTO {
      * 状态中文描述
      */
     private String taskStatusName;
+    /**
+     * 备注
+     */
+    private String remark;
+
 }

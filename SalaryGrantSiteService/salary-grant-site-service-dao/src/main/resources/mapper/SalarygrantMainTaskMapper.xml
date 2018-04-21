@@ -66,7 +66,8 @@
     </resultMap>
 
     <sql id="listField">
-      t.salary_grant_main_task_id AS task_id, t.salary_grant_main_task_code AS task_code, t.management_id, t.management_name, t.batch_code, t.grant_cycle
+        t.salary_grant_main_task_id AS task_id, t.salary_grant_main_task_code AS task_code, t.management_id, t.management_name, t.batch_code, t.grant_cycle,
+        t.payment_total_sum, t.total_person_count, t.chinese_count, t.foreigner_count, t.grant_date, t.grant_type, t.remark
     </sql>
 
 	<select id="list" resultMap="PageResultMap">
