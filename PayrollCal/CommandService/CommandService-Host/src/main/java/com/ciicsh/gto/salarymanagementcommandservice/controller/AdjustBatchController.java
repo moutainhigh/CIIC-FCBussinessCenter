@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * Created by bill on 18/1/23.
  */
 @RestController
-public class AjustBatchController {
+public class AdjustBatchController {
 
     @Autowired
     private KafkaSender sender;
