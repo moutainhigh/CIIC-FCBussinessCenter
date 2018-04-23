@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>com.ciicsh.gt1.salecenter</groupId>
-            <artifactId>apiservice-api</artifactId>
+            <artifactId>gt1.salecenter.apiservice-api</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
