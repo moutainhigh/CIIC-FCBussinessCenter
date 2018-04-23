@@ -236,6 +236,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return normalBatchMapper.selectAllBatchCodesByManagementId(managementId);
     }
 
+    @Override
+    public List<String> getBatchIdListByManagementId(String managementId) {
+        return normalBatchMapper.getBatchIdListByManagementId(managementId);
+    }
+
     private BasicDBObject getEmployeeInfo(String empCode){
         BasicDBObject basicDBObject = new BasicDBObject();
 

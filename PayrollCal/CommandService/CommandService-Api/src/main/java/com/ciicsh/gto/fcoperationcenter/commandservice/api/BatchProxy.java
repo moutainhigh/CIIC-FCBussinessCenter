@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcoperationcenter.commandservice.api;
 
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.AdvanceBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.MoneyBatchDTO;
@@ -58,4 +59,12 @@ public interface BatchProxy {
      */
     @PostMapping("/updateBatchStatus")
     int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO);
+
+    /**
+     * 获取批量列表ID 状态：未来款，未垫付，帐套已关闭
+     * @param mgrId
+     * @return
+     */
+    @GetMapping("/getBatchIdListByManagementId")
+    JsonResult<List<String>> getBatchIdListByManagementId(String mgrId);
 }

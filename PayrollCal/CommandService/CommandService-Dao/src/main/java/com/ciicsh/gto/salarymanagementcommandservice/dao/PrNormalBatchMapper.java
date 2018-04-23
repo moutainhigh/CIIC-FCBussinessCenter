@@ -52,4 +52,7 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
                         @Param("modifiedBy") String modifiedBy);
 
     List<PrNormalBatchPO> selectAllBatchCodesByManagementId(@Param("managementId") String managementId);
+
+    List<String> getBatchIdListByManagementId(@Param("managementId") String managementId);
+
 }

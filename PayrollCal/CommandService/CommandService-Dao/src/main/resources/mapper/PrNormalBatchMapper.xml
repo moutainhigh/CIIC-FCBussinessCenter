@@ -448,4 +448,46 @@
 				AND nb.management_id = #{managementId}
 			</if>
 	</select>
+
+	<select id="getBatchIdListByManagementId" resultType="java.lang.String">
+		SELECT
+		code
+		FROM
+		pr_normal_batch
+		WHERE
+		has_advance = 0 AND has_money =0 AND status = 7
+		<if test="managementId != '' and managementId != null">
+			AND management_id = #{managementId}
+		</if>
+
+		UNION
+
+		SELECT
+		ab.adjust_batch_code as code
+		FROM
+		pr_adjust_batch ab
+		JOIN pr_normal_batch nb
+		ON nb.code = ab.root_batch_code
+		WHERE
+		ab.has_advance = 0 AND ab.has_money =0 AND ab.status = 7
+		<if test="managementId != '' and managementId != null">
+			AND nb.management_id = #{managementId}
+		</if>
+
+		UNION
+
+		SELECT
+		btb.back_tracking_batch_code as code
+		FROM
+		pr_back_tracking_batch btb
+		JOIN pr_normal_batch nb
+		ON nb.code = btb.root_batch_code
+		WHERE
+		btb.has_advance = 0 AND btb.has_money =0 AND btb.status = 7
+		<if test="managementId != '' and managementId != null">
+			AND nb.management_id = #{managementId}
+		</if>
+	</select>
+
+
 </mapper>

@@ -4,7 +4,6 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -77,4 +76,11 @@ public interface PrNormalBatchService {
      * @return
      */
     List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId);
+
+    /**
+     * 获取管理方ID 列表
+     * @param managementId
+     * @return
+     */
+    List<String> getBatchIdListByManagementId(String managementId);
 }
