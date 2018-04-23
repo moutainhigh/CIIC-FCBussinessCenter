@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGe
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.salarygrant.SalaryTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.LinkmanDTO;
@@ -33,6 +34,9 @@ public class SalaryGrantController {
     private SalaryGrantService salaryGrantService;
 
     @Autowired
+    private SalaryGrantTaskQueryService salaryGrantTaskQueryService;
+
+    @Autowired
     private SheetServiceProxy sheetServiceProxy;
 
     /**
@@ -46,7 +50,8 @@ public class SalaryGrantController {
     public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
         try {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-            Page page = salaryGrantService.list(bo);
+            Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(dto.getCurrent(), dto.getSize());
+            Page page = salaryGrantTaskQueryService.queryTaskForSubmitPage(paging, bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
             page.setRecords(list);
             return ResultGenerator.genSuccessResult(page);

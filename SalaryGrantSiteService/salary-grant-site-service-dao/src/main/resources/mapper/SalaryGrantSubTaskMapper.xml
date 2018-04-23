@@ -36,4 +36,8 @@
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
 
+	<select id="subTaskList" resultMap="BaseResultMap">
+
+	</select>
+
 </mapper>
