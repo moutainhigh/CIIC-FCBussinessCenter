@@ -1,4 +1,4 @@
-package com.ciicsh.caldispatchjob.compute.messageBus;
+package com.ciicsh.caldispatchjob.compute.Cal;
 
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import org.slf4j.Logger;
@@ -9,21 +9,21 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by bill on 17/10/21.
+ * Created by bill on 18/4/19.
  */
-@EnableBinding(value = PayrollSource.class)
+@EnableBinding(value = ComputeSource.class)
 @Component
-public class KafkaSender {
+public class ComputeSender {
 
-    private final Logger logger = LoggerFactory.getLogger(KafkaSender.class);
+    private final Logger logger = LoggerFactory.getLogger(ComputeSender.class);
 
     @Autowired
-    private PayrollSource payrollSource;
+    private ComputeSource computeSource;
 
     public void SendComputeStatus(ComputeMsg computeMsg)
     {
         try{
-            payrollSource.computeStatusOutput().send(MessageBuilder.withPayload(computeMsg).build());
+            computeSource.computeStatusOutput().send(MessageBuilder.withPayload(computeMsg).build());
             logger.info("发送计算消息成功：" + computeMsg.toString());
         }
         catch(Exception ex){
@@ -31,7 +31,5 @@ public class KafkaSender {
 
         }
 
-
     }
-
 }

@@ -10,8 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-    <artifactId>caldispatchjob-host</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>caldispatchjob-compute</artifactId>
     <version>1.0.0</version>
 
     <properties>
@@ -73,7 +72,7 @@
     </dependencies>
 
     <build>
-        <finalName>salary-data-sync-task</finalName>
+        <finalName>salary-compute-task</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>

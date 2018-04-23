@@ -19,13 +19,12 @@ import java.util.List;
  */
 @Component
 public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTaskPO> {
-    /**
-     * 薪资发放任务单一览
-     * @param page
-     * @param bo
-     * @return
-     */
-    List<SalaryGrantTaskBO> list(Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> submitList(Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> approveList(Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> haveApprovedList(Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> passList(Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> rejectList(Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> invalidList(Pagination page, SalaryGrantTaskBO bo);
 
     List<SalaryGrantMainTaskBO> querySalaryGrantMainTaskList(Pagination page, SalaryGrantMainTaskBO bo);
 

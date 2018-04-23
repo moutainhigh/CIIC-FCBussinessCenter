@@ -24,4 +24,18 @@
     <finalName>gt1.fcbusinesscenter.salary-grant-api-service-api</finalName>
   </build>
 
+  <distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <url>
+        http://172.16.9.14:8081/nexus/content/repositories/releases/
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <url>
+        http://172.16.9.14:8081/nexus/content/repositories/snapshots/
+      </url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

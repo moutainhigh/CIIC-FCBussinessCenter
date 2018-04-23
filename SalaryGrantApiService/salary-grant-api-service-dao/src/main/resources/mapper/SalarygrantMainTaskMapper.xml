@@ -110,25 +110,9 @@
 					t1.foreigner_count,
 					t1.grant_date,
 					t1.grant_type,
-					(
-						SELECT
-							t2.type_name
-						FROM
-							sg_dic t2
-						WHERE
-							t2.field_name = 'grant_type'
-						AND t2.type_value = t1.grant_type
-					) grant_type_name,
+					'' as grant_type_name,
 					t1.task_status,
-					(
-						SELECT
-							t2.type_name
-						FROM
-							sg_dic t2
-						WHERE
-							t2.field_name = 'task_status'
-						AND t2.type_value = t1.task_status
-					) task_status_name
+					'' as task_status_name
 				FROM
 					sg_salary_grant_main_task t1
 				WHERE
@@ -151,25 +135,9 @@
 						t1.foreigner_count,
 						t1.grant_date,
 						t1.grant_type,
-						(
-							SELECT
-								t2.type_name
-							FROM
-								sg_dic t2
-							WHERE
-								t2.field_name = 'grant_type'
-							AND t2.type_value = t1.grant_type
-						) grant_type_name,
+						'' as grant_type_name,
 						t1.task_status,
-						(
-							SELECT
-								t2.type_name
-							FROM
-								sg_dic t2
-							WHERE
-								t2.field_name = 'task_status'
-							AND t2.type_value = t1.task_status
-						) task_status_name
+						'' as task_status_name
 					FROM
 						sg_salary_grant_task_history t1
 					WHERE
@@ -190,30 +158,14 @@
 			t.salary_grant_sub_task_id task_id,
 			t.salary_grant_sub_task_code task_code,
 			t.grant_mode,
-			(
-				SELECT
-					t1.type_name
-				FROM
-					sg_dic t1
-				WHERE
-					t1.field_name = 'grant_mode'
-				AND t1.type_value = t.grant_mode
-			) grant_mode_name,
+			'' as grant_mode_name,
 			t.grant_account_code,
 			t.payment_total_sum,
 			t.total_person_count,
 			t.chinese_count,
 			t.foreigner_count,
 			t.task_status,
-			(
-				SELECT
-					t1.type_name
-				FROM
-					sg_dic t1
-				WHERE
-					t1.field_name = 'task_status'
-				AND t1.type_value = t.task_status
-			) task_status_name
+			'' as task_status_name
 		FROM
 			sg_salary_grant_sub_task t
 		WHERE

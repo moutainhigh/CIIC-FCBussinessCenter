@@ -22,16 +22,6 @@ import java.util.Map;
  * @since 2018-02-27
  */
 public interface SalaryGrantService extends IService<SalaryGrantMainTaskPO> {
-
-    /**
-     * 查询薪资发放任务单
-     * @author chenpb
-     * @date 2018-04-20
-     * @param bo
-     * @return
-     */
-    Page list(SalaryGrantTaskBO bo);
-
     /**
      *  根据计算批次编号判断薪资发放任务单主表是否已存在
      * @param batchParam

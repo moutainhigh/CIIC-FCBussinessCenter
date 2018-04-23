@@ -1,11 +1,8 @@
-package com.ciicsh.caldispatchjob.compute.service;
+package com.ciicsh.caldispatchjob.compute.Cal;
 
-import com.ciicsh.caldispatchjob.compute.messageBus.KafkaSender;
-import com.ciicsh.caldispatchjob.compute.spliter.BatchSpliterator;
 import com.ciicsh.caldispatchjob.compute.util.CustomAgendaFilter;
 import com.ciicsh.caldispatchjob.compute.util.JavaScriptEngine;
 import com.ciicsh.caldispatchjob.entity.*;
-import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -26,20 +23,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import javax.script.*;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.StampedLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 /**
@@ -92,7 +84,7 @@ public class ComputeServiceImpl {
 
 
     @Autowired
-    private KafkaSender sender;
+    private ComputeSender sender;
 
     public void processCompute(String batchCode,int batchType){
 
