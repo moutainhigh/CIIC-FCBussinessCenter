@@ -1,7 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.ciicsh.gto.companycenter.webcommandservice.api.UserManagementProxy;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,25 +29,22 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
     @Autowired
     private FcPayrollCalcResultMapper fcPayrollCalcResultMapper;
 
-    @Autowired
-    private MongoClient mongoClient;
+//    @Autowired
+//    private MongoClient mongoClient;
 
-    @Autowired
-    private UserManagementProxy userManagementProxy;
 
     @Override
     public List<FcPayrollCalcResultPO> listFcPayrollCalcResults(Map<String, Object> params) {
 
-        userManagementProxy.list(new HashMap<String, Object>(){
-            {
-                put("userId", "XTY00001");
-            }
-        });
+//        userManagementProxy.list(new HashMap<String, Object>(){
+//            {
+//                put("userId", "XTY00001");
+//            }
+//        });
+
+//        Set<Map.Entry<String, Object>> set = mongoClient.getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find().first().entrySet();
 
         List<FcPayrollCalcResultPO> records = fcPayrollCalcResultMapper.list(params);
-
-
-        Set<Map.Entry<String, Object>> set = mongoClient.getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find().first().entrySet();
 
         return records;
     }

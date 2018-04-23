@@ -10,7 +10,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
 @SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcbusinesscenter","com.ciicsh.gt1"})
 @EnableDiscoveryClient
-@EnableFeignClients({"com.ciicsh.gto.identityservice.api", "com.ciicsh.gto.fcoperationcenter.commandservice.api", "com.ciicsh.gto.companycenter.webcommandservice.api"})
+@EnableFeignClients({"com.ciicsh.gto.identityservice.api", "com.ciicsh.gto.fcoperationcenter.commandservice.api"})
 public class MainApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
