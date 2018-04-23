@@ -18,5 +18,13 @@ import java.util.List;
  */
 @Component
 public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskPO> {
-    List<SalaryGrantSubTaskPO> subTaskList(Pagination page, SalaryGrantSubTaskPO bo);
+    /**
+     * 根据主表任务单编号查询字表任务单
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param bo
+     * @return
+     */
+    List<SalaryGrantTaskBO> subTaskList (Pagination page, SalaryGrantTaskBO bo);
 }
