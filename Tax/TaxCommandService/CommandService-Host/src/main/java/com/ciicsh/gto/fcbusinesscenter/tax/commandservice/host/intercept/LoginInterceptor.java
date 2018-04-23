@@ -44,6 +44,9 @@ public class LoginInterceptor{
                 }
                 //获取登录信息
                 Result<UserInfoResponseDTO> result = identityServiceProxy.getUserInfoByToken(token);
+                if(result.getCode() != 0){
+                    throw new TokenException("check token error...");
+                }
                 LoginInfoContext loginInfoContext = new LoginInfoContext();
                 loginInfoContext.setResult(result);
                 LoginInfoHolder.put(loginInfoContext);
