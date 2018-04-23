@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
@@ -50,6 +51,7 @@ public class SalaryGrantController {
     public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
         try {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setUserId(UserContext.getUserId());
             Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(dto.getCurrent(), dto.getSize());
             Page page = salaryGrantTaskQueryService.queryTaskForSubmitPage(paging, bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);

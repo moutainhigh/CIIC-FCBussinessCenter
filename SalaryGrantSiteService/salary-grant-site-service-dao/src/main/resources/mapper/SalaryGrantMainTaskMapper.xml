@@ -113,8 +113,8 @@
                 </if>
                 and
                   t1.is_active=1
-                and
-                  t1.operator_user_id='003'
+--                 and
+--                   t1.operator_user_id='003'
             </where>
 
         union
@@ -146,9 +146,9 @@
                     and t2.task_status = #{taskStatus}
                 </if>
                 and
-                t2.is_active=1
+                  t2.is_active=1
                 and
-                t2.task_type=1
+                  t2.task_type=1
     --             and
     --             t2.operator_user_id='003'
             </where>

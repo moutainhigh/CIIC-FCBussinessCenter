@@ -1,5 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -11,7 +14,9 @@ import java.math.BigDecimal;
  * @author chenpb
  * @since 2018-04-20
  */
-public class SalaryGrantTaskBO extends PagingBO implements Serializable {
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class SalaryGrantTaskBO {
     /**
      * 任务单ID
      */
@@ -100,208 +105,8 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      * 状态中文描述
      */
     private String taskStatusName;
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getTaskCode() {
-        return taskCode;
-    }
-
-    public void setTaskCode(String taskCode) {
-        this.taskCode = taskCode;
-    }
-
-    public String getManagementId() {
-        return managementId;
-    }
-
-    public void setManagementId(String managementId) {
-        this.managementId = managementId;
-    }
-
-    public String getManagementName() {
-        return managementName;
-    }
-
-    public void setManagementName(String managementName) {
-        this.managementName = managementName;
-    }
-
-    public String getBatchCode() {
-        return batchCode;
-    }
-
-    public void setBatchCode(String batchCode) {
-        this.batchCode = batchCode;
-    }
-
-    public String getGrantCycle() {
-        return grantCycle;
-    }
-
-    public void setGrantCycle(String grantCycle) {
-        this.grantCycle = grantCycle;
-    }
-
-    public BigDecimal getPaymentTotalSum() {
-        return paymentTotalSum;
-    }
-
-    public void setPaymentTotalSum(BigDecimal paymentTotalSum) {
-        this.paymentTotalSum = paymentTotalSum;
-    }
-
-    public Integer getTotalPersonCount() {
-        return totalPersonCount;
-    }
-
-    public void setTotalPersonCount(Integer totalPersonCount) {
-        this.totalPersonCount = totalPersonCount;
-    }
-
-    public Integer getChineseCount() {
-        return chineseCount;
-    }
-
-    public void setChineseCount(Integer chineseCount) {
-        this.chineseCount = chineseCount;
-    }
-
-    public Integer getForeignerCount() {
-        return foreignerCount;
-    }
-
-    public void setForeignerCount(Integer foreignerCount) {
-        this.foreignerCount = foreignerCount;
-    }
-
-    public String getGrantDate() {
-        return grantDate;
-    }
-
-    public void setGrantDate(String grantDate) {
-        this.grantDate = grantDate;
-    }
-
-    public Integer getGrantType() {
-        return grantType;
-    }
-
-    public void setGrantType(Integer grantType) {
-        this.grantType = grantType;
-    }
-
-    public String getGrantTypeName() {
-        return grantTypeName;
-    }
-
-    public void setGrantTypeName(String grantTypeName) {
-        this.grantTypeName = grantTypeName;
-    }
-
-    public String getGrantMode() {
-        return grantMode;
-    }
-
-    public void setGrantMode(String grantMode) {
-        this.grantMode = grantMode;
-    }
-
-    public String getGrantModeName() {
-        return grantModeName;
-    }
-
-    public void setGrantModeName(String grantModeName) {
-        this.grantModeName = grantModeName;
-    }
-
-    public String getGrantAccountCode() {
-        return grantAccountCode;
-    }
-
-    public void setGrantAccountCode(String grantAccountCode) {
-        this.grantAccountCode = grantAccountCode;
-    }
-
-    public String getGrantAccountName() {
-        return grantAccountName;
-    }
-
-    public void setGrantAccountName(String grantAccountName) {
-        this.grantAccountName = grantAccountName;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public String getInvalidReason() {
-        return invalidReason;
-    }
-
-    public void setInvalidReason(String invalidReason) {
-        this.invalidReason = invalidReason;
-    }
-
-    public String getApprovedOpinion() {
-        return approvedOpinion;
-    }
-
-    public void setApprovedOpinion(String approvedOpinion) {
-        this.approvedOpinion = approvedOpinion;
-    }
-
-    public String getTaskStatus() {
-        return taskStatus;
-    }
-
-    public void setTaskStatus(String taskStatus) {
-        this.taskStatus = taskStatus;
-    }
-
-    public String getTaskStatusName() {
-        return taskStatusName;
-    }
-
-    public void setTaskStatusName(String taskStatusName) {
-        this.taskStatusName = taskStatusName;
-    }
-
-    @Override
-    public String toString() {
-        return "SalaryGrantTaskBO{" +
-                "taskId=" + taskId +
-                ", taskCode='" + taskCode + '\'' +
-                ", managementId='" + managementId + '\'' +
-                ", managementName='" + managementName + '\'' +
-                ", batchCode='" + batchCode + '\'' +
-                ", grantCycle='" + grantCycle + '\'' +
-                ", paymentTotalSum=" + paymentTotalSum +
-                ", totalPersonCount=" + totalPersonCount +
-                ", chineseCount=" + chineseCount +
-                ", foreignerCount=" + foreignerCount +
-                ", grantDate='" + grantDate + '\'' +
-                ", grantType=" + grantType +
-                ", grantTypeName='" + grantTypeName + '\'' +
-                ", grantMode='" + grantMode + '\'' +
-                ", grantModeName='" + grantModeName + '\'' +
-                ", grantAccountCode='" + grantAccountCode + '\'' +
-                ", grantAccountName='" + grantAccountName + '\'' +
-                ", remark='" + remark + '\'' +
-                ", invalidReason='" + invalidReason + '\'' +
-                ", approvedOpinion='" + approvedOpinion + '\'' +
-                ", taskStatus='" + taskStatus + '\'' +
-                ", taskStatusName='" + taskStatusName + '\'' +
-                '}';
-    }
+    /**
+     * 系统用户ID
+     */
+    private String userId;
 }
