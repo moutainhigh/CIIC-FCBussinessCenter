@@ -8,9 +8,9 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
-@SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcbusinesscenter"})
+@SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcbusinesscenter","com.ciicsh.gt1"})
 @EnableDiscoveryClient
-@EnableFeignClients({"com.ciicsh.gto.identityservice.api", "com.ciicsh.gto.fcoperationcenter.commandservice.api"})
+@EnableFeignClients({"com.ciicsh.gto.identityservice.api", "com.ciicsh.gto.fcoperationcenter.commandservice.api", "com.ciicsh.gto.companycenter.webcommandservice.api"})
 public class MainApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {

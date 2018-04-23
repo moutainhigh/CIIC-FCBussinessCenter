@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.companycenter.webcommandservice.api.UserManagementProxy;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.FcPayrollCalc
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,17 +25,30 @@ import java.util.Map;
  * @since 2018-02-09
  */
 @Service
-@Transactional
-@SuppressWarnings("all")
 public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultService {
 
     @Autowired
     private FcPayrollCalcResultMapper fcPayrollCalcResultMapper;
 
+    @Autowired
+    private MongoClient mongoClient;
+
+    @Autowired
+    private UserManagementProxy userManagementProxy;
+
     @Override
     public List<FcPayrollCalcResultPO> listFcPayrollCalcResults(Map<String, Object> params) {
 
+        userManagementProxy.list(new HashMap<String, Object>(){
+            {
+                put("userId", "XTY00001");
+            }
+        });
+
         List<FcPayrollCalcResultPO> records = fcPayrollCalcResultMapper.list(params);
+
+
+        Set<Map.Entry<String, Object>> set = mongoClient.getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find().first().entrySet();
 
         return records;
     }

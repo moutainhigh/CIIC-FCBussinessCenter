@@ -55,6 +55,16 @@
             <artifactId>apiservice-api</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+             <groupId>com.ciicsh.gt1</groupId>
+             <artifactId>mongo-client</artifactId>
+             <version>1.1.0</version>
+        </dependency>
+        <dependency>
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
         <!--<dependency>-->
             <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
             <!--<artifactId>salarymanagement-commandservice-api</artifactId>-->
