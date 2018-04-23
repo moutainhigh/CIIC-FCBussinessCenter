@@ -5,7 +5,7 @@
 	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrEmployeeBaseItemRelationPO">
 		<id column="id" property="id" />
-		<result column="emp_id" property="empId" />
+		<result column="emp_id" property="employeeId" />
 		<result column="emp_base_value" property="empBaseValue" />
 		<result column="base_item_code" property="baseItemCode" />
 		<result column="is_active" property="isActive" />

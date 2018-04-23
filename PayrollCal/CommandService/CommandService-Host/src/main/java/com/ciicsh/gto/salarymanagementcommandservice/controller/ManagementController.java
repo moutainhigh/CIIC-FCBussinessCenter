@@ -1,7 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;

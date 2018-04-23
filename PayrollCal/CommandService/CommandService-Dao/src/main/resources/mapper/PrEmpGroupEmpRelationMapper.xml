@@ -6,7 +6,7 @@
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupEmpRelationPO">
 		<id column="id" property="id" />
 		<result column="emp_group_code" property="empGroupCode" />
-		<result column="emp_id" property="empId" />
+		<result column="emp_id" property="employeeId" />
 		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
@@ -15,7 +15,16 @@
 	</resultMap>
 
 	<select id="isExistEmpGroupEmpRelation" resultType="int">
-		SELECT COUNT(*) FROM pr_emp_group_emp_relation WHERE emp_group_code = #{empGroupCode} AND emp_id = #{empId} AND is_active = 1
+		SELECT
+			COUNT(*)
+		FROM
+			pr_emp_group_emp_relation
+		WHERE
+			emp_group_code = #{empGroupCode}
+		AND
+			employee_id = #{employeeId}
+		AND
+			is_active = 1
 	</select>
 
 	<select id="delByEmpGroupCodes" resultType="int">

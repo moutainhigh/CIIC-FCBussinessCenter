@@ -1,5 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.PagingDTO;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,7 +13,7 @@ import java.util.Date;
  * @author gaoyang
  * @since 2018-03-07
  */
-public class EmployeeChangeLogDTO extends CommonListDTO implements Serializable {
+public class EmployeeChangeLogDTO extends PagingDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

@@ -10,7 +10,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupEmpRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;

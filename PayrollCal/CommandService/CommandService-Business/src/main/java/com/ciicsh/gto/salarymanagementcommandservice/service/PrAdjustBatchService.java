@@ -32,7 +32,7 @@ public interface PrAdjustBatchService {
 
     PrAdjustBatchPO getAdjustBatchPO(PrAdjustBatchPO adjustBatchPO);
 
-    List<DBObject> getAdjustBatch(String batchCode, String originCode);
+    List<DBObject> getAdjustBatch(String batchCode);
 
     /**
      * 更新批次状态

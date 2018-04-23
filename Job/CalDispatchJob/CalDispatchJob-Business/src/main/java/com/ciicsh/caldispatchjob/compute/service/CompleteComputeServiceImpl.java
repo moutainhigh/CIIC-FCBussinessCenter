@@ -15,7 +15,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -64,6 +66,7 @@ public class CompleteComputeServiceImpl {
             batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
 
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            query.fields().include("net_pay").include("show_adj");
             batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, AdjustBatchMongoOpt.PR_ADJUST_BATCH);
 
         }else {
@@ -114,6 +117,8 @@ public class CompleteComputeServiceImpl {
             mapObj.put("salary_calc_result_items", catalog.get("pay_items"));
             mapObj.put("employee_service_agreement", emp.get(PayItemName.EMPLOYEE_SERVICE_AGREE));
 
+            processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
+
             return mapObj;
 
         }).collect(Collectors.toList());
@@ -121,5 +126,38 @@ public class CompleteComputeServiceImpl {
         int rowAffected = closeAccountMongoOpt.batchInsert(list);
 
         logger.info("批量插入成功：" + String.valueOf(rowAffected));
+    }
+
+    /**
+     * 处理调整规则 比较这次调整批次与上次调整批次的实发工资
+     */
+   private void processAdjustFields(String bathCode,int batchType, DBObject item) {
+       if(batchType == BatchTypeEnum.ADJUST.getValue()){
+           DBObject catalog = (DBObject) item.get("catalog");
+           String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
+           Object netPay = findValByName(catalog,PayItemName.EMPLOYEE_NET_PAY); // 先实发工资
+           Object originNetPay = item.get("net_pay");                           // 原实发工资
+
+           BigDecimal nowNetPay = new BigDecimal(String.valueOf(netPay));
+           BigDecimal orgNetPay = new BigDecimal(String.valueOf(originNetPay));
+
+           if(nowNetPay.compareTo(orgNetPay) < 0){ //原实发工资 比 先实发工资 大
+               adjustBatchMongoOpt.update(Criteria.where("batch_code").is(bathCode)
+                       .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "show_adj", true);
+           }
+       }
+    }
+
+    private Object findValByName(DBObject catalog, String payItemName) {
+        List<DBObject> list = (List<DBObject>) catalog.get("pay_items");
+        return findValByName(list,payItemName);
+    }
+
+    private Object findValByName(List<DBObject> list, String payItemName) {
+        Optional<DBObject> find = list.stream().filter(p -> p.get("item_name").equals(payItemName)).findFirst();
+        if (find.isPresent()) {
+            return find.get().get(payItemName);
+        }
+        return null;
     }
 }

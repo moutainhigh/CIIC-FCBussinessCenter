@@ -1,8 +1,8 @@
 info:
   app:
-    name: 薪资发放
-    version: 1.0-SNAPSHOT
-    description: 提供服务操作接口
+    name: 薪资发放-SITE
+    version: 1.0.0
+    description: 薪资发放站点
 app:
   id: 10007005
 endpoints:
@@ -16,7 +16,9 @@ eureka:
     serviceUrl:
       defaultZone: ${eureka.serviceurl}
 logging:
-  file: /tmp/logs/salcenterservice.log
+  level:
+    com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao: trace #mapper文件路径
+  #file: /tmp/logs/salarygrant.log
 management:
   context-path: /admin
   port: 7010
@@ -65,45 +67,6 @@ spring:
         binder:
           brokers: ${kafka.brokers}
           zk-nodes: ${kafka.zk-nodes}
-      bindings:
-        common-taskservice-sal-agreement-audit-channel:
-          destination: common_taskservice_sal_agreement_audit # topic name
-          group: sale-center-site-service
-          content-type: application/json
-          consumer:
-            partitioned: true
-        common-taskservice-sal-cust-qualify-audit:
-          destination: common_taskservice_sal_cust_qualify_audit # topic name
-          group: sale-center-site-service
-          content-type: application/json
-          consumer:
-            partitioned: true
-        common-taskservice-sal-new-project-audit:
-          destination: common_taskservice_sal_new_project_audit # topic name
-          group: sale-center-site-service
-          content-type: application/json
-          consumer:
-            partitioned: true
-        common-taskservice-sale-manager-audit:
-          destination: common_taskservice_sale_manager_audit # topic name
-          group: sale-center-site-service
-          content-type: application/json
-          consumer:
-            partitioned: true
-        common-taskservice-sale-seal-audit:
-          destination: common_taskservice_sale_seal_audit # topic name
-          group: sale-center-site-service
-          content-type: application/json
-          consumer:
-            partitioned: true
-        common-taskservice-process-complete:
-          destination: common_taskservice_process_complete # topic name
-          group: sale-center-site-service
-          content-type: application/json
-          consumer:
-            partitioned: true
-      instance-count: 2
-      instance-index: 0
 mybatis-plus:
   configuration:
     cache-enabled: false
@@ -123,5 +86,7 @@ mybatis-plus:
     #自定义SQL注入器
     sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
   mapper-locations: mapper/*Mapper.xml
+  plugins:
+    - catMybatisInterceptor
 seaweed:
   masterHost: ${seaweed.masterHost}
