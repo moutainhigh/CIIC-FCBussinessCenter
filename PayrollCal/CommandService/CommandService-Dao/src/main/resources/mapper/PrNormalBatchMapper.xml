@@ -409,7 +409,11 @@
 	<select id="selectAllBatchCodesByManagementId" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
 		SELECT
 			code,
-			actual_period
+			actual_period,
+            management_id,
+            management_name,
+            has_money,
+            created_time
 		FROM
 			pr_normal_batch
 		WHERE
@@ -417,12 +421,19 @@
 			<if test="managementId != '' and managementId != null">
 			   AND management_id = #{managementId}
 			</if>
+            <if test="batchCode != '' and batchCode != null">
+               AND code LIKE concat('%', #{batchCode})
+            </if>
 
 		UNION
 
 		SELECT
 			ab.adjust_batch_code as code,
-			nb.actual_period
+			nb.actual_period,
+            nb.management_id,
+            nb.management_name,
+            ab.has_money,
+            ab.created_time
 		FROM
 			pr_adjust_batch ab
 			JOIN pr_normal_batch nb
@@ -432,12 +443,19 @@
 			<if test="managementId != '' and managementId != null">
 				AND nb.management_id = #{managementId}
 			</if>
+            <if test="batchCode != '' and batchCode != null">
+                AND ab.adjust_batch_code LIKE concat('%', #{batchCode})
+            </if>
 
 		UNION
 
 		SELECT
 			btb.back_tracking_batch_code as code,
-			nb.actual_period
+			nb.actual_period,
+            nb.management_id,
+            nb.management_name,
+            btb.has_money,
+            btb.created_time
 		FROM
 			pr_back_tracking_batch btb
 			JOIN pr_normal_batch nb
@@ -447,5 +465,73 @@
 			<if test="managementId != '' and managementId != null">
 				AND nb.management_id = #{managementId}
 			</if>
+            <if test="batchCode != '' and batchCode != null">
+                AND btb.back_tracking_batch_code LIKE concat('%', #{batchCode})
+            </if>
+	</select>
+
+	<select id="selectBatchPayrollSchema" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">
+
+        SELECT
+            ppi.item_code,
+            ppi.item_name
+        FROM
+            pr_normal_batch pnb
+        LEFT JOIN pr_payroll_account_set ppas
+        ON pnb.account_set_code = ppas.account_set_code
+        LEFT JOIN pr_payroll_item ppi
+        ON ppas.payroll_group_code = ppi.payroll_group_code
+        OR (
+            ppas.payroll_group_template_code = ppi.payroll_group_template_code
+            AND
+            <![CDATA[ppas.payroll_group_template_code <> '' ]]>
+        )
+		WHERE
+		    pnb.code = #{batchCode}
+
+		UNION
+
+		SELECT
+            ppi.item_code,
+            ppi.item_name
+        FROM
+            pr_adjust_batch pab
+        LEFT JOIN pr_normal_batch pnb
+        ON pab.root_batch_code = pnb.code
+        LEFT JOIN pr_payroll_account_set ppas
+        ON pnb.account_set_code = ppas.account_set_code
+        LEFT JOIN pr_payroll_item ppi
+        ON ppas.payroll_group_code = ppi.payroll_group_code
+        OR (
+            ppas.payroll_group_template_code = ppi.payroll_group_template_code
+            AND
+            <![CDATA[ppas.payroll_group_template_code <> '' ]]>
+        )
+		WHERE
+		    pab.adjust_batch_code = #{batchCode}
+
+		UNION
+
+		SELECT
+            ppi.item_code,
+            ppi.item_name
+        FROM
+            pr_back_tracking_batch pbtb
+        LEFT JOIN pr_normal_batch pnb
+        ON pbtb.root_batch_code = pnb.code
+        LEFT JOIN pr_payroll_account_set ppas
+        ON pnb.account_set_code = ppas.account_set_code
+        LEFT JOIN pr_payroll_item ppi
+        ON ppas.payroll_group_code = ppi.payroll_group_code
+        OR (
+            ppas.payroll_group_template_code = ppi.payroll_group_template_code
+            AND
+            <![CDATA[ppas.payroll_group_template_code <> '' ]]>
+        )
+		WHERE
+		    pbtb.back_tracking_batch_code = #{batchCode}
+
+
+
 	</select>
 </mapper>
