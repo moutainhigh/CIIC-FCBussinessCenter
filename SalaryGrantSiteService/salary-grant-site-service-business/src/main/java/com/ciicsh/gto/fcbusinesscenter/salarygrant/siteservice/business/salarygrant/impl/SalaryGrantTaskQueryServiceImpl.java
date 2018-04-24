@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
     @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
+    @Autowired
+    SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
 
     /**
      * @description 待提交任务单：0-草稿 角色=操作员
@@ -98,7 +101,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     @Override
     public Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.rejectList(page, salaryGrantTaskBO);
+        List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.rejectList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
     }
@@ -113,13 +116,13 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     @Override
     public Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.invalidList(page, salaryGrantTaskBO);
+        List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.invalidList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
     }
 
     /**
-     * @description 根据主表任务单编号查询
+     * @description 根据主表任务单编号查询字表任务单
      * @author chenpb
      * @since 2018-04-23
      * @param page
@@ -128,10 +131,9 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     @Override
     public Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-//        List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(page, salaryGrantTaskBO);
-//        page.setRecords(list);
-//        return page;
-        return null;
+        List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
     }
 
 }
