@@ -251,7 +251,23 @@
             <version>1.0.0</version>
         </dependency>
 
-    </dependencies>
+        <dependency>
+            <groupId>com.dianping.cat</groupId>
+            <artifactId>cat-core</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dianping.cat</groupId>
+            <artifactId>cat-client</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>common-auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+ </dependencies>
 
     <modules>
         <module>FCBusinessCenter-Entity</module>
@@ -286,6 +302,18 @@
         <module>PayrollGrant/GrantCommandService/GrantCommandService-Dao</module>
         <module>PayrollGrant/GrantCommandService/GrantCommandService-Entity</module>
         <module>PayrollGrant/GrantCommandService/GrantCommandService-Host</module>
+
+        <module>SalaryGrantSiteService/salary-grant-site-service-api</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-business</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-dao</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-entity</module>
+        <module>SalaryGrantSiteService/salary-grant-site-service-host</module>
+
+        <module>SalaryGrantApiService/salary-grant-api-service-api</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-business</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-dao</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-entity</module>
+        <module>SalaryGrantApiService/salary-grant-api-service-host</module>
 
         <module>PayrollGrant/GrantQueryService/GrantQueryService-Api</module>
         <module>PayrollGrant/GrantQueryService/GrantQueryService-Business</module>
@@ -322,6 +350,7 @@
         <module>Job/CalDispatchJob/CalDispatchJob-Dao</module>
         <module>Job/CalDispatchJob/CalDispatchJob-Entity</module>
         <module>Job/CalDispatchJob/CalDispatchJob-Host</module>
+        <module>Job/CalDispatchJob/SalaryCompute</module>
 
         <module>./Tax/Tax-Entity</module>
         <module>./Tax/Tax-Util</module>

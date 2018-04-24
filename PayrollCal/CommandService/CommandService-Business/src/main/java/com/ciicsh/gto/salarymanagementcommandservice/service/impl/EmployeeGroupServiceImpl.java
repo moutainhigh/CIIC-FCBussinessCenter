@@ -5,13 +5,12 @@ import com.baomidou.mybatisplus.mapper.SqlHelper;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupEmpRelationPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.EmpGroupOptPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupEmpRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -118,7 +114,7 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
             empGroupMapper.deleteBatchIds(ids);
             if(empGroupCodes.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                payrollEmpGroup.setEmpGroupIds(empGroupCodes);
+                //payrollEmpGroup.setEmpGroupIds(empGroupCodes);
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }
@@ -137,6 +133,6 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
 
     @Override
     public PrEmpGroupPO getEmployeeGroupByCode(String empGroupCode) {
-        return empGroupMapper.getEmployeeGroupByCode(empGroupCode);
+        return empGroupMapper.selectEmployeeGroupByCode(empGroupCode);
     }
 }

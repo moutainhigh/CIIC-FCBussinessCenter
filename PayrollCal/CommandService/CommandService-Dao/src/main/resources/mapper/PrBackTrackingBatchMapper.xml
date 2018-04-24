@@ -30,7 +30,7 @@
 		status = #{status},
 		comments = #{comments},
 		<if test="result != '' and result != null">
-			result_data = #{result},
+			back_emp_result = #{result},
 		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
@@ -40,8 +40,6 @@
 	<delete id="deleteBatchByCodes">
 		DELETE FROM pr_back_tracking_batch
 		WHERE
-		status = 1
-		AND
 		back_tracking_batch_code IN
 		<foreach item="item" index="index" collection="codes"
 				 open="(" separator="," close=")">
@@ -52,8 +50,8 @@
 	<select id="checkBackTraceBatch" resultType="int">
 		SELECT
 		COUNT(*)
-		FROM back_tracking_batch_code
-		WHERE origin_batch_code = #{originBatchCode} and status != 9;
+		FROM pr_back_tracking_batch
+		WHERE origin_batch_code = #{originBatchCode}
 	</select>
 
 </mapper>

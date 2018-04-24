@@ -131,6 +131,10 @@ public class PrPayrollItemDTO {
      */
 	private String remark;
     /**
+     * 是否可以上锁
+     */
+    private Boolean canLock;
+    /**
      * 是否有效
      */
 	private Boolean isActive;

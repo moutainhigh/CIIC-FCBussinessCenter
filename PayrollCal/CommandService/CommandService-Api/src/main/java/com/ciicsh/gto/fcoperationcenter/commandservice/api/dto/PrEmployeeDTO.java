@@ -33,7 +33,6 @@ public class PrEmployeeDTO{
      * 雇员英文名称
      */
 	private String empNameEn;
-
     /**
      * 曾用名
      */
@@ -45,6 +44,10 @@ public class PrEmployeeDTO{
      */
     private Integer idCardType;
     /**
+     *
+     */
+    private String idCardTypeName;
+    /**
      * 证件号
      */
     private String idNum;
@@ -52,6 +55,10 @@ public class PrEmployeeDTO{
      * 性别  1:男 0:女
      */
     private Boolean gender;
+    /**
+     * 性别
+     */
+    private String genderName;
     /**
      * 生日
      */
@@ -66,13 +73,25 @@ public class PrEmployeeDTO{
      */
     private String countryCode;
     /**
+     * 国家
+     */
+    private String countryName;
+    /**
      * 省份代码
      */
     private String provinceCode;
     /**
+     * 省份
+     */
+    private String provinceName;
+    /**
      * 城市代码
      */
     private String cityCode;
+    /**
+     * 城市
+     */
+    private String cityName;
     /**
      * 部门
      */

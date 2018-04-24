@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubsDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
@@ -426,6 +427,37 @@ public class TaskMainController extends BaseController {
             tags.put("taskMainDetailIds", taskMainDTO.getTaskMainDetailIds().toString());
             //日志工具类返回
             LogTaskFactory.getLogger().error(e, "TaskMainController.unconfirmTaskMainDetailforCombined", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
+            jr.error();
+        }
+
+        return jr;
+    }
+
+    /**
+     * 更新主任务明细
+     * @param taskMainDetailDTO
+     * @return
+     */
+    @RequestMapping(value = "/updateTaskMainDetail")
+    public JsonResult<Boolean> updateTaskMainDetail(@RequestBody TaskMainDetailDTO taskMainDetailDTO) {
+
+        JsonResult<Boolean> jr = new JsonResult<>();
+        try {
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.andNew("id={0}",taskMainDetailDTO.getTaskMainDetailId());
+            TaskMainDetailPO tmdp = new TaskMainDetailPO();
+            tmdp.setDeductRetirementInsurance(taskMainDetailDTO.getDeductRetirementInsurance());
+            tmdp.setDeductMedicalInsurance(taskMainDetailDTO.getDeductMedicalInsurance());
+            tmdp.setDeductDlenessInsurance(taskMainDetailDTO.getDeductDlenessInsurance());
+            tmdp.setDeductHouseFund(taskMainDetailDTO.getDeductHouseFund());
+            tmdp.setIncomeTotal(taskMainDetailDTO.getIncomeTotal());
+            this.taskMainDetailService.update(tmdp,wrapper);//更新明细
+        } catch (Exception e) {
+            Map<String, String> tags = new HashMap<>(16);
+            tags.put("taskMainDetailId", taskMainDetailDTO.getTaskMainDetailId().toString());
+            //日志工具类返回
+            LogTaskFactory.getLogger().error(e, "TaskMainController.updateTaskMainDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, tags);
             jr.error();
         }
 

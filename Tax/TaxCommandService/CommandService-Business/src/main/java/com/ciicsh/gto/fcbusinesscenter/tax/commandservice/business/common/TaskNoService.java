@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * 获取任务编号
- *
+ * @author wuhua
  */
 @Service
 public class TaskNoService {
@@ -113,5 +113,7 @@ public class TaskNoService {
 //        String t = String.format("%05d", 10);
 //        System.out.print("%%%%%%%%%t:");
 //        System.out.print(t);
+
+        Double.parseDouble("");
     }
 }

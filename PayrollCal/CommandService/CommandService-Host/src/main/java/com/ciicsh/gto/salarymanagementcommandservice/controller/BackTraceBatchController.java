@@ -8,29 +8,25 @@ import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salarymanagementcommandservice.util.messageBus.KafkaSender;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -70,17 +66,40 @@ public class BackTraceBatchController {
     private CodeGenerator codeGenerator;
 
     @PostMapping("/addBackTraceBatch")
-    public JsonResult addBackTraceBatch(@RequestParam String batchCode) {
+    public JsonResult addBackTraceBatch(@RequestParam String batchCode, @RequestParam(required = false, defaultValue = "") String originCode) {
 
-        PrNormalBatchPO batchPO = batchService.getBatchByCode(batchCode);
+        PrBackTrackingBatchPO backTrackingBatchPO = new PrBackTrackingBatchPO();
+
+        String rootCode = "";
+
+        if(StringUtils.isNotEmpty(originCode)){
+            rootCode = originCode;
+
+        }else {
+            rootCode = batchCode;
+        }
+
+        PrNormalBatchPO batchPO = batchService.getBatchByCode(rootCode);
+        if(batchPO == null){
+            backTrackingBatchPO.setBackTrackingBatchCode(batchCode);
+            PrBackTrackingBatchPO find = backTrackingBatchService.getPrBackTrackingBatchPO(backTrackingBatchPO);
+            rootCode = find.getRootBatchCode();
+            batchPO = batchService.getBatchByCode(rootCode);
+        }
         String code = codeGenerator.genPrNormalBatchCode(batchPO.getManagementId(),batchPO.getActualPeriod());
-        PrBackTrackingBatchPO trackingBatchPO = new PrBackTrackingBatchPO();
-        trackingBatchPO.setBackTrackingBatchCode(code);
-        trackingBatchPO.setOriginBatchCode(batchCode);
-        trackingBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
-        trackingBatchPO.setCreatedBy("bill");
-        trackingBatchPO.setModifiedBy("bill");
-        backTrackingBatchService.insert(trackingBatchPO);
+        backTrackingBatchPO.setBackTrackingBatchCode(code);
+        backTrackingBatchPO.setRootBatchCode(rootCode);
+        backTrackingBatchPO.setOriginBatchCode(batchCode); // normal or adjust code
+
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMM");
+        backTrackingBatchPO.setPeriod(today.format(dtf));
+
+
+        backTrackingBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
+        backTrackingBatchPO.setCreatedBy("bill");
+        backTrackingBatchPO.setModifiedBy("bill");
+        backTrackingBatchService.insert(backTrackingBatchPO);
 
         return JsonResult.success(code);
     }
@@ -93,15 +112,14 @@ public class BackTraceBatchController {
             @RequestParam(required = false, defaultValue = "") String customValue,
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
-            @RequestParam String batchCode,
-            @RequestParam String originCode) {
+            @RequestParam String batchCode) {
 
-        List<DBObject> backTraceList = backTrackingBatchService.getBackTrackingBatch(batchCode,originCode); //从mongodb里检查是否有该数据
+        List<DBObject> backTraceList = backTrackingBatchService.getBackTrackingBatch(batchCode); //从mongodb里检查是否有该数据
         if(backTraceList == null || backTraceList.size() == 0){
             return JsonResult.success(0);
         }
 
-        Criteria criteria = Criteria.where("batch_code").is(batchCode).and("catalog.emp_info.is_active").is(true);
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);
 
         if(StringUtils.isNotEmpty(empCode)){
             criteria.and(PayItemName.EMPLOYEE_CODE_CN).regex(empCode);
@@ -150,6 +168,13 @@ public class BackTraceBatchController {
         //adjustBatchService.insert();
 
         return JsonResult.success(result);
+    }
+
+
+    @PostMapping("/checkBackTraceBatch")
+    public JsonResult checkBackTraceBatch(@RequestParam String originBatchCode){
+        int count = backTrackingBatchService.checkBackTraceBatch(originBatchCode);
+        return JsonResult.success(count);
     }
 
 }

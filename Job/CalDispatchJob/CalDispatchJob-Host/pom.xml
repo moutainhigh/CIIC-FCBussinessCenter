@@ -63,11 +63,17 @@
             <version>${mybatisplus.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.ciicsh.gt1.companycenter</groupId>
+            <artifactId>webcommandservice-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
 
     </dependencies>
 
     <build>
-        <finalName>salary-compute-task</finalName>
+        <finalName>salary-data-sync-task</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>

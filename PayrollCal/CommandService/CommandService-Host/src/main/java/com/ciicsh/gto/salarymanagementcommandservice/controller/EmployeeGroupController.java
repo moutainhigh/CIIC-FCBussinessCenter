@@ -12,10 +12,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,12 +25,13 @@ import java.util.stream.Collectors;
  * Created by jiangtianning on 2017/10/25.
  */
 @RestController
+@RequestMapping("/api/employeegroup")
 public class EmployeeGroupController extends BaseController implements EmployeeGroupProxy{
 
     @Autowired
     private EmployeeGroupService employeeGroupService;
 
-    @Override
+    @GetMapping("/getemployeegroupnames")
     public JsonResult getEmployeeGroupNames(@RequestParam String managementId,@RequestParam String query) {
         List<KeyValuePO> keyValues = employeeGroupService.getEmployeeGroupNames(managementId);
         List<KeyValuePO> result = new ArrayList<>();
@@ -54,7 +52,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         return JsonResult.success(result);
     }
 
-    @Override
+    @PostMapping("/getemployeegroups")
     public JsonResult getEmployeeGroups(@RequestBody PrEmpGroupDTO prEmpGroupDTO,
                                         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                         @RequestParam(required = false, defaultValue = "50")  Integer pageSize) {
@@ -78,7 +76,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         return prEmpGroupDTO;
     }
 
-    @Override
+    @PostMapping("/add")
     public JsonResult addEmployeeGroup(@RequestBody PrEmpGroupDTO prEmpGroupDTO) {
 
         EmpGroupOptPO optPO = new EmpGroupOptPO();
@@ -115,7 +113,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         }
     }
 
-    @Override
+    @PostMapping("/edit")
     public JsonResult editEmployeeGroup(@RequestBody PrEmpGroupDTO prEmpGroupDTO) {
         EmpGroupOptPO optPO = new EmpGroupOptPO();
         optPO.setManagementId(prEmpGroupDTO.getManagementId());
@@ -148,7 +146,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         }
     }
 
-    @Override
+    @GetMapping("/getDepart")
     public JsonResult getDepart() {
         List<KeyValuePO> keyValues = new ArrayList<>();
         for(Map.Entry<Integer, String> depart:getDepartment().entrySet()){
@@ -160,7 +158,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         return JsonResult.success(keyValues);
     }
 
-    @Override
+    @GetMapping("/getPos")
     public JsonResult getPos() {
 
         List<KeyValuePO> keyValues = new ArrayList<>();
@@ -173,11 +171,18 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         return JsonResult.success(keyValues);
     }
 
-    @Override
+    @DeleteMapping("/batchDelete/{ids}")
     public JsonResult batchDelete(@PathVariable("ids")String ids,@RequestParam String empGroupCodes) {
         String[] empGroupIds = ids.split(",");
         String[] codes = empGroupCodes.split(",");
         Boolean success = employeeGroupService.batchDelete( Arrays.asList(empGroupIds),Arrays.asList(codes));
         return JsonResult.success(success);
+    }
+
+    @GetMapping("/{empGroupCode}")
+    public JsonResult getEmployeeGroupById(@PathVariable("empGroupCode") String empGroupCode) {
+        PrEmpGroupPO empGroupPO = employeeGroupService.getEmployeeGroupByCode(empGroupCode);
+        PrEmpGroupDTO empGroupDTO = EmployeeGroupTranslator.toPrEmpGroupDTO(empGroupPO);
+        return JsonResult.success(empGroupDTO);
     }
 }

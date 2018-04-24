@@ -8,7 +8,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
-@SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcbusinesscenter.tax.commandservice"})
+@SpringBootApplication(scanBasePackages = {"com.ciicsh.gto.fcbusinesscenter.tax.commandservice","com.ciicsh.gt1"})
 @MapperScan("com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao")
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"com.ciicsh.gto.logservice.api","com.ciicsh.gto.settlementcenter","com.ciicsh.gto.identityservice.api"})

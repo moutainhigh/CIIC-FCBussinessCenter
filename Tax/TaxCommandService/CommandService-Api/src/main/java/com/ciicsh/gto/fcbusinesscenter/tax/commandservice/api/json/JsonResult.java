@@ -16,13 +16,15 @@ public class JsonResult<T> {
      */
     public static enum ReturnCode{
 
+        TOKEN_ERROR("登录异常"),
+
         FAIL("异常"),
 
         TM_ER01("任务内有未确认的合并明细，不能提交任务"),
 
-        TM_ER02("有未退回的子任务，不能提交"),
+        TM_ER02("请将所有子任务退回，否则无法提交"),
 
-        TM_ER03("有未退回的子任务，不能失效"),
+        TM_ER03("请将所有子任务退回，否则无法失效"),
 
         DE_ER01("任务内有未确认的合并明细，不能提交任务"),
 

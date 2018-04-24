@@ -3,23 +3,24 @@
 <mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO">
-		<id column="id" property="id" />
-		<result column="emp_id" property="empId" />
-		<result column="emp_name" property="empName" />
-		<result column="emp_name_en" property="empNameEn" />
+	<resultMap id="EmployeeResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO">
+		<id column="employee_id" property="employeeId" />
+		<result column="employee_name" property="employeeName" />
 		<result column="former_name" property="formerName" />
 		<result column="id_card_type" property="idCardType" />
 		<result column="id_num" property="idNum" />
+		<result column="managementId" property="managementId" />
 		<result column="gender" property="gender" />
 		<result column="birthday" property="birthday" />
-		<result column="join_date" property="joinDate" />
 		<result column="country_code" property="countryCode" />
+		<result column="country_name" property="countryName" />
 		<result column="province_code" property="provinceCode" />
+		<result column="province_name" property="provinceName" />
 		<result column="city_code" property="cityCode" />
+		<result column="city_name" property="cityName" />
 		<result column="department" property="department" />
 		<result column="position" property="position" />
-		<result column="remark" property="remark" />
+		<result column="join_date" property="joinDate" />
 		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
@@ -27,59 +28,103 @@
 		<result column="modified_by" property="modifiedBy" />
 	</resultMap>
 
-	<resultMap id="EmployeeSelectMap"   type="EmployeeExtensionPO">
-		<result column="id" property="relationId" />
-		<result column="emp_group_code" property="empGroupCode" />
-		<result column="emp_id" property="employeeId" />
-		<result column="emp_name" property="employeeName" />
-		<result column="id_card_type" property="idCardType" />
-		<result column="id_num" property="idNum" />
-		<result column="gender" property="gender" />
-		<result column="birthday" property="birthday" />
-		<result column="department" property="department" />
-		<result column="position" property="position" />
-		<result column="join_date" property="joinDate" />
-	</resultMap>
-
-	<select id="getEmployees" resultMap="EmployeeSelectMap">
+	<select id="getEmployeesByGroupCode" resultMap="EmployeeResultMap">
 		SELECT
-			a.id,
-			a.emp_group_code,
-			b.emp_id,
-			b.emp_name,
+			b.employee_id,
+			b.employee_name,
+			b.former_name,
 			b.id_card_type,
 			b.id_num,
+			b.management_id,
 			b.gender,
 			b.birthday,
+			b.country_code,
+			b.country_name,
+			b.province_code,
+			b.province_name,
+			b.city_code,
+			b.city_name,
 			b.department,
 			b.position,
-			b.join_date
+			b.join_date,
+			b.is_active,
+			b.created_time,
+			b.modified_time,
+			b.created_by,
+			b.modified_by
 		FROM pr_emp_group_emp_relation a
-		INNER JOIN pr_employee b on a.emp_id = b.emp_id
-		WHERE a.emp_group_code = #{empGroupCode}
-		<if test="empCode !=null and empCode !=''">
-			AND b.emp_id LIKE concat(#{empCode},'%')
-		</if>
-		<if test="empName !=null and empName !=''">
-			AND b.emp_name LIKE concat(#{empName},'%')
-		</if>
-
-		AND a.is_active = 1
-		AND b.is_active = 1
+		INNER JOIN pr_employee b on a.employee_id = b.employee_id
+		WHERE
+			a.emp_group_code = #{empGroupCode}
+		AND
+			a.is_active = 1
+		AND
+			b.is_active = 1
 	</select>
 
 	<select id="isExistEmployee" resultType="int">
-		SELECT COUNT(*) FROM pr_employee WHERE emp_id = #{empId} AND is_active = 1
+		SELECT
+			COUNT(*)
+		FROM
+			pr_employee
+		WHERE
+			employee_id = #{employeeId}
+		AND is_active = 1
 	</select>
 
 	<select id="hasEmployees" resultType="int">
 		SELECT
 			COUNT(*)
 		FROM pr_emp_group_emp_relation a
-		INNER JOIN pr_employee b on a.emp_id = b.emp_id
+		INNER JOIN pr_employee b on a.employee_id = b.employee_id
 		WHERE a.emp_group_code = #{empGroupCode}
 				AND a.is_active = 1
 				AND b.is_active = 1
 	</select>
+
+	<insert id="upsertEmployee" parameterType="PrEmployeePO">
+		REPLACE INTO
+		pr_employee (
+			employee_id,
+			id_card_type,
+			id_num,
+			employee_name,
+			former_name,
+			management_id,
+			gender,
+			birthday,
+			country_code,
+			country_name,
+			province_code,
+			province_name,
+			city_code,
+			city_name,
+			modified_time,
+			created_by,
+			modified_by,
+			is_active
+		)
+		VALUES
+		(
+			#{employeeId},
+			#{idCardType},
+			#{idNum},
+			#{employeeName},
+			#{formerName},
+			#{managementId},
+			#{gender},
+			#{birthday},
+			#{countryCode},
+			#{countryName},
+			#{provinceCode},
+			#{provinceName},
+			#{cityCode},
+			#{cityName},
+			#{modifiedTime},
+			created_by,
+			modified_by,
+			1
+		)
+	</insert>
 
 </mapper>

@@ -34,7 +34,7 @@
 		<include refid="whereQuery" />
 	</select>
 
-	<select id="getEmployeeGroupByCode" resultMap="BaseResultMap">
+	<select id="selectEmployeeGroupByCode" resultMap="BaseResultMap">
 		SELECT
 		<include refid="PrEmployeeGroup_All_Columns" />
 		FROM

@@ -15,6 +15,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.util.TranslatorUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -192,7 +193,8 @@ public class PrItemServiceImpl implements PrItemService {
 //            result.put("FAILURE", failList);
 //            return result;
 //        }
-        return this.realUpdateItem(param);
+        TranslatorUtils.copyNotNullProperties(param, prPayrollItemPO);
+        return this.realUpdateItem(prPayrollItemPO);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
