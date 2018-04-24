@@ -1,14 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
-<<<<<<< HEAD
 import lombok.*;
-
 import java.io.Serializable;
-=======
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
->>>>>>> 6640cbf24ef50cab6b0bb44a2a035d9a344bd56f
 import java.math.BigDecimal;
 
 /**
@@ -19,18 +14,12 @@ import java.math.BigDecimal;
  * @author chenpb
  * @since 2018-04-20
  */
-<<<<<<< HEAD
 @Getter
 @Setter
 @ToString
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantTaskBO extends PagingBO implements Serializable {
-=======
-@Data
-@EqualsAndHashCode(callSuper = false)
-public class SalaryGrantTaskBO {
->>>>>>> 6640cbf24ef50cab6b0bb44a2a035d9a344bd56f
     /**
      * 任务单ID
      */
@@ -120,14 +109,13 @@ public class SalaryGrantTaskBO {
      */
     private String taskStatusName;
     /**
-<<<<<<< HEAD
      * 当前登录用户ID
      */
     private String currentUserId;
 
-=======
+    /**
      * 系统用户ID
      */
     private String userId;
->>>>>>> 6640cbf24ef50cab6b0bb44a2a035d9a344bd56f
+
 }
