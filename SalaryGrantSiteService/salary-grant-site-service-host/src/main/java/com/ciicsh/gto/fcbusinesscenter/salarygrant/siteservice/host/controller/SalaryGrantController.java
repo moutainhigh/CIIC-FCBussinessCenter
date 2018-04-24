@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.salarygrant.SalaryTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -49,10 +50,22 @@ public class SalaryGrantController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
         try {
+            Page page = null;
+            Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(dto.getCurrent(), dto.getSize());
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
-            Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(dto.getCurrent(), dto.getSize());
-            Page page = salaryGrantTaskQueryService.queryTaskForSubmitPage(paging, bo);
+            System.out.println("状态：" + bo.getTaskStatus());
+            if (SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(bo.getTaskStatus())) {
+                page = salaryGrantTaskQueryService.queryTaskForSubmitPage(paging, bo);
+            } else if (SalaryGrantBizConsts.TASK_STATUS_APPROVAL.equals(bo.getTaskStatus())) {
+                page = salaryGrantTaskQueryService.queryTaskForApprovePage(paging, bo);
+            } else if (SalaryGrantBizConsts.TASK_STATUS_PASS.equals(bo.getTaskStatus())) {
+                page = salaryGrantTaskQueryService.queryTaskForPassPage(paging, bo);
+            } else if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(bo.getTaskStatus())) {
+                page = salaryGrantTaskQueryService.queryTaskForRejectPage(paging, bo);
+            } else if (SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(bo.getTaskStatus())) {
+                page = salaryGrantTaskQueryService.queryTaskForInvalidPage(paging, bo);
+            }
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
             page.setRecords(list);
             return ResultGenerator.genSuccessResult(page);
@@ -60,6 +73,48 @@ public class SalaryGrantController {
             return ResultGenerator.genServerFailResult("处理失败");
         }
     }
+
+    /**
+     * 薪资发放任务单提交（点击提交按钮）
+     * @author chenpb
+     * @date 2018-04-20
+     * @param
+     * @return
+     */
+    @PostMapping(value="/submit",consumes = {"application/json"})
+    public Result completeTask(@RequestBody SalaryGrantTaskRequestDTO salaryGrantMainTaskTaskRequestDTO) throws Exception {
+        // logger.info("customer系统调用完成任务接口："+custTaskRequestDTO.toString());
+        TaskRequestDTO taskRequestDTO = new TaskRequestDTO();
+        taskRequestDTO.setTaskId(salaryGrantMainTaskTaskRequestDTO.getTaskId());
+        taskRequestDTO.setAssignee(salaryGrantMainTaskTaskRequestDTO.getAssignee());
+        taskRequestDTO.setVariables(salaryGrantMainTaskTaskRequestDTO.getVariables());
+        //
+        com.ciicsh.gto.commonservice.util.dto.Result restResult = sheetServiceProxy.completeTask(taskRequestDTO);
+        //logger.info("customer系统收到完成任务接口返回："+String.valueOf("code:"+restResult.getCode()+"message:")+restResult.getMessage());
+        return ResultGenerator.genSuccessResult(true);
+
+    }
+
+    /**
+     * 失效
+     * @author chenpb
+     * @date 2018-04-24
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/cancel", method = RequestMethod.POST)
+    public Result cancel(@RequestBody SalaryTaskDTO dto) {
+        try {
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(null, SalaryTaskDTO.class);
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            return ResultGenerator.genServerFailResult("处理失败");
+        }
+    }
+
+    //todo
+    //薪资发放任务单失效（点击失效按钮）
 
     //todo
     //查询薪资发放任务单明细信息（点击任务单编号链接）
@@ -79,24 +134,6 @@ public class SalaryGrantController {
 
     //todo
     //薪资发放任务单批量提交（点击批量提交按钮）
-
-    //todo
-    //薪资发放任务单提交（点击提交按钮）
-    @PostMapping(value="/task/complete",consumes = {"application/json"})
-    public Result completeTask(@RequestBody SalaryGrantTaskRequestDTO salaryGrantMainTaskTaskRequestDTO) throws Exception {
-       // logger.info("customer系统调用完成任务接口："+custTaskRequestDTO.toString());
-        TaskRequestDTO taskRequestDTO = new TaskRequestDTO();
-        taskRequestDTO.setTaskId(salaryGrantMainTaskTaskRequestDTO.getTaskId());
-        taskRequestDTO.setAssignee(salaryGrantMainTaskTaskRequestDTO.getAssignee());
-        taskRequestDTO.setVariables(salaryGrantMainTaskTaskRequestDTO.getVariables());
-        //
-        com.ciicsh.gto.commonservice.util.dto.Result restResult = sheetServiceProxy.completeTask(taskRequestDTO);
-        //logger.info("customer系统收到完成任务接口返回："+String.valueOf("code:"+restResult.getCode()+"message:")+restResult.getMessage());
-        return ResultGenerator.genSuccessResult(true);
-
-    }
-    //todo
-    //薪资发放任务单失效（点击失效按钮）
 
     //todo
     //查询任务单列表中雇员信息变更记录（点击任务单备注链接）
