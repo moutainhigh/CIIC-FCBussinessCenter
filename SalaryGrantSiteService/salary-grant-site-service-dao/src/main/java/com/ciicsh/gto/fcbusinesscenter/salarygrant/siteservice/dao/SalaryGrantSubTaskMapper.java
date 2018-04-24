@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import org.springframework.stereotype.Component;
@@ -70,4 +71,15 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      * @return Page<SalaryGrantTaskBO>
      */
     List<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 根据主表任务单编号查询字表任务单
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param bo
+     * @return
+     */
+    List<SalaryGrantTaskBO> subTaskList (Pagination page, SalaryGrantTaskBO bo);
+
 }
