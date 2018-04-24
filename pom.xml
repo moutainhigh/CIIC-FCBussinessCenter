@@ -323,6 +323,13 @@
         <module>Job/CalDispatchJob/CalDispatchJob-Entity</module>
         <module>Job/CalDispatchJob/CalDispatchJob-Host</module>
 
+        <module>./Tax/Tax-Entity</module>
+        <module>./Tax/Tax-Util</module>
+        <module>./Tax/TaxCommandService/CommandService-Dao</module>
+        <module>./Tax/TaxCommandService/CommandService-Business</module>
+        <module>./Tax/TaxCommandService/CommandService-Api</module>
+        <module>./Tax/TaxCommandService/CommandService-Host</module>
+
     </modules>
 
 </project>
