@@ -9,24 +9,26 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSu
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * <p>
  * 薪资发放报盘任务单 服务实现类
  * </p>
  *
- * @author gaoyang
- * @since 2018-03-28
+ * @author Rock.Jiang
+ * @since 2018-04-24
  */
+@Service
 public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryGrantSubTaskMapper, SalaryGrantSubTaskPO> implements SalaryGrantOfferDocumentTaskService {
     @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
-    @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+//    @Autowired
+//    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     @Override
     public Page<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return null;
+        return page.setRecords(salaryGrantSubTaskMapper.queryOfferDocumentTaskPage(page, salaryGrantTaskBO));
     }
 }
