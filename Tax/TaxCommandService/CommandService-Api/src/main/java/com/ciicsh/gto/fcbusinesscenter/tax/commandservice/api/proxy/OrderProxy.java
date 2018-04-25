@@ -3,9 +3,10 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.OrderDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -20,9 +21,9 @@ public interface OrderProxy {
     /**
      * 根据批次号查询任务单
      *
-     * @param orderDTO
+     * @param batchIds
      * @return
      */
-    @PostMapping(value = "/queryTasksByBatchIds")
-    JsonResult<Map<String,ArrayList<OrderDTO>>> queryTasksByBatchIds(@RequestBody OrderDTO orderDTO);
+    @GetMapping(value = "/api/queryTasksByBatchIds/{batchIds}")
+    JsonResult<Map<String,ArrayList<OrderDTO>>> queryTasksByBatchIds(@PathVariable String  batchIds);
 }
