@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.salarygrant.SalaryTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryTaskDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
@@ -93,7 +95,7 @@ public class SalaryGrantController {
             return ResultGenerator.genSuccessResult(page);
         } catch (Exception e) {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询 -> 异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("处理失败");
+            return ResultGenerator.genServerFailResult("薪资发放一览查询失败");
         }
     }
 
@@ -132,7 +134,33 @@ public class SalaryGrantController {
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(null, SalaryTaskDTO.class);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
-            return ResultGenerator.genServerFailResult("处理失败");
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询 -> 异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("薪资发放失效处理失败");
+        }
+    }
+
+    /**
+     * 薪资发放详情
+     * @author chenpb
+     * @date 2018-04-24
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/detail", method = RequestMethod.POST)
+    public Result detail(@RequestBody SalaryTaskDetailDTO dto) {
+        Map<String, String> tags = new HashMap<>();
+        tags.put("taskCode", dto.getTaskCode());
+        tags.put("taskType", dto.getTaskType().toString());
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("详情").setContent("条件").setTags(tags));
+        try {
+            SalaryTaskDetailDTO salaryTaskDetailDTO = new SalaryTaskDetailDTO();
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo = salaryGrantTaskQueryService.selectTaskByTaskCode(bo);
+            SalaryGrantDetailDTO salaryGrantDetailDTO = CommonTransform.convertToDTO(bo, SalaryGrantDetailDTO.class);
+            salaryTaskDetailDTO.setTask(salaryGrantDetailDTO);
+            return ResultGenerator.genSuccessResult(salaryTaskDetailDTO);
+        } catch (Exception e) {
+            return ResultGenerator.genServerFailResult("薪资发放详情查询失败");
         }
     }
 
@@ -145,10 +173,6 @@ public class SalaryGrantController {
 
     //todo
     //查询薪资发放任务单审批信息（点击审批按钮）
-    //包括查询雇员列表信息
-
-    //todo
-    //查询薪资发放任务单编辑信息（点击处理按钮）
     //包括查询雇员列表信息
 
     //todo
