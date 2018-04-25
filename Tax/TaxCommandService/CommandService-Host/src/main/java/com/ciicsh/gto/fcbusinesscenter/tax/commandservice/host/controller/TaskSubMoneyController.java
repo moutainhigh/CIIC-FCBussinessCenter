@@ -1,11 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
@@ -183,7 +183,7 @@ public class TaskSubMoneyController extends BaseController {
             //TODO 收款方名称
             payApplyProxyDTO.setReceiver("中智");
             //申请人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             payApplyProxyDTO.setApplyer(userInfoResponseDTO.getLoginName());
             //申请日期(yyyy-MM-dd)
             payApplyProxyDTO.setApplyDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now()));

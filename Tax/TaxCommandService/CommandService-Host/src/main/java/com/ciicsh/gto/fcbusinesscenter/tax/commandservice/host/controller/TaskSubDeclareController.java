@@ -1,12 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubDeclareDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubDeclareServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
@@ -79,7 +79,7 @@ public class TaskSubDeclareController extends BaseController {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
             taskSubDeclareService.mergeTaskSubDeclares(requestForTaskSubDeclare);
             //jr.fill(true);
@@ -106,7 +106,7 @@ public class TaskSubDeclareController extends BaseController {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
             taskSubDeclareService.splitSubDeclare(requestForTaskSubDeclare, "only");
             //jr.fill(true);
@@ -206,7 +206,7 @@ public class TaskSubDeclareController extends BaseController {
                 RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
                 BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
                 //修改人
-                UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+                UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
                 requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
                 //任务状态
                 requestForTaskSubDeclare.setStatus("04");
@@ -235,7 +235,7 @@ public class TaskSubDeclareController extends BaseController {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态
             requestForTaskSubDeclare.setStatus("03");

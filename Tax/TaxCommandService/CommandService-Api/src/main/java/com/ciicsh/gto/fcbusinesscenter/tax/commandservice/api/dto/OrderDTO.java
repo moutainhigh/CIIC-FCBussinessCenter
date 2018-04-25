@@ -14,6 +14,16 @@ public class OrderDTO {
 
     public String taskName;//任务名称
 
+    public String status;//任务状态
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getBatchIds() {
         return batchIds;
     }
