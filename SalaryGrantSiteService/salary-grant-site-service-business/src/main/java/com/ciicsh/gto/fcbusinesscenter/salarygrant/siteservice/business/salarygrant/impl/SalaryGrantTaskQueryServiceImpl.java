@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
@@ -134,6 +135,24 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
+    }
+
+    /**
+     * 任务单编号查询任务单
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    @Override
+    public SalaryGrantTaskBO selectTaskByTaskCode (SalaryGrantTaskBO salaryGrantTaskBO) {
+        SalaryGrantTaskBO bo;
+        if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantTaskBO.getTaskStatus())) {
+            bo = salaryGrantTaskHistoryMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        } else if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantTaskBO.getTaskType())) {
+            bo = salaryGrantMainTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        } else {
+            bo = salaryGrantSubTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        }
+        return bo;
     }
 
 }

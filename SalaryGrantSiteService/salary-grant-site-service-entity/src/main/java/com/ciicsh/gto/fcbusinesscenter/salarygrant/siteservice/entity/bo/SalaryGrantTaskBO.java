@@ -1,10 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
+import io.swagger.models.auth.In;
 import lombok.*;
+
 import java.io.Serializable;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
@@ -65,9 +66,21 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private Integer foreignerCount;
     /**
+     * 中智上海发薪人数
+     */
+    private Integer localGrantCount;
+    /**
+     * 中智代发（委托机构）发薪人数
+     */
+    private Integer supplierGrantCount;
+    /**
      * 薪资发放日期
      */
     private String grantDate;
+    /**
+     * 薪资发放时段
+     */
+    private Integer grantTime;
     /**
      * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放
      */
@@ -89,6 +102,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String grantAccountName;
     /**
+     * 任务单类型
+     */
+    private Integer taskType;
+    /**
      * 备注:任务单中雇员信息变化提示链接
      */
     private String remark;
@@ -109,10 +126,13 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String taskStatusName;
     /**
+     * 创建时间
+     */
+    private Date createdTime;
+    /**
      * 当前登录用户ID
      */
     private String currentUserId;
-
     /**
      * 系统用户ID
      */

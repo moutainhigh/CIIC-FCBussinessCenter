@@ -75,4 +75,11 @@ public interface SalaryGrantTaskQueryService {
      * @return Page<SalaryGrantTaskBO>
      */
     Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 任务单编号查询任务单
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO salaryGrantTaskBO);
 }
