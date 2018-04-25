@@ -1,0 +1,15 @@
+database:
+  host: 172.16.9.15
+  port: 3306
+  databasename: gtobusinessdb
+  username: root
+  password: a111111
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://172.16.9.24:9602/eureka,http://172.16.9.25:9602/eureka/
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 10
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}

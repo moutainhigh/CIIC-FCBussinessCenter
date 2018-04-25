@@ -10,7 +10,6 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.EmpGroupMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrEmployeeService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -41,7 +40,7 @@ public class EmpGroupServiceImpl {
     private EmployeeContractProxy employeeContractProxy;
 
     @Autowired
-    private PrEmployeeService prEmployeeService;
+    private PrEmployeeMapper employeeMapper;
 
     @Autowired
     private EmpGroupMongoOpt empGroupMongoOpt;
@@ -54,7 +53,7 @@ public class EmpGroupServiceImpl {
      */
     public int batchInsertOrUpdateGroupEmployees(String empGroupCode, List<String> empIds) {
 
-        List<PrEmployeePO> employees = prEmployeeService.getEmployeesByGroupCode(empGroupCode); //employeeMapper.getEmployeesByGroupCode(empGroupCode);
+        List<PrEmployeePO> employees = employeeMapper.getEmployeesByGroupCode(empGroupCode);
         HashMap<String,EmployeeContractResponseDTO> mapList = new HashMap<>();
         if (empIds != null ) {
             employees = employees.stream().filter(emp -> {
