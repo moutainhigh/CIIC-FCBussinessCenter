@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
@@ -12,12 +13,17 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
+import com.ciicsh.gto.logservice.api.LogServiceProxy;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -30,6 +36,12 @@ import java.util.List;
 @RestController
 @RequestMapping(value="/api/sg")
 public class SalaryGrantController {
+
+    /**
+     * 记录日志
+     */
+    @Autowired
+    LogServiceProxy logService;
 
     @Autowired
     private SalaryGrantService salaryGrantService;
@@ -47,8 +59,17 @@ public class SalaryGrantController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @RequestMapping(value="/list", method = RequestMethod.POST)
     public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
+        Map<String, String> tags = new HashMap<>();
+        tags.put("taskCode", dto.getTaskCode());
+        tags.put("batchCode", dto.getBatchCode());
+        tags.put("managementId", dto.getManagementId());
+        tags.put("managementName", dto.getManagementName());
+        tags.put("grantMode", dto.getGrantMode());
+        tags.put("grantCycle", dto.getGrantCycle());
+        tags.put("taskStatus", dto.getTaskStatus());
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setContent("条件").setTags(tags));
         try {
             Page page = null;
             Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(dto.getCurrent(), dto.getSize());
@@ -68,8 +89,10 @@ public class SalaryGrantController {
             }
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
             page.setRecords(list);
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询结果").setContent(JSON.toJSONString(page)));
             return ResultGenerator.genSuccessResult(page);
         } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询 -> 异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("处理失败");
         }
     }
@@ -81,7 +104,7 @@ public class SalaryGrantController {
      * @param
      * @return
      */
-    @PostMapping(value="/submit",consumes = {"application/json"})
+    @RequestMapping(value="/submit", method = RequestMethod.POST)
     public Result completeTask(@RequestBody SalaryGrantTaskRequestDTO salaryGrantMainTaskTaskRequestDTO) throws Exception {
         // logger.info("customer系统调用完成任务接口："+custTaskRequestDTO.toString());
         TaskRequestDTO taskRequestDTO = new TaskRequestDTO();
@@ -102,7 +125,7 @@ public class SalaryGrantController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/cancel", method = RequestMethod.POST)
+    @RequestMapping(value="/cancel", method = RequestMethod.POST)
     public Result cancel(@RequestBody SalaryTaskDTO dto) {
         try {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
