@@ -10,8 +10,8 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
  * 薪资发放供应商任务单 服务类
  * </p>
  *
- * @author gaoyang
- * @since 2018-03-28
+ * @author Rock.Jiang
+ * @since 2018-04-24
  */
 public interface SalaryGrantSupplierSubTaskService extends IService<SalaryGrantSubTaskPO> {
 

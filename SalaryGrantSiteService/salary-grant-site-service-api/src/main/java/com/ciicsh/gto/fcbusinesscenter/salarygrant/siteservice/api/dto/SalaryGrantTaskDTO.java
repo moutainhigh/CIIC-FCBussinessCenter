@@ -1,8 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.PagingDTO;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,6 +14,9 @@ import java.math.BigDecimal;
  * @author chenpb
  * @since 2018-04-20
  */
+@Getter
+@Setter
+@ToString
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
@@ -106,4 +108,5 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
      * 状态中文描述
      */
     private String taskStatusName;
+
 }
