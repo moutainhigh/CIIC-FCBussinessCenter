@@ -1,6 +1,5 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
-import io.swagger.models.auth.In;
 import lombok.*;
 
 import java.io.Serializable;
