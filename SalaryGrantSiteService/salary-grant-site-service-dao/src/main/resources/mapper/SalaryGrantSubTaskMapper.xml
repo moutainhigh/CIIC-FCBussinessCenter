@@ -43,8 +43,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
-            t1.management_name              managementId    ,
-            t1.management_id                managementName  ,
+            t1.management_name              managementName  ,
+            t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
             t1.grant_cycle                  grantCycle      ,
             t1.payment_total_sum            paymentTotalSum ,
@@ -87,8 +87,8 @@
             resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
             parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
         SELECT
-            t1.salary_grant_sub_task_id task_id       taskId          ,
-            t1.salary_grant_sub_task_code task_code   taskCode        ,
+            t1.salary_grant_sub_task_id               taskId          ,
+            t1.salary_grant_sub_task_code             taskCode        ,
             t1.management_name                        managementName  ,
             t1.management_id                          managementId    ,
             t1.batch_code                             batchCode       ,
@@ -283,7 +283,10 @@
             t1.foreigner_count              foreignerCount  ,
             t1.grant_date                   grantDate       ,
             t1.grant_type                   grantType       ,
-            '' AS                           grantTypeName   ,
+            case t1.grant_type
+               when 1 then '正常发放'   when 2 then '调整发放' when 3 then '回溯发放'
+               when 4 then '暂缓再发放' when 5 then '退票发放' when 6 then '现金' else ''
+            end AS                          grantTypeName   ,
             t1.grant_account_code           grantAccountCode,
             '' AS                           grantAccountName
         FROM

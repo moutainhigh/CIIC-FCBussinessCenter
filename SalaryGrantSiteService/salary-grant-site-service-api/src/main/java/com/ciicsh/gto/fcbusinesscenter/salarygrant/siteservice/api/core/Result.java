@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * int code，接口调用成功=0，错误码=其他值
@@ -13,11 +14,19 @@ public class Result<T> implements Serializable {
 
     private int code;
     private T object;
+    private List<T> records;
     private String error;
     private String message;
     private Exception exception;
 
     public Result() {
+    }
+
+    public Result(int code, String message, T object, List<T> records) {
+        this.code = code;
+        this.object = object;
+        this.records = records;
+        this.message = message;
     }
 
     public int getCode() {
@@ -34,6 +43,14 @@ public class Result<T> implements Serializable {
 
     public void setObject(T object) {
         this.object = object;
+    }
+
+    public List<T> getRecords() {
+        return records;
+    }
+
+    public void setRecords(List<T> records) {
+        this.records = records;
     }
 
     public String getError() {
@@ -60,4 +77,15 @@ public class Result<T> implements Serializable {
         this.exception = exception;
     }
 
+    @Override
+    public String toString() {
+        return "Result{" +
+                "code=" + code +
+                ", object=" + object +
+                ", records=" + records +
+                ", error='" + error + '\'' +
+                ", message='" + message + '\'' +
+                ", exception=" + exception +
+                '}';
+    }
 }
