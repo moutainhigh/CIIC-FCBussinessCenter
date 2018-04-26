@@ -1,5 +1,5 @@
 database:
-  host: 172.16.9.15
+  host: 172.16.22.108
   port: 3306
   databasename: gtobusinessdb
   username: root
@@ -7,14 +7,19 @@ database:
 eureka:
   client:
     serviceUrl:
-      defaultZone: "http://172.16.9.15:9601/eureka,http://172.16.9.24:9602/eureka"
+      defaultZone: "http://172.16.9.56:9602/eureka"
   instance:
     lease-expiration-duration-in-seconds: 30
-    lease-renewal-interval-in-seconds: 10
+    lease-renewal-interval-in-seconds: 40
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 kafka:
-  brokers: 172.16.9.17:9092,172.16.9.18:9092
-  zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
+  brokers: 172.16.100.101:9092
+  zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.108:2181
 seaweed:
-  masterHost: "172.16.9.58:9333"
+  masterHost: "172.16.22.110:9333"
+zipkin:
+  base-url: http://172.16.100.103:9623  #ZipkinService地址
+  enabled: true
+sleuth:
+  percentage: 0.1

@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.Properties;
 
 /**
- * @author chenpb
  * @since 2018/4/17
  */
 @Intercepts({

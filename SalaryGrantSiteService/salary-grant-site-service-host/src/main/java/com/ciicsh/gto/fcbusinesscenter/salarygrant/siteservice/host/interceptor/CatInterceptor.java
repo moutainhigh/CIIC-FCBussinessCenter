@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author chenpb
  * @since 2018/4/17
  */
 public class CatInterceptor implements HandlerInterceptor {
