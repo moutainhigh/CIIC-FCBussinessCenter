@@ -38,13 +38,15 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @return Page<SalaryGrantTaskBO>
      */
     @Override
-    public Page<SalaryGrantTaskBO> sgList(SalaryGrantTaskBO bo) {
+    public Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO bo) {
         Page page = null;
         Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
         if (SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(bo.getTaskStatus())) {
             page = this.queryTaskForSubmitPage(paging, bo);
-        } else if (SalaryGrantBizConsts.TASK_STATUS_APPROVAL.equals(bo.getTaskStatus())) {
+        } else if (SalaryGrantBizConsts.TASK_PENDING.equals(bo.getTaskStatus())) {
             page = this.queryTaskForApprovePage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_APPROVAL.equals(bo.getTaskStatus())) {
+           page = this.queryTaskForHaveApprovedPage(paging, bo);
         } else if (SalaryGrantBizConsts.TASK_STATUS_PASS.equals(bo.getTaskStatus())) {
             page = this.queryTaskForPassPage(paging, bo);
         } else if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(bo.getTaskStatus())) {

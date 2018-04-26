@@ -111,19 +111,22 @@
                 <if test="batchCode != null and batchCode != ''">
                     and t1.batch_code = #{batchCode}
                 </if>
-                <if test="grantMode != null and grantMode != ''">
-                    and t1.grant_mode = #{grantMode}
-                </if>
+                <!--<if test="grantMode != null and grantMode != ''">-->
+                    <!--and t1.grant_mode = #{grantMode}-->
+                <!--</if>-->
                 <if test="grantCycle != null and grantCycle != ''">
                     and t1.grant_cycle = #{grantCycle}
                 </if>
                 <if test="taskStatus != null and taskStatus != ''">
                     and t1.task_status = #{taskStatus}
                 </if>
+                <if test="userId != null and userId != ''">
+                    and t1.operator_user_id = #{userId}
+                </if>
+                and
+                  t1.grant_mode like '%1'
                 and
                   t1.is_active=1
---                 and
---                   t1.operator_user_id='003'
             </where>
 
         union
@@ -145,21 +148,24 @@
                 <if test="batchCode != null and batchCode != ''">
                     and t2.batch_code = #{batchCode}
                 </if>
-                <if test="grantMode != null and grantMode != ''">
-                    and t2.grant_mode = #{grantMode}
-                </if>
+                <!--<if test="grantMode != null and grantMode != ''">-->
+                    <!--and t2.grant_mode = #{grantMode}-->
+                <!--</if>-->
                 <if test="grantCycle != null and grantCycle != ''">
                     and t2.grant_cycle = #{grantCycle}
                 </if>
                 <if test="taskStatus != null and taskStatus != ''">
                     and t2.task_status = #{taskStatus}
                 </if>
+                <if test="userId != null and userId != ''">
+                    and t2.operator_user_id = #{userId}
+                </if>
                 and
-                  t2.is_active=1
+                  t2.grant_mode = 1
                 and
                   t2.task_type=1
-    --             and
-    --             t2.operator_user_id='003'
+                and
+                  t2.is_active=1
             </where>
         ) t
         order by t.task_code
@@ -187,19 +193,24 @@
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t1.grant_mode  like concat('%', #{grantMode, jdbcType=VARCHAR}, '')
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t1.grant_mode  like concat('%', #{grantMode, jdbcType=VARCHAR}, '')-->
+            <!--</if>-->
+            <!--<if test="taskStatus != null and taskStatus != ''">-->
+                <!--and t1.task_status = #{taskStatus}-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
-            <if test="taskStatus != null and taskStatus != ''">
-                and t1.task_status = #{taskStatus}
+            <if test="userId != null and userId != ''">
+                and t1.approve_user_id = #{userId}
             </if>
             and
-            t1.is_active=1
+              t1.task_status='1'
             and
-            t1.approve_user_id='002'
+              t1.grant_mode like '%1'
+            and
+              t1.is_active=1
         </where>
 
         union
@@ -221,21 +232,26 @@
             <if test="batchCode != null and batchCode != ''">
                 and t2.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t2.grant_mode = #{grantMode}
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t2.grant_mode = #{grantMode}-->
+            <!--</if>-->
+            <!--<if test="taskStatus != null and taskStatus != ''">-->
+                <!--and t2.task_status = #{taskStatus}-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t2.grant_cycle = #{grantCycle}
             </if>
-            <if test="taskStatus != null and taskStatus != ''">
-                and t2.task_status = #{taskStatus}
+            <if test="userId != null and userId != ''">
+                and t2.approve_user_id = #{userId}
             </if>
             and
-            t2.is_active=1
+              t2.task_status='1'
             and
-            t2.task_type=1
-            --             and
-            --             t2.approve_user_id='002'
+              t2.grant_mode=1
+            and
+              t2.task_type=1
+            and
+              t2.is_active=1
         </where>
         ) t
         order by t.task_code
@@ -263,19 +279,22 @@
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t1.grant_mode = like concat('%', #{grantMode, jdbcType=VARCHAR}, '')
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t1.grant_mode = like concat('%', #{grantMode, jdbcType=VARCHAR}, '')-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
             <if test="taskStatus != null and taskStatus != ''">
                 and t1.task_status = #{taskStatus}
             </if>
+            <if test="userId != null and userId != ''">
+                and t1.operator_user_id = #{userId}
+            </if>
             and
-            t1.is_active=1
+              t1.grant_mode like '%1'
             and
-            t1.operator_user_id='001'
+              t1.is_active=1
         </where>
 
         union
@@ -297,21 +316,24 @@
             <if test="batchCode != null and batchCode != ''">
                 and t2.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t2.grant_mode = #{grantMode}
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t2.grant_mode = #{grantMode}-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t2.grant_cycle = #{grantCycle}
             </if>
             <if test="taskStatus != null and taskStatus != ''">
                 and t2.task_status = #{taskStatus}
             </if>
+            <if test="userId != null and userId != ''">
+                and t2.operator_user_id = #{userId}
+            </if>
             and
-            t2.is_active=1
+              t2.is_active=1
             and
-            t2.task_type=1
---             and
---             t2.operator_user_id='001'
+              t2.task_type=1
+            and
+              t2.grant_mode=1
         </where>
         ) t
         order by t.task_code
@@ -339,18 +361,21 @@
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t1.grant_mode like concat('%', #{grantMode, jdbcType=VARCHAR}, '')
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t1.grant_mode like concat('%', #{grantMode, jdbcType=VARCHAR}, '')-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
+            <if test="userId != null and userId != ''">
+                and (t1.approve_user_id = #{userId} or t1.operator_user_id = #{userId})
+            </if>
             and
-              t1.task_status in('2','6','7')
+              t1.task_status in ('2','6','7')
             and
-              (t1.approve_user_id='002' or t1.operator_user_id='001')
+              t1.grant_mode like '%1'
             and
-            t1.is_active=1
+              t1.is_active=1
         </where>
 
         union
@@ -372,18 +397,21 @@
             <if test="batchCode != null and batchCode != ''">
                 and t2.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t2.grant_mode = #{grantMode}
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t2.grant_mode = #{grantMode}-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t2.grant_cycle = #{grantCycle}
             </if>
+            <if test="userId != null and userId != ''">
+                and (t2.approve_user_id = #{userId} or t2.operator_user_id = #{userId})
+            </if>
             and
-              t2.task_status in('2','6','7')
-            and
-              (t2.approve_user_id='002' or t2.operator_user_id='001')
+              t2.task_status in ('2','6','7')
             and
               t2.task_type=1
+            and
+              t2.grant_mode=1
             and
               t2.is_active=1
         </where>

@@ -18,7 +18,7 @@ public interface SalaryGrantTaskQueryService {
      * @param salaryGrantTaskBO
      * @return Page<SalaryGrantTaskBO>
      */
-    Page<SalaryGrantTaskBO> sgList(SalaryGrantTaskBO salaryGrantTaskBO);
+    Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
      * 根据任务单编号查询任务单
