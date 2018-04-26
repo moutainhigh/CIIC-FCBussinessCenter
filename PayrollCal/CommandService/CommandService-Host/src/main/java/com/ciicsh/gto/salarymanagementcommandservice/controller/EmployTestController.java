@@ -1,10 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmpEmployeeQryRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmpEmployeeResponseDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeTestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +65,8 @@ public class EmployTestController extends BaseController{
 
     @PostMapping("/getEmployees")
     public JsonResult getEmployees(@RequestBody PrEmployeePO employeeTestPO,
-                                        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                                        @RequestParam(required = false, defaultValue = "50")  Integer pageSize) {
+                                   @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                   @RequestParam(required = false, defaultValue = "50")  Integer pageSize) {
 //        PageInfo<PrEmployeePO> pageInfo =  employeeTestService.getEmployees(employeeTestPO, pageNum,pageSize);
 //        List<PrEmployeePO> employees = pageInfo.getList()
 //                .stream()
@@ -77,7 +77,7 @@ public class EmployTestController extends BaseController{
         EmpEmployeeQryRequestDTO param = new EmpEmployeeQryRequestDTO();
         param.setPageNo(pageNum);
         param.setPageSize(pageSize);
-        com.ciicsh.gto.companycenter.webcommandservice.api.JsonResult<Page<EmpEmployeeResponseDTO>> result
+        JsonResult<Page<EmpEmployeeResponseDTO>> result
                 = employeeServiceProxy.PageEmpEmployee(param);
 //        Page<EmpEmployeeResponseDTO> data = result.getData();
 

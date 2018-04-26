@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.HistoryBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmployeeTestDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
@@ -535,5 +536,27 @@ public class NormalBatchController {
 
         return JsonResult.success(rowAffected);
 
+    }
+
+    @PostMapping("/getHistoryBatchInfoList")
+    public JsonResult getHistoryBatchInfoList(@RequestParam String mgrIds){
+        if(StringUtils.isEmpty(mgrIds)){
+            return JsonResult.faultMessage("管理方ID不能为空！");
+        }
+        List<String> Ids = Arrays.asList(mgrIds.split(","));
+        List<PrNormalBatchPO> normalBatchPOS = batchService.getHistoryBatchInfoList(Ids);
+        if(normalBatchPOS == null || normalBatchPOS.size() == 0){
+            return JsonResult.faultMessage("批次列表为空！");
+        }
+
+        List<HistoryBatchDTO> historyBatchDTOS = normalBatchPOS.stream().map(p->{
+            HistoryBatchDTO historyBatchDTO = new HistoryBatchDTO();
+            historyBatchDTO.setAccountSetCode(p.getAccountSetCode());
+            historyBatchDTO.setNormalBatchCode(p.getCode());
+            historyBatchDTO.setManagerId(p.getManagementId());
+            return historyBatchDTO;
+        }).collect(Collectors.toList());
+
+        return JsonResult.success(historyBatchDTOS, "批次列表获取");
     }
 }

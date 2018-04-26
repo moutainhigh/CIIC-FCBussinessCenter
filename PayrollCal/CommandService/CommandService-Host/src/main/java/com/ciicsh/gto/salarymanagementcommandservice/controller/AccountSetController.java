@@ -216,24 +216,9 @@ public class AccountSetController extends BaseController {
 
     @GetMapping("/getPayrollAccountSetNames")
     @ResponseBody
-    public  JsonResult getPayrollAccountSetNames(@RequestParam String managementId,@RequestParam String query){
+    public  JsonResult getPayrollAccountSetNames(@RequestParam String managementId){
         List<KeyValuePO> keyValues = prAccountSetService.getPayrollAccountSetNames(managementId);
-        List<KeyValuePO> result = new ArrayList<>();
-        result.clear();
-        if(CommonUtils.isContainChinese(query)){
-            keyValues.forEach(model ->{
-                if(model.getValue().indexOf(query) >-1){
-                    result.add(model);
-                }
-            });
-        }else {
-            keyValues.forEach(model ->{
-                if(model.getKey().indexOf(query) >-1){
-                    result.add(model);
-                }
-            });
-        }
-        return JsonResult.success(result);
+        return JsonResult.success(keyValues);
     }
 
     @PostMapping("/getPayrollAccountSets")

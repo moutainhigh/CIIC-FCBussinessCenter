@@ -31,12 +31,15 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -356,8 +359,7 @@ public class AdjustBatchController {
     }
 
     private Query createQuery(String batchCode){
-        Criteria criteria = Criteria.where("batch_code").is(batchCode);
-        criteria.and("show_adj").is(true);
+        Criteria criteria = Criteria.where("batch_code").is(batchCode).andOperator(Criteria.where("show_adj").is(true));
         Query query = Query.query(criteria);
         query.fields().include("batch_code");
         return query;
@@ -389,6 +391,7 @@ public class AdjustBatchController {
                                              @RequestParam String batchCode){
 
         Query query = createQuery(batchCode);
+
         long totalCount = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH).stream().count();
 
         query.fields().
@@ -411,7 +414,7 @@ public class AdjustBatchController {
             DBObject empInfo = (DBObject) catalog.get("emp_info");
             String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
             String empName = empInfo.get(PayItemName.EMPLOYEE_NAME_CN)== null ? "" :(String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
-            List<DBObject> adjustItems = (List<DBObject>)item.get("adjust_items");
+            List<DBObject> adjustItems = (List<DBObject>)catalog.get("adjust_items");
             String originBatchCode = (String) item.get("origin_batch_code");
             adjustBatchDTO.setOriginCode(originBatchCode);
             adjustBatchDTO.setBatchCode(batchCode);
@@ -420,8 +423,18 @@ public class AdjustBatchController {
             List<AdjustItem> adjusts = adjustItems.stream().map(p->{
                 AdjustItem adjust = new AdjustItem();
                 adjust.setItemName((String) p.get("name"));
-                adjust.setBefore(p.get("new"));
-                adjust.setAfter(p.get("origin"));
+                Object origin = p.get("origin");
+                Object n = p.get("new");
+                adjust.setBefore(origin);
+                adjust.setAfter(n);
+                if(n !=null && isNumeric(String.valueOf(n))){
+                    if(origin == null){
+                        adjust.setGap(n);
+                    }else {
+                       BigDecimal gap = (new BigDecimal(String.valueOf(n))).subtract(new BigDecimal(String.valueOf(origin)));
+                       adjust.setGap(gap);
+                    }
+                }
                 return adjust;
             }).collect(Collectors.toList());
 
@@ -438,4 +451,13 @@ public class AdjustBatchController {
 
     }
 
+
+    private boolean isNumeric(String str) {
+        Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]+");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
+    }
 }

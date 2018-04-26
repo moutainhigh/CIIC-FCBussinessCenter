@@ -489,5 +489,20 @@
 		</if>
 	</select>
 
+	<select id="getHistoryBatchInfoList" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
+		SELECT
+		code,
+		account_set_code,
+		management_id
+		FROM
+		pr_normal_batch
+
+		WHERE management_id IN
+		<foreach item="item" index="index" collection="mgrIds"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
+	</select>
 
 </mapper>

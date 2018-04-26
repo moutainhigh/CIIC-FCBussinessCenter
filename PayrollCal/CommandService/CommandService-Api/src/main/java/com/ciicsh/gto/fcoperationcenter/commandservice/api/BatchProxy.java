@@ -66,5 +66,5 @@ public interface BatchProxy {
      * @return
      */
     @GetMapping("/getBatchIdListByManagementId")
-    JsonResult<List<String>> getBatchIdListByManagementId(String mgrId);
+    JsonResult<List<String>> getBatchIdListByManagementId(@RequestParam("mgrId") String mgrId);
 }
