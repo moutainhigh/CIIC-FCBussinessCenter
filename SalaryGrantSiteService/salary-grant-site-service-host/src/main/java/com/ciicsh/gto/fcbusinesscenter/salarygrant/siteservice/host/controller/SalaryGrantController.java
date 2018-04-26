@@ -75,7 +75,7 @@ public class SalaryGrantController {
             Page page = salaryGrantTaskQueryService.salaryGrantList(bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
             page.setRecords(list);
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询结果").setContent(JSON.toJSONString(page)));
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览").setContent(JSON.toJSONString(page)));
             return ResultGenerator.genSuccessResult(page);
         } catch (Exception e) {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询异常").setContent(e.getMessage()));
@@ -140,7 +140,25 @@ public class SalaryGrantController {
     }
 
     /**
-     * 薪资发放详情
+     * 审批
+     * @author chenpb
+     * @date 2018-04-26
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/approve", method = RequestMethod.POST)
+    public Result approve(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("审批失败");
+        }
+    }
+
+    /**
+     * 薪资发放明细
      * @author chenpb
      * @date 2018-04-24
      * @param
@@ -152,24 +170,20 @@ public class SalaryGrantController {
         tags.put("taskCode", dto.getTaskCode());
         tags.put("taskType", dto.getTaskType().toString());
         tags.put("taskStatus", dto.getTaskStatus().toString());
-        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("详情查询").setContent("条件").setTags(tags));
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询明细").setContent("条件").setTags(tags));
         try {
             SalaryTaskDetailDTO salaryTaskDetailDTO = new SalaryTaskDetailDTO();
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo = salaryGrantTaskQueryService.selectTaskByTaskCode(bo);
             SalaryGrantDetailDTO salaryGrantDetailDTO = CommonTransform.convertToDTO(bo, SalaryGrantDetailDTO.class);
             salaryTaskDetailDTO.setTask(salaryGrantDetailDTO);
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("详情查询结果").setContent(JSON.toJSONString(salaryTaskDetailDTO)));
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细").setContent(JSON.toJSONString(salaryTaskDetailDTO)));
             return ResultGenerator.genSuccessResult(salaryTaskDetailDTO);
         } catch (Exception e) {
-            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("详情查询异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("薪资发放详情查询失败");
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询明细异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询明细失败");
         }
     }
-
-    //todo
-    //查询薪资发放任务单明细信息（点击任务单编号链接）
-    //包括查询雇员列表信息
 
     //todo
     //查询薪资发放任务单审批信息（点击审批按钮）
@@ -178,9 +192,6 @@ public class SalaryGrantController {
     //todo
     //创建薪资发放任务单信息（订阅计算引擎消息）
     //1、创建薪资发放任务单 2、拆分雇员数据插入到雇员信息表
-
-    //todo
-    //薪资发放任务单批量提交（点击批量提交按钮）
 
     //todo
     //查询任务单列表中雇员信息变更记录（点击任务单备注链接）
