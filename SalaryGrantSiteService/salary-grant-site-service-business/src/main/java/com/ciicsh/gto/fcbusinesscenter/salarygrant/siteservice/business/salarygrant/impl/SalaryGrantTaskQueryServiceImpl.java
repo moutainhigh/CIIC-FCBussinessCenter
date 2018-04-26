@@ -33,112 +33,32 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
 
     /**
-     * @description 待提交任务单：0-草稿 角色=操作员
-     * @author chenpb
-     * @since 2018-04-23
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return
+     * 查询薪资发放任务单列表
+     * @param bo
+     * @return Page<SalaryGrantTaskBO>
      */
     @Override
-    public Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.submitList(page, salaryGrantTaskBO);
-        page.setRecords(list);
+    public Page<SalaryGrantTaskBO> sgList(SalaryGrantTaskBO bo) {
+        Page page = null;
+        Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
+        if (SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForSubmitPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_APPROVAL.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForApprovePage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_PASS.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForPassPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForRejectPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForInvalidPage(paging, bo);
+        }
         return page;
     }
 
     /**
-     * @description 待审批任务单:1-审批中 角色=审核员
+     * @description 根据任务单编号查询任务单
      * @author chenpb
-     * @since 2018-04-23
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return
-     */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.approveList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
-    }
-
-    /**
-     * @description 已处理任务单:1-审批中 角色=操作员
-     * @author chenpb
-     * @since 2018-04-23
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return
-     */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.haveApprovedList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
-    }
-
-    /**
-     * @description 已处理任务单:审批通过 2-审批通过、6-未支付、7-已支付 角色=操作员、审核员
-     * @author chenpb
-     * @since 2018-04-23
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return
-     */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.passList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
-    }
-
-    /**
-     * @description 已处理任务单:审批拒绝 3-审批拒绝、8-撤回、9-驳回 角色=操作员、审核员（查历史表）
-     * @author chenpb
-     * @since 2018-04-23
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return
-     */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.rejectList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
-    }
-
-    /**
-     * @description 已处理任务单:已处理:4-失效 角色=操作员、审核员（查历史表）
-     * @author chenpb
-     * @since 2018-04-23
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return
-     */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.invalidList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
-    }
-
-    /**
-     * @description 根据主表任务单编号查询字表任务单
-     * @author chenpb
-     * @since 2018-04-23
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return
-     */
-    @Override
-    public Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
-    }
-
-    /**
-     * 任务单编号查询任务单
+     * @since 2018-04-25
      * @param salaryGrantTaskBO
      * @return
      */
@@ -153,6 +73,104 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
             bo = salaryGrantSubTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
         }
         return bo;
+    }
+
+    /**
+     * @description 待提交任务单：0-草稿 角色=操作员
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    private Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.submitList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
+    }
+
+    /**
+     * @description 待审批任务单:1-审批中 角色=审核员
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    private Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.approveList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
+    }
+
+    /**
+     * @description 已处理任务单:1-审批中 角色=操作员
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    private Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.haveApprovedList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
+    }
+
+    /**
+     * @description 已处理任务单:审批通过 2-审批通过、6-未支付、7-已支付 角色=操作员、审核员
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    private Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.passList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
+    }
+
+    /**
+     * @description 已处理任务单:审批拒绝 3-审批拒绝、8-撤回、9-驳回 角色=操作员、审核员（查历史表）
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    private Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.rejectList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
+    }
+
+    /**
+     * @description 已处理任务单:已处理:4-失效 角色=操作员、审核员（查历史表）
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    private Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.invalidList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
+    }
+
+    /**
+     * @description 根据主表任务单编号查询字表任务单
+     * @author chenpb
+     * @since 2018-04-23
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    private Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(page, salaryGrantTaskBO);
+        page.setRecords(list);
+        return page;
     }
 
 }
