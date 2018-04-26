@@ -19,6 +19,6 @@ public interface CalculationBatchDetailProxy {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaxBatchDetail")
+    @PostMapping(value = "/api/queryTaxBatchDetail")
     JsonResult queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO);
 }

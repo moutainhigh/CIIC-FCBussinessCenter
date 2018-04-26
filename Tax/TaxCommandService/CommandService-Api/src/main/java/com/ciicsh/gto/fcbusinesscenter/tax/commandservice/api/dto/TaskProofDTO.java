@@ -116,7 +116,6 @@ public class TaskProofDTO {
     private String taskType;
 
 
-
     public Long getId() {
         return id;
     }

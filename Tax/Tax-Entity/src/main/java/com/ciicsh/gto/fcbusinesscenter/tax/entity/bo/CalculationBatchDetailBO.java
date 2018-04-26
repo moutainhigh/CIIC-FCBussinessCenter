@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 /**
  * @author yuantongqing on 2017/12/19
@@ -217,6 +218,11 @@ public class CalculationBatchDetailBO {
      * 是否完税凭证服务完成
      */
     private Boolean isProofed;
+
+    /**
+     * 管理方名称(管理方切换)
+     */
+    private String[] managerNames;
 
     public Boolean getProof() {
         return isProof;
@@ -636,6 +642,14 @@ public class CalculationBatchDetailBO {
         this.batchNo = batchNo;
     }
 
+    public String[] getManagerNames() {
+        return managerNames;
+    }
+
+    public void setManagerNames(String[] managerNames) {
+        this.managerNames = managerNames;
+    }
+
     @Override
     public String toString() {
         return "CalculationBatchDetailBO{" +
@@ -688,6 +702,9 @@ public class CalculationBatchDetailBO {
                 ", isDeclareSupported=" + isDeclareSupported +
                 ", isTransferSupported=" + isTransferSupported +
                 ", isPaySupported=" + isPaySupported +
+                ", isProof=" + isProof +
+                ", isProofed=" + isProofed +
+                ", managerNames=" + Arrays.toString(managerNames) +
                 '}';
     }
 }

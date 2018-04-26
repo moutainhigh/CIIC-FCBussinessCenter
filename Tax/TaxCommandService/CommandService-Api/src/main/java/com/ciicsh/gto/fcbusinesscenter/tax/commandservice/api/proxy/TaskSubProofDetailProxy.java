@@ -21,7 +21,7 @@ public interface TaskSubProofDetailProxy {
      * @param subProofDetailDTO
      * @return
      */
-    @PostMapping(value = "/saveSubProofDetail")
+    @PostMapping(value = "/api/saveSubProofDetail")
     JsonResult saveSubProofDetail(@RequestBody SubProofDetailDTO subProofDetailDTO);
 
     /**
@@ -30,7 +30,7 @@ public interface TaskSubProofDetailProxy {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofDetail")
+    @PostMapping(value = "/api/queryTaskSubProofDetail")
     JsonResult queryTaskSubProofDetail(@RequestBody TaskProofDTO taskProofDTO);
 
     /**
@@ -39,6 +39,6 @@ public interface TaskSubProofDetailProxy {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/queryEmployee")
+    @PostMapping(value = "/api/queryEmployee")
     JsonResult queryEmployee(@RequestBody TaskProofDTO taskProofDTO);
 }
