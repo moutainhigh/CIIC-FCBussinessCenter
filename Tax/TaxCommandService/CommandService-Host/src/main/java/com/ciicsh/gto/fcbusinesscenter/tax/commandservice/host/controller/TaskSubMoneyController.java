@@ -61,7 +61,7 @@ public class TaskSubMoneyController extends BaseController {
         try {
             RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
             BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
-            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
                 //设置request请求管理方名称数组
                 requestForSubMoney.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
             });

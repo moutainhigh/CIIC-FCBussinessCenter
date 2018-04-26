@@ -69,7 +69,7 @@ public class TaskMainController extends BaseController {
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
-            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
                 //设置request请求管理方名称数组
                 requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
             });
@@ -102,7 +102,7 @@ public class TaskMainController extends BaseController {
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
-            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
                 //设置request请求管理方名称数组
                 requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
             });
@@ -135,7 +135,7 @@ public class TaskMainController extends BaseController {
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
-            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
                 //设置request请求管理方名称数组
                 requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
             });
