@@ -48,7 +48,7 @@ public class TaskSubSupplierController extends BaseController {
         try {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
-            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
                 //设置request请求管理方名称数组
                 requestForTaskSubSupplier.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
             });

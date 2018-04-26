@@ -52,7 +52,7 @@ public class CalculationBatchController extends BaseController {
         try {
             RequestForCalBatch requestForCalBatch = new RequestForCalBatch();
             BeanUtils.copyProperties(calculationBatchDTO, requestForCalBatch);
-            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
                 //设置request请求管理方名称数组
                 requestForCalBatch.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
             });
