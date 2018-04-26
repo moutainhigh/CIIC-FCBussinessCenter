@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -63,9 +60,9 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
         EntityWrapper wrapper = new EntityWrapper();
         //管理方名称
-        if(StrKit.isNotEmpty(requestForTaskMain.getManagerName())){
-            wrapper.like("manager_name",requestForTaskMain.getManagerName());
-        }
+        Optional.ofNullable(requestForTaskMain.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){
             wrapper.like("task_no",requestForTaskMain.getTaskNo());
@@ -92,9 +89,9 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
         EntityWrapper wrapper = new EntityWrapper();
         //管理方名称
-        if(StrKit.isNotEmpty(requestForTaskMain.getManagerName())){
-            wrapper.like("manager_name",requestForTaskMain.getManagerName());
-        }
+        Optional.ofNullable(requestForTaskMain.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){
             wrapper.like("task_no",requestForTaskMain.getTaskNo());
@@ -114,10 +111,14 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     public ResponseForTaskMain queryTaskMainsForCheck(RequestForTaskMain requestForTaskMain) {
 
         EntityWrapper wrapper = new EntityWrapper();
+//        //管理方名称
+//        if(StrKit.isNotEmpty(requestForTaskMain.getManagerName())){
+//            wrapper.like("manager_name",requestForTaskMain.getManagerName());
+//        }
         //管理方名称
-        if(StrKit.isNotEmpty(requestForTaskMain.getManagerName())){
-            wrapper.like("manager_name",requestForTaskMain.getManagerName());
-        }
+        Optional.ofNullable(requestForTaskMain.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){
             wrapper.like("task_no",requestForTaskMain.getTaskNo());

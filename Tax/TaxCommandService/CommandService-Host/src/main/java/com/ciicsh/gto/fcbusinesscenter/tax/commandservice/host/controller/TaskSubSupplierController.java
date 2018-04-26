@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.ciicsh.gt1.common.auth.ManagementInfo;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubSupplierDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
@@ -20,10 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yuantongqing  on 2018/02/09
@@ -49,6 +48,10 @@ public class TaskSubSupplierController extends BaseController {
         try {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+                //设置request请求管理方名称数组
+                requestForTaskSubSupplier.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            });
             ResponseForTaskSubSupplier responseForTaskSubSupplier = taskSubSupplierService.queryTaskSubSupplier(requestForTaskSubSupplier);
             jr.fill(responseForTaskSubSupplier);
         } catch (Exception e) {
