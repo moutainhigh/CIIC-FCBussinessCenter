@@ -72,8 +72,7 @@ public class SalaryGrantController {
         try {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
-            System.out.println("状态：" + bo.getTaskStatus());
-            Page page = salaryGrantTaskQueryService.sgList(bo);
+            Page page = salaryGrantTaskQueryService.salaryGrantList(bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
             page.setRecords(list);
             logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询结果").setContent(JSON.toJSONString(page)));
