@@ -82,6 +82,10 @@ public class SalaryTaskDTO extends PagingDTO {
      */
     private Integer taskType;
     /**
+     * 审批意见
+     */
+    private String approvedOpinion;
+    /**
      * 备注
      */
     private String remark;

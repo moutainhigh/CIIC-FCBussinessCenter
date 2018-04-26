@@ -169,9 +169,6 @@ public class SalaryGrantController {
     }
 
     //todo
-    //薪资发放任务单失效（点击失效按钮）
-
-    //todo
     //查询薪资发放任务单明细信息（点击任务单编号链接）
     //包括查询雇员列表信息
 

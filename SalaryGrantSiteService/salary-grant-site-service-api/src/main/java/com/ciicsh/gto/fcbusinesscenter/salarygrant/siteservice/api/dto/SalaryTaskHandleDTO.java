@@ -26,4 +26,8 @@ public class SalaryTaskHandleDTO {
      * 任务单状态
      */
     private String taskStatus;
+    /**
+     * 失效原因
+     */
+    private String invalidReason;
 }
