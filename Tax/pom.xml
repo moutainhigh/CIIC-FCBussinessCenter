@@ -214,14 +214,19 @@
             <dependency>
                 <groupId>com.ciicsh.gt1</groupId>
                 <artifactId>common-auth</artifactId>
+                <version>${commonservice.version}</version>
+            </dependency>
+            <!--<dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>common-auth</artifactId>
                 <version>${commonauth.version}</version>
-                <exclusions>
+                &lt;!&ndash;<exclusions>
                     <exclusion>
                         <groupId>*</groupId>
                         <artifactId>*</artifactId>
                     </exclusion>
-                </exclusions>
-            </dependency>
+                </exclusions>&ndash;&gt;
+            </dependency>-->
             <!--<dependency>
                 <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
                 <artifactId>fcbusinesscenter-util</artifactId>
