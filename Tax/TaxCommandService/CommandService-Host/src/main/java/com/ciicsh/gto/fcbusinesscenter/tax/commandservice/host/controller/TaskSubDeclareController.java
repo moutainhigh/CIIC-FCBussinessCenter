@@ -51,7 +51,7 @@ public class TaskSubDeclareController extends BaseController {
         try {
             RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
             BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            Optional.ofNullable(UserContext.getManagementInfo()).ifPresent(managementInfo -> {
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
                 //设置request请求管理方名称数组
                 requestForTaskSubDeclare.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
             });
