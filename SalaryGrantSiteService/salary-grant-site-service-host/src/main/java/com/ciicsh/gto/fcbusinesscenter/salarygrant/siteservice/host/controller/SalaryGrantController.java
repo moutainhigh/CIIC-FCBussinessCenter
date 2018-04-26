@@ -148,7 +148,7 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/detail", method = RequestMethod.POST)
-    public Result detail(@RequestBody SalaryTaskDetailDTO dto) {
+    public Result<SalaryTaskDetailDTO> detail(@RequestBody SalaryTaskDetailDTO dto) {
         Map<String, String> tags = new HashMap<>();
         tags.put("taskCode", dto.getTaskCode());
         tags.put("taskType", dto.getTaskType().toString());

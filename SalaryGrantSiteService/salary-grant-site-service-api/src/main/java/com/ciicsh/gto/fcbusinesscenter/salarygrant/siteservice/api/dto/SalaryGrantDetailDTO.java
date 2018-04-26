@@ -35,6 +35,10 @@ public class SalaryGrantDetailDTO {
      */
     private Integer taskType;
     /**
+     * 任务单状态
+     */
+    private String taskStatus;
+    /**
      * 薪资周期
      */
     private String grantCycle;
