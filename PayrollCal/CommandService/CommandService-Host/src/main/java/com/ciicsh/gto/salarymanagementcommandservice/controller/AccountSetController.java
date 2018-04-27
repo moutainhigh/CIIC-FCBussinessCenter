@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetExtensionDTO;
@@ -216,24 +217,9 @@ public class AccountSetController extends BaseController {
 
     @GetMapping("/getPayrollAccountSetNames")
     @ResponseBody
-    public  JsonResult getPayrollAccountSetNames(@RequestParam String managementId,@RequestParam String query){
+    public  JsonResult getPayrollAccountSetNames(@RequestParam String managementId){
         List<KeyValuePO> keyValues = prAccountSetService.getPayrollAccountSetNames(managementId);
-        List<KeyValuePO> result = new ArrayList<>();
-        result.clear();
-        if(CommonUtils.isContainChinese(query)){
-            keyValues.forEach(model ->{
-                if(model.getValue().indexOf(query) >-1){
-                    result.add(model);
-                }
-            });
-        }else {
-            keyValues.forEach(model ->{
-                if(model.getKey().indexOf(query) >-1){
-                    result.add(model);
-                }
-            });
-        }
-        return JsonResult.success(result);
+        return JsonResult.success(keyValues);
     }
 
     @PostMapping("/getPayrollAccountSets")
@@ -266,7 +252,9 @@ public class AccountSetController extends BaseController {
                 .map(this::setPayrollAccountSetExtDTO)
                 .collect(Collectors.toList());
         PageInfo<PrPayrollAccountSetExtensionDTO> resultPage = new PageInfo<>(extensions);
+        //UserContext.getManagementInfo()
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
+
         return JsonResult.success(resultPage);
     }
 

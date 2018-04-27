@@ -5,7 +5,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -78,8 +78,22 @@ public interface PrNormalBatchService {
      * @param managementId
      * @return
      */
-    PageInfo<PrNormalBatchPO> getAllBatchesByManagementId(String managementId, String batchCode, Integer pageNum, Integer pageSize);
+    List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId);
 
+    /**
+     * 获取管理方ID 列表
+     * @param managementId
+     * @return
+     */
+    List<String> getBatchIdListByManagementId(String managementId);
+
+    /**
+     * 获取历史批次列表
+     * @param mgrIds
+     * @return
+     */
+    List<PrNormalBatchPO> getHistoryBatchInfoList(List<String> mgrIds);
+    PageInfo<PrNormalBatchPO> getAllBatchesByManagementId(String managementId, String batchCode, Integer pageNum, Integer pageSize);
     HashMap<String, ?> compareBatch(String sourceBatchCode, String targetBatchCode);
 
     List<PrPayrollItemPO> getBatchPayrollSchema(String batchCode);
