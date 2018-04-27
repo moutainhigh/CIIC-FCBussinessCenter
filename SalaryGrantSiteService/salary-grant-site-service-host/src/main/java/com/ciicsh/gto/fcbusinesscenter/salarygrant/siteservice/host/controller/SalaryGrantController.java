@@ -15,6 +15,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
+import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
@@ -61,7 +62,7 @@ public class SalaryGrantController {
     @RequestMapping(value="/list", method = RequestMethod.POST)
     public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
         SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-        bo.setManagementIds("");
+        bo.setManagementIds(CommonHelper.getManagementIDs());
         Map<String, String> tags = new HashMap<>();
         tags.put("taskCode", dto.getTaskCode());
         tags.put("batchCode", dto.getBatchCode());
