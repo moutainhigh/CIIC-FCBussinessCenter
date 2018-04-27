@@ -103,7 +103,7 @@
                     and t1.salary_grant_main_task_code = #{taskCode}
                 </if>
                 <if test="managementIds != null and managementIds != ''">
-                    and t1.management_id in (#{managementIds})
+                    and t1.management_id in (${managementIds})
                 </if>
                 <if test="batchCode != null and batchCode != ''">
                     and t1.batch_code = #{batchCode}
@@ -137,7 +137,7 @@
                     and t2.salary_grant_sub_task_code = #{taskCode}
                 </if>
                 <if test="managementIds != null and managementIds != ''">
-                    and t2.management_id in (#{managementIds})
+                    and t2.management_id in (${managementIds})
                 </if>
                 <if test="batchCode != null and batchCode != ''">
                     and t2.batch_code = #{batchCode}
@@ -179,7 +179,7 @@
                 and t1.salary_grant_main_task_code = #{taskCode}
             </if>
             <if test="managementIds != null and managementIds != ''">
-                and t1.management_id in (#{managementIds})
+                and t1.management_id in (${managementIds})
             </if>
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
@@ -215,7 +215,7 @@
                 and t2.salary_grant_sub_task_code = #{taskCode}
             </if>
             <if test="managementIds != null and managementIds != ''">
-                and t2.management_id in (#{managementIds})
+                and t2.management_id in (${managementIds})
             </if>
             <if test="batchCode != null and batchCode != ''">
                 and t2.batch_code = #{batchCode}
@@ -259,7 +259,7 @@
                 and t1.salary_grant_main_task_code = #{taskCode}
             </if>
             <if test="managementIds != null and managementIds != ''">
-                and t1.management_id in (#{managementIds})
+                and t1.management_id in (${managementIds})
             </if>
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
@@ -293,7 +293,7 @@
                 and t2.salary_grant_sub_task_code = #{taskCode}
             </if>
             <if test="managementIds != null and managementIds != ''">
-                and t2.management_id in (#{managementIds})
+                and t2.management_id in (${managementIds})
             </if>
             <if test="batchCode != null and batchCode != ''">
                 and t2.batch_code = #{batchCode}
@@ -335,7 +335,7 @@
                 and t1.salary_grant_main_task_code = #{taskCode}
             </if>
             <if test="managementIds != null and managementIds != ''">
-                and t1.management_id in (#{managementIds})
+                and t1.management_id in (${managementIds})
             </if>
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
@@ -368,7 +368,7 @@
                 and t2.salary_grant_main_task_code = #{taskCode}
             </if>
             <if test="managementIds != null and managementIds != ''">
-                and t2.management_id in (#{managementIds})
+                and t2.management_id in (${managementIds})
             </if>
             <if test="batchCode != null and batchCode != ''">
                 and t2.batch_code = #{batchCode}
