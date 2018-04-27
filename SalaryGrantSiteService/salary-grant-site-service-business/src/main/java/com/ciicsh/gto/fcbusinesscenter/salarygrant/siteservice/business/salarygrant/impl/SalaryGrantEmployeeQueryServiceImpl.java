@@ -28,16 +28,12 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     @Override
     public Page<SalaryGrantEmployeeBO> queryEmployeeTask(int taskType, Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
         //查询主表的雇员信息
-        if (taskType == 1) {
+        if (taskType == 0) {
             return queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
-        }
-
-        //查询子表的雇员信息
-        if (taskType == 1) {
+        } else {
+            //查询子表的雇员信息
             return queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
         }
-
-        return null;
     }
 
     @Override

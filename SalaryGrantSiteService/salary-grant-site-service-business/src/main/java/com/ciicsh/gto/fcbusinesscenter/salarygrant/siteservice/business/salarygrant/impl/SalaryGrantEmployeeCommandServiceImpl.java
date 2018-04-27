@@ -20,32 +20,4 @@ import java.util.List;
 @Service
 public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGrantEmployeeMapper, SalaryGrantEmployeePO> implements SalaryGrantEmployeeCommandService {
 
-    @Override
-    public Boolean toReprieveEmployee(SalaryGrantEmployeePO salaryGrantEmployeePO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toRecoverEmployee(SalaryGrantEmployeePO salaryGrantEmployeePO) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toBatchReprieveEmployee(List<SalaryGrantEmployeePO> salaryGrantEmployeePOList) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public Boolean toBatchRecoverEmployee(List<SalaryGrantEmployeePO> salaryGrantEmployeePOList) {
-        // todo
-        return null;
-    }
-
-    @Override
-    public void toExportEmployee(String salaryGrantMainTaskCode) {
-        // todo
-    }
 }

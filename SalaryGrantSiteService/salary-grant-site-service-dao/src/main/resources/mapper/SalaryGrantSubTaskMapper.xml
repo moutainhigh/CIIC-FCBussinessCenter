@@ -53,6 +53,9 @@
             t1.foreigner_count              foreignerCount  ,
             t1.grant_account_code           grantAccountCode,
             '' AS                           grantAccountName,
+            date_format(t1.created_time, '%Y-%m-%d')   createdTime,
+            t1.grant_date                   grantDate       ,
+            t1.grant_time                   grantTime       ,
             t1.remark
         FROM
             sg_salary_grant_sub_task t1

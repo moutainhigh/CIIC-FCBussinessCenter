@@ -69,6 +69,10 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
      */
     private String grantDate;
     /**
+     * 薪资发放时段:1-上午，2-下午
+     */
+    private Integer grantTime;
+    /**
      * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
      */
     private Integer grantType;
