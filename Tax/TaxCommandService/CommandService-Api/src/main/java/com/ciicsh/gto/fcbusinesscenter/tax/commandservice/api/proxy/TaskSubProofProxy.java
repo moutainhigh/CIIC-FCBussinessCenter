@@ -22,7 +22,7 @@ public interface TaskSubProofProxy {
      * @param taskMainProofId
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofByMainId/{taskMainProofId}")
+    @PostMapping(value = "/api/queryTaskSubProofByMainId/{taskMainProofId}")
     JsonResult queryTaskSubProofByMainId(@PathVariable(value = "taskMainProofId")  Long taskMainProofId);
 
     /**
@@ -31,7 +31,7 @@ public interface TaskSubProofProxy {
      * @param taskSubProofId
      * @return
      */
-    @PostMapping(value = "/copyProofInfoBySubId/{taskSubProofId}")
+    @PostMapping(value = "/api/copyProofInfoBySubId/{taskSubProofId}")
     JsonResult copyProofInfoBySubId(@PathVariable(value = "taskSubProofId") Long taskSubProofId);
 
     /**
@@ -40,7 +40,7 @@ public interface TaskSubProofProxy {
      * @param taskSubProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofByRes")
+    @PostMapping(value = "/api/queryTaskSubProofByRes")
     JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO);
 
 }

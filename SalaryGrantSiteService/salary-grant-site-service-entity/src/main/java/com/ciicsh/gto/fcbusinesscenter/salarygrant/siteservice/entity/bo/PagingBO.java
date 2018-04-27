@@ -1,5 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
+import lombok.*;
+
+@Getter
+@Setter
+@ToString
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class PagingBO {
 
     private Integer current;

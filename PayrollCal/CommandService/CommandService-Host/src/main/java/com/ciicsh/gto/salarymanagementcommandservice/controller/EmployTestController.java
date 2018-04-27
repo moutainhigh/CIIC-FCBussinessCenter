@@ -5,6 +5,7 @@ import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmpEmployeeQryRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmpEmployeeResponseDTO;
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeTestService;
 import org.springframework.beans.factory.annotation.Autowired;

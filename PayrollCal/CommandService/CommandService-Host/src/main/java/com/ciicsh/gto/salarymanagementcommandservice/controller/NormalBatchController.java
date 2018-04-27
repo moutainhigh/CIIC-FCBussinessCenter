@@ -539,11 +539,9 @@ public class NormalBatchController {
     }
 
     @PostMapping("/getHistoryBatchInfoList")
-    public JsonResult getHistoryBatchInfoList(@RequestParam String mgrIds){
-        if(StringUtils.isEmpty(mgrIds)){
-            return JsonResult.faultMessage("管理方ID不能为空！");
-        }
-        List<String> Ids = Arrays.asList(mgrIds.split(","));
+    public JsonResult getHistoryBatchInfoList(){
+        List<String> Ids = UserContext.getManagementInfoLists().stream().map(p -> p.getManagementId()).collect(Collectors.toList());
+        //ist<String> Ids = Arrays.asList(mgrIds.split(","));
         List<PrNormalBatchPO> normalBatchPOS = batchService.getHistoryBatchInfoList(Ids);
         if(normalBatchPOS == null || normalBatchPOS.size() == 0){
             return JsonResult.faultMessage("批次列表为空！");

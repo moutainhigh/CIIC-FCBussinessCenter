@@ -1,5 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.ciicsh.gt1.common.auth.ManagementInfo;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubPaymentDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentService;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author yuantongqing on 2018/01/02
@@ -42,6 +46,10 @@ public class TaskSubPaymentController extends BaseController {
         try {
             RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
             BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
+                //设置request请求管理方名称数组
+                requestForSubPayment.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            });
             ResponseForSubPayment responseForSubPayment = taskSubPaymentService.querySubPayment(requestForSubPayment);
             jr.fill(responseForSubPayment);
         } catch (Exception e) {

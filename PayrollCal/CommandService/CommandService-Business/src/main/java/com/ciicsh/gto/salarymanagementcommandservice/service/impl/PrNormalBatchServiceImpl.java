@@ -8,6 +8,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.*;
 import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
@@ -45,7 +46,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     private final static Logger logger = LoggerFactory.getLogger(PrNormalBatchServiceImpl.class);
 
     @Autowired
-    PrNormalBatchMapper normalBatchMapper;
+    private PrNormalBatchMapper normalBatchMapper;
 
     @Autowired
     private PrEmployeeMapper employeeMapper;
@@ -233,7 +234,17 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     public List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId) {
-        return normalBatchMapper.selectAllBatchCodesByManagementId(managementId);
+        return null;
+    }
+
+    @Override
+    public PageInfo<PrNormalBatchPO> getAllBatchesByManagementId(String managementId, String batchCode, Integer pageNum, Integer pageSize) {
+
+        List<PrNormalBatchPO> resultList = new ArrayList<>();
+        PageHelper.startPage(pageNum, pageSize);
+        resultList = normalBatchMapper.selectAllBatchCodesByManagementId(managementId, batchCode);
+        PageInfo<PrNormalBatchPO> pageInfo = new PageInfo<>(resultList);
+        return pageInfo;
     }
 
     @Override
@@ -270,4 +281,22 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
         return basicDBObject;
     }
+
+    @Override
+    public HashMap<String, ?> compareBatch(String sourceBatchCode, String targetBatchCode) {
+
+        // 验证两个比较批次是否拥有相同薪资结构
+
+
+
+        Criteria criteriaSource = Criteria.where("batch_code").is(sourceBatchCode);
+
+        return null;
+    }
+
+    @Override
+    public List<PrPayrollItemPO> getBatchPayrollSchema(String batchCode) {
+        return normalBatchMapper.selectBatchPayrollSchema(batchCode);
+    }
+
 }

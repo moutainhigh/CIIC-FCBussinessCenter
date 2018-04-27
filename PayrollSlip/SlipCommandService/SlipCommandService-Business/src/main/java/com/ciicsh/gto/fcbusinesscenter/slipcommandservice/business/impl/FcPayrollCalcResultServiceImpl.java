@@ -13,6 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.FcPayrollCalc
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,15 +24,26 @@ import java.util.Map;
  * @since 2018-02-09
  */
 @Service
-@Transactional
-@SuppressWarnings("all")
 public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultService {
 
     @Autowired
     private FcPayrollCalcResultMapper fcPayrollCalcResultMapper;
 
+    // TODO: query mongo
+//    @Autowired
+//    private MongoClient mongoClient;
+
+
     @Override
     public List<FcPayrollCalcResultPO> listFcPayrollCalcResults(Map<String, Object> params) {
+
+//        userManagementProxy.list(new HashMap<String, Object>(){
+//            {
+//                put("userId", "XTY00001");
+//            }
+//        });
+
+//        Set<Map.Entry<String, Object>> set = mongoClient.getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find().first().entrySet();
 
         List<FcPayrollCalcResultPO> records = fcPayrollCalcResultMapper.list(params);
 

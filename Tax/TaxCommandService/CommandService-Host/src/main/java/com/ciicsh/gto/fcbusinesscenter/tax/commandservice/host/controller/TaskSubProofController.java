@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 
+import com.ciicsh.gt1.common.auth.ManagementInfo;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
@@ -8,7 +10,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProof
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
@@ -22,10 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yuantongqing on 2017/12/12
@@ -105,7 +104,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
             //登录信息
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             taskSubProofService.copyProofInfoBySubId(taskSubProofId, userInfoResponseDTO.getLoginName());
             //jr.fill(true);
         } catch (Exception e) {
@@ -130,6 +129,10 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         try {
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
+                //设置request请求管理方名称数组
+                requestForProof.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            });
             ResponseForSubProof responseForSubProof = taskSubProofService.querySubProofInfoByTaskType(requestForProof);
             jr.fill(responseForSubProof);
         } catch (Exception e) {
@@ -207,7 +210,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过，03:退回，04:已完成，05:已失效
             requestForProof.setStatus("04");
@@ -236,7 +239,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("03");
@@ -265,7 +268,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             RequestForProof requestForProof = new RequestForProof();
             BeanUtils.copyProperties(taskProofDTO, requestForProof);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForProof.setModifiedBy(userInfoResponseDTO.getLoginName());
             //任务状态：00:草稿，01:已提交/处理中，02:通过,03:被退回，04:已完成，05:已失效
             requestForProof.setStatus("05");

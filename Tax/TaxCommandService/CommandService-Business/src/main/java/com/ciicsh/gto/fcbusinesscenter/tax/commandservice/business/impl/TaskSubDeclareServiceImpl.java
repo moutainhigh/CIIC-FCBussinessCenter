@@ -59,7 +59,6 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
     @Override
     public ResponseForTaskSubDeclare queryTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
-
         ResponseForTaskSubDeclare responseForTaskSubDeclare = new ResponseForTaskSubDeclare();
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubDeclarePO());
@@ -67,10 +66,10 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         if (StrKit.isNotEmpty(requestForTaskSubDeclare.getDeclareAccount())) {
             wrapper.like("declare_account", requestForTaskSubDeclare.getDeclareAccount());
         }
-        //判断是否包含管理方名称条件
-        if (StrKit.isNotEmpty(requestForTaskSubDeclare.getManagerName())) {
-            wrapper.like("manager_name", requestForTaskSubDeclare.getManagerName());
-        }
+        //管理方名称
+        Optional.ofNullable(requestForTaskSubDeclare.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubDeclare.getPeriod())) {
             wrapper.andNew("period = {0} ", LocalDate.parse(requestForTaskSubDeclare.getPeriod()));

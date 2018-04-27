@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetExtensionDTO;
@@ -251,7 +252,9 @@ public class AccountSetController extends BaseController {
                 .map(this::setPayrollAccountSetExtDTO)
                 .collect(Collectors.toList());
         PageInfo<PrPayrollAccountSetExtensionDTO> resultPage = new PageInfo<>(extensions);
+        //UserContext.getManagementInfo()
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
+
         return JsonResult.success(resultPage);
     }
 

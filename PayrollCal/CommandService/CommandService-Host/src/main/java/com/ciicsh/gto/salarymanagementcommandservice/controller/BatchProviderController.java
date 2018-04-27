@@ -7,29 +7,30 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.AdvanceBatchDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.MoneyBatchDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrBatchDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.page.Pagination;
+import com.ciicsh.gto.salarymanagement.entity.dto.BatchPayrollSchemaDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
+import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import com.mongodb.DBObject;
+import kafka.utils.Json;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,14 +95,21 @@ public class BatchProviderController implements BatchProxy {
     }
 
     @Override
-    public List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam(value = "managementId", required = false) String managementId) {
+    public Pagination<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam(value = "managementId", required = false) String managementId,
+                                                                   @RequestParam(value = "batchCode", required = false) String batchCode,
+                                                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                                                   @RequestParam(value = "pageSize", defaultValue = "50") int pageSize) {
         /*if (StringUtils.isEmpty(managementId)) {
             return null;
         }*/
-        List<PrNormalBatchPO> batchList = normalBatchService.getAllBatchesByManagementId(managementId);
-        List<PrNormalBatchDTO> resultList = JSON.parseObject(JSON.toJSONString(batchList)
+        PageInfo<PrNormalBatchPO> pageInfo = normalBatchService.getAllBatchesByManagementId(managementId, batchCode, pageNum, pageSize);
+        List<PrNormalBatchDTO> resultList = JSON.parseObject(JSON.toJSONString(pageInfo.getList())
                 , new TypeReference<List<PrNormalBatchDTO>>(){});
-        return resultList;
+        Pagination<PrNormalBatchDTO> resultPage = new Pagination<>();
+        BeanUtils.copyProperties(pageInfo, resultPage, "list");
+        resultPage.setList(resultList);
+
+        return resultPage;
     }
 
     @Override
@@ -169,11 +177,43 @@ public class BatchProviderController implements BatchProxy {
             List<String> list = normalBatchService.getBatchIdListByManagementId(mgrId);
             result.setData(list);
             result.setSuccess(true);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             result.setSuccess(false);
         }
 
         return result;
+    }
+
+    @GetMapping("/compareBatch")
+    public JsonResult compareBatch(@RequestParam String source, @RequestParam String target) {
+
+        //TODO
+
+        return null;
+    }
+
+    @GetMapping("/batchPayrollSchema")
+    public JsonResult getBatchPayrollSchemas(@RequestParam String batchCodesStr) {
+
+        String[] batchCodes = batchCodesStr.split(",");
+        List<BatchPayrollSchemaDTO> batchPayrollSchemaDTOList = new ArrayList<>();
+        Arrays.stream(batchCodes).map(String::trim).forEach(i -> {
+            List<PrPayrollItemPO> items = normalBatchService.getBatchPayrollSchema(i);
+            BatchPayrollSchemaDTO batchPayrollSchemaDTO = new BatchPayrollSchemaDTO();
+            batchPayrollSchemaDTO.setBatchCode(i);
+            List<BatchPayrollSchemaDTO.PayItemCodeNameObj> itemList = new ArrayList<>();
+            if (items != null) {
+                items.forEach(j -> {
+                    BatchPayrollSchemaDTO.PayItemCodeNameObj itemCodeNameObj
+                            = batchPayrollSchemaDTO.new PayItemCodeNameObj(j.getItemCode(), j.getItemName());
+                    itemList.add(itemCodeNameObj);
+                });
+                batchPayrollSchemaDTO.setItemList(itemList);
+            }
+            batchPayrollSchemaDTOList.add(batchPayrollSchemaDTO);
+        });
+
+        return JsonResult.success(batchPayrollSchemaDTOList);
     }
 
 }

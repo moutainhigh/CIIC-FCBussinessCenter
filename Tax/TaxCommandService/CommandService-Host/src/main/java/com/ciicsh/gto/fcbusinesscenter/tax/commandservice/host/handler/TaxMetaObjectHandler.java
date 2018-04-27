@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.handler;
 
 import com.baomidou.mybatisplus.mapper.MetaObjectHandler;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import org.apache.ibatis.reflection.MetaObject;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
 
         try {
             //登录信息
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             //创建人
             setFieldValByName("createdBy", userInfoResponseDTO.getLoginName(), metaObject);
             //修改人
@@ -52,7 +52,7 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
 
         try {
             //登录信息
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             //修改人
             setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
         } catch (Exception e) {

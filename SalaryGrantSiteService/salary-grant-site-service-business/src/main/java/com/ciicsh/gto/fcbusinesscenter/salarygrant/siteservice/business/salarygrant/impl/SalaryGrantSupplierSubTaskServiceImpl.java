@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
  * 薪资发放供应商任务单 服务实现类
  * </p>
  *
- * @author gaoyang
- * @since 2018-03-28
+ * @author Rock.Jiang
+ * @since 2018-04-24
  */
 @Service
 public class SalaryGrantSupplierSubTaskServiceImpl extends ServiceImpl<SalaryGrantSubTaskMapper, SalaryGrantSubTaskPO> implements SalaryGrantSupplierSubTaskService {
@@ -25,32 +25,31 @@ public class SalaryGrantSupplierSubTaskServiceImpl extends ServiceImpl<SalaryGra
     @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
-    @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
-
+//    @Autowired
+//    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return null;
+        return page.setRecords(salaryGrantSubTaskMapper.querySupplierSubTaskForSubmitPage(page, salaryGrantTaskBO));
     }
 
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return null;
+        return page.setRecords(salaryGrantSubTaskMapper.querySupplierSubTaskForApprovePage(page, salaryGrantTaskBO));
     }
 
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return null;
+        return page.setRecords(salaryGrantSubTaskMapper.querySupplierSubTaskForHaveApprovedPage(page, salaryGrantTaskBO));
     }
 
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return null;
+        return page.setRecords(salaryGrantSubTaskMapper.querySupplierSubTaskForPassPage(page, salaryGrantTaskBO));
     }
 
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return null;
+        return page.setRecords(salaryGrantSubTaskMapper.querySupplierSubTaskForRejectPage(page, salaryGrantTaskBO));
     }
 }

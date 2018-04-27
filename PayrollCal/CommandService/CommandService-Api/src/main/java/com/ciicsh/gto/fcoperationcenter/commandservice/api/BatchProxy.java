@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAudit
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.MoneyBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.page.Pagination;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,10 @@ public interface BatchProxy {
      * @return 批次ID列表
      */
     @GetMapping("/getBatchListByManagementId")
-    List<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam(value = "managementId", required = false) String managementId);
+    Pagination<PrNormalBatchDTO> getBatchListByManagementId(@RequestParam(value = "managementId", required = false) String managementId,
+                                                            @RequestParam(value = "batchCode", required = false) String batchCode,
+                                                            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                                            @RequestParam(value = "pageSize", defaultValue = "50") int pageSize);
 
     /**
      * 获取一个批次计算结果 BY 批次编号 JSON 格式

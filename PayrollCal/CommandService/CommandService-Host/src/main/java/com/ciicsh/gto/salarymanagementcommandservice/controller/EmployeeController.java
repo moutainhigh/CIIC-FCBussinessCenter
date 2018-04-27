@@ -6,6 +6,7 @@ import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmpEmployeeQryRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmpEmployeeResponseDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.EmployeeProxy;
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmployeeDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmployeeTestDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;

@@ -56,21 +56,6 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMappe
     @Autowired
     SalaryGrantWorkFlowService salaryGrantWorkFlowService;
 
-    /**
-     * 查询薪资发放任务单
-     * @author chenpb
-     * @date 2018-04-20
-     * @param bo
-     * @return
-     */
-    @Override
-    public Page list(SalaryGrantTaskBO bo) {
-        Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
-        List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.list(page, bo);
-        page.setRecords(list);
-        return page;
-    }
-
     @Override
     public Boolean isExistSalaryGrantMainTask(Map batchParam) {
         SalaryGrantMainTaskPO salaryGrantMainTaskPO;

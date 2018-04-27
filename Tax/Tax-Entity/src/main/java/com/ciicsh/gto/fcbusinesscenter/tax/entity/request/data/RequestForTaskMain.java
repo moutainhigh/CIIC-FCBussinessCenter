@@ -45,6 +45,10 @@ public class RequestForTaskMain extends PageInfo {
     private String idNo;
 
     private String[] status;
+    /**
+     * 管理方名称(管理方切换)
+     */
+    private String[] managerNames;
 
     public String[] getStatus() {
         return status;
@@ -172,5 +176,13 @@ public class RequestForTaskMain extends PageInfo {
 
     public void setBatchIds(String[] batchIds) {
         this.batchIds = batchIds;
+    }
+
+    public String[] getManagerNames() {
+        return managerNames;
+    }
+
+    public void setManagerNames(String[] managerNames) {
+        this.managerNames = managerNames;
     }
 }

@@ -20,7 +20,7 @@ public interface TaskMainProofProxy {
      * @param taskMainProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskMainProofByRes")
+    @PostMapping(value = "/api/queryTaskMainProofByRes")
     JsonResult queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO);
 
     /**
@@ -29,7 +29,7 @@ public interface TaskMainProofProxy {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/addTaskProof")
+    @PostMapping(value = "/api/addTaskProof")
     JsonResult addTaskProof(@RequestBody TaskProofDTO taskProofDTO);
 
     /**
@@ -38,7 +38,7 @@ public interface TaskMainProofProxy {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/updateTaskProof")
+    @PostMapping(value = "/api/updateTaskProof")
     JsonResult updateTaskProof(@RequestBody TaskProofDTO taskProofDTO);
 
     /**
@@ -47,7 +47,7 @@ public interface TaskMainProofProxy {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/invalidTaskProof")
+    @PostMapping(value = "/api/invalidTaskProof")
     JsonResult invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO);
 
 }

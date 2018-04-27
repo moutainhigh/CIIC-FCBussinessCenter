@@ -22,10 +22,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -71,10 +68,10 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         if (StrKit.isNotEmpty(requestForTaskSubSupplier.getDeclareAccount())) {
             wrapper.like("declare_account", requestForTaskSubSupplier.getDeclareAccount());
         }
-        //判断是否包含管理方名称条件
-        if (StrKit.isNotEmpty(requestForTaskSubSupplier.getManagerName())) {
-            wrapper.like("manager_name", requestForTaskSubSupplier.getManagerName());
-        }
+        //管理方名称
+        Optional.ofNullable(requestForTaskSubSupplier.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubSupplier.getPeriod())) {
             wrapper.andNew("period = {0} ", LocalDate.parse(requestForTaskSubSupplier.getPeriod()));

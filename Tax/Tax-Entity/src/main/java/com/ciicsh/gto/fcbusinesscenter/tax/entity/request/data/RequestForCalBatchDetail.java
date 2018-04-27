@@ -36,6 +36,11 @@ public class RequestForCalBatchDetail extends PageInfo {
      */
     private String[] ids;
 
+    /**
+     * 管理方名称(管理方切换)
+     */
+    private String[] managerNames;
+
     public String getEmployeeNo() {
         return employeeNo;
     }
@@ -94,5 +99,13 @@ public class RequestForCalBatchDetail extends PageInfo {
 
     public void setIds(String[] ids) {
         this.ids = ids;
+    }
+
+    public String[] getManagerNames() {
+        return managerNames;
+    }
+
+    public void setManagerNames(String[] managerNames) {
+        this.managerNames = managerNames;
     }
 }
