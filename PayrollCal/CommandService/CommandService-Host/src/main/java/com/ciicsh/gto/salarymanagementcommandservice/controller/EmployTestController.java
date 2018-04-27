@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmpEmployeeQryRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmpEmployeeResponseDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeTestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class EmployTestController extends BaseController{
         EmpEmployeeQryRequestDTO param = new EmpEmployeeQryRequestDTO();
         param.setPageNo(pageNum);
         param.setPageSize(pageSize);
-        com.ciicsh.gto.companycenter.webcommandservice.api.JsonResult<Page<EmpEmployeeResponseDTO>> result
+        JsonResult<Page<EmpEmployeeResponseDTO>> result
                 = employeeServiceProxy.PageEmpEmployee(param);
 //        Page<EmpEmployeeResponseDTO> data = result.getData();
 

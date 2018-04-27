@@ -1,11 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.ciicsh.gt1.common.auth.ManagementInfo;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubSupplierDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.intercept.LoginInfoHolder;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForTaskSubSupplier;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForTaskSubSupplier;
@@ -20,10 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yuantongqing  on 2018/02/09
@@ -49,6 +48,10 @@ public class TaskSubSupplierController extends BaseController {
         try {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
+                //设置request请求管理方名称数组
+                requestForTaskSubSupplier.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            });
             ResponseForTaskSubSupplier responseForTaskSubSupplier = taskSubSupplierService.queryTaskSubSupplier(requestForTaskSubSupplier);
             jr.fill(responseForTaskSubSupplier);
         } catch (Exception e) {
@@ -104,7 +107,7 @@ public class TaskSubSupplierController extends BaseController {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForTaskSubSupplier.setModifiedBy(userInfoResponseDTO.getLoginName());
             taskSubSupplierService.mergeTaskSubSuppliers(requestForTaskSubSupplier);
         } catch (Exception e) {
@@ -130,7 +133,7 @@ public class TaskSubSupplierController extends BaseController {
             RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
             BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
             //修改人
-            UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             requestForTaskSubSupplier.setModifiedBy(userInfoResponseDTO.getLoginName());
             taskSubSupplierService.splitSubSupplier(requestForTaskSubSupplier, "only");
         } catch (Exception e) {
@@ -195,7 +198,7 @@ public class TaskSubSupplierController extends BaseController {
                 RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
                 BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
                 //修改人
-                UserInfoResponseDTO userInfoResponseDTO = LoginInfoHolder.get().getResult().getObject();
+                UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
                 requestForTaskSubSupplier.setModifiedBy(userInfoResponseDTO.getLoginName());
                 //任务状态
                 requestForTaskSubSupplier.setStatus("04");

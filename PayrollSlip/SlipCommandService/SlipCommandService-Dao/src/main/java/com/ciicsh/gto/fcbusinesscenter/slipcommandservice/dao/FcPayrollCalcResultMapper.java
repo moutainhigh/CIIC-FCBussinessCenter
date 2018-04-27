@@ -2,6 +2,8 @@ package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.FcPayrollCalcResultPO;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import java.util.Map;
  * @author taka
  * @since 2018-02-09
  */
+@Repository
 public interface FcPayrollCalcResultMapper extends BaseMapper<FcPayrollCalcResultPO> {
 
     int total(Map<String, Object> params);

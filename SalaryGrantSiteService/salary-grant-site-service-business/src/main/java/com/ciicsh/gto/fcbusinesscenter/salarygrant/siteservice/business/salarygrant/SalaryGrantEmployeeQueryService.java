@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 
@@ -11,10 +12,10 @@ import java.util.List;
  * 薪资发放雇员信息查询 服务类
  * </p>
  *
- * @author gaoyang
- * @since 2018-04-17
+ * @author Rock.Jiang
+ * @since 2018-04-23
  */
-public interface SalaryGrantEmployeeQueryService {
+public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmployeePO> {
 
     /**
      * 查询主表的雇员信息

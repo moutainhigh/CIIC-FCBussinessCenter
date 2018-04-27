@@ -63,6 +63,10 @@ public class RequestForTaskSubDeclare extends PageInfo {
      * 修改人
      */
     private String modifiedBy;
+    /**
+     * 管理方名称(管理方切换)
+     */
+    private String[] managerNames;
 
     public Long getId() {
         return id;
@@ -158,5 +162,13 @@ public class RequestForTaskSubDeclare extends PageInfo {
 
     public void setMainIds(Long[] mainIds) {
         this.mainIds = mainIds;
+    }
+
+    public String[] getManagerNames() {
+        return managerNames;
+    }
+
+    public void setManagerNames(String[] managerNames) {
+        this.managerNames = managerNames;
     }
 }

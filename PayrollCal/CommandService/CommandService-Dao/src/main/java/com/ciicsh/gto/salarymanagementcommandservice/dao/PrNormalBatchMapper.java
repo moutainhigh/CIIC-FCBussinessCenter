@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
 
@@ -51,5 +52,8 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
                         @Param("hasMoney") boolean hasMoney,
                         @Param("modifiedBy") String modifiedBy);
 
-    List<PrNormalBatchPO> selectAllBatchCodesByManagementId(@Param("managementId") String managementId);
+    List<PrNormalBatchPO> selectAllBatchCodesByManagementId(@Param("managementId") String managementId,
+                                                            @Param("batchCode") String batchCode);
+
+    List<PrPayrollItemPO> selectBatchPayrollSchema(@Param("batchCode") String batchCode);
 }

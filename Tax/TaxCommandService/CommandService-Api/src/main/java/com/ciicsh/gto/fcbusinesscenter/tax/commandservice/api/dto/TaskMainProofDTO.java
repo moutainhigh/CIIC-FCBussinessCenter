@@ -7,7 +7,7 @@ import java.util.Date;
  * @author yuantongqing
  * data 2017/12/8
  */
-public class TaskMainProofDTO extends BaseDTO{
+public class TaskMainProofDTO{
     /**
      * 主键ID
      */

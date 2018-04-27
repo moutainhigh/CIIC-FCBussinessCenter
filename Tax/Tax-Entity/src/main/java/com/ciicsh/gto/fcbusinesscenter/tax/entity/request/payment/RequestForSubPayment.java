@@ -62,6 +62,11 @@ public class RequestForSubPayment extends PageInfo {
      */
     private String areaType;
 
+    /**
+     * 管理方名称(管理方切换)
+     */
+    private String[] managerNames;
+
     public Long getId() {
         return id;
     }
@@ -148,5 +153,13 @@ public class RequestForSubPayment extends PageInfo {
 
     public void setMainIds(Long[] mainIds) {
         this.mainIds = mainIds;
+    }
+
+    public String[] getManagerNames() {
+        return managerNames;
+    }
+
+    public void setManagerNames(String[] managerNames) {
+        this.managerNames = managerNames;
     }
 }

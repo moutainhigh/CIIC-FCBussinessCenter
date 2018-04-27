@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.salarygrant;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.PagingDTO;
 import lombok.Data;
@@ -17,10 +17,6 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class SalaryTaskDTO extends PagingDTO {
-    /**
-     * 任务单ID
-     */
-    private Long taskId;
     /**
      * 任务单编号
      */
@@ -81,6 +77,14 @@ public class SalaryTaskDTO extends PagingDTO {
      * 状态中文描述
      */
     private String taskStatusName;
+    /**
+     * 任务单类型
+     */
+    private Integer taskType;
+    /**
+     * 审批意见
+     */
+    private String approvedOpinion;
     /**
      * 备注
      */

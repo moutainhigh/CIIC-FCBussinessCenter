@@ -103,4 +103,5 @@ spring:
     data:
       mongodb:
         uri: mongodb://ciicit:ciicit!%23%25@172.16.9.15:27017/payroll_db
-
+seaweed:
+  masterHost: "172.16.9.19:9333"

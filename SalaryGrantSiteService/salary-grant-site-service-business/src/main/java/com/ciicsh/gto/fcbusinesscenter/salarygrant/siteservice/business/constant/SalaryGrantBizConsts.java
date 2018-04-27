@@ -87,5 +87,28 @@ public class SalaryGrantBizConsts {
     public static final String GRANT_MODE_LOCAL_LTB = "LTB";
     /** 上海本地发放任务单编号前缀标识：外币发放-LTW*/
     public static final String GRANT_MODE_LOCAL_LTW = "LTW";
+
+    /** 任务单状态：0-草稿*/
+    public static final String TASK_STATUS_DRAFT = "0";
+    /** 任务单状态：1-审批中*/
+    public static final String TASK_STATUS_APPROVAL= "1";
+    /** 任务单状态：2-审批通过*/
+    public static final String TASK_STATUS_PASS = "2";
+    /** 任务单状态：3-审批拒绝*/
+    public static final String TASK_STATUS_REFUSE = "3";
+    /** 任务单状态：4-失效*/
+    public static final String TASK_STATUS_CANCEL= "4";
+    /** 任务单状态：5-待支付*/
+    public static final String TASK_STATUS_WAIT = "5";
+    /** 任务单状态：6-未支付*/
+    public static final String TASK_STATUS_UNPAID = "6";
+    /** 任务单状态：7-已支付*/
+    public static final String TASK_STATUS_PAYMENT= "7";
+    /** 任务单状态：8-驳回*/
+    public static final String TASK_STATUS_REJECT= "8";
+
+    /** 任务单审批常量*/
+    public static final String TASK_PENDING= "98";
+
 }
 

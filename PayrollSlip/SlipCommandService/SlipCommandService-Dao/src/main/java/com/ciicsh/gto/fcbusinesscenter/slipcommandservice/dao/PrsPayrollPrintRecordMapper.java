@@ -2,6 +2,8 @@ package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPrintRecordPO;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import java.util.Map;
  * @author taka
  * @since 2018-02-24
  */
+@Repository
 public interface PrsPayrollPrintRecordMapper extends BaseMapper<PrsPayrollPrintRecordPO> {
 
     int total(Map<String, Object> params);

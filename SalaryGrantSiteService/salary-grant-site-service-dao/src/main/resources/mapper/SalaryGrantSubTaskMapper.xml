@@ -2,38 +2,386 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO">
-		<id column="salary_grant_sub_task_id" property="salaryGrantSubTaskId" />
-		<result column="salary_grant_sub_task_code" property="salaryGrantSubTaskCode" />
-		<result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode" />
-		<result column="work_flow_process_id" property="workFlowProcessId" />
-		<result column="management_id" property="managementId" />
-		<result column="management_name" property="managementName" />
-		<result column="batch_code" property="batchCode" />
-		<result column="grant_cycle" property="grantCycle" />
-		<result column="payment_total_sum" property="paymentTotalSum" />
-		<result column="total_person_count" property="totalPersonCount" />
-		<result column="chinese_count" property="chineseCount" />
-		<result column="foreigner_count" property="foreignerCount" />
-		<result column="grant_date" property="grantDate" />
-		<result column="grant_time" property="grantTime" />
-		<result column="grant_account_code" property="grantAccountCode" />
-		<result column="grant_type" property="grantType" />
-		<result column="grant_mode" property="grantMode" />
-		<result column="is_adversion" property="isAdversion" />
-		<result column="adversion_type" property="adversionType" />
-		<result column="remark" property="remark" />
-		<result column="approved_opinion" property="approvedOpinion" />
-		<result column="task_status" property="taskStatus" />
-		<result column="task_type" property="taskType" />
-        <result column="operator_user_id" property="operatorUserId" />
-        <result column="approve_user_id" property="approveUserId" />
-		<result column="is_active" property="isActive" />
-		<result column="created_by" property="createdBy" />
-		<result column="created_time" property="createdTime" />
-		<result column="modified_by" property="modifiedBy" />
-		<result column="modified_time" property="modifiedTime" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap"
+               type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO">
+        <id column="salary_grant_sub_task_id" property="salaryGrantSubTaskId"/>
+        <result column="salary_grant_sub_task_code" property="salaryGrantSubTaskCode"/>
+        <result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode"/>
+        <result column="work_flow_process_id" property="workFlowProcessId"/>
+        <result column="management_id" property="managementId"/>
+        <result column="management_name" property="managementName"/>
+        <result column="batch_code" property="batchCode"/>
+        <result column="grant_cycle" property="grantCycle"/>
+        <result column="payment_total_sum" property="paymentTotalSum"/>
+        <result column="total_person_count" property="totalPersonCount"/>
+        <result column="chinese_count" property="chineseCount"/>
+        <result column="foreigner_count" property="foreignerCount"/>
+        <result column="grant_date" property="grantDate"/>
+        <result column="grant_time" property="grantTime"/>
+        <result column="grant_account_code" property="grantAccountCode"/>
+        <result column="grant_type" property="grantType"/>
+        <result column="grant_mode" property="grantMode"/>
+        <result column="is_adversion" property="isAdversion"/>
+        <result column="adversion_type" property="adversionType"/>
+        <result column="remark" property="remark"/>
+        <result column="approved_opinion" property="approvedOpinion"/>
+        <result column="task_status" property="taskStatus"/>
+        <result column="task_type" property="taskType"/>
+        <result column="operator_user_id" property="operatorUserId"/>
+        <result column="approve_user_id" property="approveUserId"/>
+        <result column="is_active" property="isActive"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_by" property="modifiedBy"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+
+    <select id="querySupplierSubTaskForSubmitPage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+            t.salary_grant_sub_task_id     taskId          ,
+            t.salary_grant_sub_task_code   taskCode        ,
+            t.management_name              managementId    ,
+            t.management_id                managementName  ,
+            t.batch_code                   batchCode       ,
+            t.grant_cycle                  grantCycle      ,
+            t.payment_total_sum            paymentTotalSum ,
+            t.total_person_count           totalPersonCount,
+            t.chinese_count                chineseCount    ,
+            t.foreigner_count              foreignerCount  ,
+            t.grant_account_code           grantAccountCode,
+            '' AS                           grantAccountName,
+            t.remark
+        FROM
+            sg_salary_grant_sub_task t1
+        WHERE
+            t.task_status = '0'
+            AND t.is_active = 1
+            AND t.task_type = 2
+            AND t.grant_mode = 2
+            <if test="currentUserId != null">
+                AND t.operator_user_id = #{currentUserId}
+            </if>
+            <if test="taskCode != null">
+                AND t.salary_grant_sub_task_code = #{taskCode}
+            </if>
+            <if test="managementId != null">
+                AND t.management_id = #{managementId}
+            </if>
+            <if test="managementName != null">
+                AND t.management_name LIKE concat('%', #{managementName})
+            </if>
+            <if test="batchCode != null">
+                AND t.batch_code = #{batchCode}
+            </if>
+            <if test="grantAccountCode != null">
+                AND t.grant_account_code = #{grantAccountCode}
+            </if>
+        ORDER BY
+            t.salary_grant_sub_task_code
+    </select>
+
+    <select id="querySupplierSubTaskForApprovePage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+            t.salary_grant_sub_task_id task_id       taskId          ,
+            t.salary_grant_sub_task_code task_code   taskCode        ,
+            t.management_name                        managementName  ,
+            t.management_id                          managementId    ,
+            t.batch_code                             batchCode       ,
+            t.grant_cycle                            grantCycle      ,
+            t.payment_total_sum                      paymentTotalSum ,
+            t.total_person_count                     totalPersonCount,
+            t.chinese_count                          chineseCount    ,
+            t.foreigner_count                        foreignerCount  ,
+            t.grant_account_code                     grantAccountCode,
+            '' AS                                     grantAccountName,
+            t.remark
+        FROM
+            sg_salary_grant_sub_task t1
+        WHERE
+            t.task_status = '1'
+            AND t.is_active = 1
+            AND t.task_type = 2
+            AND t.grant_mode = 2
+            <if test="currentUserId != null">
+                AND t.approve_user_id = #{currentUserId}
+            </if>
+            <if test="taskCode != null">
+                AND t.salary_grant_sub_task_code = #{taskCode}
+            </if>
+            <if test="managementId != null">
+                AND t.management_id = #{managementId}
+            </if>
+            <if test="managementName != null">
+                AND t.management_name LIKE concat('%', #{managementName})
+            </if>
+            <if test="batchCode != null">
+                AND t.batch_code = #{batchCode}
+            </if>
+            <if test="grantAccountCode != null">
+                AND t.grant_account_code = #{grantAccountCode}
+            </if>
+        ORDER BY
+            t.salary_grant_sub_task_code
+    </select>
+
+    <select id="querySupplierSubTaskForHaveApprovedPage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+            t.salary_grant_sub_task_id     taskId          ,
+            t.salary_grant_sub_task_code   taskCode        ,
+            t.management_name              managementName  ,
+            t.management_id                managementId    ,
+            t.batch_code                   batchCode       ,
+            t.grant_cycle                  grantCycle      ,
+            t.payment_total_sum            paymentTotalSum ,
+            t.total_person_count           totalPersonCount,
+            t.chinese_count                chineseCount    ,
+            t.foreigner_count              foreignerCount  ,
+            t.grant_account_code           grantAccountCode,
+            '' AS                           grantAccountName,
+            t.remark
+        FROM
+            sg_salary_grant_sub_task t1
+        WHERE
+            t.task_status = '1'
+            AND t.is_active = 1
+            AND t.task_type = 2
+            AND t.grant_mode = 2
+            <if test="currentUserId != null">
+                AND t.operator_user_id = #{currentUserId}
+            </if>
+            <if test="taskCode != null">
+                AND t.salary_grant_sub_task_code = #{taskCode}
+            </if>
+            <if test="managementId != null">
+                AND t.management_id = #{managementId}
+            </if>
+            <if test="managementName != null">
+                AND t.management_name LIKE concat('%', #{managementName})
+            </if>
+            <if test="batchCode != null">
+                AND t.batch_code = #{batchCode}
+            </if>
+            <if test="grantAccountCode != null">
+                AND t.grant_account_code = #{grantAccountCode}
+            </if>
+        ORDER BY
+            t.salary_grant_sub_task_code
+    </select>
+
+    <select id="querySupplierSubTaskForPassPage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+            t.salary_grant_sub_task_id     taskId          ,
+            t.salary_grant_sub_task_code   taskCode        ,
+            t.management_name              managementName  ,
+            t.management_id                managementId    ,
+            t.batch_code                   batchCode       ,
+            t.grant_cycle                  grantCycle      ,
+            t.payment_total_sum            paymentTotalSum ,
+            t.total_person_count           totalPersonCount,
+            t.chinese_count                chineseCount    ,
+            t.foreigner_count              foreignerCount  ,
+            t.grant_account_code           grantAccountCode,
+            '' AS                           grantAccountName,
+            t.approved_opinion             approvedOpinion
+        FROM
+            sg_salary_grant_sub_task t1
+        WHERE
+            t.task_status IN ('2' , '10', '11')
+            AND t.is_active = 1
+            AND t.task_type = 2
+            AND t.grant_mode = 2
+            <if test="currentUserId != null">
+                AND (t.approve_user_id = #{currentUserId} OR t.operator_user_id = #{currentUserId})
+            </if>
+            <if test="taskCode != null">
+                AND t.salary_grant_sub_task_code = #{taskCode}
+            </if>
+            <if test="managementId != null">
+                AND t.management_id = #{managementId}
+            </if>
+            <if test="managementName != null">
+                AND t.management_name LIKE concat('%', #{managementName})
+            </if>
+            <if test="batchCode != null">
+                AND t.batch_code = #{batchCode}
+            </if>
+            <if test="grantAccountCode != null">
+                AND t.grant_account_code = #{grantAccountCode}
+            </if>
+        ORDER BY
+            t.salary_grant_sub_task_code
+    </select>
+
+    <select id="querySupplierSubTaskForRejectPage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+            t.task_id              taskId          ,
+            t.task_code            taskCode        ,
+            t.management_name      managementName  ,
+            t.management_id        managementId    ,
+            t.batch_code           batchCode       ,
+            t.grant_cycle          grantCycle      ,
+            t.payment_total_sum    paymentTotalSum ,
+            t.total_person_count   totalPersonCount,
+            t.chinese_count        chineseCount    ,
+            t.foreigner_count      foreignerCount  ,
+            t.grant_account_code   grantAccountCode,
+            '' AS                   grantAccountName,
+            t.approved_opinion     approvedOpinion
+        FROM
+            sg_salary_grant_task_history t1
+        WHERE
+            t.task_status IN ('3' , '8')
+            AND t.is_active = 1
+            AND t.task_type = 2
+            AND t.grant_mode = 2
+            <if test="currentUserId != null">
+                AND (t.approve_user_id = #{currentUserId} OR t.operator_user_id = #{currentUserId})
+            </if>
+            <if test="taskCode != null">
+                AND t.task_code = #{taskCode}
+            </if>
+            <if test="managementId != null">
+                AND t.management_id = #{managementId}
+            </if>
+            <if test="managementName != null">
+                AND t.management_name LIKE concat('%', #{managementName})
+            </if>
+            <if test="batchCode != null">
+                AND t.batch_code = #{batchCode}
+            </if>
+            <if test="grantAccountCode != null">
+                AND t.grant_account_code = #{grantAccountCode}
+            </if>
+        ORDER BY
+            t.task_code
+    </select>
+
+    <select id="queryOfferDocumentTaskPage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+            t.salary_grant_sub_task_id     taskId          ,
+            t.salary_grant_sub_task_code   taskCode        ,
+            t.management_name              managementName  ,
+            t.management_id                managementId    ,
+            t.batch_code                   batchCode       ,
+            t.grant_cycle                  grantCycle      ,
+            t.payment_total_sum            paymentTotalSum ,
+            t.total_person_count           totalPersonCount,
+            t.chinese_count                chineseCount    ,
+            t.foreigner_count              foreignerCount  ,
+            t.grant_date                   grantDate       ,
+            t.grant_type                   grantType       ,
+            '' AS                           grantTypeName   ,
+            t.grant_account_code           grantAccountCode,
+            '' AS                           grantAccountName
+        FROM
+            sg_salary_grant_sub_task t1
+        WHERE
+            t.task_status = '12'
+            AND t.is_active = 1
+            AND t.task_type IN (3 , 4)
+            <if test="currentUserId != null">
+                AND t.operator_user_id = #{currentUserId}
+            </if>
+            <if test="taskCode != null">
+                AND t.salary_grant_sub_task_code = #{taskCode}
+            </if>
+            <if test="managementId != null">
+                AND t.management_id = #{managementId}
+            </if>
+            <if test="managementName != null">
+                AND t.management_name LIKE concat('%', #{managementName})
+            </if>
+            <if test="batchCode != null">
+                AND t.batch_code = #{batchCode}
+            </if>
+            <if test="grantAccountCode != null">
+                AND t.grant_account_code = #{grantAccountCode}
+            </if>
+            <if test="grantCycle != null">
+                AND t.grant_cycle = #{grantCycle}
+            </if>
+        ORDER BY
+            t.salary_grant_sub_task_code
+    </select>
+
+    <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        <result column="task_id" property="taskId" />
+        <result column="task_code" property="taskCode" />
+        <result column="management_id" property="managementId" />
+        <result column="management_name" property="managementName" />
+        <result column="batch_code" property="batchCode" />
+        <result column="grant_cycle" property="grantCycle" />
+        <result column="payment_total_sum" property="paymentTotalSum" />
+        <result column="total_person_count" property="totalPersonCount" />
+        <result column="chinese_count" property="chineseCount" />
+        <result column="foreigner_count" property="foreignerCount" />
+        <result column="local_grant_count" property="localGrantCount" />
+        <result column="supplier_grant_count" property="supplierGrantCount" />
+        <result column="grant_date" property="grantDate" />
+        <result column="grant_time" property="grantTime" />
+        <result column="grant_type" property="grantType" />
+        <result column="grant_type_name" property="grantTypeName" />
+        <result column="grant_mode" property="grantMode" />
+        <result column="grant_mode_name" property="grantModeName" />
+        <result column="grant_account_code" property="grantAccountCode" />
+        <result column="grant_account_name" property="grantAccountName" />
+        <result column="remark" property="remark" />
+        <result column="invalid_reason" property="invalidReason" />
+        <result column="approved_opinion" property="approvedOpinion" />
+        <result column="task_status" property="taskStatus" />
+        <result column="task_status_name" property="taskStatusName" />
+        <result column="task_type" property="taskType" />
+        <result column="created_time" property="createdTime" />
+    </resultMap>
+
+	<sql id="subTaskListField">
+       t.salary_grant_sub_task_code task_code,t.grant_mode,'' as grant_mode_name,t.grant_account_code,t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,t.task_status,'' as task_status_name, t.approved_opinion,
+	</sql>
+
+    <sql id="sgDetailField">
+        t.salary_grant_sub_task_code task_code,t.management_id, t.management_name, t.grant_cycle, t.grant_date, t.grant_time, t.created_time, t.task_type,t.task_status,
+        t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count, 0 as local_grant_count, 0 as supplier_grant_count
+    </sql>
+
+	<select id="subTaskList" resultMap="PageResultMap">
+		select
+		  <include refid="subTaskListField"></include>
+		from
+          sg_salary_grant_sub_task t
+		<where>
+			<if test="taskCode != null and taskCode != ''">
+				and t.salary_grant_main_task_code = #{taskCode}
+			</if>
+			and
+            t.is_active=1
+		</where>
+          order by t.grant_mode,t.salary_grant_sub_task_code
+	</select>
+
+    <select id="selectTaskByTaskCode" resultMap="PageResultMap">
+        select
+          <include refid="sgDetailField"></include>
+        from
+          sg_salary_grant_sub_task t
+        where
+          t.salary_grant_sub_task_code = #{taskCode}
+        and
+          t.is_active=1
+        order by
+          t.salary_grant_sub_task_code
+    </select>
 
 </mapper>
