@@ -258,6 +258,132 @@ public class SalaryGrantController {
         }
     }
 
+    /**
+     * 发放账户变化查询
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/selectPayrollAccount", method = RequestMethod.POST)
+    public Result selectPayrollAccount(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化发放账户").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化发放账户异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询变化发放账户失败");
+        }
+    }
+
+    /**
+     * 收款账户变化查询
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/selectPayeeAccount", method = RequestMethod.POST)
+    public Result selectPayeeAccount(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化收款账户").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化收款账户异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询变化收款账户失败");
+        }
+    }
+
+    /**
+     * 暂缓
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/defer", method = RequestMethod.POST)
+    public Result defer(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("暂缓失败");
+        }
+    }
+
+    /**
+     * 批量暂缓
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/batchDefer", method = RequestMethod.POST)
+    public Result batchDefer(@RequestBody List<SalaryTaskHandleDTO> list) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量暂缓").setContent(JSON.toJSONString(list)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量暂缓异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("批量暂缓失败");
+        }
+    }
+
+    /**
+     * 恢复
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/recover", method = RequestMethod.POST)
+    public Result recover(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("恢复失败");
+        }
+    }
+
+    /**
+     * 批量恢复
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/batchRecover", method = RequestMethod.POST)
+    public Result batchRecover(@RequestBody List<SalaryTaskHandleDTO> list) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量恢复").setContent(JSON.toJSONString(list)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量恢复异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("批量恢复失败");
+        }
+    }
+
+    /**
+     * 日志信息
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/records", method = RequestMethod.POST)
+    public Result records(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询日志信息失败");
+        }
+    }
+
     //todo
     //生成工资清单：打印预览
 
@@ -278,21 +404,6 @@ public class SalaryGrantController {
 
     //todo
     //导入暂缓名单
-
-    //todo
-    //暂缓雇员操作
-
-    //todo
-    //恢复雇员操作
-
-    //todo
-    //批量暂缓雇员操作
-
-    //todo
-    //批量恢复雇员操作
-
-    //todo
-    // 任务单流程--查看流程日志
 
     //todo
     //调整信息-对于发放类型是调整发放。查询调整/回溯批次、基于的计算批次，查询2条计算结果数据，再进行数据合并生成第三条合并数据。
