@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +30,7 @@ public class OfferFileController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/offerFile/DocumentTask")
-    Page<SalaryGrantTaskDTO> queryOfferDocumentTaskPage(SalaryGrantTaskDTO salaryGrantTaskDTO){
+    public Page<SalaryGrantTaskDTO> queryOfferDocumentTaskPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO){
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());

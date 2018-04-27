@@ -26,6 +26,17 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     @Override
+    public Page<SalaryGrantEmployeeBO> queryEmployeeTask(int taskType, Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+        //查询主表的雇员信息
+        if (taskType == 0) {
+            return queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
+        } else {
+            //查询子表的雇员信息
+            return queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
+        }
+    }
+
+    @Override
     public Page<SalaryGrantEmployeeBO> queryEmployeeForMainTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
         return page.setRecords(salaryGrantEmployeeMapper.selectBOList(page, salaryGrantEmployeeBO));
     }

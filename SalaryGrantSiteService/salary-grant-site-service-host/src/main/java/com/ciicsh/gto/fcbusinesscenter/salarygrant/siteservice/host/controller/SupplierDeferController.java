@@ -1,6 +1,5 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskDTO;
@@ -8,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +32,7 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/submit")
-    Page<SalaryGrantTaskDTO> querySupplierSubTaskForSubmitPage(SalaryGrantTaskDTO salaryGrantTaskDTO) {
+    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForSubmitPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -56,7 +56,7 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/approve")
-    Page<SalaryGrantTaskDTO> querySupplierSubTaskForApprovePage(SalaryGrantTaskDTO salaryGrantTaskDTO) {
+    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForApprovePage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -80,7 +80,7 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/haveApproved")
-    Page<SalaryGrantTaskDTO> querySupplierSubTaskForHaveApprovedPage(SalaryGrantTaskDTO salaryGrantTaskDTO) {
+    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForHaveApprovedPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -104,7 +104,7 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/pass")
-    Page<SalaryGrantTaskDTO> querySupplierSubTaskForPassPage(SalaryGrantTaskDTO salaryGrantTaskDTO) {
+    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForPassPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -128,7 +128,7 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/reject")
-    Page<SalaryGrantTaskDTO> querySupplierSubTaskForRejectPage(SalaryGrantTaskDTO salaryGrantTaskDTO) {
+    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForRejectPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());

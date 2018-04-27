@@ -70,8 +70,8 @@
 		    <if test="period != null and period !=''">
 				AND a.period = #{period}
 			</if>
-			<if test="managementName != null and managementName !=''">
-				AND a.management_name LIKE concat(#{managementName},'%')
+			<if test="managementId != null and managementId !=''">
+				AND a.managementId IN (#{managementId})
 			</if>
 			<if test="status != 0">
 				AND a.status = #{status}
@@ -114,8 +114,8 @@
 		<if test="period != null and period !=''">
 			AND a.period = #{period}
 		</if>
-		<if test="managementName != null and managementName !=''">
-			AND a.management_name LIKE concat(#{managementName},'%')
+		<if test="managementId != null and managementId !=''">
+			AND a.managementId IN (#{managementId})
 		</if>
 		<if test="accountSetName != null and accountSetName != ''">
 			AND b.account_set_name LIKE concat(#{accountSetName},'%')
@@ -163,8 +163,8 @@
 		<if test="period != null and period !=''" >
 			AND a.period = #{period}
 		</if>
-		<if test="managementName != null and managementName !=''">
-			AND a.management_name LIKE concat(#{managementName},'%')
+		<if test="managementId != null and managementId !=''">
+			AND a.managementId IN (#{managementId})
 		</if>
 		<if test="status != 0">
 			AND a.code in (SELECT DISTINCT origin_batch_code FROM pr_back_tracking_batch WHERE status=#{status})
