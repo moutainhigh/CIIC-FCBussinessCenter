@@ -46,6 +46,10 @@
             <artifactId>commonservice-util</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>common-auth</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
@@ -135,6 +139,11 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>2.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>common-auth</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <!--mongodb-->
         <!--<dependency>

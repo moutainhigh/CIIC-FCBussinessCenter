@@ -1,6 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gt1.common.auth.ManagementInfo;
+import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.ManagerDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubsDTO;
@@ -24,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -64,6 +69,10 @@ public class TaskMainController extends BaseController {
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
+                //设置request请求管理方名称数组
+                requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            });
             ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMains(requestForTaskMain);
             jr.fill(responseForTaskMain);
         } catch (Exception e) {
@@ -93,6 +102,10 @@ public class TaskMainController extends BaseController {
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
+                //设置request请求管理方名称数组
+                requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            });
             ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMainsForDraft(requestForTaskMain);
             jr.fill(responseForTaskMain);
 
@@ -122,6 +135,10 @@ public class TaskMainController extends BaseController {
         try {
             RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
             BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
+            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
+                //设置request请求管理方名称数组
+                requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            });
             ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMainsForCheck(requestForTaskMain);
             jr.fill(responseForTaskMain);
 

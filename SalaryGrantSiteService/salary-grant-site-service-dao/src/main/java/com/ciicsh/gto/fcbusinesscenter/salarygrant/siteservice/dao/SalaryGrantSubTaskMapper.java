@@ -82,4 +82,13 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      */
     List<SalaryGrantTaskBO> subTaskList (Pagination page, SalaryGrantTaskBO bo);
 
+    /**
+     * 任务单编号查询任务单
+     * @author chenpb
+     * @since 2018-04-25
+     * @param bo
+     * @return
+     */
+    SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
+
 }

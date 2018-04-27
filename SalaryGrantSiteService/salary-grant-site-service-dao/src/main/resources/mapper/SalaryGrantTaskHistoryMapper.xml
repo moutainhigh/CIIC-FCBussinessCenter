@@ -52,7 +52,10 @@
         <result column="total_person_count" property="totalPersonCount" />
         <result column="chinese_count" property="chineseCount" />
         <result column="foreigner_count" property="foreignerCount" />
+        <result column="local_grant_count" property="localGrantCount" />
+        <result column="supplier_grant_count" property="supplierGrantCount" />
         <result column="grant_date" property="grantDate" />
+        <result column="grant_time" property="grantTime" />
         <result column="grant_type" property="grantType" />
         <result column="grant_type_name" property="grantTypeName" />
         <result column="grant_mode" property="grantMode" />
@@ -64,11 +67,18 @@
         <result column="approved_opinion" property="approvedOpinion" />
         <result column="task_status" property="taskStatus" />
         <result column="task_status_name" property="taskStatusName" />
+        <result column="task_type" property="taskType" />
+        <result column="created_time" property="createdTime" />
     </resultMap>
 
+    <sql id="sgDetailField">
+        t1.task_code task_code,t1.management_id, t1.management_name, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type,t1.task_status,
+		t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count
+    </sql>
+
 	<sql id="historyTaskListField">
-        t1.task_id,t1.task_code,t1.management_name,t1.management_id,t1.batch_code,t1.grant_cycle,t1.payment_total_sum,t1.total_person_count,
-        t1.chinese_count,t1.foreigner_count,t1.grant_date,t1.task_status,'' as task_status_name,t1.approved_opinion
+        t1.task_code,t1.management_name,t1.management_id,t1.batch_code,t1.grant_cycle,t1.payment_total_sum,t1.total_person_count,
+        t1.chinese_count,t1.foreigner_count,t1.grant_date,t1.task_status,'' as task_status_name, t1.task_type, t1.task_status, t1.approved_opinion
 	</sql>
 
 	<select id="rejectList" resultMap="PageResultMap">
@@ -89,18 +99,21 @@
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t1.grant_mode like '%1'
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t1.grant_mode like '%1'-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
+            </if>
+            <if test="userId != null and userId != ''">
+                and (t1.operator_user_id = #{userId} or t1.approve_user_id = #{userId})
             </if>
             and
               t1.task_status in('3','8','9')
             and
               t1.task_type in (0,1)
             and
-              (t1.approve_user_id='002' or t1.operator_user_id='001')
+              t1.grant_mode like '%1'
             and
               t1.is_active=1
         </where>
@@ -126,23 +139,39 @@
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
             </if>
-            <if test="grantMode != null and grantMode != ''">
-                and t1.grant_mode like '%1'
-            </if>
+            <!--<if test="grantMode != null and grantMode != ''">-->
+                <!--and t1.grant_mode like '%1'-->
+            <!--</if>-->
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
+            </if>
+            <if test="userId != null and userId != ''">
+                and (t1.operator_user_id = #{userId} or t1.approve_user_id = #{userId})
             </if>
             and
               t1.task_status = '4'
             and
               t1.task_type = 0
             and
-              (t1.approve_user_id='002' or t1.operator_user_id='001')
+              t1.grant_mode like '%1'
             and
               t1.is_active=1
         </where>
         order by
           t1.task_code
 	</select>
+
+    <select id="selectTaskByTaskCode" resultMap="PageResultMap">
+        select
+        <include refid="sgDetailField"></include>
+        from
+          sg_salary_grant_task_history t1
+        where
+          t1.task_code = #{taskCode}
+        and
+          t1.is_active=1
+        order by
+          t1.task_code
+    </select>
 
 </mapper>

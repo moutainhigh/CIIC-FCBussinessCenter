@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
@@ -32,6 +33,51 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
 
     /**
+     * 查询薪资发放任务单列表
+     * @param bo
+     * @return Page<SalaryGrantTaskBO>
+     */
+    @Override
+    public Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO bo) {
+        Page page = null;
+        Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
+        if (SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForSubmitPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_PENDING.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForApprovePage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_APPROVAL.equals(bo.getTaskStatus())) {
+           page = this.queryTaskForHaveApprovedPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_PASS.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForPassPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForRejectPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(bo.getTaskStatus())) {
+            page = this.queryTaskForInvalidPage(paging, bo);
+        }
+        return page;
+    }
+
+    /**
+     * @description 根据任务单编号查询任务单
+     * @author chenpb
+     * @since 2018-04-25
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    @Override
+    public SalaryGrantTaskBO selectTaskByTaskCode (SalaryGrantTaskBO salaryGrantTaskBO) {
+        SalaryGrantTaskBO bo;
+        if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantTaskBO.getTaskStatus())) {
+            bo = salaryGrantTaskHistoryMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        } else if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantTaskBO.getTaskType())) {
+            bo = salaryGrantMainTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        } else {
+            bo = salaryGrantSubTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        }
+        return bo;
+    }
+
+    /**
      * @description 待提交任务单：0-草稿 角色=操作员
      * @author chenpb
      * @since 2018-04-23
@@ -39,8 +85,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+    private Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.submitList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
@@ -54,8 +99,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+    private Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.approveList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
@@ -69,8 +113,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+    private Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.haveApprovedList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
@@ -84,8 +127,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+    private Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.passList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
@@ -99,8 +141,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+    private Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.rejectList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
@@ -114,8 +155,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
-    @Override
-    public Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+    private Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.invalidList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;
@@ -129,8 +169,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
-    @Override
-    public Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+    private Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(page, salaryGrantTaskBO);
         page.setRecords(list);
         return page;

@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author yuantongqing on 2018/01/02
@@ -56,10 +57,10 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         if (StrKit.notBlank(requestForSubPayment.getPaymentAccount())) {
             wrapper.like("payment_account", requestForSubPayment.getPaymentAccount());
         }
-        //管理方名称模糊查询条件
-        if (StrKit.notBlank(requestForSubPayment.getManagerName())) {
-            wrapper.like("manager_name", requestForSubPayment.getManagerName());
-        }
+        //管理方名称
+        Optional.ofNullable(requestForSubPayment.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //期间类型currentPan：当期,currentBeforePan：当期前,currentAfterPan：当期后
         if (StrKit.notBlank(requestForSubPayment.getPeriodType())) {
             //将年月的个税期间，转成1号，

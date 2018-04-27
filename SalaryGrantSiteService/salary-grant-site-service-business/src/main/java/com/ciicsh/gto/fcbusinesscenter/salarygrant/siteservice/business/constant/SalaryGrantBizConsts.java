@@ -107,5 +107,8 @@ public class SalaryGrantBizConsts {
     /** 任务单状态：8-驳回*/
     public static final String TASK_STATUS_REJECT= "8";
 
+    /** 任务单审批常量*/
+    public static final String TASK_PENDING= "98";
+
 }
 

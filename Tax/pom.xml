@@ -45,6 +45,7 @@
         <identityservice.version>1.0.0</identityservice.version>
         <commonservice.version>1.0.0</commonservice.version>
         <fcbusinesscenter-util.version>1.0.0</fcbusinesscenter-util.version>
+        <commonauth.version>1.0.0</commonauth.version>
     </properties>
 
     <distributionManagement>
@@ -210,6 +211,22 @@
                 <artifactId>commonservice-util</artifactId>
                 <version>${commonservice.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>common-auth</artifactId>
+                <version>${commonservice.version}</version>
+            </dependency>
+            <!--<dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>common-auth</artifactId>
+                <version>${commonauth.version}</version>
+                &lt;!&ndash;<exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>&ndash;&gt;
+            </dependency>-->
             <!--<dependency>
                 <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
                 <artifactId>fcbusinesscenter-util</artifactId>

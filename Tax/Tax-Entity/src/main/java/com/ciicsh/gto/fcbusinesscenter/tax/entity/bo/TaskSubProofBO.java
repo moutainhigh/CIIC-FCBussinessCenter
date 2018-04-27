@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 /**
  * @author yuantongqing
@@ -110,6 +111,11 @@ public class TaskSubProofBO {
      * 是否为合并任务
      */
     private Boolean isCombined;
+
+    /**
+     * 管理方名称(管理方切换)
+     */
+    private String[] managerNames;
 
     public Long getId() {
         return id;
@@ -279,6 +285,14 @@ public class TaskSubProofBO {
         this.taxOrganization = taxOrganization;
     }
 
+    public String[] getManagerNames() {
+        return managerNames;
+    }
+
+    public void setManagerNames(String[] managerNames) {
+        this.managerNames = managerNames;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -303,6 +317,7 @@ public class TaskSubProofBO {
                 ", period=" + period +
                 ", taskType='" + taskType + '\'' +
                 ", isCombined=" + isCombined +
+                ", managerNames=" + Arrays.toString(managerNames) +
                 '}';
     }
 }

@@ -71,3 +71,7 @@ build
 /cobertura.ser
 
 logs/
+
+.classpath
+.project
+.settings

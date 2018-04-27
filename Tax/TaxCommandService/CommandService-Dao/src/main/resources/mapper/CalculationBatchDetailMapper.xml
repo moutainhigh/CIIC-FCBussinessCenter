@@ -109,8 +109,15 @@
 		<if test = "employeeName != null and employeeName != ''">
 			and t2.employee_name LIKE concat('%', #{employeeName, jdbcType=VARCHAR},'%')
 		</if>
-		<if test = "managerName != null and managerName != ''">
-			and t1.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')
+		<!--<if test = "managerName != null and managerName != ''">-->
+			<!--and t1.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')-->
+		<!--</if>-->
+		<if test="managerNames != null and managerNames.length != 0">
+			and t1.manager_name in
+			<foreach collection="managerNames" item="managerName"
+					 index="index" open="(" close=")" separator=",">
+				#{managerName}
+			</foreach>
 		</if>
 		<if test = "batchNo != null and batchNo != ''">
 			and t1.batch_no LIKE concat('%', #{batchNo, jdbcType=VARCHAR},'%')

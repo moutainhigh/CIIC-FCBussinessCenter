@@ -17,6 +17,11 @@ public class RequestForCalBatch extends PageInfo {
      */
     private String batchNo;
 
+    /**
+     * 管理方名称(管理方切换)
+     */
+    private String[] managerNames;
+
     public String getManagerName() {
         return managerName;
     }
@@ -31,5 +36,13 @@ public class RequestForCalBatch extends PageInfo {
 
     public void setBatchNo(String batchNo) {
         this.batchNo = batchNo;
+    }
+
+    public String[] getManagerNames() {
+        return managerNames;
+    }
+
+    public void setManagerNames(String[] managerNames) {
+        this.managerNames = managerNames;
     }
 }

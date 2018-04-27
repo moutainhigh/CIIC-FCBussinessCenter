@@ -56,6 +56,15 @@ public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTas
      */
     List<SalaryGrantTaskBO> passList(Pagination page, SalaryGrantTaskBO bo);
 
+    /**
+     * 任务单编号查询任务单
+     * @author chenpb
+     * @since 2018-04-25
+     * @param bo
+     * @return
+     */
+    SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
+
     List<SalaryGrantMainTaskBO> querySalaryGrantMainTaskList(Pagination page, SalaryGrantMainTaskBO bo);
 
 }

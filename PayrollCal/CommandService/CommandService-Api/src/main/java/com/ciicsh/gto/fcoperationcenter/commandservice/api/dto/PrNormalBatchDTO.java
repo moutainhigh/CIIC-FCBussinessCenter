@@ -88,6 +88,10 @@ public class PrNormalBatchDTO{
      */
 	private Boolean isActive;
     /**
+     * 是否来款
+     */
+	private Boolean hasMoney;
+    /**
      * 数据创建时间
      */
 	private Date createdTime;

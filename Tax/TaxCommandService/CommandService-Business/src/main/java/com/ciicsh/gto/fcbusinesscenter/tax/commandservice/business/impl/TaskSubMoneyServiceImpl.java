@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author yuantongqing
@@ -58,10 +59,10 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         if (StrKit.notBlank(requestForSubMoney.getPaymentAccount())) {
             wrapper.like("payment_account", requestForSubMoney.getPaymentAccount());
         }
-        //管理方名称模糊查询条件
-        if (StrKit.notBlank(requestForSubMoney.getManagerName())) {
-            wrapper.like("manager_name", requestForSubMoney.getManagerName());
-        }
+        //管理方名称
+        Optional.ofNullable(requestForSubMoney.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //期间类型currentPan,currentBeforePan,currentAfterPan
         if (StrKit.notBlank(requestForSubMoney.getPeriodType())) {
             String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";

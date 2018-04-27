@@ -27,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -91,9 +88,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         //查询条件
         EntityWrapper wrapper = new EntityWrapper();
         //管理方名称
-        if(StrKit.isNotEmpty(requestForCalBatch.getManagerName())){
-            wrapper.like("manager_name",requestForCalBatch.getManagerName());
-        }
+        Optional.ofNullable(requestForCalBatch.getManagerNames()).ifPresent(managerNames -> {
+            wrapper.in("manager_name",managerNames);
+        });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForCalBatch.getBatchNo())){
             wrapper.like("batch_no",requestForCalBatch.getBatchNo());

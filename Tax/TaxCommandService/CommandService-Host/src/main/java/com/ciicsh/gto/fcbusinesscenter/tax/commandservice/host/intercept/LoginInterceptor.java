@@ -5,13 +5,12 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.aop.TokenExceptio
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.HttpKit;
 import com.ciicsh.gto.identityservice.api.IdentityServiceProxy;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.apache.commons.lang.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Stream;
 
@@ -19,8 +18,8 @@ import java.util.stream.Stream;
  * login的拦截器
  * @author wuhua
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class LoginInterceptor{
 
     @Autowired
