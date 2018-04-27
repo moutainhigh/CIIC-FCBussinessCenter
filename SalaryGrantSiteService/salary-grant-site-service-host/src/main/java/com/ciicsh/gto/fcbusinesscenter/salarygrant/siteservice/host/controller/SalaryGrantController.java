@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.common.auth.ManagementInfo;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
@@ -23,9 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,18 +60,18 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/list", method = RequestMethod.POST)
     public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
+        SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+        bo.setManagementIds("");
         Map<String, String> tags = new HashMap<>();
         tags.put("taskCode", dto.getTaskCode());
         tags.put("batchCode", dto.getBatchCode());
-        tags.put("managementId", dto.getManagementId());
-        tags.put("managementName", dto.getManagementName());
+        tags.put("managementIds", String.valueOf(bo.getManagementIds()));
         tags.put("grantMode", dto.getGrantMode());
         tags.put("grantCycle", dto.getGrantCycle());
         tags.put("taskStatus", dto.getTaskStatus());
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setContent("条件").setTags(tags));
         try {
-            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-            bo.setUserId(UserContext.getUserId());
+            //bo.setUserId(UserContext.getUserId());
             Page page = salaryGrantTaskQueryService.salaryGrantList(bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
             page.setRecords(list);
