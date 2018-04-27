@@ -77,7 +77,7 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String grantDate;
     /**
-     * 薪资发放时段
+     * 薪资发放时段:1-上午，2-下午
      */
     private Integer grantTime;
     /**
@@ -136,5 +136,9 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      * 系统用户ID
      */
     private String userId;
+    /**
+     * 创建时间
+     */
+    private String createdTimeStr;
 
 }

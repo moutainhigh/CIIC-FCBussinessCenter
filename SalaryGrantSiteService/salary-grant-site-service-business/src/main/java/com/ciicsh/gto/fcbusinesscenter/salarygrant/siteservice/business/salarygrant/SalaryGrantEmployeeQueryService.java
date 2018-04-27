@@ -18,6 +18,17 @@ import java.util.List;
 public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmployeePO> {
 
     /**
+     * 查询雇员信息
+     * 根据taskType判断查询主表或者子表的雇员信息
+     *
+     * @param taskType 1-查询主表的雇员信息;2-查询子表的雇员信息
+     * @param page
+     * @param salaryGrantEmployeeBO
+     * @return
+     */
+    Page<SalaryGrantEmployeeBO> queryEmployeeTask(int taskType, Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+
+    /**
      * 查询主表的雇员信息
      * 主要根据主表任务单编号查询
      * @param page
