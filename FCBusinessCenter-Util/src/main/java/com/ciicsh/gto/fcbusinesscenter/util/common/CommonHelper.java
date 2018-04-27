@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.util.common;
 
+import com.ciicsh.gt1.common.auth.ManagementInfo;
 import com.ciicsh.gt1.common.auth.UserContext;
 
 import java.util.List;
@@ -10,11 +11,16 @@ import java.util.stream.Collectors;
  */
 public class CommonHelper {
 
+    /**
+     * 获取当前用户管理方ID 列表 字符串 ， 格式："GL001,GL002,GL003,..."
+     * @return
+     */
     public static String getManagementIDs(){
-        List<String> IDList = UserContext.getManagementInfoLists().stream().map(p-> p.getManagementId()).collect(Collectors.toList());
-        if(IDList == null || IDList.size() ==0 ){
+        List<ManagementInfo> list = UserContext.getManagementInfoLists();
+        if(list == null || list.size() ==0 ){
             return "";
         }
+        List<String> IDList = list.stream().map(p-> p.getManagementId()).collect(Collectors.toList());
         return String.join(",",IDList);
     }
 }
