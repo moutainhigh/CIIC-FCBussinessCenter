@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
@@ -148,8 +149,7 @@ public class NormalBatchController {
     @PostMapping("/getBatchList")
     public JsonResult getBatchList(@RequestBody PrCustomBatchDTO param){
 
-        List<String> IDList = UserContext.getManagementInfoLists().stream().map(p-> p.getManagementId()).collect(Collectors.toList());
-        String managementIds = String.join(",",IDList);
+        String managementIds = CommonHelper.getManagementIDs();
         param.setManagementId(managementIds);
 
         PrCustBatchPO custBatchPO = BathTranslator.toPrBatchPO(param);
