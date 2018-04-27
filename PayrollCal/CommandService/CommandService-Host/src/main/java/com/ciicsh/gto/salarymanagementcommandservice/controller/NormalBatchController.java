@@ -4,10 +4,12 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.PrCustomBatchDTO;
+import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.HistoryBatchDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmployeeTestDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrNormalBatchDTO;
@@ -146,6 +148,9 @@ public class NormalBatchController {
 
     @PostMapping("/getBatchList")
     public JsonResult getBatchList(@RequestBody PrCustomBatchDTO param){
+
+        String managementIds = CommonHelper.getManagementIDs();
+        param.setManagementId(managementIds);
 
         PrCustBatchPO custBatchPO = BathTranslator.toPrBatchPO(param);
         int pageNum = param.getPageNum() == 0 ? 1 : param.getPageNum();
@@ -535,5 +540,25 @@ public class NormalBatchController {
 
         return JsonResult.success(rowAffected);
 
+    }
+
+    @PostMapping("/getHistoryBatchInfoList")
+    public JsonResult getHistoryBatchInfoList(){
+        List<String> Ids = UserContext.getManagementInfoLists().stream().map(p -> p.getManagementId()).collect(Collectors.toList());
+        //ist<String> Ids = Arrays.asList(mgrIds.split(","));
+        List<PrNormalBatchPO> normalBatchPOS = batchService.getHistoryBatchInfoList(Ids);
+        if(normalBatchPOS == null || normalBatchPOS.size() == 0){
+            return JsonResult.faultMessage("批次列表为空！");
+        }
+
+        List<HistoryBatchDTO> historyBatchDTOS = normalBatchPOS.stream().map(p->{
+            HistoryBatchDTO historyBatchDTO = new HistoryBatchDTO();
+            historyBatchDTO.setAccountSetCode(p.getAccountSetCode());
+            historyBatchDTO.setNormalBatchCode(p.getCode());
+            historyBatchDTO.setManagerId(p.getManagementId());
+            return historyBatchDTO;
+        }).collect(Collectors.toList());
+
+        return JsonResult.success(historyBatchDTOS, "批次列表获取");
     }
 }

@@ -233,6 +233,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
+    public List<PrNormalBatchPO> getAllBatchesByManagementId(String managementId) {
+        return null;
+    }
+
+    @Override
     public PageInfo<PrNormalBatchPO> getAllBatchesByManagementId(String managementId, String batchCode, Integer pageNum, Integer pageSize) {
 
         List<PrNormalBatchPO> resultList = new ArrayList<>();
@@ -240,6 +245,16 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         resultList = normalBatchMapper.selectAllBatchCodesByManagementId(managementId, batchCode);
         PageInfo<PrNormalBatchPO> pageInfo = new PageInfo<>(resultList);
         return pageInfo;
+    }
+
+    @Override
+    public List<String> getBatchIdListByManagementId(String managementId) {
+        return normalBatchMapper.getBatchIdListByManagementId(managementId);
+    }
+
+    @Override
+    public List<PrNormalBatchPO> getHistoryBatchInfoList(List<String> mgrIds) {
+        return normalBatchMapper.getHistoryBatchInfoList(mgrIds);
     }
 
     private BasicDBObject getEmployeeInfo(String empCode){

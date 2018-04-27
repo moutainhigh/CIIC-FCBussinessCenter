@@ -91,7 +91,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         }
 
         if(importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue()){
-           return overrideImport(rowIndex, rs, empCode, colNames);
+            return overrideImport(rowIndex, rs, empCode, colNames);
         }else if(importType == CompExcelImportEmum.MODIFY_EXPORT.getValue()){
             List<BasicDBObject> dbObjects = getDbObjects(empCode);
             if(dbObjects == null){
@@ -111,7 +111,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             if(dbObjects == null){
                 return processMissEmpCode(rowIndex, empCode);
             }else {
-               //TODO
+                //TODO
             }
         }
         return null;
@@ -182,8 +182,8 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             List<BasicDBObject> overrideList = null;
 
             for (Map.Entry<String, List<BasicDBObject>> entry : list.entrySet()) {
-                 overrideList = entry.getValue();
-                 break;
+                overrideList = entry.getValue();
+                break;
             }
 
             List<BasicDBObject> cloneList = cloneListDBObject(overrideList);
