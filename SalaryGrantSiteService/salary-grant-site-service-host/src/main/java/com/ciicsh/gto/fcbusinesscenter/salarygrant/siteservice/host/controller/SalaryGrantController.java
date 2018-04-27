@@ -135,7 +135,25 @@ public class SalaryGrantController {
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("失效异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("薪资发放失效处理失败");
+            return ResultGenerator.genServerFailResult("失效处理失败");
+        }
+    }
+
+    /**
+     * 撤回
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/retract", method = RequestMethod.POST)
+    public Result retract(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("撤回").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("撤回异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("撤回处理失败");
         }
     }
 
@@ -158,9 +176,63 @@ public class SalaryGrantController {
     }
 
     /**
+     * 雇员信息变更记录
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/empInfoChange", method = RequestMethod.POST)
+    public Result empInfoChange(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("雇员信息变更查询").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("雇员信息变更查询异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("雇员信息变更查询失败");
+        }
+    }
+
+    /**
+     * 业务明细
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/businessDetail", method = RequestMethod.POST)
+    public Result businessDetail(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("业务明细查询").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("业务明细查询异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("业务明细查询失败");
+        }
+    }
+
+    /**
+     * 财务明细
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/financeDetail", method = RequestMethod.POST)
+    public Result financeDetail(@RequestBody SalaryTaskHandleDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("财务明细查询").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("财务明细查询异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("财务明细查询失败");
+        }
+    }
+
+    /**
      * 薪资发放明细
      * @author chenpb
-     * @date 2018-04-24
+     * @date 2018-04-25
      * @param
      * @return
      */
@@ -184,15 +256,6 @@ public class SalaryGrantController {
             return ResultGenerator.genServerFailResult("查询明细失败");
         }
     }
-
-    //todo
-    //查询任务单列表中雇员信息变更记录（点击任务单备注链接）
-
-    //todo
-    //生成工资清单：业务明细
-
-    //todo
-    //生成工资清单：财务明细
 
     //todo
     //生成工资清单：打印预览
