@@ -6,10 +6,13 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
+import com.ciicsh.gto.salarymanagement.entity.dto.AdjustItem;
+import com.ciicsh.gto.salarymanagement.entity.dto.ComparedAdjustBatchDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.AdjustBatchMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
@@ -28,12 +31,15 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -352,16 +358,18 @@ public class AdjustBatchController {
         }
     }
 
+    private Query createQuery(String batchCode){
+        Criteria criteria = Criteria.where("batch_code").is(batchCode).andOperator(Criteria.where("show_adj").is(true));
+        Query query = Query.query(criteria);
+        query.fields().include("batch_code");
+        return query;
+    }
+
     @GetMapping("/showAdjustInfo")
     public JsonResult showAdjustInfo(@RequestParam String batchCode, @RequestParam(required = false) int batchType){
         int findFlag = 0;
         if(batchType == BatchTypeEnum.ADJUST.getValue()){
-            Criteria criteria = Criteria.where("batch_code").is(batchCode);
-            criteria.and("show_adj").is(true);
-
-            //DBObject find = adjustBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode).andOperator(Criteria.where("show_adj")).is(true));
-            Query query = Query.query(criteria);
-            query.fields().include("batch_code");
+            Query query = createQuery(batchCode);
             DBObject find = adjustBatchMongoOpt.getMongoTemplate().findOne(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
             if(find != null){
                 findFlag = 1;
@@ -370,4 +378,86 @@ public class AdjustBatchController {
         return JsonResult.success(findFlag);
     }
 
+    /**
+     * 获取上次调整批次比对结果
+     * @param pageNum
+     * @param pageSize
+     * @param batchCode
+     * @return
+     */
+    @GetMapping("getCompareAdjustBatch")
+    public JsonResult getCompareAdjustBatch( @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                             @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
+                                             @RequestParam String batchCode){
+
+        Query query = createQuery(batchCode);
+
+        long totalCount = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH).stream().count();
+
+        query.fields().
+                include("origin_batch_code").
+                include(PayItemName.EMPLOYEE_CODE_CN).
+                include("catalog.emp_info." + PayItemName.EMPLOYEE_NAME_CN).
+                include("catalog.pay_items.data_type").
+                include("catalog.pay_items.item_name").
+                include("catalog.pay_items.item_value").
+                include("catalog.adjust_items")
+        ;
+        query.skip((pageNum-1) * pageSize);
+        query.limit(pageSize);
+
+        List<DBObject> list = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
+
+        List<ComparedAdjustBatchDTO> adjustBatchDTOS = list.stream().map(item->{
+            ComparedAdjustBatchDTO adjustBatchDTO = new ComparedAdjustBatchDTO();
+            DBObject catalog = (DBObject) item.get("catalog");
+            DBObject empInfo = (DBObject) catalog.get("emp_info");
+            String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
+            String empName = empInfo.get(PayItemName.EMPLOYEE_NAME_CN)== null ? "" :(String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
+            List<DBObject> adjustItems = (List<DBObject>)catalog.get("adjust_items");
+            String originBatchCode = (String) item.get("origin_batch_code");
+            adjustBatchDTO.setOriginCode(originBatchCode);
+            adjustBatchDTO.setBatchCode(batchCode);
+            adjustBatchDTO.setEmpCode(empCode);
+            adjustBatchDTO.setEmpName(empName);
+            List<AdjustItem> adjusts = adjustItems.stream().map(p->{
+                AdjustItem adjust = new AdjustItem();
+                adjust.setItemName((String) p.get("name"));
+                Object origin = p.get("origin");
+                Object n = p.get("new");
+                adjust.setBefore(origin);
+                adjust.setAfter(n);
+                if(n !=null && isNumeric(String.valueOf(n))){
+                    if(origin == null){
+                        adjust.setGap(n);
+                    }else {
+                       BigDecimal gap = (new BigDecimal(String.valueOf(n))).subtract(new BigDecimal(String.valueOf(origin)));
+                       adjust.setGap(gap);
+                    }
+                }
+                return adjust;
+            }).collect(Collectors.toList());
+
+            adjustBatchDTO.setAdjustItems(adjusts);
+
+            return adjustBatchDTO;
+        }).collect(Collectors.toList());
+
+        PageInfo<ComparedAdjustBatchDTO> result = new PageInfo<>(adjustBatchDTOS);
+        result.setTotal(totalCount);
+        result.setPageNum(pageNum);
+
+        return JsonResult.success(result);
+
+    }
+
+
+    private boolean isNumeric(String str) {
+        Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]+");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
+    }
 }

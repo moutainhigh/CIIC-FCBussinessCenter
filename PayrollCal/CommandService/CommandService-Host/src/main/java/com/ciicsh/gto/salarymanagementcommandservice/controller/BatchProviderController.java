@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
@@ -166,6 +167,21 @@ public class BatchProviderController implements BatchProxy {
             rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getResult());
         }
         return rowAffected;
+    }
+
+    @Override
+    public JsonResult<List<String>> getBatchIdListByManagementId(@RequestParam("mgrId") String mgrId) {
+        JsonResult<List<String>> result = new JsonResult<>();
+
+        try {
+            List<String> list = normalBatchService.getBatchIdListByManagementId(mgrId);
+            result.setData(list);
+            result.setSuccess(true);
+        } catch (Exception ex) {
+            result.setSuccess(false);
+        }
+
+        return result;
     }
 
     @GetMapping("/compareBatch")

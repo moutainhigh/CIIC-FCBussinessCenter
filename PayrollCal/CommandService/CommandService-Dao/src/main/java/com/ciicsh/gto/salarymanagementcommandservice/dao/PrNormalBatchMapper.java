@@ -32,6 +32,7 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
 
     /**
      * delete batch by code
+     *
      * @param codes
      * @return
      */
@@ -52,8 +53,13 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
                         @Param("hasMoney") boolean hasMoney,
                         @Param("modifiedBy") String modifiedBy);
 
+    List<PrNormalBatchPO> selectAllBatchCodesByManagementId(@Param("managementId") String managementId);
+
+    List<String> getBatchIdListByManagementId(@Param("managementId") String managementId);
+
+    List<PrNormalBatchPO> getHistoryBatchInfoList(@Param("mgrIds") List<String> mgrIds);
+
     List<PrNormalBatchPO> selectAllBatchCodesByManagementId(@Param("managementId") String managementId,
                                                             @Param("batchCode") String batchCode);
-
     List<PrPayrollItemPO> selectBatchPayrollSchema(@Param("batchCode") String batchCode);
 }

@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmpEmployeeQryRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmpEmployeeResponseDTO;

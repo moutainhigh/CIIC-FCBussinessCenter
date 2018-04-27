@@ -28,7 +28,8 @@ public class BathTranslator {
         custBatchPO.setEmpGroupName(PrCustomBatchDTO.getEmpGroupName());
         custBatchPO.setStatus(PrCustomBatchDTO.getStatus());
         custBatchPO.setPeriod(PrCustomBatchDTO.getPeriod());
-        custBatchPO.setManagementName(PrCustomBatchDTO.getManagementName());
+        //custBatchPO.setManagementName(PrCustomBatchDTO.getManagementName());
+        custBatchPO.setManagementId(PrCustomBatchDTO.getManagementId());
 
         return custBatchPO;
     }
