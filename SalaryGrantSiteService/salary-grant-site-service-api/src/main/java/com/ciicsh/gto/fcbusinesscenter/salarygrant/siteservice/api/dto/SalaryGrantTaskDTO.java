@@ -115,6 +115,6 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
     /**
      * 创建时间
      */
-    private String createdTime;
+    private String createdTimeStr;
 
 }
