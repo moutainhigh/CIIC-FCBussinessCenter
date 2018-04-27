@@ -1,11 +1,16 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
+import com.ciicsh.gto.basicdataservice.api.DicItemServiceProxy;
+import com.ciicsh.gto.basicdataservice.api.dto.DicItemDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
+
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -20,6 +25,8 @@ public class CommonServiceImpl implements CommonService {
 
     @Autowired
     private EntityIdServiceProxy entityIdServiceProxy;
+    @Autowired
+    private DicItemServiceProxy dicItemServiceProxy;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -29,5 +36,18 @@ public class CommonServiceImpl implements CommonService {
         // 获取公共服务生成返回的entity_id
         String entityId = entityIdServiceProxy.getEntityId(idCode);
         return entityId;
+    }
+
+    @Override
+    public String getNameByValue(String dicValue, String dicItemValue) {
+        DicItemDTO dicItemDTO = dicItemServiceProxy.selectByValue(dicValue, dicItemValue);
+        return dicItemDTO.getDicItemText();
+    }
+
+    @Override
+    public List getNameByValueForList(String dicValue) {
+        List<DicItemDTO> dicItemDTOList = dicItemServiceProxy.listByDicValue(dicValue);
+        List dicItemTextList = dicItemDTOList.stream().map(DicItemDTO::getDicItemText).collect(Collectors.toList());
+        return dicItemTextList;
     }
 }
