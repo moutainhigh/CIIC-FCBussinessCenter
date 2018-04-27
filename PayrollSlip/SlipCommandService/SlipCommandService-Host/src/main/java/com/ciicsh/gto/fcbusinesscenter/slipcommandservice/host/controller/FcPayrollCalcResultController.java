@@ -92,18 +92,18 @@ public class FcPayrollCalcResultController {
         };
 
 
-        for (FcPayrollCalcResultPO po : fcPayrollCalcResultService.listFcPayrollCalcResults(params)) {
-
-            Map<String, Object> ele = new HashMap<String, Object>(){
-                {
-                    put("SalaryID", po.getFcPayrollCalcResultId());
-                    put("SalaryMonth", po.getPersonnelIncomeYearMonth());
-                    put("Salary", po.getPersonnelIncomeNetPay());
-                }
-            };
-
-            list.add(ele);
-        }
+//        for (FcPayrollCalcResultPO po : fcPayrollCalcResultService.listFcPayrollCalcResults(params)) {
+//
+//            Map<String, Object> ele = new HashMap<String, Object>(){
+//                {
+//                    put("SalaryID", po.getFcPayrollCalcResultId());
+//                    put("SalaryMonth", po.getPersonnelIncomeYearMonth());
+//                    put("Salary", po.getPersonnelIncomeNetPay());
+//                }
+//            };
+//
+//            list.add(ele);
+//        }
 
         return new HashMap<String, Object>(){
             {
