@@ -62,4 +62,8 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <build>
+        <!--<finalName>salary.commandService.api</finalName>-->
+    </build>
+
 </project>

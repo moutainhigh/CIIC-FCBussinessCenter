@@ -147,6 +147,10 @@ public class NormalBatchController {
     @PostMapping("/getBatchList")
     public JsonResult getBatchList(@RequestBody PrCustomBatchDTO param){
 
+        List<String> IDList = UserContext.getManagementInfoLists().stream().map(p-> p.getManagementId()).collect(Collectors.toList());
+        String managementIds = String.join(",",IDList);
+        param.setManagementId(managementIds);
+
         PrCustBatchPO custBatchPO = BathTranslator.toPrBatchPO(param);
         int pageNum = param.getPageNum() == 0 ? 1 : param.getPageNum();
         int pageSize = param.getPageSize() == 0 ? 50 : param.getPageSize();
