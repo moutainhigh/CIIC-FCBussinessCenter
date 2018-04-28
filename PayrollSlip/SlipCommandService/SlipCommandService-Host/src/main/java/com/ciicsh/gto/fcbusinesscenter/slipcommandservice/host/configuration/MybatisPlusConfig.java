@@ -18,11 +18,11 @@ public class MybatisPlusConfig {
         return new PaginationInterceptor();
     }
 
-    @Bean
-    public PerformanceInterceptor performanceInterceptor() {
-        PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
-        performanceInterceptor.setFormat(true);
-        return performanceInterceptor;
-    }
+//    @Bean
+//    public PerformanceInterceptor performanceInterceptor() {
+//        PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
+//        performanceInterceptor.setFormat(true);
+//        return performanceInterceptor;
+//    }
 }
 

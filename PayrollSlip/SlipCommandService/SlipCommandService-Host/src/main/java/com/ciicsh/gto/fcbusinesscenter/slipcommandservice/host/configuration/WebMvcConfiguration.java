@@ -27,6 +27,10 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticateInterceptor()).addPathPatterns("/**");
+
+        registry.addInterceptor(authenticateInterceptor()).addPathPatterns("/**").excludePathPatterns(
+                "/api/payrollslipservice/listFcPayrollCalcResults");
+
         super.addInterceptors(registry);
     }
 

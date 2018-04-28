@@ -18,10 +18,11 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 @EnableDiscoveryClient
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
 @EnableFeignClients({
-        "com.ciicsh.gto.afsystemmanagecenter",
+        "com.ciicsh.gto.afsystemmanagecenter.apiservice.api",
         "com.ciicsh.gto.salecenter.apiservice.api",
         "com.ciicsh.gto.companycenter.webcommandservice.api",
-        "com.ciicsh.gto.identityservice.api"
+        "com.ciicsh.gto.identityservice.api",
+        "com.ciicsh.gto.fcoperationcenter.commandservice.api"
     })// 指定对应中心的 @FeignClient 所在对应的包
 public class App {
 
