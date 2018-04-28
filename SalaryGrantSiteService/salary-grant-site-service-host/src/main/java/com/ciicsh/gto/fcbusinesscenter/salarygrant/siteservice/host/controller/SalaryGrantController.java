@@ -6,18 +6,19 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantDetailDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryTaskDetailDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryTaskHandleDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.PageUtil;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.core.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,9 @@ public class SalaryGrantController {
     @Autowired
     private SalaryGrantTaskQueryService salaryGrantTaskQueryService;
 
+    @Autowired
+    private SalaryGrantEmployeeQueryService salaryGrantEmployeeQueryService;
+
     /**
      * 薪资发放任务单一览
      * @author chenpb
@@ -73,11 +77,10 @@ public class SalaryGrantController {
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setContent("条件").setTags(tags));
         try {
             bo.setUserId(UserContext.getUserId());
-            Page page = salaryGrantTaskQueryService.salaryGrantList(bo);
-            List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(page.getRecords(), SalaryTaskDTO.class);
-            page.setRecords(list);
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览").setContent(JSON.toJSONString(page)));
-            return ResultGenerator.genSuccessResult(page);
+            Page<SalaryGrantTaskBO> page = salaryGrantTaskQueryService.salaryGrantList(bo);
+            Pagination<SalaryTaskDTO> pagination = PageUtil.changeWapper(page, SalaryTaskDTO.class);
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览").setContent(JSON.toJSONString(pagination)));
+            return ResultGenerator.genSuccessResult(pagination);
         } catch (Exception e) {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("薪资发放一览查询失败");
@@ -249,6 +252,12 @@ public class SalaryGrantController {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo = salaryGrantTaskQueryService.selectTaskByTaskCode(bo);
             SalaryGrantDetailDTO salaryGrantDetailDTO = CommonTransform.convertToDTO(bo, SalaryGrantDetailDTO.class);
+
+            Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(dto.getCurrent(), dto.getSize());
+            page = salaryGrantEmployeeQueryService.queryEmployeeTask(dto.getTaskType(), page, dto.getTaskCode());
+            Pagination<SalaryGrantEmpDTO> pagination = PageUtil.changeWapper(page, SalaryGrantEmpDTO.class);
+
+            salaryTaskDetailDTO.setEmpSgInfo(pagination);
             salaryTaskDetailDTO.setTask(salaryGrantDetailDTO);
             logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细").setContent(JSON.toJSONString(salaryTaskDetailDTO)));
             return ResultGenerator.genSuccessResult(salaryTaskDetailDTO);
