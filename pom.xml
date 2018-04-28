@@ -220,9 +220,10 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-feign</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>com.ciicsh</groupId>
-            <artifactId>afsystemmanagecenter-basicdataservice-client</artifactId>
+            <groupId>com.ciicsh.gt1.afsystemmanagecenter</groupId>
+            <artifactId>gt1.afsystemmanagecenter.apiservice-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 
