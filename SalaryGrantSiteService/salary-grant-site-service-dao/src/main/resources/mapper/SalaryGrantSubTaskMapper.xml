@@ -71,7 +71,7 @@
             AND t1.salary_grant_sub_task_code = #{taskCode}
         </if>
         <if test="managementId != null">
-            AND t1.management_id = #{managementId}
+            AND t1.management_id IN (${managementId}})
         </if>
         <if test="managementName != null">
             AND t1.management_name LIKE concat('%', #{managementName}, '%')
@@ -117,7 +117,7 @@
             AND t1.salary_grant_sub_task_code = #{taskCode}
         </if>
         <if test="managementId != null">
-            AND t1.management_id = #{managementId}
+            AND t1.management_id IN (${managementId}})
         </if>
         <if test="managementName != null">
             AND t1.management_name LIKE concat('%', #{managementName}, '%')
@@ -163,7 +163,7 @@
             AND t1.salary_grant_sub_task_code = #{taskCode}
         </if>
         <if test="managementId != null">
-            AND t1.management_id = #{managementId}
+            AND t1.management_id IN (${managementId}})
         </if>
         <if test="managementName != null">
             AND t1.management_name LIKE concat('%', #{managementName}, '%')
@@ -209,7 +209,7 @@
             AND t1.salary_grant_sub_task_code = #{taskCode}
         </if>
         <if test="managementId != null">
-            AND t1.management_id = #{managementId}
+            AND t1.management_id IN (${managementId}})
         </if>
         <if test="managementName != null">
             AND t1.management_name LIKE concat('%', #{managementName}, '%')
@@ -255,7 +255,7 @@
             AND t1.task_code = #{taskCode}
         </if>
         <if test="managementId != null">
-            AND t1.management_id = #{managementId}
+            AND t1.management_id IN (${managementId}})
         </if>
         <if test="managementName != null">
             AND t1.management_name LIKE concat('%', #{managementName}, '%')
@@ -305,7 +305,7 @@
             AND t1.salary_grant_sub_task_code = #{taskCode}
         </if>
         <if test="managementId != null">
-            AND t1.management_id = #{managementId}
+            AND t1.management_id IN (${managementId}})
         </if>
         <if test="managementName != null">
             AND t1.management_name LIKE concat('%', #{managementName}, '%')
