@@ -367,6 +367,24 @@ public class SalaryGrantController {
     }
 
     /**
+     * 薪资发放项金额
+     * @author chenpb
+     * @date 2018-04-27
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/itemsData", method = RequestMethod.POST)
+    public Result itemsData(@RequestBody List<SalaryTaskHandleDTO> list) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资发放项金额").setContent(JSON.toJSONString(list)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资发放项金额异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询薪资发放项金额失败");
+        }
+    }
+
+    /**
      * 日志信息
      * @author chenpb
      * @date 2018-04-27
