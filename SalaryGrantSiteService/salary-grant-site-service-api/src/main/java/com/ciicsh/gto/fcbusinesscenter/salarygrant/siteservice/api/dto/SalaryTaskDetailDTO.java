@@ -1,9 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.PagingDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.core.Pagination;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.poi.ss.formula.functions.T;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SalaryTaskDetailDTO {
+public class SalaryTaskDetailDTO extends PagingDTO implements Serializable {
     /**
      * 任务单编号
      */
@@ -36,5 +38,5 @@ public class SalaryTaskDetailDTO {
     /**
      * 薪资发放雇员信息
      */
-    private List<T> emp;
+    private Pagination<SalaryGrantEmpDTO> empSgInfo;
 }
