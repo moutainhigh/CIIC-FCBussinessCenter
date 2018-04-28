@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * <p>
@@ -31,6 +30,18 @@ public class SalaryTaskDetailDTO extends PagingDTO implements Serializable {
      * 任务单状态
      */
     private String taskStatus;
+    /**
+     * 雇员编号
+     */
+    private String employeeId;
+    /**
+     * 雇员名称
+     */
+    private String employeeName;
+    /**
+     * 发放状态
+     */
+    private String grantStatus;
     /**
      * 薪资发放任务单信息
      */

@@ -244,8 +244,11 @@ public class SalaryGrantController {
     public Result<SalaryTaskDetailDTO> detail(@RequestBody SalaryTaskDetailDTO dto) {
         Map<String, String> tags = new HashMap<>();
         tags.put("taskCode", dto.getTaskCode());
-        tags.put("taskType", dto.getTaskType().toString());
-        tags.put("taskStatus", dto.getTaskStatus().toString());
+        tags.put("taskType", String.valueOf(dto.getTaskType().toString()));
+        tags.put("taskStatus", dto.getTaskStatus());
+        tags.put("grantStatus", dto.getGrantStatus());
+        tags.put("employeeId", dto.getEmployeeId());
+        tags.put("employeeName", dto.getEmployeeName());
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询明细").setContent("条件").setTags(tags));
         try {
             SalaryTaskDetailDTO salaryTaskDetailDTO = new SalaryTaskDetailDTO();
