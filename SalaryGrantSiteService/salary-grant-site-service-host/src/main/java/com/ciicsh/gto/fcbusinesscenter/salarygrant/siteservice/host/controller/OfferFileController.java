@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantOfferDocumentTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +37,7 @@ public class OfferFileController {
         page.setSize(salaryGrantTaskDTO.getSize());
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-
+        salaryGrantTaskBO.setManagementId(CommonHelper.getManagementIDs());
         page = offerDocumentTaskService.queryOfferDocumentTaskPage(page, salaryGrantTaskBO);
 
         // BO PAGE 转换为 DTO PAGE

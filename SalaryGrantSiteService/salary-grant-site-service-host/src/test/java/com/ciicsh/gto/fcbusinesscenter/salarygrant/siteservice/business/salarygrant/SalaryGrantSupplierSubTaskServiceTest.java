@@ -34,6 +34,11 @@ public class SalaryGrantSupplierSubTaskServiceTest {
     public void querySupplierSubTaskForSubmitPage() {
         Page<SalaryGrantTaskBO> page = new Page<>();
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
+        salaryGrantTaskBO.setManagementId("GL000007");
+        salaryGrantTaskBO.setBatchCode("GL000007_201802_0000000175");
+        salaryGrantTaskBO.setTaskCode("LT201803280000000003");
+        page = supplierSubTaskService.querySupplierSubTaskForSubmitPage(page, salaryGrantTaskBO);
+        System.out.println("查询供应商任务单列表 page: " + page + " 记录: " + page.getRecords());
     }
 
     /**

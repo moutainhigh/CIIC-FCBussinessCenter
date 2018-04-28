@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
@@ -26,12 +27,15 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     @Override
-    public Page<SalaryGrantEmployeeBO> queryEmployeeTask(int taskType, Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+    public Page<SalaryGrantEmployeeBO> queryEmployeeTask(Integer taskType, Page<SalaryGrantEmployeeBO> page, String taskCode) {
+        SalaryGrantEmployeeBO salaryGrantEmployeeBO  = new SalaryGrantEmployeeBO();
         //查询主表的雇员信息
-        if (taskType == 0) {
+        if (taskType == Integer.valueOf(SalaryGrantBizConsts.TASK_STATUS_DRAFT)) {
+            salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(taskCode);
             return queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
         } else {
             //查询子表的雇员信息
+            salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(taskCode);
             return queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
         }
     }
