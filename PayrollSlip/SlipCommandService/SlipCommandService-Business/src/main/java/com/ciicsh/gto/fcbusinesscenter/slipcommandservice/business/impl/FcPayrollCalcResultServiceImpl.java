@@ -3,6 +3,11 @@ package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
+import com.ciicsh.gt1.config.MongoConfig;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +18,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.FcPayrollCalc
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,22 +36,25 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
     private FcPayrollCalcResultMapper fcPayrollCalcResultMapper;
 
     // TODO: query mongo
-//    @Autowired
-//    private MongoClient mongoClient;
+    @Autowired
+    private MongoConfig mongoConfig;
 
 
     @Override
-    public List<FcPayrollCalcResultPO> listFcPayrollCalcResults(Map<String, Object> params) {
+    public List<Document> listFcPayrollCalcResults(Map<String, Object> params) {
 
-//        userManagementProxy.list(new HashMap<String, Object>(){
-//            {
-//                put("userId", "XTY00001");
-//            }
-//        });
+        List<Document> records = new ArrayList<Document>();
 
-//        Set<Map.Entry<String, Object>> set = mongoClient.getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find().first().entrySet();
+        Document doc = new Document("batch_id", params.get("batchId"));
+        MongoCursor<Document> cursor = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find(doc).iterator();
 
-        List<FcPayrollCalcResultPO> records = fcPayrollCalcResultMapper.list(params);
+        try {
+            while (cursor.hasNext()) {
+                records.add(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
 
         return records;
     }

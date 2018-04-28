@@ -5,6 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -32,6 +33,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      * 管理方编号
      */
     private String managementId;
+    /**
+     * 管理方编号列表
+     */
+    private String managementIds;
     /**
      * 管理方名称
      */
