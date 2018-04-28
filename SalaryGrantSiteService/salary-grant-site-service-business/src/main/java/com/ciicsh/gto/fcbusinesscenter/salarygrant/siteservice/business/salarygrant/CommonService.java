@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,4 +19,19 @@ public interface CommonService {
      * @return String ENTITY_ID
      */
     String getEntityIdForSalaryGrantTask(Map entityParam);
+
+    /**
+     *  调用公共服务根据字典类型值和字典项值获取字典项内容
+     * @param dicValue 字典类型值
+     * @param dicItemValue 字典项值
+     * @return String 字典项内容
+     */
+    String getNameByValue(String dicValue, String dicItemValue);
+
+    /**
+     *  调用公共服务根据字典类型值获取字典项内容列表
+     * @param dicValue 字典类型值
+     * @return List 字典项内容列表
+     */
+    List getNameByValueForList(String dicValue);
 }
