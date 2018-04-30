@@ -10,6 +10,7 @@ import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.page.Pagination;
+import com.ciicsh.gto.salarymanagement.entity.dto.BatchCompareRequestDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.BatchPayrollSchemaDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
@@ -20,6 +21,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import com.mongodb.DBObject;
@@ -184,10 +186,11 @@ public class BatchProviderController implements BatchProxy {
         return result;
     }
 
-    @GetMapping("/compareBatch")
-    public JsonResult compareBatch(@RequestParam String source, @RequestParam String target) {
+    @PostMapping("/compareBatch")
+    public JsonResult compareBatch(@RequestBody BatchCompareRequestDTO obj) {
 
         //TODO
+//        ObjectMapper
 
         return null;
     }
