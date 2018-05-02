@@ -1,6 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.translator;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.ApprovalHistoryDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.ApprovalHistoryDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
