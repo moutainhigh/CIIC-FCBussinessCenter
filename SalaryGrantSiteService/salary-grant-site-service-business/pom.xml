@@ -39,18 +39,18 @@
       </dependency>
       <dependency>
           <groupId>com.ciicsh.gt1.commonservice</groupId>
-          <artifactId>sheetservice-api</artifactId>
-          <version>1.0.0</version>
+          <artifactId>gt1.commonservice.sheetservice-api</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>com.ciicsh.gt1.commonservice</groupId>
-          <artifactId>entityidservice-api</artifactId>
-          <version>1.0.0</version>
+          <artifactId>gt1.commonservice.entityidservice-api</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>com.ciicsh.gt1.commonservice</groupId>
-          <artifactId>basicdataservice-api</artifactId>
-          <version>1.0.0</version>
+          <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
       </dependency>
   </dependencies>
 </project>

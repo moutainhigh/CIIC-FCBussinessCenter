@@ -257,7 +257,7 @@ public class SalaryGrantController {
             SalaryGrantDetailDTO salaryGrantDetailDTO = CommonTransform.convertToDTO(bo, SalaryGrantDetailDTO.class);
 
             Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(dto.getCurrent(), dto.getSize());
-            page = salaryGrantEmployeeQueryService.queryEmployeeTask(dto.getTaskType(), page, dto.getTaskCode());
+            //page = salaryGrantEmployeeQueryService.queryEmployeeTask(dto.getTaskType(), page, dto.getTaskCode());
             Pagination<SalaryGrantEmpDTO> pagination = PageUtil.changeWapper(page, SalaryGrantEmpDTO.class);
 
             salaryTaskDetailDTO.setEmpSgInfo(pagination);

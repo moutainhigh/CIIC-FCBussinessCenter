@@ -39,11 +39,6 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
 	@TableField("salary_grant_main_task_code")
 	private String salaryGrantMainTaskCode;
     /**
-     * 流程编号
-     */
-	@TableField("work_flow_process_id")
-	private String workFlowProcessId;
-    /**
      * 管理方编号
      */
 	@TableField("management_id")
@@ -98,6 +93,11 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
      */
 	@TableField("grant_account_code")
 	private String grantAccountCode;
+	/**
+	 * 发放账户名称
+	 */
+	@TableField("grant_account_name")
+	private String grantAccountName;
     /**
      * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
      */
@@ -118,6 +118,11 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
      */
     @TableField("adversion_type")
     private Integer adversionType;
+	/**
+	 * 是否处理:1-已处理，0-未处理
+	 */
+	@TableField("is_process")
+	private Boolean isProcess;
     /**
      * 备注:任务单中雇员信息变化提示链接
      */
@@ -195,14 +200,6 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
 
 	public void setSalaryGrantMainTaskCode(String salaryGrantMainTaskCode) {
 		this.salaryGrantMainTaskCode = salaryGrantMainTaskCode;
-	}
-
-	public String getWorkFlowProcessId() {
-		return workFlowProcessId;
-	}
-
-	public void setWorkFlowProcessId(String workFlowProcessId) {
-		this.workFlowProcessId = workFlowProcessId;
 	}
 
 	public String getManagementId() {
@@ -418,6 +415,22 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
 		return this.salaryGrantSubTaskId;
 	}
 
+	public String getGrantAccountName() {
+		return grantAccountName;
+	}
+
+	public void setGrantAccountName(String grantAccountName) {
+		this.grantAccountName = grantAccountName;
+	}
+
+	public Boolean getProcess() {
+		return isProcess;
+	}
+
+	public void setProcess(Boolean process) {
+		isProcess = process;
+	}
+
 	// 重写克隆方法子列才可以调用
 	@Override
 	public Object clone() throws CloneNotSupportedException {
@@ -430,7 +443,6 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
 			", salaryGrantSubTaskId=" + salaryGrantSubTaskId +
 			", salaryGrantSubTaskCode=" + salaryGrantSubTaskCode +
 			", salaryGrantMainTaskCode=" + salaryGrantMainTaskCode +
-			", workFlowProcessId=" + workFlowProcessId +
 			", managementId=" + managementId +
 			", managementName=" + managementName +
 			", batchCode=" + batchCode +
@@ -442,10 +454,12 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
             ", grantDate=" + grantDate +
             ", grantTime=" + grantTime +
 			", grantAccountCode=" + grantAccountCode +
+			", grantAccountName=" + grantAccountName +
             ", grantType=" + grantType +
 			", grantMode=" + grantMode +
             ", isAdversion=" + isAdversion +
             ", adversionType=" + adversionType +
+			", isProcess=" + isProcess +
 			", remark=" + remark +
             ", approvedOpinion=" + approvedOpinion +
             ", taskStatus=" + taskStatus +

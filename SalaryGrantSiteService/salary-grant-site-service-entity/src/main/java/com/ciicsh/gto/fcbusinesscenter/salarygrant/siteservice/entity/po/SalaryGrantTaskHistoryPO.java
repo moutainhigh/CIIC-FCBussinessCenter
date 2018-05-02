@@ -39,11 +39,6 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 	@TableField("task_code")
 	private String taskCode;
     /**
-     * 流程编号
-     */
-	@TableField("work_flow_process_id")
-	private String workFlowProcessId;
-    /**
      * 管理方编号
      */
 	@TableField("management_id")
@@ -113,6 +108,11 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 	 */
 	@TableField("grant_account_code")
 	private String grantAccountCode;
+	/**
+	 * 发放账户名称
+	 */
+	@TableField("grant_account_name")
+	private String grantAccountName;
     /**
      * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
      */
@@ -133,6 +133,16 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 	 */
 	@TableField("adversion_type")
 	private Integer adversionType;
+	/**
+	 * 是否垫付:0-否，1-是
+	 */
+	@TableField("is_advance")
+	private Boolean isAdvance;
+	/**
+	 * 垫付类型:1-水单垫付、2-信用期垫付、3-偶然垫付、4-AF垫付、5-预付款垫付
+	 */
+	@TableField("advance_type")
+	private Integer advanceType;
 	/**
 	 * 备注:任务单中雇员信息变化提示链接
 	 */
@@ -213,14 +223,6 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 
 	public void setTaskCode(String taskCode) {
 		this.taskCode = taskCode;
-	}
-
-	public String getWorkFlowProcessId() {
-		return workFlowProcessId;
-	}
-
-	public void setWorkFlowProcessId(String workFlowProcessId) {
-		this.workFlowProcessId = workFlowProcessId;
 	}
 
 	public String getManagementId() {
@@ -479,6 +481,30 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 		isIncludeForeignCurrency = includeForeignCurrency;
 	}
 
+	public String getGrantAccountName() {
+		return grantAccountName;
+	}
+
+	public void setGrantAccountName(String grantAccountName) {
+		this.grantAccountName = grantAccountName;
+	}
+
+	public Boolean getAdvance() {
+		return isAdvance;
+	}
+
+	public void setAdvance(Boolean advance) {
+		isAdvance = advance;
+	}
+
+	public Integer getAdvanceType() {
+		return advanceType;
+	}
+
+	public void setAdvanceType(Integer advanceType) {
+		this.advanceType = advanceType;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.salaryGrantTaskHistoryId;
@@ -490,7 +516,6 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 			", salaryGrantTaskHistoryId=" + salaryGrantTaskHistoryId +
 			", taskId=" + taskId +
 			", taskCode=" + taskCode +
-			", workFlowProcessId=" + workFlowProcessId +
 			", managementId=" + managementId +
 			", managementName=" + managementName +
 			", batchCode=" + batchCode +
@@ -505,10 +530,13 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 			", grantDate=" + grantDate +
 			", grantTime=" + grantTime +
 			", grantAccountCode=" + grantAccountCode +
+			", grantAccountName=" + grantAccountName +
 			", grantType=" + grantType +
 			", grantMode=" + grantMode +
 			", isAdversion=" + isAdversion +
 			", adversionType=" + adversionType +
+			", isAdvance=" + isAdvance +
+			", advanceType=" + advanceType +
 			", remark=" + remark +
 			", invalidReason=" + invalidReason +
 			", approvedOpinion=" + approvedOpinion +

@@ -8,7 +8,6 @@
         <id column="salary_grant_sub_task_id" property="salaryGrantSubTaskId"/>
         <result column="salary_grant_sub_task_code" property="salaryGrantSubTaskCode"/>
         <result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode"/>
-        <result column="work_flow_process_id" property="workFlowProcessId"/>
         <result column="management_id" property="managementId"/>
         <result column="management_name" property="managementName"/>
         <result column="batch_code" property="batchCode"/>
@@ -20,10 +19,12 @@
         <result column="grant_date" property="grantDate"/>
         <result column="grant_time" property="grantTime"/>
         <result column="grant_account_code" property="grantAccountCode"/>
+        <result column="grant_account_name" property="grantAccountName"/>
         <result column="grant_type" property="grantType"/>
         <result column="grant_mode" property="grantMode"/>
         <result column="is_adversion" property="isAdversion"/>
         <result column="adversion_type" property="adversionType"/>
+        <result column="is_process" property="isProcess"/>
         <result column="remark" property="remark"/>
         <result column="approved_opinion" property="approvedOpinion"/>
         <result column="task_status" property="taskStatus"/>

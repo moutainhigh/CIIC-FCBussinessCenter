@@ -25,10 +25,6 @@ public class SalaryGrantMainTaskDTO extends PagingDTO implements Serializable {
      */
     private String salaryGrantMainTaskCode;
     /**
-     * 流程编号
-     */
-    private String workFlowProcessId;
-    /**
      * 管理方编号
      */
     private String managementId;
@@ -143,14 +139,6 @@ public class SalaryGrantMainTaskDTO extends PagingDTO implements Serializable {
 
     public void setSalaryGrantMainTaskCode(String salaryGrantMainTaskCode) {
         this.salaryGrantMainTaskCode = salaryGrantMainTaskCode;
-    }
-
-    public String getWorkFlowProcessId() {
-        return workFlowProcessId;
-    }
-
-    public void setWorkFlowProcessId(String workFlowProcessId) {
-        this.workFlowProcessId = workFlowProcessId;
     }
 
     public String getManagementId() {

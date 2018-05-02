@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.OfferDocumentMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO">
+		<id column="offer_document_id" property="offerDocumentId" />
+		<result column="task_code" property="taskCode" />
+		<result column="bankcard_type" property="bankcardType" />
+		<result column="payment_total_sum" property="paymentTotalSum" />
+		<result column="total_person_count" property="totalPersonCount" />
+		<result column="is_active" property="isActive" />
+		<result column="created_by" property="createdBy" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_by" property="modifiedBy" />
+		<result column="modified_time" property="modifiedTime" />
+	</resultMap>
+
+</mapper>

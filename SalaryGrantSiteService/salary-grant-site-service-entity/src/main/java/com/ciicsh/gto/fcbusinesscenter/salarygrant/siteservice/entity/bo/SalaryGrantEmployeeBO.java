@@ -56,4 +56,13 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      */
     private String reprieveTypeName;
 
+    /**
+     * 任务单类型
+     */
+    private Integer taskType;
+
+    /**
+     * 任务单编号
+     */
+    private String taskCode;
 }

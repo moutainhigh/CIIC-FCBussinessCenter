@@ -1,23 +1,21 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * <p>
- * 薪资发放任务单主表
+ * 薪资发放报盘信息表
  * </p>
  *
  * @author gaoyang
- * @since 2018-01-22
+ * @since 2018-05-02
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SalaryGrantMainTaskBO extends SalaryGrantMainTaskPO implements Serializable {
+public class OfferDocumentBO extends OfferDocumentPO implements Serializable {
     private static final long serialVersionUID = 1L;
-
 }

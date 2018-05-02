@@ -7,7 +7,6 @@
 		<id column="salary_grant_task_history_id" property="salaryGrantTaskHistoryId" />
 		<result column="task_id" property="taskId" />
 		<result column="task_code" property="taskCode" />
-		<result column="work_flow_process_id" property="workFlowProcessId" />
 		<result column="management_id" property="managementId" />
 		<result column="management_name" property="managementName" />
 		<result column="batch_code" property="batchCode" />
@@ -22,10 +21,13 @@
 		<result column="grant_date" property="grantDate" />
 		<result column="grant_time" property="grantTime" />
 		<result column="grant_account_code" property="grantAccountCode" />
+        <result column="grant_account_name" property="grantAccountName" />
 		<result column="grant_type" property="grantType" />
 		<result column="grant_mode" property="grantMode" />
 		<result column="is_adversion" property="isAdversion" />
 		<result column="adversion_type" property="adversionType" />
+        <result column="is_advance" property="isAdvance" />
+        <result column="advance_type" property="advanceType" />
 		<result column="remark" property="remark" />
 		<result column="invalid_reason" property="invalidReason" />
 		<result column="approved_opinion" property="approvedOpinion" />

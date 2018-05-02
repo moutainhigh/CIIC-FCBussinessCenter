@@ -187,7 +187,8 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMappe
         Map<String,String> startProcessResponseMap = salaryGrantWorkFlowService.startSalaryGrantTaskProcess(salaryGrantTaskMissionRequestDTO);
         String processId = salaryGrantWorkFlowService.getProcessId(startProcessResponseMap);
         if(!StringUtil.isEmpty(processId)){
-            salaryGrantMainTaskPO.setWorkFlowProcessId(processId);
+            // todo 后续插入工作流编号到任务单流程映射表sg_task_work_flow_relation
+            //salaryGrantMainTaskPO.setWorkFlowProcessId(processId);
         }else{
             // todo 抛异常信息
         }

@@ -27,15 +27,14 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     @Override
-    public Page<SalaryGrantEmployeeBO> queryEmployeeTask(Integer taskType, Page<SalaryGrantEmployeeBO> page, String taskCode) {
-        SalaryGrantEmployeeBO salaryGrantEmployeeBO  = new SalaryGrantEmployeeBO();
+    public Page<SalaryGrantEmployeeBO> queryEmployeeTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
         //查询主表的雇员信息
-        if (taskType == Integer.valueOf(SalaryGrantBizConsts.TASK_STATUS_DRAFT)) {
-            salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(taskCode);
+        if (salaryGrantEmployeeBO.getTaskType() == Integer.valueOf(SalaryGrantBizConsts.TASK_STATUS_DRAFT)) {
+            salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
             return queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
         } else {
             //查询子表的雇员信息
-            salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(taskCode);
+            salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
             return queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
         }
     }

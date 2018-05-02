@@ -88,6 +88,11 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
      */
 	@TableField("grant_account_code")
 	private String grantAccountCode;
+	/**
+	 * 发放账户名称
+	 */
+	@TableField("grant_account_name")
+	private String grantAccountName;
     /**
      * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
      */
@@ -768,7 +773,15 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 		return this.salaryGrantEmployeeId;
 	}
 
-    // 重写克隆方法子列才可以调用
+	public String getGrantAccountName() {
+		return grantAccountName;
+	}
+
+	public void setGrantAccountName(String grantAccountName) {
+		this.grantAccountName = grantAccountName;
+	}
+
+	// 重写克隆方法子列才可以调用
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -790,6 +803,7 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 			", taxCycle=" + taxCycle +
 			", batchCode=" + batchCode +
 			", grantAccountCode=" + grantAccountCode +
+			", grantAccountName=" + grantAccountName +
 			", grantMode=" + grantMode +
 			", salaryGrantRuleId=" + salaryGrantRuleId +
 			", ruleType=" + ruleType +

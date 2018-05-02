@@ -7,10 +7,10 @@ database:
 eureka:
   client:
     serviceUrl:
-      defaultZone: "http://172.16.9.25:9602/eureka,http://172.16.9.24:9602/eureka"
+      defaultZone: "http://172.16.9.24:9602/eureka/,http://172.16.9.25:9602/eureka/"
   instance:
     lease-expiration-duration-in-seconds: 30
-    lease-renewal-interval-in-seconds: 10
+    lease-renewal-interval-in-seconds: 40
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 kafka:
@@ -18,3 +18,8 @@ kafka:
   zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
 seaweed:
   masterHost: "172.16.9.19:9333"
+zipkin:
+  base-url: http://172.16.9.24:9623  #ZipkinService地址
+  enabled: true
+sleuth:
+  percentage: 1.0

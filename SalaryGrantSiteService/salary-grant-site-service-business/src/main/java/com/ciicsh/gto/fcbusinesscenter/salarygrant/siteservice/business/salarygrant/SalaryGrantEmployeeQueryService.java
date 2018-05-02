@@ -21,12 +21,11 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
      * 查询雇员信息
      * 根据taskType判断查询主表或者子表的雇员信息
      *
-     * @param taskType 1-查询主表的雇员信息;2-查询子表的雇员信息
      * @param page
      * @param salaryGrantEmployeeBO
      * @return
      */
-    Page<SalaryGrantEmployeeBO> queryEmployeeTask(Integer taskType, Page<SalaryGrantEmployeeBO> page, String taskCode);
+    Page<SalaryGrantEmployeeBO> queryEmployeeTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
 
     /**
      * 查询主表的雇员信息
