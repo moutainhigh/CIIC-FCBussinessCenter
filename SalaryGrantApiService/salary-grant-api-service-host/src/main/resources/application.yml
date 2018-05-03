@@ -57,10 +57,10 @@ mybatis-plus:
     sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
   mapper-locations: mapper/*Mapper.xml
   plugins:
-      - catMybatisInterceptor
+    - catMybatisInterceptor
 spring:
   application:
-    name: fcbusiness-center-salarygrant-site-service
+    name: fcbusiness-center-salarygrant-api-service
   profiles:
     active: dev
   http:
@@ -83,20 +83,20 @@ spring:
     password: ${database.password}
     driver-class-name: com.mysql.jdbc.Driver
   zipkin:
-      base-url: ${zipkin.base-url}  #ZipkinService地址
-      enabled: ${zipkin.enabled}
-    sleuth:
-      sampler:
-        percentage: ${sleuth.percentage}
+    base-url: ${zipkin.base-url}  #ZipkinService地址
+    enabled: ${zipkin.enabled}
+  sleuth:
+    sampler:
+      percentage: ${sleuth.percentage}
   cloud:
-   stream:
-     kafka:
-       binder:
-         brokers: ${kafka.brokers}
-         zk-nodes: ${kafka.zk-nodes}
-         autoAddPartitions: true
-     bindings:
-       sleuth:
-         destination: sleuth-itdev # topic name
+    stream:
+      kafka:
+        binder:
+          brokers: ${kafka.brokers}
+          zk-nodes: ${kafka.zk-nodes}
+          autoAddPartitions: true
+      bindings:
+        sleuth:
+          destination: sleuth-itdev # topic name
 seaweed:
   masterHost: ${seaweed.masterHost}
