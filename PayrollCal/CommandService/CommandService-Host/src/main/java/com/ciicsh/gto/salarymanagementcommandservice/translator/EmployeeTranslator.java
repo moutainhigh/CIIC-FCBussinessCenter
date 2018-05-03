@@ -1,9 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.translator;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.EmployeeExtensionDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmployeeDTO;
-import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
-import com.ciicsh.gto.salarymanagement.entity.enums.GenderEnum;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.EmployeeExtensionDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrEmployeeDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.IdCardTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;

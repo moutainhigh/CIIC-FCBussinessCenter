@@ -1,8 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;

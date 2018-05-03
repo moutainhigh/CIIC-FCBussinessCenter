@@ -80,6 +80,15 @@ spring:
           content-type: application/json
           producer:
             partitionCount: 1
+
+        sleuth:
+          detination: sleuth-itdev
+  zipkin:
+    base-url: ${zipkin.base-url}  #ZipkinService地址
+    enabled: true
+  sleuth:
+    sampler:
+      percentage: ${sleuth.percentage}
   profiles:
     active: dev
 server:

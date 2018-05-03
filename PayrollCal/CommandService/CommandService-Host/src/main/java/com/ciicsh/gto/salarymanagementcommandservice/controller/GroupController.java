@@ -3,9 +3,13 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
+import com.ciicsh.gto.salarymanagementcommandservice.api.PayrollGroupProxy;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupHistoryDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.*;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
@@ -37,7 +41,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/salaryManagement")
-public class GroupController {
+public class GroupController implements PayrollGroupProxy{
 
     @Autowired
     private PrGroupService prGroupService;
@@ -50,7 +54,7 @@ public class GroupController {
 
     @GetMapping(value = "/importPrGroup")
     public JsonResult importPrGroup(@RequestParam String from,
-                                      @RequestParam String to) {
+                                    @RequestParam String to) {
         boolean importResult = prGroupService.importPrGroup(from, to);
         if (!importResult) {
             throw new BusinessException("薪资组导入失败");
@@ -189,8 +193,8 @@ public class GroupController {
     }
 
     @GetMapping("/prGroupName")
-    public  JsonResult getPayrollGroupNameList(@RequestParam String query,
-                                               @RequestParam(required = false, defaultValue = "") String managementId){
+    public JsonResult<List<HashMap<String, String>>> getPayrollGroupNameList(@RequestParam("query") String query,
+                                                                             @RequestParam(value = "managementId", required = false, defaultValue = "") String managementId){
         List<HashMap<String, String>> nameList = prGroupService.getPrGroupNameList(query, managementId);
         return JsonResult.success(nameList);
     }
@@ -224,8 +228,6 @@ public class GroupController {
         resultObject.setItemDTOList(lastVersionItemsDTO);
         return JsonResult.success(resultObject);
     }
-
-
 
     @GetMapping("/queryGroupKeyValues")
     public  JsonResult queryGroupKeyValues(@RequestParam String managementId,@RequestParam String query){

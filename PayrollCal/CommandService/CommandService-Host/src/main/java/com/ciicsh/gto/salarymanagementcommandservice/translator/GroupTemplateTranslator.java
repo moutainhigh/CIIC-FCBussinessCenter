@@ -1,6 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.translator;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import org.springframework.beans.BeanUtils;

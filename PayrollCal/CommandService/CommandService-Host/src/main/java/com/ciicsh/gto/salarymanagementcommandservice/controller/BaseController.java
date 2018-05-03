@@ -1,19 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
-import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by jiangtianning on 2017/12/7.

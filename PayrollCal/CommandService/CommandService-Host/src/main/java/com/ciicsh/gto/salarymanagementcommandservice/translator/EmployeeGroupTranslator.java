@@ -1,6 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.translator;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrEmpGroupDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrEmpGroupDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupPO;
 import org.springframework.beans.BeanUtils;
 

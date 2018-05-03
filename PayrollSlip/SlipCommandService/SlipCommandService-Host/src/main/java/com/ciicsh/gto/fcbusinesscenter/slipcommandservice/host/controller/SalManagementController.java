@@ -1,18 +1,15 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.controller;
 
-import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.SalManagementService;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.PayrollAccountProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.PayrollAccountProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Map;
 
 /**

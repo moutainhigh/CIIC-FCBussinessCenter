@@ -1,6 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.translator;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountSetExtensionDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountSetExtensionDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetExtensionPO;
 import org.springframework.beans.BeanUtils;
 

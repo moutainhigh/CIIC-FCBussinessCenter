@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -93,8 +94,21 @@ public interface PrNormalBatchService {
      * @return
      */
     List<PrNormalBatchPO> getHistoryBatchInfoList(List<String> mgrIds);
-    PageInfo<PrNormalBatchPO> getAllBatchesByManagementId(String managementId, String batchCode, Integer pageNum, Integer pageSize);
-    HashMap<String, ?> compareBatch(String sourceBatchCode, String targetBatchCode);
 
+    /**
+     * 通过管理放获取批次列表
+     * @param managementId
+     * @param batchCode
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<PrNormalBatchPO> getAllBatchesByManagementId(String managementId, String batchCode, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取对批次薪资结构
+     * @param batchCode
+     * @return
+     */
     List<PrPayrollItemPO> getBatchPayrollSchema(String batchCode);
 }

@@ -6,28 +6,30 @@ import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.BatchProxy;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.Custom.BatchAuditDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.page.Pagination;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.MoneyBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.page.Pagination;
+import com.ciicsh.gto.salarymanagement.entity.dto.BatchCompareRequestDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.BatchPayrollSchemaDTO;
-import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagementcommandservice.service.BatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import com.mongodb.DBObject;
-import kafka.utils.Json;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -58,6 +60,8 @@ public class BatchProviderController implements BatchProxy {
     @Autowired
     private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
 
+    @Autowired
+    private BatchService batchService;
 
     public String getBatchListByCodes(List<String> batchCodes, int batchType) {
         Gson gson = new Gson();
@@ -184,10 +188,13 @@ public class BatchProviderController implements BatchProxy {
         return result;
     }
 
-    @GetMapping("/compareBatch")
-    public JsonResult compareBatch(@RequestParam String source, @RequestParam String target) {
+    @PostMapping("/compareBatch")
+    public JsonResult compareBatch(@RequestBody BatchCompareRequestDTO obj) {
 
         //TODO
+//        ObjectMapper
+        batchService.compareBatch(obj.getSrc(), obj.getSrcBatchType()
+                , obj.getTgt(), obj.getTgtBatchType(), obj.getMapping());
 
         return null;
     }

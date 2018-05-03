@@ -1,17 +1,12 @@
 package com.ciicsh.gto.salarymanagementcommandservice.translator;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Created by jiangtianning on 2017/12/8.

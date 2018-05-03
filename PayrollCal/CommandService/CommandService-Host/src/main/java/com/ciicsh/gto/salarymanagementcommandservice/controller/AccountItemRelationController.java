@@ -1,8 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PayrollAccountItemRelationExtDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollAccountItemRelationDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PayrollAccountItemRelationExtDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountItemRelationDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrPayrollAccountItemRelationService;

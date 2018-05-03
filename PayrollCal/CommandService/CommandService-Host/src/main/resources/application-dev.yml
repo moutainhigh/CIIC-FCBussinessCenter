@@ -36,3 +36,8 @@ management:
 
 seaweed:
   masterHost: "172.16.9.19:9333"
+
+zipkin:
+  base-url: http://172.16.9.31:9623  #ZipkinService地址
+sleuth:
+  percentage: 1.0

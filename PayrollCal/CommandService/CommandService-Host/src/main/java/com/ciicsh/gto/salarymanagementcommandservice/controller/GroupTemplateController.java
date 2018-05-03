@@ -2,10 +2,10 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollGroupTemplateHistoryDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.PrPayrollItemDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateHistoryDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplateHistoryPO;

@@ -1,8 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gt1.FileHandler;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.ApprovalHistoryDTO;
-import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.JsonResult;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.ApprovalHistoryDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ApprovalHistoryTranslator;

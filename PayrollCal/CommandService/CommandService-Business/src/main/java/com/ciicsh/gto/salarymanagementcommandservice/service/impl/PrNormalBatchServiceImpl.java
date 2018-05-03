@@ -282,17 +282,6 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return basicDBObject;
     }
 
-    @Override
-    public HashMap<String, ?> compareBatch(String sourceBatchCode, String targetBatchCode) {
-
-        // 验证两个比较批次是否拥有相同薪资结构
-
-
-
-        Criteria criteriaSource = Criteria.where("batch_code").is(sourceBatchCode);
-
-        return null;
-    }
 
     @Override
     public List<PrPayrollItemPO> getBatchPayrollSchema(String batchCode) {
