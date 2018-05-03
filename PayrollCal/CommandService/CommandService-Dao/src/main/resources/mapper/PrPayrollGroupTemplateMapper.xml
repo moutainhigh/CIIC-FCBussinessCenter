@@ -52,6 +52,7 @@
 				AND is_active = #{isActive}
 			</if>
 		</trim>
+		ORDER BY created_time DESC
 	</select>
 
 	<select id="selectNameList" resultType="hashmap">

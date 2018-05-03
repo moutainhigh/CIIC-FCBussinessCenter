@@ -59,6 +59,8 @@
 				AND approval_status = #{managementId}
 			</if>
 		</trim>
+
+		ORDER BY created_time DESC
 	</select>
 
     <update id="updateItemByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO">

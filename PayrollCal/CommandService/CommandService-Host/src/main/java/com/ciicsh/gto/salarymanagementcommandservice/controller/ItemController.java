@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollItemDTO;
@@ -148,8 +149,8 @@ public class ItemController extends BaseController{
             }
         }
         //临时参数
-        newParam.setCreatedBy("jiang");
-        newParam.setModifiedBy("jiang");
+        newParam.setCreatedBy(UserContext.getUserId());
+        newParam.setModifiedBy(UserContext.getUserId());
         int resultId = 0;
         try {
             resultId = itemService.addItem(newParam);

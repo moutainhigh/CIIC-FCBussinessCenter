@@ -36,6 +36,8 @@ public interface PrNormalBatchService {
 
     PrNormalBatchPO getBatchByCode(String code);
 
+    PrCustBatchPO getCustBatchInfo(String batchCode);
+
     /**
      * 上传雇员薪资项数据
      * @param batchCode      批次编码

@@ -118,6 +118,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setItemName(i.getBaseItemName());
                         item.setBaseItemCode(i.getBaseItemCode());
                         item.setItemType(i.getBaseItemType());
+                        item.setCanLock(false);
                         item.setPayrollGroupCode(paramItem.getGroupCode());
                         item.setManagementId(paramItem.getManagementId());
                         item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);

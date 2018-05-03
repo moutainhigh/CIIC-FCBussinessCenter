@@ -62,4 +62,6 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
     List<PrNormalBatchPO> selectAllBatchCodesByManagementId(@Param("managementId") String managementId,
                                                             @Param("batchCode") String batchCode);
     List<PrPayrollItemPO> selectBatchPayrollSchema(@Param("batchCode") String batchCode);
+
+    PrCustBatchPO getCustBatchInfo(@Param("batchCode") String batchCode);
 }

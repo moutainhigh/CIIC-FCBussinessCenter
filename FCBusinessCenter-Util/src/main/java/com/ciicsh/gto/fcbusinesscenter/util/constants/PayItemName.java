@@ -5,9 +5,6 @@ package com.ciicsh.gto.fcbusinesscenter.util.constants;
  */
 public class PayItemName {
 
-    public static final String EMPLOYEE_CODE_CN = "雇员编号";
-
-    public static final String EMPLOYEE_NAME_CN = "雇员名称";
 
     public static final String EMPLOYEE_BIRTHDAY_CN = "出生日期";
 
@@ -16,8 +13,6 @@ public class PayItemName {
     public static final String EMPLOYEE_SEX_CN = "性别";
 
     public static final String EMPLOYEE_ID_TYPE_CN = "证件类型";
-
-    public static final String EMPLOYEE_ONBOARD_CN = "入职日期";
 
     public static final String EMPLOYEE_ID_NUM_CN = "证件号码";
 
@@ -37,5 +32,28 @@ public class PayItemName {
 
     public static final String EMPLOYEE_NET_PAY = "实发工资";
 
+
+    // new structure
+    public static final String EMPLOYEE_CODE_CN = "雇员编号";
+
+    public static final String EMPLOYEE_NAME_CN = "雇员名称";
+
+    public static final String EMPLOYEE_ONBOARD_CN = "入职日期";
+
+    public static final String LEAVE_DATE = "离职日期";
+
+    public static final String NATIONALITY = "国籍";
+
+    public static final String SALARY_TOTAL = "工资总额(含四金)";
+
+    public static final String BEFORE_TOTAL = "税前合计";
+
+    public static final String INCOME_TOTAL = "收入合计";
+
+    public static final String AFTER_TOTAL = "税后合计";
+
+    public static final String TAX_TOTAL = "个税合计";
+
+    public static final String ACTUAL_SALARY = "实发工资";
 
 }

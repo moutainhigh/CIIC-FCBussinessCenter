@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
@@ -15,7 +16,6 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateServ
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -179,8 +179,8 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
             prPayrollGroupTemplateHistoryPO.setPayrollGroupTemplateCode(paramItem.getGroupTemplateCode());
             prPayrollGroupTemplateHistoryPO.setVersion(version);
             prPayrollGroupTemplateHistoryPO.setPayrollGroupTemplateHistory(history);
-            prPayrollGroupTemplateHistoryPO.setCreatedBy("system");
-            prPayrollGroupTemplateHistoryPO.setModifiedBy("system");
+            prPayrollGroupTemplateHistoryPO.setCreatedBy(UserContext.getUserId());
+            prPayrollGroupTemplateHistoryPO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupTemplateHistoryMapper.insert(prPayrollGroupTemplateHistoryPO);
         }
         // 更新审批历史
@@ -268,7 +268,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
                     updateParam.setParentItemCode(null);
                     updateParam.setDisplayPriority(null);
                     updateParam.setCalPriority(null);
-                    updateParam.setModifiedBy("sys");
+                    updateParam.setModifiedBy(UserContext.getUserId());
                     prItemService.updateItem(updateParam);
                 } else {
                     // 不存在则插入
@@ -277,8 +277,8 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
                     insertParam.setManagementId(i.getManagementId());
                     insertParam.setPayrollGroupCode(i.getGroupCode());
                     insertParam.setParentItemCode(j.getItemCode());
-                    insertParam.setModifiedBy("sys");
-                    insertParam.setCreatedBy("sys");
+                    insertParam.setModifiedBy(UserContext.getUserId());
+                    insertParam.setCreatedBy(UserContext.getUserId());
                     prItemService.addItem(insertParam);
                 }
             });

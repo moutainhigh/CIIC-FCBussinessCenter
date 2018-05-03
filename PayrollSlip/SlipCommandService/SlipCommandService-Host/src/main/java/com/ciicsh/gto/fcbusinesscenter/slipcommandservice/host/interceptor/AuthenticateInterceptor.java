@@ -1,11 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.interceptor;
 
-import com.ciicsh.gto.commonservice.util.dto.Result;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.CommonTransform;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.exception.AuthException;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import com.ciicsh.gto.identityservice.api.IdentityServiceProxy;
+import com.ciicsh.gto.identityservice.api.dto.Result;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;

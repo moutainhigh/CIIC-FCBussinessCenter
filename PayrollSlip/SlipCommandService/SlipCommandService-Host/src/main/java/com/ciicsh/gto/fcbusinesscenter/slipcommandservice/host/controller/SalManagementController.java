@@ -63,7 +63,8 @@ public class SalManagementController {
 
     @RequestMapping(value = "/listBatches")
     public JsonResult listBatches(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(batchProxy.getBatchListByManagementId((String)params.get("managementId"), (String)params.get("batchCode"), (int)params.get("pageNum"), (int)params.get("pageSize")));
+        //return JsonResult.success(batchProxy.getBatchListByManagementId((String)params.get("managementId"), (String)params.get("batchCode"), (int)params.get("pageNum"), (int)params.get("pageSize")));
+        return JsonResult.success(batchProxy.getBatchListByManagementId((String)params.get("managementId"))); // updated by bill
 
     }
 

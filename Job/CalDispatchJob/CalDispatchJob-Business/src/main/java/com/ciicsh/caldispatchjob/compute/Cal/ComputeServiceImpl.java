@@ -171,9 +171,9 @@ public class ComputeServiceImpl {
         if(scripts == null){
             scripts = new HashMap<>();
         }
-        DBObject calalog = (DBObject) dbObject.get("catalog");
+        DBObject catalog = (DBObject) dbObject.get("catalog");
         String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
-        List<DBObject> items = ((List<DBObject>) calalog.get("pay_items"));
+        List<DBObject> items = ((List<DBObject>) catalog.get("pay_items"));
 
         Bindings bindings = new SimpleBindings();
 

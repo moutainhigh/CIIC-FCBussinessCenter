@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
@@ -106,7 +107,8 @@ public class PrItemServiceImpl implements PrItemService {
         param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
         param.setModifiedTime(new Date());
         param.setCreatedTime(new Date());
-        param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(param.getPayrollGroupCode()) + 1);
+        if(param.getItemType() == ItemTypeEnum.CALC.getValue())
+            param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(param.getPayrollGroupCode()) + 1);
         this.replaceItemNameWithCode(param);
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
@@ -201,6 +203,9 @@ public class PrItemServiceImpl implements PrItemService {
     public int realUpdateItem(PrPayrollItemPO param) {
         // 将所在薪资组/模板的审核状态更新为草稿
         this.updateRelatedGroupStatus(param);
+        if(param.getItemType() != ItemTypeEnum.CALC.getValue()){
+            param.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
+        }
         param.setModifiedTime(new Date());
         this.replaceItemNameWithCode(param);
         return prPayrollItemMapper.updateItemByCode(param);

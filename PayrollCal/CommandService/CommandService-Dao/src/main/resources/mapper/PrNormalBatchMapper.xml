@@ -41,6 +41,23 @@
 
 	</resultMap>
 
+	<select id="getCustBatchInfo" resultMap="CustBatchResultMap">
+		SELECT
+		a.code,
+		a.management_id,
+		a.management_name,
+		a.account_set_code,
+		c.emp_group_code
+		FROM
+			  pr_normal_batch a, normal_batch_view b,pr_emp_group c
+		where
+			  a.code = #{batchCode}
+			  AND a.account_set_code = b.account_set_code
+			  and b.emp_group_code = c.emp_group_code
+			  and c.is_active = 1
+
+	</select>
+
 	<select id="selectBatchListByUseLike" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" resultMap="CustBatchResultMap">
 
 		SELECT * from ( SELECT

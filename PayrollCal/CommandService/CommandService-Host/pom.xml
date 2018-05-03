@@ -51,13 +51,13 @@
         <dependency>
             <groupId>com.ciicsh.gt1.salecenter</groupId>
             <artifactId>gt1.salecenter.apiservice-api</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.ciicsh.gt1.companycenter</groupId>
             <artifactId>webcommandservice-api</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <!--二方库依赖 ED-->
 
@@ -142,7 +142,12 @@
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>seaweedFS-client</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salarymanagement-commandservice-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
 
