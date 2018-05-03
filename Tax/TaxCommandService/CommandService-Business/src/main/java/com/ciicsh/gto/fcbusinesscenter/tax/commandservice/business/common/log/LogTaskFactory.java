@@ -53,7 +53,7 @@ public class LogTaskFactory implements ILogTask{
     }
 
     //错误日志
-    public void error(final Exception e, final String title, final String source
+    public void error(final Throwable e, final String title, final String source
                         , final LogType logType, final Map<String, String> tags) {
 
         LogManager.me().executeLog(new TimerTask() {
