@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.ciicsh.gt1.salecenter</groupId>
             <artifactId>gt1.salecenter.apiservice-api</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
              <groupId>com.ciicsh.gt1</groupId>
