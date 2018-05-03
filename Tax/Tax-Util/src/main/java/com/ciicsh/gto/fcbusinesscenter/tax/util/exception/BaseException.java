@@ -21,7 +21,7 @@ public class BaseException {
      * @param e
      * @return
      */
-    public static String exceptionToString(Exception e) {
+    public static String exceptionToString(Throwable e) {
         StringWriter sw = null;
         try {
             sw = new StringWriter();
