@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 @RestController
 public class AdjustBatchController {
 
+    private static final Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]+");
+
     @Autowired
     private KafkaSender sender;
 
@@ -451,9 +453,7 @@ public class AdjustBatchController {
 
     }
 
-
     private boolean isNumeric(String str) {
-        Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]+");
         Matcher isNum = pattern.matcher(str);
         if (!isNum.matches()) {
             return false;

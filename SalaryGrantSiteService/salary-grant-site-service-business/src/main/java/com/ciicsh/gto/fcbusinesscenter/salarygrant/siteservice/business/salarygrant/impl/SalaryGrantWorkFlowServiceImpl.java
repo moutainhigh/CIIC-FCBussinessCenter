@@ -1,11 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
-import com.ciicsh.gto.commonservice.util.dto.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskMissionRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
+import com.ciicsh.gto.sheetservice.api.dto.Result;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcoperationcenter.commandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
@@ -116,7 +117,7 @@ public class GroupController {
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
         updateParam.setGroupCode(code);
-        updateParam.setModifiedBy("jiang");
+        updateParam.setModifiedBy(UserContext.getUserId());
         Integer result = prGroupService.updateItemByCode(updateParam);
         return JsonResult.success(result);
     }
@@ -160,8 +161,9 @@ public class GroupController {
 
         PrPayrollGroupPO newParam = new PrPayrollGroupPO();
         BeanUtils.copyProperties(paramItem, newParam);
-        newParam.setCreatedBy("jiang");
-        newParam.setModifiedBy("jiang");
+
+        newParam.setCreatedBy(UserContext.getUserId());
+        newParam.setModifiedBy(UserContext.getUserId());
         int result= prGroupService.addItem(newParam);
         return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
     }

@@ -10,6 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 /**
  * Created by bill on 18/4/26.
  */
+
+/*
 @Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
@@ -30,3 +32,4 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         addInterceptor.addPathPatterns("/**");
     }
 }
+*/

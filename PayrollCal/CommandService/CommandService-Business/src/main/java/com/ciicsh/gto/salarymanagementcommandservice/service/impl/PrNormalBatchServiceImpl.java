@@ -112,6 +112,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
+    public PrCustBatchPO getCustBatchInfo(String batchCode) {
+        return normalBatchMapper.getCustBatchInfo(batchCode);
+    }
+
+    @Override
     public int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file) {
 
         List<String> identityList = Arrays.asList(itemNames.split(","));

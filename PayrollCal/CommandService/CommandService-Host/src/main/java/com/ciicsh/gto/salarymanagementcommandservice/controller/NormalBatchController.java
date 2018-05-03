@@ -34,6 +34,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import kafka.utils.Json;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
@@ -144,6 +145,14 @@ public class NormalBatchController {
         catch (Exception e){
             return JsonResult.faultMessage("保持失败");
         }
+    }
+
+    @RequestMapping("/getNormalBatch")
+    public JsonResult getNormalBatch(@RequestParam String batchCode){
+        PrNormalBatchPO prNormalBatchPO = new PrNormalBatchPO();
+        prNormalBatchPO.setCode(batchCode);
+        PrCustBatchPO prCustBatchPO  = batchService.getCustBatchInfo(batchCode);
+        return JsonResult.success(prCustBatchPO);
     }
 
     @PostMapping("/getBatchList")
@@ -332,6 +341,9 @@ public class NormalBatchController {
                                       @RequestParam String batchCode,
                                       @RequestParam int batchType)
     {
+        if(batchType != BatchTypeEnum.NORMAL.getValue()){
+            return JsonResult.faultMessage("不能添加雇员");
+        }
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         List<DBObject> employees = employeeTestDTOS.stream().map(employee -> {
@@ -349,6 +361,8 @@ public class NormalBatchController {
             emp.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN, employee.getCountryCode());
             emp.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN, employee.getProvinceCode());
             emp.put(PayItemName.EMPLOYEE_CITY_CODE_CN, employee.getCityCode());
+
+            //emp.put(PayItemName.ACTUAL_SALARY)
 
 
             return emp;
