@@ -36,13 +36,17 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public HashMap<String, ?> compareBatch(String srcBatchCode, Integer srcBatchType,
-                                           String tgtBatchCode, Integer tgtBatchType, LinkedHashMap<String, String> compareMap) {
+                                           String tgtBatchCode, Integer tgtBatchType,
+                                           List<String> compareKeys,
+                                           LinkedHashMap<String, String> compareMap) {
 
         List<DBObject> srcBatchList = this.getBatchItemList(srcBatchType, srcBatchCode);
         List<DBObject> tgtBatchList = this.getBatchItemList(tgtBatchType, tgtBatchCode);
-        if (srcBatchList == null || tgtBatchList == null) {
+        if (srcBatchList == null || tgtBatchList == null || srcBatchList.size() == 0 || tgtBatchList.size() == 0) {
             throw new BusinessException("没有批次数据");
         }
+
+
 
         compareMap.forEach((k, v) -> {
 
