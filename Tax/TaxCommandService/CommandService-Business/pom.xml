@@ -31,9 +31,13 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.ciicsh.gt1.logservice</groupId>
             <artifactId>logservice-api</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.commonservice</groupId>
+            <artifactId>gt1.commonservice.logservice-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>

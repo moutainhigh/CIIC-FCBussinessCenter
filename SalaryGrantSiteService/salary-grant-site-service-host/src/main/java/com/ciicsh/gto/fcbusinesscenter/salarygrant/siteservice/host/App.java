@@ -18,7 +18,13 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
         "com.ciicsh.gto.sheetservice.api",
         "com.ciicsh.gto.basicdataservice.api",
         "com.ciicsh.gto.logservice.api",
-        "com.ciicsh.gto.identityservice.api"
+        "com.ciicsh.gto.identityservice.api",
+        "com.ciicsh.gto.salarymanagementcommandservice.api",
+        "com.ciicsh.gto.salecenter.apiservice.api",
+        "com.ciicsh.gto.employeecenter.apiservice.api",
+        "com.ciicsh.gto.companycenter.webcommandservice.api",
+        "com.ciicsh.gto.settlementcenter.payment.cmdapi",
+        "com.ciicsh.gto.billcenter.fcmodule.cmd.api"
 })
 @SpringBootApplication(scanBasePackages = {
         "com.ciicsh.gt1",

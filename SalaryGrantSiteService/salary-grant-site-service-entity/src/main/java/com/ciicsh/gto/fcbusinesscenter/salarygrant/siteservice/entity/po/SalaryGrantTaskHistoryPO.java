@@ -183,6 +183,11 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
      */
     @TableField("approve_user_id")
     private String approveUserId;
+	/**
+	 * 任务流转信息
+	 */
+	@TableField("work_flow_user_info")
+	private String workFlowUserInfo;
     /**
      * 1-有效，0-无效
      */
@@ -505,6 +510,14 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 		this.advanceType = advanceType;
 	}
 
+	public String getWorkFlowUserInfo() {
+		return workFlowUserInfo;
+	}
+
+	public void setWorkFlowUserInfo(String workFlowUserInfo) {
+		this.workFlowUserInfo = workFlowUserInfo;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.salaryGrantTaskHistoryId;
@@ -545,6 +558,7 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 			", isIncludeForeignCurrency=" + isIncludeForeignCurrency +
             ", operatorUserId=" + operatorUserId +
             ", approveUserId=" + approveUserId +
+			", workFlowUserInfo=" + workFlowUserInfo +
 			", isActive=" + isActive +
 			", createdBy=" + createdBy +
 			", createdTime=" + createdTime +

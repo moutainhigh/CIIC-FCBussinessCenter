@@ -48,21 +48,12 @@ public class TaskSubProofDetailController extends BaseController implements Task
     @Override
     public JsonResult<ResponseForSubDetail> queryTaskSubProofDetail(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult<ResponseForSubDetail> jr = new JsonResult<>();
-        try {
-            RequestForProof requestForProof = new RequestForProof();
-            BeanUtils.copyProperties(taskProofDTO, requestForProof);
-            ResponseForSubDetail responseForSubDetail = taskSubProofDetailService.queryTaskSubProofDetail(requestForProof);
-            jr.fill(responseForSubDetail);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("detailType", taskProofDTO.getDetailType());
-            tags.put("id", taskProofDTO.getId().toString());
-            tags.put("employeeNo", taskProofDTO.getEmployeeNo());
-            tags.put("employeeName", taskProofDTO.getEmployeeName());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.queryTaskSubProofDetail", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
-            jr.error();
-        }
+
+        RequestForProof requestForProof = new RequestForProof();
+        BeanUtils.copyProperties(taskProofDTO, requestForProof);
+        ResponseForSubDetail responseForSubDetail = taskSubProofDetailService.queryTaskSubProofDetail(requestForProof);
+        jr.fill(responseForSubDetail);
+
         return jr;
     }
 
@@ -79,101 +70,90 @@ public class TaskSubProofDetailController extends BaseController implements Task
         JsonResult<ResponseForEmployee> jr = new JsonResult<>();
         List<EmployeeBO> employeeBOList = new ArrayList<>();
         ResponseForEmployee responseForEmployee = new ResponseForEmployee();
-        try {
-            if (main.equals(taskProofDTO.getDetailType())) {
-                if ("蓝天科技".equals(taskProofDTO.getManagerName())) {
-                    EmployeeBO employeeBO1 = new EmployeeBO();
-                    employeeBO1.setId(Long.valueOf(1));
-                    employeeBO1.setEmployeeNo("17A13012");
-                    employeeBO1.setEmployeeName("李晓");
-                    employeeBO1.setIdType("01");
-                    employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
-                    employeeBO1.setIdNo("321000199010101234");
-                    employeeBO1.setManagerNo("GL170001");
-                    employeeBO1.setManagerName("蓝天科技");
-                    employeeBO1.setDeclareAccount("蓝天科技独立户");
-                    employeeBOList.add(employeeBO1);
-                } else if ("西门子".equals(taskProofDTO.getManagerName())) {
-                    EmployeeBO employeeBO2 = new EmployeeBO();
-                    employeeBO2.setId(Long.valueOf(2));
-                    employeeBO2.setEmployeeNo("17A13497");
-                    employeeBO2.setEmployeeName("张名");
-                    employeeBO2.setIdType("01");
-                    employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
-                    employeeBO2.setIdNo("323891199003103290");
-                    employeeBO2.setManagerNo("GL170002");
-                    employeeBO2.setManagerName("西门子");
-                    employeeBO2.setDeclareAccount("西门子独立户");
-                    employeeBOList.add(employeeBO2);
-                } else if ("联想".equals(taskProofDTO.getManagerName())) {
-                    EmployeeBO employeeBO3 = new EmployeeBO();
-                    employeeBO3.setId(Long.valueOf(3));
-                    employeeBO3.setEmployeeNo("17A13513");
-                    employeeBO3.setEmployeeName("刘文华");
-                    employeeBO3.setIdType("01");
-                    employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
-                    employeeBO3.setIdNo("321110197108239090");
-                    employeeBO3.setManagerNo("GL170003");
-                    employeeBO3.setManagerName("联想");
-                    employeeBO3.setDeclareAccount("联想独立户");
-                    employeeBOList.add(employeeBO3);
-                }
-            } else {
-                if ("蓝天科技".equals(taskProofDTO.getManagerName())) {
-                    EmployeeBO employeeBO1 = new EmployeeBO();
-                    employeeBO1.setId(Long.valueOf(1));
-                    employeeBO1.setEmployeeNo("17A13012");
-                    employeeBO1.setEmployeeName("李晓");
-                    employeeBO1.setIdType("01");
-                    employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
-                    employeeBO1.setIdNo("321000199010101234");
-                    employeeBO1.setManagerNo("GL170001");
-                    employeeBO1.setManagerName("蓝天科技");
-                    employeeBO1.setDeclareAccount("蓝天科技独立户");
-                    employeeBOList.add(employeeBO1);
-                } else if ("西门子".equals(taskProofDTO.getManagerName())) {
-                    EmployeeBO employeeBO2 = new EmployeeBO();
-                    employeeBO2.setId(Long.valueOf(2));
-                    employeeBO2.setEmployeeNo("17A13497");
-                    employeeBO2.setEmployeeName("张名");
-                    employeeBO2.setIdType("01");
-                    employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
-                    employeeBO2.setIdNo("323891199003103290");
-                    employeeBO2.setManagerNo("GL170002");
-                    employeeBO2.setManagerName("西门子");
-                    employeeBO2.setDeclareAccount("西门子独立户");
-                    employeeBOList.add(employeeBO2);
-                } else if ("联想".equals(taskProofDTO.getManagerName())) {
-                    EmployeeBO employeeBO3 = new EmployeeBO();
-                    employeeBO3.setId(Long.valueOf(3));
-                    employeeBO3.setEmployeeNo("17A13513");
-                    employeeBO3.setEmployeeName("刘文华");
-                    employeeBO3.setIdType("01");
-                    employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
-                    employeeBO3.setIdNo("321110197108239090");
-                    employeeBO3.setManagerNo("GL170003");
-                    employeeBO3.setManagerName("联想");
-                    employeeBO3.setDeclareAccount("联想独立户");
-                    employeeBOList.add(employeeBO3);
-                }
+
+        if (main.equals(taskProofDTO.getDetailType())) {
+            if ("蓝天科技".equals(taskProofDTO.getManagerName())) {
+                EmployeeBO employeeBO1 = new EmployeeBO();
+                employeeBO1.setId(Long.valueOf(1));
+                employeeBO1.setEmployeeNo("17A13012");
+                employeeBO1.setEmployeeName("李晓");
+                employeeBO1.setIdType("01");
+                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
+                employeeBO1.setIdNo("321000199010101234");
+                employeeBO1.setManagerNo("GL170001");
+                employeeBO1.setManagerName("蓝天科技");
+                employeeBO1.setDeclareAccount("蓝天科技独立户");
+                employeeBOList.add(employeeBO1);
+            } else if ("西门子".equals(taskProofDTO.getManagerName())) {
+                EmployeeBO employeeBO2 = new EmployeeBO();
+                employeeBO2.setId(Long.valueOf(2));
+                employeeBO2.setEmployeeNo("17A13497");
+                employeeBO2.setEmployeeName("张名");
+                employeeBO2.setIdType("01");
+                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
+                employeeBO2.setIdNo("323891199003103290");
+                employeeBO2.setManagerNo("GL170002");
+                employeeBO2.setManagerName("西门子");
+                employeeBO2.setDeclareAccount("西门子独立户");
+                employeeBOList.add(employeeBO2);
+            } else if ("联想".equals(taskProofDTO.getManagerName())) {
+                EmployeeBO employeeBO3 = new EmployeeBO();
+                employeeBO3.setId(Long.valueOf(3));
+                employeeBO3.setEmployeeNo("17A13513");
+                employeeBO3.setEmployeeName("刘文华");
+                employeeBO3.setIdType("01");
+                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
+                employeeBO3.setIdNo("321110197108239090");
+                employeeBO3.setManagerNo("GL170003");
+                employeeBO3.setManagerName("联想");
+                employeeBO3.setDeclareAccount("联想独立户");
+                employeeBOList.add(employeeBO3);
             }
-            responseForEmployee.setTotalNum(1);
-            responseForEmployee.setCurrentNum(taskProofDTO.getCurrentNum());
-            responseForEmployee.setPageSize(taskProofDTO.getPageSize());
-            responseForEmployee.setRowList(employeeBOList);
-            jr.fill(responseForEmployee);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("detailType", taskProofDTO.getDetailType());
-            tags.put("taskId", taskProofDTO.getTaskId().toString());
-            tags.put("declareAccount", taskProofDTO.getDeclareAccount());
-            tags.put("managerName", taskProofDTO.getManagerName());
-            tags.put("employeeNo", taskProofDTO.getEmployeeNo());
-            tags.put("employeeName", taskProofDTO.getEmployeeName());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubProofDetailController.queryEmployee", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "05"), LogType.APP, tags);
-            jr.error();
+        } else {
+            if ("蓝天科技".equals(taskProofDTO.getManagerName())) {
+                EmployeeBO employeeBO1 = new EmployeeBO();
+                employeeBO1.setId(Long.valueOf(1));
+                employeeBO1.setEmployeeNo("17A13012");
+                employeeBO1.setEmployeeName("李晓");
+                employeeBO1.setIdType("01");
+                employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
+                employeeBO1.setIdNo("321000199010101234");
+                employeeBO1.setManagerNo("GL170001");
+                employeeBO1.setManagerName("蓝天科技");
+                employeeBO1.setDeclareAccount("蓝天科技独立户");
+                employeeBOList.add(employeeBO1);
+            } else if ("西门子".equals(taskProofDTO.getManagerName())) {
+                EmployeeBO employeeBO2 = new EmployeeBO();
+                employeeBO2.setId(Long.valueOf(2));
+                employeeBO2.setEmployeeNo("17A13497");
+                employeeBO2.setEmployeeName("张名");
+                employeeBO2.setIdType("01");
+                employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
+                employeeBO2.setIdNo("323891199003103290");
+                employeeBO2.setManagerNo("GL170002");
+                employeeBO2.setManagerName("西门子");
+                employeeBO2.setDeclareAccount("西门子独立户");
+                employeeBOList.add(employeeBO2);
+            } else if ("联想".equals(taskProofDTO.getManagerName())) {
+                EmployeeBO employeeBO3 = new EmployeeBO();
+                employeeBO3.setId(Long.valueOf(3));
+                employeeBO3.setEmployeeNo("17A13513");
+                employeeBO3.setEmployeeName("刘文华");
+                employeeBO3.setIdType("01");
+                employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
+                employeeBO3.setIdNo("321110197108239090");
+                employeeBO3.setManagerNo("GL170003");
+                employeeBO3.setManagerName("联想");
+                employeeBO3.setDeclareAccount("联想独立户");
+                employeeBOList.add(employeeBO3);
+            }
         }
+        responseForEmployee.setTotalNum(1);
+        responseForEmployee.setCurrentNum(taskProofDTO.getCurrentNum());
+        responseForEmployee.setPageSize(taskProofDTO.getPageSize());
+        responseForEmployee.setRowList(employeeBOList);
+        jr.fill(responseForEmployee);
+
         return jr;
     }
 

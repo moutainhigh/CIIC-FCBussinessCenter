@@ -58,24 +58,16 @@ public class TaskSubMoneyController extends BaseController {
     @PostMapping(value = "querySubMoney")
     public JsonResult<ResponseForSubMoney> querySubMoney(@RequestBody TaskSubMoneyDTO taskSubMoneyDTO) {
         JsonResult<ResponseForSubMoney> jr = new JsonResult<>();
-        try {
-            RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
-            BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
-            Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
-                //设置request请求管理方名称数组
-                requestForSubMoney.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
-            });
-            ResponseForSubMoney responseForSubMoney = taskSubMoneyService.querySubMoney(requestForSubMoney);
-            jr.fill(responseForSubMoney);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("paymentAccount", taskSubMoneyDTO.getPaymentAccount());
-            tags.put("managerName", taskSubMoneyDTO.getManagerName());
-            tags.put("statusType", taskSubMoneyDTO.getStatusType());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.querySubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
-            jr.error();
-        }
+
+        RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
+        BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
+        Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
+            //设置request请求管理方名称数组
+            requestForSubMoney.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+        });
+        ResponseForSubMoney responseForSubMoney = taskSubMoneyService.querySubMoney(requestForSubMoney);
+        jr.fill(responseForSubMoney);
+
         return jr;
     }
 
@@ -89,20 +81,13 @@ public class TaskSubMoneyController extends BaseController {
     @PostMapping(value = "completeTaskSubMoney")
     public JsonResult<Boolean> completeTaskSubMoney(@RequestBody TaskSubMoneyDTO taskSubMoneyDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
-        try {
-            RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
-            BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
-            //任务状态
-            requestForSubMoney.setStatus("04");
-            taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
-            //jr.fill(true);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.completeTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
-            jr.error();
-        }
+
+        RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
+        BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
+        //任务状态
+        requestForSubMoney.setStatus("04");
+        taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
+
         return jr;
     }
 
@@ -115,20 +100,13 @@ public class TaskSubMoneyController extends BaseController {
     @PostMapping(value = "rejectTaskSubMoney")
     public JsonResult<Boolean> rejectTaskSubMoney(@RequestBody TaskSubMoneyDTO taskSubMoneyDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
-        try {
-            RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
-            BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
-            //任务状态
-            requestForSubMoney.setStatus("03");
-            taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
-            //jr.fill(true);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("subMoneyIds", taskSubMoneyDTO.getSubMoneyIds().toString());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.rejectTaskSubMoney", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
-            jr.error();
-        }
+
+        RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
+        BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
+        //任务状态
+        requestForSubMoney.setStatus("03");
+        taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
+
         return jr;
     }
 
@@ -141,20 +119,14 @@ public class TaskSubMoneyController extends BaseController {
     @PostMapping(value = "/querySubMoneyById/{subMoneyId}")
     public JsonResult<TaskSubMoneyDTO> querySubMoneyById(@PathVariable Long subMoneyId) {
         JsonResult<TaskSubMoneyDTO> jr = new JsonResult<>();
-        try {
-            TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(subMoneyId);
-            TaskSubMoneyDTO taskSubMoneyDTO = new TaskSubMoneyDTO();
-            BeanUtils.copyProperties(taskSubMoneyPO, taskSubMoneyDTO);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
-            taskSubMoneyDTO.setPeriod(taskSubMoneyPO.getPeriod().format(formatter));
-            jr.fill(taskSubMoneyDTO);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("subMoneyId", subMoneyId.toString());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.querySubMoneyById", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
-            jr.error();
-        }
+
+        TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(subMoneyId);
+        TaskSubMoneyDTO taskSubMoneyDTO = new TaskSubMoneyDTO();
+        BeanUtils.copyProperties(taskSubMoneyPO, taskSubMoneyDTO);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM");
+        taskSubMoneyDTO.setPeriod(taskSubMoneyPO.getPeriod().format(formatter));
+        jr.fill(taskSubMoneyDTO);
+
         return jr;
     }
 
@@ -284,18 +256,13 @@ public class TaskSubMoneyController extends BaseController {
      */
     @GetMapping(value = "/printVoucher/{id}")
     public void printVoucher(@PathVariable Long id, HttpServletResponse response) {
-        try {
-            TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(id);
-            com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult jr = payapplyServiceProxy.downloadPayVoucher(taskSubMoneyPO.getPayApplyCode());
-            if ("0".equals(jr.getCode())) {
-                byte[] bs = jr.getContents();
-                super.downloadFile(response, "划款凭证.xlsx", bs);
-            }
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("subMoneyId", id.toString());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.printVoucher", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
+
+        TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(id);
+        com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult jr = payapplyServiceProxy.downloadPayVoucher(taskSubMoneyPO.getPayApplyCode());
+        if ("0".equals(jr.getCode())) {
+            byte[] bs = jr.getContents();
+            super.downloadFile(response, "划款凭证.xlsx", bs);
         }
+
     }
 }

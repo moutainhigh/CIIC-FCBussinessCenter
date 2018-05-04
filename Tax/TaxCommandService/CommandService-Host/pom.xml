@@ -25,26 +25,26 @@
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
             <artifactId>fcbusinesscenter-tax-commandservice-api</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <!--打印付款凭单-->
         <dependency>
             <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
-            <artifactId>settlementcenter-payment-command-api</artifactId>
+            <artifactId>gt1.settlementcenter-payment-command-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-kafka</artifactId>
         </dependency>
         <!--认证-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.ciicsh.gt1.commonservice</groupId>
-            <artifactId>identityservice-api</artifactId>
-        </dependency>
-        <dependency>
+            <artifactId>gt1.commonservice.identityservice-api</artifactId>
+        </dependency>-->
+        <!--<dependency>
             <groupId>com.ciicsh.gt1.commonservice</groupId>
             <artifactId>commonservice-util</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>common-auth</artifactId>
@@ -140,11 +140,6 @@
             <artifactId>springfox-swagger2</artifactId>
             <version>2.8.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.ciicsh.gt1</groupId>
-            <artifactId>common-auth</artifactId>
-            <version>1.0.0</version>
-        </dependency>
         <!--mongodb-->
         <!--<dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
@@ -234,23 +229,7 @@
                 </configuration>
             </plugin>
 
-            <!--<plugin>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-maven-plugin</artifactId>
-                <version>7.1.0.Final</version>
-                <extensions>true</extensions>
-            </plugin>-->
-
         </plugins>
 
-
     </build>
-    <!--<repositories>
-        <repository>
-            <id>guvnor-m2-repo</id>
-            <name>Guvnor M2 Repo</name>
-            <url>http://172.16.9.59:8080/kie-drools-wb/maven2/</url>
-        </repository>
-    </repositories>-->
-
 </project>

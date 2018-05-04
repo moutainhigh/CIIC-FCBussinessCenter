@@ -45,19 +45,12 @@ public class TaskFileController extends BaseController {
     @PostMapping(value = "queryTaxFile")
     public JsonResult<ResponseForFile> queryTaxFile(@RequestBody FileDTO fileDTO) {
         JsonResult<ResponseForFile> jr = new JsonResult<>();
-        try {
-            RequestForFile requestForFile = new RequestForFile();
-            BeanUtils.copyProperties(fileDTO, requestForFile);
-            ResponseForFile responseForFile = fileService.queryTaxFile(requestForFile);
-            jr.fill(responseForFile);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("businessId", fileDTO.getBusinessId().toString());
-            tags.put("businessType", fileDTO.getBusinessType());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskFileController.queryTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
-            jr.error();
-        }
+
+        RequestForFile requestForFile = new RequestForFile();
+        BeanUtils.copyProperties(fileDTO, requestForFile);
+        ResponseForFile responseForFile = fileService.queryTaxFile(requestForFile);
+        jr.fill(responseForFile);
+
         return jr;
     }
 
@@ -70,18 +63,12 @@ public class TaskFileController extends BaseController {
     @PostMapping(value = "deleteTaxFile")
     public JsonResult<Boolean> deleteTaxFile(@RequestBody FileDTO fileDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
-        try {
-            RequestForFile requestForFile = new RequestForFile();
-            BeanUtils.copyProperties(fileDTO, requestForFile);
-            Boolean flag = fileService.deleteTaxFile(requestForFile);
-            jr.fill(flag);
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("id", fileDTO.getId().toString());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskFileController.deleteTaxFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, tags);
-            jr.error();
-        }
+
+        RequestForFile requestForFile = new RequestForFile();
+        BeanUtils.copyProperties(fileDTO, requestForFile);
+        Boolean flag = fileService.deleteTaxFile(requestForFile);
+        jr.fill(flag);
+
         return jr;
     }
 

@@ -14,13 +14,24 @@ import javax.security.auth.message.AuthException;
 public class GlobalExceptionHandler {
 
     /**
-     * token异常拦截
+     * token异常处理
      */
     @ExceptionHandler(AuthException.class)
     @ResponseBody
     public JsonResult<Object> tokenExceptionHandler() {
         JsonResult<Object> jr = new JsonResult<>();
         jr.fill(JsonResult.ReturnCode.TOKEN_ERROR);
+        return jr;
+    }
+
+    /**
+     * controller异常拦截
+     */
+    @ExceptionHandler(ControllerException.class)
+    @ResponseBody
+    public JsonResult<Object> controllerExceptionHandler() {
+        JsonResult<Object> jr = new JsonResult<>();
+        jr.error();
         return jr;
     }
 }

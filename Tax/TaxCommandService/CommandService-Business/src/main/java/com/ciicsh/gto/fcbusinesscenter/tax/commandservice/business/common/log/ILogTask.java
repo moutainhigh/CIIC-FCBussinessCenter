@@ -14,6 +14,6 @@ public interface ILogTask {
     void info(final String content, final String title, final String source
             , final LogType logType, final Map<String, String> tags);
 
-    void error(final Exception e, final String title, final String source
+    void error(final Throwable e, final String title, final String source
             , final LogType logType, final Map<String, String> tags);
 }
