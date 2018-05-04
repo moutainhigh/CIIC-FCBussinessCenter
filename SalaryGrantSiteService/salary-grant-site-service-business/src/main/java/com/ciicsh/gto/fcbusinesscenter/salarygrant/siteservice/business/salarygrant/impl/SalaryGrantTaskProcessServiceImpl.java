@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gt1.CalResultMongoOpt;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.JsonParseConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
@@ -16,12 +18,16 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSu
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmployeeChangeLogBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantMainTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.StringUtil;
+import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.beans.BeanInfo;
@@ -35,16 +41,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 /**
  * <p>
- * 任务单 服务实现类
+ * 薪资发放任务单处理 服务实现类
  * </p>
  *
- * @author chenpb
- * @since 2018-04-18
+ * @author gaoyang
+ * @since 2018-01-22
  */
 @Service
-public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMapper, SalaryGrantMainTaskPO> implements SalaryGrantService {
+public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMainTaskMapper, SalaryGrantMainTaskPO> implements SalaryGrantTaskProcessService {
     @Autowired
     SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
@@ -55,6 +62,10 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMappe
     CommonService commonService;
     @Autowired
     SalaryGrantWorkFlowService salaryGrantWorkFlowService;
+    @Autowired
+    CalResultMongoOpt calResultMongoOpt;
+    @Autowired
+    ManagementProxy managementProxy;
 
     @Override
     public Boolean isExistSalaryGrantMainTask(Map batchParam) {
@@ -203,29 +214,65 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMappe
     /**
      *  根据批次对应的管理方，查找对应的操作员。
      * @param managementId
-     * @return Map
+     * @return String
      */
-    private Map getUserByManagement(String managementId){
+    private String getUserByManagement(String managementId){
         // todo 根据批次对应的管理方，查找对应的操作员。
         // 根据管理方查询有哪些操作员负责，获取操作员信息，作为批次对应任务单的创建人。
         // 在待处理任务列表中根据系统权限控制，查找当前登录人的任务单列表。
-
-        return null;
+        JsonResult<DetailResponseDTO> detailResponseDTO =  managementProxy.detail(managementId);
+        String userId = detailResponseDTO.getObject().getOwnerId();
+        return userId;
     }
 
     @Override
     public List<PayrollCalcResultDTO> listPayrollCalcResult(Map batchParam) {
+        String batchCode = (String)batchParam.get("batchCode");
+        Integer batchType = (Integer)batchParam.get("batchType");
         List<PayrollCalcResultDTO> payrollCalcResultDTOList = new ArrayList<PayrollCalcResultDTO>();
-        // todo 调用胡兵提供的查询批次结果数据的接口方法,调用计算引擎提供的mongodb数据库查询API
+        // 调用计算引擎提供的mongodb数据库查询工具类
+        List<DBObject> list  = calResultMongoOpt.list(Criteria.where("batch_id").is(batchCode).and("batch_type").is(batchType));
+        if (list != null && list.size() > 0) {
+            list.forEach(dbObject ->{
+                PayrollCalcResultDTO payrollCalcResultDTO = this.toConvertToPayrollCalcResultDTO(dbObject);
+                payrollCalcResultDTOList.add(payrollCalcResultDTO);
+            });
+        }
         return payrollCalcResultDTOList;
+    }
+
+    private PayrollCalcResultDTO toConvertToPayrollCalcResultDTO(DBObject dbObject){
+        PayrollCalcResultDTO payrollCalcResultDTO = new PayrollCalcResultDTO();
+        payrollCalcResultDTO.setFcPayrollCalcResultId((Long)dbObject.get("_id"));
+        payrollCalcResultDTO.setEmpId((String)dbObject.get("emp_id"));
+        payrollCalcResultDTO.setEmpName((String)dbObject.get("emp_name"));
+        payrollCalcResultDTO.setBatchId((String)dbObject.get("batch_id"));
+        payrollCalcResultDTO.setRefBatchId((String)dbObject.get("ref_batch_id"));
+        payrollCalcResultDTO.setBatchType((String)dbObject.get("batch_type"));
+        payrollCalcResultDTO.setMgrId((String)dbObject.get("mgr_id"));
+        payrollCalcResultDTO.setMgrName((String)dbObject.get("mgr_name"));
+        payrollCalcResultDTO.setCountryCode((String)dbObject.get("country_code"));
+        payrollCalcResultDTO.setPersonnelIncomeNetPay((BigDecimal)dbObject.get("net_pay"));
+        payrollCalcResultDTO.setPersonnelIncomeTax((BigDecimal)dbObject.get("tax"));
+        payrollCalcResultDTO.setPersonnelSocialSecurity((BigDecimal)dbObject.get("social_security"));
+        payrollCalcResultDTO.setPersonnelProvidentFund((BigDecimal)dbObject.get("provident_fund"));
+        payrollCalcResultDTO.setPersonnelIncomeYearMonth((String)dbObject.get("income_year_month"));
+        payrollCalcResultDTO.setTaxYearMonth((String)dbObject.get("tax_year_month"));
+        payrollCalcResultDTO.setContractFirstParty((String)dbObject.get("contract_first_party"));
+        payrollCalcResultDTO.setSalaryCalcResultItems((String)dbObject.get("salary_calc_result_items"));
+        payrollCalcResultDTO.setEmployeeServiceAgreement((String)dbObject.get("employee_service_agreement"));
+        payrollCalcResultDTO.setEmployeeServiceAgreement((String)dbObject.get("employee_service_agreement"));
+        payrollCalcResultDTO.setPersonnelIncomeYearlyBonusAfterTax((BigDecimal)dbObject.get("bonus_after_tax"));
+
+        return payrollCalcResultDTO;
     }
 
     /**
      *  创建薪资发放任务单主表，解析雇员计算结果数据，过滤薪资发放的雇员信息，汇总相关数据。
      *  新建薪资发放任务单，把查询的批次业务表中数据赋值到主表明细对应字段中。
-     插入新增记录，包括entityId、批次信息、雇员数据汇总信息
-     字段包括：管理方编号、管理方名称、薪酬计算批次号、参考批次号、薪资周期、薪资发放日期、发放类型（默认0）、状态（默认0）、任务单类型（0）、是否有效（1）、创建人、创建时间、修改人、修改时间。
-     汇总信息：薪资发放总金额（RMB）--直接从计算批次汇总、发薪人数、中方发薪人数、外方发薪人数、中智上海发薪人数--包括大库和独立库、委托机构发薪人数、发放方式。
+     *  插入新增记录，包括entityId、批次信息、雇员数据汇总信息
+     *  字段包括：管理方编号、管理方名称、薪酬计算批次号、参考批次号、薪资周期、薪资发放日期、发放类型（默认0）、状态（默认0）、任务单类型（0）、是否有效（1）、创建人、创建时间、修改人、修改时间。
+     *  汇总信息：薪资发放总金额（RMB）--直接从计算批次汇总、发薪人数、中方发薪人数、外方发薪人数、中智上海发薪人数--包括大库和独立库、委托机构发薪人数、发放方式。
      * @param payrollCalcResultDTOList
      * @param salaryGrantMainTaskPO
      * @return SalaryGrantMainTaskPO
@@ -347,13 +394,13 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantMainTaskMappe
         /*if(salaryGrantMainTaskPO.getSalaryGrantMainTaskId() < 0){
             salaryGrantMainTaskPO.setCreatedTime(new Date());
             //todo 后期添加权限控制
-            Map userMap = this.getUserByManagement(salaryGrantMainTaskPO.getManagementId());
-            salaryGrantMainTaskPO.setOperatorUserId((String) userMap.get("userId"));
-            salaryGrantMainTaskPO.setCreatedBy((String) userMap.get("userId"));
+            String userId = this.getUserByManagement(salaryGrantMainTaskPO.getManagementId());
+            salaryGrantMainTaskPO.setOperatorUserId(userId);
+            salaryGrantMainTaskPO.setCreatedBy(userId);
             salaryGrantMainTaskPO.setModifiedTime(new Date());
         }else{
             //todo 后期添加权限控制，获取当前登录人ID
-            salaryGrantMainTaskPO.setModifiedBy("");
+            salaryGrantMainTaskPO.setModifiedBy(UserContext.getUserId());
             salaryGrantMainTaskPO.setModifiedTime(new Date());
         }*/
         return insertOrUpdate(salaryGrantMainTaskPO);
