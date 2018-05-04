@@ -192,6 +192,11 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
      */
 	@TableField("personal_income_tax")
 	private BigDecimal personalIncomeTax;
+	/**
+	 * 年终奖
+	 */
+	@TableField("year_end_bonus")
+	private BigDecimal yearEndBonus;
     /**
      * 人民币金额
      */
@@ -781,6 +786,14 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 		this.grantAccountName = grantAccountName;
 	}
 
+	public BigDecimal getYearEndBonus() {
+		return yearEndBonus;
+	}
+
+	public void setYearEndBonus(BigDecimal yearEndBonus) {
+		this.yearEndBonus = yearEndBonus;
+	}
+
 	// 重写克隆方法子列才可以调用
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -824,6 +837,7 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 			", personalSocialSecurity=" + personalSocialSecurity +
 			", individualProvidentFund=" + individualProvidentFund +
 			", personalIncomeTax=" + personalIncomeTax +
+			", yearEndBonus=" + yearEndBonus +
 			", paymentAmountRMB=" + paymentAmountRMB +
 			", paymentAmount=" + paymentAmount +
 			", currencyCode=" + currencyCode +

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryClaimMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryClaimPO">
+		<id column="task_code" property="taskCode" />
+		<result column="collecting_mode" property="collectingMode" />
+		<result column="serial_number" property="serialNumber" />
+		<result column="claim_date" property="claimDate" />
+		<result column="receive_amount" property="receiveAmount" />
+		<result column="currency_code" property="currencyCode" />
+		<result column="claim_abstract" property="claimAbstract" />
+		<result column="claim_amount" property="claimAmount" />
+		<result column="receive_account_code" property="receiveAccountCode" />
+		<result column="receive_account_name" property="receiveAccountName" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+</mapper>

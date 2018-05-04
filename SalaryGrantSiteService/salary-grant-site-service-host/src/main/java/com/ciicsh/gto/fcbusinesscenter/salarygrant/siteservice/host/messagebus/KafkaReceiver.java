@@ -1,6 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
 import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCompleteMsgDTO;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class KafkaReceiver {
 
     @Autowired
-    private SalaryGrantService salaryGrantService;
+    private SalaryGrantTaskProcessService salaryGrantTaskProcessService;
 
     //todo 接收计算引擎消息，获取计算批次号
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_TASK)
@@ -40,7 +40,7 @@ public class KafkaReceiver {
         batchParam.put("batchCode",batchCode);
         batchParam.put("batchType",batchType);
         // 2、根据计算批次号查询批次业务表的批次数据信息，包括计算结果数据及雇员服务协议信息。发起薪资发放任务单。
-        salaryGrantService.createSalaryGrantMainTask(batchParam);
+        salaryGrantTaskProcessService.createSalaryGrantMainTask(batchParam);
 
     }
 

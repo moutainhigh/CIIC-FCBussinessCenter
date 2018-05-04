@@ -39,6 +39,7 @@
         <result column="personal_social_security" property="personalSocialSecurity"/>
         <result column="individual_provident_fund" property="individualProvidentFund"/>
         <result column="personal_income_tax" property="personalIncomeTax"/>
+        <result column="year_end_bonus" property="yearEndBonus"/>
         <result column="payment_amount_rmb" property="paymentAmountRMB"/>
         <result column="payment_amount" property="paymentAmount"/>
         <result column="currency_code" property="currencyCode"/>

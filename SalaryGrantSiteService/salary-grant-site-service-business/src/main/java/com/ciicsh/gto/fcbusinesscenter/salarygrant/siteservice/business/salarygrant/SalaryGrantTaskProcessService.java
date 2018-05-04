@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.PayrollBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantMainTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
@@ -15,13 +14,13 @@ import java.util.Map;
 
 /**
  * <p>
- * 薪资发放 服务类
+ * 薪资发放任务单处理 服务类
  * </p>
  *
- * @author chenpb
- * @since 2018-02-27
+ * @author gaoyang
+ * @since 2018-01-22
  */
-public interface SalaryGrantService extends IService<SalaryGrantMainTaskPO> {
+public interface SalaryGrantTaskProcessService extends IService<SalaryGrantMainTaskPO> {
     /**
      *  根据计算批次编号判断薪资发放任务单主表是否已存在
      * @param batchParam
