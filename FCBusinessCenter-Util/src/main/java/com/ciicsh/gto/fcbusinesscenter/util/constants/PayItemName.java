@@ -30,7 +30,6 @@ public class PayItemName {
 
     public static final String EMPLOYEE_SERVICE_AGREE = "雇员服务协议";
 
-    public static final String EMPLOYEE_NET_PAY = "实发工资";
 
     public static final String EMPLOYEE_COMPANY_ID = "公司编号";
 
@@ -46,6 +45,8 @@ public class PayItemName {
 
     public static final String NATIONALITY = "国籍";
 
+    public static final String EMPLOYEE_NET_PAY = "实发工资";
+
     public static final String SALARY_TOTAL = "工资总额(含四金)";
 
     public static final String BEFORE_TOTAL = "税前合计";
@@ -56,6 +57,5 @@ public class PayItemName {
 
     public static final String TAX_TOTAL = "个税合计";
 
-    public static final String ACTUAL_SALARY = "实发工资";
 
 }

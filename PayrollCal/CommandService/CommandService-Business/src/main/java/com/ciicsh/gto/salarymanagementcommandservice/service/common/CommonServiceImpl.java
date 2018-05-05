@@ -68,28 +68,18 @@ public class CommonServiceImpl {
                 clonePyItems.forEach(p->{
                     if (p.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)) {
                         p.put("item_value", base_info.get(PayItemName.EMPLOYEE_NAME_CN));
-                    } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_CODE_CN)) {
+                    }
+                    else if (p.get("item_name").equals(PayItemName.EMPLOYEE_CODE_CN)) {
                         p.put("item_value", base_info.get(PayItemName.EMPLOYEE_CODE_CN));
-                    } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_DEP_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_DEP_CN));
-                    } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_BIRTHDAY_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_BIRTHDAY_CN));
-                    } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_ID_NUM_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_ID_NUM_CN));
-                    } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_ID_TYPE_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_ID_TYPE_CN));
-                    } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_POSITION_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_POSITION_CN));
-                    } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_FORMER_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_FORMER_CN));
-                    }else if (p.get("item_name").equals(PayItemName.EMPLOYEE_COUNTRY_CODE_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN));
-                    }else if (p.get("item_name").equals(PayItemName.EMPLOYEE_PROVINCE_CODE_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_PROVINCE_CODE_CN));
-                    }else if (p.get("item_name").equals(PayItemName.EMPLOYEE_CITY_CODE_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_CITY_CODE_CN));
-                    }else if (p.get("item_name").equals(PayItemName.EMPLOYEE_SEX_CN)) {
-                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_SEX_CN));
+                    }
+                    else if (p.get("item_name").equals(PayItemName.NATIONALITY)) {
+                        p.put("item_value", base_info.get(PayItemName.NATIONALITY));
+                    }
+                    else if (p.get("item_name").equals(PayItemName.EMPLOYEE_ONBOARD_CN)) {
+                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_ONBOARD_CN));
+                    }
+                    else if (p.get("item_name").equals(PayItemName.LEAVE_DATE)) {
+                        p.put("item_value", base_info.get(PayItemName.LEAVE_DATE));
                     }
                 });
 

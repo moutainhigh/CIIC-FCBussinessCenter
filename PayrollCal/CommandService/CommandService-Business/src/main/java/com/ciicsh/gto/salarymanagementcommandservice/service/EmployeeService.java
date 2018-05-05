@@ -16,10 +16,12 @@ public interface EmployeeService {
      * @return 是否新增成功
      */
     Integer addEmployee(PrEmployeePO employeePO);
+
     /**
-     * 添加雇员组雇员
-     * @param employeeTestPOS 雇员主表数据
-     * @return 是否增加成功
+     *
+     * @param empIds
+     * @param empGroupCode
+     * @return
      */
     Boolean addEmployees(List<String> empIds, String empGroupCode);
 
@@ -54,4 +56,5 @@ public interface EmployeeService {
      * @return
      */
     int upsertEmployee(PrEmployeePO employeePO);
+
 }
