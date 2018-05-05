@@ -46,4 +46,5 @@ public interface PrEmployeeMapper extends BaseMapper<PrEmployeePO> {
      * 插入（更新）本地雇员冗余表
      */
     int upsertEmployee(PrEmployeePO prEmployeePO);
+
 }

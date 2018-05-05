@@ -2,6 +2,10 @@ package com.ciicsh.caldispatchjob.compute.messageBus;
 
 import com.ciicsh.caldispatchjob.compute.Cal.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.*;
+import com.ciicsh.common.entity.JsonResult;
+import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeContractProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.GetEmployeeContractsDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmployeeContractResponseDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.AdjustBatchMsg;
@@ -29,6 +33,9 @@ public class BatchSyncReceiver {
     private final static Logger logger = LoggerFactory.getLogger(BatchSyncReceiver.class);
 
     @Autowired
+    private EmployeeContractProxy employeeContractProxy;
+
+    @Autowired
     private EmpGroupServiceImpl empGroupService;
 
     @Autowired
@@ -54,7 +61,7 @@ public class BatchSyncReceiver {
 
     @StreamListener(PayrollSink.EMP_GROUP_INPUT)
     public void receive(PayrollEmpGroup message){
-        //logger.info("received employee group from message: " + message.getIds().size());
+        //logger.info("received employee group from message: " + message.getIds());
         processEmployees(message);
     }
 
@@ -86,8 +93,8 @@ public class BatchSyncReceiver {
      * @param message
      */
     private void processEmployees(PayrollEmpGroup message){
-        List<String> empIds = StringUtils.isNotEmpty(message.getIds())? null : Arrays.asList(message.getIds().split(","));
-        List<String> groupIds = StringUtils.isNotEmpty(message.getEmpGroupIds())? null :Arrays.asList(message.getEmpGroupIds().split(","));
+        List<String> empIds = StringUtils.isNotEmpty(message.getIds())? Arrays.asList(message.getIds().split(",")): null;
+        List<String> groupIds = StringUtils.isNotEmpty(message.getEmpGroupIds())? Arrays.asList(message.getEmpGroupIds().split(",")): null;
 
         if(groupIds == null || empIds == null){
             logger.info("groupIds or empIds should not be empty");

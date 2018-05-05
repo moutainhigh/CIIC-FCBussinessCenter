@@ -46,7 +46,7 @@
 				AND group_template_name LIKE concat(#{groupTemplateName},'%')
 			</if>
 			<if test="approvalStatus != null">
-				AND approval_status = #{managementId}
+				AND approval_status = #{approvalStatus}
 			</if>
 			<if test="isActive != null">
 				AND is_active = #{isActive}

@@ -275,7 +275,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,employeePO.getDepartment());
         basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN,employeePO.getGender()? "男":"女");
         basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,employeePO.getIdCardType());
-        basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,employeePO.getJoinDate());
+        basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,employeePO.getInDate());
         basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,employeePO.getIdNum());
         basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,employeePO.getPosition());
 

@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountSetExtensionDTO;
@@ -50,13 +51,14 @@ public class AccountSetController extends BaseController {
     @GetMapping("/getWorkCalendarList")
     public JsonResult getWorkCalendarList(@RequestParam String managementId) {
 
+        //TODO
         List<WorkCalendar> workCalendars = new ArrayList<>();
         WorkCalendar workCalendar = null;
 
-        workCalendar = new WorkCalendar("GL170001","蓝天科技工作日历A","1,2,3,4,5,6,7,8,9,10");
+        workCalendar = new WorkCalendar("GL1800255","蓝天科技工作日历A","1,2,3,4,5,6,7,8,9,10");
         workCalendars.add(workCalendar);
 
-        workCalendar = new WorkCalendar("GL170001","蓝天科技工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
+        workCalendar = new WorkCalendar("GL1800255","蓝天科技工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
         workCalendars.add(workCalendar);
 
         workCalendar = new WorkCalendar("GL000007","蓝天科技工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
@@ -242,6 +244,8 @@ public class AccountSetController extends BaseController {
     public JsonResult getPayrollAccountSetExts(@RequestBody PrPayrollAccountSetExtensionDTO extensionDTO,
                                             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                             @RequestParam(required = false, defaultValue = "50")  Integer pageSize) {
+
+        extensionDTO.setManagementId(CommonHelper.getManagementIDs());
         PrPayrollAccountSetExtensionPO extensionPO  = PayrollAccountSetExtensionTranslator.toPrPayrollAccountSetExtensionPO(extensionDTO);
         PageInfo<PrPayrollAccountSetExtensionPO> pageInfo = prAccountSetService.getPayrollAccountSetExts(extensionPO, pageNum,pageSize);
         List<PrPayrollAccountSetExtensionDTO> extensions = pageInfo.getList()

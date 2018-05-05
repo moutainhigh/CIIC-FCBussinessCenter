@@ -186,7 +186,6 @@ public class AdjustBatchController {
             DBObject calalog = (DBObject)dbObject.get("catalog");
             DBObject empInfo = (DBObject)calalog.get("emp_info");
             itemPO.setEmpName(empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN)); //雇员姓名
-            itemPO.setTaxPeriod(empInfo.get(PayItemName.EMPLOYEE_TAX_CN) == null ? "本月" : (String)empInfo.get(PayItemName.EMPLOYEE_TAX_CN)); //雇员个税期间 TODO
 
             List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
             List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();

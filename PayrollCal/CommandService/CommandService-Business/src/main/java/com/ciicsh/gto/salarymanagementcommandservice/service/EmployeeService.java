@@ -16,10 +16,12 @@ public interface EmployeeService {
      * @return 是否新增成功
      */
     Integer addEmployee(PrEmployeePO employeePO);
+
     /**
-     * 添加雇员组雇员
-     * @param employeeTestPOS 雇员主表数据
-     * @return 是否增加成功
+     *
+     * @param empIds
+     * @param empGroupCode
+     * @return
      */
     Boolean addEmployees(List<String> empIds, String empGroupCode);
 
@@ -36,10 +38,10 @@ public interface EmployeeService {
 
     /**
      * 批量删除
-     * @param ids 雇员和雇员组关系ID
+     * @param
      * @return
      */
-    Integer batchDelete(List<String> ids, List<String> employeeIds, String empGroupCode);
+    Integer batchDelete(List<String> employeeIds, String empGroupCode);
 
     /**
      * 检查雇员在该雇员组是否存在
@@ -54,4 +56,5 @@ public interface EmployeeService {
      * @return
      */
     int upsertEmployee(PrEmployeePO employeePO);
+
 }

@@ -35,4 +35,16 @@
 		AND is_active = 1
 	</select>
 
+	<delete id="deleteEmpGroupRelation">
+		DELETE FROM pr_emp_group_emp_relation
+		WHERE
+		emp_group_code = #{empGroupCode}
+		AND
+		employee_id IN
+		<foreach item="item" index="index" collection="employeeIds"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
 </mapper>

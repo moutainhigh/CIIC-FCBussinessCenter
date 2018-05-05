@@ -124,6 +124,7 @@
 
         <!--三方库依赖 ED-->
 
+        <!--
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bus-kafka</artifactId>
@@ -138,6 +139,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>
         </dependency>
+        -->
 
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
