@@ -1,5 +1,8 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.ManagementInfo;
+import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.salarymanagementcommandservice.api.EmployeeGroupProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrEmpGroupDTO;
@@ -10,15 +13,12 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.EmployeeGroupServic
 import com.ciicsh.gto.salarymanagementcommandservice.translator.EmployeeGroupTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,24 +32,9 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
     private EmployeeGroupService employeeGroupService;
 
     @GetMapping("/getemployeegroupnames")
-    public JsonResult getEmployeeGroupNames(@RequestParam String managementId,@RequestParam String query) {
+    public JsonResult getEmployeeGroupNames(@RequestParam String managementId) {
         List<KeyValuePO> keyValues = employeeGroupService.getEmployeeGroupNames(managementId);
-        List<KeyValuePO> result = new ArrayList<>();
-        result.clear();
-        if(CommonUtils.isContainChinese(query)){
-            keyValues.forEach(model ->{
-                if(model.getValue().indexOf(query) >-1){
-                    result.add(model);
-                }
-            });
-        }else {
-            keyValues.forEach(model ->{
-                if(model.getKey().indexOf(query) >-1){
-                    result.add(model);
-                }
-            });
-        }
-        return JsonResult.success(result);
+        return JsonResult.success(keyValues);
     }
 
     @PostMapping("/getemployeegroups")
@@ -57,6 +42,8 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
                                         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                         @RequestParam(required = false, defaultValue = "50")  Integer pageSize) {
         PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
+        empGroupPO.setName(prEmpGroupDTO.getEmpGroupName());
+        empGroupPO.setManagementId(CommonHelper.getManagementIDs());
         PageInfo<PrEmpGroupPO> pageInfo =  employeeGroupService.getEmployeeGroups(empGroupPO, pageNum,pageSize);
         List<PrEmpGroupDTO> empGroups = pageInfo.getList()
                 .stream()
@@ -183,6 +170,11 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
     public JsonResult getEmployeeGroupById(@PathVariable("empGroupCode") String empGroupCode) {
         PrEmpGroupPO empGroupPO = employeeGroupService.getEmployeeGroupByCode(empGroupCode);
         PrEmpGroupDTO empGroupDTO = EmployeeGroupTranslator.toPrEmpGroupDTO(empGroupPO);
+        //set management name -- added by bill 2018-05-04
+        Optional<ManagementInfo> find = UserContext.getManagementInfoLists().stream().filter(mgrInfo -> mgrInfo.getManagementId().equals(empGroupDTO.getManagementId())).findFirst();
+        if(find.isPresent()){
+            empGroupDTO.setManagementName(find.get().getManagementName());
+        }
         return JsonResult.success(empGroupDTO);
     }
 }

@@ -36,10 +36,10 @@ public interface EmployeeService {
 
     /**
      * 批量删除
-     * @param ids 雇员和雇员组关系ID
+     * @param
      * @return
      */
-    Integer batchDelete(List<String> ids, List<String> employeeIds, String empGroupCode);
+    Integer batchDelete(List<String> employeeIds, String empGroupCode);
 
     /**
      * 检查雇员在该雇员组是否存在

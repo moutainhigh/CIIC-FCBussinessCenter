@@ -24,6 +24,8 @@ public class PrEmpGroupDTO{
      * 雇员组编码，规则为：GYZ-客户ID-xxx(三位数字序号)
      */
 	private String empGroupCode;
+
+	private String empGroupName;
     /**
      * 所属管理方ID
      */

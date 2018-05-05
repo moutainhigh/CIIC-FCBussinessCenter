@@ -311,16 +311,19 @@ public class NormalBatchController {
 
             List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
             List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
-            items.stream()
-                    //.filter(p->!p.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN) && !p.get("item_name").equals(PayItemName.EMPLOYEE_CODE_CN))
-                    .forEach(dbItem -> {
-                                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
-                                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
-                                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
-                                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
-                                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
-                                simplePayItemDTOList.add(simplePayItemDTO);
-                            });
+            items.stream().sorted((item1, item2)->{
+                int order1, order2;
+                order1 = (int)item1.get("display_priority");
+                order2 = (int)item2.get("display_priority");
+                return Integer.compare(order1,order2);
+            }).forEach(dbItem -> {
+                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
+                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
+                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
+                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
+                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
+                simplePayItemDTOList.add(simplePayItemDTO);
+            });
             itemPO.setPayItemDTOS(simplePayItemDTOList);
             return itemPO;
         }).collect(Collectors.toList());

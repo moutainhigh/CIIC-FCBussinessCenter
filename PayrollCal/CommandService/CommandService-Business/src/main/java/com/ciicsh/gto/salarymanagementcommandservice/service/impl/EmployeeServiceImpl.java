@@ -13,6 +13,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.commons.lang.StringUtils;
 
 ;import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             if(ids.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
                 payrollEmpGroup.setEmpGroupIds(empGroupCode);
-                payrollEmpGroup.setIds(ids.toString());
+                payrollEmpGroup.setIds(StringUtils.join(ids,","));
                 payrollEmpGroup.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }
@@ -90,13 +91,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Integer batchDelete(List<String> ids,List<String> employeeIds,String empGroupCode) {
-        Integer result = empGroupEmpRelationMapper.deleteBatchIds(ids);
+    public Integer batchDelete(List<String> employeeIds,String empGroupCode) {
+        Integer result = empGroupEmpRelationMapper.deleteEmpGroupRelation(employeeIds,empGroupCode);
         if(result > 0){
             if(employeeIds != null && employeeIds.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                //payrollEmpGroup.setEmpGroupIds(Arrays.asList(empGroupCode));
-                //payrollEmpGroup.setIds(employeeIds);
+                payrollEmpGroup.setEmpGroupIds(empGroupCode);
+                payrollEmpGroup.setIds(StringUtils.join(employeeIds,","));
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }

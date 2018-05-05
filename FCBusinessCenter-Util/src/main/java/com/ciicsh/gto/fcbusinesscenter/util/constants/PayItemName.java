@@ -32,6 +32,8 @@ public class PayItemName {
 
     public static final String EMPLOYEE_NET_PAY = "实发工资";
 
+    public static final String EMPLOYEE_COMPANY_ID = "公司编号";
+
 
     // new structure
     public static final String EMPLOYEE_CODE_CN = "雇员编号";
