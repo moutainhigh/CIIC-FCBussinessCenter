@@ -2,24 +2,29 @@ eureka:
   client:
     serviceUrl:
       defaultZone: "http://172.16.9.56:9602/eureka"
+  instance:
+      lease-expiration-duration-in-seconds: 30
+      lease-renewal-interval-in-seconds: 40
+      prefer-ip-address: true
+      instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 
 management:
   security:
    enabled: false
 
 seaweed:
-  masterHost: "172.16.22.110:9333"
+  masterHost: "172.16.9.58:9333"
 
 database:
-  host: 172.16.22.108
+  host: 172.16.9.53
   port: 3306
   databasename: gtopayrolldb
   username: root
-  password: a111111
+  password: ciicit!#%
 
 kafka:
-  brokers: 172.16.100.101:9092
-  zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.109:2181
+  brokers: 172.16.9.55:9092
+  zk-nodes: 172.16.9.55:2181,172.16.9.56:2181,172.16.9.57:2181
 
 mongo:
   host: 172.16.9.15  # 172.16.9.52 java -Xms384m -Xmx512m -jar app.jar --spring.profiles.active=qa --server.port=8060
@@ -27,3 +32,4 @@ mongo:
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
+
