@@ -260,7 +260,7 @@
                 and t1.batch_code = #{batchCode}
             </if>
             <if test="grantMode != null and grantMode != ''">
-                and t1.grant_mode = like concat('%', #{grantMode, jdbcType=VARCHAR}, '')
+                and t1.grant_mode like concat('%', #{grantMode, jdbcType=VARCHAR}, '')
             </if>
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
