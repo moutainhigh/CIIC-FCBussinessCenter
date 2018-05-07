@@ -110,6 +110,7 @@
 		LEFT JOIN pr_payroll_group c on a.payroll_group_code = c.group_code
 		LEFT JOIN pr_payroll_group_template d on a.payroll_group_template_code = d.group_template_code
 		<include refid="whereExtQuery" />
+		ORDER BY a.created_time DESC
 	</select>
 	
 	<select id="getPayrollAccountSetExtByCode" resultMap="BaseExtensionResultMap">
@@ -200,16 +201,16 @@
 	<sql id="whereExtQuery">
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
 			<if test="managementId != null and managementId != ''">
-				AND a.management_id = #{managementId}
-			</if>
-			<if test="accountSetCode != null and accountSetCode !=''">
-				AND a.account_set_code = #{accountSetCode}
+				AND a.management_id IN (${managementId})
 			</if>
 			<if test="accountSetName != null and accountSetName != ''">
-				AND a.account_set_name = #{accountSetName}
+				AND a.account_set_name LIKE concat(#{accountSetName},'%')
 			</if>
-			<if test="payrollGroupCode != null and payrollGroupCode != ''">
-				AND a.payroll_group_code = #{payrollGroupCode}
+			<if test="empGroupName != null and empGroupName != ''">
+				AND b.name LIKE concat(#{empGroupName},'%')
+			</if>
+			<if test="payrollGroupName != null and payrollGroupName != ''">
+				AND c.group_name LIKE concat(#{payrollGroupName},'%')
 			</if>
 		</trim>
 	</sql>

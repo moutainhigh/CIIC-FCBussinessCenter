@@ -6,6 +6,7 @@
 	<resultMap id="EmployeeResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO">
 		<id column="employee_id" property="employeeId" />
 		<result column="employee_name" property="employeeName" />
+		<result column="company_id" property="companyId" />
 		<result column="former_name" property="formerName" />
 		<result column="id_card_type" property="idCardType" />
 		<result column="id_num" property="idNum" />
@@ -20,7 +21,8 @@
 		<result column="city_name" property="cityName" />
 		<result column="department" property="department" />
 		<result column="position" property="position" />
-		<result column="join_date" property="joinDate" />
+		<result column="join_date" property="inDate" />
+		<result column="leave_date" property="outDate" />
 		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
@@ -30,6 +32,7 @@
 
 	<select id="getEmployeesByGroupCode" resultMap="EmployeeResultMap">
 		SELECT
+			b.company_id,
 			b.employee_id,
 			b.employee_name,
 			b.former_name,
@@ -47,6 +50,7 @@
 			b.department,
 			b.position,
 			b.join_date,
+			b.leave_date,
 			b.is_active,
 			b.created_time,
 			b.modified_time,
@@ -86,6 +90,7 @@
 		REPLACE INTO
 		pr_employee (
 			employee_id,
+			company_id,
 			id_card_type,
 			id_num,
 			employee_name,
@@ -93,6 +98,8 @@
 			management_id,
 			gender,
 			birthday,
+			join_date,
+			leave_date,
 			country_code,
 			country_name,
 			province_code,
@@ -107,6 +114,7 @@
 		VALUES
 		(
 			#{employeeId},
+			#{companyId},
 			#{idCardType},
 			#{idNum},
 			#{employeeName},
@@ -114,6 +122,8 @@
 			#{managementId},
 			#{gender},
 			#{birthday},
+			#{inDate},
+			#{outDate},
 			#{countryCode},
 			#{countryName},
 			#{provinceCode},

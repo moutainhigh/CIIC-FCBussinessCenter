@@ -41,10 +41,10 @@ public class EmployeeController{
     }
 
 //    @Override
-    @DeleteMapping("/batchDelete/{ids}")
-    public JsonResult batchDelete(@PathVariable("ids")String ids,@RequestParam String employeeIds,@RequestParam String empGroupCode) {
-        String[] relationIds = ids.split(",");
-        Integer value = employeeService.batchDelete(Arrays.asList(relationIds),Arrays.asList(employeeIds),empGroupCode);
+    @DeleteMapping("/batchDelete")
+    public JsonResult batchDelete(@RequestParam String employeeIds,@RequestParam String empGroupCode) {
+
+        Integer value = employeeService.batchDelete(Arrays.asList(employeeIds.split(",")),empGroupCode);
         if(value > 0){
             return JsonResult.success(value,"删除成功!");
         }

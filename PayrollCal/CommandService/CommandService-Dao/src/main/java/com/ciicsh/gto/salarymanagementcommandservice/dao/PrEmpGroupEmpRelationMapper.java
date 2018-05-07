@@ -33,4 +33,6 @@ public interface PrEmpGroupEmpRelationMapper extends BaseMapper<PrEmpGroupEmpRel
      * @return
      */
     Integer delByEmpGroupCodes(List<String> empGroupCodes);
+
+    Integer deleteEmpGroupRelation(@Param("employeeIds") List<String> employeeIds,@Param("empGroupCode") String empGroupCode);
 }

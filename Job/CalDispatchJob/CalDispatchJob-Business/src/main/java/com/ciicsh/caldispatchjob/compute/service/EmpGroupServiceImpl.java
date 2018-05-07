@@ -13,6 +13,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,47 +79,50 @@ public class EmpGroupServiceImpl {
             }
 
         }
+        if(mapList.size() == 0){
+            logger.info("no data");
+            return 0;
+        }
 
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<BathUpdateOptions> options = new ArrayList<>();
-        DBObject basicDBObject = null;
+        List<DBObject> empGroups = new ArrayList<>();
+        DBObject emp = null;
 
         for (PrEmployeePO item : employees) {
-            BathUpdateOptions opt = new BathUpdateOptions();
-            opt.setQuery(Query.query(Criteria.where("emp_group_code").is(empGroupCode)
-                    .andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.getEmployeeId()))));
-            basicDBObject = new BasicDBObject();
+            if(checkExistEmp(empGroupCode,item.getEmployeeId())) //存在忽略
+                break;
+            emp = new BasicDBObject();
+            empGroups.add(emp);
+            emp.put("emp_group_code",empGroupCode);
+            emp.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());
+            BasicDBObject basicDBObject = new BasicDBObject();
+            emp.put("base_info",basicDBObject);
             basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());
             basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,item.getEmployeeName());
-            basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN,formatter.format(item.getBirthday()));
+            basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN, item.getBirthday() == null ? "" : formatter.format(item.getBirthday()));
             basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,item.getDepartment());
             basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN, item.getGender()? "男":"女");
             basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.getIdCardType());
-            basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,formatter.format(item.getJoinDate()));
+            basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN, item.getInDate() == null ? "" : formatter.format(item.getInDate()));
             basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.getIdNum());
             basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,item.getPosition());
+            basicDBObject.put(PayItemName.EMPLOYEE_COMPANY_ID,item.getCompanyId());
+            basicDBObject.put(PayItemName.EMPLOYEE_FORMER_CN, item.getFormerName());
+            basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN,item.getCountryCode());
+            basicDBObject.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN,item.getProvinceCode());
+            basicDBObject.put(PayItemName.EMPLOYEE_CITY_CODE_CN,item.getCityCode());
+            basicDBObject.put(PayItemName.NATIONALITY, item.getCountryName());
+            basicDBObject.put(PayItemName.LEAVE_DATE, item.getOutDate() == null ? "" : formatter.format(item.getOutDate()));
 
-            basicDBObject.put(PayItemName.EMPLOYEE_FORMER_CN, "");
-            basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN,"");
-            basicDBObject.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN,"");
-            basicDBObject.put(PayItemName.EMPLOYEE_CITY_CODE_CN,"");
-
-
-            //TODO 获取雇员服务协议和雇员扩展字段接口
-            String emp_json_agreement = JSON.serialize(mapList.get(item.getEmployeeId()));
-            basicDBObject.put(PayItemName.EMPLOYEE_SERVICE_AGREE, (DBObject)JSON.parse(emp_json_agreement));
-
-            opt.setUpdate(Update.update("base_info", basicDBObject));
-
-            opt.setMulti(true);
-            opt.setUpsert(true);
-
-            options.add(opt);
+            String emp_json_agreement = com.alibaba.fastjson.JSON.toJSONString(mapList.get(item.getEmployeeId()));
+            if (StringUtils.isNotEmpty(emp_json_agreement)) {
+                basicDBObject.put(PayItemName.EMPLOYEE_SERVICE_AGREE, (DBObject) JSON.parse(emp_json_agreement));
+            }
         }
 
         empGroupMongoOpt.createIndex();
-        int rowAffected = empGroupMongoOpt.doBathUpdate(options,false);
+        int rowAffected = empGroupMongoOpt.batchInsert(empGroups);
         return rowAffected;
 
     }
@@ -165,6 +169,19 @@ public class EmpGroupServiceImpl {
             return empGroupMongoOpt.list(Criteria.where("emp_group_code").is(empGroupCode));
         }
         return list;
+    }
+
+    private boolean checkExistEmp(String empGroupCode, String empCode) {
+        boolean exist = false;
+        Criteria criteria = Criteria.where("emp_group_code").is(empGroupCode).
+                andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode));
+        Query query = Query.query(criteria);
+        query.fields().include("emp_group_code");
+        long total = empGroupMongoOpt.getMongoTemplate().count(query, EmpGroupMongoOpt.PR_EMPLOYEE_GROUP);
+        if (total > 0) {
+            exist = true;
+        }
+        return exist;
     }
 
 }

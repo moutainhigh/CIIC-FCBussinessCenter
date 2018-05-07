@@ -11,8 +11,6 @@ public class SimpleEmpPayItemDTO {
 
     private String empName; //雇员名称
 
-    private String taxPeriod; //个税期间
-
     List<SimplePayItemDTO> payItemDTOS; //薪资项列表
 
     public String getEmpName() {
@@ -22,16 +20,6 @@ public class SimpleEmpPayItemDTO {
     public void setEmpName(String empName) {
         this.empName = empName;
     }
-
-    public String getTaxPeriod() {
-        return taxPeriod;
-    }
-
-    public void setTaxPeriod(String taxPeriod) {
-        this.taxPeriod = taxPeriod;
-    }
-
-
 
     public String getEmpCode() {
         return empCode;

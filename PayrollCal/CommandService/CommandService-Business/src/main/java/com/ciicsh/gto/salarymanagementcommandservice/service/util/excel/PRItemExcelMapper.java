@@ -80,8 +80,8 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         //获取EXCEL列中的雇员编号（该字段必须存在）
         String empCode = String.valueOf(rs.getProperties().get(PayItemName.EMPLOYEE_CODE_CN));
 
-        PrEmployeePO employeePO = checkEmpDBExist(empCode);
-        if(employeePO == null){ //如果数据库不存在，不让导入
+        Integer check = employeeMapper.isExistEmployee(empCode);
+        if(check <= 0 ){ //如果数据库不存在，不让导入
             List<BasicDBObject> errorList = new ArrayList<>();
             BasicDBObject dbObject = new BasicDBObject();
             dbObject.put("row_index",rs.getCurrentRowIndex());
@@ -119,16 +119,6 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
     private List<BasicDBObject> getDbObjects(String empCode){
         return list.get(empCode);
-    }
-
-    /**
-     * 检查该雇员是否在数据库存在
-     */
-    private PrEmployeePO checkEmpDBExist(String empCode){
-        PrEmployeePO employeePO = new PrEmployeePO();
-        employeePO.setEmployeeId(empCode);
-        employeePO = employeeMapper.selectOne(employeePO);
-        return employeePO;
     }
 
 
