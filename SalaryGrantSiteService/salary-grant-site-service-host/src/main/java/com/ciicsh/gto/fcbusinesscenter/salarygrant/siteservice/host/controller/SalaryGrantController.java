@@ -13,6 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.PageUtil;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
@@ -407,11 +408,15 @@ public class SalaryGrantController {
      * @param
      * @return
      */
-    @RequestMapping(value="/records", method = RequestMethod.POST)
-    public Result records(@RequestBody SalaryTaskHandleDTO dto) {
+    @RequestMapping(value="/logInfo", method = RequestMethod.POST)
+    public Result logInfo(@RequestBody SalaryTaskHandleDTO dto) {
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录").setContent(JSON.toJSONString(dto)));
         try {
-            return ResultGenerator.genSuccessResult();
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            Page<SalaryGrantTaskHistoryPO> page = salaryGrantTaskQueryService.operation(bo);
+            Pagination<SalaryGrantOperationDTO> pagination = PageUtil.changeWapper(page, SalaryGrantOperationDTO.class);
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("操作记录").setContent(JSON.toJSONString(pagination)));
+            return ResultGenerator.genSuccessResult(pagination);
         } catch (Exception e) {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("查询日志信息失败");
