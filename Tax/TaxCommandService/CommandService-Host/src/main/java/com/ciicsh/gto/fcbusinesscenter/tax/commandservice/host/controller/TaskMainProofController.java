@@ -14,7 +14,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProo
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForMainProof;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -99,7 +98,6 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      * @return
      */
     @Override
-    @PostMapping(value = "/updateTaskProof")
     public JsonResult<Boolean> updateTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
 
@@ -117,7 +115,6 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      * @return
      */
     @Override
-    @PostMapping(value = "/invalidTaskProof")
     public JsonResult<Boolean> invalidTaskProof(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
 
