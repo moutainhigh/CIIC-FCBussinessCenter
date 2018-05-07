@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.PagingDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,7 +14,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SalaryTaskHandleDTO {
+public class SalaryTaskHandleDTO extends PagingDTO {
     /**
      * 任务单编号
      */

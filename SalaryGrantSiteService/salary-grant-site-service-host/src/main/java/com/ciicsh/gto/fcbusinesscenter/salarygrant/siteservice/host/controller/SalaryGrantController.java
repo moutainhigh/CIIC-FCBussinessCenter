@@ -190,7 +190,10 @@ public class SalaryGrantController {
     public Result empInfoChange(@RequestBody SalaryTaskHandleDTO dto) {
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("雇员信息变更查询").setContent(JSON.toJSONString(dto)));
         try {
-            return ResultGenerator.genSuccessResult();
+            Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(dto.getCurrent(), dto.getSize());
+            Pagination<SalaryTaskDTO> pagination = PageUtil.changeWapper(page, SalaryTaskDTO.class);
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览").setContent(JSON.toJSONString(pagination)));
+            return ResultGenerator.genSuccessResult(pagination);
         } catch (Exception e) {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("雇员信息变更查询异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("雇员信息变更查询失败");
