@@ -25,6 +25,9 @@ public class BatchCompareRequestDTO {
     // 对比批次类型
     private Integer tgtBatchType;
 
+    // 对比key
+    private String compareKeysStr;
+
     // 对比列mapping
     private LinkedHashMap<String, String> mapping = new LinkedHashMap<>();
 }

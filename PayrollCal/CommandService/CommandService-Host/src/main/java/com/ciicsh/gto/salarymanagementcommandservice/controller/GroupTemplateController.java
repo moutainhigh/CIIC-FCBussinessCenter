@@ -94,25 +94,8 @@ public class GroupTemplateController extends BaseController {
     }
 
     @GetMapping("/getPayrollGroupTemplateNames")
-    public JsonResult getPayrollGroupTemplateNames(@RequestParam String query){
-        List<KeyValuePO> resultList = prGroupTemplateService.getPayrollGroupTemplateNames();
-        List<KeyValuePO> results = new ArrayList<>();
-        results.clear();
-        if(resultList.size() > 0){
-            if(CommonUtils.isContainChinese(query)){
-                resultList.forEach(item->{
-                    if(item.getValue().contains(query)){
-                        results.add(item);
-                    }
-                });
-            }else {
-                resultList.forEach(item ->{
-                    if(item.getKey().contains(query)){
-                        results.add(item);
-                    }
-                });
-            }
-        }
+    public JsonResult getPayrollGroupTemplateNames(){
+        List<KeyValuePO> results = prGroupTemplateService.getPayrollGroupTemplateNames();
         return JsonResult.success(results);
     }
 

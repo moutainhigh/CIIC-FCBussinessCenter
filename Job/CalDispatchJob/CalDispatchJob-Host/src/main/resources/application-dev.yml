@@ -1,0 +1,50 @@
+eureka:
+  client:
+    serviceUrl:
+      #defaultZone: http://172.16.9.24:9602/eureka/
+      defaultZone: "http://172.16.9.21:9602/eureka/,http://172.16.9.20:9602/eureka/,http://172.16.9.19:9602/eureka/" #注册中心eureka地址
+  instance:
+      lease-expiration-duration-in-seconds: 40
+      lease-renewal-interval-in-seconds: 30
+      prefer-ip-address: true
+      instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+
+database:
+  host: 172.16.9.15
+  port: 3306
+  databasename: gtopayrolldb
+  username: root
+  password: a111111
+
+kafka:
+  brokers: 172.16.9.11:9092
+  zk-nodes: 172.16.9.11:2181,172.16.9.16:2181
+
+logging:
+  file: logs/dev_app.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: DEBUG
+    com.ciicsh.zorro.salarymanagementwebservice: DEBUG
+    org.mybatis: DEBUG
+
+management:
+  security:
+   enabled: false
+
+seaweed:
+  masterHost: "172.16.9.19:9333"
+
+zipkin:
+  base-url: http://172.16.9.31:9623  #ZipkinService地址
+sleuth:
+  percentage: 1.0
+
+mongo:
+  host: 172.16.9.15  # 172.16.9.52 java -Xms384m -Xmx512m -jar app.jar --spring.profiles.active=qa --server.port=8060
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%

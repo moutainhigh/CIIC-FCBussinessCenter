@@ -32,6 +32,7 @@
 		FROM
 		pr_emp_group
 		<include refid="whereQuery" />
+		ORDER BY created_time DESC
 	</select>
 
 	<select id="selectEmployeeGroupByCode" resultMap="BaseResultMap">
@@ -65,10 +66,10 @@
 				AND emp_group_code = #{empGroupCode}
 			</if>
 			<if test="managementId != null and managementId != ''">
-				AND management_id = #{managementId}
+				AND management_id IN (${managementId})
 			</if>
 			<if test="name != null and name != ''">
-				AND name = #{name}
+				AND name LIKE concat(#{name},'%')
 			</if>
 			<if test="remark != null and remark != ''">
 				AND remark = #{remark}

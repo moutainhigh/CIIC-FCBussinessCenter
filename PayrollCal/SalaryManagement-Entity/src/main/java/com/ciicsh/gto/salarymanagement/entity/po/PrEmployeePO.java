@@ -62,10 +62,16 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 	private Date birthday;
 
 	/**
+	 * 离职日期
+	 */
+	@TableField("leave_date")
+	private Date outDate;
+
+	/**
 	 * 入职日期
 	 */
 	@TableField("join_date")
-	private Date joinDate;
+	private Date inDate;
 	/**
 	 * 国家代码
 	 */
@@ -130,6 +136,17 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 	@TableField("is_active")
 	private Boolean isActive;
 
+	@TableField("company_id")
+	private String companyId;
+
+	public String getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
+	}
+
 	public String getEmployeeId() {
 		return employeeId;
 	}
@@ -192,14 +209,6 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
-	}
-
-	public Date getJoinDate() {
-		return joinDate;
-	}
-
-	public void setJoinDate(Date joinDate) {
-		this.joinDate = joinDate;
 	}
 
 	public String getCountryCode() {
@@ -296,6 +305,22 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 
 	public void setCityName(String cityName) {
 		this.cityName = cityName;
+	}
+
+	public Date getOutDate() {
+		return outDate;
+	}
+
+	public void setOutDate(Date outDate) {
+		this.outDate = outDate;
+	}
+
+	public Date getInDate() {
+		return inDate;
+	}
+
+	public void setInDate(Date inDate) {
+		this.inDate = inDate;
 	}
 
 	public Boolean getIsActive() {

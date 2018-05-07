@@ -277,11 +277,11 @@ public class NormalBatchController {
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN).
                 include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
-                include("catalog.emp_info."+PayItemName.EMPLOYEE_TAX_CN).
                 include("catalog.pay_items.data_type").
                 include("catalog.pay_items.item_type").
                 include("catalog.pay_items.item_name").
-                include("catalog.pay_items.item_value")
+                include("catalog.pay_items.item_value").
+                include("catalog.pay_items.display_priority")
         ;
         query.skip((pageNum-1) * pageSize);
         query.limit(pageSize);
@@ -307,21 +307,21 @@ public class NormalBatchController {
             DBObject empInfo = (DBObject)calalog.get("emp_info");
             String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
             itemPO.setEmpName(name); //雇员姓名
-            //itemPO.setTaxPeriod(empInfo.get(PayItemName.EMPLOYEE_TAX_CN) == null ? "本月" : (String)empInfo.get(PayItemName.EMPLOYEE_TAX_CN)); //雇员个税期间 TODO
 
             List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
             List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
-            items.stream()
-                    //.filter(p->!p.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN) && !p.get("item_name").equals(PayItemName.EMPLOYEE_CODE_CN))
-                    .forEach(dbItem -> {
-                                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
-                                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
-                                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
-                                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
-                                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
-                                simplePayItemDTOList.add(simplePayItemDTO);
-                            });
-            itemPO.setPayItemDTOS(simplePayItemDTOList);
+            items.stream().forEach(dbItem -> {
+                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
+                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
+                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
+                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
+                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
+                simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
+                simplePayItemDTOList.add(simplePayItemDTO);
+            });
+            //设置显示顺序
+            List<SimplePayItemDTO> payItemDTOS = simplePayItemDTOList.stream().sorted(Comparator.comparing(SimplePayItemDTO::getDisplay)).collect(Collectors.toList());
+            itemPO.setPayItemDTOS(payItemDTOS);
             return itemPO;
         }).collect(Collectors.toList());
 

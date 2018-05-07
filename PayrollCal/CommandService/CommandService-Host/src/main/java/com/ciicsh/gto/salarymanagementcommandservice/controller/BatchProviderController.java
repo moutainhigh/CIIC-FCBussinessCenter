@@ -194,7 +194,9 @@ public class BatchProviderController implements BatchProxy {
         //TODO
 //        ObjectMapper
         batchService.compareBatch(obj.getSrc(), obj.getSrcBatchType()
-                , obj.getTgt(), obj.getTgtBatchType(), obj.getMapping());
+                , obj.getTgt(), obj.getTgtBatchType()
+                , Arrays.asList(obj.getCompareKeysStr().split(","))
+                , obj.getMapping());
 
         return null;
     }

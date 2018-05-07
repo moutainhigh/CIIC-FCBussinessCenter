@@ -24,6 +24,7 @@
 
 	<resultMap id="CustBatchResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" >
 		<result column="code" property="code"/>
+		<result column="batch_type" property="batchType"/>
 		<result column="management_id" property="managementId"/>
 		<result column="management_name" property="managementName"/>
 		<result column="account_set_code" property="accountSetCode"/>
@@ -62,6 +63,7 @@
 
 		SELECT * from ( SELECT
 		a.code,
+		1 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
@@ -106,6 +108,7 @@
 		UNION
 		SELECT
 		a.code,
+		2 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
@@ -156,6 +159,7 @@
 	UNION
 		SELECT
 		a.code,
+		3 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,

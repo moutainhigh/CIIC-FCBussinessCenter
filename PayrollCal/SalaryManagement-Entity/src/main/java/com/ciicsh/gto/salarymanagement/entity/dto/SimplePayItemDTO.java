@@ -17,6 +17,8 @@ public class SimplePayItemDTO {
      */
     private int itemType;
 
+    private int display;
+
     public String getName() {
         return name;
     }
@@ -47,5 +49,13 @@ public class SimplePayItemDTO {
 
     public void setItemType(int itemType) {
         this.itemType = itemType;
+    }
+
+    public int getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(int display) {
+        this.display = display;
     }
 }
