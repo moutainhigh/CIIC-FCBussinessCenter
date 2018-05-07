@@ -43,15 +43,15 @@ public class BatchUtils {
             }
             else {
                 if (startDay > endDay) {
-                    dates[0] = String.valueOf(year) + String.valueOf(month - 2) + StringUtils.leftPad(String.valueOf(startDay),2,"0");
-                    dates[1] = String.valueOf(year) + String.valueOf(month -1) + StringUtils.leftPad(String.valueOf(endDay),2,"0");
+                    dates[0] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(String.valueOf(month - 2)),2,"0") + StringUtils.leftPad(String.valueOf(startDay),2,"0");
+                    dates[1] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(String.valueOf(month - 1)),2,"0") + StringUtils.leftPad(String.valueOf(endDay),2,"0");
                 }
                 else {
-                    dates[0] = String.valueOf(year) + String.valueOf(month - 1) + StringUtils.leftPad(String.valueOf(startDay),2,"0");
-                    dates[1] = String.valueOf(year) + String.valueOf(month - 1) + StringUtils.leftPad(String.valueOf(endDay),2,"0");
+                    dates[0] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(String.valueOf(month - 1)),2,"0") + StringUtils.leftPad(String.valueOf(startDay),2,"0");
+                    dates[1] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(String.valueOf(month - 1)),2,"0") + StringUtils.leftPad(String.valueOf(endDay),2,"0");
                 }
 
-                dates[2] = String.valueOf(year) + String.valueOf(month - 1);
+                dates[2] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(String.valueOf(month - 1)),2,"0");
 
             }
         }else if(periodType == PeriodTypeEnum.NEXT_MONTH.getValue()){
@@ -78,14 +78,14 @@ public class BatchUtils {
                 dates[2] = String.valueOf(year) + "02";
             }else {
                 if (startDay > endDay) {
-                    dates[0] = String.valueOf(year) + String.valueOf(month) + StringUtils.leftPad(String.valueOf(startDay),2,"0");
-                    dates[1] = String.valueOf(year) + String.valueOf(month + 1) + StringUtils.leftPad(String.valueOf(endDay),2,"0");
+                    dates[0] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month),2,"0") + StringUtils.leftPad(String.valueOf(startDay),2,"0");
+                    dates[1] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month + 1),2,"0") + StringUtils.leftPad(String.valueOf(endDay),2,"0");
                 }else {
-                    dates[0] = String.valueOf(year) + String.valueOf(month + 1) + StringUtils.leftPad(String.valueOf(startDay),2,"0");
-                    dates[1] = String.valueOf(year) + String.valueOf(month + 1) + StringUtils.leftPad(String.valueOf(endDay),2,"0");
+                    dates[0] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month + 1),2,"0") + StringUtils.leftPad(String.valueOf(startDay),2,"0");
+                    dates[1] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month + 1),2,"0") + StringUtils.leftPad(String.valueOf(endDay),2,"0");
                 }
 
-                dates[2] = String.valueOf(year) + String.valueOf(month + 1);
+                dates[2] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month + 1),2,"0");
 
             }
         }
@@ -113,11 +113,11 @@ public class BatchUtils {
                 dates[2] = String.valueOf(year) + "01";
             }else {
                 if (startDay > endDay) {
-                    dates[0] = String.valueOf(year) + String.valueOf(month-1) + StringUtils.leftPad(String.valueOf(startDay),2,"0");
-                    dates[1] = String.valueOf(year) + String.valueOf(month) + StringUtils.leftPad(String.valueOf(endDay),2,"0");
+                    dates[0] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month - 1),2,"0") + StringUtils.leftPad(String.valueOf(startDay),2,"0");
+                    dates[1] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month),2,"0") + StringUtils.leftPad(String.valueOf(endDay),2,"0");
                 }else {
-                    dates[0] = String.valueOf(year) + String.valueOf(month) + StringUtils.leftPad(String.valueOf(startDay),2,"0");
-                    dates[1] = String.valueOf(year) + String.valueOf(month) + StringUtils.leftPad(String.valueOf(endDay),2,"0");
+                    dates[0] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month),2,"0") + StringUtils.leftPad(String.valueOf(startDay),2,"0");
+                    dates[1] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month),2,"0") + StringUtils.leftPad(String.valueOf(endDay),2,"0");
                 }
                 dates[2] = String.valueOf(year) + StringUtils.leftPad(String.valueOf(month),2,"0");
             }
