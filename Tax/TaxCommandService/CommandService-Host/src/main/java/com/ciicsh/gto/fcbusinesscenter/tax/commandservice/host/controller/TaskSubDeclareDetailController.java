@@ -11,10 +11,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +32,8 @@ public class TaskSubDeclareDetailController extends BaseController {
      * @param taskSubDeclareDetailDTO
      * @return
      */
-    @PostMapping(value = "querySubDeclareDetailsByParams")
-    public JsonResult<ResponseForSubDeclareDetail> querySubDeclareDetailsByParams(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
+    @GetMapping(value = "querySubDeclareDetailsByParams")
+    public JsonResult<ResponseForSubDeclareDetail> querySubDeclareDetailsByParams(TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
         JsonResult<ResponseForSubDeclareDetail> jr = new JsonResult<>();
 
         RequestForSubDeclareDetail requestForSubDeclareDetail = new RequestForSubDeclareDetail();
@@ -52,8 +49,8 @@ public class TaskSubDeclareDetailController extends BaseController {
      * @param taskSubDeclareDetailDTO
      * @return
      */
-    @PostMapping(value = "querySubDeclareDetailsByCombined")
-    public JsonResult<ResponseForSubDeclareDetail> querySubDeclareDetailsByCombined(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
+    @GetMapping(value = "querySubDeclareDetailsByCombined")
+    public JsonResult<ResponseForSubDeclareDetail> querySubDeclareDetailsByCombined(TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
         JsonResult<ResponseForSubDeclareDetail> jr = new JsonResult<>();
 
         EntityWrapper wrapper = new EntityWrapper();
@@ -83,8 +80,8 @@ public class TaskSubDeclareDetailController extends BaseController {
      * @param taskSubDeclareDetailDTO
      * @return
      */
-    @PostMapping(value = "querySubDeclareDetailsForCombined")
-    public JsonResult<ResponseForSubDeclareDetail> querySubDeclareDetailsForCombined(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
+    @GetMapping(value = "querySubDeclareDetailsForCombined")
+    public JsonResult<ResponseForSubDeclareDetail> querySubDeclareDetailsForCombined(TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
         JsonResult<ResponseForSubDeclareDetail> jr = new JsonResult<>();
 
         EntityWrapper wrapper = new EntityWrapper();
@@ -103,7 +100,7 @@ public class TaskSubDeclareDetailController extends BaseController {
      * @param taskSubDeclareDetailDTO
      * @return
      */
-    @RequestMapping(value = "/confirmTaskSubDeclareDetailforCombined")
+    @PostMapping(value = "/confirmTaskSubDeclareDetailforCombined")
     public JsonResult<Boolean> confirmTaskSubDeclareDetailforCombined(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
 
         JsonResult<Boolean> jr = new JsonResult<>();
@@ -122,7 +119,7 @@ public class TaskSubDeclareDetailController extends BaseController {
      * @param taskSubDeclareDetailDTO
      * @return
      */
-    @RequestMapping(value = "/unconfirmTaskSubDeclareDetailforCombined")
+    @PostMapping(value = "/unconfirmTaskSubDeclareDetailforCombined")
     public JsonResult<Boolean> unconfirmTaskSubDeclareDetailforCombined(@RequestBody TaskSubDeclareDetailDTO taskSubDeclareDetailDTO) {
 
         JsonResult<Boolean> jr = new JsonResult<>();

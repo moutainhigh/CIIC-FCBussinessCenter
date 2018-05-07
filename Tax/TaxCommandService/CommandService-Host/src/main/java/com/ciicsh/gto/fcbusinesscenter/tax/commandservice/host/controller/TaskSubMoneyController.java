@@ -55,8 +55,8 @@ public class TaskSubMoneyController extends BaseController {
      * @param taskSubMoneyDTO
      * @return
      */
-    @PostMapping(value = "querySubMoney")
-    public JsonResult<ResponseForSubMoney> querySubMoney(@RequestBody TaskSubMoneyDTO taskSubMoneyDTO) {
+    @GetMapping(value = "querySubMoney")
+    public JsonResult<ResponseForSubMoney> querySubMoney(TaskSubMoneyDTO taskSubMoneyDTO) {
         JsonResult<ResponseForSubMoney> jr = new JsonResult<>();
 
         RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
@@ -116,7 +116,7 @@ public class TaskSubMoneyController extends BaseController {
      * @param subMoneyId
      * @return
      */
-    @PostMapping(value = "/querySubMoneyById/{subMoneyId}")
+    @GetMapping(value = "/querySubMoneyById/{subMoneyId}")
     public JsonResult<TaskSubMoneyDTO> querySubMoneyById(@PathVariable Long subMoneyId) {
         JsonResult<TaskSubMoneyDTO> jr = new JsonResult<>();
 

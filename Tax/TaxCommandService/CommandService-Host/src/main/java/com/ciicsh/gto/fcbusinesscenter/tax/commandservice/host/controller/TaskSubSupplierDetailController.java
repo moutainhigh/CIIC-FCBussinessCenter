@@ -11,10 +11,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForSu
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +31,8 @@ public class TaskSubSupplierDetailController extends BaseController {
      * @param taskSubSupplierDetailDTO
      * @return
      */
-    @PostMapping(value = "querySubSupplierDetailsByParams")
-    public JsonResult<ResponseForSubSupplierDetail> querySubSupplierDetailsByParams(@RequestBody TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
+    @GetMapping(value = "querySubSupplierDetailsByParams")
+    public JsonResult<ResponseForSubSupplierDetail> querySubSupplierDetailsByParams(TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
         JsonResult<ResponseForSubSupplierDetail> jr = new JsonResult<>();
 
         RequestForSubSupplierDetail requestForSubSupplierDetail = new RequestForSubSupplierDetail();
@@ -52,8 +49,8 @@ public class TaskSubSupplierDetailController extends BaseController {
      * @param taskSubSupplierDetailDTO
      * @return
      */
-    @PostMapping(value = "querySubSupplierDetailsByCombined")
-    public JsonResult<ResponseForSubSupplierDetail> querySubSupplierDetailsByCombined(@RequestBody TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
+    @GetMapping(value = "querySubSupplierDetailsByCombined")
+    public JsonResult<ResponseForSubSupplierDetail> querySubSupplierDetailsByCombined(TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
         JsonResult<ResponseForSubSupplierDetail> jr = new JsonResult<>();
 
         EntityWrapper wrapper = new EntityWrapper();
@@ -85,8 +82,8 @@ public class TaskSubSupplierDetailController extends BaseController {
      * @param taskSubSupplierDetailDTO
      * @return
      */
-    @PostMapping(value = "querySubSupplierDetailsForCombined")
-    public JsonResult<ResponseForSubSupplierDetail> querySubSupplierDetailsForCombined(@RequestBody TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
+    @GetMapping(value = "querySubSupplierDetailsForCombined")
+    public JsonResult<ResponseForSubSupplierDetail> querySubSupplierDetailsForCombined(TaskSubSupplierDetailDTO taskSubSupplierDetailDTO) {
         JsonResult<ResponseForSubSupplierDetail> jr = new JsonResult<>();
 
         EntityWrapper wrapper = new EntityWrapper();
