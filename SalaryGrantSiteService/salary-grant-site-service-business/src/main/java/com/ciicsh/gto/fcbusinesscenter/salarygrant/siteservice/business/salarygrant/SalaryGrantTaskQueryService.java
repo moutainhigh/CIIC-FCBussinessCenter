@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
 
 /**
  * <p>
@@ -26,4 +27,11 @@ public interface SalaryGrantTaskQueryService {
      * @return
      */
     SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 根据任务单编号查询操作记录
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Page<SalaryGrantTaskHistoryPO> operation(SalaryGrantTaskBO salaryGrantTaskBO);
 }
