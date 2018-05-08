@@ -41,3 +41,10 @@ zipkin:
   base-url: http://172.16.9.31:9623  #ZipkinService地址
 sleuth:
   percentage: 1.0
+
+mongo:
+  host: 172.16.9.15 #172.16.9.52 172.16.9.15 172.16.9.16 sit
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%

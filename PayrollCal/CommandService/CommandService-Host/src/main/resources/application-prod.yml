@@ -20,3 +20,10 @@ database:
 kafka:
   brokers: 172.16.100.101:9092
   zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.109:2181
+
+mongo:
+  host: 172.16.22.113
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%
