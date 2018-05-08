@@ -42,17 +42,17 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     public Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO bo) {
         Page<SalaryGrantTaskBO> page = null;
         Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
-        if (SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(bo.getTaskStatus())) {
+        if (SalaryGrantBizConsts.TASK_REFER.equals(bo.getTaskStatusEn())) {
             page = this.queryTaskForSubmitPage(paging, bo);
-        } else if (SalaryGrantBizConsts.TASK_PENDING.equals(bo.getTaskStatus())) {
+        } else if (SalaryGrantBizConsts.TASK_PEND.equals(bo.getTaskStatusEn())) {
             page = this.queryTaskForApprovePage(paging, bo);
-        } else if (SalaryGrantBizConsts.TASK_STATUS_APPROVAL.equals(bo.getTaskStatus())) {
-           page = this.queryTaskForHaveApprovedPage(paging, bo);
-        } else if (SalaryGrantBizConsts.TASK_STATUS_PASS.equals(bo.getTaskStatus())) {
+        } else if (SalaryGrantBizConsts.TASK_APPROVAL.equals(bo.getTaskStatusEn())) {
+            page = this.queryTaskForHaveApprovedPage(paging, bo);
+        } else if (SalaryGrantBizConsts.TASK_ADOPT.equals(bo.getTaskStatusEn())) {
             page = this.queryTaskForPassPage(paging, bo);
-        } else if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(bo.getTaskStatus())) {
+        } else if (SalaryGrantBizConsts.TASK_REFUSE.equals(bo.getTaskStatusEn())) {
             page = this.queryTaskForRejectPage(paging, bo);
-        } else if (SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(bo.getTaskStatus())) {
+        } else if (SalaryGrantBizConsts.TASK_CANCEL.equals(bo.getTaskStatusEn())) {
             page = this.queryTaskForInvalidPage(paging, bo);
         }
         return page;
