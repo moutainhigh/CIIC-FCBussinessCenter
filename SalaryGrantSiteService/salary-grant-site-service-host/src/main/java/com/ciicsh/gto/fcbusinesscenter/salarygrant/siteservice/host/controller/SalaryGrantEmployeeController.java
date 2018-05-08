@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -45,10 +46,10 @@ public class SalaryGrantEmployeeController {
         Page<SalaryGrantEmployeeBO> page = new Page<>();
         page.setCurrent(salaryGrantEmployeeDTO.getCurrent());
         page.setSize(salaryGrantEmployeeDTO.getSize());
-        SalaryGrantEmployeeBO salaryGrantTaskBO = new SalaryGrantEmployeeBO();
-        BeanUtils.copyProperties(salaryGrantEmployeeDTO, salaryGrantTaskBO);
+        SalaryGrantEmployeeBO grantEmployeeBO = new SalaryGrantEmployeeBO();
+        BeanUtils.copyProperties(salaryGrantEmployeeDTO, grantEmployeeBO);
 
-        page = employeeQueryService.queryEmployeeForSubTask(page, salaryGrantTaskBO);
+        page = employeeQueryService.queryEmployeeForSubTask(page, grantEmployeeBO);
 
         // BO PAGE 转换为 DTO PAGE
         String boJSONStr = JSONObject.toJSONString(page);

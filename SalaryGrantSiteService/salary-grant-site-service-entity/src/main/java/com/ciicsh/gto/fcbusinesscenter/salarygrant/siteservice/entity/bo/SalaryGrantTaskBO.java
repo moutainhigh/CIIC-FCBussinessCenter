@@ -5,7 +5,6 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * <p>
@@ -142,7 +141,7 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String userId;
     /**
-     * 创建时间
+     * 创建时间字符串
      */
     private String createdTimeStr;
 
