@@ -39,7 +39,8 @@ public class SupplierDeferController {
         page.setSize(salaryGrantTaskDTO.getSize());
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        salaryGrantTaskBO.setManagementId(CommonHelper.getManagementIDs());
+        //设置管理方信息
+        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
         page = supplierSubTaskService.querySupplierSubTaskForSubmitPage(page, salaryGrantTaskBO);
 
         // BO PAGE 转换为 DTO PAGE
@@ -63,7 +64,8 @@ public class SupplierDeferController {
         page.setSize(salaryGrantTaskDTO.getSize());
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        salaryGrantTaskBO.setManagementId(CommonHelper.getManagementIDs());
+        //设置管理方信息
+        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
         page = supplierSubTaskService.querySupplierSubTaskForApprovePage(page, salaryGrantTaskBO);
 
         // BO PAGE 转换为 DTO PAGE
@@ -87,7 +89,8 @@ public class SupplierDeferController {
         page.setSize(salaryGrantTaskDTO.getSize());
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        salaryGrantTaskBO.setManagementId(CommonHelper.getManagementIDs());
+        //设置管理方信息
+        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
         page = supplierSubTaskService.querySupplierSubTaskForHaveApprovedPage(page, salaryGrantTaskBO);
 
         // BO PAGE 转换为 DTO PAGE
@@ -111,7 +114,8 @@ public class SupplierDeferController {
         page.setSize(salaryGrantTaskDTO.getSize());
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        salaryGrantTaskBO.setManagementId(CommonHelper.getManagementIDs());
+        //设置管理方信息
+        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
         page = supplierSubTaskService.querySupplierSubTaskForPassPage(page, salaryGrantTaskBO);
 
         // BO PAGE 转换为 DTO PAGE
@@ -135,7 +139,8 @@ public class SupplierDeferController {
         page.setSize(salaryGrantTaskDTO.getSize());
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        salaryGrantTaskBO.setManagementId(CommonHelper.getManagementIDs());
+        //设置管理方信息
+        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
         page = supplierSubTaskService.querySupplierSubTaskForRejectPage(page, salaryGrantTaskBO);
 
         // BO PAGE 转换为 DTO PAGE
