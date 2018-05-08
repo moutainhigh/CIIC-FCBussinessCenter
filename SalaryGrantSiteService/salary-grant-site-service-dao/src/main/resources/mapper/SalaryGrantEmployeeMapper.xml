@@ -100,13 +100,16 @@
             <if test="salaryGrantSubTaskCode != null">
                 and t.salary_grant_sub_task_code=#{salaryGrantSubTaskCode}
             </if>
-            <if test="employeeId != null">
+            <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
+            <if test="employeeId != null and employeeId != ''">
                 and t.employee_id=#{employeeId}
             </if>
-            <if test="employeeName != null">
+            <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
+            <if test="employeeName != null and employeeName != ''">
                 and t.employee_name like concat('%', #{employeeName}, '%')
             </if>
-            <if test="grantStatus != null">
+            <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
+            <if test="grantStatus != null and grantStatus != ''">
                 and t.grant_status=#{grantStatus}
             </if>
             and t.is_active=1
