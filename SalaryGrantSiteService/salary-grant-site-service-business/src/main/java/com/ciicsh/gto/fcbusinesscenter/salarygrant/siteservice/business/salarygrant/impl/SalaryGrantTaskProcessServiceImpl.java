@@ -35,10 +35,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -391,7 +388,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      * @return boolean
      */
     private boolean insertOrUpdateSalaryGrantMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO) {
-        /*if(salaryGrantMainTaskPO.getSalaryGrantMainTaskId() < 0){
+        if(salaryGrantMainTaskPO.getSalaryGrantMainTaskId() < 0){
             salaryGrantMainTaskPO.setCreatedTime(new Date());
             //todo 后期添加权限控制
             String userId = this.getUserByManagement(salaryGrantMainTaskPO.getManagementId());
@@ -402,7 +399,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             //todo 后期添加权限控制，获取当前登录人ID
             salaryGrantMainTaskPO.setModifiedBy(UserContext.getUserId());
             salaryGrantMainTaskPO.setModifiedTime(new Date());
-        }*/
+        }
         return insertOrUpdate(salaryGrantMainTaskPO);
     }
 

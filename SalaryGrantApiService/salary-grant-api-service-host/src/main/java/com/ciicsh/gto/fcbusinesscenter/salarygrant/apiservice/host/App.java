@@ -13,7 +13,10 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
  */
 @EnableDiscoveryClient
 @MapperScan(basePackages = {"com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao"})
-@EnableFeignClients({})
+@EnableFeignClients({
+        "com.ciicsh.gto.logservice.api",
+        "com.ciicsh.gto.basicdataservice.api"
+})
 @SpringBootApplication(scanBasePackages = {
         "com.ciicsh.gt1",
         "com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice",

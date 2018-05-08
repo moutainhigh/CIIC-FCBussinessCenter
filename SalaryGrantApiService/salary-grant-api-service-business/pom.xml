@@ -18,6 +18,11 @@
 			<artifactId>lombok</artifactId>
 			<version>1.16.6</version>
 		</dependency>
+		<dependency>
+			<groupId>com.ciicsh.gt1.commonservice</groupId>
+			<artifactId>gt1.commonservice.basicdataservice-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 		<!-- 内部模块依赖 -->
 		<dependency>
 			<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
