@@ -43,7 +43,7 @@ sleuth:
   percentage: 1.0
 
 mongo:
-  host: 172.16.9.15 #172.16.9.52 172.16.9.15 172.16.9.16 sit
+  host: 172.16.9.15  # 172.16.9.52 java -Xms384m -Xmx512m -jar app.jar --spring.profiles.active=qa --server.port=8060
   port: 27017
   database: payroll_db
   userName: ciicit

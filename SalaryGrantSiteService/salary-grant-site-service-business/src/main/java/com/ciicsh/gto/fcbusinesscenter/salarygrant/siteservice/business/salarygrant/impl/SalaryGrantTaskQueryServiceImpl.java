@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMa
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     @Override
     public Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO bo) {
-        Page page = null;
+        Page<SalaryGrantTaskBO> page = null;
         Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
         if (SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(bo.getTaskStatus())) {
             page = this.queryTaskForSubmitPage(paging, bo);
@@ -75,6 +76,18 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
             bo = salaryGrantSubTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
         }
         return bo;
+    }
+
+    /**
+     * 根据任务单编号查询操作记录
+     * @param bo
+     * @return
+     */
+    @Override
+    public Page<SalaryGrantTaskHistoryPO> operation(SalaryGrantTaskBO bo) {
+        Page<SalaryGrantTaskHistoryPO> page = new Page<SalaryGrantTaskHistoryPO>(bo.getCurrent(), bo.getSize());
+        List<SalaryGrantTaskHistoryPO> list = salaryGrantTaskHistoryMapper.operation(page, bo);
+        return page.setRecords(list);
     }
 
     /**

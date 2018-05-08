@@ -7,8 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubP
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -26,8 +25,8 @@ public class TaskSubPaymentDetailController extends BaseController {
      * @param taskSubPaymentDetailDTO
      * @return
      */
-    @PostMapping(value = "querySubPaymentDetailsByParams")
-    public JsonResult<ResponseForSubPaymentDetail> querySubPaymentDetailsByParams(@RequestBody TaskSubPaymentDetailDTO taskSubPaymentDetailDTO) {
+    @GetMapping(value = "querySubPaymentDetailsByParams")
+    public JsonResult<ResponseForSubPaymentDetail> querySubPaymentDetailsByParams(TaskSubPaymentDetailDTO taskSubPaymentDetailDTO) {
         JsonResult<ResponseForSubPaymentDetail> jr = new JsonResult<>();
 
         RequestForSubPaymentDetail requestForSubPaymentDetail = new RequestForSubPaymentDetail();

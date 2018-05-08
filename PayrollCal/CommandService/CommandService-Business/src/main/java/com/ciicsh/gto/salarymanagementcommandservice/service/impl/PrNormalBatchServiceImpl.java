@@ -49,9 +49,6 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     private PrNormalBatchMapper normalBatchMapper;
 
     @Autowired
-    private PrEmployeeMapper employeeMapper;
-
-    @Autowired
     private PRItemExcelReader excelReader;
 
     @Autowired
@@ -138,7 +135,8 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                 .include("catalog.pay_items.decimal_process_type")
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
-        ;
+                .include("catalog.pay_items.display_priority")
+        ; //薪资计算需要的列
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
@@ -175,13 +173,10 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                     //opt.setQuery(Query.query(Criteria.where("batch_code").is(batchCode)));
 
                     Criteria cri = Criteria.where("batch_code").is(batchCode)
-                            .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode)
-                            .and("pr_group_code").is(prGroupCode);
+                            .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
                     Query updateQuy = new Query(cri);
-                    Update update = Update.update("catalog.pay_items", row);
-                    if(payItems.get(empCode) == null){ //该雇员在雇员组中不存在，但在雇员中心存在
-                        update = update.set("catalog.emp_info",getEmployeeInfo(empCode));
-                    }
+                    Update update = new Update();
+                    update.set("catalog.pay_items", row);
                     if(batchType == BatchTypeEnum.NORMAL.getValue()) {
                         rowAffected += normalBatchMongoOpt.upsert(updateQuy,update);
                     }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
@@ -262,30 +257,6 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return normalBatchMapper.getHistoryBatchInfoList(mgrIds);
     }
 
-    private BasicDBObject getEmployeeInfo(String empCode){
-        BasicDBObject basicDBObject = new BasicDBObject();
-
-        PrEmployeePO employeePO = new PrEmployeePO();
-        employeePO.setEmployeeId(empCode);
-        employeePO = employeeMapper.selectOne(employeePO);
-
-        basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN,employeePO.getEmployeeId());
-        basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,employeePO.getEmployeeName());
-        basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN, employeePO.getBirthday());
-        basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,employeePO.getDepartment());
-        basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN,employeePO.getGender()? "男":"女");
-        basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,employeePO.getIdCardType());
-        basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN,employeePO.getInDate());
-        basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,employeePO.getIdNum());
-        basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,employeePO.getPosition());
-
-        basicDBObject.put(PayItemName.EMPLOYEE_FORMER_CN,employeePO.getFormerName());
-        basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN,employeePO.getCountryCode());
-        basicDBObject.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN,employeePO.getProvinceCode());
-        basicDBObject.put(PayItemName.EMPLOYEE_CITY_CODE_CN,employeePO.getCityCode());
-
-        return basicDBObject;
-    }
 
 
     @Override

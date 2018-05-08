@@ -105,6 +105,7 @@ public class ComputeServiceImpl {
                 .include("catalog.pay_items.decimal_process_type")
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
+                .include("catalog.pay_items.display_priority")
         ;
 
         //query = query.skip(pageindex*size).limit(size);

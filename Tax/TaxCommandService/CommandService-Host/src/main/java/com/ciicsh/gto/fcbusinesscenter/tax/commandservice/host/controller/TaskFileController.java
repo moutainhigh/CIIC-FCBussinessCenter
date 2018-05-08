@@ -42,8 +42,8 @@ public class TaskFileController extends BaseController {
      * @param fileDTO
      * @return
      */
-    @PostMapping(value = "queryTaxFile")
-    public JsonResult<ResponseForFile> queryTaxFile(@RequestBody FileDTO fileDTO) {
+    @GetMapping(value = "queryTaxFile")
+    public JsonResult<ResponseForFile> queryTaxFile(FileDTO fileDTO) {
         JsonResult<ResponseForFile> jr = new JsonResult<>();
 
         RequestForFile requestForFile = new RequestForFile();

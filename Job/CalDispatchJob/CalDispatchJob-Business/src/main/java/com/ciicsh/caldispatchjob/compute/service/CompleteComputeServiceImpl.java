@@ -1,10 +1,7 @@
 package com.ciicsh.caldispatchjob.compute.service;
 
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.CloseAccountMongoOpt;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -41,6 +38,9 @@ public class CompleteComputeServiceImpl {
     @Autowired
     private CloseAccountMongoOpt closeAccountMongoOpt;
 
+    @Autowired
+    private EmpGroupMongoOpt empGroupMongoOpt;
+
     public void processCompleteCompute(String batchCode, int batchType){
 
         List<DBObject> batchList = null;
@@ -50,9 +50,7 @@ public class CompleteComputeServiceImpl {
 
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN)
-                .include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN)
-                .include("catalog.emp_info."+PayItemName.EMPLOYEE_DEP_CN)
-                .include("catalog.emp_info."+PayItemName.EMPLOYEE_SERVICE_AGREE)
+                .include("catalog.emp_info")
                 .include("catalog.emp_info.country_code")
                 .include("catalog.batch_info.period")
                 .include("catalog.batch_info.management_ID")
@@ -75,23 +73,27 @@ public class CompleteComputeServiceImpl {
 
         List<DBObject> list = batchList.stream().map(item -> {
             DBObject catalog = (DBObject)item.get("catalog");
-            DBObject emp = (DBObject)catalog.get("emp_info");
+            String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
+            String empGroupCode = (String) catalog.get("emp_group_code");
+            DBObject emp = getEmployeeInfo(catalog,empCode,empGroupCode);
             DBObject batchInfo = (DBObject)catalog.get("batch_info");
+            List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
             DBObject mapObj = new BasicDBObject();
-            mapObj.put("emp_id", item.get(PayItemName.EMPLOYEE_CODE_CN));
+            mapObj.put("emp_id", empCode);
             mapObj.put("emp_name",emp.get(PayItemName.EMPLOYEE_NAME_CN));
             mapObj.put("payroll_type", ""); // 工资单类型
+            mapObj.put("company_id",emp.get(PayItemName.EMPLOYEE_COMPANY_ID));
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("mgr_id", batchInfo.get("management_ID")); // 管理方ID
             mapObj.put("mgr_name", batchInfo.get("management_Name")); // 管理方名称
             mapObj.put("department", emp.get(PayItemName.EMPLOYEE_DEP_CN)); // 部门名称
             mapObj.put("income_year_month", batchInfo.get("period")); //工资年月
             mapObj.put("batch_id", batchCode);
-            mapObj.put("country_code", "");  // 国家代码
+            mapObj.put("country_code", emp.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN));  // 国家代码
             mapObj.put("ref_batch_id", "");  // 引用 BATCH
-            mapObj.put("leaving_years", ""); // 离职年限
-            mapObj.put("net_pay", ""); //实发工资
-            mapObj.put("tax", ""); //个人所得税
+            mapObj.put("leaving_years", emp.get(PayItemName.LEAVE_DATE)); // 离职年限
+            mapObj.put("net_pay", findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //实发工资
+            mapObj.put("tax", findValByName(payItems,PayItemName.TAX_TOTAL)); //个人所得税
             mapObj.put("wage_before_tax", ""); //个人收入（薪金）- 税前
             mapObj.put("wage_after_tax", ""); //个人收入（薪金）- 税后
             mapObj.put("bonus_before_tax", ""); //个人收入（年奖）- 税前
@@ -114,7 +116,7 @@ public class CompleteComputeServiceImpl {
             mapObj.put("tax_year_month", ""); //报税年月
             mapObj.put("annuity", ""); //年金
             mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
-            mapObj.put("salary_calc_result_items", catalog.get("pay_items"));
+            mapObj.put("salary_calc_result_items", payItems);
             mapObj.put("employee_service_agreement", emp.get(PayItemName.EMPLOYEE_SERVICE_AGREE));
 
             processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
@@ -156,8 +158,25 @@ public class CompleteComputeServiceImpl {
     private Object findValByName(List<DBObject> list, String payItemName) {
         Optional<DBObject> find = list.stream().filter(p -> p.get("item_name").equals(payItemName)).findFirst();
         if (find.isPresent()) {
-            return find.get().get(payItemName);
+            return find.get().get("item_value");
         }
         return null;
+    }
+
+    private DBObject getEmployeeInfo(DBObject catalog, String empCode, String empGroupCode){
+
+       DBObject basicDBObject = null;
+       if(catalog.get("emp_info") == null) {
+           Criteria criteria = Criteria.where("emp_group_code").is(empGroupCode)
+                   .andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode));
+           Query query = Query.query(criteria);
+           query.fields().include("base_info");
+
+           basicDBObject = empGroupMongoOpt.getMongoTemplate().findOne(query, DBObject.class, EmpGroupMongoOpt.PR_EMPLOYEE_GROUP);
+       }else {
+            basicDBObject = (DBObject)catalog.get("emp_info");
+       }
+       return basicDBObject;
+
     }
 }

@@ -3,8 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -19,6 +18,6 @@ public interface CalculationBatchDetailProxy {
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/api/queryTaxBatchDetail")
-    JsonResult queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO);
+    @GetMapping(value = "/api/queryTaxBatchDetail")
+    JsonResult queryTaxBatchDetail(TaskProofDTO taskProofDTO);
 }

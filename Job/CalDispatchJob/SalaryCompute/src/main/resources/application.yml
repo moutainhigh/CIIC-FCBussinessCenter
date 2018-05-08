@@ -2,21 +2,20 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://172.16.9.15:3306/gtopayrolldb?characterEncoding=utf8&useSSL=true
-    username: root
-    password: a111111
+    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?characterEncoding=utf8&useSSL=true&allowMultiQueries=true
+    username: ${database.username}
+    password: ${database.password}
   application:
     name: fcbusiness-center-salary-compute
   cloud:
     stream:
       kafka:
         binder:
-          brokers: 172.16.9.11:9092  #172.16.9.17:9092,172.16.9.18:9092
-          zk-nodes: 172.16.9.11:2181,172.16.9.16:2181 # 172.16.9.55:2181,172.16.9.56:2181,172.16.9.57:2181 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
+          brokers: ${kafka.brokers}
+          zk-nodes: ${kafka.zk-nodes}
           autoAddPartitions: true
 
       bindings:
-
         pr_compute-input-channel:
           destination: fc_payroll_compute_result # 薪资计算 topic
           content-type: application/json
@@ -29,10 +28,11 @@ spring:
           content-type: application/json
           producer:
             partitionCount: 1
+  profiles:
+    active: dev
 
       #instance-count: 2
       #instance-index: 1
-
 server:
   port: 7034
 

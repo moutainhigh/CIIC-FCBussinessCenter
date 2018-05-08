@@ -5,7 +5,10 @@ import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
+import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareItemBO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.InWitchCompareBatchEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.service.BatchService;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +17,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import javax.swing.text.html.Option;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -46,15 +48,107 @@ public class BatchServiceImpl implements BatchService {
             throw new BusinessException("没有批次数据");
         }
 
+        List<BatchCompareEmpBO> batchCompareEmpBOList = new ArrayList<>();
 
+        srcBatchList.forEach(i -> {
+            if (i.get("雇员编号") != null) {
+                BatchCompareEmpBO empResultBO = new BatchCompareEmpBO();
 
-        compareMap.forEach((k, v) -> {
+                String srcEmpId = i.get("雇员编号").toString();
+                empResultBO.setEmployeeId(srcEmpId);
 
+                Optional<DBObject> tgtEmpResultData = tgtBatchList.stream()
+                        .filter(j -> {
+                            String tgtEmpId = j.get("雇员编号").toString();
+                            return srcEmpId.equals(tgtEmpId);
+                        })
+                        .findFirst();
+
+                List<BatchCompareItemBO> batchCompareItemBOList = new ArrayList<>();
+
+                if (tgtEmpResultData.isPresent()) {
+                    empResultBO.setInWhichBatch(InWitchCompareBatchEnum.BOTH.getValue());
+
+                    DBObject srcCatalog = (DBObject)i.get("catalog");
+                    List<DBObject> srcPayItems = (List<DBObject>)srcCatalog.get("pay_items");
+                    DBObject tgtCatalog = (DBObject)i.get("catalog");
+                    List<DBObject> tgtPayItems = (List<DBObject>)tgtCatalog.get("pay_items");
+
+                    compareMap.forEach((k,v) -> {
+                        DBObject srcItem = srcPayItems.stream()
+                                .filter(item -> k.equals(item.get("item_name")))
+                                .findFirst()
+                                .orElse(null);
+
+                        DBObject tgtItem = tgtPayItems.stream()
+                                .filter(item -> v.equals(item.get("item_name")))
+                                .findFirst()
+                                .orElse(null);
+
+                        BatchCompareItemBO itemBO = new BatchCompareItemBO();
+
+                        itemBO.setMappingKey(k);
+                        itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
+                        itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
+
+                        batchCompareItemBOList.add(itemBO);
+                    });
+                    tgtBatchList.remove(tgtEmpResultData);
+                } else {
+                    empResultBO.setInWhichBatch(InWitchCompareBatchEnum.SRC.getValue());
+
+                    DBObject srcCatalog = (DBObject)i.get("catalog");
+                    List<DBObject> srcPayItems = (List<DBObject>)srcCatalog.get("pay_items");
+
+                    compareMap.forEach((k,v) -> {
+                        DBObject srcItem = srcPayItems.stream()
+                                .filter(item -> k.equals(item.get("item_name")))
+                                .findFirst()
+                                .orElse(null);
+
+                        BatchCompareItemBO itemBO = new BatchCompareItemBO();
+
+                        itemBO.setMappingKey(k);
+                        itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
+                        itemBO.setTgtValue("");
+
+                        batchCompareItemBOList.add(itemBO);
+                    });
+                }
+
+                empResultBO.setItemList(batchCompareItemBOList);
+                batchCompareEmpBOList.add(empResultBO);
+            }
         });
+
+//        tgtBatchList.forEach(i -> {
+//            if (i.get("雇员编号") != null) {
+//                BatchCompareEmpBO empResultBO = new BatchCompareEmpBO();
+//
+//                String empId = i.get("雇员编号").toString();
+//                empResultBO.setEmployeeId(empId);
+//
+//                List<BatchCompareItemBO> batchCompareItemBOList = new ArrayList<>();
+//            }
+//        });
+//
+//
+//        compareMap.forEach((k, v) -> {
+//
+//        });
 
         //query = query.skip(pageindex*size).limit(size);
 
         return null;
+    }
+
+    private String getItemValueFromDBObject(DBObject dbObject) {
+        if (dbObject == null) {
+            return "";
+        } else {
+            Optional<Object> itemValue =  Optional.ofNullable(dbObject.get("item_value"));
+            return itemValue.map(Object::toString).orElse("");
+        }
     }
 
     private List<DBObject> getBatchItemList(Integer batchType, String batchCode) {

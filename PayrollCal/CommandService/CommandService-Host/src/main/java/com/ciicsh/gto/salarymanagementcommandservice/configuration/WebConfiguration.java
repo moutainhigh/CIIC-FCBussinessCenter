@@ -26,7 +26,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
         // 排除配置
 //        addInterceptor.excludePathPatterns("/error");
-//        addInterceptor.excludePathPatterns("/login**");
+          addInterceptor.excludePathPatterns("/api/prBatch/**");
 
         // 拦截配置
         addInterceptor.addPathPatterns("/**");
