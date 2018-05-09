@@ -41,7 +41,7 @@ public class SalaryTaskDetailDTO extends PagingDTO implements Serializable {
     /**
      * 发放状态
      */
-    private String grantStatus;
+    private Integer grantStatus;
     /**
      * 薪资发放任务单信息
      */
