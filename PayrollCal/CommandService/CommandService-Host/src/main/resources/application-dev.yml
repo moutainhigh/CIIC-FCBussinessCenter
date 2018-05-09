@@ -18,7 +18,7 @@ database:
 
 kafka:
   brokers: 172.16.9.11:9092
-  zk-nodes: 172.16.9.11:2181,172.16.9.16:2181
+  zk-nodes: 172.16.9.11:2181
 
 logging:
   file: logs/dev_app.log
