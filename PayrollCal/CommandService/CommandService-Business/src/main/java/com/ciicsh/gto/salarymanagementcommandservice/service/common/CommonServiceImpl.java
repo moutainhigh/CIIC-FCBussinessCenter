@@ -144,11 +144,11 @@ public class CommonServiceImpl {
 
         prList = prList.stream()
                 .filter(p-> itemRelationExtsList.stream().anyMatch(f -> f.getPayrollItemCode().equals(p.getItemCode()) && f.getIsActive()))
+                .sorted(Comparator.comparing(PrPayrollItemPO::getCalPriority))
                 .collect(Collectors.toList());
 
-        //显示优先级，计算顺序由小到大排列，越小计算优先级越高
-
-        prList.sort(Comparator.comparing(PrPayrollItemPO::getDisplayPriority).thenComparing(PrPayrollItemPO::getCalPriority));
+        //显示优先级，计算顺序由小到大排列
+        //prList.sort(Comparator.comparing(PrPayrollItemPO::getDisplayPriority).thenComparing(PrPayrollItemPO::getCalPriority));
 
         prList.forEach(item ->{
             BasicDBObject dbObject = new BasicDBObject();
