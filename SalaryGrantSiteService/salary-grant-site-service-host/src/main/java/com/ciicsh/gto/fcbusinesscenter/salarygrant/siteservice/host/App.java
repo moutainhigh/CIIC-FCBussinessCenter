@@ -30,6 +30,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
         "com.ciicsh.gt1",
         "com.ciicsh.gto.fcbusinesscenter.util",
         "com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice",
+        "com.ciicsh.gto.logservice.client"
 })
 public class App {
     public static void main(String[] args) {
