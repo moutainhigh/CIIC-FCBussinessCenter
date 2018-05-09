@@ -74,13 +74,6 @@
         <result column="created_time" property="createdTime" />
     </resultMap>
 
-    <resultMap id="LogInfoResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
-        <result column="task_code" property="taskCode" />
-        <result column="operator_user_id" property="operateUser" />
-        <result column="modified_time" property="operateDate" />
-        <result column="task_status" property="operateStep" />
-    </resultMap>
-
     <sql id="sgDetailField">
         t1.task_code task_code,t1.management_id, t1.management_name, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type,t1.task_status,
 		t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count
@@ -90,10 +83,6 @@
         t1.task_code,t1.management_name,t1.management_id,t1.batch_code,t1.grant_cycle,t1.payment_total_sum,t1.total_person_count,
         t1.chinese_count,t1.foreigner_count,t1.grant_date,t1.task_status,'' as task_status_name, t1.task_type, t1.task_status, t1.approved_opinion
 	</sql>
-
-    <sql id="logInfoField">
-        t.task_code, t.operator_user_id, t.modified_time, t.task_status
-    </sql>
 
 	<select id="rejectList" resultMap="PageResultMap">
 		select
@@ -182,19 +171,6 @@
           t1.is_active=1
         order by
           t1.task_code
-    </select>
-
-    <select id="operation" resultMap="LogInfoResultMap">
-        select
-          <include refid="logInfoField"></include>
-        from
-          sg_salary_grant_task_history t
-        where
-          t.task_code = #{taskCode}
-        and
-          t.is_active=1
-        order by
-          t.task_code
     </select>
 
 </mapper>

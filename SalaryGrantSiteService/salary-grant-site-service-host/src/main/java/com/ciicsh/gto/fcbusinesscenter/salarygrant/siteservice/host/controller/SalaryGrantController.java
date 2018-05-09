@@ -13,7 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.PageUtil;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
@@ -413,7 +413,7 @@ public class SalaryGrantController {
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录").setContent(JSON.toJSONString(dto)));
         try {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-            Page<SalaryGrantTaskHistoryPO> page = salaryGrantTaskQueryService.operation(bo);
+            Page<WorkFlowTaskInfoBO> page = salaryGrantTaskQueryService.operation(bo);
             Pagination<SalaryGrantOperationDTO> pagination = PageUtil.changeWapper(page, SalaryGrantOperationDTO.class);
             logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("操作记录").setContent(JSON.toJSONString(pagination)));
             return ResultGenerator.genSuccessResult(pagination);
