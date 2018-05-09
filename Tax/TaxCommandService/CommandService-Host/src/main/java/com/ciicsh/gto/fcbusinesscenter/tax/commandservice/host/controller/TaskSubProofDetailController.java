@@ -46,7 +46,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
      * @return
      */
     @Override
-    public JsonResult<ResponseForSubDetail> queryTaskSubProofDetail(TaskProofDTO taskProofDTO) {
+    public JsonResult<ResponseForSubDetail> queryTaskSubProofDetail(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult<ResponseForSubDetail> jr = new JsonResult<>();
 
         RequestForProof requestForProof = new RequestForProof();
@@ -64,7 +64,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
      * @return
      */
     @Override
-    public JsonResult<ResponseForEmployee> queryEmployee(TaskProofDTO taskProofDTO) {
+    public JsonResult<ResponseForEmployee> queryEmployee(@RequestBody TaskProofDTO taskProofDTO) {
         //主任务标识
         String main = "main";
         JsonResult<ResponseForEmployee> jr = new JsonResult<>();
