@@ -23,3 +23,10 @@ zipkin:
   enabled: true
 sleuth:
   percentage: 0.1
+
+mongo:
+  host: 172.16.22.113
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%
