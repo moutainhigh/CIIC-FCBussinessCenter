@@ -37,7 +37,8 @@ public class OfferFileController {
         page.setSize(salaryGrantTaskDTO.getSize());
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        salaryGrantTaskBO.setManagementId(CommonHelper.getManagementIDs());
+        //设置管理方信息
+        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
         page = offerDocumentTaskService.queryOfferDocumentTaskPage(page, salaryGrantTaskBO);
 
         // BO PAGE 转换为 DTO PAGE

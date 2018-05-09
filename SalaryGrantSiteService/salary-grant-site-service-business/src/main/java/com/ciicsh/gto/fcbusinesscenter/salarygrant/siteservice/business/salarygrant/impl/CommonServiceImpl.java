@@ -1,10 +1,13 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
+import com.ciicsh.gto.basicdataservice.api.CountryServiceProxy;
 import com.ciicsh.gto.basicdataservice.api.DicItemServiceProxy;
+import com.ciicsh.gto.basicdataservice.api.dto.CountryDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.DicItemDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,8 @@ public class CommonServiceImpl implements CommonService {
     private EntityIdServiceProxy entityIdServiceProxy;
     @Autowired
     private DicItemServiceProxy dicItemServiceProxy;
+    @Autowired
+    private CountryServiceProxy countryServiceProxy;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -49,5 +54,17 @@ public class CommonServiceImpl implements CommonService {
         List<DicItemDTO> dicItemDTOList = dicItemServiceProxy.listByDicValue(dicValue);
         List dicItemTextList = dicItemDTOList.stream().map(DicItemDTO::getDicItemText).collect(Collectors.toList());
         return dicItemTextList;
+    }
+
+    @Override
+    public String getCountryName(String countryCode) {
+        String countryName = null;
+        if(countryCode == null || "".equals(countryCode)){
+            throw new BusinessException("国家编号为空！");
+        }else{
+            CountryDTO countryDTO = countryServiceProxy.selectByCountryCode(countryCode);
+            countryName = countryDTO.getCountryName();
+        }
+        return countryName;
     }
 }

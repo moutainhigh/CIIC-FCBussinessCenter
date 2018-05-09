@@ -33,6 +33,10 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
      */
     private String managementId;
     /**
+     * 管理方编号列表
+     */
+    private String managementIds;
+    /**
      * 管理方名称
      */
     private String managementName;
@@ -65,6 +69,14 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
      */
     private Integer foreignerCount;
     /**
+     * 中智上海发薪人数
+     */
+    private Integer localGrantCount;
+    /**
+     * 中智代发（委托机构）发薪人数
+     */
+    private Integer supplierGrantCount;
+    /**
      * 薪资发放日期
      */
     private String grantDate;
@@ -93,6 +105,10 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
      */
     private String grantAccountName;
     /**
+     * 任务单类型
+     */
+    private Integer taskType;
+    /**
      * 备注:任务单中雇员信息变化提示链接
      */
     private String remark;
@@ -113,7 +129,11 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
      */
     private String taskStatusName;
     /**
-     * 创建时间
+     * 当前登录用户ID
+     */
+    private String currentUserId;
+    /**
+     * 创建时间字符串
      */
     private String createdTimeStr;
 

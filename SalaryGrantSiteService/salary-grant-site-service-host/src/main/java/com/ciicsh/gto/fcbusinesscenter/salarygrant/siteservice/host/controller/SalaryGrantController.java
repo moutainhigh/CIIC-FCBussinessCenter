@@ -248,7 +248,7 @@ public class SalaryGrantController {
     public Result<SalaryTaskDetailDTO> detail(@RequestBody SalaryTaskDetailDTO dto) {
         Map<String, String> tags = new HashMap<>();
         tags.put("taskCode", dto.getTaskCode());
-        tags.put("taskType", String.valueOf(dto.getTaskType().toString()));
+        tags.put("taskType", String.valueOf(dto.getTaskType()));
         tags.put("taskStatus", dto.getTaskStatus());
         tags.put("grantStatus", dto.getGrantStatus());
         tags.put("employeeId", dto.getEmployeeId());
