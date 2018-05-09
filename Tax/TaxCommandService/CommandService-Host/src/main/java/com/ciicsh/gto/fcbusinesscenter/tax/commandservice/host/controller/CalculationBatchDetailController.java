@@ -37,7 +37,7 @@ public class CalculationBatchDetailController extends BaseController implements 
      * @return
      */
     @Override
-    public JsonResult<ResponseForBatchDetail> queryTaxBatchDetail(TaskProofDTO taskProofDTO) {
+    public JsonResult<ResponseForBatchDetail> queryTaxBatchDetail(@RequestBody TaskProofDTO taskProofDTO) {
         JsonResult<ResponseForBatchDetail> jr = new JsonResult<>();
 
         RequestForProof requestForProof = new RequestForProof();
