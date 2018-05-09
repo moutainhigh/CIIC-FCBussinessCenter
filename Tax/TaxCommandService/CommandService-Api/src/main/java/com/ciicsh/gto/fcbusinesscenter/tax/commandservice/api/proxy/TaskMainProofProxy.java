@@ -4,7 +4,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainProofD
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +20,8 @@ public interface TaskMainProofProxy {
      * @param taskMainProofDTO
      * @return
      */
-    @GetMapping(value = "/api/queryTaskMainProofByRes")
-    JsonResult queryTaskMainProofByRes(TaskMainProofDTO taskMainProofDTO);
+    @PostMapping(value = "/api/queryTaskMainProofByRes")
+    JsonResult queryTaskMainProofByRes(@RequestBody  TaskMainProofDTO taskMainProofDTO);
 
     /**
      * 新建任务

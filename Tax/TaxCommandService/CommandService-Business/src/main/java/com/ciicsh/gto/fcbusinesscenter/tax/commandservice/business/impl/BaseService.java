@@ -5,18 +5,18 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import java.io.File;
-import java.io.FileInputStream;
+
+import java.io.InputStream;
 
 public class BaseService {
 
     /**
      * 模板文件目录
      */
-    public static final String TEMPLATE_FILE_PATH =
-            Thread.currentThread().getContextClassLoader()
-                    .getResource("template/file/")
-                    .getPath().substring(1);
+    public static final String TEMPLATE_FILE_PATH = "template/file/";
+//            Thread.currentThread().getContextClassLoader()
+//                    .getResource("template/file/")
+//                    .getPath().substring(1);
 
     /**
      * 通过文件名获取POIFSFileSystem对象
@@ -28,9 +28,11 @@ public class BaseService {
         POIFSFileSystem fs = null;
         //excel全路径
         try {
-            String excel = TEMPLATE_FILE_PATH + fileName;
-            File file = new File(excel);
-            fs = new POIFSFileSystem(new FileInputStream(file));
+//            String excel = TEMPLATE_FILE_PATH + fileName;
+//            File file = new File(excel);
+//            fs = new POIFSFileSystem(new FileInputStream(file));
+            InputStream stream = getClass().getClassLoader().getResourceAsStream(TEMPLATE_FILE_PATH + fileName);
+            fs = new POIFSFileSystem(stream);
         } catch (Exception e) {
             LogTaskFactory.getLogger().error(e, "BaseController.downloadFile", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.APP, null);
         }

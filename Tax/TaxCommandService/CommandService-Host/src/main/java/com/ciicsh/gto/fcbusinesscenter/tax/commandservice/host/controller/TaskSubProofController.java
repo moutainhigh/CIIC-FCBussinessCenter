@@ -68,7 +68,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @return
      */
     @Override
-    public JsonResult<ResponseForSubProof> queryTaskSubProofByRes(TaskSubProofDTO taskSubProofDTO) {
+    public JsonResult<ResponseForSubProof> queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO) {
         JsonResult<ResponseForSubProof> jr = new JsonResult<>();
 
         RequestForProof requestForProof = new RequestForProof();

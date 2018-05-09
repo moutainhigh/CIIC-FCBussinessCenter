@@ -45,6 +45,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
@@ -91,6 +93,8 @@
         SELECT
             t1.salary_grant_sub_task_id               taskId          ,
             t1.salary_grant_sub_task_code             taskCode        ,
+            t1.task_type                              taskType        ,
+            t1.task_status                            taskStatus      ,
             t1.management_name                        managementName  ,
             t1.management_id                          managementId    ,
             t1.batch_code                             batchCode       ,
@@ -134,6 +138,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
@@ -177,6 +183,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
@@ -220,6 +228,8 @@
         SELECT
             t1.task_id              taskId          ,
             t1.task_code            taskCode        ,
+            t1.task_type            taskType        ,
+            t1.task_status          taskStatus      ,
             t1.management_name      managementName  ,
             t1.management_id        managementId    ,
             t1.batch_code           batchCode       ,
@@ -263,6 +273,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
