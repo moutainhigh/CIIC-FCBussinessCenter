@@ -53,6 +53,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String grantCycle;
     /**
+     * 发放状态
+     */
+    private Integer grantStatus;
+    /**
      * 薪资发放总金额（RMB）
      */
     private BigDecimal paymentTotalSum;
