@@ -252,7 +252,7 @@ public class SalaryGrantController {
         tags.put("grantStatus", String.valueOf(dto.getGrantStatus()));
         tags.put("employeeId", dto.getEmployeeId());
         tags.put("employeeName", dto.getEmployeeName());
-        logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询明细").setContent("条件").setTags(tags));
+        logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细查询").setContent("条件").setTags(tags));
         try {
             SalaryTaskDetailDTO salaryTaskDetailDTO = new SalaryTaskDetailDTO();
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
