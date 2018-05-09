@@ -45,6 +45,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
@@ -91,6 +93,8 @@
         SELECT
             t1.salary_grant_sub_task_id               taskId          ,
             t1.salary_grant_sub_task_code             taskCode        ,
+            t1.task_type                              taskType        ,
+            t1.task_status                            taskStatus      ,
             t1.management_name                        managementName  ,
             t1.management_id                          managementId    ,
             t1.batch_code                             batchCode       ,
@@ -134,6 +138,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
@@ -177,6 +183,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
@@ -220,6 +228,8 @@
         SELECT
             t1.task_id              taskId          ,
             t1.task_code            taskCode        ,
+            t1.task_type            taskType        ,
+            t1.task_status          taskStatus      ,
             t1.management_name      managementName  ,
             t1.management_id        managementId    ,
             t1.batch_code           batchCode       ,
@@ -263,6 +273,8 @@
         SELECT
             t1.salary_grant_sub_task_id     taskId          ,
             t1.salary_grant_sub_task_code   taskCode        ,
+            t1.task_type                    taskType        ,
+            t1.task_status                  taskStatus      ,
             t1.management_name              managementName  ,
             t1.management_id                managementId    ,
             t1.batch_code                   batchCode       ,
@@ -273,10 +285,7 @@
             t1.foreigner_count              foreignerCount  ,
             t1.grant_date                   grantDate       ,
             t1.grant_type                   grantType       ,
-            case t1.grant_type
-            when 1 then '正常发放'   when 2 then '调整发放' when 3 then '回溯发放'
-            when 4 then '暂缓再发放' when 5 then '退票发放' when 6 then '现金' else ''
-            end AS                          grantTypeName   ,
+            '' AS                           grantTypeName   ,
             t1.grant_account_code           grantAccountCode,
             '' AS                           grantAccountName
         FROM

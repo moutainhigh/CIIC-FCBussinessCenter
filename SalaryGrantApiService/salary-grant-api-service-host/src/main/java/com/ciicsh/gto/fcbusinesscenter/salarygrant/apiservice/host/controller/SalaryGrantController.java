@@ -51,7 +51,6 @@ public class SalaryGrantController implements SalaryGrantProxy {
      * @return
      */
     @Override
-    @RequestMapping(value = "/getTask", method = RequestMethod.POST)
     public Result<ReponseTaskDTO> getTask(@RequestBody RequestTaskDTO dto) {
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询任务单主表").setContent(JSON.toJSONString(dto)));
         try {

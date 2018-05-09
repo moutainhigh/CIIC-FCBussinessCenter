@@ -14,6 +14,7 @@ import java.math.BigDecimal;
  * @author gaoyang
  * @since 2018-02-02
  */
+@ToString(callSuper = true)
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Serializable {

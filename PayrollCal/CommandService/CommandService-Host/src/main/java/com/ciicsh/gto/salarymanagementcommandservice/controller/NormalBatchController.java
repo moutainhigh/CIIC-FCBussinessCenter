@@ -445,7 +445,7 @@ public class NormalBatchController {
     }
 
     @GetMapping(value = "/downLoad")
-    public void downLoadOtherBatchImportFile(@RequestParam String batchCode, @RequestParam int batchType, HttpServletResponse response) {
+    public void downLoadOtherBatchImportFile(@RequestParam String batchCode, @RequestParam int batchType, @RequestParam(required = false) String token, HttpServletResponse response) {
 
         List<DBObject> dbObjects = null;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {

@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -148,5 +149,25 @@ public class SupplierDeferController {
         Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
 
         return taskDTOPage;
+    }
+
+    /**
+     * 审批通过供应商任务单
+     *
+     * @return
+     */
+    @RequestMapping("/supplierDefer/approveSubTask")
+    public Result approveSupplierSubTask() {
+        return new Result();
+    }
+
+    /**
+     * 审批退回供应商任务单
+     *
+     * @return
+     */
+    @RequestMapping("/supplierDefer/rejectSubTask")
+    public Result rejectSupplierSubTask() {
+        return new Result();
     }
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantEmployeeDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
@@ -12,6 +13,8 @@ import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +36,8 @@ public class SalaryGrantEmployeeController {
     private SalaryGrantEmployeeQueryService employeeQueryService;
     @Autowired
     private SalaryGrantEmployeeCommandService employeeCommandService;
+    @Autowired
+    private CommonService commonService;
 
     /**
      * 查询子表的雇员信息
@@ -50,6 +55,25 @@ public class SalaryGrantEmployeeController {
         BeanUtils.copyProperties(salaryGrantEmployeeDTO, grantEmployeeBO);
 
         page = employeeQueryService.queryEmployeeForSubTask(page, grantEmployeeBO);
+
+        //字段转换
+        List<SalaryGrantEmployeeBO> employeeBOList = page.getRecords();
+        if (!CollectionUtils.isEmpty(employeeBOList)) {
+            int size = employeeBOList.size();
+            SalaryGrantEmployeeBO employeeBO;
+            for (int i = 0; i < size; i++) {
+                employeeBO = employeeBOList.get(i);
+                //国籍转码
+                if (!StringUtils.isEmpty(employeeBO.getCountryCode())){
+                    employeeBO.setCountryName(commonService.getCountryName(employeeBO.getCountryCode()));
+                }
+
+                //发放状态
+                if (!ObjectUtils.isEmpty(employeeBO.getGrantStatus())){
+                    employeeBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(employeeBO.getGrantStatus())));
+                }
+            }
+        }
 
         // BO PAGE 转换为 DTO PAGE
         String boJSONStr = JSONObject.toJSONString(page);

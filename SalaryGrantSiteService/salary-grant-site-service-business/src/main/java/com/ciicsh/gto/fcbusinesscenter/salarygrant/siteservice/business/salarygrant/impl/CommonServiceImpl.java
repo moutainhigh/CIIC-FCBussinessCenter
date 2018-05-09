@@ -58,13 +58,15 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public String getCountryName(String countryCode) {
-        String countryName = null;
         if(countryCode == null || "".equals(countryCode)){
-            throw new BusinessException("国家编号为空！");
+            return null;
         }else{
             CountryDTO countryDTO = countryServiceProxy.selectByCountryCode(countryCode);
-            countryName = countryDTO.getCountryName();
+            if(countryDTO == null || "".equals(countryDTO.getCountryName())){
+                return null;
+            }else{
+                return countryDTO.getCountryName();
+            }
         }
-        return countryName;
     }
 }
