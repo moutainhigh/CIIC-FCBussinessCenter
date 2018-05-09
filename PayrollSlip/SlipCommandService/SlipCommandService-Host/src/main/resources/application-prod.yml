@@ -13,7 +13,7 @@ seaweed:
 database:
   host: 172.16.22.108
   port: 3306
-  databasename: gtopayrolldb
+  databasename: gtobusinessdb
   username: root
   password: a111111
 
