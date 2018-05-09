@@ -36,6 +36,11 @@ spring:
 server:
   port: 7034
 
+
+app:
+  id: 10007022
+  name: SalaryComputeJob
+
 mybatis-plus:
   mapper-locations: classpath*:mapper/**.xml
   type-aliases-package: com.ciicsh.gto.salarymanagement.entity.po
