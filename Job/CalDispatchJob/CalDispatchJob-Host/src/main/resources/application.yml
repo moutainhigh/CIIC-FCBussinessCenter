@@ -52,6 +52,10 @@ spring:
 server:
   port: 7033
 
+app:
+  id: 10007023
+  name: CalDispatchJob
+
 mybatis-plus:
   mapper-locations: classpath*:mapper/**.xml
   type-aliases-package: com.ciicsh.gto.salarymanagement.entity.po

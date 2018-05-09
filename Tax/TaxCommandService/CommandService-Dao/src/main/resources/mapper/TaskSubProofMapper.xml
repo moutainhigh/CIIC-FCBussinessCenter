@@ -99,7 +99,7 @@
                      index="index" open="(" close=")" separator=",">
                 #{managerName}
             </foreach>
-            or tmp.is_combined = 1)
+            or tsp.is_combined = 1)
         </if>
         <if test="declareAccount != null and declareAccount != ''">
             and tsp.declare_account LIKE concat('%', #{declareAccount, jdbcType=VARCHAR},'%')

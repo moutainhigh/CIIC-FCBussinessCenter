@@ -4,7 +4,10 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author yuantongqing on 20180116
@@ -19,7 +22,7 @@ public interface TaskSubProofProxy {
      * @param taskMainProofId
      * @return
      */
-    @GetMapping(value = "/api/queryTaskSubProofByMainId/{taskMainProofId}")
+    @PostMapping(value = "/api/queryTaskSubProofByMainId/{taskMainProofId}")
     JsonResult queryTaskSubProofByMainId(@PathVariable(value = "taskMainProofId")  Long taskMainProofId);
 
     /**
@@ -37,7 +40,7 @@ public interface TaskSubProofProxy {
      * @param taskSubProofDTO
      * @return
      */
-    @GetMapping(value = "/api/queryTaskSubProofByRes")
-    JsonResult queryTaskSubProofByRes(TaskSubProofDTO taskSubProofDTO);
+    @PostMapping(value = "/api/queryTaskSubProofByRes")
+    JsonResult queryTaskSubProofByRes(@RequestBody TaskSubProofDTO taskSubProofDTO);
 
 }
