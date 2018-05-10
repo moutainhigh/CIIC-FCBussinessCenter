@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
@@ -10,6 +11,9 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
+import com.ciicsh.gto.logservice.api.LogServiceProxy;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -38,6 +42,8 @@ public class SalaryGrantEmployeeController {
     private SalaryGrantEmployeeCommandService employeeCommandService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    LogServiceProxy logService;
 
     /**
      * 查询子表的雇员信息
@@ -48,6 +54,8 @@ public class SalaryGrantEmployeeController {
      */
     @RequestMapping("/SalaryGrantEmployee/SubTask")
     public Page<SalaryGrantEmployeeDTO> queryEmployeeForSubTask(@RequestBody SalaryGrantEmployeeDTO salaryGrantEmployeeDTO){
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("查询子表的雇员信息").setContent(JSON.toJSONString(salaryGrantEmployeeDTO)));
+
         Page<SalaryGrantEmployeeBO> page = new Page<>();
         page.setCurrent(salaryGrantEmployeeDTO.getCurrent());
         page.setSize(salaryGrantEmployeeDTO.getSize());
@@ -98,6 +106,8 @@ public class SalaryGrantEmployeeController {
      */
     @RequestMapping("/SalaryGrantEmployee/reprieveEmployee")
     public Result toReprieveEmployee(@RequestBody SalaryGrantEmployeeDTO salaryGrantEmployeeDTO){
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("根据grantStatus进行不同的操作").setContent(JSON.toJSONString(salaryGrantEmployeeDTO)));
+
         SalaryGrantEmployeePO employeePO = new SalaryGrantEmployeePO();
         employeePO.setSalaryGrantEmployeeId(salaryGrantEmployeeDTO.getSalaryGrantEmployeeId());
         employeePO.setGrantStatus(salaryGrantEmployeeDTO.getGrantStatus());
@@ -123,6 +133,8 @@ public class SalaryGrantEmployeeController {
      */
     @RequestMapping("/SalaryGrantEmployee/batchReprieveEmployee")
     public Result toBatchReprieveEmployee(@RequestBody List<Long> salaryGrantEmployeeIdList){
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("批量暂缓雇员操作").setContent(JSON.toJSONString(salaryGrantEmployeeIdList)));
+
         if (CollectionUtils.isEmpty(salaryGrantEmployeeIdList)) {
             return new Result();
         }
@@ -159,6 +171,8 @@ public class SalaryGrantEmployeeController {
      */
     @RequestMapping("/SalaryGrantEmployee/batchRecoverEmployee")
     public Result toBatchRecoverEmployee(@RequestBody List<Long> salaryGrantEmployeeIdList){
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("批量恢复雇员操作").setContent(JSON.toJSONString(salaryGrantEmployeeIdList)));
+
         if (CollectionUtils.isEmpty(salaryGrantEmployeeIdList)) {
             return new Result();
         }
