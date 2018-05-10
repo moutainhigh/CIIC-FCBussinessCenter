@@ -11,7 +11,7 @@ import java.util.Date;
  * </p>
  *
  * @author chenpb
- * @since 2018-05-07
+ * @since 2018-05-09
  */
 @Getter
 @Setter
@@ -20,20 +20,24 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantOperationDTO {
     /**
-     * 任务单编号
+     * 处理人编号
      */
-    private String taskCode;
+    private String operateUserId;
     /**
-     * 操作员
+     * 处理人名称
      */
-    private String operateUser;
+    private String operateUserName;
     /**
-     * 最后修改时间
+     * 处理时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8", locale = "zh")
-    private Date operateDate;
+    private Date operateTime;
     /**
      * 操作
      */
-    private String operateStep;
+    private String operation;
+    /**
+     * 审批意见
+     */
+    private String opinion;
 }

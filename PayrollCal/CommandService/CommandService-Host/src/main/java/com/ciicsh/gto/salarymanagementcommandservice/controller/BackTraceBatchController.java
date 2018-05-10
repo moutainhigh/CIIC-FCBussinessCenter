@@ -11,6 +11,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
+import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
@@ -18,6 +19,7 @@ import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,6 +66,10 @@ public class BackTraceBatchController {
 
     @Autowired
     private CodeGenerator codeGenerator;
+
+    @Autowired
+    private CommonServiceImpl commonService;
+
 
     @PostMapping("/addBackTraceBatch")
     public JsonResult addBackTraceBatch(@RequestParam String batchCode, @RequestParam(required = false, defaultValue = "") String originCode) {
@@ -131,41 +137,34 @@ public class BackTraceBatchController {
             criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(customKey).and("item_value").regex(customValue));
         }
 
-        List<DBObject> list = backTraceBatchMongoOpt.list(criteria);
-        int totalCount = list.size();
+        Query query = new Query(criteria);
+        query.fields().include("batch_code");
+
+        long totalCount = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH).stream().count();
         if(totalCount == 0){
             return JsonResult.success(0);
         }
 
-        list = list.stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
+        query.fields().
+                include(PayItemName.EMPLOYEE_CODE_CN).
+                include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
+                include("catalog.emp_info."+PayItemName.EMPLOYEE_TAX_CN).
+                include("catalog.pay_items.data_type").
+                include("catalog.pay_items.item_type").
+                include("catalog.pay_items.item_name").
+                include("catalog.pay_items.item_value").
+                include("catalog.pay_items.display_priority")
+        ;
+        query.skip((pageNum-1) * pageSize);
+        query.limit(pageSize);
 
-        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
-            SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
-            itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
+        List<DBObject> list = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
 
-            DBObject calalog = (DBObject)dbObject.get("catalog");
-            DBObject empInfo = (DBObject)calalog.get("emp_info");
-            itemPO.setEmpName(empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN)); //雇员姓名
-
-            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
-            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
-            items.forEach( dbItem -> {
-                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
-                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int)dbItem.get("data_type"));
-                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int)dbItem.get("item_type"));
-                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value"): dbItem.get("item_value"));
-                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String)dbItem.get("item_name"));
-                simplePayItemDTOList.add(simplePayItemDTO);
-            });
-            itemPO.setPayItemDTOS(simplePayItemDTOList);
-            return itemPO;
-        }).collect(Collectors.toList());
+        List<SimpleEmpPayItemDTO> simplePayItemDTOS = commonService.translate(list);
 
         PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
         result.setTotal(totalCount);
         result.setPageNum(pageNum);
-        //adjustBatchService.insert();
-
         return JsonResult.success(result);
     }
 

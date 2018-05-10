@@ -3,6 +3,8 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
@@ -252,5 +254,38 @@ public class CommonServiceImpl {
                 );
 
         return map;
+    }
+
+    public List<SimpleEmpPayItemDTO> translate(List<DBObject> list){
+
+        if(list.size() == 0) return null;
+
+        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
+            SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
+            itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
+
+            DBObject calalog = (DBObject)dbObject.get("catalog");
+            DBObject empInfo = (DBObject)calalog.get("emp_info");
+            String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
+            itemPO.setEmpName(name); //雇员姓名
+
+            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
+            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
+            items.stream().forEach(dbItem -> {
+                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
+                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
+                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
+                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
+                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
+                simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
+                simplePayItemDTOList.add(simplePayItemDTO);
+            });
+            //设置显示顺序
+            List<SimplePayItemDTO> payItemDTOS = simplePayItemDTOList.stream().sorted(Comparator.comparing(SimplePayItemDTO::getDisplay)).collect(Collectors.toList());
+            itemPO.setPayItemDTOS(payItemDTOS);
+            return itemPO;
+        }).collect(Collectors.toList());
+
+        return simplePayItemDTOS;
     }
 }
