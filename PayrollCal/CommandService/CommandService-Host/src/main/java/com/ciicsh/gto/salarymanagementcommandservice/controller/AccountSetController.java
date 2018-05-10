@@ -1,7 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.common.entity.JsonResult;
+import com.ciicsh.gto.companycenter.webcommandservice.api.WorkingCalendarProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.WorkingCalendarRequestDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.WorkingCalendarResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountSetExtensionDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
@@ -14,6 +17,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSe
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,103 +36,24 @@ import java.util.stream.Collectors;
 @RestController
 public class AccountSetController extends BaseController {
 
-    class WorkCalendar{
-        public String ManagementId;
-        public String WorkCalendarName;
-        public String WorkCalendarValue;
-
-        public WorkCalendar(String managementId,String workCalendarName,String workCalendarValue){
-            this.ManagementId = managementId;
-            this.WorkCalendarName = workCalendarName;
-            this.WorkCalendarValue = workCalendarValue;
-        }
-    }
-
     @Autowired
     private PrAccountSetService prAccountSetService;
 
+    @Autowired
+    private WorkingCalendarProxy workingCalendarProxy;
 
     @GetMapping("/getWorkCalendarList")
     public JsonResult getWorkCalendarList(@RequestParam String managementId) {
 
-        //TODO
-        List<WorkCalendar> workCalendars = new ArrayList<>();
-        WorkCalendar workCalendar = null;
-
-        workCalendar = new WorkCalendar("GL1800255","蓝天科技工作日历A","1,2,3,4,5,6,7,8,9,10");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("GL1800255","蓝天科技工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("GL000007","蓝天科技工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-0009","上海微软中国工作日历A","1,2,3,4,5,6,7,8,9,10");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-0009","上海微软中国工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-0009","上海微软中国工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-00091","北京微软中国工作日历A","1,2,3,4,5,6,7,8,9,10");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-00091","北京微软中国工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-00091","北京微软中国工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
-        workCalendars.add(workCalendar);
-
-
-        workCalendar = new WorkCalendar("glf-00092","深圳微软中国工作日历A","1,2,3,4,5,6,7,8,9,10");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-00092","深圳微软中国工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("glf-00092","深圳微软中国工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
-        workCalendars.add(workCalendar);
-
-
-        workCalendar = new WorkCalendar("ymx-0001","上海亚马逊工作日历A","1,2,3,4,5,6,7,8,9,10");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("ymx-0001","上海亚马逊工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("ymx-0001","上海亚马逊工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("ymx-0002","北京亚马逊工作日历A","1,2,3,4,5,6,7,8,9,10");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("ymx-0002","北京亚马逊工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("ymx-0002","北京亚马逊工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
-        workCalendars.add(workCalendar);
-
-
-        workCalendar = new WorkCalendar("ymx-0003","深圳亚马逊工作日历A","1,2,3,4,5,6,7,8,9,10");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("ymx-0003","深圳亚马逊工作日历B","1,2,3,4,5,6,7,8,9,10,11,12");
-        workCalendars.add(workCalendar);
-
-        workCalendar = new WorkCalendar("ymx-0003","深圳亚马逊工作日历C","1,2,3,4,5,6,7,8,9,10,11,12,13,14");
-        workCalendars.add(workCalendar);
-
-
-        List<WorkCalendar> result = new ArrayList<>();
-        result.clear();
-
-        result = workCalendars
-                .stream()
-                .filter(x->x.ManagementId.equals(managementId))
-                .collect(Collectors.toList());
+        WorkingCalendarRequestDTO param = new WorkingCalendarRequestDTO();
+        param.setManagementId(managementId);
+        JsonResult<WorkingCalendarResponseDTO> result;
+        try{
+            result = workingCalendarProxy.getWorkingCalendars(param);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JsonResult.faultMessage("获取工作日历失败");
+        }
         return JsonResult.success(result);
     }
 
@@ -273,6 +198,5 @@ public class AccountSetController extends BaseController {
     public JsonResult getAccountSetInfo(@RequestParam("accSetCode") String accSetCode) {
         PrPayrollAccountSetPO prPayrollAccountSetPO = prAccountSetService.getAccountSetInfo(accSetCode);
         return JsonResult.success(prPayrollAccountSetPO);
-
     }
 }

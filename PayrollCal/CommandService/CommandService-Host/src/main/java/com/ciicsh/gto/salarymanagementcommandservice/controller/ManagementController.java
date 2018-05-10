@@ -29,12 +29,12 @@ public class ManagementController {
     private KafkaSender kafkaSender;
 
     class MgrData{
-        public String Code;
-        public String Name;
+        public String code;
+        public String name;
 
         public MgrData(String code, String name){
-            this.Code = code;
-            this.Name = name;
+            this.code = code;
+            this.name = name;
         }
     }
 

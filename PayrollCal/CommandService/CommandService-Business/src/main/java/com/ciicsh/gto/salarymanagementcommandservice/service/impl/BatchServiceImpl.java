@@ -37,7 +37,7 @@ public class BatchServiceImpl implements BatchService {
     private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
 
     @Override
-    public HashMap<String, ?> compareBatch(String srcBatchCode, Integer srcBatchType,
+    public List<BatchCompareEmpBO> compareBatch(String srcBatchCode, Integer srcBatchType,
                                            String tgtBatchCode, Integer tgtBatchType,
                                            List<String> compareKeys,
                                            LinkedHashMap<String, String> compareMap) {
@@ -121,16 +121,39 @@ public class BatchServiceImpl implements BatchService {
             }
         });
 
-//        tgtBatchList.forEach(i -> {
-//            if (i.get("雇员编号") != null) {
-//                BatchCompareEmpBO empResultBO = new BatchCompareEmpBO();
-//
-//                String empId = i.get("雇员编号").toString();
-//                empResultBO.setEmployeeId(empId);
-//
-//                List<BatchCompareItemBO> batchCompareItemBOList = new ArrayList<>();
-//            }
-//        });
+        tgtBatchList.forEach(i -> {
+            if (i.get("雇员编号") != null) {
+                BatchCompareEmpBO empResultBO = new BatchCompareEmpBO();
+
+                String empId = i.get("雇员编号").toString();
+                empResultBO.setEmployeeId(empId);
+
+                List<BatchCompareItemBO> batchCompareItemBOList = new ArrayList<>();
+
+                empResultBO.setInWhichBatch(InWitchCompareBatchEnum.TGT.getValue());
+
+                DBObject tgtCatalog = (DBObject)i.get("catalog");
+                List<DBObject> tgtPayItems = (List<DBObject>)tgtCatalog.get("pay_items");
+
+                compareMap.forEach((k,v) -> {
+                    DBObject tgtItem = tgtPayItems.stream()
+                            .filter(item -> v.equals(item.get("item_name")))
+                            .findFirst()
+                            .orElse(null);
+
+                    BatchCompareItemBO itemBO = new BatchCompareItemBO();
+
+                    itemBO.setMappingKey(k);
+                    itemBO.setSrcValue("");
+                    itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
+
+                    batchCompareItemBOList.add(itemBO);
+                });
+
+                empResultBO.setItemList(batchCompareItemBOList);
+                batchCompareEmpBOList.add(empResultBO);
+            }
+        });
 //
 //
 //        compareMap.forEach((k, v) -> {

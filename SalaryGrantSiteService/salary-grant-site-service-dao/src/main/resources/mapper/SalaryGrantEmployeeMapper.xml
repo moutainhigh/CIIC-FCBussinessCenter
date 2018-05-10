@@ -87,8 +87,7 @@
             t.country_code               countryCode          ,
             ''                           countryName          ,
             t.grant_status               grantStatus          ,
-            case t.grant_status when 0 then '正常' when 1 then '手动暂缓' when 2 then '自动暂缓'
-                                when 3 then '退票' when 4 then '部分发放' else '' end   grantStatusName,
+            ''                           grantStatusName      ,
             t.remark
         from
             sg_salary_grant_employee t

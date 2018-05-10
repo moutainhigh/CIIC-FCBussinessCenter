@@ -13,6 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,18 +57,23 @@ public class SalaryGrantEmployeeController {
         page = employeeQueryService.queryEmployeeForSubTask(page, grantEmployeeBO);
 
         //字段转换
-//        List<SalaryGrantEmployeeBO> employeeBOList = page.getRecords();
-//        if (!CollectionUtils.isEmpty(employeeBOList)) {
-//            int size = employeeBOList.size();
-//            SalaryGrantEmployeeBO employeeBO;
-//            //国籍转码
-//            for (int i = 0; i < size; i++) {
-//                employeeBO = employeeBOList.get(i);
-//                if (!StringUtils.isEmpty(employeeBO.getCountryCode())){
-//                    employeeBO.setCountryName(commonService.getCountryName(employeeBO.getCountryCode()));
-//                }
-//            }
-//        }
+        List<SalaryGrantEmployeeBO> employeeBOList = page.getRecords();
+        if (!CollectionUtils.isEmpty(employeeBOList)) {
+            int size = employeeBOList.size();
+            SalaryGrantEmployeeBO employeeBO;
+            for (int i = 0; i < size; i++) {
+                employeeBO = employeeBOList.get(i);
+                //国籍转码
+                if (!StringUtils.isEmpty(employeeBO.getCountryCode())){
+                    employeeBO.setCountryName(commonService.getCountryName(employeeBO.getCountryCode()));
+                }
+
+                //发放状态
+                if (!ObjectUtils.isEmpty(employeeBO.getGrantStatus())){
+                    employeeBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(employeeBO.getGrantStatus())));
+                }
+            }
+        }
 
         // BO PAGE 转换为 DTO PAGE
         String boJSONStr = JSONObject.toJSONString(page);

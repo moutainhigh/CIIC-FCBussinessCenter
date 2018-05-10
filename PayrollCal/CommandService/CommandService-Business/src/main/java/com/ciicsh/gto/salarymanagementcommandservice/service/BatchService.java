@@ -1,5 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
+import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,11 +17,11 @@ public interface BatchService {
      * @param targetBatchCode
      * @return
      */
-    HashMap<String, ?> compareBatch(String sourceBatchCode,
-                                    Integer srcBatchType,
-                                    String targetBatchCode,
-                                    Integer tgtBatchType,
-                                    List<String> compareKeys,
-                                    LinkedHashMap<String, String> compareMap);
+    List<BatchCompareEmpBO> compareBatch(String sourceBatchCode,
+                                         Integer srcBatchType,
+                                         String targetBatchCode,
+                                         Integer tgtBatchType,
+                                         List<String> compareKeys,
+                                         LinkedHashMap<String, String> compareMap);
 
 }

@@ -23,7 +23,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         InterceptorRegistration addInterceptor = registry.addInterceptor(getAuthenticateInterceptor());
 
         // 排除配置
-//        addInterceptor.excludePathPatterns("/error");
+        addInterceptor.excludePathPatterns("/swagger-resources/**");
 //        addInterceptor.excludePathPatterns("/login**");
 
         // 拦截配置
