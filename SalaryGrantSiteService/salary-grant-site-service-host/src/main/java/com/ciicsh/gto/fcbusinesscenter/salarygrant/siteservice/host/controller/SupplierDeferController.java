@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
@@ -7,6 +8,9 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGra
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
+import com.ciicsh.gto.logservice.api.LogServiceProxy;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +29,8 @@ public class SupplierDeferController {
 
     @Autowired
     private SalaryGrantSupplierSubTaskService supplierSubTaskService;
+    @Autowired
+    LogServiceProxy logService;
 
     /**
      * 查询供应商任务单列表
@@ -35,6 +41,8 @@ public class SupplierDeferController {
      */
     @RequestMapping("/supplierDefer/submit")
     public Page<SalaryGrantTaskDTO> querySupplierSubTaskForSubmitPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 待提交").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -60,6 +68,8 @@ public class SupplierDeferController {
      */
     @RequestMapping("/supplierDefer/approve")
     public Page<SalaryGrantTaskDTO> querySupplierSubTaskForApprovePage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 待审批").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -85,6 +95,8 @@ public class SupplierDeferController {
      */
     @RequestMapping("/supplierDefer/haveApproved")
     public Page<SalaryGrantTaskDTO> querySupplierSubTaskForHaveApprovedPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 已处理:审批中").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -110,6 +122,8 @@ public class SupplierDeferController {
      */
     @RequestMapping("/supplierDefer/pass")
     public Page<SalaryGrantTaskDTO> querySupplierSubTaskForPassPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 已处理:审批通过").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
@@ -135,6 +149,8 @@ public class SupplierDeferController {
      */
     @RequestMapping("/supplierDefer/reject")
     public Page<SalaryGrantTaskDTO> querySupplierSubTaskForRejectPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 已处理:审批拒绝").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
         page.setSize(salaryGrantTaskDTO.getSize());
