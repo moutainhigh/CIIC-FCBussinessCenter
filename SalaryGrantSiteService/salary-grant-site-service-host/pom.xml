@@ -23,6 +23,12 @@
             <version>1.1.0-SNAPSHOT</version>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>com.ciicsh.gt1.companycenter</groupId>-->
+            <!--<artifactId>gt1.companycenter-util</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

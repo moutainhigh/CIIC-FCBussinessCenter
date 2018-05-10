@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 
+import java.util.List;
+
 /**
  * <p>
  * 薪资发放任务单查询 服务类
@@ -34,4 +36,13 @@ public interface SalaryGrantTaskQueryService {
      * @return
      */
     Page<WorkFlowTaskInfoBO> operation(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * @description 根据主表任务单编号查询子表任务单
+     * @author chenpb
+     * @since 2018-05-10
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO);
 }
