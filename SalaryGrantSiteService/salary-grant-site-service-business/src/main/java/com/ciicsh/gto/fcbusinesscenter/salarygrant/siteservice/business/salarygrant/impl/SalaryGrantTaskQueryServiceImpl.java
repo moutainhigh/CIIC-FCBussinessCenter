@@ -3,12 +3,9 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +29,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
     SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
+    @Autowired
+    WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
 
     /**
      * 查询薪资发放任务单列表
@@ -84,9 +83,9 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @return
      */
     @Override
-    public Page<SalaryGrantTaskHistoryPO> operation(SalaryGrantTaskBO bo) {
-        Page<SalaryGrantTaskHistoryPO> page = new Page<SalaryGrantTaskHistoryPO>(bo.getCurrent(), bo.getSize());
-        List<SalaryGrantTaskHistoryPO> list = salaryGrantTaskHistoryMapper.operation(page, bo);
+    public Page<WorkFlowTaskInfoBO> operation(SalaryGrantTaskBO bo) {
+        Page<WorkFlowTaskInfoBO> page = new Page<WorkFlowTaskInfoBO>(bo.getCurrent(), bo.getSize());
+        List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(page, bo);
         return page.setRecords(list);
     }
 
