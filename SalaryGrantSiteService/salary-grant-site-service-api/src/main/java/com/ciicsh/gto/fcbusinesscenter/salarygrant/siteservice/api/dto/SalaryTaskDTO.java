@@ -82,6 +82,14 @@ public class SalaryTaskDTO extends PagingDTO {
      */
     private String taskStatusName;
     /**
+     * 发放账户编号
+     */
+    private String grantAccountCode;
+    /**
+     * 发放账户名称
+     */
+    private String grantAccountName;
+    /**
      * 任务单类型
      */
     private Integer taskType;
