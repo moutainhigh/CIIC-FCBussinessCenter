@@ -147,6 +147,11 @@ public class TaskSubDeclareDTO {
      */
     private String areaType;
 
+    /**
+     * 账户类型(00:独立户,01:大库)
+     */
+    private String accountType;
+
     public Long getId() {
         return id;
     }
@@ -403,6 +408,14 @@ public class TaskSubDeclareDTO {
         this.mainIds = mainIds;
     }
 
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
     @Override
     public String toString() {
         return "TaskSubDeclareDTO{" +
@@ -438,6 +451,7 @@ public class TaskSubDeclareDTO {
                 ", isCombined=" + isCombined +
                 ", hasCombined=" + hasCombined +
                 ", areaType='" + areaType + '\'' +
+                ", accountType='" + accountType + '\'' +
                 '}';
     }
 }

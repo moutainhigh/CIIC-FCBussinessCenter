@@ -36,11 +36,11 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
         wrapper.setEntity(new TaskSubMoneyDetailPO());
         //判断是否包含主键ID条件
         if (null != requestForSubMoneyDetail.getId()) {
-            wrapper.andNew("id = {0}", requestForSubMoneyDetail.getId());
+            wrapper.and("id = {0}", requestForSubMoneyDetail.getId());
         }
         //判断是否包含划款子任务ID条件
         if (null != requestForSubMoneyDetail.getTaskSubMoneyId()) {
-            wrapper.andNew("task_sub_money_id = {0}", requestForSubMoneyDetail.getTaskSubMoneyId());
+            wrapper.and("task_sub_money_id = {0}", requestForSubMoneyDetail.getTaskSubMoneyId());
         }
         //雇员编号模糊查询条件
         if (StrKit.notBlank(requestForSubMoneyDetail.getEmployeeNo())) {
@@ -52,13 +52,13 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
         }
         //证件类型
         if (StrKit.notBlank(requestForSubMoneyDetail.getIdType())) {
-            wrapper.andNew("id_type = {0}", requestForSubMoneyDetail.getIdType());
+            wrapper.and("id_type = {0}", requestForSubMoneyDetail.getIdType());
         }
         //证件号
         if (StrKit.notBlank(requestForSubMoneyDetail.getIdNo())) {
             wrapper.like("id_no", requestForSubMoneyDetail.getIdNo());
         }
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubMoneyDetail.getPageSize() && null != requestForSubMoneyDetail.getCurrentNum()) {

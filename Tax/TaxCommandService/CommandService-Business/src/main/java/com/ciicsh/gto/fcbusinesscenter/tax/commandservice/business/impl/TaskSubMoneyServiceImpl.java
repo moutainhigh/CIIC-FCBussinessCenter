@@ -53,7 +53,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         wrapper.setEntity(new TaskSubMoneyPO());
         //判断是否包含主键ID条件
         if (null != requestForSubMoney.getId()) {
-            wrapper.andNew("id = {0}", requestForSubMoney.getId());
+            wrapper.and("id = {0}", requestForSubMoney.getId());
         }
         //缴纳账户模糊查询条件
         if (StrKit.notBlank(requestForSubMoney.getPaymentAccount())) {
@@ -67,22 +67,22 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         if (StrKit.notBlank(requestForSubMoney.getPeriodType())) {
             String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
             if (currentPan.equals(requestForSubMoney.getPeriodType())) {
-                wrapper.andNew("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
+                wrapper.and("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             } else if (currentBeforePan.equals(requestForSubMoney.getPeriodType())) {
-                wrapper.andNew("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
+                wrapper.and("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             } else if (currentAfterPan.equals(requestForSubMoney.getPeriodType())) {
-                wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
+                wrapper.and("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
         }
         //任务状态
         if (StrKit.notBlank(requestForSubMoney.getStatusType())) {
-            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubMoney.getStatusType().toUpperCase()));
+            wrapper.and("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubMoney.getStatusType().toUpperCase()));
         }
         //区域类型(00:本地,01:异地)
         if (StrKit.notBlank(requestForSubMoney.getAreaType())) {
-            wrapper.andNew("area_type = {0}", requestForSubMoney.getAreaType());
+            wrapper.and("area_type = {0}", requestForSubMoney.getAreaType());
         }
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
 
         //判断是否分页
@@ -144,7 +144,7 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             taskSubMoneyPO.setStatus(requestForSubMoney.getStatus());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubMoneyPO());
-            wrapper.andNew("is_active = {0}", true);
+            wrapper.and("is_active = {0}", true);
             wrapper.in("id", requestForSubMoney.getSubMoneyIds());
             //修改划款子任务状态
             baseMapper.update(taskSubMoneyPO, wrapper);

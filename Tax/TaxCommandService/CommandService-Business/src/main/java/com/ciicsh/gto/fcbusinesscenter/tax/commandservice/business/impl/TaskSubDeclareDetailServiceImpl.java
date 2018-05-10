@@ -7,7 +7,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclar
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -50,7 +48,7 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         wrapper.setEntity(new TaskSubDeclareDetailPO());
         Long[] ids = longList.toArray(new Long[longList.size()]);
         wrapper.in("task_sub_declare_id", ids);
-        wrapper.andNew("is_active = {0}", true);
+        wrapper.and("is_active = {0}", true);
         taskSubProofDetailPOList = baseMapper.selectList(wrapper);
         return taskSubProofDetailPOList;
     }
@@ -69,7 +67,7 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         wrapper.setEntity(new TaskSubDeclareDetailPO());
         //判断是否包含主键ID条件
         if (null != requestForSubDeclareDetail.getId()) {
-            wrapper.andNew("id = {0}", requestForSubDeclareDetail.getId());
+            wrapper.and("id = {0}", requestForSubDeclareDetail.getId());
         }
         //判断是否包含申报子任务ID条件
         if (null != requestForSubDeclareDetail.getSubDeclareId()) {
@@ -90,7 +88,7 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         }
         //证件类型
         if (StrKit.notBlank(requestForSubDeclareDetail.getIdType())) {
-            wrapper.andNew("id_type = {0}", requestForSubDeclareDetail.getIdType());
+            wrapper.and("id_type = {0}", requestForSubDeclareDetail.getIdType());
         }
         //证件号
         if (StrKit.notBlank(requestForSubDeclareDetail.getIdNo())) {
@@ -98,9 +96,9 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         }
         //页签
         if (StrKit.notBlank(requestForSubDeclareDetail.getTabType())) {
-            wrapper.andNew("is_combined = {0} ", requestForSubDeclareDetail.getTabType());
+            wrapper.and("is_combined = {0} ", requestForSubDeclareDetail.getTabType());
         }
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubDeclareDetail.getPageSize() && null != requestForSubDeclareDetail.getCurrentNum()) {
@@ -137,8 +135,8 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
     @Override
     public int selectCount(String[] hasCombinedDeclareIds) {
         EntityWrapper wrapper = new EntityWrapper();
-        wrapper.andNew("is_combine_confirmed = {0}", false);
-        wrapper.andNew("is_combined = {0}", true);
+        wrapper.and("is_combine_confirmed = {0}", false);
+        wrapper.and("is_combined = {0}", true);
         wrapper.in("task_sub_declare_id", hasCombinedDeclareIds);
         int count = baseMapper.selectCount(wrapper);
         return count;

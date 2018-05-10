@@ -51,7 +51,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         wrapper.setEntity(new TaskSubPaymentPO());
         //判断是否包含主键ID条件
         if (null != requestForSubPayment.getId()) {
-            wrapper.andNew("id = {0}", requestForSubPayment.getId());
+            wrapper.and("id = {0}", requestForSubPayment.getId());
         }
         //缴纳账户模糊查询条件
         if (StrKit.notBlank(requestForSubPayment.getPaymentAccount())) {
@@ -66,22 +66,22 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             //将年月的个税期间，转成1号，
             String currentDateStr = DateTimeKit.format(new Date(), "YYYY-MM") + "-01";
             if (currentPan.equals(requestForSubPayment.getPeriodType())) {
-                wrapper.andNew("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
+                wrapper.and("period = {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             } else if (currentBeforePan.equals(requestForSubPayment.getPeriodType())) {
-                wrapper.andNew("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
+                wrapper.and("period < {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             } else if (currentAfterPan.equals(requestForSubPayment.getPeriodType())) {
-                wrapper.andNew("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
+                wrapper.and("period > {0}", DateTimeKit.parse(currentDateStr, DateTimeKit.NORM_DATE_PATTERN));
             }
         }
         //任务状态
         if (StrKit.notBlank(requestForSubPayment.getStatusType())) {
-            wrapper.andNew("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubPayment.getStatusType().toUpperCase()));
+            wrapper.and("status = {0}", EnumUtil.getMessage(EnumUtil.BUSINESS_STATUS_TYPE, requestForSubPayment.getStatusType().toUpperCase()));
         }
         //区域类型(00:本地,01:异地)
         if (StrKit.notBlank(requestForSubPayment.getAreaType())) {
-            wrapper.andNew("area_type = {0}", requestForSubPayment.getAreaType());
+            wrapper.and("area_type = {0}", requestForSubPayment.getAreaType());
         }
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
 
         //判断是否分页
@@ -143,7 +143,7 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             taskSubPaymentPO.setStatus(requestForSubPayment.getStatus());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubPaymentPO());
-            wrapper.andNew("is_active = {0}", true);
+            wrapper.and("is_active = {0}", true);
             wrapper.in("id", requestForSubPayment.getSubPaymentIds());
             //修改缴纳子任务状态
             baseMapper.update(taskSubPaymentPO, wrapper);
