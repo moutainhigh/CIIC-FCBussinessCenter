@@ -103,7 +103,7 @@ public class SalaryGrantController {
         try {
             List<SalaryGrantTaskBO> boList = salaryGrantTaskQueryService.querySubTask(bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(boList, SalaryTaskDTO.class);
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单查询").setContent(JSON.toJSONString(list)));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单一览").setContent(JSON.toJSONString(list)));
             return ResultGenerator.genSuccessResult(list);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单查询异常").setContent(e.getMessage()));
