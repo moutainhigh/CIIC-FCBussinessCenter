@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -187,7 +188,16 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     @Override
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
-        Optional.ofNullable(list).ifPresent(x -> x.stream().forEach(y -> y.setGrantMode(commonService.getNameByValue(y.getGrantMode(),"sgGrantMode"))));
+        if(!list.isEmpty()) {
+            list.stream().forEach(y -> {
+                if (StringUtils.isNotBlank(y.getGrantMode())) {
+                    y.setGrantModeName(commonService.getNameByValue("sgGrantMode", y.getGrantMode()));
+                }
+                if (StringUtils.isNotBlank(y.getTaskStatus())) {
+                    y.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus", y.getTaskStatus()));
+                }
+            });
+        }
         return list;
     }
 
