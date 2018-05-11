@@ -22,7 +22,7 @@ zipkin:
   base-url: http://172.16.9.24:9623  #ZipkinService地址
   enabled: true
 sleuth:
-  percentage: 1.0
+  percentage: 0.1
 
 mongo:
   host: 172.16.9.16 #172.16.9.52 172.16.9.15 172.16.9.16 sit
