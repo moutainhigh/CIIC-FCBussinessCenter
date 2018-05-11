@@ -316,6 +316,26 @@
             t1.salary_grant_sub_task_code
     </select>
 
+    <select id="queryOfferDocument" resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.OfferDocumentBO" parameterType="java.lang.String">
+        select
+            t1.bankcard_type           bankcardType       ,
+            ''                         bankcardName       ,
+            t3.grant_account_code      grantAccountCode   ,
+            t3.grant_account_name      grantAccountName   ,
+            t2.offer_document_file_id  offerDocumentFileId,
+            t2.file_name               fileName           ,
+            t2.file_path               filePath           ,
+            t2.payment_total_sum       paymentTotalSum
+        from
+            sg_offer_document        t1,
+            sg_offer_document_file   t2,
+            sg_salary_grant_sub_task t3
+        where
+            t1.offer_document_id = t2.offer_document_id
+            and t1.task_code     = t3.salary_grant_sub_task_code
+            and t3.salary_grant_sub_task_code=#{taskCode}
+    </select>
+
     <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
         <result column="task_id" property="taskId" />
         <result column="task_code" property="taskCode" />
@@ -347,7 +367,7 @@
     </resultMap>
 
     <sql id="subTaskListField">
-        t.salary_grant_sub_task_code task_code,t.grant_mode,'' as grant_mode_name,t.grant_account_code,t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,t.task_status,'' as task_status_name, t.approved_opinion,
+        t.salary_grant_sub_task_code task_code,t.grant_mode,'' as grant_mode_name, t.grant_account_code, t.grant_account_name, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,t.task_status,'' as task_status_name, t.approved_opinion
     </sql>
 
     <sql id="sgDetailField">
@@ -364,8 +384,7 @@
             <if test="taskCode != null and taskCode != ''">
                 and t.salary_grant_main_task_code = #{taskCode}
             </if>
-            and
-            t.is_active=1
+            and t.is_active=1
         </where>
         order by t.grant_mode,t.salary_grant_sub_task_code
     </select>

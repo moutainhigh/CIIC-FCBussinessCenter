@@ -174,17 +174,14 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
-     * @description 根据主表任务单编号查询字表任务单
+     * @description 根据主表任务单编号查询子表任务单
      * @author chenpb
-     * @since 2018-04-23
-     * @param page
+     * @since 2018-05-10
      * @param salaryGrantTaskBO
      * @return
      */
-    private Page<SalaryGrantTaskBO> querySubTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+    public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
+        return salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
     }
 
 }
