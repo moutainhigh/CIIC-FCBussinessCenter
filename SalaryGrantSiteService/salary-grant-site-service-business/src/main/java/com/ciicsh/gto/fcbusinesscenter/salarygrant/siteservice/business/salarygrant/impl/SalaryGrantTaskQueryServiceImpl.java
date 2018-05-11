@@ -2,14 +2,17 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -21,6 +24,8 @@ import java.util.List;
  */
 @Service
 public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryService {
+    @Autowired
+    CommonService commonService;
     @Autowired
     SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
@@ -180,8 +185,20 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
+    @Override
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
-        return salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
+        List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
+        if(!list.isEmpty()) {
+            list.stream().forEach(y -> {
+                if (StringUtils.isNotBlank(y.getGrantMode())) {
+                    y.setGrantModeName(commonService.getNameByValue("sgGrantMode", y.getGrantMode()));
+                }
+                if (StringUtils.isNotBlank(y.getTaskStatus())) {
+                    y.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus", y.getTaskStatus()));
+                }
+            });
+        }
+        return list;
     }
 
 }
