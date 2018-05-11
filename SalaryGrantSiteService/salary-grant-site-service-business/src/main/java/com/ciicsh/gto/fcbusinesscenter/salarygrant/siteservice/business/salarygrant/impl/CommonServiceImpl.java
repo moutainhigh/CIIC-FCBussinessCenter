@@ -45,15 +45,33 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public String getNameByValue(String dicValue, String dicItemValue) {
-        DicItemDTO dicItemDTO = dicItemServiceProxy.selectByValue(dicValue, dicItemValue);
-        return dicItemDTO.getDicItemText();
+        if(dicValue == null || "".equals(dicValue)){
+            return null;
+        }else if(dicItemValue == null || "".equals(dicItemValue)){
+            return null;
+        }else{
+            DicItemDTO dicItemDTO = dicItemServiceProxy.selectByValue(dicValue, dicItemValue);
+            if(dicItemDTO == null || "".equals(dicItemDTO.getDicItemText())){
+                return null;
+            }else{
+                return dicItemDTO.getDicItemText();
+            }
+        }
     }
 
     @Override
     public List getNameByValueForList(String dicValue) {
-        List<DicItemDTO> dicItemDTOList = dicItemServiceProxy.listByDicValue(dicValue);
-        List dicItemTextList = dicItemDTOList.stream().map(DicItemDTO::getDicItemText).collect(Collectors.toList());
-        return dicItemTextList;
+        if(dicValue == null || "".equals(dicValue)){
+            return null;
+        }else{
+            List<DicItemDTO> dicItemDTOList = dicItemServiceProxy.listByDicValue(dicValue);
+            if(dicItemDTOList.isEmpty()){
+                return null;
+            }else{
+                List dicItemTextList = dicItemDTOList.stream().map(DicItemDTO::getDicItemText).collect(Collectors.toList());
+                return dicItemTextList;
+            }
+        }
     }
 
     @Override
