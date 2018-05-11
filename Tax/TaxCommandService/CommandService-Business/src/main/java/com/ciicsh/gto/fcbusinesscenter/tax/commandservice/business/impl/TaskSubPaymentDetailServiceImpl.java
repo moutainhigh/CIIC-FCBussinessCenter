@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubPaymentDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubPaymentDetailMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubPaymentDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubPaymentDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPaymentDetail;
@@ -14,7 +13,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,11 +36,11 @@ public class TaskSubPaymentDetailServiceImpl extends ServiceImpl<TaskSubPaymentD
         wrapper.setEntity(new TaskSubPaymentDetailPO());
         //判断是否包含主键ID条件
         if (null != requestForSubPaymentDetail.getId()) {
-            wrapper.andNew("id = {0}", requestForSubPaymentDetail.getId());
+            wrapper.and("id = {0}", requestForSubPaymentDetail.getId());
         }
         //判断是否包含缴纳子任务ID条件
         if (null != requestForSubPaymentDetail.getTaskSubPaymentId()) {
-            wrapper.andNew("task_sub_payment_id = {0}", requestForSubPaymentDetail.getTaskSubPaymentId());
+            wrapper.and("task_sub_payment_id = {0}", requestForSubPaymentDetail.getTaskSubPaymentId());
         }
         //雇员编号模糊查询条件
         if (StrKit.notBlank(requestForSubPaymentDetail.getEmployeeNo())) {
@@ -54,13 +52,13 @@ public class TaskSubPaymentDetailServiceImpl extends ServiceImpl<TaskSubPaymentD
         }
         //证件类型
         if (StrKit.notBlank(requestForSubPaymentDetail.getIdType())) {
-            wrapper.andNew("id_type = {0}", requestForSubPaymentDetail.getIdType());
+            wrapper.and("id_type = {0}", requestForSubPaymentDetail.getIdType());
         }
         //证件号
         if (StrKit.notBlank(requestForSubPaymentDetail.getIdNo())) {
             wrapper.like("id_no", requestForSubPaymentDetail.getIdNo());
         }
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
         //判断是否分页
         if (null != requestForSubPaymentDetail.getPageSize() && null != requestForSubPaymentDetail.getCurrentNum()) {

@@ -63,9 +63,9 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubProofPO());
         //主任务ID
-        wrapper.andNew(" task_main_proof_id = {0}", taskMainProofId);
+        wrapper.and(" task_main_proof_id = {0}", taskMainProofId);
         //是否可用
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("is_active = {0} ", true);
         //修改时间排序
         wrapper.orderBy("modified_time", false);
         List<TaskSubProofPO> taskSubProofPOList = baseMapper.selectList(wrapper);
@@ -86,7 +86,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         wrapper.setEntity(new TaskSubProofPO());
         //判断是否包含主键ID条件
         if (requestForProof.getId() != null) {
-            wrapper.andNew("id = {0}", requestForProof.getId());
+            wrapper.and("id = {0}", requestForProof.getId());
         }
         wrapper.orderBy("created_time", false);
         //判断是否是分页查询
@@ -153,8 +153,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
 
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubProofDetailPO());
-        wrapper.andNew("task_sub_proof_id = {0}", taskSubProofId);
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("task_sub_proof_id = {0}", taskSubProofId);
+        wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("created_time", false);
         //根据子任务ID查询相关申报明细，并重新插入
         List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofDetailMapper.selectList(wrapper);
@@ -223,7 +223,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofPO());
             wrapper.isNull("task_sub_proof_id");
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             wrapper.in("id", requestForProof.getSubProofIds());
             wrapper.orderBy("modified_time", false);
             wrapper.orderBy("created_time", false);
@@ -306,8 +306,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             taskSubProofPO.setTaskSubProofId(newTaskSubProof.getId());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofPO());
-            wrapper.andNew("status = {0}", "01");
-            wrapper.andNew("is_active = {0}", true);
+            wrapper.and("status = {0}", "01");
+            wrapper.and("is_active = {0}", true);
             //将list转为数组
             Long[] ids = unCombinedIds.toArray(new Long[unCombinedIds.size()]);
             wrapper.in("id", ids);
@@ -338,8 +338,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             taskSubProofPO.setTaskSubProofId(null);
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofPO());
-            wrapper.andNew("is_active = {0}", true);
-            wrapper.andNew("task_sub_proof_id = {0}", requestForProof.getId());
+            wrapper.and("is_active = {0}", true);
+            wrapper.and("task_sub_proof_id = {0}", requestForProof.getId());
             //根据合并的ID将原子任务的合并ID置为空
             baseMapper.update(taskSubProofPO, wrapper);
 
@@ -386,7 +386,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             EntityWrapper wrapperId = new EntityWrapper();
             wrapperId.setEntity(new TaskSubProofPO());
             wrapperId.in("id", requestForProof.getSubProofIds());
-            wrapperId.andNew("is_active = {0}", true);
+            wrapperId.and("is_active = {0}", true);
             //修改完税凭证子任务合并任务ID为空的状态为退回
             baseMapper.update(taskSubProofPO, wrapperId);
             //修改完税凭证子任务合并任务ID在子任务数组ID的状态
@@ -500,7 +500,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         wrapper.setEntity(new TaskSubProofDetailPO());
         Long[] ids = longList.toArray(new Long[longList.size()]);
         wrapper.in("task_sub_proof_id", ids);
-        wrapper.andNew("is_active = {0}", true);
+        wrapper.and("is_active = {0}", true);
         taskSubProofDetailPOList = taskSubProofDetailMapper.selectList(wrapper);
         return taskSubProofDetailPOList;
     }

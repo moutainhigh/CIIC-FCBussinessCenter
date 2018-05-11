@@ -294,37 +294,11 @@ public class NormalBatchController {
                 return JsonResult.success(0);
             }
         }
-
         //List<DBObject> list = normalBatchMongoOpt.list(criteria).stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 
         logger.info("获取翻页时间 : " + String.valueOf((System.currentTimeMillis() - start)));
 
-        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
-            SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
-            itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
-
-            DBObject calalog = (DBObject)dbObject.get("catalog");
-            DBObject empInfo = (DBObject)calalog.get("emp_info");
-            String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
-            itemPO.setEmpName(name); //雇员姓名
-
-            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
-            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
-            items.stream().forEach(dbItem -> {
-                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
-                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
-                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
-                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
-                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
-                simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
-                simplePayItemDTOList.add(simplePayItemDTO);
-            });
-            //设置显示顺序
-            List<SimplePayItemDTO> payItemDTOS = simplePayItemDTOList.stream().sorted(Comparator.comparing(SimplePayItemDTO::getDisplay)).collect(Collectors.toList());
-            itemPO.setPayItemDTOS(payItemDTOS);
-            return itemPO;
-        }).collect(Collectors.toList());
-
+        List<SimpleEmpPayItemDTO> simplePayItemDTOS = commonService.translate(list);
         PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
         result.setTotal(totalCount);
         result.setPageNum(pageNum);

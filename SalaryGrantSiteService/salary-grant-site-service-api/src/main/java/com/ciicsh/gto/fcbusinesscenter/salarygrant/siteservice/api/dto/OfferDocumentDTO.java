@@ -1,24 +1,22 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
- * <p>
- * 薪资发放报盘信息表
- * </p>
+ * <p>Description: 薪资发放报盘文件 DTO</p>
  *
- * @author gaoyang
- * @since 2018-05-02
+ * @author Rock Jiang
+ * @version 1.0
+ * @date 2018/5/10 0010
  */
 @Data
-public class OfferDocumentBO extends OfferDocumentPO implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class OfferDocumentDTO {
+    /**
+     * 银行卡种类:1:中国银行2:建设银行3:工商银行4:招商银行5:其他银行
+     */
+    private Integer bankcardType;
     /**
      * 银行卡种类名称
      */
@@ -43,4 +41,8 @@ public class OfferDocumentBO extends OfferDocumentPO implements Serializable {
      * 报盘文件地址
      */
     private String filePath;
+    /**
+     * 薪资发放总金额（RMB）
+     */
+    private BigDecimal paymentTotalSum;
 }
