@@ -183,20 +183,20 @@ public class CommonServiceImpl {
         return list;
     }
 
-    private void setBatchOptions(List<BathUpdateOptions> options, PrCustBatchPO batchPO, DBObject item,List<BasicDBObject> payItems){
+    private void setBatchOptions(List<BathUpdateOptions> options, PrCustBatchPO batchPO, DBObject emp,List<BasicDBObject> payItems){
 
         DBObject basicDBObject = new BasicDBObject();
 
         BathUpdateOptions opt = new BathUpdateOptions();
-        if(item != null) {
+        if(emp != null) {
                     opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
                     .andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
                             Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(emp.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
                     )
             ));
-            DBObject empInfo = item.get("base_info") == null ? item :(DBObject)item.get("base_info");
+            DBObject empInfo = emp.get("base_info") == null ? emp :(DBObject)emp.get("base_info");
             basicDBObject.put("emp_info", empInfo);
         }else {
             opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
