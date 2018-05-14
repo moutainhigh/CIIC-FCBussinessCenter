@@ -39,6 +39,26 @@ public class OfferDocumentPO extends Model<OfferDocumentPO> {
     @TableField("bankcard_type")
     private Integer bankcardType;
     /**
+     * 公司编号
+     */
+    @TableField("company_id")
+    private String companyId;
+    /**
+     * 公司名称
+     */
+    @TableField("company_name")
+    private String companyName;
+    /**
+     * 付款账号
+     */
+    @TableField("payment_account_code")
+    private String paymentAccountCode;
+    /**
+     * 付款账户名
+     */
+    @TableField("payment_account_name")
+    private String paymentAccountName;
+    /**
      * 薪资发放总金额（RMB）
      */
     @TableField("payment_total_sum")
@@ -155,6 +175,38 @@ public class OfferDocumentPO extends Model<OfferDocumentPO> {
         this.modifiedTime = modifiedTime;
     }
 
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getPaymentAccountCode() {
+        return paymentAccountCode;
+    }
+
+    public void setPaymentAccountCode(String paymentAccountCode) {
+        this.paymentAccountCode = paymentAccountCode;
+    }
+
+    public String getPaymentAccountName() {
+        return paymentAccountName;
+    }
+
+    public void setPaymentAccountName(String paymentAccountName) {
+        this.paymentAccountName = paymentAccountName;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.offerDocumentId;
@@ -166,6 +218,10 @@ public class OfferDocumentPO extends Model<OfferDocumentPO> {
                 ", offerDocumentId=" + offerDocumentId +
                 ", taskCode=" + taskCode +
                 ", bankcardType=" + bankcardType +
+                ", companyId=" + companyId +
+                ", companyName=" + companyName +
+                ", paymentAccountCode=" + paymentAccountCode +
+                ", paymentAccountName=" + paymentAccountName +
                 ", paymentTotalSum=" + paymentTotalSum +
                 ", totalPersonCount=" + totalPersonCount +
                 ", isActive=" + isActive +
