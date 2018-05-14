@@ -73,22 +73,22 @@
     </resultMap>
 
     <sql id="sgDetailField">
-        t1.salary_grant_main_task_code task_code,t1.management_id, t1.management_name, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type, t1.task_status,
+        t1.salary_grant_main_task_id task_id, t1.salary_grant_main_task_code task_code,t1.management_id, t1.management_name, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type, t1.task_status,
 		t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count
     </sql>
 
     <sql id="sgListField">
-        t.task_code, t.management_id, t.management_name, t.batch_code, t.grant_cycle,  t.approved_opinion,
+        t.task_id, t.task_code, t.management_id, t.management_name, t.batch_code, t.grant_cycle,  t.approved_opinion,
         t.payment_total_sum, t.total_person_count, t.chinese_count, t.foreigner_count, t.grant_date, t.grant_type, t.grant_type_name, t.task_type, t.task_status, t.remark
     </sql>
 
     <sql id="mainListField">
-        t1.salary_grant_main_task_code task_code,t1.management_name,t1.management_id,t1.batch_code, t1.grant_cycle, t1.approved_opinion,
+        t1.salary_grant_main_task_id task_id, t1.salary_grant_main_task_code task_code,t1.management_name,t1.management_id,t1.batch_code, t1.grant_cycle, t1.approved_opinion,
         t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.grant_date,t1.grant_type, t1.task_type, t1.task_status, '' as grant_type_name, t1.remark
     </sql>
 
     <sql id="subListField">
-        t2.salary_grant_sub_task_code task_code,t2.management_name,t2.management_id,t2.batch_code, t2.grant_cycle, t2.approved_opinion,
+        t2.salary_grant_sub_task_id task_id, t2.salary_grant_sub_task_code task_code,t2.management_name,t2.management_id,t2.batch_code, t2.grant_cycle, t2.approved_opinion,
         t2.payment_total_sum,t2.total_person_count,t2.chinese_count,t2.foreigner_count,t2.grant_date,t2.grant_type, t2.task_type, t2.task_status, '' as grant_type_name,t2.remark
     </sql>
 
@@ -161,7 +161,7 @@
                   t2.is_active=1
             </where>
         ) t
-        order by t.task_code
+        order by t.task_id
 	</select>
 
     <select id="approveList" resultMap="PageResultMap">
@@ -233,7 +233,7 @@
               t2.is_active=1
         </where>
         ) t
-        order by t.task_code
+        order by t.task_id
     </select>
 
     <select id="haveApprovedList" resultMap="PageResultMap">
@@ -305,7 +305,7 @@
               t2.task_type=1
         </where>
         ) t
-        order by t.task_code
+        order by t.task_id
     </select>
 
     <select id="passList" resultMap="PageResultMap">
@@ -375,7 +375,7 @@
               t2.is_active=1
         </where>
         ) t
-        order by t.task_code
+        order by t.t.task_id
     </select>
 
     <select id="selectTaskByTaskCode" resultMap="PageResultMap">
@@ -388,7 +388,7 @@
         and
           t1.is_active=1
         order by
-          t1.salary_grant_main_task_code
+          t1.salary_grant_main_task_id
     </select>
 
 
