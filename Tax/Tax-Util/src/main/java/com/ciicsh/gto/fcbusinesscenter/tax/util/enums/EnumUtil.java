@@ -1,6 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.util.enums;
 
+import com.ciicsh.gto.fcbusinesscenter.tax.util.commondata.BasicData;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+
+import java.util.Map;
 
 /**
  * @author wuhua
@@ -60,7 +63,12 @@ public class EnumUtil {
             if (type.equals(EnumUtil.BATCH_NO_STATUS)) {
                 return BatchNoStatus.valueOf(EnumUtil.BATCH_NO_STATUS + key).getMessage();
             } else if (type.equals(EnumUtil.IT_TYPE)) {
-                return IdType.valueOf(EnumUtil.IT_TYPE + key).getMessage();
+                String value = "";
+                Map<String,String> map = BasicData.getInstance().getCertType();
+                if(map.containsKey(key)){
+                    value = map.get(key);
+                }
+                return value;
             } else if (type.equals(EnumUtil.INCOME_SUBJECT)) {
                 return IncomeSubject.valueOf(EnumUtil.INCOME_SUBJECT + key).getMessage();
             } else if (type.equals(EnumUtil.VOUCHER_STATUS)) {

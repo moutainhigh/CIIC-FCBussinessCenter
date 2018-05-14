@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.configuration;
 
 import com.ciicsh.gt1.common.auth.AuthenticateInterceptor;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.interceptor.DataInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
@@ -18,8 +19,14 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         return new AuthenticateInterceptor();
     }
 
+    @Bean
+    public DataInterceptor getDataInterceptor() {
+        return new DataInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        //token Interceptor
         InterceptorRegistration addInterceptor = registry.addInterceptor(getAuthenticateInterceptor());
 
         // 排除配置
@@ -28,5 +35,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
         // 拦截配置
         addInterceptor.addPathPatterns("/**");
+
+        //data Interceptor
+        InterceptorRegistration dataInterceptor = registry.addInterceptor(getDataInterceptor());
+
+        // 拦截配置
+        dataInterceptor.addPathPatterns("/**");
     }
 }

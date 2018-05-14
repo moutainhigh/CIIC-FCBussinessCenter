@@ -220,6 +220,19 @@ public class TaskSubMoneyDetailPO{
 	 */
 	private Long taskMainDetailId;
 
+	/**
+	 * 薪酬计算批次
+	 */
+	private String batchNo;
+
+	public String getBatchNo() {
+		return batchNo;
+	}
+
+	public void setBatchNo(String batchNo) {
+		this.batchNo = batchNo;
+	}
+
 	public Long getTaskMainDetailId() {
 		return taskMainDetailId;
 	}
