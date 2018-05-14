@@ -77,7 +77,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 employeeBO1.setId(Long.valueOf(1));
                 employeeBO1.setEmployeeNo("17A13012");
                 employeeBO1.setEmployeeName("李晓");
-                employeeBO1.setIdType("01");
+                employeeBO1.setIdType("1");
                 employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
                 employeeBO1.setIdNo("321000199010101234");
                 employeeBO1.setManagerNo("GL170001");
@@ -89,7 +89,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 employeeBO2.setId(Long.valueOf(2));
                 employeeBO2.setEmployeeNo("17A13497");
                 employeeBO2.setEmployeeName("张名");
-                employeeBO2.setIdType("01");
+                employeeBO2.setIdType("1");
                 employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
                 employeeBO2.setIdNo("323891199003103290");
                 employeeBO2.setManagerNo("GL170002");
@@ -101,7 +101,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 employeeBO3.setId(Long.valueOf(3));
                 employeeBO3.setEmployeeNo("17A13513");
                 employeeBO3.setEmployeeName("刘文华");
-                employeeBO3.setIdType("01");
+                employeeBO3.setIdType("1");
                 employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
                 employeeBO3.setIdNo("321110197108239090");
                 employeeBO3.setManagerNo("GL170003");
@@ -115,7 +115,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 employeeBO1.setId(Long.valueOf(1));
                 employeeBO1.setEmployeeNo("17A13012");
                 employeeBO1.setEmployeeName("李晓");
-                employeeBO1.setIdType("01");
+                employeeBO1.setIdType("1");
                 employeeBO1.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO1.getIdType()));
                 employeeBO1.setIdNo("321000199010101234");
                 employeeBO1.setManagerNo("GL170001");
@@ -127,7 +127,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 employeeBO2.setId(Long.valueOf(2));
                 employeeBO2.setEmployeeNo("17A13497");
                 employeeBO2.setEmployeeName("张名");
-                employeeBO2.setIdType("01");
+                employeeBO2.setIdType("1");
                 employeeBO2.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO2.getIdType()));
                 employeeBO2.setIdNo("323891199003103290");
                 employeeBO2.setManagerNo("GL170002");
@@ -139,7 +139,7 @@ public class TaskSubProofDetailController extends BaseController implements Task
                 employeeBO3.setId(Long.valueOf(3));
                 employeeBO3.setEmployeeNo("17A13513");
                 employeeBO3.setEmployeeName("刘文华");
-                employeeBO3.setIdType("01");
+                employeeBO3.setIdType("1");
                 employeeBO3.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, employeeBO3.getIdType()));
                 employeeBO3.setIdNo("321110197108239090");
                 employeeBO3.setManagerNo("GL170003");
