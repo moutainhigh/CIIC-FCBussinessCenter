@@ -75,7 +75,7 @@ public class SalaryGrantController {
         tags.put("managementIds", String.valueOf(bo.getManagementIds()));
         tags.put("grantMode", dto.getGrantMode());
         tags.put("grantCycle", dto.getGrantCycle());
-        tags.put("taskStatus", dto.getTaskStatus());
+        tags.put("taskStatusEn", dto.getTaskStatusEn());
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setContent("条件").setTags(tags));
         try {
             bo.setUserId(UserContext.getUserId());
@@ -99,7 +99,7 @@ public class SalaryGrantController {
     @RequestMapping(value="/subList", method = RequestMethod.POST)
     public Result<SalaryTaskDTO> subList(@RequestBody SalaryTaskDTO dto) {
         SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单查询").setContent("条件：" + dto.getTaskCode()));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单查询").setContent("查询条件 -> taskCode: " + dto.getTaskCode()));
         try {
             List<SalaryGrantTaskBO> boList = salaryGrantTaskQueryService.querySubTask(bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(boList, SalaryTaskDTO.class);
@@ -300,6 +300,7 @@ public class SalaryGrantController {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo = salaryGrantTaskQueryService.selectTaskByTaskCode(bo);
             SalaryGrantDetailDTO salaryGrantDetailDTO = CommonTransform.convertToDTO(bo, SalaryGrantDetailDTO.class);
+            salaryGrantDetailDTO.setGrantTimeStr(String.valueOf(bo.getGrantTime()));
 
             SalaryGrantEmployeeBO empBO = CommonTransform.convertToEntity(dto, SalaryGrantEmployeeBO.class);
             Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(dto.getCurrent(), dto.getSize());
