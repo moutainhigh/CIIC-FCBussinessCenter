@@ -612,7 +612,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
 
                     int headcount = taskSubProofDetailPOs.size();
                     taskSubProofPO.setHeadcount(headcount);
-                    Long chineseNum = taskSubProofDetailPOs.stream().filter(x -> "01".equals(x.getIdType())).collect(Collectors.counting());
+                    Long chineseNum = taskSubProofDetailPOs.stream().filter(x -> "1".equals(x.getIdType())).collect(Collectors.counting());
                     if (chineseNum != null) {
 
                         taskSubProofPO.setChineseNum(chineseNum.intValue());

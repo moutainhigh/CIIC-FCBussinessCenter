@@ -19,6 +19,8 @@
         <result column="batch_code" property="batchCode"/>
         <result column="grant_account_code" property="grantAccountCode"/>
         <result column="grant_account_name" property="grantAccountName"/>
+        <result column="payment_account_code" property="paymentAccountCode"/>
+        <result column="payment_account_name" property="paymentAccountName"/>
         <result column="grant_mode" property="grantMode"/>
         <result column="salary_grant_rule_id" property="salaryGrantRuleId"/>
         <result column="rule_type" property="ruleType"/>
