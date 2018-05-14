@@ -5,9 +5,8 @@ import com.ciicsh.gto.basicdataservice.api.DicItemServiceProxy;
 import com.ciicsh.gto.basicdataservice.api.dto.CountryDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.DicItemDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
-
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
-import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +44,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public String getNameByValue(String dicValue, String dicItemValue) {
-        if(dicValue == null || "".equals(dicValue)){
+        if(StringUtils.isEmpty(dicValue)){
             return null;
-        }else if(dicItemValue == null || "".equals(dicItemValue)){
+        }else if(StringUtils.isEmpty(dicItemValue)){
             return null;
         }else{
             DicItemDTO dicItemDTO = dicItemServiceProxy.selectByValue(dicValue, dicItemValue);
@@ -61,7 +60,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public List getNameByValueForList(String dicValue) {
-        if(dicValue == null || "".equals(dicValue)){
+        if(StringUtils.isEmpty(dicValue)){
             return null;
         }else{
             List<DicItemDTO> dicItemDTOList = dicItemServiceProxy.listByDicValue(dicValue);
@@ -76,7 +75,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public String getCountryName(String countryCode) {
-        if(countryCode == null || "".equals(countryCode)){
+        if(StringUtils.isEmpty(countryCode)){
             return null;
         }else{
             CountryDTO countryDTO = countryServiceProxy.selectByCountryCode(countryCode);
