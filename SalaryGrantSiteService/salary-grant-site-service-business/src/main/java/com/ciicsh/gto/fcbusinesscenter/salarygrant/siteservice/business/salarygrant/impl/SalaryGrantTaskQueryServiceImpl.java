@@ -189,12 +189,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
         if(!list.isEmpty()) {
-            list.stream().forEach(y -> {
-                if (StringUtils.isNotBlank(y.getGrantMode())) {
-                    y.setGrantModeName(commonService.getNameByValue("sgGrantMode", y.getGrantMode()));
+            list.stream().forEach(x -> {
+                if (StringUtils.isNotBlank(x.getGrantMode())) {
+                    x.setGrantModeName(commonService.getNameByValue("sgGrantMode", x.getGrantMode()));
                 }
-                if (StringUtils.isNotBlank(y.getTaskStatus())) {
-                    y.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus", y.getTaskStatus()));
+                if (StringUtils.isNotBlank(x.getTaskStatus())) {
+                    x.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus", x.getTaskStatus()));
                 }
             });
         }

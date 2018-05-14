@@ -222,6 +222,42 @@ public class SalaryGrantController {
     }
 
     /**
+     * 通过
+     * @author chenpb
+     * @date 2018-05-14
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/pass", method = RequestMethod.POST)
+    public Result pass(@RequestBody SalaryTaskHandleDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批通过").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("审批失败");
+        }
+    }
+
+    /**
+     * 退回
+     * @author chenpb
+     * @date 2018-05-14
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/reject", method = RequestMethod.POST)
+    public Result reject(@RequestBody SalaryTaskHandleDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("退回失败");
+        }
+    }
+
+    /**
      * 雇员信息变更记录
      * @author chenpb
      * @date 2018-04-27
