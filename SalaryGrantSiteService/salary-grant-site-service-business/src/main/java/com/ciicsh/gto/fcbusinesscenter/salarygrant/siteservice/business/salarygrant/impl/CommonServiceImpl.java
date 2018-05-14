@@ -1,9 +1,13 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
+import com.ciicsh.gto.basicdataservice.api.CityServiceProxy;
 import com.ciicsh.gto.basicdataservice.api.CountryServiceProxy;
 import com.ciicsh.gto.basicdataservice.api.DicItemServiceProxy;
+import com.ciicsh.gto.basicdataservice.api.ProvinceServiceProxy;
+import com.ciicsh.gto.basicdataservice.api.dto.CityDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.CountryDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.DicItemDTO;
+import com.ciicsh.gto.basicdataservice.api.dto.ProvinceDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +35,10 @@ public class CommonServiceImpl implements CommonService {
     private DicItemServiceProxy dicItemServiceProxy;
     @Autowired
     private CountryServiceProxy countryServiceProxy;
+    @Autowired
+    private CityServiceProxy cityServiceProxy;
+    @Autowired
+    private ProvinceServiceProxy provinceServiceProxy;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -83,6 +91,35 @@ public class CommonServiceImpl implements CommonService {
                 return null;
             }else{
                 return countryDTO.getCountryName();
+            }
+        }
+    }
+
+    @Override
+    public String getCityName(String cityCode) {
+        if(StringUtils.isEmpty(cityCode)){
+            return null;
+        }else{
+            CityDTO cityDTO = cityServiceProxy.selectByCityCode(cityCode);
+            if(cityDTO == null || "".equals(cityDTO.getCityName())){
+                return null;
+            }else{
+                return cityDTO.getCityName();
+            }
+        }
+
+    }
+
+    @Override
+    public String getProvinceName(String provinceCode) {
+        if(StringUtils.isEmpty(provinceCode)){
+            return null;
+        }else{
+            ProvinceDTO provinceDTO = provinceServiceProxy.selectByProvinceCode(provinceCode);
+            if(provinceDTO == null || "".equals(provinceDTO.getProvinceName())){
+                return null;
+            }else{
+                return provinceDTO.getProvinceName();
             }
         }
     }

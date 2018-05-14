@@ -59,6 +59,11 @@ public class OfferDocumentPO extends Model<OfferDocumentPO> {
     @TableField("payment_account_name")
     private String paymentAccountName;
     /**
+     * 付款银行名
+     */
+    @TableField("payment_account_bank_name")
+    private String paymentAccountBankName;
+    /**
      * 薪资发放总金额（RMB）
      */
     @TableField("payment_total_sum")
@@ -207,6 +212,14 @@ public class OfferDocumentPO extends Model<OfferDocumentPO> {
         this.paymentAccountName = paymentAccountName;
     }
 
+    public String getPaymentAccountBankName() {
+        return paymentAccountBankName;
+    }
+
+    public void setPaymentAccountBankName(String paymentAccountBankName) {
+        this.paymentAccountBankName = paymentAccountBankName;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.offerDocumentId;
@@ -222,6 +235,7 @@ public class OfferDocumentPO extends Model<OfferDocumentPO> {
                 ", companyName=" + companyName +
                 ", paymentAccountCode=" + paymentAccountCode +
                 ", paymentAccountName=" + paymentAccountName +
+                ", paymentAccountBankName=" + paymentAccountBankName +
                 ", paymentTotalSum=" + paymentTotalSum +
                 ", totalPersonCount=" + totalPersonCount +
                 ", isActive=" + isActive +
