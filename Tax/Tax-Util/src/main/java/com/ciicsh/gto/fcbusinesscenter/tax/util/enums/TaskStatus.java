@@ -27,7 +27,15 @@ public enum TaskStatus {
     /**
      * 失效
      */
-    TS05("失效");
+    TS05("失效"),
+    /**
+     * 部分完成
+     */
+    TS06("部分完成"),
+    /**
+     * 部分退回
+     */
+    TS07("部分退回");
 
     private String  message;
 

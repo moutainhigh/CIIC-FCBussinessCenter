@@ -105,7 +105,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
     }
 
     /**
-     * 修改（即：提交/失效）完税凭证状态
+     * 修改（即：提交）完税凭证状态
      *
      * @param requestForProof
      */
@@ -131,7 +131,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
 
             //修改完税凭证子任务状态
             TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
-            taskSubProofPO.setStatus(requestForProof.getStatus());
+            taskSubProofPO.setStatus("01");
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
             //任务为草稿状态
