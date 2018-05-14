@@ -342,7 +342,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = declareTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                Map<Long, Long> mapChineseNum = declareTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
                         .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
@@ -372,7 +372,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = moneyTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                Map<Long, Long> mapChineseNum = moneyTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
                         .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
@@ -400,7 +400,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = paymentTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                Map<Long, Long> mapChineseNum = paymentTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
                         .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
@@ -428,7 +428,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = supportTaskDetail.stream().filter(x -> "01".equals(x.getIdType()))
+                Map<Long, Long> mapChineseNum = supportTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
                         .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
