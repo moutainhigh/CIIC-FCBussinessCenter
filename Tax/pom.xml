@@ -43,8 +43,7 @@
         <payment.version>1.0.0-SNAPSHOT</payment.version>
         <logservice.version>1.0.0-SNAPSHOT</logservice.version>
         <identityservice.version>1.0.0-SNAPSHOT</identityservice.version>
-        <!--<commonservice.version>1.0.0-SNAPSHOT</commonservice.version>
-        <fcbusinesscenter-util.version>1.0.0-SNAPSHOT</fcbusinesscenter-util.version>-->
+        <commonservice.version>1.0.0-SNAPSHOT</commonservice.version>
         <commonauth.version>1.0.0-SNAPSHOT</commonauth.version>
     </properties>
 
@@ -190,6 +189,13 @@
                 <groupId>com.ciicsh.gt1</groupId>
                 <artifactId>common-auth</artifactId>
                 <version>${commonauth.version}</version>
+            </dependency>
+
+            <!--基础数据-->
+            <dependency>
+                <groupId>com.ciicsh.gt1.commonservice</groupId>
+                <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
+                <version>${commonservice.version}</version>
             </dependency>
             <!--mongodb数据库-->
             <!--<dependency>

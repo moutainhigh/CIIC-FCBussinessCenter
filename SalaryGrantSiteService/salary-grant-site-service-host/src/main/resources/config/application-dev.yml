@@ -19,12 +19,12 @@ kafka:
   brokers: 172.16.9.11:9092
   zk-nodes: 172.16.9.11:2181
 seaweed:
-  masterHost: "172.16.9.19:9333"
+  masterHost: "172.16.9.15:9333"
 zipkin:
   base-url: http://172.16.9.31:9623  #ZipkinService地址
   enabled: true
 sleuth:
-  percentage: 1.0
+  percentage: 0.1
 
 mongo:
   host: 172.16.9.15 #172.16.9.52 172.16.9.15 172.16.9.16 sit

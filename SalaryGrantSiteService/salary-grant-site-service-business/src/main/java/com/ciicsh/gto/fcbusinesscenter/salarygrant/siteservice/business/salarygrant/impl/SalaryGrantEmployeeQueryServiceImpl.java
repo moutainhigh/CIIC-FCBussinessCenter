@@ -10,6 +10,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -43,17 +44,19 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
             salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
             employeeBOList = queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
         }
-        employeeBOList.getRecords().forEach(salaryGrantTaskBO -> {
-            //国籍转码
-            if (!StringUtils.isEmpty(salaryGrantTaskBO.getCountryCode())){
-                salaryGrantTaskBO.setCountryName(commonService.getCountryName(salaryGrantTaskBO.getCountryCode()));
-            }
+        if(!employeeBOList.getRecords().isEmpty()){
+            employeeBOList.getRecords().forEach(salaryGrantTaskBO -> {
+                //国籍转码
+                if (!StringUtils.isEmpty(salaryGrantTaskBO.getCountryCode())){
+                    salaryGrantTaskBO.setCountryName(commonService.getCountryName(salaryGrantTaskBO.getCountryCode()));
+                }
 
-            //发放状态
-            if (!ObjectUtils.isEmpty(salaryGrantTaskBO.getGrantStatus())){
-                salaryGrantTaskBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(salaryGrantTaskBO.getGrantStatus())));
-            }
-        });
+                //发放状态
+                if (!ObjectUtils.isEmpty(salaryGrantTaskBO.getGrantStatus())){
+                    salaryGrantTaskBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(salaryGrantTaskBO.getGrantStatus())));
+                }
+            });
+        }
 
         return employeeBOList;
     }
