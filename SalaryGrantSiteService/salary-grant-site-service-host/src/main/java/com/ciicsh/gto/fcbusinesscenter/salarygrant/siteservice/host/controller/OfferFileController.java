@@ -16,6 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.BankFileProxy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -48,7 +49,9 @@ public class OfferFileController {
     @Autowired
     private CommonService commonService;
     @Autowired
-    LogServiceProxy logService;
+    private LogServiceProxy logService;
+    @Autowired
+    private BankFileProxy bankFileProxy;
 
     /**
      * 查询薪资发放报盘任务单列表
@@ -91,7 +94,7 @@ public class OfferFileController {
     }
 
     /**
-     * 查询薪资发放报盘文件
+     * 查询薪资发放报盘文件列表
      *
      * @return
      */

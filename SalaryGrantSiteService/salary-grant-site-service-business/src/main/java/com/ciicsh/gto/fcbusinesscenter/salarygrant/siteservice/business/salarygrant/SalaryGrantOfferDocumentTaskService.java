@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.OfferDocumentDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.OfferDocumentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 
 import java.util.List;
@@ -27,6 +28,22 @@ public interface SalaryGrantOfferDocumentTaskService extends IService<SalaryGran
      * @return Page<SalaryGrantTaskBO>
      */
     Page<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 生成薪资发放报盘文件
+     *
+     * @param taskCode
+     * @return
+     */
+    List<OfferDocumentBO> generateOfferDocument(String taskCode);
+
+    /**
+     * 创建薪资发放报盘文件
+     *
+     * @param taskCode
+     * @return
+     */
+    void createOfferDocument(String taskCode);
 
     /**
      * 查询薪资发放报盘文件

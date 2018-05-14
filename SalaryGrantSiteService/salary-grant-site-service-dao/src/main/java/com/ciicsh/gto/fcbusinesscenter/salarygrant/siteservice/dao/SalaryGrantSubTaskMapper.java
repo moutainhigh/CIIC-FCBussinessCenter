@@ -55,15 +55,6 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
     List<SalaryGrantTaskBO> querySupplierSubTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
-     * 查询供应商任务单列表
-     * 已处理:审批拒绝 3-审批拒绝、8-撤回 角色=操作员、审核员（查历史表）
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return Page<SalaryGrantTaskBO>
-     */
-    List<SalaryGrantTaskBO> querySupplierSubTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
-
-    /**
      * 查询薪资发放报盘任务单列表
      * @param page
      * @param salaryGrantTaskBO

@@ -44,6 +44,51 @@
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
 
+    <select id="querySupplierSubTaskForRejectPage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+        t1.task_id              taskId          ,
+        t1.task_code            taskCode        ,
+        t1.task_type            taskType        ,
+        t1.task_status          taskStatus      ,
+        t1.management_name      managementName  ,
+        t1.management_id        managementId    ,
+        t1.batch_code           batchCode       ,
+        t1.grant_cycle          grantCycle      ,
+        t1.payment_total_sum    paymentTotalSum ,
+        t1.total_person_count   totalPersonCount,
+        t1.chinese_count        chineseCount    ,
+        t1.foreigner_count      foreignerCount  ,
+        t1.grant_account_code   grantAccountCode,
+        '' AS                   grantAccountName,
+        t1.approved_opinion     approvedOpinion
+        FROM
+        sg_salary_grant_task_history t1
+        WHERE
+        t1.task_status IN ('3' , '8')
+        AND t1.is_active = 1
+        AND t1.task_type = 2
+        AND t1.grant_mode = 2
+        <if test="currentUserId != null">
+            AND (t1.approve_user_id = #{currentUserId} OR t1.operator_user_id = #{currentUserId})
+        </if>
+        <if test="taskCode != null">
+            AND t1.task_code = #{taskCode}
+        </if>
+        <if test="managementIds != null">
+            AND t1.management_id IN (${managementIds})
+        </if>
+        <if test="batchCode != null">
+            AND t1.batch_code = #{batchCode}
+        </if>
+        <if test="grantAccountCode != null">
+            AND t1.grant_account_code = #{grantAccountCode}
+        </if>
+        ORDER BY
+        t1.salary_grant_task_history_id
+    </select>
+
     <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
         <result column="task_id" property="taskId" />
         <result column="task_code" property="taskCode" />
