@@ -41,4 +41,18 @@ public interface CommonService {
      * @return String 国家名称
      */
     String getCountryName(String countryCode);
+
+    /**
+     *  调用公共服务根据城市编码查询城市名称
+     * @param cityCode 城市编码
+     * @return String 城市名称
+     */
+    String getCityName(String cityCode);
+
+    /**
+     *  调用公共服务根据省份编码查询省份名称
+     * @param provinceCode 省份编码
+     * @return String 省份名称
+     */
+    String getProvinceName(String provinceCode);
 }

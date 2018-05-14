@@ -11,6 +11,7 @@
 		<result column="company_name" property="companyName" />
 		<result column="payment_account_code" property="paymentAccountCode" />
 		<result column="payment_account_name" property="paymentAccountName" />
+		<result column="payment_account_bank_name" property="paymentAccountBankName" />
 		<result column="payment_total_sum" property="paymentTotalSum" />
 		<result column="total_person_count" property="totalPersonCount" />
 		<result column="is_active" property="isActive" />
