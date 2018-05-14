@@ -42,7 +42,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         wrapper.setEntity(new TaskMainProofPO());
         //判断是否包含主键ID条件
         if (requestForProof.getId() != null && !"".equals(requestForProof.getId())) {
-            wrapper.andNew("id = {0}", requestForProof.getId());
+            wrapper.and("id = {0}", requestForProof.getId());
         }
         //管理方名称
         Optional.ofNullable(requestForProof.getManagerNames()).ifPresent(managerNames -> {
@@ -50,13 +50,13 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         });
         //判断是否包含起始时间条件
         if (requestForProof.getSubmitTimeStart() != null && !"".equals(requestForProof.getSubmitTimeStart())) {
-            wrapper.andNew("created_time >= {0}", requestForProof.getSubmitTimeStart() + "00:00:00");
+            wrapper.and("created_time >= {0}", requestForProof.getSubmitTimeStart() + "00:00:00");
         }
         //判断是否包含结束时间条件
         if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {
-            wrapper.andNew("created_time <= {0} ", requestForProof.getSubmitTimeEnd() + " 23:59:59");
+            wrapper.and("created_time <= {0} ", requestForProof.getSubmitTimeEnd() + " 23:59:59");
         }
-        wrapper.andNew("is_active = {0} ", true);
+        wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
         //判断是否是分页查询
         if (requestForProof.getCurrentNum() != null && requestForProof.getPageSize() != 0) {
@@ -121,9 +121,9 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
             //任务为草稿状态
-            wrapperMain.andNew("status = {0} ", "00");
+            wrapperMain.and("status = {0} ", "00");
             //任务为可用状态
-            wrapperMain.andNew("is_active = {0} ", true);
+            wrapperMain.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapperMain.in("id", requestForProof.getMainProofIds());
             //修改完税凭证主任务
@@ -135,9 +135,9 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
             //任务为草稿状态
-            wrapperSub.andNew("status = {0} ", "00");
+            wrapperSub.and("status = {0} ", "00");
             //任务为可用状态
-            wrapperSub.andNew("is_active = {0} ", true);
+            wrapperSub.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapperSub.in("task_main_proof_id", requestForProof.getMainProofIds());
             //修改完税凭证子任务
@@ -150,9 +150,9 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
                 //任务为草稿状态
-                wrapperSub.andNew("status = {0} ", "00");
+                wrapperSub.and("status = {0} ", "00");
                 //任务为可用状态
-                wrapperSub.andNew("is_active = {0} ", true);
+                wrapperSub.and("is_active = {0} ", true);
                 //主任务ID IN条件
                 wrapperSub.in("id", requestForProof.getSubProofIds());
                 //修改完税凭证子任务
@@ -178,9 +178,9 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             EntityWrapper wrapperMain = new EntityWrapper();
             wrapperMain.setEntity(new TaskMainProofPO());
             //任务为草稿状态
-            wrapperMain.andNew("status = {0} ", "00");
+            wrapperMain.and("status = {0} ", "00");
             //任务为可用状态
-            wrapperMain.andNew("is_active = {0} ", true);
+            wrapperMain.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapperMain.in("id", requestForProof.getMainProofIds());
             //修改完税凭证主任务
@@ -193,9 +193,9 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             EntityWrapper wrapperSub = new EntityWrapper();
             wrapperSub.setEntity(new TaskSubProofPO());
             //任务为草稿状态
-            wrapperSub.andNew("status = {0} ", "00");
+            wrapperSub.and("status = {0} ", "00");
             //任务为可用状态
-            wrapperSub.andNew("is_active = {0} ", true);
+            wrapperSub.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapperSub.in("task_main_proof_id", requestForProof.getMainProofIds());
             //修改完税凭证子任务
@@ -209,9 +209,9 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
                 EntityWrapper wrapperSub = new EntityWrapper();
                 wrapperSub.setEntity(new TaskSubProofPO());
                 //任务为草稿状态
-                wrapperSub.andNew("status = {0} ", "00");
+                wrapperSub.and("status = {0} ", "00");
                 //任务为可用状态
-                wrapperSub.andNew("is_active = {0} ", true);
+                wrapperSub.and("is_active = {0} ", true);
                 //主任务ID IN条件
                 wrapperSub.in("id", requestForProof.getSubProofIds());
                 //修改完税凭证子任务

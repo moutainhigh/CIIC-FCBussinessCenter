@@ -68,6 +68,11 @@ public class RequestForTaskSubDeclare extends PageInfo {
      */
     private String[] managerNames;
 
+    /**
+     * 账户类型(00:独立户,01:大库)
+     */
+    private String accountType;
+
     public Long getId() {
         return id;
     }
@@ -170,5 +175,13 @@ public class RequestForTaskSubDeclare extends PageInfo {
 
     public void setManagerNames(String[] managerNames) {
         this.managerNames = managerNames;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
     }
 }

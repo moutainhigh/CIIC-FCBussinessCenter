@@ -64,11 +64,11 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         wrapper.setEntity(new TaskSubDeclarePO());
         //判断是否包含申报账户条件
         if (StrKit.isNotEmpty(requestForTaskSubDeclare.getDeclareAccount())) {
-            wrapper.like("declare_account", requestForTaskSubDeclare.getDeclareAccount());
+            wrapper.andNew().like("declare_account", requestForTaskSubDeclare.getDeclareAccount());
         }
         //管理方名称
         Optional.ofNullable(requestForTaskSubDeclare.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames).or("is_combined",true);
+            wrapper.andNew().in("manager_name",managerNames).or("is_combined",true);
         });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubDeclare.getPeriod())) {
@@ -93,8 +93,12 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         if (StrKit.notBlank(requestForTaskSubDeclare.getAreaType())) {
             wrapper.andNew("area_type = {0} ", requestForTaskSubDeclare.getAreaType());
         }
+        //账户类型(00:独立户,01:大库)
+        if (StrKit.notBlank(requestForTaskSubDeclare.getAccountType())) {
+            wrapper.andNew("account_type = {0} ", requestForTaskSubDeclare.getAccountType());
+        }
         //申报子任务ID为空
-        wrapper.isNull("task_sub_declare_id");
+        wrapper.andNew().isNull("task_sub_declare_id");
         //是否可用
         wrapper.andNew("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
@@ -124,7 +128,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubDeclarePO());
             wrapper.isNull("task_sub_declare_id");
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
             wrapper.orderBy("modified_time", false);
             wrapper.orderBy("created_time", false);
@@ -417,9 +421,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubDeclarePO());
             //任务为通过状态
-            wrapper.andNew("status = {0} ", "02");
+            wrapper.and("status = {0} ", "02");
             //任务为可用状态
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
             //修改完税凭证子任务
@@ -447,9 +451,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubDeclarePO());
             //任务为通过状态
-            wrapper.andNew("status = {0} ", "02");
+            wrapper.and("status = {0} ", "02");
             //任务为可用状态
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
             //修改完税凭证子任务

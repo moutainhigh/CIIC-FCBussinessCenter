@@ -74,14 +74,13 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
     List<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
-     * 根据主表任务单编号查询字表任务单
+     * 根据主表任务单编号查询子表任务单
      * @author chenpb
      * @since 2018-04-23
-     * @param page
      * @param bo
      * @return
      */
-    List<SalaryGrantTaskBO> subTaskList (Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> subTaskList (SalaryGrantTaskBO bo);
 
     /**
      * 任务单编号查询任务单

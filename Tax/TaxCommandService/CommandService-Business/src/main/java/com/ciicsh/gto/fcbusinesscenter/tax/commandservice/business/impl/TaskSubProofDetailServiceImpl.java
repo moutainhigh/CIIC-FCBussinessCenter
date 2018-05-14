@@ -93,9 +93,9 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofPO());
             //主任务ID
-            wrapper.andNew("task_main_proof_id = {0} ", requestForSubDetail.getTaskId());
+            wrapper.and("task_main_proof_id = {0} ", requestForSubDetail.getTaskId());
             //任务为可用状态
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             //根据主任务ID查询其下所有子任务
             List<TaskSubProofPO> subList = taskSubProofMapper.selectList(wrapper);
             //用于存申报账户
@@ -196,7 +196,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubProofDetailPO());
             //任务为可用状态
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             //完税凭证申请明细主键 IN条件
             wrapper.in("id", requestForSubDetail.getOldDeleteIds());
             baseMapper.update(taskSubProofDetailPO, wrapper);

@@ -66,12 +66,12 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         wrapper.setEntity(new TaskSubSupplierPO());
         //判断是否包含申报账户条件
         if (StrKit.isNotEmpty(requestForTaskSubSupplier.getDeclareAccount())) {
-            wrapper.like("declare_account", requestForTaskSubSupplier.getDeclareAccount());
+            wrapper.andNew().like("declare_account", requestForTaskSubSupplier.getDeclareAccount());
         }
         //管理方名称
         Optional.ofNullable(requestForTaskSubSupplier.getManagerNames()).ifPresent(managerNames -> {
 //            wrapper.in("manager_name",managerNames);
-            wrapper.in("manager_name",managerNames).or("is_combined",true);
+            wrapper.andNew().in("manager_name",managerNames).or("is_combined",true);
         });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubSupplier.getPeriod())) {
@@ -79,7 +79,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         }
         //判断是否包含供应商名称条件
         if (StrKit.isNotEmpty(requestForTaskSubSupplier.getSupportName())) {
-            wrapper.like("support_name", requestForTaskSubSupplier.getSupportName());
+            wrapper.andNew().like("support_name", requestForTaskSubSupplier.getSupportName());
         }
         //期间类型currentPan,currentBeforePan,currentAfterPan
         if (StrKit.notBlank(requestForTaskSubSupplier.getPeriodType())) {
@@ -101,7 +101,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             wrapper.andNew("account_type = {0}", requestForTaskSubSupplier.getAccountType());
         }
         //供应商子任务ID为空
-        wrapper.isNull("task_sub_supplier_id");
+        wrapper.andNew().isNull("task_sub_supplier_id");
         //是否可用
         wrapper.andNew("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
@@ -143,7 +143,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubSupplierPO());
             wrapper.isNull("task_sub_supplier_id");
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
             wrapper.orderBy("modified_time", false);
             wrapper.orderBy("created_time", false);
@@ -247,8 +247,8 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             taskSubSupplierPO1.setTaskSubSupplierId(taskSubSupplierPO.getId());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubSupplierPO());
-            wrapper.andNew("status = {0}", "02");
-            wrapper.andNew("is_active = {0}", true);
+            wrapper.and("status = {0}", "02");
+            wrapper.and("is_active = {0}", true);
             //将list转为数组
             Long[] ids = unMergeIds.toArray(new Long[unMergeIds.size()]);
             wrapper.in("id", ids);
@@ -412,9 +412,9 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubSupplierPO());
             //任务为通过状态
-            wrapper.andNew("status = {0} ", "02");
+            wrapper.and("status = {0} ", "02");
             //任务为可用状态
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
             //修改供应商子任务
@@ -444,9 +444,9 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubSupplierPO());
             //任务为通过状态
-            wrapper.andNew("status = {0} ", "02");
+            wrapper.and("status = {0} ", "02");
             //任务为可用状态
-            wrapper.andNew("is_active = {0} ", true);
+            wrapper.and("is_active = {0} ", true);
             //主任务ID IN条件
             wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
             //修改供应商子任务

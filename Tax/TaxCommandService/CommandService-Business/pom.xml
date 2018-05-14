@@ -51,6 +51,11 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1.commonservice</groupId>
+            <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

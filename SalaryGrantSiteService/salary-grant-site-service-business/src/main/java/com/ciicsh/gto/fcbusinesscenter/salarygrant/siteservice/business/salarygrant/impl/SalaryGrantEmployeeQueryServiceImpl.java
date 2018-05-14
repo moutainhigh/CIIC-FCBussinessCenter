@@ -3,12 +3,16 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -25,18 +29,36 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
 
     @Autowired
     private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    @Autowired
+    CommonService commonService;
 
     @Override
     public Page<SalaryGrantEmployeeBO> queryEmployeeTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+        Page<SalaryGrantEmployeeBO> employeeBOList = null;
         //查询主表的雇员信息
         if (salaryGrantEmployeeBO.getTaskType() == Integer.valueOf(SalaryGrantBizConsts.TASK_STATUS_DRAFT)) {
             salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
-            return queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
+            employeeBOList = queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
         } else {
             //查询子表的雇员信息
             salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
-            return queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
+            employeeBOList = queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
         }
+        if(!employeeBOList.getRecords().isEmpty()){
+            employeeBOList.getRecords().forEach(salaryGrantTaskBO -> {
+                //国籍转码
+                if (!StringUtils.isEmpty(salaryGrantTaskBO.getCountryCode())){
+                    salaryGrantTaskBO.setCountryName(commonService.getCountryName(salaryGrantTaskBO.getCountryCode()));
+                }
+
+                //发放状态
+                if (!ObjectUtils.isEmpty(salaryGrantTaskBO.getGrantStatus())){
+                    salaryGrantTaskBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(salaryGrantTaskBO.getGrantStatus())));
+                }
+            });
+        }
+
+        return employeeBOList;
     }
 
     @Override

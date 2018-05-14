@@ -7,7 +7,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSuppli
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForSubSupplierDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -44,7 +42,7 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
         wrapper.setEntity(new TaskSubSupplierDetailPO());
         //判断是否包含主键ID条件
         if (null != requestForSubSupplierDetail.getId()) {
-            wrapper.andNew("id = {0}", requestForSubSupplierDetail.getId());
+            wrapper.and("id = {0}", requestForSubSupplierDetail.getId());
         }
         //判断是否包含供应商子任务ID条件
         if (null != requestForSubSupplierDetail.getSubSupplierId()) {
@@ -112,8 +110,8 @@ public class TaskSubSupplierDetailServiceImpl extends ServiceImpl<TaskSubSupplie
     @Override
     public int selectCount(String[] subHasCombinedSupplierIds) {
         EntityWrapper wrapper = new EntityWrapper();
-        wrapper.andNew("is_combine_confirmed = {0}", false);
-        wrapper.andNew("is_combined = {0}", true);
+        wrapper.and("is_combine_confirmed = {0}", false);
+        wrapper.and("is_combined = {0}", true);
         wrapper.in("task_sub_supplier_id", subHasCombinedSupplierIds);
         int count = baseMapper.selectCount(wrapper);
         return count;
