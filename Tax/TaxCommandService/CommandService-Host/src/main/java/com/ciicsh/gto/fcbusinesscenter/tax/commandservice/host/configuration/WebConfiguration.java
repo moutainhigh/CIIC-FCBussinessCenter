@@ -40,6 +40,25 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         InterceptorRegistration dataInterceptor = registry.addInterceptor(getDataInterceptor());
 
         // 拦截配置
-        dataInterceptor.addPathPatterns("/**");
+//        dataInterceptor.addPathPatterns("/**");
+        dataInterceptor.addPathPatterns("/tax/api/queryTaxBatchDetail");
+        dataInterceptor.addPathPatterns("/tax/api/queryTaskSubProofDetail");
+        dataInterceptor.addPathPatterns("/tax/api/queryEmployee");
+        dataInterceptor.addPathPatterns("/tax/api/queryTaskSubProofByRes");
+        dataInterceptor.addPathPatterns("/tax/queryCalculationBatchDetails");
+        dataInterceptor.addPathPatterns("/tax/queryTaxBatchDetailByRes");
+        dataInterceptor.addPathPatterns("/tax/exportSubDeclare/**");
+        dataInterceptor.addPathPatterns("/tax/exportDeclareBySubject/**");
+        dataInterceptor.addPathPatterns("/tax/querySubDeclareDetailsByParams");
+        dataInterceptor.addPathPatterns("/tax/querySubDeclareDetailsByCombined");
+        dataInterceptor.addPathPatterns("/tax/querySubDeclareDetailsForCombined");
+        dataInterceptor.addPathPatterns("/tax/querySubMoneyDetailsByParams");
+        dataInterceptor.addPathPatterns("/tax/querySubPaymentDetailsByParams");
+        dataInterceptor.addPathPatterns("/tax/queryTaskSubProofDetailBySubId");
+        dataInterceptor.addPathPatterns("/tax/exportSubTaskProof/**");
+        dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsByParams");
+        dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsByCombined");
+        dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsForCombined");
+
     }
 }
