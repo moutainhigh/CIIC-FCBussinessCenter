@@ -12,6 +12,8 @@ public class TaskMainDetailBO {
 
     private Long id;
 
+    private Long calculationBatchDetailId;
+
     private Long taskMainId;
     private Long taskMainDetailId;
 
@@ -234,6 +236,14 @@ public class TaskMainDetailBO {
     private String areaType;
 
     private String managerNo;
+
+    public Long getCalculationBatchDetailId() {
+        return calculationBatchDetailId;
+    }
+
+    public void setCalculationBatchDetailId(Long calculationBatchDetailId) {
+        this.calculationBatchDetailId = calculationBatchDetailId;
+    }
 
     public String getManagerNo() {
         return managerNo;
