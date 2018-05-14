@@ -259,6 +259,28 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 map.put("changeReason", "重新申报");
                 //根据不同的业务需要处理wb
                 this.exportAboutPD(wb, map, taskSubProofDetailPOList);
+            } else{
+                fileName = "完税凭证_浦东.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //扣缴单位
+                map.put("withholdingUnit", "上海中智");
+                //电脑编码
+                map.put("withholdingCode", "123456789");
+                //通用缴款书流水号
+                map.put("generalPaymentBook", "147258369");
+                //办税人员
+                map.put("taxationPersonnel", "admin");
+                //联系电话
+                map.put("phone", "18201886666");
+                //换开份数
+                map.put("changeNum", "2");
+                //换开原因
+                map.put("changeReason", "重新申报");
+                //根据不同的业务需要处理wb
+                this.exportAboutPD(wb, map, taskSubProofDetailPOList);
             }
         } catch (Exception e) {
             if (wb != null) {
@@ -608,7 +630,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 String period = "";
                 String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
                 String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
-                if (incomeStart.equals(incomeEnd)) {
+                if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
                     period = incomeStart;
                 } else {
                     period = incomeStart + "~" + incomeEnd;
@@ -653,9 +675,9 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 String period = "";
                 String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
                 String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
-                if (incomeStart.equals(incomeEnd)) {
+                if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
                     period = incomeStart;
-                } else {
+                } else{
                     period = incomeStart + "~" + incomeEnd;
                 }
                 cellK.setCellValue(period);
