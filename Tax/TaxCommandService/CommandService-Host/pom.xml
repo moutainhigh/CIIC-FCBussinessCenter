@@ -163,6 +163,11 @@
             <artifactId>kie-spring</artifactId>
         </dependency>
 
+        <dependency>
+        <groupId>com.ciicsh.gt1</groupId>
+        <artifactId>common-entity</artifactId>
+        </dependency>
+
     </dependencies>
 
 
