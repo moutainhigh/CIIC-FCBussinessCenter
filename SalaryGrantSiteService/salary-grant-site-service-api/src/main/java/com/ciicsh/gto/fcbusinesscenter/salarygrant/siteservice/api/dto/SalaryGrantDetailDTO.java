@@ -51,6 +51,10 @@ public class SalaryGrantDetailDTO {
      */
     private Integer grantTime;
     /**
+     * 薪资发放时段
+     */
+    private String grantTimeStr;
+    /**
      * 发放方式
      */
     private String grantMode;
