@@ -367,7 +367,7 @@
     </resultMap>
 
     <sql id="subTaskListField">
-        t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code,t.grant_mode,'' as grant_mode_name, t.grant_account_code, t.grant_account_name, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,t.task_status,'' as task_status_name, t.approved_opinion
+        t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code,t.grant_mode,'' as grant_mode_name, t.grant_account_code, t.grant_account_name, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,'' as task_status_name, t.approved_opinion
     </sql>
 
     <sql id="sgDetailField">
