@@ -324,7 +324,6 @@
             t3.grant_account_name      grantAccountName   ,
             t2.offer_document_file_id  offerDocumentFileId,
             t2.file_name               fileName           ,
-            t2.file_path               filePath           ,
             t2.payment_total_sum       paymentTotalSum
         from
             sg_offer_document        t1,

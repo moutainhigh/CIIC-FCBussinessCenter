@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantEmployeeDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
@@ -111,7 +112,7 @@ public class SalaryGrantEmployeeController {
         SalaryGrantEmployeePO employeePO = new SalaryGrantEmployeePO();
         employeePO.setSalaryGrantEmployeeId(salaryGrantEmployeeDTO.getSalaryGrantEmployeeId());
         employeePO.setGrantStatus(salaryGrantEmployeeDTO.getGrantStatus());
-//        employeePO.setModifiedBy();
+        employeePO.setModifiedBy(UserContext.getUserId());
         employeePO.setModifiedTime(new Date());
 
         try {
@@ -141,12 +142,13 @@ public class SalaryGrantEmployeeController {
 
         List<SalaryGrantEmployeePO> employeePOList = new ArrayList<>(salaryGrantEmployeeIdList.size());
         SalaryGrantEmployeePO employeePO;
+        String userId = UserContext.getUserId();
         for (Long salaryGrantEmployeeId : salaryGrantEmployeeIdList) {
             employeePO = new SalaryGrantEmployeePO();
             employeePO.setSalaryGrantEmployeeId(salaryGrantEmployeeId);
             //发放状态:0-正常，1-手动暂缓，2-自动暂缓，3-退票，4-部分发放
             employeePO.setGrantStatus(1);
-//            employeePO.setModifiedBy();
+            employeePO.setModifiedBy(userId);
             employeePO.setModifiedTime(new Date());
 
             employeePOList.add(employeePO);
@@ -179,12 +181,13 @@ public class SalaryGrantEmployeeController {
 
         List<SalaryGrantEmployeePO> employeePOList = new ArrayList<>(salaryGrantEmployeeIdList.size());
         SalaryGrantEmployeePO employeePO;
+        String userId = UserContext.getUserId();
         for (Long salaryGrantEmployeeId : salaryGrantEmployeeIdList) {
             employeePO = new SalaryGrantEmployeePO();
             employeePO.setSalaryGrantEmployeeId(salaryGrantEmployeeId);
             //发放状态:0-正常，1-手动暂缓，2-自动暂缓，3-退票，4-部分发放
             employeePO.setGrantStatus(0);
-//            employeePO.setModifiedBy();
+            employeePO.setModifiedBy(userId);
             employeePO.setModifiedTime(new Date());
 
             employeePOList.add(employeePO);
