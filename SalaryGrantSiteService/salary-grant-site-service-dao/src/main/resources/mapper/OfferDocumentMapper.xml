@@ -7,6 +7,10 @@
 		<id column="offer_document_id" property="offerDocumentId" />
 		<result column="task_code" property="taskCode" />
 		<result column="bankcard_type" property="bankcardType" />
+		<result column="company_id" property="companyId" />
+		<result column="company_name" property="companyName" />
+		<result column="payment_account_code" property="paymentAccountCode" />
+		<result column="payment_account_name" property="paymentAccountName" />
 		<result column="payment_total_sum" property="paymentTotalSum" />
 		<result column="total_person_count" property="totalPersonCount" />
 		<result column="is_active" property="isActive" />
