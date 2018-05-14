@@ -3,9 +3,8 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.OfferDocumentDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantOfferDocumentTaskService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.OfferDocumentMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.OfferDocumentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -27,6 +26,8 @@ import java.util.List;
 public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryGrantSubTaskMapper, SalaryGrantSubTaskPO> implements SalaryGrantOfferDocumentTaskService {
     @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
+    @Autowired
+    OfferDocumentMapper offerDocumentMapper;
 
 //    @Autowired
 //    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
@@ -38,6 +39,6 @@ public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryG
 
     @Override
     public List<OfferDocumentBO> queryOfferDocument(String taskCode) {
-        return salaryGrantSubTaskMapper.queryOfferDocument(taskCode);
+        return offerDocumentMapper.queryOfferDocument(taskCode);
     }
 }
