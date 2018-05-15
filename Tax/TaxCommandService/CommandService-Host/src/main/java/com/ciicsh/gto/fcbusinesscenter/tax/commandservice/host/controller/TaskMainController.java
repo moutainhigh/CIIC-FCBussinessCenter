@@ -16,10 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskM
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -334,7 +331,7 @@ public class TaskMainController extends BaseController {
      * @param taskMainDetailDTO
      * @return
      */
-    @RequestMapping(value = "/updateTaskMainDetail")
+    @PostMapping(value = "/updateTaskMainDetail")
     public JsonResult<Boolean> updateTaskMainDetail(@RequestBody TaskMainDetailDTO taskMainDetailDTO) {
 
         JsonResult<Boolean> jr = new JsonResult<>();

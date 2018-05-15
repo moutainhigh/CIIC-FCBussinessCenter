@@ -2,16 +2,18 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.CommonDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.kie.api.cdi.KReleaseId;
 import org.kie.api.cdi.KSession;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.runtime.KieSession;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,13 +28,16 @@ public class CommonController extends BaseController{
     @KReleaseId(groupId = "com.ciicsh.gt1.fcbusinesscenter.tax", artifactId = "fcbusinesscenter_tax_commandservice_drools", version = "1.0.0-SNAPSHOT")
     private KieSession kSession;
 
+    @Autowired
+    private CommonService commonService;
+
     /**
      * 倒推税前收入
      *
      * @param commonDTO
      * @return
      */
-    @RequestMapping(value = "/common/cal")
+    @PostMapping(value = "/common/cal")
     public JsonResult<CommonDTO> cal(@RequestBody CommonDTO commonDTO) {
         JsonResult<CommonDTO> jr = new JsonResult<>();
 
@@ -53,6 +58,22 @@ public class CommonController extends BaseController{
             jr.error();
         }
 
+        return jr;
+    }
+
+    @GetMapping(value = "/common/dic")
+    public JsonResult<Map<String,Map<String,String>>> cal(@RequestParam(value = "dicValues")String dicValues) {
+
+        JsonResult<Map<String,Map<String,String>>> jr = new JsonResult<>();
+
+        Map<String,Map<String,String>> map = new HashMap<>();
+        if(StrKit.isNotEmpty(dicValues)){
+            String[] dicValueArray = dicValues.split(",");
+            for(String dicV : dicValueArray){
+                map.put(dicV,commonService.getDicItemByDicValue(dicV));
+            }
+        }
+        jr.fill(map);
         return jr;
     }
 }
