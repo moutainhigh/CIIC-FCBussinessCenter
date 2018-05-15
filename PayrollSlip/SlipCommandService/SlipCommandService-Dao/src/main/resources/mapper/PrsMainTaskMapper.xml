@@ -15,6 +15,11 @@
         <result column="chinese_count" property="chineseCount" />
         <result column="foreigner_count" property="foreignerCount" />
         <result column="publish_date" property="publishDate" />
+        <result column="publish_exec_date" property="publishExecDate" />
+        <result column="publish_manual_date" property="publishManualDate" />
+        <result column="publish_manual_remark" property="publishManualRemark" />
+        <result column="publish_state" property="publishState" />
+        <result column="publish_fail_log" property="publishFailLog" />
         <result column="payroll_type" property="payrollType" />
         <result column="selected_payroll_type" property="selectedPayrollType" />
         <result column="status" property="status" />
@@ -35,6 +40,27 @@
     <select id="total"  resultType="int">
         SELECT COUNT(*) FROM prs_main_task
         WHERE is_active = 1
+        <if test="status != null and status != ''">
+            and status = #{status}
+        </if>
+        <if test="mainTaskId != null and mainTaskId != ''">
+            and main_task_id = #{mainTaskId}
+        </if>
+        <if test="title != null and title != ''">
+            and title like concat('%', #{title}, '%')
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
     </select>
 
     <select id="all"  resultMap="BaseResultMap">
@@ -58,9 +84,9 @@
     </select>
 
     <insert id="insert" parameterType="map">
-        INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, payroll_type, selected_payroll_type, status, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
-        VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{payrollType}, #{selectedPayrollType}, #{status}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
-    </insert>
+    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, publish_exec_date, publish_manual_date, publish_manual_remark, publish_state, publish_fail_log, payroll_type, selected_payroll_type, status, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
+    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{publishExecDate}, #{publishManualDate}, #{publishManualRemark}, #{publishState}, #{publishFailLog}, #{payrollType}, #{selectedPayrollType}, #{status}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+  </insert>
 
     <update id="update" parameterType="map">
         UPDATE prs_main_task
@@ -87,17 +113,32 @@
             <if test="employees != null and employees != ''">
                 employees = #{employees},
             </if>
-            <if test="totalCount != null and totalCount != ''">
+            <if test="totalCount != null">
                 total_count = #{totalCount},
             </if>
-            <if test="chineseCount != null and chineseCount != ''">
+            <if test="chineseCount != null">
                 chinese_count = #{chineseCount},
             </if>
-            <if test="foreignerCount != null and foreignerCount != ''">
+            <if test="foreignerCount != null">
                 foreigner_count = #{foreignerCount},
             </if>
             <if test="publishDate != null">
                 publish_date = #{publishDate},
+            </if>
+            <if test="publishExecDate != null">
+                publish_exec_date = #{publishExecDate},
+            </if>
+            <if test="publishManualDate != null">
+                publish_manual_date = #{publishManualDate},
+            </if>
+            <if test="publishManualRemark != null and publishManualRemark != ''">
+                publish_manual_remark = #{publishManualRemark},
+            </if>
+            <if test="publishState != null and publishState != ''">
+                publish_state = #{publishState},
+            </if>
+            <if test="publishFailLog != null and publishFailLog != ''">
+                publish_fail_log = #{publishFailLog},
             </if>
             <if test="payrollType != null and payrollType != ''">
                 payroll_type = #{payrollType},
@@ -154,7 +195,7 @@
             and title like concat('%', #{title}, '%')
         </if>
         <if test="managementId != null and managementId != ''">
-            and management_id = #{managementId}
+            and management_id IN (${managementId})
         </if>
         <if test="managementName != null and managementName != ''">
             and management_name like concat('%', #{managementName}, '%')

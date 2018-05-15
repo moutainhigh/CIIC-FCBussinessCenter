@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import com.ciicsh.gt1.config.MongoConfig;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
@@ -35,17 +36,17 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
     @Autowired
     private FcPayrollCalcResultMapper fcPayrollCalcResultMapper;
 
-    // TODO: query mongo
     @Autowired
     private MongoConfig mongoConfig;
 
 
     @Override
-    public List<Document> listFcPayrollCalcResults(Map<String, Object> params) {
+    public List<Document> listFcPayrollCalcResults(String params) {
 
         List<Document> records = new ArrayList<Document>();
 
-        Document doc = new Document("batch_id", params.get("batchId"));
+        Document doc = Document.parse(params);
+
         MongoCursor<Document> cursor = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find(doc).iterator();
 
         try {

@@ -14,7 +14,7 @@ import org.bson.Document;
  * @since 2018-02-09
  */
 public interface FcPayrollCalcResultService {
-    List<Document> listFcPayrollCalcResults(Map<String, Object> params);
+    List<Document> listFcPayrollCalcResults(String params);
 
     Page<FcPayrollCalcResultPO> pageFcPayrollCalcResults(Map<String, Object> params);
 
