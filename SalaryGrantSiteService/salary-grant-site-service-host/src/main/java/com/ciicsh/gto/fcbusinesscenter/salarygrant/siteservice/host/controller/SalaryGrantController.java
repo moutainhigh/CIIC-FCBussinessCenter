@@ -9,14 +9,16 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Paginati
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.excel.SalaryTaskEmpExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.CommonTransform;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform.PageUtil;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.CommonTransform;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.ExcelUtil;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.PageUtil;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
@@ -25,9 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -498,6 +499,36 @@ public class SalaryGrantController {
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("查询日志信息失败");
+        }
+    }
+
+    /**
+     * 导出雇员信息
+     * @author chenpb
+     * @date 2018-05-15
+     * @param
+     * @param response
+     * @return
+     */
+    @GetMapping(value = "/exportEmpInfo")
+    public Result exportEmpInfo(SalaryTaskDetailDTO salaryTaskDetailDTO, HttpServletResponse response) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息").setContent(JSON.toJSONString(salaryTaskDetailDTO)));
+        try {
+            SalaryGrantEmployeeBO empBO = CommonTransform.convertToEntity(salaryTaskDetailDTO, SalaryGrantEmployeeBO.class);
+            Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(salaryTaskDetailDTO.getCurrent(), salaryTaskDetailDTO.getSize());
+            page = salaryGrantEmployeeQueryService.queryEmployeeTask(page, empBO);
+            List<SalaryGrantEmployeeBO> list = page.getRecords();
+
+            List<SalaryTaskEmpExcelDTO> lists = new ArrayList<>();
+            list.stream().forEach(i -> {
+                SalaryTaskEmpExcelDTO excelDTO =  CommonTransform.convertToDTO(i, SalaryTaskEmpExcelDTO.class);
+                lists.add(excelDTO);
+            });
+            ExcelUtil.exportExcel(lists, SalaryTaskEmpExcelDTO.class, "薪资发放雇员信息.xls", response);
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("导出雇员信息失败");
         }
     }
 
