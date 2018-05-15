@@ -506,12 +506,12 @@ public class SalaryGrantController {
      * 导出雇员信息
      * @author chenpb
      * @date 2018-05-15
-     * @param
+     * @param salaryTaskDetailDTO
      * @param response
      * @return
      */
     @GetMapping(value = "/exportEmpInfo")
-    public Result exportEmpInfo(SalaryTaskDetailDTO salaryTaskDetailDTO, HttpServletResponse response) {
+    public void exportEmpInfo(SalaryTaskDetailDTO salaryTaskDetailDTO, HttpServletResponse response) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息").setContent(JSON.toJSONString(salaryTaskDetailDTO)));
         try {
             SalaryGrantEmployeeBO empBO = CommonTransform.convertToEntity(salaryTaskDetailDTO, SalaryGrantEmployeeBO.class);
@@ -524,11 +524,10 @@ public class SalaryGrantController {
                 SalaryTaskEmpExcelDTO excelDTO =  CommonTransform.convertToDTO(i, SalaryTaskEmpExcelDTO.class);
                 lists.add(excelDTO);
             });
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员明细").setContent(JSON.toJSONString(lists)));
             ExcelUtil.exportExcel(lists, SalaryTaskEmpExcelDTO.class, "薪资发放雇员信息.xls", response);
-            return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("导出雇员信息失败");
         }
     }
 
