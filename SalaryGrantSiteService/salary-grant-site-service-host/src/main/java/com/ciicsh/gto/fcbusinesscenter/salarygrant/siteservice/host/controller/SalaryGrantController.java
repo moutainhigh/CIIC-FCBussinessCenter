@@ -2,7 +2,6 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Pagination;
@@ -10,12 +9,14 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.excel.SalaryTaskEmpExcelDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.CommonTransform;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.ExcelUtil;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.PageUtil;
@@ -27,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +58,10 @@ public class SalaryGrantController {
 
     @Autowired
     private SalaryGrantEmployeeQueryService salaryGrantEmployeeQueryService;
+
+    @Autowired
+    private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
+
 
     /**
      * 薪资发放任务单一览
@@ -393,36 +397,20 @@ public class SalaryGrantController {
     /**
      * 暂缓
      * @author chenpb
-     * @date 2018-04-27
+     * @date 2018-05-15
      * @param
      * @return
      */
     @RequestMapping(value="/defer", method = RequestMethod.POST)
-    public Result defer(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result defer(@RequestBody List<EmployeeHandleDTO> dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓").setContent(JSON.toJSONString(dto)));
         try {
+            List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
+            salaryGrantEmployeeCommandService.updateBatchById(list);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("暂缓失败");
-        }
-    }
-
-    /**
-     * 批量暂缓
-     * @author chenpb
-     * @date 2018-04-27
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/batchDefer", method = RequestMethod.POST)
-    public Result batchDefer(@RequestBody List<SalaryTaskHandleDTO> list) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量暂缓").setContent(JSON.toJSONString(list)));
-        try {
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量暂缓异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("批量暂缓失败");
         }
     }
 

@@ -20,6 +20,10 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantEmpDTO extends PagingDTO {
     /**
+     * 雇员信息编号
+     */
+    private Long salaryGrantEmployeeId;
+    /**
      * 雇员编号
      */
     private String employeeId;
