@@ -79,7 +79,7 @@
             t.grant_cycle                grantCycle           ,
             t.batch_code                 batchCode            ,
             t.grant_account_code         grantAccountCode     ,
-            ''                           grantAccountName     ,
+            t.grant_account_name         grantAccountName     ,
             t.card_num                   cardNum              ,
             t.account_name               accountName          ,
             t.bank_code                  bankCode             ,
@@ -118,4 +118,5 @@
         order by
             t.employee_id
     </select>
+
 </mapper>

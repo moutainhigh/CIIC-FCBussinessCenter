@@ -24,14 +24,6 @@ public class OfferDocumentBO extends OfferDocumentPO implements Serializable {
      */
     private String bankcardName;
     /**
-     * 发放账户编号
-     */
-    private String grantAccountCode;
-    /**
-     * 发放账户名称
-     */
-    private String grantAccountName;
-    /**
      * 报盘文件ID
      */
     private Long offerDocumentFileId;

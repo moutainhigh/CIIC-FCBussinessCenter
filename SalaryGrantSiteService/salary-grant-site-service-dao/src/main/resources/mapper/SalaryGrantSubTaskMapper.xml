@@ -56,7 +56,7 @@
             t1.chinese_count                chineseCount    ,
             t1.foreigner_count              foreignerCount  ,
             t1.grant_account_code           grantAccountCode,
-            '' AS                           grantAccountName,
+            t1.grant_account_name           grantAccountName,
             date_format(t1.created_time, '%Y-%m-%d')   createdTimeStr,
             t1.grant_date                   grantDate       ,
             t1.grant_time                   grantTime       ,
@@ -84,7 +84,7 @@
                 AND t1.grant_account_code = #{grantAccountCode}
             </if>
         ORDER BY
-            t1.salary_grant_sub_task_code
+            t1.salary_grant_sub_task_id
     </select>
 
     <select id="querySupplierSubTaskForApprovePage"
@@ -104,7 +104,7 @@
             t1.chinese_count                          chineseCount    ,
             t1.foreigner_count                        foreignerCount  ,
             t1.grant_account_code                     grantAccountCode,
-            '' AS                                     grantAccountName,
+            t1.grant_account_name                     grantAccountName,
             t1.remark
         FROM
             sg_salary_grant_sub_task t1
@@ -129,7 +129,7 @@
                 AND t1.grant_account_code = #{grantAccountCode}
             </if>
         ORDER BY
-            t1.salary_grant_sub_task_code
+            t1.salary_grant_sub_task_id
     </select>
 
     <select id="querySupplierSubTaskForHaveApprovedPage"
@@ -149,7 +149,7 @@
             t1.chinese_count                chineseCount    ,
             t1.foreigner_count              foreignerCount  ,
             t1.grant_account_code           grantAccountCode,
-            '' AS                           grantAccountName,
+            t1.grant_account_name           grantAccountName,
             t1.remark
         FROM
             sg_salary_grant_sub_task t1
@@ -174,7 +174,7 @@
                 AND t1.grant_account_code = #{grantAccountCode}
             </if>
         ORDER BY
-            t1.salary_grant_sub_task_code
+            t1.salary_grant_sub_task_id
     </select>
 
     <select id="querySupplierSubTaskForPassPage"
@@ -194,7 +194,7 @@
             t1.chinese_count                chineseCount    ,
             t1.foreigner_count              foreignerCount  ,
             t1.grant_account_code           grantAccountCode,
-            '' AS                           grantAccountName,
+            t1.grant_account_name           grantAccountName,
             t1.approved_opinion             approvedOpinion
         FROM
             sg_salary_grant_sub_task t1
@@ -219,52 +219,7 @@
                 AND t1.grant_account_code = #{grantAccountCode}
             </if>
         ORDER BY
-            t1.salary_grant_sub_task_code
-    </select>
-
-    <select id="querySupplierSubTaskForRejectPage"
-            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
-            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
-        SELECT
-            t1.task_id              taskId          ,
-            t1.task_code            taskCode        ,
-            t1.task_type            taskType        ,
-            t1.task_status          taskStatus      ,
-            t1.management_name      managementName  ,
-            t1.management_id        managementId    ,
-            t1.batch_code           batchCode       ,
-            t1.grant_cycle          grantCycle      ,
-            t1.payment_total_sum    paymentTotalSum ,
-            t1.total_person_count   totalPersonCount,
-            t1.chinese_count        chineseCount    ,
-            t1.foreigner_count      foreignerCount  ,
-            t1.grant_account_code   grantAccountCode,
-            '' AS                   grantAccountName,
-            t1.approved_opinion     approvedOpinion
-        FROM
-            sg_salary_grant_task_history t1
-        WHERE
-            t1.task_status IN ('3' , '8')
-            AND t1.is_active = 1
-            AND t1.task_type = 2
-            AND t1.grant_mode = 2
-            <if test="currentUserId != null">
-                AND (t1.approve_user_id = #{currentUserId} OR t1.operator_user_id = #{currentUserId})
-            </if>
-            <if test="taskCode != null">
-                AND t1.task_code = #{taskCode}
-            </if>
-            <if test="managementIds != null">
-                AND t1.management_id IN (${managementIds})
-            </if>
-            <if test="batchCode != null">
-                AND t1.batch_code = #{batchCode}
-            </if>
-            <if test="grantAccountCode != null">
-                AND t1.grant_account_code = #{grantAccountCode}
-            </if>
-        ORDER BY
-            t1.task_code
+            t1.salary_grant_sub_task_id
     </select>
 
     <select id="queryOfferDocumentTaskPage"
@@ -287,7 +242,7 @@
             t1.grant_type                   grantType       ,
             '' AS                           grantTypeName   ,
             t1.grant_account_code           grantAccountCode,
-            '' AS                           grantAccountName
+            t1.grant_account_name           grantAccountName
         FROM
             sg_salary_grant_sub_task t1
         WHERE
@@ -313,27 +268,7 @@
                 AND t1.grant_cycle = #{grantCycle}
             </if>
         ORDER BY
-            t1.salary_grant_sub_task_code
-    </select>
-
-    <select id="queryOfferDocument" resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.OfferDocumentBO" parameterType="java.lang.String">
-        select
-            t1.bankcard_type           bankcardType       ,
-            ''                         bankcardName       ,
-            t3.grant_account_code      grantAccountCode   ,
-            t3.grant_account_name      grantAccountName   ,
-            t2.offer_document_file_id  offerDocumentFileId,
-            t2.file_name               fileName           ,
-            t2.file_path               filePath           ,
-            t2.payment_total_sum       paymentTotalSum
-        from
-            sg_offer_document        t1,
-            sg_offer_document_file   t2,
-            sg_salary_grant_sub_task t3
-        where
-            t1.offer_document_id = t2.offer_document_id
-            and t1.task_code     = t3.salary_grant_sub_task_code
-            and t3.salary_grant_sub_task_code=#{taskCode}
+            t1.salary_grant_sub_task_id
     </select>
 
     <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">

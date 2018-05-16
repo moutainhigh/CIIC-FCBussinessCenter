@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class SalaryGrantSupplierSubTaskServiceImpl extends ServiceImpl<SalaryGra
 
     @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
+    @Autowired
+    SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
 
 //    @Autowired
 //    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
@@ -50,6 +53,6 @@ public class SalaryGrantSupplierSubTaskServiceImpl extends ServiceImpl<SalaryGra
 
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return page.setRecords(salaryGrantSubTaskMapper.querySupplierSubTaskForRejectPage(page, salaryGrantTaskBO));
+        return page.setRecords(salaryGrantTaskHistoryMapper.querySupplierSubTaskForRejectPage(page, salaryGrantTaskBO));
     }
 }

@@ -1,5 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -55,4 +59,11 @@ public interface CommonService {
      * @return String 省份名称
      */
     String getProvinceName(String provinceCode);
+
+    /**
+     * 调用结算中心接口生成报盘文件
+     *
+     * @return
+     */
+    List<OfferDocumentFilePO> generateOfferDocumentFile(SalaryGrantEmployeeGroupInfoBO groupInfoBO, OfferDocumentPO offerDocumentPO);
 }

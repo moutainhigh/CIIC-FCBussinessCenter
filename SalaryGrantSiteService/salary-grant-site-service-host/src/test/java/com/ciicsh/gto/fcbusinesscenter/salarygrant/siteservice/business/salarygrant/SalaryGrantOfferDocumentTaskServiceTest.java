@@ -45,4 +45,10 @@ public class SalaryGrantOfferDocumentTaskServiceTest {
         System.out.println("查询薪资发放报盘文件 documentDTOList: " + documentDTOList);
 
     }
+
+    @Test
+    public void createOfferDocument() {
+        documentTaskService.createOfferDocument("sdfsdf", "李三");
+
+    }
 }

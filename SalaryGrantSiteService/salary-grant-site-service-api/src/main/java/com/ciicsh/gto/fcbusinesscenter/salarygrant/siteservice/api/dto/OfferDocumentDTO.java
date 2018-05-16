@@ -22,13 +22,13 @@ public class OfferDocumentDTO {
      */
     private String bankcardName;
     /**
-     * 发放账户编号
+     * 付款账号
      */
-    private String grantAccountCode;
+    private String paymentAccountCode;
     /**
-     * 发放账户名称
+     * 付款账户名
      */
-    private String grantAccountName;
+    private String paymentAccountName;
     /**
      * 报盘文件ID
      */
@@ -45,4 +45,9 @@ public class OfferDocumentDTO {
      * 薪资发放总金额（RMB）
      */
     private BigDecimal paymentTotalSum;
+    /**
+     * 公司名称
+     */
+    private String companyName;
+
 }
