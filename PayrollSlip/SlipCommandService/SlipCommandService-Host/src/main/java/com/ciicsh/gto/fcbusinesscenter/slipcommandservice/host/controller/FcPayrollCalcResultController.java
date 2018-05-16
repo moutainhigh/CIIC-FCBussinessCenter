@@ -34,7 +34,7 @@ public class FcPayrollCalcResultController {
     private FcPayrollCalcResultService fcPayrollCalcResultService;
 
     @RequestMapping(value = "/listFcPayrollCalcResults")
-    public JsonResult list(@RequestBody Map<String, Object> params) {
+    public JsonResult list(@RequestBody String params) {
         return JsonResult.success(fcPayrollCalcResultService.listFcPayrollCalcResults(params));
     }
 

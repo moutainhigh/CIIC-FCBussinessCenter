@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单模板
  *
  * @author taka
- * @since 2018-02-22
+ * @since 2018-05-16
  */
 @TableName("prs_payroll_template")
 public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
@@ -89,6 +89,18 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
   private String templateFileUrl;
 
   /**
+   * 邮件标题
+   */
+  @TableField("email_title")
+  private String emailTitle;
+
+  /**
+   * 邮件内容
+   */
+  @TableField("email_content")
+  private String emailContent;
+
+  /**
    * 模板html
    */
   @TableField("html")
@@ -113,7 +125,7 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
   private Boolean ifEncrypt;
 
   /**
-   * 状态（0：草稿 1:）
+   * 状态
    */
   @TableField("status")
   private Integer status;
@@ -250,6 +262,22 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
     this.templateFileUrl = templateFileUrl;
   }
 
+  public String getEmailTitle() {
+    return emailTitle;
+  }
+
+  public void setEmailTitle(String emailTitle) {
+    this.emailTitle = emailTitle;
+  }
+
+  public String getEmailContent() {
+    return emailContent;
+  }
+
+  public void setEmailContent(String emailContent) {
+    this.emailContent = emailContent;
+  }
+
   public String getHtml() {
     return html;
   }
@@ -367,6 +395,8 @@ public class PrsPayrollTemplatePO extends Model<PrsPayrollTemplatePO> {
             ", templateType=" + templateType +
             ", templateFileName=" + templateFileName +
             ", templateFileUrl=" + templateFileUrl +
+            ", emailTitle=" + emailTitle +
+            ", emailContent=" + emailContent +
             ", html=" + html +
             ", effectiveTime=" + effectiveTime +
             ", invalidTime=" + invalidTime +
