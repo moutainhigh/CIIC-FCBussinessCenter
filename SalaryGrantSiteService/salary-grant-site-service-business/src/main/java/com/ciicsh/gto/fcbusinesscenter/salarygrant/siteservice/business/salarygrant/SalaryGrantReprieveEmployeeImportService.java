@@ -4,6 +4,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -22,6 +23,6 @@ public interface SalaryGrantReprieveEmployeeImportService extends IService<Salar
      * @since 2018-05-16
      * @param inputStream
      */
-    void importReprieveList(InputStream inputStream);
+    void importReprieveList(InputStream inputStream)  throws IOException;
 
 }

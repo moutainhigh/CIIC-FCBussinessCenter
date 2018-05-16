@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.excel;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
