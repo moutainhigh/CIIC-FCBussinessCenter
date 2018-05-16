@@ -35,7 +35,7 @@ public interface SalaryGrantOfferDocumentTaskService extends IService<SalaryGran
      * @param taskCode
      * @return
      */
-    List<OfferDocumentBO> generateOfferDocument(String taskCode);
+    List<OfferDocumentBO> generateOfferDocument(String taskCode, String userId);
 
     /**
      * 创建薪资发放报盘文件
@@ -43,7 +43,7 @@ public interface SalaryGrantOfferDocumentTaskService extends IService<SalaryGran
      * @param taskCode
      * @return
      */
-    void createOfferDocument(String taskCode);
+    void createOfferDocument(String taskCode, String userId);
 
     /**
      * 查询薪资发放报盘文件

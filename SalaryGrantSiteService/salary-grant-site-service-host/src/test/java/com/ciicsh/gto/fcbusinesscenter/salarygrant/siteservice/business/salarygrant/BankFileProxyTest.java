@@ -40,16 +40,17 @@ public class BankFileProxyTest {
 
         List<BankFileEmployeeProxyDTO> list = new ArrayList<>();
         BankFileEmployeeProxyDTO employeeProxyDTO = new BankFileEmployeeProxyDTO();
-        employeeProxyDTO.setEmployeeName("张三");
+        employeeProxyDTO.setEmployeeBankAccountName("张三");
         employeeProxyDTO.setEmployeeBankAccount("6000000000001");
-        employeeProxyDTO.setBankName("建设银行");
-        employeeProxyDTO.setCityName("上海");
+        employeeProxyDTO.setEmployeeBankName("建设银行");
+        employeeProxyDTO.setEmployeeCityName("上海");
         employeeProxyDTO.setPayAmount(new BigDecimal(200.00));
-        employeeProxyDTO.setProvinceName("上海");
-        employeeProxyDTO.setAreaCode("SH");
-        employeeProxyDTO.setRemark("AF雇员报销");
-        employeeProxyDTO.setBankAccountName("建设银行徐汇支行");
-        employeeProxyDTO.setBankAccount("6000000000002");
+        employeeProxyDTO.setEmployeeProvinceName("上海");
+        employeeProxyDTO.setEmployeeAreaCode("SH");
+        employeeProxyDTO.setRemark("薪资发放");
+        employeeProxyDTO.setPaymentBankAccountName("建设银行徐汇支行");
+        employeeProxyDTO.setPaymentBankAccount("6000000000002");
+        employeeProxyDTO.setPaymentBankName("中国建设银行徐汇支行");
 
         list.add(employeeProxyDTO);
 
@@ -63,7 +64,7 @@ public class BankFileProxyTest {
                 List<BankFileResultFileProxyDTO> resultFileProxyDTOList = fileResultProxyDTO.getList();
                 if (!CollectionUtils.isEmpty(resultFileProxyDTOList)) {
                     resultFileProxyDTOList.stream().forEach(proxyDTO ->
-                            System.out.println("getFilePath: " + proxyDTO.getFilePath() + " getAmount: " + proxyDTO.getAmount() + " getCount: " + proxyDTO.getCount())
+                            System.out.println("getFileName: " + proxyDTO.getFileName() + " getFilePath: " + proxyDTO.getFilePath() + " getAmount: " + proxyDTO.getAmount() + " getCount: " + proxyDTO.getCount())
                     );
                 }
             }

@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.OfferDocumentDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskDTO;
@@ -94,15 +95,15 @@ public class OfferFileController {
     }
 
     /**
-     * 查询薪资发放报盘文件列表
+     * 生成薪资发放报盘文件
      *
      * @return
      */
-    @RequestMapping("/offerFile/queryOfferDocument/{taskCode}")
-    public List<OfferDocumentDTO> queryOfferDocument(@PathVariable String taskCode){
-        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("查询薪资发放报盘文件").setContent("taskCode: " + taskCode));
+    @RequestMapping("/offerFile/generateOfferDocument/{taskCode}")
+    public List<OfferDocumentDTO> generateOfferDocument(@PathVariable String taskCode){
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件").setContent("taskCode: " + taskCode));
 
-        List<OfferDocumentBO> documentBOList = offerDocumentTaskService.queryOfferDocument(taskCode);
+        List<OfferDocumentBO> documentBOList = offerDocumentTaskService.generateOfferDocument(taskCode, UserContext.getUserId());
 
         //字段转换
         if (!CollectionUtils.isEmpty(documentBOList)) {
