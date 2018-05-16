@@ -395,6 +395,26 @@ public class SalaryGrantController {
     }
 
     /**
+     * 恢复
+     * @author chenpb
+     * @date 2018-05-16
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/recover", method = RequestMethod.POST)
+    public Result recover(@RequestBody List<EmployeeHandleDTO> dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复").setContent(JSON.toJSONString(dto)));
+        try {
+            List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
+            salaryGrantEmployeeCommandService.updateBatchById(list);
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("恢复失败");
+        }
+    }
+
+    /**
      * 暂缓
      * @author chenpb
      * @date 2018-05-15
@@ -411,42 +431,6 @@ public class SalaryGrantController {
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("暂缓失败");
-        }
-    }
-
-    /**
-     * 恢复
-     * @author chenpb
-     * @date 2018-04-27
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/recover", method = RequestMethod.POST)
-    public Result recover(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复").setContent(JSON.toJSONString(dto)));
-        try {
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("恢复失败");
-        }
-    }
-
-    /**
-     * 批量恢复
-     * @author chenpb
-     * @date 2018-04-27
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/batchRecover", method = RequestMethod.POST)
-    public Result batchRecover(@RequestBody List<SalaryTaskHandleDTO> list) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量恢复").setContent(JSON.toJSONString(list)));
-        try {
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量恢复异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("批量恢复失败");
         }
     }
 
