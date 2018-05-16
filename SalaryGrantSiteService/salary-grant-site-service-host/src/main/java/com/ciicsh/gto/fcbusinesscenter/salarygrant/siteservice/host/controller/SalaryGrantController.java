@@ -81,7 +81,7 @@ public class SalaryGrantController {
         tags.put("grantMode", dto.getGrantMode());
         tags.put("grantCycle", dto.getGrantCycle());
         tags.put("taskStatusEn", dto.getTaskStatusEn());
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setContent("条件").setTags(tags));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setTags(tags));
         try {
             bo.setUserId(UserContext.getUserId());
             Page<SalaryGrantTaskBO> page = salaryGrantTaskQueryService.salaryGrantList(bo);
@@ -335,7 +335,7 @@ public class SalaryGrantController {
         tags.put("grantStatus", String.valueOf(dto.getGrantStatus()));
         tags.put("employeeId", dto.getEmployeeId());
         tags.put("employeeName", dto.getEmployeeName());
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细查询").setContent("条件").setTags(tags));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细查询").setTags(tags));
         try {
             SalaryTaskDetailDTO salaryTaskDetailDTO = new SalaryTaskDetailDTO();
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
