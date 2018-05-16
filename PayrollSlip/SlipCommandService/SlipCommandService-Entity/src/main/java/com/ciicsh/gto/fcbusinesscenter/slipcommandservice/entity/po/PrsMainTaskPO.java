@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单任务单主表
  *
  * @author taka
- * @since 2018-03-08
+ * @since 2018-05-14
  */
 @TableName("prs_main_task")
 public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
@@ -89,10 +89,40 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   private Integer foreignerCount;
 
   /**
-   * 实际发布日期
+   * 邮件发送日期
    */
   @TableField("publish_date")
   private Date publishDate;
+
+  /**
+   * 邮件发送执行日期
+   */
+  @TableField("publish_exec_date")
+  private Date publishExecDate;
+
+  /**
+   * 主动发送日期
+   */
+  @TableField("publish_manual_date")
+  private Date publishManualDate;
+
+  /**
+   * 主动发送备注
+   */
+  @TableField("publish_manual_remark")
+  private String publishManualRemark;
+
+  /**
+   * 邮件发送状态 1: 待发送 2: 发送中 3: 发送成功 4: 发送失败
+   */
+  @TableField("publish_state")
+  private Integer publishState;
+
+  /**
+   * 邮件发送失败日志
+   */
+  @TableField("publish_fail_log")
+  private String publishFailLog;
 
   /**
    * 工资单类型:0-通用，1-纸质，2-邮件，3-网上查看
@@ -282,6 +312,46 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.publishDate = publishDate;
   }
 
+  public Date getPublishExecDate() {
+    return publishExecDate;
+  }
+
+  public void setPublishExecDate(Date publishExecDate) {
+    this.publishExecDate = publishExecDate;
+  }
+
+  public Date getPublishManualDate() {
+    return publishManualDate;
+  }
+
+  public void setPublishManualDate(Date publishManualDate) {
+    this.publishManualDate = publishManualDate;
+  }
+
+  public String getPublishManualRemark() {
+    return publishManualRemark;
+  }
+
+  public void setPublishManualRemark(String publishManualRemark) {
+    this.publishManualRemark = publishManualRemark;
+  }
+
+  public Integer getPublishState() {
+    return publishState;
+  }
+
+  public void setPublishState(Integer publishState) {
+    this.publishState = publishState;
+  }
+
+  public String getPublishFailLog() {
+    return publishFailLog;
+  }
+
+  public void setPublishFailLog(String publishFailLog) {
+    this.publishFailLog = publishFailLog;
+  }
+
   public Integer getPayrollType() {
     return payrollType;
   }
@@ -424,6 +494,11 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
             ", chineseCount=" + chineseCount +
             ", foreignerCount=" + foreignerCount +
             ", publishDate=" + publishDate +
+            ", publishExecDate=" + publishExecDate +
+            ", publishManualDate=" + publishManualDate +
+            ", publishManualRemark=" + publishManualRemark +
+            ", publishState=" + publishState +
+            ", publishFailLog=" + publishFailLog +
             ", payrollType=" + payrollType +
             ", selectedPayrollType=" + selectedPayrollType +
             ", status=" + status +
