@@ -102,7 +102,7 @@ public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<Sa
 
     private static SheetSettings reprieveEmpCellSettings(SheetSettings sheetSettings) {
         sheetSettings.setCellSettings(new CellSettings[]{
-                new CellSettings("salarygrantReprieveEmployeeImportId", "薪资发放暂缓名单编号"),
+                new CellSettings("salarygrantReprieveEmployeeImportId", "暂缓编号"),
                 new CellSettings("taskCode", "任务单编号"),
                 new CellSettings("taskType", "任务单类型"),
                 new CellSettings("employeeId", "雇员编号"),

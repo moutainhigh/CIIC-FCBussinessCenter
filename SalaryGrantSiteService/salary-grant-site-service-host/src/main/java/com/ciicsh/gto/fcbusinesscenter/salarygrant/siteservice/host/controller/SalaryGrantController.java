@@ -12,6 +12,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.ReprieveEmpImportExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.SalaryTaskEmpExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.CommonTransform;
@@ -514,7 +515,9 @@ public class SalaryGrantController {
     public Result importDeferList(MultipartFile file) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单"));
         try {
-            salaryGrantReprieveEmployeeImportService.importReprieveList(file.getInputStream());
+            List<ReprieveEmpImportExcelDTO> list = ExcelUtil.importExcel(file, 1,1, ReprieveEmpImportExcelDTO.class, false);
+            System.out.println(JSON.toJSONString(list));
+            //salaryGrantReprieveEmployeeImportService.importReprieveList(file.getInputStream());
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单异常").setContent(e.getMessage()));
