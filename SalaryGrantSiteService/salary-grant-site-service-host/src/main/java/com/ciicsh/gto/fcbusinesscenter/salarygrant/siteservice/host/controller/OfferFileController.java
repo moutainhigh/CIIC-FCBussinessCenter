@@ -51,8 +51,6 @@ public class OfferFileController {
     private CommonService commonService;
     @Autowired
     private LogServiceProxy logService;
-    @Autowired
-    private BankFileProxy bankFileProxy;
 
     /**
      * 查询薪资发放报盘任务单列表

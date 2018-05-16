@@ -72,6 +72,16 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     }
 
     @Override
+    public Page<SalaryGrantEmployeeBO> queryEmployeeInfoChanged(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+        if (salaryGrantEmployeeBO.getTaskType().intValue() == 0) {
+            salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
+        } else {
+            salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
+        }
+        return page.setRecords(salaryGrantEmployeeMapper.selectBOList(page, salaryGrantEmployeeBO));
+    }
+
+    @Override
     public List listAdjustCalcInfo(SalaryGrantEmployeePO salaryGrantEmployeePO) {
         // todo
         return null;

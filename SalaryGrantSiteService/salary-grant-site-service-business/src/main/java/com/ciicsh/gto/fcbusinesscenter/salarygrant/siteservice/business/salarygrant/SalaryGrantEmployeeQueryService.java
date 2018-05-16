@@ -46,10 +46,20 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
     Page<SalaryGrantEmployeeBO> queryEmployeeForSubTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
 
     /**
+     * 查询发放变化的雇员信息
+     *
+     * @param page
+     * @param salaryGrantEmployeeBO
+     * @return Page<SalaryGrantEmployeeBO>
+     */
+    Page<SalaryGrantEmployeeBO> queryEmployeeInfoChanged(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+
+    /**
      * 调整信息-对于发放类型是调整/回溯发放。
      * 查询调整/回溯批次、基于的计算批次，查询2条计算结果数据，再进行数据合并生成第三条合并数据。（调用计算批次接口，查询第3个方法）
      * @param salaryGrantEmployeePO
      * @return List
      */
     List listAdjustCalcInfo(SalaryGrantEmployeePO salaryGrantEmployeePO);
+
 }
