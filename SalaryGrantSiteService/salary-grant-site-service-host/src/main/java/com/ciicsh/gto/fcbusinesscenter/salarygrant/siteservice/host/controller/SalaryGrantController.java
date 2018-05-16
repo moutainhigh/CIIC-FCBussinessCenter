@@ -9,10 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.excel.SalaryTaskEmpExcelDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
@@ -26,6 +23,7 @@ import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -62,6 +60,8 @@ public class SalaryGrantController {
     @Autowired
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
 
+    @Autowired
+    private SalaryGrantReprieveEmployeeImportService salaryGrantReprieveEmployeeImportService;
 
     /**
      * 薪资发放任务单一览
@@ -500,6 +500,25 @@ public class SalaryGrantController {
             ExcelUtil.exportExcel(lists, SalaryTaskEmpExcelDTO.class, "薪资发放雇员信息.xls", response);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息异常").setContent(e.getMessage()));
+        }
+    }
+
+    /**
+     * 导入暂缓名单
+     * @author chenpb
+     * @date 2018-05-16
+     * @param file
+     * @return
+     */
+    @PostMapping("/importDeferList")
+    public Result importDeferList(MultipartFile file) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单"));
+        try {
+            salaryGrantReprieveEmployeeImportService.importReprieveList(file.getInputStream());
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("导入暂缓名单失败");
         }
     }
 

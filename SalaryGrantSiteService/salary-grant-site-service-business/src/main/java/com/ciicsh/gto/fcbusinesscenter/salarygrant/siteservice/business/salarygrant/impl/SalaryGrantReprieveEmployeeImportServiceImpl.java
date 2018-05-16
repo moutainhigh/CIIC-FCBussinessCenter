@@ -9,6 +9,8 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
+
 /**
  * <p>
  * 薪资发放暂缓名单导入 服务实现类
@@ -24,4 +26,15 @@ public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<Sa
 
     @Autowired
     SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+
+    /**
+     * @description 导入暂缓名单
+     * @author chenpb
+     * @since 2018-05-16
+     * @param inputStream
+     */
+    @Override
+    public void importReprieveList(InputStream inputStream) {
+
+    }
 }

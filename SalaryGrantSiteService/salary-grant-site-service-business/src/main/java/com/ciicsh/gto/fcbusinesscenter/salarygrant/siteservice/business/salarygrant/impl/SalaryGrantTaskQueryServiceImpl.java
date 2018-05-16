@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * <p>
@@ -39,6 +38,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
 
     /**
      * 查询薪资发放任务单列表
+     * @author chenpb
+     * @since 2018-04-25
      * @param bo
      * @return Page<SalaryGrantTaskBO>
      */

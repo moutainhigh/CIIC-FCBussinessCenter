@@ -4,6 +4,8 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO;
 
+import java.io.InputStream;
+
 /**
  * <p>
  * 薪资发放暂缓名单导入 服务类
@@ -14,7 +16,12 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
  */
 public interface SalaryGrantReprieveEmployeeImportService extends IService<SalaryGrantReprieveEmployeeImportPO> {
 
-    //todo
-    //导入暂缓名单（放入SalaryGrantReprieveEmployeeImportService处理）
+    /**
+     * @description 导入暂缓名单
+     * @author chenpb
+     * @since 2018-05-16
+     * @param inputStream
+     */
+    void importReprieveList(InputStream inputStream);
 
 }
