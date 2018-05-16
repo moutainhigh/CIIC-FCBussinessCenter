@@ -66,6 +66,13 @@ public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<Sa
         }
     }
 
+    /**
+     * @description 导入暂缓名单
+     * @author chenpb
+     * @since 2018-05-16
+     * @param dto
+     * @param pos
+     */
     private static void convertPos (ReprieveEmpImportDTO dto, List<SalaryGrantReprieveEmployeeImportPO> pos) {
         if (dto!=null) {
             SalaryGrantReprieveEmployeeImportPO po = BeanUtils.instantiate(SalaryGrantReprieveEmployeeImportPO.class);
