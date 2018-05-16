@@ -15,6 +15,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlo
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.ReprieveEmpImportExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.SalaryTaskEmpExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.CommonTransform;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.ExcelUtil;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.PageUtil;
@@ -27,10 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -515,10 +513,19 @@ public class SalaryGrantController {
     public Result importDeferList(MultipartFile file) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单"));
         try {
-            List<ReprieveEmpImportExcelDTO> list = ExcelUtil.importExcel(file, 1,1, ReprieveEmpImportExcelDTO.class, false);
-            System.out.println(JSON.toJSONString(list));
-            //salaryGrantReprieveEmployeeImportService.importReprieveList(file.getInputStream());
-            return ResultGenerator.genSuccessResult();
+            List<ReprieveEmpImportExcelDTO> list = ExcelUtil.importExcel(file, 1,1, ReprieveEmpImportExcelDTO.class, true);
+            if (!list.isEmpty()) {
+                List<SalaryGrantReprieveEmployeeImportPO> pos = CommonTransform.convertToEntities(list, SalaryGrantReprieveEmployeeImportPO.class);
+                pos.stream().forEach(x -> {
+                    x.setCreatedBy(UserContext.getUserId());
+                    x.setCreatedTime(new Date());
+                    x.setImportTime(new Date());
+                });
+                salaryGrantReprieveEmployeeImportService.insertBatch(pos);
+                return ResultGenerator.genSuccessResult();
+            } else {
+                return ResultGenerator.genServerFailResult("无暂缓雇员");
+            }
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("导入暂缓名单失败");
