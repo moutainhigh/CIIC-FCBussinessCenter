@@ -515,8 +515,8 @@ public class SalaryGrantController {
     public Result importDeferList(MultipartFile file) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单"));
         try {
-            List<ReprieveEmpImportExcelDTO> list = ExcelUtil.importExcel(file, 1,1, ReprieveEmpImportExcelDTO.class, true);
-            if (!list.isEmpty()) {
+            List<ReprieveEmpImportExcelDTO> list = ExcelUtil.importExcel(file, 0,1, ReprieveEmpImportExcelDTO.class, true);
+            if ( list.isEmpty()) {
                 return ResultGenerator.genServerFailResult("无暂缓雇员");
             }
             List<SalaryGrantReprieveEmployeeImportPO> pos = CommonTransform.convertToEntities(list, SalaryGrantReprieveEmployeeImportPO.class);
