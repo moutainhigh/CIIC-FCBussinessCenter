@@ -517,17 +517,16 @@ public class SalaryGrantController {
         try {
             List<ReprieveEmpImportExcelDTO> list = ExcelUtil.importExcel(file, 1,1, ReprieveEmpImportExcelDTO.class, true);
             if (!list.isEmpty()) {
-                List<SalaryGrantReprieveEmployeeImportPO> pos = CommonTransform.convertToEntities(list, SalaryGrantReprieveEmployeeImportPO.class);
-                pos.stream().forEach(x -> {
-                    x.setCreatedBy(UserContext.getUserId());
-                    x.setCreatedTime(new Date());
-                    x.setImportTime(new Date());
-                });
-                salaryGrantReprieveEmployeeImportService.insertBatch(pos);
-                return ResultGenerator.genSuccessResult();
-            } else {
                 return ResultGenerator.genServerFailResult("无暂缓雇员");
             }
+            List<SalaryGrantReprieveEmployeeImportPO> pos = CommonTransform.convertToEntities(list, SalaryGrantReprieveEmployeeImportPO.class);
+            pos.stream().forEach(x -> {
+                x.setCreatedBy(UserContext.getUserId());
+                x.setCreatedTime(new Date());
+                x.setImportTime(new Date());
+            });
+            salaryGrantReprieveEmployeeImportService.insertBatch(pos);
+            return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("导入暂缓名单失败");
