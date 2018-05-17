@@ -491,7 +491,6 @@ public class SalaryGrantController {
             Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(salaryTaskDetailDTO.getCurrent(), Page.NO_ROW_LIMIT);
             page = salaryGrantEmployeeQueryService.queryEmployeeTask(page, empBO);
             List<SalaryGrantEmployeeBO> records = page.getRecords();
-
             List<SalaryTaskEmpExcelDTO> lists = new ArrayList<>();
             records.stream().forEach(i -> {
                 SalaryTaskEmpExcelDTO excelDTO =  CommonTransform.convertToDTO(i, SalaryTaskEmpExcelDTO.class);
