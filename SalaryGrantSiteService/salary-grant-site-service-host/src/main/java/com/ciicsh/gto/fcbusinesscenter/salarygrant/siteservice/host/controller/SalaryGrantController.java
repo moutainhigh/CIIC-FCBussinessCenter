@@ -23,6 +23,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,9 @@ public class SalaryGrantController {
      */
     @Autowired
     LogClientService logClientService;
+
+    @Autowired
+    CommonService commonService;
 
     @Autowired
     private SalaryGrantTaskProcessService salaryGrantTaskProcessService;
@@ -269,13 +273,16 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/empInfoChange", method = RequestMethod.POST)
-    public Result empInfoChange(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result<ChangedEmpInfoDTO> empInfoChange(@RequestBody SalaryTaskHandleDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员查询").setContent(JSON.toJSONString(dto)));
         try {
             Page<SalaryGrantEmployeeBO> page = new Page<>(dto.getCurrent(), dto.getSize());
             SalaryGrantEmployeeBO bo = CommonTransform.convertToEntity(dto, SalaryGrantEmployeeBO.class);
             page = salaryGrantEmployeeQueryService.queryEmployeeInfoChanged(page, bo);
-            Pagination<SalaryTaskDTO> pagination = PageUtil.changeWapper(page, SalaryTaskDTO.class);
+            if (!page.getRecords().isEmpty()) {
+                page.getRecords().stream().forEach(x -> {if(StringUtils.isNotBlank(x.getCountryCode())){x.setCountryName(commonService.getCountryName(x.getCountryCode()));}});
+            }
+            Pagination<ChangedEmpInfoDTO> pagination = PageUtil.changeWapper( page, ChangedEmpInfoDTO.class);
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员").setContent(JSON.toJSONString(pagination)));
             return ResultGenerator.genSuccessResult(pagination);
         } catch (Exception e) {
@@ -463,7 +470,7 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/logInfo", method = RequestMethod.POST)
-    public Result logInfo(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result<SalaryGrantOperationDTO> logInfo(@RequestBody SalaryTaskHandleDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录").setContent(JSON.toJSONString(dto)));
         try {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
