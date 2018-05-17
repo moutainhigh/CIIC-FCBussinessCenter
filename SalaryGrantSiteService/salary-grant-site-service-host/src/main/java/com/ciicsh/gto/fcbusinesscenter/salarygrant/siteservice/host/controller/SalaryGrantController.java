@@ -533,63 +533,6 @@ public class SalaryGrantController {
         }
     }
 
-//    /**
-//     * @description 导出雇员信息
-//     * @author chenpb
-//     * @since 2018-05-10
-//     * @param jsonData 查询条件
-//     * @return 导出结果
-//     */
-//    @RequestMapping(value="/exportEmpInfo", method = RequestMethod.GET)
-//    public void exportEmpInfo(@RequestParam("jsonData")String jsonData, HttpServletResponse response) throws IOException {
-//        SalaryTaskHandleDTO dto = JSON.parseObject(jsonData, new TypeReference<SalaryTaskHandleDTO>() {});
-//        SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-//        Page<WorkFlowTaskInfoBO> page = salaryGrantTaskQueryService.operation(bo);
-//        SheetSettings sheet = getSheetSettings(page.getRecords());
-//        OfficeIoResult result = OfficeIoUtils.exportXlsx(sheet);
-//        OfficeIoUtils.exportErrorRecord(result.getSheetSettings(),result.getErrRecordRows());
-//        String fileName = "EmployeePayment.xlsx";
-//        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-//        response.setContentType("application/octet-stream;charset=UTF-8");
-//        OutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
-//        result.getResultWorkbook().write(outputStream);
-//        outputStream.flush();
-//        outputStream.close();
-//    }
-//
-//    private static SheetSettings getSheetSettings(List<WorkFlowTaskInfoBO> list) {
-//        Map applyTypeMap = new HashMap();
-//        applyTypeMap.put(1, "支付个人");
-//        applyTypeMap.put(2, "其他");
-//
-//        Map statusMap = new HashMap();
-//        statusMap.put(1, "未审核");
-//        statusMap.put(2, "已批退");
-//        statusMap.put(3, "已审核未同步");
-//        statusMap.put(4, "已同步");
-//        statusMap.put(5, "已支付");
-//        statusMap.put(6, "财务退回");
-//        statusMap.put(7, "银行退票");
-//        statusMap.put(8, "已完成");
-//
-//        SheetSettings sheet = new SheetSettings("雇员付款",AfEmpPaymentInfoDTO.class);
-//        sheet.setCellSettings(new CellSettings[] {
-//                new CellSettings("paymentApplyId","序号"),
-//                new CellSettings("companyId","客户编号"),
-//                new CellSettings("employeeId","雇员编号"),
-//                new CellSettings("employeeName","雇员姓名"),
-//                new CellSettings("modifiedBy","业务经办人"),
-//                new CellSettings("payTotalAmount","付款金额"),
-//                new CellSettings("applyTypeId","申请类型").addFixedMap(applyTypeMap),
-//                new CellSettings("createdTime","申请日期").addCellDataType(CellDataType.DATE).addPattern(DatePattern.DATE_FORMAT_DAY),
-//                new CellSettings("bankAccount","卡号"),
-//                //new CellSettings("modifiedBy","客服"),
-//                new CellSettings("status","状态").addFixedMap(statusMap)
-//        });
-//        sheet.setExportData(list);
-//        return sheet;
-//    }
-
     //todo
     //生成工资清单：打印预览
 
