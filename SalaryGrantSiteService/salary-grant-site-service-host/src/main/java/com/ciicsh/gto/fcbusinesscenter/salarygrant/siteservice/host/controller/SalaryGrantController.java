@@ -270,15 +270,17 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/empInfoChange", method = RequestMethod.POST)
     public Result empInfoChange(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("雇员信息变更查询").setContent(JSON.toJSONString(dto)));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员查询").setContent(JSON.toJSONString(dto)));
         try {
-            Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(dto.getCurrent(), dto.getSize());
+            Page<SalaryGrantEmployeeBO> page = new Page<>(dto.getCurrent(), dto.getSize());
+            SalaryGrantEmployeeBO bo = CommonTransform.convertToEntity(dto, SalaryGrantEmployeeBO.class);
+            page = salaryGrantEmployeeQueryService.queryEmployeeInfoChanged(page, bo);
             Pagination<SalaryTaskDTO> pagination = PageUtil.changeWapper(page, SalaryTaskDTO.class);
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览").setContent(JSON.toJSONString(pagination)));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员").setContent(JSON.toJSONString(pagination)));
             return ResultGenerator.genSuccessResult(pagination);
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("雇员信息变更查询异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("雇员信息变更查询失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员查询异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("信息变更雇员查询失败");
         }
     }
 
