@@ -13,14 +13,22 @@ import java.util.Map;
 public interface ExportFileService {
     /**
      * 申报导出(线下)
+     * @param subDeclareId
+     * @return
      */
     public HSSFWorkbook exportForDeclareOffline(Long subDeclareId);
+
     /**
      * 申报导出(线上)
+     * @param subDeclareId
+     * @return
      */
     public HSSFWorkbook exportForDeclareOnline(Long subDeclareId);
+
     /**
      * 完税凭证导出
+     * @param subProofId
+     * @return
      */
     public HSSFWorkbook exportForProof(Long subProofId);
     /**
@@ -65,4 +73,9 @@ public interface ExportFileService {
      * @param taskSubDeclareDetailPOList
      */
     void exportAboutSubject(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList);
+
+    /**
+     * 导出离职人员
+     */
+    public HSSFWorkbook exportQuitPerson(Long subDeclareId);
 }

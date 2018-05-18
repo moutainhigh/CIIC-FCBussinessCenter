@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -42,7 +44,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
     public TaskSubDeclareService taskSubDeclareService;
 
     @Autowired
-    public TaskSubDeclareDetailService taskSubDeclareDetailService;
+    public TaskSubDeclareDetailServiceImpl taskSubDeclareDetailService;
 
     @Autowired
     private TaskSubProofService taskSubProofService;
@@ -1412,6 +1414,146 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         }
     }
 
+    /**
+     * 导出离职人员信息
+     * @param subDeclareId
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public HSSFWorkbook exportQuitPerson(Long subDeclareId) {
+        POIFSFileSystem fs = null;
+        HSSFWorkbook wb = null;
+        try {
+            //根据申报ID查询申报信息
+            TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
+            //根据申报子任务ID查询申报明细
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOListCurrent = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubDeclareDetailPO());
+            //申报账户
+            wrapper.and("declare_account = {0}",taskSubDeclarePO.getDeclareAccount());
+            //个税期间(上个月)
+            wrapper.and("period = {0} ",taskSubDeclarePO.getPeriod().minusMonths(1));
+            //根据申报账户和个税期间，查询出上个月的申报人员
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOListLast = taskSubDeclareDetailService.selectList(wrapper);
+            //筛选出离职人员(即上个月有的申报人员，申报ID查询出来的结果没有的)
+            List<TaskSubDeclareDetailPO> quitTaskSubDeclareDetailList = taskSubDeclareDetailPOListLast.stream().filter(item -> !taskSubDeclareDetailPOListCurrent.contains(item)).collect(Collectors.toList());
+            //TODO 添加以为离职人员测试
+            TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
+            taskSubDeclareDetailPO.setIdType("1");
+            taskSubDeclareDetailPO.setEmployeeNo("XYT00699");
+            taskSubDeclareDetailPO.setEmployeeName("yuantq");
+            taskSubDeclareDetailPO.setIdNo("1990000000");
+            quitTaskSubDeclareDetailList.add(taskSubDeclareDetailPO);
+            //文件名称
+            String fileName = "";
+            //TODO 独立户和大库
+            //00-独立户,01-独立户
+            if ("00".equals(taskSubDeclarePO.getAccountType())) {
+                fileName = "人员信息.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                this.exportAboutQuit(wb, quitTaskSubDeclareDetailList);
+            } else {
+                fileName = "人员信息.xls";
+                //获取POIFSFileSystem对象
+                fs = getFSFileSystem(fileName);
+                //通过POIFSFileSystem对象获取WB对象
+                wb = getHSSFWorkbook(fs);
+                //根据不同的业务需要处理wb
+                this.exportAboutQuit(wb, quitTaskSubDeclareDetailList);
+            }
+
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    logger.error("exportDeclareBySubject fs close error",ee);
+                }
+            }
+            throw e;
+        }
+        return wb;
+    }
+
+    /**
+     * 导出离职人员信息
+     * @param wb
+     * @param taskSubDeclareDetailPOList
+     */
+    public void exportAboutQuit(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList){
+        // 读取了模板内所有sheet内容
+        HSSFSheet sheet = wb.getSheetAt(0);
+        //在相应的单元格进行赋值
+        int sheetRowIndex = 1;
+        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOList) {
+            HSSFRow row = sheet.getRow(sheetRowIndex);
+            if (null == row) {
+                row = sheet.createRow(sheetRowIndex);
+            }
+            //工号-A列
+            HSSFCell cellA = row.getCell(0);
+            if (null == cellA) {
+                cellA = row.createCell(0);
+            }
+            cellA.setCellValue(po.getEmployeeNo());
+            //*姓名-B列
+            HSSFCell cellB = row.getCell(1);
+            if (null == cellB) {
+                cellB = row.createCell(1);
+            }
+            cellB.setCellValue(po.getEmployeeName());
+            //*证照类型-C列
+            HSSFCell cellC = row.getCell(2);
+            if (null == cellC) {
+                cellC = row.createCell(2);
+            }
+            cellC.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
+            //*证照号码-D列
+            HSSFCell cellD = row.getCell(3);
+            if (null == cellD) {
+                cellD = row.createCell(3);
+            }
+            cellD.setCellValue(po.getIdNo());
+            //*国籍(地区)-E列
+//            HSSFCell cellF = row.getCell(5);
+//            if (null == cellF) {
+//                cellF = row.createCell(5);
+//            }
+//            cellF.setCellValue(po.getIncomeTotal() == null ? "" : po.getIncomeTotal().toString());
+            //性别-F列
+            //出生年月-G列
+            //*人员状态-H列
+            //*是否残疾烈属孤老-I列
+            //是否特定行业-J列
+            //*是否雇员-K列
+            //是否股东、投资者-L列
+            //是否境外人员-M列
+            //个人股本（投资）额-N列
+            //是否天使投资个人-O列
+            //*联系电话-P列
+            //联系地址-Q列
+            //邮政编码-R列
+            //备注-S列
+            //电子邮箱-T列
+            //工作单位-U列
+            //姓名（中文）-V列
+            //来华时间-W列
+            //任职期限-X列
+            //预计离境时间-Y列
+            //预计离境地点-Z列
+            //境内职务-AA
+            //境外职务-AB
+            //支付地-AC
+            //境外支付地（国别/地区-AD
+            sheetRowIndex++;
+        }
+    }
 
     /**
      * 插入行
