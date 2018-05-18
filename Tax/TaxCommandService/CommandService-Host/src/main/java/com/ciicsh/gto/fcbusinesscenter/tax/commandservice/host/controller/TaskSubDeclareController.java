@@ -241,4 +241,17 @@ public class TaskSubDeclareController extends BaseController {
 
         return jr;
     }
+
+    /**
+     * 导出离职人员
+     *
+     * @param subDeclareId
+     */
+    @RequestMapping(value = "/exportQuitPerson/{subDeclareId}", method = RequestMethod.GET)
+    public void exportQuitPerson(@PathVariable(value = "subDeclareId") Long subDeclareId, HttpServletResponse response) {
+        String fileName = "人员信息.xls";
+
+        //导出excel
+        exportExcel(response, this.exportFileService.exportQuitPerson(subDeclareId), fileName);
+    }
 }
