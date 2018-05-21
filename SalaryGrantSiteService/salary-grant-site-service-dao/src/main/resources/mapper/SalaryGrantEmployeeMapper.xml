@@ -76,6 +76,7 @@
             t.salary_grant_employee_id   salaryGrantEmployeeId,
             t.employee_id                employeeId           ,
             t.employee_name              employeeName         ,
+            t.company_id                 companyId            ,
             t.grant_cycle                grantCycle           ,
             t.batch_code                 batchCode            ,
             t.grant_account_code         grantAccountCode     ,

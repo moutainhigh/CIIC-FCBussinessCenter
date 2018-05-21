@@ -395,6 +395,19 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             baseMapper.updateTaskProofStatus(requestForProof.getSubProofIds(), requestForProof.getStatus(), requestForProof.getModifiedBy(), LocalDateTime.now());
             //获取选择的子任务集合
             List<TaskSubProofPO> taskSubProofPOList = baseMapper.selectList(wrapperId);
+            //获取合并子任务集合
+            List<TaskSubProofPO> taskSubProofPOSMerge = taskSubProofPOList.stream().filter(x -> x.getCombined()).collect(Collectors.toList());
+            if(taskSubProofPOSMerge.size() > 0){
+                List<Long> mergeSubIds  = taskSubProofPOSMerge.stream().map(y -> y.getId()).collect(Collectors.toList());
+                EntityWrapper wrapperMerge = new EntityWrapper();
+                wrapperMerge.setEntity(new TaskSubProofPO());
+                wrapperMerge.in("task_sub_proof_id", mergeSubIds);
+                wrapperMerge.and("is_active = {0}", true);
+                List<TaskSubProofPO> taskSubProofPOUnmergeList = baseMapper.selectList(wrapperMerge);
+                //去除合并子任务集合
+                taskSubProofPOList = taskSubProofPOList.stream().filter(item -> !taskSubProofPOSMerge.contains(item)).collect(Collectors.toList());
+                taskSubProofPOList.addAll(taskSubProofPOUnmergeList);
+            }
             List<Long> mainIdList = taskSubProofPOList.stream().collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId)).entrySet().stream()
                     .map(x -> x.getKey()).collect(Collectors.toList());
             EntityWrapper wrapper = new EntityWrapper();
