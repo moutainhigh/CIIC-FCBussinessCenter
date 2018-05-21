@@ -2,10 +2,13 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -62,4 +65,31 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
      */
     List listAdjustCalcInfo(SalaryGrantEmployeePO salaryGrantEmployeePO);
 
+    /**
+     * 查询雇员薪资项列表
+     *
+     * @param batchParam
+     * @return
+     */
+    List<CalcResultItemBO> getSalaryCalcResultItemsList(Map batchParam);
+
+    /**
+     * 查询计算批次结果的雇员信息数据
+     *
+     * @param batchCode 计算批次号
+     * @param grantType 发放类型
+     * @return
+     */
+    List<EmpCalcResultBO> getEmpCalcResultItemsList(String batchCode, int grantType);
+
+    /**
+     * 发放金额更新到计算批次的对应薪资项中
+     *
+     * @param checkedItemsList 薪资项列表
+     * @param taskCode 任务单编号
+     * @param batchCode 计算批次号
+     * @param grantType 发放类型
+     * @return
+     */
+    List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, String taskCode, String batchCode, int grantType);
 }
