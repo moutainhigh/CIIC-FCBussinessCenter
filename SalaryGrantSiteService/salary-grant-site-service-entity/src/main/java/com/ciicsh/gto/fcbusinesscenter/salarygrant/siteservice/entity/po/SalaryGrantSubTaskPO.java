@@ -119,6 +119,16 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
     @TableField("adversion_type")
     private Integer adversionType;
 	/**
+	 * 是否垫付:0-否，1-是
+	 */
+	@TableField("is_advance")
+	private Boolean isAdvance;
+	/**
+	 * 垫付类型:1-信用期垫付;2-偶然垫付;3-水单垫付;4-AF垫付;5-预付款垫付
+	 */
+	@TableField("advance_type")
+	private Integer advanceType;
+	/**
 	 * 是否处理:1-已处理，0-未处理
 	 */
 	@TableField("is_process")
@@ -142,6 +152,11 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
      */
 	@TableField("task_type")
 	private Integer taskType;
+	/**
+	 * 结算发放标识:0-正常，1-垫付
+	 */
+	@TableField("balance_grant")
+	private Integer balanceGrant;
     /**
      * 操作员
      */
@@ -415,11 +430,6 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
         this.approveUserId = approveUserId;
     }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.salaryGrantSubTaskId;
-	}
-
 	public String getGrantAccountName() {
 		return grantAccountName;
 	}
@@ -442,6 +452,35 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
 
 	public void setWorkFlowUserInfo(String workFlowUserInfo) {
 		this.workFlowUserInfo = workFlowUserInfo;
+	}
+
+	public Boolean getAdvance() {
+		return isAdvance;
+	}
+
+	public void setAdvance(Boolean advance) {
+		isAdvance = advance;
+	}
+
+	public Integer getAdvanceType() {
+		return advanceType;
+	}
+
+	public void setAdvanceType(Integer advanceType) {
+		this.advanceType = advanceType;
+	}
+
+	public Integer getBalanceGrant() {
+		return balanceGrant;
+	}
+
+	public void setBalanceGrant(Integer balanceGrant) {
+		this.balanceGrant = balanceGrant;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.salaryGrantSubTaskId;
 	}
 
 	// 重写克隆方法子列才可以调用
@@ -472,11 +511,14 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
 			", grantMode=" + grantMode +
             ", isAdversion=" + isAdversion +
             ", adversionType=" + adversionType +
+			", isAdvance=" + isAdvance +
+			", advanceType=" + advanceType +
 			", isProcess=" + isProcess +
 			", remark=" + remark +
             ", approvedOpinion=" + approvedOpinion +
             ", taskStatus=" + taskStatus +
 			", taskType=" + taskType +
+			", balanceGrant=" + balanceGrant +
             ", operatorUserId=" + operatorUserId +
             ", approveUserId=" + approveUserId +
 			", workFlowUserInfo=" + workFlowUserInfo +

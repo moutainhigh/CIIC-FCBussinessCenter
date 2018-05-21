@@ -14,7 +14,4 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
  */
 public interface SalaryGrantReprieveEmployeeImportService extends IService<SalaryGrantReprieveEmployeeImportPO> {
 
-    //todo
-    //导入暂缓名单（放入SalaryGrantReprieveEmployeeImportService处理）
-
 }

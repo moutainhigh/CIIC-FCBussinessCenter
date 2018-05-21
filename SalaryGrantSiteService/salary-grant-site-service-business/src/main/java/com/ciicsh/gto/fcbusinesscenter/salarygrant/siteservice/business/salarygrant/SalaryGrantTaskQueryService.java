@@ -18,6 +18,8 @@ public interface SalaryGrantTaskQueryService {
 
     /**
      * 查询薪资发放任务单列表
+     * @author chenpb
+     * @since 2018-05-10
      * @param salaryGrantTaskBO
      * @return Page<SalaryGrantTaskBO>
      */
@@ -25,6 +27,8 @@ public interface SalaryGrantTaskQueryService {
 
     /**
      * 根据任务单编号查询任务单
+     * @author chenpb
+     * @since 2018-05-10
      * @param salaryGrantTaskBO
      * @return
      */
@@ -32,6 +36,8 @@ public interface SalaryGrantTaskQueryService {
 
     /**
      * 根据任务单编号查询操作记录
+     * @author chenpb
+     * @since 2018-05-10
      * @param salaryGrantTaskBO
      * @return
      */

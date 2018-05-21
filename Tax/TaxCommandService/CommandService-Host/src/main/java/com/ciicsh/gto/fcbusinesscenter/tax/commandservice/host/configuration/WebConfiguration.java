@@ -59,6 +59,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsByParams");
         dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsByCombined");
         dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsForCombined");
+        dataInterceptor.addPathPatterns("/tax/exportQuitPerson/**");
 
     }
 }

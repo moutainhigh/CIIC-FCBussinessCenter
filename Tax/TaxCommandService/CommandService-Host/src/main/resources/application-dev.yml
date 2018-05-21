@@ -1,5 +1,6 @@
 app:
-  id : 10007010
+  id: 10007010
+  name: TaxCommandService
 eureka:
   client:
     serviceUrl:
