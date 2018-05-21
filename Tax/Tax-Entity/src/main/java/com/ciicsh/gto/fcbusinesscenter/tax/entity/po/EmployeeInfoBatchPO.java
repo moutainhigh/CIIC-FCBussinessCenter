@@ -201,10 +201,6 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
      * 修改人
      */
 	private String modifiedBy;
-    /**
-     * 主任务id
-     */
-	private Long taskMainId;
 
 
 	public Long getId() {
@@ -559,14 +555,6 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Long getTaskMainId() {
-		return taskMainId;
-	}
-
-	public void setTaskMainId(Long taskMainId) {
-		this.taskMainId = taskMainId;
-	}
-
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -619,7 +607,6 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
 			", modifiedBy=" + modifiedBy +
-			", taskMainId=" + taskMainId +
 			"}";
 	}
 }
