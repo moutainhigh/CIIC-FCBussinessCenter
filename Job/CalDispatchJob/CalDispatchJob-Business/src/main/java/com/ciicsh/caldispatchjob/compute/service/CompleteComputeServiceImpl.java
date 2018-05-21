@@ -81,7 +81,7 @@ public class CompleteComputeServiceImpl {
             DBObject mapObj = new BasicDBObject();
             mapObj.put("emp_id", empCode);
             mapObj.put("emp_name",emp.get(PayItemName.EMPLOYEE_NAME_CN));
-            mapObj.put("payroll_type", ""); // 工资单类型
+            //mapObj.put("payroll_type", ""); // 工资单类型
             mapObj.put("company_id",emp.get(PayItemName.EMPLOYEE_COMPANY_ID));
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("mgr_id", batchInfo.get("management_ID")); // 管理方ID

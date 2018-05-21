@@ -9,6 +9,8 @@ import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateMapper;
@@ -255,6 +257,11 @@ public class PrItemServiceImpl implements PrItemService {
             prPayrollItemMapper.updateItemByCode(param);
         }
         return true;
+    }
+
+    @Override
+    public List<PrItemInAccountSetPO> selectItemNames(String batchCode) {
+        return prPayrollItemMapper.selectItemNames(batchCode);
     }
 
     private void updateRelatedGroupStatus(PrPayrollItemPO param) {

@@ -10,17 +10,25 @@
 		has_advance = #{hasAdvance},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
-		WHERE back_tracking_batch_code = #{code}
+		WHERE back_tracking_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
 	</update>
 
-	<update id="updateHasMoneny">
+	<update id="updateHasMoney">
 		UPDATE
 		pr_back_tracking_batch
 		SET
 		has_money = #{hasMoney},
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
-		WHERE back_tracking_batch_code = #{code}
+		WHERE back_tracking_batch_code IN
+		<foreach item="item" index="index" collection="codes"
+				 open="(" separator="," close=")">
+			#{item}
+		</foreach>
 	</update>
 
 	<update id="auditBatch">

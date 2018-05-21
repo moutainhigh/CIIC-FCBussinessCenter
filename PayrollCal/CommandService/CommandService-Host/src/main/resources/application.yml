@@ -84,6 +84,12 @@ spring:
           producer:
             partitionCount: 1
 
+        pr_compute-close-output-channel:
+          destination: fc_compute_close # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 2
+
         sleuth:
           detination: sleuth-itdev
   zipkin:

@@ -15,6 +15,8 @@ public class MoneyBatchDTO {
 
     private String modifiedBy;
 
+    private int batchType;
+
     public boolean isHasMoney() {
         return hasMoney;
     }
@@ -39,5 +41,11 @@ public class MoneyBatchDTO {
     }
 
 
+    public int getBatchType() {
+        return batchType;
+    }
 
+    public void setBatchType(int batchType) {
+        this.batchType = batchType;
+    }
 }

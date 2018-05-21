@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
+import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
@@ -8,8 +9,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -46,7 +46,7 @@ public interface PrNormalBatchService {
      * @param file           EXCEL 文件
      * @return INT           上传成功行数
      */
-    int uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, String itemNames, int batchType,int importType, MultipartFile file);
+    ExcelUploadStatistics uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file);
 
     /**
      * 审批意见
@@ -61,11 +61,11 @@ public interface PrNormalBatchService {
     /**
      * 更新批次是否来款
      * @param batchCodes
-     * @param hasAdvance
+     * @param advance
      * @param modifiedBy
      * @return
      */
-    int updateHasAdvance(List<String> batchCodes, boolean hasAdvance, String modifiedBy);
+    int updateHasAdvance(List<String> batchCodes, int advance, String modifiedBy);
 
     /**
      * 更新批次是否垫付
@@ -73,7 +73,7 @@ public interface PrNormalBatchService {
      * @param modifiedBy
      * @return
      */
-    int updateHasMoneny(List<String> batchCodes, boolean hasMoney, String modifiedBy);
+    int updateHasMoney(List<String> batchCodes, boolean hasMoney, String modifiedBy);
 
 
     /**
@@ -113,4 +113,8 @@ public interface PrNormalBatchService {
      * @return
      */
     List<PrPayrollItemPO> getBatchPayrollSchema(String batchCode);
+
+
+    String[] readExcelColumns(String batchCode, InputStream stream);
+
 }

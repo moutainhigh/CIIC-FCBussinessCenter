@@ -3,6 +3,8 @@ package com.ciicsh.gto.salarymanagementcommandservice.service;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 import scala.annotation.meta.param;
@@ -118,4 +120,8 @@ public interface PrItemService {
      * @return
      */
     boolean updateCalPriority(List<String> codes);
+
+
+    List<PrItemInAccountSetPO> selectItemNames(String batchCode);
+
 }

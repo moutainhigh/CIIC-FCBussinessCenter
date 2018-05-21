@@ -53,13 +53,13 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
     private ApprovalHistoryService approvalHistoryService;
 
     @Override
-    public int updateHasAdvance(String batchCode, boolean hasAdvance, String modifiedBy) {
-        return adjustBatchMapper.updateHasAdvance(batchCode, hasAdvance, modifiedBy);
+    public int updateHasAdvance(List<String> batchCodes, int hasAdvance, String modifiedBy) {
+        return adjustBatchMapper.updateHasAdvance(batchCodes, hasAdvance, modifiedBy);
     }
 
     @Override
-    public int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy) {
-        return adjustBatchMapper.updateHasMoneny(batchCode, hasMoney, modifiedBy);
+    public int updateHasMoney(List<String> batchCodes, boolean hasMoney, String modifiedBy) {
+        return adjustBatchMapper.updateHasMoney(batchCodes, hasMoney, modifiedBy);
     }
 
     @Override

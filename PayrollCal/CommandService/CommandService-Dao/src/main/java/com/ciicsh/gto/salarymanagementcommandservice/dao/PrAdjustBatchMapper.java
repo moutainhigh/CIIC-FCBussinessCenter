@@ -18,11 +18,11 @@ import java.util.List;
 @Component
 public interface PrAdjustBatchMapper extends BaseMapper<PrAdjustBatchPO> {
 
-    int updateHasAdvance(@Param("code") String batchCode,
-                         @Param("hasAdvance") boolean hasAdvance,
+    int updateHasAdvance(@Param("codes") List<String> batchCodes,
+                         @Param("hasAdvance") int hasAdvance,
                          @Param("modifiedBy") String modifiedBy);
 
-    int updateHasMoneny(@Param("code") String batchCode,
+    int updateHasMoney(@Param("codes") List<String> batchCodes,
                         @Param("hasMoney") boolean hasMoney,
                         @Param("modifiedBy") String modifiedBy);
 

@@ -84,6 +84,6 @@ public class PrBatchDTO {
 
 	private boolean hasMoney;
 
-	private boolean hasAdvance;
+	private int hasAdvance;
 
 }
