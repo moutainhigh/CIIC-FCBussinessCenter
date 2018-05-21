@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * <p>
@@ -39,6 +38,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
 
     /**
      * 查询薪资发放任务单列表
+     * @author chenpb
+     * @since 2018-04-25
      * @param bo
      * @return Page<SalaryGrantTaskBO>
      */
@@ -189,12 +190,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
         if(!list.isEmpty()) {
-            list.stream().forEach(y -> {
-                if (StringUtils.isNotBlank(y.getGrantMode())) {
-                    y.setGrantModeName(commonService.getNameByValue("sgGrantMode", y.getGrantMode()));
+            list.stream().forEach(x -> {
+                if (StringUtils.isNotBlank(x.getGrantMode())) {
+                    x.setGrantModeName(commonService.getNameByValue("sgGrantMode", x.getGrantMode()));
                 }
-                if (StringUtils.isNotBlank(y.getTaskStatus())) {
-                    y.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus", y.getTaskStatus()));
+                if (StringUtils.isNotBlank(x.getTaskStatus())) {
+                    x.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus", x.getTaskStatus()));
                 }
             });
         }
