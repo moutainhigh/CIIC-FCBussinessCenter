@@ -25,10 +25,6 @@ public class SalaryGrantBizConsts {
     public static final Integer EXCHANGE_CALC_MODE_FIX = 0;
     /** 汇率计算方式：1 - 实时*/
     public static final Integer EXCHANGE_CALC_MODE_REAL_TIME = 1;
-    /** 任务单状态：0 - 草稿 */
-    public static final String SALARY_GRANT_TASK_STAUS_DRAFT = "0";
-    /** 任务单状态：2 - 审批通过 */
-    public static final String SALARY_GRANT_TASK_STAUS_APPROVE = "2";
     /** 任务单类型:0 - 主表*/
     public static final Integer SALARY_GRANT_TASK_TYPE_MAIN_TASK = 0;
     /** 任务单类型:1-中智上海账户*/
@@ -75,6 +71,8 @@ public class SalaryGrantBizConsts {
     public static final String CONTRACT_FIRST_PARTY_CMY_1 = "AF";
     /** 合同我方-客服中心:FC*/
     public static final String CONTRACT_FIRST_PARTY_CMY_2 = "FC";
+    /** 合同我方-客服中心:BPO*/
+    public static final String CONTRACT_FIRST_PARTY_CMY_3 = "BPO";
     /** 合同我方-结算中心:AF-1*/
     public static final String CONTRACT_FIRST_PARTY_STM_1 = "1";
     /** 合同我方-结算中心:FC-2*/
@@ -104,8 +102,17 @@ public class SalaryGrantBizConsts {
     public static final String TASK_STATUS_UNPAID = "6";
     /** 任务单状态：7-已支付*/
     public static final String TASK_STATUS_PAYMENT= "7";
-    /** 任务单状态：8-驳回*/
-    public static final String TASK_STATUS_REJECT= "8";
+    /** 任务单状态：8-撤回*/
+    public static final String TASK_STATUS_RETREAT= "8";
+    /** 任务单状态：9-驳回*/
+    public static final String TASK_STATUS_REJECT= "9";
+    /** 任务单状态：10-待合并*/
+    public static final String TASK_STATUS_COMBINE_WAIT= "10";
+    /** 任务单状态：11-已合并*/
+    public static final String TASK_STATUS_COMBINE= "11";
+    /** 任务单状态：12-已确认*/
+    public static final String TASK_STATUS_CONFIRM= "12";
+
 
     /** 任务单状态常量*/
     public static final String TASK_REFER= "refer";

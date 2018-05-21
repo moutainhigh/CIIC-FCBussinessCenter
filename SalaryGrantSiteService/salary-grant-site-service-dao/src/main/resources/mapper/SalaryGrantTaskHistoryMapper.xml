@@ -34,6 +34,7 @@
 		<result column="task_status" property="taskStatus" />
 		<result column="task_type" property="taskType" />
 		<result column="is_include_foreign_currency" property="isIncludeForeignCurrency" />
+        <result column="balance_grant" property="balanceGrant" />
         <result column="operator_user_id" property="operatorUserId" />
         <result column="approve_user_id" property="approveUserId" />
         <result column="work_flow_user_info" property="workFlowUserInfo" />

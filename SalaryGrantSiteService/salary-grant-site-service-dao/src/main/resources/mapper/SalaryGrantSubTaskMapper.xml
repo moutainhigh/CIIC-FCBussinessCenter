@@ -24,11 +24,14 @@
         <result column="grant_mode" property="grantMode"/>
         <result column="is_adversion" property="isAdversion"/>
         <result column="adversion_type" property="adversionType"/>
+        <result column="is_advance" property="isAdvance" />
+        <result column="advance_type" property="advanceType" />
         <result column="is_process" property="isProcess"/>
         <result column="remark" property="remark"/>
         <result column="approved_opinion" property="approvedOpinion"/>
         <result column="task_status" property="taskStatus"/>
         <result column="task_type" property="taskType"/>
+        <result column="balance_grant" property="balanceGrant" />
         <result column="operator_user_id" property="operatorUserId"/>
         <result column="approve_user_id" property="approveUserId"/>
         <result column="work_flow_user_info" property="workFlowUserInfo" />
