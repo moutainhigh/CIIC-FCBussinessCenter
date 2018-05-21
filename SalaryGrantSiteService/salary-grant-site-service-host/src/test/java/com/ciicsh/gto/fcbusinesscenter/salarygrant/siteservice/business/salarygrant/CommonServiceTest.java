@@ -41,4 +41,10 @@ public class CommonServiceTest {
         String countryName = commonService.getCountryName("CN");
         System.out.println("国家名称: " + countryName);
     }
+
+    @Test
+    public void queryUserName(){
+        String userName = commonService.getUserNameById("XTY00699");
+        System.out.println("userName: " + userName);
+    }
 }

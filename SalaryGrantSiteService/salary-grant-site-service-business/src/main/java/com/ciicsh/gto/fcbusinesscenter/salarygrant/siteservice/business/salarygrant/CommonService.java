@@ -66,4 +66,11 @@ public interface CommonService {
      * @return
      */
     List<OfferDocumentFilePO> generateOfferDocumentFile(SalaryGrantEmployeeGroupInfoBO groupInfoBO, OfferDocumentPO offerDocumentPO);
+
+    /**
+     *  调用公共服务根据用户id查询用户名称
+     * @param userId 用户id
+     * @return String 用户名称
+     */
+    String getUserNameById(String userId);
 }
