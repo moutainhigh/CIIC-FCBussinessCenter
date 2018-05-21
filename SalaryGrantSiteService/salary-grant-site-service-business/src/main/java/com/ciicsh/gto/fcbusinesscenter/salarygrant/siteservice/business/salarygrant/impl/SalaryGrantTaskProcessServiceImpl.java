@@ -1210,7 +1210,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             }else{
                 // todo 抛异常信息
             }
-            salaryGrantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.SALARY_GRANT_TASK_STAUS_APPROVE);
+            salaryGrantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS);
             salaryGrantSubTaskPOList.add(salaryGrantSubTaskPO);
             // 遍历batchUpdateMap，把新建的SubTask的任务单编号，回填至对应的薪资发放雇员信息中。
             batchUpdateMap.forEach((account, employeeIdArr) -> {
@@ -2062,7 +2062,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      * @return List<SalaryGrantMainTaskPO>
      */
     public List<SalaryGrantMainTaskPO> listSalaryGrantMainTaskPO(Map paraMap){
-        // taskStatus = SalaryGrantBizConsts.SALARY_GRANT_TASK_STAUS_DRAFT
+        // taskStatus = SalaryGrantBizConsts.TASK_STATUS_DRAFT
         // String taskStatus = (String)paraMap.get("taskStatus");
         List<SalaryGrantMainTaskPO> salaryGrantMainTaskPOList = salaryGrantMainTaskMapper.selectByMap(paraMap);
         return salaryGrantMainTaskPOList;
@@ -2229,7 +2229,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             condition.setSalaryGrantMainTaskCode(salaryGrantMainTaskCode);
             SalaryGrantMainTaskPO salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(condition);
             // 任务单状态是草稿状态，则修改薪资发放雇员信息表中对应雇员的发放状态为正常，同时判断是对原发放金额进行部分发放，还是全部发放。
-            if(SalaryGrantBizConsts.SALARY_GRANT_TASK_STAUS_DRAFT.equals(salaryGrantMainTaskPO.getTaskStatus())){
+            if(SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(salaryGrantMainTaskPO.getTaskStatus())){
                 // 如果原来任务单中的雇员是全部暂缓，或部分暂缓，暂缓池中暂缓再发放的金额是原暂缓金额的部分，需要修改雇员的发放状态4-部分发放。
                 // 如果对原来暂缓的金额全部发放，则修改雇员的发放状态为正常。
             }else{

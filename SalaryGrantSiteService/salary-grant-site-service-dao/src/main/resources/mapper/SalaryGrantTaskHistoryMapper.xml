@@ -34,6 +34,7 @@
 		<result column="task_status" property="taskStatus" />
 		<result column="task_type" property="taskType" />
 		<result column="is_include_foreign_currency" property="isIncludeForeignCurrency" />
+        <result column="balance_grant" property="balanceGrant" />
         <result column="operator_user_id" property="operatorUserId" />
         <result column="approve_user_id" property="approveUserId" />
         <result column="work_flow_user_info" property="workFlowUserInfo" />
@@ -43,6 +44,51 @@
 		<result column="modified_by" property="modifiedBy" />
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
+
+    <select id="querySupplierSubTaskForRejectPage"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        SELECT
+            t1.task_id              taskId          ,
+            t1.task_code            taskCode        ,
+            t1.task_type            taskType        ,
+            t1.task_status          taskStatus      ,
+            t1.management_name      managementName  ,
+            t1.management_id        managementId    ,
+            t1.batch_code           batchCode       ,
+            t1.grant_cycle          grantCycle      ,
+            t1.payment_total_sum    paymentTotalSum ,
+            t1.total_person_count   totalPersonCount,
+            t1.chinese_count        chineseCount    ,
+            t1.foreigner_count      foreignerCount  ,
+            t1.grant_account_code   grantAccountCode,
+            t1.grant_account_name   grantAccountName,
+            t1.approved_opinion     approvedOpinion
+        FROM
+            sg_salary_grant_task_history t1
+        WHERE
+            t1.task_status IN ('3' , '8')
+            AND t1.is_active = 1
+            AND t1.task_type = 2
+            AND t1.grant_mode = 2
+            <if test="currentUserId != null">
+                AND (t1.approve_user_id = #{currentUserId} OR t1.operator_user_id = #{currentUserId})
+            </if>
+            <if test="taskCode != null">
+                AND t1.task_code = #{taskCode}
+            </if>
+            <if test="managementIds != null">
+                AND t1.management_id IN (${managementIds})
+            </if>
+            <if test="batchCode != null">
+                AND t1.batch_code = #{batchCode}
+            </if>
+            <if test="grantAccountCode != null">
+                AND t1.grant_account_code = #{grantAccountCode}
+            </if>
+        ORDER BY
+            t1.salary_grant_task_history_id
+    </select>
 
     <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
         <result column="task_id" property="taskId" />
@@ -75,12 +121,12 @@
     </resultMap>
 
     <sql id="sgDetailField">
-        t1.task_code task_code,t1.management_id, t1.management_name, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type,t1.task_status,
+        t1.salary_grant_task_history_id task_id, t1.task_code task_code,t1.management_id, t1.management_name, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type,t1.task_status,
 		t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count
     </sql>
 
 	<sql id="historyTaskListField">
-        t1.task_code,t1.management_name,t1.management_id,t1.batch_code,t1.grant_cycle,t1.payment_total_sum,t1.total_person_count,
+        t1.salary_grant_task_history_id task_id, t1.task_code,t1.management_name,t1.management_id,t1.batch_code,t1.grant_cycle,t1.payment_total_sum,t1.total_person_count,
         t1.chinese_count,t1.foreigner_count,t1.grant_date,t1.task_status,'' as task_status_name, t1.task_type, t1.task_status, t1.approved_opinion
 	</sql>
 
@@ -119,7 +165,7 @@
               t1.is_active=1
         </where>
 		order by
-		  t1.task_code
+		  t1.task_id
 	</select>
 
 	<select id="invalidList" resultMap="PageResultMap">
@@ -157,7 +203,7 @@
               t1.is_active=1
         </where>
         order by
-          t1.task_code
+          t1.task_id
 	</select>
 
     <select id="selectTaskByTaskCode" resultMap="PageResultMap">
@@ -170,7 +216,7 @@
         and
           t1.is_active=1
         order by
-          t1.task_code
+          t1.salary_grant_task_history_id
     </select>
 
 </mapper>

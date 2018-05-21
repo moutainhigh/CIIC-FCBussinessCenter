@@ -1,5 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -41,4 +45,32 @@ public interface CommonService {
      * @return String 国家名称
      */
     String getCountryName(String countryCode);
+
+    /**
+     *  调用公共服务根据城市编码查询城市名称
+     * @param cityCode 城市编码
+     * @return String 城市名称
+     */
+    String getCityName(String cityCode);
+
+    /**
+     *  调用公共服务根据省份编码查询省份名称
+     * @param provinceCode 省份编码
+     * @return String 省份名称
+     */
+    String getProvinceName(String provinceCode);
+
+    /**
+     * 调用结算中心接口生成报盘文件
+     *
+     * @return
+     */
+    List<OfferDocumentFilePO> generateOfferDocumentFile(SalaryGrantEmployeeGroupInfoBO groupInfoBO, OfferDocumentPO offerDocumentPO);
+
+    /**
+     *  调用公共服务根据用户id查询用户名称
+     * @param userId 用户id
+     * @return String 用户名称
+     */
+    String getUserNameById(String userId);
 }

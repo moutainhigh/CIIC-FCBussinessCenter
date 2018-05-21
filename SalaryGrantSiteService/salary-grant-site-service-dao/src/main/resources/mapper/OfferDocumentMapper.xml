@@ -7,6 +7,11 @@
 		<id column="offer_document_id" property="offerDocumentId" />
 		<result column="task_code" property="taskCode" />
 		<result column="bankcard_type" property="bankcardType" />
+		<result column="company_id" property="companyId" />
+		<result column="company_name" property="companyName" />
+		<result column="payment_account_code" property="paymentAccountCode" />
+		<result column="payment_account_name" property="paymentAccountName" />
+		<result column="payment_account_bank_name" property="paymentAccountBankName" />
 		<result column="payment_total_sum" property="paymentTotalSum" />
 		<result column="total_person_count" property="totalPersonCount" />
 		<result column="is_active" property="isActive" />
@@ -16,4 +21,26 @@
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
 
+	<select id="queryOfferDocument" resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.OfferDocumentBO" parameterType="java.lang.String">
+        select
+            t1.offer_document_id       offerDocumentId    ,
+            t1.bankcard_type           bankcardType       ,
+            ''                         bankcardName       ,
+            t1.company_name            companyName        ,
+            t1.payment_account_code    paymentAccountCode ,
+            t1.payment_account_name    paymentAccountName ,
+            t2.offer_document_file_id  offerDocumentFileId,
+            t2.file_name               fileName           ,
+            t2.payment_total_sum       paymentTotalSum
+        from
+            sg_offer_document        t1,
+            sg_offer_document_file   t2,
+            sg_salary_grant_sub_task t3
+        where
+            t1.offer_document_id = t2.offer_document_id
+            and t1.task_code     = t3.salary_grant_sub_task_code
+            and t3.salary_grant_sub_task_code=#{taskCode}
+        order by
+           t1.offer_document_id
+    </select>
 </mapper>

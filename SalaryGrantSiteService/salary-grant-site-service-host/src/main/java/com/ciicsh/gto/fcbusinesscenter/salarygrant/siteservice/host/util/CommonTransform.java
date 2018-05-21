@@ -1,4 +1,4 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util;
 
 import org.springframework.beans.BeanUtils;
 

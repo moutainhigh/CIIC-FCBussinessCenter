@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.OfferDocumentDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskDTO;
@@ -16,6 +17,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.BankFileProxy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -48,7 +50,7 @@ public class OfferFileController {
     @Autowired
     private CommonService commonService;
     @Autowired
-    LogServiceProxy logService;
+    private LogServiceProxy logService;
 
     /**
      * 查询薪资发放报盘任务单列表
@@ -91,15 +93,15 @@ public class OfferFileController {
     }
 
     /**
-     * 查询薪资发放报盘文件
+     * 生成薪资发放报盘文件
      *
      * @return
      */
-    @RequestMapping("/offerFile/queryOfferDocument/{taskCode}")
-    public List<OfferDocumentDTO> queryOfferDocument(@PathVariable String taskCode){
-        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("查询薪资发放报盘文件").setContent("taskCode: " + taskCode));
+    @RequestMapping("/offerFile/generateOfferDocument/{taskCode}")
+    public List<OfferDocumentDTO> generateOfferDocument(@PathVariable String taskCode){
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件").setContent("taskCode: " + taskCode));
 
-        List<OfferDocumentBO> documentBOList = offerDocumentTaskService.queryOfferDocument(taskCode);
+        List<OfferDocumentBO> documentBOList = offerDocumentTaskService.generateOfferDocument(taskCode, UserContext.getUserId());
 
         //字段转换
         if (!CollectionUtils.isEmpty(documentBOList)) {

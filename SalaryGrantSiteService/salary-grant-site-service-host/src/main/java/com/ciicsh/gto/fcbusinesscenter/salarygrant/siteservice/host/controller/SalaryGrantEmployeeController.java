@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantEmployeeDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
@@ -91,6 +92,50 @@ public class SalaryGrantEmployeeController {
     }
 
     /**
+     * 查询发放变化的雇员信息
+     *
+     * @param salaryGrantEmployeeDTO
+     * @return
+     */
+    @RequestMapping("/SalaryGrantEmployee/infoChanged")
+    public Page<SalaryGrantEmployeeDTO> queryEmployeeInfoChanged(@RequestBody SalaryGrantEmployeeDTO salaryGrantEmployeeDTO){
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("查询发放变化的雇员信息").setContent(JSON.toJSONString(salaryGrantEmployeeDTO)));
+
+        Page<SalaryGrantEmployeeBO> page = new Page<>();
+        page.setCurrent(salaryGrantEmployeeDTO.getCurrent());
+        page.setSize(salaryGrantEmployeeDTO.getSize());
+        SalaryGrantEmployeeBO grantEmployeeBO = new SalaryGrantEmployeeBO();
+        BeanUtils.copyProperties(salaryGrantEmployeeDTO, grantEmployeeBO);
+
+        page = employeeQueryService.queryEmployeeInfoChanged(page, grantEmployeeBO);
+
+        //字段转换
+        List<SalaryGrantEmployeeBO> employeeBOList = page.getRecords();
+        if (!CollectionUtils.isEmpty(employeeBOList)) {
+            int size = employeeBOList.size();
+            SalaryGrantEmployeeBO employeeBO;
+            for (int i = 0; i < size; i++) {
+                employeeBO = employeeBOList.get(i);
+                //国籍转码
+                if (!StringUtils.isEmpty(employeeBO.getCountryCode())){
+                    employeeBO.setCountryName(commonService.getCountryName(employeeBO.getCountryCode()));
+                }
+
+                //发放状态
+                if (!ObjectUtils.isEmpty(employeeBO.getGrantStatus())){
+                    employeeBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(employeeBO.getGrantStatus())));
+                }
+            }
+        }
+
+        // BO PAGE 转换为 DTO PAGE
+        String boJSONStr = JSONObject.toJSONString(page);
+        Page<SalaryGrantEmployeeDTO> employeeDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+
+        return employeeDTOPage;
+    }
+
+    /**
      * 根据grantStatus进行不同的操作
      *
      * grantStatus = 1:
@@ -111,7 +156,7 @@ public class SalaryGrantEmployeeController {
         SalaryGrantEmployeePO employeePO = new SalaryGrantEmployeePO();
         employeePO.setSalaryGrantEmployeeId(salaryGrantEmployeeDTO.getSalaryGrantEmployeeId());
         employeePO.setGrantStatus(salaryGrantEmployeeDTO.getGrantStatus());
-//        employeePO.setModifiedBy();
+        employeePO.setModifiedBy(UserContext.getUserId());
         employeePO.setModifiedTime(new Date());
 
         try {
@@ -141,12 +186,13 @@ public class SalaryGrantEmployeeController {
 
         List<SalaryGrantEmployeePO> employeePOList = new ArrayList<>(salaryGrantEmployeeIdList.size());
         SalaryGrantEmployeePO employeePO;
+        String userId = UserContext.getUserId();
         for (Long salaryGrantEmployeeId : salaryGrantEmployeeIdList) {
             employeePO = new SalaryGrantEmployeePO();
             employeePO.setSalaryGrantEmployeeId(salaryGrantEmployeeId);
             //发放状态:0-正常，1-手动暂缓，2-自动暂缓，3-退票，4-部分发放
             employeePO.setGrantStatus(1);
-//            employeePO.setModifiedBy();
+            employeePO.setModifiedBy(userId);
             employeePO.setModifiedTime(new Date());
 
             employeePOList.add(employeePO);
@@ -179,12 +225,13 @@ public class SalaryGrantEmployeeController {
 
         List<SalaryGrantEmployeePO> employeePOList = new ArrayList<>(salaryGrantEmployeeIdList.size());
         SalaryGrantEmployeePO employeePO;
+        String userId = UserContext.getUserId();
         for (Long salaryGrantEmployeeId : salaryGrantEmployeeIdList) {
             employeePO = new SalaryGrantEmployeePO();
             employeePO.setSalaryGrantEmployeeId(salaryGrantEmployeeId);
             //发放状态:0-正常，1-手动暂缓，2-自动暂缓，3-退票，4-部分发放
             employeePO.setGrantStatus(0);
-//            employeePO.setModifiedBy();
+            employeePO.setModifiedBy(userId);
             employeePO.setModifiedTime(new Date());
 
             employeePOList.add(employeePO);
@@ -198,6 +245,8 @@ public class SalaryGrantEmployeeController {
         }
         return new Result();
     }
+
+
 
     /**
      * 导出雇员信息

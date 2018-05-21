@@ -14,6 +14,8 @@
         <result column="template_type" property="templateType" />
         <result column="template_file_name" property="templateFileName" />
         <result column="template_file_url" property="templateFileUrl" />
+        <result column="email_title" property="emailTitle" />
+        <result column="email_content" property="emailContent" />
         <result column="html" property="html" />
         <result column="effective_time" property="effectiveTime" />
         <result column="invalid_time" property="invalidTime" />
@@ -31,6 +33,18 @@
     <select id="total"  resultType="int">
         SELECT COUNT(*) FROM prs_payroll_template
         WHERE is_active = 1
+        <if test="templateCode != null and templateCode != ''">
+            and template_code = #{templateCode}
+        </if>
+        <if test="templateName != null and templateName != ''">
+            and template_name like concat('%', #{templateName}, '%')
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
     </select>
 
     <select id="all"  resultMap="BaseResultMap">
@@ -54,9 +68,9 @@
     </select>
 
     <insert id="insert" parameterType="map">
-        INSERT INTO prs_payroll_template(template_code, template_name, management_id, management_name, account_code, account_name, account_items, template_type, template_file_name, template_file_url, html, effective_time, invalid_time, if_encrypt, status, comments, remark, created_by, modified_by)
-        VALUES (#{templateCode}, #{templateName}, #{managementId}, #{managementName}, #{accountCode}, #{accountName}, #{accountItems}, #{templateType}, #{templateFileName}, #{templateFileUrl}, #{html}, #{effectiveTime}, #{invalidTime}, #{ifEncrypt}, #{status}, #{comments}, #{remark}, #{createdBy}, #{modifiedBy})
-    </insert>
+    INSERT INTO prs_payroll_template(template_code, template_name, management_id, management_name, account_code, account_name, account_items, template_type, template_file_name, template_file_url, email_title, email_content, html, effective_time, invalid_time, if_encrypt, status, comments, remark, created_by, modified_by)
+    VALUES (#{templateCode}, #{templateName}, #{managementId}, #{managementName}, #{accountCode}, #{accountName}, #{accountItems}, #{templateType}, #{templateFileName}, #{templateFileUrl}, #{emailTitle}, #{emailContent}, #{html}, #{effectiveTime}, #{invalidTime}, #{ifEncrypt}, #{status}, #{comments}, #{remark}, #{createdBy}, #{modifiedBy})
+  </insert>
 
     <update id="update" parameterType="map">
         UPDATE prs_payroll_template
@@ -91,6 +105,12 @@
             </if>
             <if test="templateFileUrl != null and templateFileUrl != ''">
                 template_file_url = #{templateFileUrl},
+            </if>
+            <if test="emailTitle != null and emailTitle != ''">
+                email_title = #{emailTitle},
+            </if>
+            <if test="emailContent != null and emailContent != ''">
+                email_content = #{emailContent},
             </if>
             <if test="html != null and html != ''">
                 html = #{html},
@@ -135,7 +155,7 @@
       and template_name like concat('%', #{templateName}, '%')
     </if>
     <if test="managementId != null and managementId != ''">
-      and management_id = #{managementId}
+      and management_id IN (${managementId})
     </if>
     <if test="managementName != null and managementName != ''">
       and management_name like concat('%', #{managementName}, '%')

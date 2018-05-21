@@ -124,7 +124,7 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
     @TableField("is_advance")
     private Boolean isAdvance;
     /**
-     * 垫付类型:1-水单垫付、2-信用期垫付、3-偶然垫付、4-AF垫付、5-预付款垫付
+     * 垫付类型:1-信用期垫付;2-偶然垫付;3-水单垫付;4-AF垫付;5-预付款垫付
      */
     @TableField("advance_type")
     private Integer advanceType;
@@ -162,6 +162,11 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
      */
     @TableField("is_include_foreign_currency")
     private Boolean isIncludeForeignCurrency;
+    /**
+     * 结算发放标识:0-正常，1-垫付
+     */
+    @TableField("balance_grant")
+    private Integer balanceGrant;
     /**
      * 操作员
      */
@@ -492,6 +497,14 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
         this.workFlowUserInfo = workFlowUserInfo;
     }
 
+    public Integer getBalanceGrant() {
+        return balanceGrant;
+    }
+
+    public void setBalanceGrant(Integer balanceGrant) {
+        this.balanceGrant = balanceGrant;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.salaryGrantMainTaskId;
@@ -528,6 +541,7 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
                 ", taskStatus=" + taskStatus +
                 ", taskType=" + taskType +
                 ", isIncludeForeignCurrency=" + isIncludeForeignCurrency +
+                ", balanceGrant=" + balanceGrant +
                 ", operatorUserId=" + operatorUserId +
                 ", approveUserId=" + approveUserId +
                 ", workFlowUserInfo=" + workFlowUserInfo +

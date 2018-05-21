@@ -43,9 +43,9 @@
         <payment.version>1.0.0-SNAPSHOT</payment.version>
         <logservice.version>1.0.0-SNAPSHOT</logservice.version>
         <identityservice.version>1.0.0-SNAPSHOT</identityservice.version>
-        <!--<commonservice.version>1.0.0-SNAPSHOT</commonservice.version>
-        <fcbusinesscenter-util.version>1.0.0-SNAPSHOT</fcbusinesscenter-util.version>-->
+        <commonservice.version>1.0.0-SNAPSHOT</commonservice.version>
         <commonauth.version>1.0.0-SNAPSHOT</commonauth.version>
+        <commonentity.version>0.0.1-SNAPSHOT</commonentity.version>
     </properties>
 
     <distributionManagement>
@@ -86,6 +86,16 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-feign</artifactId>
                 <version>1.3.5.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-bus-kafka</artifactId>
+                <version>1.3.1.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>
+                <version>1.2.5.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -190,6 +200,20 @@
                 <groupId>com.ciicsh.gt1</groupId>
                 <artifactId>common-auth</artifactId>
                 <version>${commonauth.version}</version>
+            </dependency>
+
+            <!--基础数据-->
+            <dependency>
+                <groupId>com.ciicsh.gt1.commonservice</groupId>
+                <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
+                <version>${commonservice.version}</version>
+            </dependency>
+
+            <!--common-entity-->
+            <dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>common-entity</artifactId>
+                <version>${commonentity.version}</version>
             </dependency>
             <!--mongodb数据库-->
             <!--<dependency>

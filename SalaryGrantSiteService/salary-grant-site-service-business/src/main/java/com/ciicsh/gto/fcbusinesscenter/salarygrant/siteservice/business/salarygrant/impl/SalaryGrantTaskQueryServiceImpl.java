@@ -2,10 +2,12 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,8 @@ import java.util.List;
 @Service
 public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryService {
     @Autowired
+    CommonService commonService;
+    @Autowired
     SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
     SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
@@ -34,6 +38,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
 
     /**
      * 查询薪资发放任务单列表
+     * @author chenpb
+     * @since 2018-04-25
      * @param bo
      * @return Page<SalaryGrantTaskBO>
      */
@@ -180,8 +186,20 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param salaryGrantTaskBO
      * @return
      */
+    @Override
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
-        return salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
+        List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
+        if(!list.isEmpty()) {
+            list.stream().forEach(x -> {
+                if (StringUtils.isNotBlank(x.getGrantMode())) {
+                    x.setGrantModeName(commonService.getNameByValue("sgGrantMode", x.getGrantMode()));
+                }
+                if (StringUtils.isNotBlank(x.getTaskStatus())) {
+                    x.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus", x.getTaskStatus()));
+                }
+            });
+        }
+        return list;
     }
 
 }

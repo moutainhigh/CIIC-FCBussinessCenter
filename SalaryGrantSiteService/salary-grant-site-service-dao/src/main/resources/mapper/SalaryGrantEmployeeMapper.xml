@@ -19,6 +19,9 @@
         <result column="batch_code" property="batchCode"/>
         <result column="grant_account_code" property="grantAccountCode"/>
         <result column="grant_account_name" property="grantAccountName"/>
+        <result column="payment_account_code" property="paymentAccountCode"/>
+        <result column="payment_account_name" property="paymentAccountName"/>
+        <result column="payment_account_bank_name" property="paymentAccountBankName" />
         <result column="grant_mode" property="grantMode"/>
         <result column="salary_grant_rule_id" property="salaryGrantRuleId"/>
         <result column="rule_type" property="ruleType"/>
@@ -73,10 +76,11 @@
             t.salary_grant_employee_id   salaryGrantEmployeeId,
             t.employee_id                employeeId           ,
             t.employee_name              employeeName         ,
+            t.company_id                 companyId            ,
             t.grant_cycle                grantCycle           ,
             t.batch_code                 batchCode            ,
             t.grant_account_code         grantAccountCode     ,
-            ''                           grantAccountName     ,
+            t.grant_account_name         grantAccountName     ,
             t.card_num                   cardNum              ,
             t.account_name               accountName          ,
             t.bank_code                  bankCode             ,
@@ -111,8 +115,12 @@
             <if test="grantStatus != null and grantStatus != ''">
                 and t.grant_status=#{grantStatus}
             </if>
+            <if test="remark != null and remark != ''">
+                and t.remark is not null
+            </if>
             and t.is_active=1
         order by
             t.employee_id
     </select>
+
 </mapper>
