@@ -111,13 +111,13 @@ public class ExcelUtil {
         return list;
     }
 
-    public static <T> List<T> importExcel(MultipartFile file, Integer titleRows, Integer headerRows, Class<T> pojoClass,boolean needVerfiy) throws Exception {
+    public static <T> List<T> importExcel(MultipartFile file, Integer titleRows, Integer headerRows, Class<T> pojoClass, boolean needVerify) throws Exception {
         if (file == null){
             return null;
         }
         ImportParams params = new ImportParams();
-        if(needVerfiy){
-            params.setNeedVerfiy(true);
+        if(needVerify){
+            params.setNeedVerfiy(needVerify);
         }
         params.setTitleRows(titleRows);
         params.setHeadRows(headerRows);
