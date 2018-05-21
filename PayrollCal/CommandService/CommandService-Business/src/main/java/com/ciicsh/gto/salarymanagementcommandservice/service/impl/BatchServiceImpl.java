@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
 
 /**
  * Created by NeoJiang on 2018/5/2.
@@ -196,5 +197,33 @@ public class BatchServiceImpl implements BatchService {
         }
 
         return batchList;
+    }
+
+    private DBObject findRecordFromListByCompareKeys(List<DBObject> records, List<String> keys) {
+
+        //平铺item list
+        List<List<DBObject>> itemListList = records.stream()
+                .map(i -> (DBObject)i.get("catalog"))
+                .map(catalog -> (List<DBObject>)catalog.get("pay_items"))
+                .collect(Collectors.toList());
+
+//        Map<String, List<DBObject>> itemListMap = itemListList.stream()
+//                .collect(Collectors.groupingBy(list -> list);
+
+//
+//                .collect(Collectors.toMap(catalog -> {
+//                    List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
+//                    List<String> keyStr = new ArrayList<>();
+//                    keys.forEach(i -> {
+//                        DBObject name = payItems.stream()
+//                                .filter(item -> i.equals(item.get("item_name")))
+//                                .findFirst()
+//                                .orElse(null);
+//
+//                    });
+//                    return "";
+//                }, catalog -> new ArrayList<DBObject>()));
+
+        return null;
     }
 }

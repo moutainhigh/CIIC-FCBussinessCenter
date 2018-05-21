@@ -132,31 +132,31 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
             }
         }
     }
-
-    @GetMapping("/getDepart")
-    public JsonResult getDepart() {
-        List<KeyValuePO> keyValues = new ArrayList<>();
-        for(Map.Entry<Integer, String> depart:getDepartment().entrySet()){
-            KeyValuePO keyValuePO = new KeyValuePO();
-            keyValuePO.setKey(String.valueOf(depart.getKey()));
-            keyValuePO.setValue(depart.getValue());
-            keyValues.add(keyValuePO);
-        }
-        return JsonResult.success(keyValues);
-    }
-
-    @GetMapping("/getPos")
-    public JsonResult getPos() {
-
-        List<KeyValuePO> keyValues = new ArrayList<>();
-        for(Map.Entry<Integer, String> pos:getPosition().entrySet()){
-            KeyValuePO keyValuePO = new KeyValuePO();
-            keyValuePO.setKey(String.valueOf(pos.getKey()));
-            keyValuePO.setValue(pos.getValue());
-            keyValues.add(keyValuePO);
-        }
-        return JsonResult.success(keyValues);
-    }
+//
+//    @GetMapping("/getDepart")
+//    public JsonResult getDepart() {
+//        List<KeyValuePO> keyValues = new ArrayList<>();
+//        for(Map.Entry<Integer, String> depart:getDepartment().entrySet()){
+//            KeyValuePO keyValuePO = new KeyValuePO();
+//            keyValuePO.setKey(String.valueOf(depart.getKey()));
+//            keyValuePO.setValue(depart.getValue());
+//            keyValues.add(keyValuePO);
+//        }
+//        return JsonResult.success(keyValues);
+//    }
+//
+//    @GetMapping("/getPos")
+//    public JsonResult getPos() {
+//
+//        List<KeyValuePO> keyValues = new ArrayList<>();
+//        for(Map.Entry<Integer, String> pos:getPosition().entrySet()){
+//            KeyValuePO keyValuePO = new KeyValuePO();
+//            keyValuePO.setKey(String.valueOf(pos.getKey()));
+//            keyValuePO.setValue(pos.getValue());
+//            keyValues.add(keyValuePO);
+//        }
+//        return JsonResult.success(keyValues);
+//    }
 
     @DeleteMapping("/batchDelete/{ids}")
     public JsonResult batchDelete(@PathVariable("ids")String ids,@RequestParam String empGroupCodes) {

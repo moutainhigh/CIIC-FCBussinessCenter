@@ -48,11 +48,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             empIds.forEach(i -> {
                 Integer revalue = empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode, i);
                 if(revalue <= 0){
-                    Integer isExist = employeeMapper.isExistEmployee(i);
-                    if(isExist <= 0)
-                    {
-//                      employeeMapper.insert(this.toEmployeePO(employeeTestPO));
-                    }
                     empGroupEmpRelationMapper.insert(this.toEmpGroupEmpRelationPO(i, empGroupCode));
                     ids.add(i);
                 }
@@ -66,7 +61,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
             return true;
         }catch (Exception e){
-            return false;
+            throw new RuntimeException(e.getMessage());
         }
     }
 
