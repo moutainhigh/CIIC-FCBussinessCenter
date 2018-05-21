@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.SMUserInfoProxy;
+import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.dto.auth.SMUserInfoDTO;
 import com.ciicsh.gto.basicdataservice.api.CityServiceProxy;
 import com.ciicsh.gto.basicdataservice.api.CountryServiceProxy;
 import com.ciicsh.gto.basicdataservice.api.DicItemServiceProxy;
@@ -30,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,6 +62,8 @@ public class CommonServiceImpl implements CommonService {
     private BankFileProxy bankFileProxy;
     @Autowired
     private LogServiceProxy logService;
+    @Autowired
+    private SMUserInfoProxy smUserInfoProxy;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -209,5 +211,29 @@ public class CommonServiceImpl implements CommonService {
         }
 
         return documentFilePOList;
+    }
+
+    @Override
+    public String getUserNameById(String userId) {
+        if(StringUtils.isEmpty(userId)){
+            return null;
+        }else{
+            com.ciicsh.gto.afsystemmanagecenter.apiservice.api.dto.JsonResult<List<SMUserInfoDTO>> userInfoDTOJsonResult = smUserInfoProxy.getUsersByUserId(userId);
+            if (!ObjectUtils.isEmpty(userInfoDTOJsonResult) && userInfoDTOJsonResult.getCode() == 0) {
+                List<SMUserInfoDTO> userInfoDTOList = userInfoDTOJsonResult.getData();
+                if (!CollectionUtils.isEmpty(userInfoDTOList)) {
+                    SMUserInfoDTO smUserInfoDTO = userInfoDTOList.get(0);
+                    if(smUserInfoDTO == null || "".equals(smUserInfoDTO.getDisplayName())){
+                        return null;
+                    }else{
+                        return smUserInfoDTO.getDisplayName();
+                    }
+                }else {
+                    return null;
+                }
+            }else{
+                return null;
+            }
+        }
     }
 }
