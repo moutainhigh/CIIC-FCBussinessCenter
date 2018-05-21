@@ -100,7 +100,14 @@ spring:
             group: ${spring.application.name}
             consumer:
               partitioned: false
+          sleuth:
+            destination: sleuth-itdev
     data:
       mongodb:
         uri: mongodb://ciicit:ciicit!%23%25@172.16.9.15:27017/payroll_db
-
+    zipkin:
+      base-url: http://172.16.100.103:9623 #ZipkinService地址
+      enabled: true
+    sleuth:
+      sampler:
+        percentage: 0.1
