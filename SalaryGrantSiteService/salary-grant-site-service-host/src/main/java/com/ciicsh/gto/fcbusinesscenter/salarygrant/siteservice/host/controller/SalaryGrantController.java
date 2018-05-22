@@ -9,10 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.*;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.ReprieveEmpImportExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.SalaryTaskEmpExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
@@ -453,7 +450,7 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/itemsInfo", method = RequestMethod.POST)
-    public Result<SalaryGrantOperationDTO> itemsInfo(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result<SalaryTaskItemDTO> itemsInfo(@RequestBody SalaryTaskHandleDTO dto) {
         Map map = new HashMap();
         map.put("batchCode", dto.getBatchCode());
         map.put("batchType", dto.getGrantType());
@@ -465,25 +462,28 @@ public class SalaryGrantController {
             return ResultGenerator.genSuccessResult(itemDto);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("查询薪资发放项金额失败");
+            return ResultGenerator.genServerFailResult("查询薪资项失败");
         }
     }
 
     /**
-     * 薪资发放项金额
+     * 薪资项金额
      * @author chenpb
-     * @date 2018-04-27
+     * @date 2018-05-22
      * @param
      * @return
      */
     @RequestMapping(value="/itemsData", method = RequestMethod.POST)
     public Result<SalaryGrantOperationDTO> itemsData(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资发放项").setContent(JSON.toJSONString(dto)));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项金额").setContent(JSON.toJSONString(dto)));
         try {
-            return ResultGenerator.genSuccessResult();
+            List<CalcResultItemBO> list = CommonTransform.convertToEntities(dto.getItemInfo(), CalcResultItemBO.class);
+            List<EmpCalcResultBO> outBo = salaryGrantEmployeeQueryService.getEmployeeForBizList(list, dto.getTaskCode(), dto.getBatchCode(), dto.getGrantType().intValue());
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资项金额").setContent(JSON.toJSONString(outBo)));
+            return ResultGenerator.genSuccessResult(outBo);
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资发放项金额异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("查询薪资发放项金额失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项金额异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询薪资项金额失败");
         }
     }
 

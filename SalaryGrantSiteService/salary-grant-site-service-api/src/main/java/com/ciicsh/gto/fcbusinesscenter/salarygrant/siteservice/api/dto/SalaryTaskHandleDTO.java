@@ -4,6 +4,8 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.Paging
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * <p>
  * 薪资发放任务单提交
@@ -39,4 +41,8 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      * 失效原因
      */
     private String invalidReason;
+    /**
+     * 薪资项
+     */
+    private List<SalaryTaskItemDTO> itemInfo;
 }
