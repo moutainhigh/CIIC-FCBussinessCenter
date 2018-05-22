@@ -16,6 +16,14 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryTaskHandleDTO extends PagingDTO {
     /**
+     * 计算批次号
+     */
+    private String batchCode;
+    /**
+     * 发放类型
+     */
+    private Integer grantType;
+    /**
      * 任务单编号
      */
     private String taskCode;

@@ -9,6 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
@@ -445,6 +446,30 @@ public class SalaryGrantController {
     }
 
     /**
+     * 薪资项
+     * @author chenpb
+     * @date 2018-05-22
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/itemsInfo", method = RequestMethod.POST)
+    public Result<SalaryGrantOperationDTO> itemsInfo(@RequestBody SalaryTaskHandleDTO dto) {
+        Map map = new HashMap();
+        map.put("batchCode", dto.getBatchCode());
+        map.put("batchType", dto.getGrantType());
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项").setContent(JSON.toJSONString(dto)));
+        try {
+            List<CalcResultItemBO> itemBo = salaryGrantEmployeeQueryService.getSalaryCalcResultItemsList(map);
+            List<SalaryTaskItemDTO> itemDto = CommonTransform.convertToDTOs(itemBo, SalaryTaskItemDTO.class);
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资项").setContent(JSON.toJSONString(itemDto)));
+            return ResultGenerator.genSuccessResult(itemDto);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询薪资发放项金额失败");
+        }
+    }
+
+    /**
      * 薪资发放项金额
      * @author chenpb
      * @date 2018-04-27
@@ -452,8 +477,8 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/itemsData", method = RequestMethod.POST)
-    public Result itemsData(@RequestBody List<SalaryTaskHandleDTO> list) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资发放项金额").setContent(JSON.toJSONString(list)));
+    public Result<SalaryGrantOperationDTO> itemsData(@RequestBody SalaryTaskHandleDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资发放项").setContent(JSON.toJSONString(dto)));
         try {
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
