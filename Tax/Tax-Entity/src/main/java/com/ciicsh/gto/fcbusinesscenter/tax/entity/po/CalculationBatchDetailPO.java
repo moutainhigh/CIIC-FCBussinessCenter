@@ -295,6 +295,90 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 	 * 本年累计已纳税额
 	 */
 	private BigDecimal exerciseTaxAmount;
+	/**
+	 * 离职金
+	 */
+	private BigDecimal separationPayment;
+	/**
+	 * 离职金免税额
+	 */
+	private BigDecimal separationPaymentTaxFee;
+	/**
+	 * 年度奖金
+	 */
+	private BigDecimal annualBonus;
+	/**
+	 * 劳务费
+	 */
+	private BigDecimal serviceCharge;
+	/**
+	 * 利息、股息、红利所得
+	 */
+	private BigDecimal incomeFromInterest;
+	/**
+	 * 偶然所得
+	 */
+	private BigDecimal fortuitousIncome;
+	/**
+	 * 商业保险
+	 */
+	private BigDecimal commercialInsurance;
+
+	public BigDecimal getSeparationPayment() {
+		return separationPayment;
+	}
+
+	public void setSeparationPayment(BigDecimal separationPayment) {
+		this.separationPayment = separationPayment;
+	}
+
+	public BigDecimal getSeparationPaymentTaxFee() {
+		return separationPaymentTaxFee;
+	}
+
+	public void setSeparationPaymentTaxFee(BigDecimal separationPaymentTaxFee) {
+		this.separationPaymentTaxFee = separationPaymentTaxFee;
+	}
+
+	public BigDecimal getAnnualBonus() {
+		return annualBonus;
+	}
+
+	public void setAnnualBonus(BigDecimal annualBonus) {
+		this.annualBonus = annualBonus;
+	}
+
+	public BigDecimal getServiceCharge() {
+		return serviceCharge;
+	}
+
+	public void setServiceCharge(BigDecimal serviceCharge) {
+		this.serviceCharge = serviceCharge;
+	}
+
+	public BigDecimal getIncomeFromInterest() {
+		return incomeFromInterest;
+	}
+
+	public void setIncomeFromInterest(BigDecimal incomeFromInterest) {
+		this.incomeFromInterest = incomeFromInterest;
+	}
+
+	public BigDecimal getFortuitousIncome() {
+		return fortuitousIncome;
+	}
+
+	public void setFortuitousIncome(BigDecimal fortuitousIncome) {
+		this.fortuitousIncome = fortuitousIncome;
+	}
+
+	public BigDecimal getCommercialInsurance() {
+		return commercialInsurance;
+	}
+
+	public void setCommercialInsurance(BigDecimal commercialInsurance) {
+		this.commercialInsurance = commercialInsurance;
+	}
 
 	public BigDecimal getTaxReal() {
 		return taxReal;
