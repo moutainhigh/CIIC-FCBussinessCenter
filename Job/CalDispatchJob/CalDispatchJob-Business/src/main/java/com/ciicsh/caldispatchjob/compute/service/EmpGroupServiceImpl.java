@@ -61,9 +61,6 @@ public class EmpGroupServiceImpl {
                 return empIds.contains(emp.getEmployeeId());
             }).collect(Collectors.toList());
 
-            //empIds.clear();
-            //empIds.add("18016011");
-
             GetEmployeeContractsDTO contractsDTO = new GetEmployeeContractsDTO();
             contractsDTO.setEmpIds(empIds);
             JsonResult<List<EmployeeContractResponseDTO>> result = employeeContractProxy.getEmployeeContracts(contractsDTO);

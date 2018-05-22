@@ -81,7 +81,8 @@ public class CompleteComputeServiceImpl {
             DBObject mapObj = new BasicDBObject();
             mapObj.put("emp_id", empCode);
             mapObj.put("emp_name",emp.get(PayItemName.EMPLOYEE_NAME_CN));
-            //mapObj.put("payroll_type", ""); // 工资单类型
+            mapObj.put("id_card_type",""); //证件类型
+            mapObj.put("id_num",""); //证件号
             mapObj.put("company_id",emp.get(PayItemName.EMPLOYEE_COMPANY_ID));
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("mgr_id", batchInfo.get("management_ID")); // 管理方ID
@@ -90,9 +91,10 @@ public class CompleteComputeServiceImpl {
             mapObj.put("income_year_month", batchInfo.get("period")); //工资年月
             mapObj.put("batch_id", batchCode);
             mapObj.put("country_code", emp.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN));  // 国家代码
-            mapObj.put("ref_batch_id", "");  // 引用 BATCH
             mapObj.put("leaving_years", emp.get(PayItemName.LEAVE_DATE)); // 离职年限
             mapObj.put("net_pay", findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //实发工资
+            mapObj.put("actual_pay", findValByName(payItems,PayItemName.ACTUAL_PAY)); //应发工资
+
             mapObj.put("tax", findValByName(payItems,PayItemName.TAX_TOTAL)); //个人所得税
             mapObj.put("wage_before_tax", ""); //个人收入（薪金）- 税前
             mapObj.put("wage_after_tax", ""); //个人收入（薪金）- 税后
@@ -167,14 +169,15 @@ public class CompleteComputeServiceImpl {
 
        DBObject basicDBObject = null;
        if(catalog.get("emp_info") == null) {
-           Criteria criteria = Criteria.where("emp_group_code").is(empGroupCode)
-                   .andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode));
+           Criteria criteria = Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
            Query query = Query.query(criteria);
            query.fields().include("base_info");
-
            basicDBObject = empGroupMongoOpt.getMongoTemplate().findOne(query, DBObject.class, EmpGroupMongoOpt.PR_EMPLOYEE_GROUP);
        }else {
             basicDBObject = (DBObject)catalog.get("emp_info");
+            if(basicDBObject.get(PayItemName.EMPLOYEE_CODE_CN) == null){
+
+            }
        }
        return basicDBObject;
 

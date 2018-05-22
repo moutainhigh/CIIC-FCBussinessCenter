@@ -85,10 +85,16 @@ spring:
             partitionCount: 1
 
         pr_compute-close-output-channel:
-          destination: fc_compute_close # topic name
+          destination: fc_compute_close # 关帐
           content-type: application/json
           producer:
-            partitionCount: 2
+            partitionCount: 1
+
+        pr_compute-unclose-output-channel:
+          destination: fc_compute_unclose # 取消关帐
+          content-type: application/json
+          producer:
+            partitionCount: 1
 
         sleuth:
           detination: sleuth-itdev

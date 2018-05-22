@@ -5,6 +5,7 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
  * 批次状态：
  */
 public enum BatchStatusEnum implements ValuedEnum {
+    //1: "新建", 2: "计算中", 3: "计算完成", 4: "待审核", 5: "审核通过", 6: "审核拒绝", 7: "关账", 8: "薪资已发放", 9: "个税已申报"
     /**
      * 新建
      */
@@ -28,7 +29,7 @@ public enum BatchStatusEnum implements ValuedEnum {
     /**
      * 审核完成
      */
-    APPROVAL(5, "审核完成"),
+    APPROVAL(5, "审核通过"),
 
     /**
      * 审核拒绝

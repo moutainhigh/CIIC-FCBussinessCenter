@@ -93,6 +93,13 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
     }
 
     @Override
+    public PrAdjustBatchPO getAdjustBatchPO(String batchCode) {
+        PrAdjustBatchPO adjustBatchPO = new PrAdjustBatchPO();
+        adjustBatchPO.setAdjustBatchCode(batchCode);
+        return adjustBatchMapper.selectOne(adjustBatchPO);
+    }
+
+    @Override
     public List<DBObject> getAdjustBatch(String adjustBatchCode) {
         return adjustBatchMongoOpt.list(Criteria.where("batch_code").is(adjustBatchCode));
     }

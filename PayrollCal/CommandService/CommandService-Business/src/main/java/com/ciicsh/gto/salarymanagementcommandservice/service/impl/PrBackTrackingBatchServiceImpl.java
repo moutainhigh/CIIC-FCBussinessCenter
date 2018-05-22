@@ -144,4 +144,11 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
         return backTrackingBatchMapper.selectOne(prBackTrackingBatchPO);
     }
 
+    @Override
+    public PrBackTrackingBatchPO getPrBackTrackingBatchPO(String batchCode) {
+        PrBackTrackingBatchPO backTrackingBatchPO = new PrBackTrackingBatchPO();
+        backTrackingBatchPO.setBackTrackingBatchCode(batchCode);
+        return backTrackingBatchMapper.selectOne(backTrackingBatchPO);
+    }
+
 }

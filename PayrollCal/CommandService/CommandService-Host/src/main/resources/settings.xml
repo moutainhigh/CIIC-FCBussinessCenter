@@ -22,8 +22,8 @@
 
         <server>
             <id>drools-workbench</id>
-            <username>admin</username>
-            <password>admin123</password>
+            <username>ciicit</username>
+            <password>admin</password>
             <configuration>
                 <httpConfiguration>
                     <put>
