@@ -456,10 +456,10 @@ public class SalaryGrantController {
         map.put("batchType", dto.getGrantType());
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项").setContent(JSON.toJSONString(dto)));
         try {
-            List<CalcResultItemBO> itemBo = salaryGrantEmployeeQueryService.getSalaryCalcResultItemsList(map);
-            List<SalaryTaskItemDTO> itemDto = CommonTransform.convertToDTOs(itemBo, SalaryTaskItemDTO.class);
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资项").setContent(JSON.toJSONString(itemDto)));
-            return ResultGenerator.genSuccessResult(itemDto);
+            List<CalcResultItemBO> bo = salaryGrantEmployeeQueryService.getSalaryCalcResultItemsList(map);
+            List<SalaryTaskItemDTO> items = CommonTransform.convertToDTOs(bo, SalaryTaskItemDTO.class);
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资项").setContent(JSON.toJSONString(items)));
+            return ResultGenerator.genSuccessResult(items);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("查询薪资项失败");
@@ -478,9 +478,9 @@ public class SalaryGrantController {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项金额").setContent(JSON.toJSONString(dto)));
         try {
             List<CalcResultItemBO> list = CommonTransform.convertToEntities(dto.getItemInfo(), CalcResultItemBO.class);
-            List<EmpCalcResultBO> outBo = salaryGrantEmployeeQueryService.getEmployeeForBizList(list, dto.getTaskCode(), dto.getBatchCode(), dto.getGrantType());
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资项金额").setContent(JSON.toJSONString(outBo)));
-            return ResultGenerator.genSuccessResult(outBo);
+            List<EmpCalcResultBO> bo = salaryGrantEmployeeQueryService.getEmployeeForBizList(list, dto.getTaskCode(), dto.getBatchCode(), dto.getGrantType());
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资项金额").setContent(JSON.toJSONString(bo)));
+            return ResultGenerator.genSuccessResult(bo);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项金额异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("查询薪资项金额失败");
