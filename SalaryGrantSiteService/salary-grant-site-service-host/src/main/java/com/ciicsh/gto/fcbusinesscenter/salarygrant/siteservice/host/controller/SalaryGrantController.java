@@ -474,7 +474,7 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/itemsData", method = RequestMethod.POST)
-    public Result<SalaryGrantOperationDTO> itemsData(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result<EmpCalcResultBO> itemsData(@RequestBody SalaryTaskHandleDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资").setContent(JSON.toJSONString(dto)));
         try {
             List<CalcResultItemBO> list = CommonTransform.convertToEntities(dto.getItemInfo(), CalcResultItemBO.class);
