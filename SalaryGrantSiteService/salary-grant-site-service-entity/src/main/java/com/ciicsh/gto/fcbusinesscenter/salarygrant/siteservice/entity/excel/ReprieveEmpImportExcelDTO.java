@@ -27,7 +27,7 @@ public class ReprieveEmpImportExcelDTO {
 //    private Long salarygrantReprieveEmployeeImportId;
     @Excel(name = "任务单编号", orderNum = "1")
     private String taskCode;
-    @Excel(name = "任务单类型", orderNum = "2")
+    @Excel(name = "任务单类型", orderNum = "2", replace = { "主表_0", "中智大库_1" , "中智代发（委托机构）_2" , "中智代发（客户账户）_3", "客户自行_4"})
     private Integer taskType;
     @Excel(name = "雇员编号", orderNum = "3")
     private String employeeId;
