@@ -29,26 +29,6 @@ public class BaseController {
         return hashtable;
     }
 
-    public Hashtable<Integer,String> getDepartment(){
-        Hashtable<Integer,String> hashtable = new Hashtable<>();
-        hashtable.put(1,"研发部");
-        hashtable.put(2,"市场部");
-        hashtable.put(3,"销售部");
-        hashtable.put(4,"公关部");
-        return hashtable;
-    }
-
-    public Hashtable<Integer,String> getPosition(){
-        Hashtable<Integer,String> hashtable = new Hashtable<>();
-        hashtable.put(1,"测试工程");
-        hashtable.put(2,"开发工程师");
-        hashtable.put(3,"架构师");
-        hashtable.put(4,"研发经理");
-        hashtable.put(6,"产品");
-        hashtable.put(4,"研发经理");
-        return hashtable;
-    }
-
 
 //    public Hashtable<String,String> getPayrollGroup(){
 //        Hashtable<String,String> hashtable = new Hashtable<>();

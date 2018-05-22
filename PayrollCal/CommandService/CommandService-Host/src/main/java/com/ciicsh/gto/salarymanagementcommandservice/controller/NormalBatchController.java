@@ -7,6 +7,9 @@ import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
+import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
+import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
@@ -16,7 +19,6 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
-import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
@@ -34,7 +36,6 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import kafka.utils.Json;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -94,6 +96,13 @@ public class NormalBatchController {
 
     @Autowired
     private CommonServiceImpl commonService;
+
+    @Autowired
+    private PrItemService itemService;
+
+    @Autowired
+    private PrBatchExcelMapService excelMapService;
+
 
     @GetMapping("/checkEmployees/{empGroupCode}")
     public JsonResult checkEmployees(@PathVariable("empGroupCode") String empGroupCode){
@@ -209,11 +218,8 @@ public class NormalBatchController {
     @PostMapping("/uploadExcel")
     public JsonResult importExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file){
 
-        int sucessRows = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
-        if(sucessRows == -1){
-            return JsonResult.faultMessage("雇员组中已有雇员，不能用于覆盖导入");
-        }
-        return JsonResult.success(sucessRows);
+        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
+        return JsonResult.success(statistics);
 
     }
 
@@ -400,7 +406,10 @@ public class NormalBatchController {
 
         }
         if(rowAffected > 0) {
-            if(batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()){
+            if(StringUtils.isNotEmpty(batchAuditDTO.getAction()) && batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue()){ //取消关帐通知
+                //TODO
+            }
+            else if(batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) { //关帐通知
                 //审核通过后，发送消息
                 ComputeMsg computeMsg = new ComputeMsg();
                 computeMsg.setBatchType(batchAuditDTO.getBatchType());
@@ -410,6 +419,7 @@ public class NormalBatchController {
                 logger.info("审核通过 : " + computeMsg.toString());
 
                 sender.SendComputeCompleteAction(computeMsg);
+
             }
             return JsonResult.success(rowAffected);
         }
@@ -549,4 +559,70 @@ public class NormalBatchController {
 
         return JsonResult.success(historyBatchDTOS, "批次列表获取");
     }
+
+    @PostMapping("api/uploadExcelCols")
+    public JsonResult uploadExcelCols(String batchCode, MultipartFile file){
+
+        ExcelMapDTO mapDTO = new ExcelMapDTO();
+        try {
+            InputStream stream = file.getInputStream();
+            String[] cols = batchService.readExcelColumns(batchCode,stream);
+            mapDTO.setExcelCols(cols);
+            String[] itemNames = itemService.selectItemNames(batchCode).stream().map(p->p.getPayrollItemName()).toArray(String[]::new);
+            mapDTO.setPayItemNames(itemNames);
+
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
+        }
+
+        return JsonResult.success(mapDTO,"获取列和薪资项");
+    }
+
+    @PostMapping("api/updateExcelCols")
+    public JsonResult updateExcelCols(@RequestBody PrBatchExcelMapDTO batchExcelMapDTO){
+
+        String user = UserContext.getUserId();
+        PrBatchExcelMapPO batchExcelMapPO = excelMapService.getBatchExcelMap(batchExcelMapDTO.getBatchCode());
+        int rowAffected = 0;
+        if(batchExcelMapPO == null){
+            batchExcelMapPO = new PrBatchExcelMapPO();
+            batchExcelMapPO.setBatchCode(batchExcelMapDTO.getBatchCode());
+            batchExcelMapPO.setCreatedBy(user);
+            batchExcelMapPO.setModifiedBy(user);
+            batchExcelMapPO.setExcelCols(batchExcelMapDTO.getExcelCols());
+            batchExcelMapPO.setMappingResult(batchExcelMapDTO.getMappingResult());
+            batchExcelMapPO.setIdentityResult(batchExcelMapDTO.getIdentityResult());
+            rowAffected = excelMapService.insert(batchExcelMapPO);
+        }else {
+            batchExcelMapPO.setModifiedBy(user);
+            batchExcelMapPO.setExcelCols(batchExcelMapDTO.getExcelCols());
+            batchExcelMapPO.setMappingResult(batchExcelMapDTO.getMappingResult());
+            batchExcelMapPO.setIdentityResult(batchExcelMapDTO.getIdentityResult());
+            rowAffected = excelMapService.update(batchExcelMapPO);
+        }
+        if(rowAffected > 0){
+            return JsonResult.success("更新成功");
+        }else {
+            return JsonResult.faultMessage("更新失败");
+        }
+
+    }
+
+    @PostMapping("api/getExcelCols")
+    public JsonResult getExcelCols(@RequestParam String batchCode){
+        PrBatchExcelMapPO batchExcelMapPO = excelMapService.getBatchExcelMap(batchCode);
+        if(batchExcelMapPO == null) {
+            return JsonResult.success(null);
+
+        }else {
+            PrBatchExcelMapDTO batchExcelMapDTO = new PrBatchExcelMapDTO();
+            batchExcelMapDTO.setBatchCode(batchExcelMapPO.getBatchCode());
+            batchExcelMapDTO.setExcelCols(batchExcelMapPO.getExcelCols());
+            batchExcelMapDTO.setMappingResult(batchExcelMapPO.getMappingResult());
+            batchExcelMapDTO.setIdentityResult(batchExcelMapPO.getIdentityResult());
+            return JsonResult.success(batchExcelMapDTO);
+        }
+
+    }
+
 }

@@ -18,6 +18,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 @EnableDiscoveryClient
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
 @EnableFeignClients({
+        "com.ciicsh.gto.basicdataservice.api",
         "com.ciicsh.gto.afsystemmanagecenter.apiservice.api",
         "com.ciicsh.gto.salecenter.apiservice.api",
         "com.ciicsh.gto.companycenter.webcommandservice.api",

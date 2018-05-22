@@ -63,29 +63,19 @@ public class BatchProviderController implements BatchProxy {
     @Autowired
     private BatchService batchService;
 
-    public String getBatchListByCodes(List<String> batchCodes, int batchType) {
-        Gson gson = new Gson();
-        List<DBObject> batchResult = null;
-        if(batchType == BatchTypeEnum.NORMAL.getValue()){
-            batchResult = normalBatchMongoOpt.list(Criteria.where("batch_code").in(Arrays.asList(batchCodes)));
-            return gson.toJson(batchResult);
-
-        }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
-            batchResult = adjustBatchMongoOpt.list(Criteria.where("batch_code").in(Arrays.asList(batchCodes)));
-            return gson.toJson(batchResult);
-        }
-        else {
-            batchResult = backTraceBatchMongoOpt.list(Criteria.where("batch_code").in(Arrays.asList(batchCodes)));
-            return gson.toJson(batchResult);
-        }
-    }
-
     @Override
     public int updateAdvanceBatch(@RequestBody AdvanceBatchDTO advanceBatchDTO) {
         List<String> batchCodes = Arrays.asList(advanceBatchDTO.getBatchCodes().split(","));
-        boolean hasAdvance = advanceBatchDTO.isHasAdvance();
+        int advance = advanceBatchDTO.getAdvance();
         String modifiedBy = advanceBatchDTO.getModifiedBy();
-        int rowAffected = normalBatchService.updateHasAdvance(batchCodes,hasAdvance,modifiedBy);
+        int rowAffected = 0;
+        if(advanceBatchDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
+            rowAffected = normalBatchService.updateHasAdvance(batchCodes, advance, modifiedBy);
+        }else if(advanceBatchDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()){
+            rowAffected = adjustBatchService.updateHasAdvance(batchCodes, advance, modifiedBy);
+        }else if(advanceBatchDTO.getBatchType() == BatchTypeEnum.BACK.getValue()){
+            rowAffected = backTrackingBatchService.updateHasAdvance(batchCodes, advance, modifiedBy);
+        }
         return rowAffected;
     }
 
@@ -94,7 +84,14 @@ public class BatchProviderController implements BatchProxy {
         List<String> batchCodes = Arrays.asList(moneyBatchDTO.getBatchCodes().split(","));
         boolean hasMoney = moneyBatchDTO.isHasMoney();
         String modifiedBy = moneyBatchDTO.getModifiedBy();
-        int rowAffected = normalBatchService.updateHasMoneny(batchCodes,hasMoney,modifiedBy);
+        int rowAffected = 0;
+        if(moneyBatchDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
+            rowAffected = normalBatchService.updateHasMoney(batchCodes, hasMoney, modifiedBy);
+        }else  if(moneyBatchDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
+            rowAffected = adjustBatchService.updateHasMoney(batchCodes, hasMoney, modifiedBy);
+        }else  if(moneyBatchDTO.getBatchType() == BatchTypeEnum.BACK.getValue()) {
+            rowAffected = backTrackingBatchService.updateHasMoney(batchCodes, hasMoney, modifiedBy);
+        }
         return rowAffected;
     }
 

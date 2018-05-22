@@ -46,10 +46,10 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
 
 
     int updateHasAdvance(@Param("codes") List<String> batchCodes,
-                         @Param("hasAdvance") boolean hasAdvance,
+                         @Param("hasAdvance") int hasAdvance,
                          @Param("modifiedBy") String modifiedBy);
 
-    int updateHasMoneny(@Param("codes") List<String> batchCodes,
+    int updateHasMoney(@Param("codes") List<String> batchCodes,
                         @Param("hasMoney") boolean hasMoney,
                         @Param("modifiedBy") String modifiedBy);
 

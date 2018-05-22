@@ -57,5 +57,9 @@ public class PayItemName {
 
     public static final String TAX_TOTAL = "个税合计";
 
+    public static final String IDENTITY_NUM = "身份证号";
+
+    public static final String EMPLOYEE_ID = "员工工号";
+
 
 }

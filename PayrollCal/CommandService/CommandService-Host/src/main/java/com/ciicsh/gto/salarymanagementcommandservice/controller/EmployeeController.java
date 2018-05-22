@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/employee")
-//public class EmployeeController implements EmployeeProxy{
 public class EmployeeController{
 
     @Autowired
@@ -89,4 +88,5 @@ public class EmployeeController{
         BeanUtils.copyProperties(page, resultPage, "list");
         return JsonResult.success(resultPage);
     }
+
 }

@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus;
 
+import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.AdjustBatchMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
@@ -69,6 +70,21 @@ public class KafkaSender {
         try {
             logger.info("发送调整批次消息");
             payrollSource.adujstBatchOutput().send(MessageBuilder.withPayload(adjustBatchMsg).build());
+        }
+        catch (Exception ex){
+            logger.error(ex.getMessage());
+        }
+    }
+
+
+    /**
+     * 发送薪资计算关帐
+     * @param closingMsg
+     */
+    public void SendComputeClose(ClosingMsg closingMsg ){
+        try {
+            logger.info("发送计算关帐消息");
+            payrollSource.computeCloseOutput().send(MessageBuilder.withPayload(closingMsg).build());
         }
         catch (Exception ex){
             logger.error(ex.getMessage());

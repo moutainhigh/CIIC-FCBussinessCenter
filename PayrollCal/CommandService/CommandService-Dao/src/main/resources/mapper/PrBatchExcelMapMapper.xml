@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrBatchExcelMapMapper">
+
+    <insert id="insertBatchExcelMap" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrBatchExcelMapPO">
+        INSERT INTO pr_batch_excel_map
+        (
+          batch_code,
+          excel_cols,
+          mapping_result,
+          identity_result,
+          created_by,
+          modified_by
+        )
+        VALUES
+        (
+            #{batchCode},
+            #{excelCols},
+            #{mappingResult},
+            #{identityResult},
+            #{createdBy},
+            #{modifiedBy}
+		)
+    </insert>
+
+    <update id="updateBatchExcelMap" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrBatchExcelMapPO">
+        UPDATE pr_batch_excel_map
+        SET
+        <if test="mappingResult != null">
+            mapping_result = #{mappingResult},
+        </if>
+        <if test="identityResult != null">
+            identity_result = #{identityResult},
+        </if>
+        <if test="excelCols != null">
+            excel_cols = #{excelCols},
+        </if>
+        <if test="modifiedBy != null">
+            modified_by = #{modifiedBy},
+        </if>
+        modified_time = sysdate()
+        WHERE
+        batch_code = #{batchCode}
+    </update>
+
+
+</mapper>
