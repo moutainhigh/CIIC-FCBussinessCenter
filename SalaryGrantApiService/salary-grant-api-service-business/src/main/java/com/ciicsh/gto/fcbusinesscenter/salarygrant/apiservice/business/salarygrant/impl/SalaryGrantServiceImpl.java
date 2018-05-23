@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeRefundBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
@@ -58,5 +59,15 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
             salaryGrantSubTaskBO.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus",String.valueOf(salaryGrantSubTaskBO.getTaskStatus())));
         });
         return taskList;
+    }
+
+    @Override
+    public Boolean toCreateRefundTask(List<SalaryGrantEmployeeRefundBO> employeeRefundList) {
+        return null;
+    }
+
+    @Override
+    public Boolean toRejectTask(SalaryGrantTaskBO salaryGrantTaskBO) {
+        return null;
     }
 }

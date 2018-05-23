@@ -61,12 +61,18 @@ public class SalaryGrantBizConsts {
     public static final Integer GRANT_STATUS_AUTO_REPRIEVE = 2;
     /** 发放状态:3-退票*/
     public static final Integer GRANT_STATUS_REFUND = 3;
+    /** 发放类型:1-正常发放*/
+    public static final Integer GRANT_TYPE_NORMAL = 1;
     /** 发放类型:2-调整发放*/
     public static final Integer GRANT_TYPE_ADJUST = 2;
     /** 发放类型:3-回溯发放*/
     public static final Integer GRANT_TYPE_BACK_TRACE = 3;
+    /** 发放类型:4-暂缓再发放*/
+    public static final Integer GRANT_TYPE_REPRIEVE = 4;
     /** 发放类型:5-退票发放*/
     public static final Integer GRANT_TYPE_REFUND = 5;
+    /** 发放类型:6-现金*/
+    public static final Integer GRANT_TYPE_CASH = 6;
     /** 合同我方-客服中心:AF*/
     public static final String CONTRACT_FIRST_PARTY_CMY_1 = "AF";
     /** 合同我方-客服中心:FC*/
