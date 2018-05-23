@@ -118,9 +118,20 @@ public class SalaryGrantEmployeeQueryServiceTest {
         calcResultItemBO.setItemValue("22950.0");
         checkedItemsList.add(calcResultItemBO);
 
-        String taskCode = "LTB20180328000000002";
-        String batchCode = "GL1800255_201804_0000000257";
-        int grantType = 1;
-        List<EmpCalcResultBO> empCalcResultBOList = queryService.getEmployeeForBizList(checkedItemsList, taskCode, batchCode, grantType);
+        SalaryGrantEmployeeBO salaryGrantEmployeeBO = new SalaryGrantEmployeeBO();
+        salaryGrantEmployeeBO.setTaskCode("LTB20180328000000002");
+        salaryGrantEmployeeBO.setTaskType(1);
+        salaryGrantEmployeeBO.setBatchCode("GL1800255_201804_0000000257");
+
+        List<EmpCalcResultBO> empCalcResultBOList = queryService.getEmployeeForBizList(checkedItemsList, salaryGrantEmployeeBO);
+    }
+
+    @Test
+    public void queryEmpHisInfo() {
+        long task_his_id = 1;
+        Integer pageNum = 2;
+        Integer pageSize = 20;
+        Page<SalaryGrantEmployeeBO> employeeBOPage = queryService.queryEmpHisInfo(task_his_id, pageNum, pageSize);
+        System.out.println("-----------");
     }
 }
