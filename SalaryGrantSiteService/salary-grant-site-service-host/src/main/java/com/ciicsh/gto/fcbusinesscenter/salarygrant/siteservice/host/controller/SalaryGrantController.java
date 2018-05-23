@@ -483,8 +483,8 @@ public class SalaryGrantController {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资").setContent(JSON.toJSONString(bo)));
             return ResultGenerator.genSuccessResult(bo);
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资异常").setContent(JSON.toJSONString(e)));
-            return ResultGenerator.genServerFailResult("查询薪资失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult(e.getMessage());
         }
     }
 
