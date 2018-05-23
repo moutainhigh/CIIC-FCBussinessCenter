@@ -309,7 +309,7 @@
     </sql>
 
     <sql id="sgDetailField">
-        t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code, t.management_id, t.management_name, t.grant_cycle, t.grant_date, t.grant_time, t.created_time, t.task_type,t.task_status,
+        t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code, t.management_id, t.management_name, t.grant_type, t.grant_cycle, t.grant_date, t.grant_time, t.created_time, t.task_type,t.task_status,
         t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count, 0 as local_grant_count, 0 as supplier_grant_count
     </sql>
 

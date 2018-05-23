@@ -43,6 +43,10 @@ public class SalaryGrantDetailDTO {
      */
     private String grantCycle;
     /**
+     * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放
+     */
+    private Integer grantType;
+    /**
      * 薪资发放日期
      */
     private String grantDate;
