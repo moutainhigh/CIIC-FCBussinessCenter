@@ -4,6 +4,8 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
+import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -36,6 +38,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
@@ -374,7 +377,26 @@ public class NormalBatchController {
         }else {
             return JsonResult.success( "删除失败");
         }
+    }
 
+    @PostMapping("/api/getBatchStatus")
+    public JsonResult getBatchStatus(@RequestParam String batchCode, @RequestParam int batchType){
+        Boolean result = false;
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            PrNormalBatchPO normalBatchPO = batchService.getBatchByCode(batchCode);
+            result = normalBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            PrAdjustBatchPO adjustBatchPO = adjustBatchService.getAdjustBatchPO(batchCode);
+            result = adjustBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
+        }else {
+            PrBackTrackingBatchPO backTrackingBatchPO = backTrackingBatchService.getPrBackTrackingBatchPO(batchCode);
+            result = backTrackingBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
+        }
+        if(result) {
+            return JsonResult.faultMessage("该批次薪资已发放,不能取消关帐!");
+        }else {
+            return JsonResult.success("可以取消关帐");
+        }
     }
 
     @PostMapping("/auditBatch")
@@ -382,43 +404,36 @@ public class NormalBatchController {
         String modifiedBy = UserContext.getName();
         int rowAffected = 0 ;
         if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
-            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode())); //.and("catalog.emp_info.is_active").is(true));
-                String jsonResult = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonResult);
-            }*/
             rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
         }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
-            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
-                String jsonResult = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonResult);
-            }*/
             rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
 
         }else {
-            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
-                String jsonResult = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonResult);
-            }*/
             rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
-
         }
         if(rowAffected > 0) {
             if(StringUtils.isNotEmpty(batchAuditDTO.getAction()) && batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue()){ //取消关帐通知
-                //TODO
+                CancelClosingMsg  cancelClosingMsg = new CancelClosingMsg();
+                cancelClosingMsg.setBatchCode(batchAuditDTO.getBatchCode());
+                cancelClosingMsg.setBatchType(batchAuditDTO.getBatchType());
+                cancelClosingMsg.setOptID(UserContext.getUserId());
+                cancelClosingMsg.setOptName(UserContext.getName());
+
+                logger.info("取消关帐 : " + cancelClosingMsg.toString());
+
+                sender.SendComputeUnClose(cancelClosingMsg);
             }
             else if(batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) { //关帐通知
-                //审核通过后，发送消息
-                ComputeMsg computeMsg = new ComputeMsg();
-                computeMsg.setBatchType(batchAuditDTO.getBatchType());
-                computeMsg.setComputeStatus(BatchStatusEnum.CLOSED.getValue());
-                computeMsg.setBatchCode(batchAuditDTO.getBatchCode());
+                //发送关帐消息
+                ClosingMsg closingMsg = new ClosingMsg();
+                closingMsg.setBatchType(batchAuditDTO.getBatchType());
+                closingMsg.setOptID(UserContext.getUserId());
+                closingMsg.setOptName(UserContext.getName());
+                closingMsg.setBatchCode(batchAuditDTO.getBatchCode());
 
-                logger.info("审核通过 : " + computeMsg.toString());
+                logger.info("关帐 : " + closingMsg.toString());
 
-                sender.SendComputeCompleteAction(computeMsg);
+                sender.SendComputeClose(closingMsg);
 
             }
             return JsonResult.success(rowAffected);

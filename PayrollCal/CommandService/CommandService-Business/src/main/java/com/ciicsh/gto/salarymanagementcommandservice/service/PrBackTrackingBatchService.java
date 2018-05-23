@@ -34,6 +34,7 @@ public interface PrBackTrackingBatchService {
 
     PrBackTrackingBatchPO getPrBackTrackingBatchPO(PrBackTrackingBatchPO prBackTrackingBatchPO);
 
+    PrBackTrackingBatchPO getPrBackTrackingBatchPO(String batchCode);
 
     List<DBObject> getBackTrackingBatch(String batchCode);
     /**
