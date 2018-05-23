@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
+import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
 import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
@@ -31,11 +32,11 @@ public class KafkaReceiver {
 
     //todo 接收计算引擎消息，获取计算批次号
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_TASK)
-    public void salaryGrantMainTaskCreateTask(){
+    public void salaryGrantMainTaskCreateTask(Message<ClosingMsg> message){
         // 1、接收消息返回的计算批次号
-        String batchCode = null;
+        String batchCode = message.getPayload().getBatchCode();
         // 接收消息返回的批次类型
-        String batchType = null;
+        Integer batchType = message.getPayload().getBatchType();
         Map batchParam = new HashMap();
         batchParam.put("batchCode",batchCode);
         batchParam.put("batchType",batchType);

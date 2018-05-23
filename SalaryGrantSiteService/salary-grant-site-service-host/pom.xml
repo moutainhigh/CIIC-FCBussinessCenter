@@ -113,7 +113,13 @@
             <version>1.0.0</version>
         </dependency>
         <!-- 内部模块依赖 -->
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>fcbusinesscenter-entity</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
+
 
     <build>
         <finalName>gt1.fcbusinesscenter.salary-grant-site-service-host</finalName>
