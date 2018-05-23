@@ -7,6 +7,7 @@ import com.ciicsh.gt1.CalResultMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
 import com.mongodb.DBObject;
@@ -118,7 +119,7 @@ public class SalaryGrantEmployeeQueryServiceTest {
         calcResultItemBO.setItemValue("22950.0");
         checkedItemsList.add(calcResultItemBO);
 
-        SalaryGrantEmployeeBO salaryGrantEmployeeBO = new SalaryGrantEmployeeBO();
+        SalaryGrantTaskBO salaryGrantEmployeeBO = new SalaryGrantTaskBO();
         salaryGrantEmployeeBO.setTaskCode("LTB20180328000000002");
         salaryGrantEmployeeBO.setTaskType(1);
         salaryGrantEmployeeBO.setBatchCode("GL1800255_201804_0000000257");
