@@ -3,10 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.controller;
 import com.alibaba.fastjson.JSON;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.ResultGenerator;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseSubTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestSubTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
@@ -76,6 +73,16 @@ public class SalaryGrantController implements SalaryGrantProxy {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务单子表查询异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("处理失败");
         }
+    }
+
+    @Override
+    public Result<Boolean> toCreateRefundTask(SalaryGrantEmployeeRefundDTO dto) {
+        return null;
+    }
+
+    @Override
+    public Result<Boolean> toRejectTask(SalaryGrantTaskDTO dto) {
+        return null;
     }
 
 }
