@@ -154,9 +154,16 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
 
                         //发放币种:CNY-人民币，USD-美元，EUR-欧元
                         String employeeServiceAgreementJSONStr = StringUtils.isEmpty(dbObject.get("employee_service_agreement")) ? null : dbObject.get("employee_service_agreement").toString();
-                        JSONObject employeeServiceAgreementJSONObject = JSON.parseObject(employeeServiceAgreementJSONStr);
-                        JSONObject salaryGrantInfoJSONObject = employeeServiceAgreementJSONObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
-                        empCalcResultBO.setCurrencyCode(ObjectUtils.isEmpty(salaryGrantInfoJSONObject.get("currencyType")) ? null : salaryGrantInfoJSONObject.get("currencyType").toString());
+                        if (!StringUtils.isEmpty(employeeServiceAgreementJSONStr)) {
+                            JSONObject employeeServiceAgreementJSONObject = JSON.parseObject(employeeServiceAgreementJSONStr);
+                            JSONObject salaryGrantInfoJSONObject = employeeServiceAgreementJSONObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
+                            if (!ObjectUtils.isEmpty(salaryGrantInfoJSONObject)) {
+                                empCalcResultBO.setCurrencyCode(ObjectUtils.isEmpty(salaryGrantInfoJSONObject.get("currencyType")) ? null : salaryGrantInfoJSONObject.get("currencyType").toString());
+                            } else {
+                                //解析发放币种失败时抛异常
+                                throw new RuntimeException("雇员服务协议薪资发放信息中币种不能为空！");
+                            }
+                        }
 
                         String salaryCalcResultItemsJSONStr = StringUtils.isEmpty(dbObject.get("salary_calc_result_items")) ? null : dbObject.get("salary_calc_result_items").toString();
                         JSONArray salaryCalcResultItemsJSONArray = JSONArray.parseArray(salaryCalcResultItemsJSONStr);
