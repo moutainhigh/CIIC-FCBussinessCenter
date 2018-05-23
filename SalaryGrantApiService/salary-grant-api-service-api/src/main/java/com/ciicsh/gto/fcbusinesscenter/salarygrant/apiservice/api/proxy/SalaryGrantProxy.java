@@ -1,10 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.Result;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseSubTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestSubTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.*;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,4 +32,23 @@ public interface SalaryGrantProxy {
     @PostMapping("/getSubTask")
     Result<ReponseSubTaskDTO> getSubTask(@RequestBody RequestSubTaskDTO dto);
 
+    /**
+     *  根据退票雇员信息创建薪资发放任务单
+     * @author gaoyang
+     * @date 2018-05-22
+     * @param dto
+     * @return Result<Boolean>
+     */
+    @PostMapping("/toCreateRefundTask")
+    Result<Boolean> toCreateRefundTask(@RequestBody SalaryGrantEmployeeRefundDTO dto);
+
+    /**
+     *  根据任务单信息进行驳回处理
+     * @author gaoyang
+     * @date 2018-05-22
+     * @param dto
+     * @return Result<Boolean>
+     */
+    @PostMapping("/toRejectTask")
+    Result<Boolean> toRejectTask(@RequestBody SalaryGrantTaskDTO dto);
 }

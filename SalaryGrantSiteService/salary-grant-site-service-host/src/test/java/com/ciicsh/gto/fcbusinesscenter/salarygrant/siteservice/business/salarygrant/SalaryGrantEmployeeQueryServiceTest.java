@@ -7,6 +7,7 @@ import com.ciicsh.gt1.CalResultMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
 import com.mongodb.DBObject;
@@ -118,9 +119,20 @@ public class SalaryGrantEmployeeQueryServiceTest {
         calcResultItemBO.setItemValue("22950.0");
         checkedItemsList.add(calcResultItemBO);
 
-        String taskCode = "LTB20180328000000002";
-        String batchCode = "GL1800255_201804_0000000257";
-        int grantType = 1;
-        List<EmpCalcResultBO> empCalcResultBOList = queryService.getEmployeeForBizList(checkedItemsList, taskCode, batchCode, grantType);
+        SalaryGrantTaskBO salaryGrantEmployeeBO = new SalaryGrantTaskBO();
+        salaryGrantEmployeeBO.setTaskCode("LTB20180328000000002");
+        salaryGrantEmployeeBO.setTaskType(1);
+        salaryGrantEmployeeBO.setBatchCode("GL1800255_201804_0000000257");
+
+        List<EmpCalcResultBO> empCalcResultBOList = queryService.getEmployeeForBizList(checkedItemsList, salaryGrantEmployeeBO);
+    }
+
+    @Test
+    public void queryEmpHisInfo() {
+        long task_his_id = 1;
+        Integer pageNum = 2;
+        Integer pageSize = 20;
+        Page<SalaryGrantEmployeeBO> employeeBOPage = queryService.queryEmpHisInfo(task_his_id, pageNum, pageSize);
+        System.out.println("-----------");
     }
 }
