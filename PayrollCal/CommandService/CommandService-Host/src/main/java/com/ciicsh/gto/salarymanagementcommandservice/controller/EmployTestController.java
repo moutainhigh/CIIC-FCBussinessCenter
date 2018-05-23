@@ -79,7 +79,7 @@ public class EmployTestController extends BaseController{
         param.setPageNo(pageNum);
         param.setPageSize(pageSize);
         JsonResult<Page<EmpEmployeeResponseDTO>> result
-                = employeeServiceProxy.PageEmpEmployee(param);
+                = employeeServiceProxy.pageEmpEmployee(param);
 //        Page<EmpEmployeeResponseDTO> data = result.getData();
 
         return JsonResult.success(result.getData());
