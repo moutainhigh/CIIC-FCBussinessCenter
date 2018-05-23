@@ -14,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEm
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
@@ -153,9 +154,16 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
 
                         //发放币种:CNY-人民币，USD-美元，EUR-欧元
                         String employeeServiceAgreementJSONStr = StringUtils.isEmpty(dbObject.get("employee_service_agreement")) ? null : dbObject.get("employee_service_agreement").toString();
-                        JSONObject employeeServiceAgreementJSONObject = JSON.parseObject(employeeServiceAgreementJSONStr);
-                        JSONObject salaryGrantInfoJSONObject = employeeServiceAgreementJSONObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
-                        empCalcResultBO.setCurrencyCode(ObjectUtils.isEmpty(salaryGrantInfoJSONObject.get("currencyType")) ? null : salaryGrantInfoJSONObject.get("currencyType").toString());
+                        if (!StringUtils.isEmpty(employeeServiceAgreementJSONStr)) {
+                            JSONObject employeeServiceAgreementJSONObject = JSON.parseObject(employeeServiceAgreementJSONStr);
+                            JSONObject salaryGrantInfoJSONObject = employeeServiceAgreementJSONObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
+                            if (!ObjectUtils.isEmpty(salaryGrantInfoJSONObject)) {
+                                empCalcResultBO.setCurrencyCode(ObjectUtils.isEmpty(salaryGrantInfoJSONObject.get("currencyType")) ? null : salaryGrantInfoJSONObject.get("currencyType").toString());
+                            } else {
+                                //解析发放币种失败时抛异常
+                                throw new RuntimeException("雇员服务协议薪资发放信息中币种不能为空！");
+                            }
+                        }
 
                         String salaryCalcResultItemsJSONStr = StringUtils.isEmpty(dbObject.get("salary_calc_result_items")) ? null : dbObject.get("salary_calc_result_items").toString();
                         JSONArray salaryCalcResultItemsJSONArray = JSONArray.parseArray(salaryCalcResultItemsJSONStr);
@@ -182,22 +190,25 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     }
 
     @Override
-    public List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+    public List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantTaskBO salaryGrantTaskBO) {
         if (CollectionUtils.isEmpty(checkedItemsList)) {
             return null;
         }
 
+        SalaryGrantEmployeeBO salaryGrantEmployeeBO = new SalaryGrantEmployeeBO();
+        salaryGrantEmployeeBO.setTaskCode(salaryGrantTaskBO.getTaskCode());
+        salaryGrantEmployeeBO.setTaskType(salaryGrantTaskBO.getTaskType());
         //查询任务单雇员信息
         Page<SalaryGrantEmployeeBO> page = new Page<>(1, Integer.MAX_VALUE);
-        if (!ObjectUtils.isEmpty(salaryGrantEmployeeBO.getTaskType()) && salaryGrantEmployeeBO.getTaskType().intValue() == 0) {
+        if (!ObjectUtils.isEmpty(salaryGrantTaskBO.getTaskType()) && salaryGrantTaskBO.getTaskType().intValue() == 0) {
             //发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
-            salaryGrantEmployeeBO.setGrantMode(12);
+            salaryGrantTaskBO.setGrantMode("12");
         }
         Page<SalaryGrantEmployeeBO> salaryGrantEmployeeBOPage = queryEmployeeTask(page, salaryGrantEmployeeBO);
         List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList = salaryGrantEmployeeBOPage.getRecords();
 
         //查询计算批次结果的雇员信息数据
-        List<EmpCalcResultBO> empCalcResultBOList = getEmpCalcResultItemsList(salaryGrantEmployeeBO.getBatchCode(), salaryGrantEmployeeBO.getTaskType());
+        List<EmpCalcResultBO> empCalcResultBOList = getEmpCalcResultItemsList(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
 
         //根据薪资项选择列表筛选批次结果的雇员薪资项数据
         List<EmpCalcResultBO> filterCalcResultBOList = filterEmpCalcResultBOList(empCalcResultBOList, checkedItemsList);
