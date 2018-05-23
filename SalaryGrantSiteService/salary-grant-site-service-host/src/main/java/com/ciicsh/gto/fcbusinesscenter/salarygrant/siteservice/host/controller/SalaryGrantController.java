@@ -478,7 +478,7 @@ public class SalaryGrantController {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资").setContent(JSON.toJSONString(dto)));
         try {
             List<CalcResultItemBO> paramList = CommonTransform.convertToEntities(dto.getItemInfo(), CalcResultItemBO.class);
-            SalaryGrantEmployeeBO paramBo = CommonTransform.convertToEntity(dto, SalaryGrantEmployeeBO.class);
+            SalaryGrantTaskBO paramBo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             List<EmpCalcResultBO> bo = salaryGrantEmployeeQueryService.getEmployeeForBizList(paramList, paramBo);
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资").setContent(JSON.toJSONString(bo)));
             return ResultGenerator.genSuccessResult(bo);
