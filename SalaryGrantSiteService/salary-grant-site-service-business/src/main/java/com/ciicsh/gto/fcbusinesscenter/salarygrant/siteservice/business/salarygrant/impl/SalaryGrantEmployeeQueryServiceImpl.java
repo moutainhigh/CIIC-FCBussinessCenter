@@ -15,10 +15,14 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcRes
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.mongodb.DBObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -47,6 +51,8 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     CommonService commonService;
     @Autowired
     CalResultMongoOpt calResultMongoOpt;
+    @Autowired
+    SalaryGrantEmpHisOpt salaryGrantEmpHisOpt;
 
     @Override
     public Page<SalaryGrantEmployeeBO> queryEmployeeTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
@@ -60,6 +66,7 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
             salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
             employeeBOList = queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
         }
+
         if (!employeeBOList.getRecords().isEmpty()) {
             employeeBOList.getRecords().forEach(salaryGrantTaskBO -> {
                 //国籍转码
@@ -175,20 +182,22 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     }
 
     @Override
-    public List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, String taskCode, String batchCode, int grantType) {
+    public List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
         if (CollectionUtils.isEmpty(checkedItemsList)) {
             return null;
         }
 
         //查询任务单雇员信息
         Page<SalaryGrantEmployeeBO> page = new Page<>(1, Integer.MAX_VALUE);
-        SalaryGrantEmployeeBO salaryGrantEmployeeBO = new SalaryGrantEmployeeBO();
-        salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(taskCode);
-        Page<SalaryGrantEmployeeBO> salaryGrantEmployeeBOPage = queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
+        if (!ObjectUtils.isEmpty(salaryGrantEmployeeBO.getTaskType()) && salaryGrantEmployeeBO.getTaskType().intValue() == 0) {
+            //发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
+            salaryGrantEmployeeBO.setGrantMode(12);
+        }
+        Page<SalaryGrantEmployeeBO> salaryGrantEmployeeBOPage = queryEmployeeTask(page, salaryGrantEmployeeBO);
         List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList = salaryGrantEmployeeBOPage.getRecords();
 
         //查询计算批次结果的雇员信息数据
-        List<EmpCalcResultBO> empCalcResultBOList = getEmpCalcResultItemsList(batchCode, grantType);
+        List<EmpCalcResultBO> empCalcResultBOList = getEmpCalcResultItemsList(salaryGrantEmployeeBO.getBatchCode(), salaryGrantEmployeeBO.getTaskType());
 
         //根据薪资项选择列表筛选批次结果的雇员薪资项数据
         List<EmpCalcResultBO> filterCalcResultBOList = filterEmpCalcResultBOList(empCalcResultBOList, checkedItemsList);
@@ -206,7 +215,7 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
      * @param salaryGrantEmployeeBOList
      * @return
      */
-    private List<EmpCalcResultBO> compareBatchAndTaskEmployeeInfo(List<EmpCalcResultBO> filterCalcResultBOList, List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList){
+    private List<EmpCalcResultBO> compareBatchAndTaskEmployeeInfo(List<EmpCalcResultBO> filterCalcResultBOList, List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList) {
         List<EmpCalcResultBO> retCalcResultBOList = new ArrayList<>();
 
         //实发工资薪资项code
@@ -297,5 +306,35 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
         }
 
         return empCalcResultBOFilterList;
+    }
+
+    @Override
+    public Page<SalaryGrantEmployeeBO> queryEmpHisInfo(long task_his_id, Integer pageNum, Integer pageSize) {
+        Page<SalaryGrantEmployeeBO> employeeBOPage = new Page<>();
+        employeeBOPage.setCurrent(pageNum);
+        employeeBOPage.setSize(pageSize);
+
+        DBObject dbObject = salaryGrantEmpHisOpt.get(Criteria.where("task_his_id").is(task_his_id));
+        if (!ObjectUtils.isEmpty(dbObject)) {
+            List<SalaryGrantEmployeeBO> employeeBOList = (List<SalaryGrantEmployeeBO>) dbObject.get("employeeInfo");
+            if (!CollectionUtils.isEmpty(employeeBOList)) {
+
+                //雇员记录数大于等于起始分页记录数时，若雇员记录数大于等于雇员总记录数，则返回分页记录数；否则，返回起始分页记录数之后的雇员记录数
+                int fromIndex = (pageNum - 1) * pageSize;
+                int toIndex = pageNum * pageSize;
+
+                if (employeeBOList.size() >= fromIndex) {
+                    if (employeeBOList.size() >= toIndex) {
+                        employeeBOPage.setTotal(employeeBOList.size());
+                        employeeBOPage.setRecords(employeeBOList.subList(fromIndex, toIndex));
+                    } else {
+                        employeeBOPage.setTotal(employeeBOList.size());
+                        employeeBOPage.setRecords(employeeBOList.subList(fromIndex, employeeBOList.size()));
+                    }
+                }
+            }
+        }
+
+        return employeeBOPage;
     }
 }

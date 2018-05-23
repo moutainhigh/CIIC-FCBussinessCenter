@@ -85,11 +85,17 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
     /**
      * 发放金额更新到计算批次的对应薪资项中
      *
-     * @param checkedItemsList 薪资项列表
-     * @param taskCode 任务单编号
-     * @param batchCode 计算批次号
-     * @param grantType 发放类型
+     * @param checkedItemsList 选定薪资项列表
+     * @param salaryGrantEmployeeBO
      * @return
      */
-    List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, String taskCode, String batchCode, int grantType);
+    List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+
+    /**
+     * 查询任务单对应雇员历史数据
+     *
+     * @param task_his_id
+     * @return
+     */
+    Page<SalaryGrantEmployeeBO> queryEmpHisInfo(long task_his_id, Integer pageNum, Integer pageSize);
 }

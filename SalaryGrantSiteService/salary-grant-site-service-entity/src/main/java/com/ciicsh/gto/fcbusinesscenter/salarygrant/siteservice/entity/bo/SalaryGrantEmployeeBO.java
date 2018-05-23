@@ -25,10 +25,6 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      */
     private String templateTypeName;
     /**
-     * 发放账户名称
-     */
-    private String grantAccountName;
-    /**
      * 发放方式名称
      */
     private String grantModeName;
@@ -66,5 +62,4 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 任务单编号
      */
     private String taskCode;
-
 }
