@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 
 import java.util.List;
@@ -86,10 +87,10 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
      * 发放金额更新到计算批次的对应薪资项中
      *
      * @param checkedItemsList 选定薪资项列表
-     * @param salaryGrantEmployeeBO
+     * @param salaryGrantTaskBO
      * @return
      */
-    List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+    List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
      * 查询任务单对应雇员历史数据

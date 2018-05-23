@@ -14,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEm
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
@@ -182,22 +183,25 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     }
 
     @Override
-    public List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+    public List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantTaskBO salaryGrantTaskBO) {
         if (CollectionUtils.isEmpty(checkedItemsList)) {
             return null;
         }
 
+        SalaryGrantEmployeeBO salaryGrantEmployeeBO = new SalaryGrantEmployeeBO();
+        salaryGrantEmployeeBO.setTaskCode(salaryGrantTaskBO.getTaskCode());
+        salaryGrantEmployeeBO.setTaskType(salaryGrantTaskBO.getTaskType());
         //查询任务单雇员信息
         Page<SalaryGrantEmployeeBO> page = new Page<>(1, Integer.MAX_VALUE);
-        if (!ObjectUtils.isEmpty(salaryGrantEmployeeBO.getTaskType()) && salaryGrantEmployeeBO.getTaskType().intValue() == 0) {
+        if (!ObjectUtils.isEmpty(salaryGrantTaskBO.getTaskType()) && salaryGrantTaskBO.getTaskType().intValue() == 0) {
             //发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
-            salaryGrantEmployeeBO.setGrantMode(12);
+            salaryGrantTaskBO.setGrantMode("12");
         }
         Page<SalaryGrantEmployeeBO> salaryGrantEmployeeBOPage = queryEmployeeTask(page, salaryGrantEmployeeBO);
         List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList = salaryGrantEmployeeBOPage.getRecords();
 
         //查询计算批次结果的雇员信息数据
-        List<EmpCalcResultBO> empCalcResultBOList = getEmpCalcResultItemsList(salaryGrantEmployeeBO.getBatchCode(), salaryGrantEmployeeBO.getTaskType());
+        List<EmpCalcResultBO> empCalcResultBOList = getEmpCalcResultItemsList(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
 
         //根据薪资项选择列表筛选批次结果的雇员薪资项数据
         List<EmpCalcResultBO> filterCalcResultBOList = filterEmpCalcResultBOList(empCalcResultBOList, checkedItemsList);
