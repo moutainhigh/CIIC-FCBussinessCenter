@@ -16,4 +16,38 @@
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
 
+	<delete id="deleteReprieveEmp" parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO">
+		delete from
+			sg_salary_grant_reprieve_employee_import
+		where
+			task_code = #{taskCode}
+		and
+			task_type = #{taskType}
+	</delete>
+
+	<!-- 批量新增暂缓失败雇员 -->
+	<insert id="insertBatch" parameterType="java.util.List">
+		INSERT INTO sg_salary_grant_reprieve_employee_import
+		(
+			task_code,
+			task_type,
+			employee_id,
+			employee_name,
+			created_by,
+			created_time,
+			import_time
+		) VALUES
+		<foreach collection="failList" item="item" index="index" separator=",">
+			(
+				#{taskCode},
+				#{taskType},
+				#{item.employee_id},
+				#{item.employee_name},
+				#{userId},
+				NOW(),
+				NOW()
+			)
+		</foreach>
+	</insert>
+
 </mapper>

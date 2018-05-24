@@ -54,6 +54,10 @@ public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<Sa
                 failList.add(x);
             }
         });
+        if (!failList.isEmpty()) {
+            salaryGrantReprieveEmployeeImportMapper.deleteReprieveEmp(taskCode, taskType);
+            salaryGrantReprieveEmployeeImportMapper.insertBatch(taskCode, taskType, userId, failList);
+        }
         return failList;
     }
 }
