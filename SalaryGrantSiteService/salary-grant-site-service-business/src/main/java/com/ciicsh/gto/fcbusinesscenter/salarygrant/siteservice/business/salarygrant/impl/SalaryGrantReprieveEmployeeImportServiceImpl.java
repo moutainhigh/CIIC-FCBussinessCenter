@@ -2,18 +2,22 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantReprieveEmployeeImportService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantReprieveEmployeeImportMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantReprieveEmployeeImportBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -55,9 +59,23 @@ public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<Sa
             }
         });
         if (!failList.isEmpty()) {
+            List<SalaryGrantReprieveEmployeeImportBO> lists = convertToEntities(failList, SalaryGrantReprieveEmployeeImportBO.class);
             salaryGrantReprieveEmployeeImportMapper.deleteReprieveEmp(taskCode, taskType);
-            salaryGrantReprieveEmployeeImportMapper.insertBatch(taskCode, taskType, userId, failList);
+            salaryGrantReprieveEmployeeImportMapper.insertBatch(lists);
         }
         return failList;
+    }
+
+    private static <E, T> List<E> convertToEntities(Collection<T> list, Class<E> e) {
+        if (list == null || list.size() <= 0) {
+            return Collections.emptyList();
+        }
+        return list.stream().map(t -> convertToEntity(t, e)).collect(Collectors.toList());
+    }
+
+    private static <E, T> E convertToEntity(T t, Class<E> e) {
+        E entity = BeanUtils.instantiate(e);
+        BeanUtils.copyProperties(t, entity);
+        return entity;
     }
 }

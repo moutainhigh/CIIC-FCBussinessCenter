@@ -37,13 +37,13 @@
 			created_time,
 			import_time
 		) VALUES
-		<foreach collection="failList" item="item" index="index" separator=",">
+		<foreach collection="list" item="item" index="index" separator=",">
 			(
-				#{taskCode},
-				#{taskType},
+				#{item.taskCode},
+				#{item.taskType},
 				#{item.employee_id},
 				#{item.employee_name},
-				#{userId},
+				#{item.modifiedBy},
 				NOW(),
 				NOW()
 			)
