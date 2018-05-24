@@ -2,8 +2,11 @@ package com.ciicsh.caldispatchjob.compute.service;
 
 import com.alibaba.fastjson.JSON;
 import com.ciicsh.common.entity.JsonResult;
+import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeContractProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.FcEmployeeRequestDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.GetEmployeeContractsDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmployeeContractResponseDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.FcEmployeeResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
@@ -52,6 +55,10 @@ public class CompleteComputeServiceImpl {
     @Autowired
     private EmployeeServiceProxy employeeServiceProxy;
 
+    @Autowired
+    private EmployeeContractProxy employeeContractProxy;
+
+
     public void processCompleteCompute(String batchCode, int batchType){
 
         List<DBObject> batchList = null;
@@ -85,28 +92,29 @@ public class CompleteComputeServiceImpl {
         List<DBObject> list = batchList.stream().map(item -> {
             DBObject catalog = (DBObject)item.get("catalog");
             String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
-            String empGroupCode = (String) catalog.get("emp_group_code");
-            DBObject emp = getEmployeeInfo(catalog,empCode,empGroupCode);
             DBObject batchInfo = (DBObject)catalog.get("batch_info");
+            String mgrId = batchInfo.get("management_ID") == null ? "" : (String) batchInfo.get("management_ID");
+            DBObject emp = getEmployeeInfo(catalog,empCode,mgrId);
+
             List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
             DBObject mapObj = new BasicDBObject();
+            mapObj.put("tax_info",emp.get("tax_info") == null ? "" : emp.get("tax_info"));
             mapObj.put("emp_id", empCode);
             mapObj.put("emp_name",emp.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_NAME_CN));
             mapObj.put("id_card_type",emp.get(PayItemName.EMPLOYEE_ID_TYPE_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_ID_TYPE_CN)); //证件类型
             mapObj.put("id_num",emp.get(PayItemName.IDENTITY_NUM) == null ? "" : emp.get(PayItemName.IDENTITY_NUM)); //证件号
             mapObj.put("company_id",emp.get(PayItemName.EMPLOYEE_COMPANY_ID) == null ? "" : emp.get(PayItemName.EMPLOYEE_COMPANY_ID));
             mapObj.put("batch_type", batchType); // 批次类型
-            mapObj.put("mgr_id", batchInfo.get("management_ID")); // 管理方ID
-            mapObj.put("mgr_name", batchInfo.get("management_Name")); // 管理方名称
-            mapObj.put("department", emp.get(PayItemName.EMPLOYEE_DEP_CN)); // 部门名称
-            mapObj.put("income_year_month", batchInfo.get("period")); //工资年月
+            mapObj.put("mgr_id", mgrId); // 管理方ID
+            mapObj.put("mgr_name", batchInfo.get("management_Name") == null ? "" : batchInfo.get("management_Name")); // 管理方名称
+            //mapObj.put("department", emp.get(PayItemName.EMPLOYEE_DEP_CN)); // 部门名称
+            mapObj.put("income_year_month", batchInfo.get("period") == null ? "" : batchInfo.get("period")); //工资年月
             mapObj.put("batch_id", batchCode);
             mapObj.put("country_code", emp.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN));  // 国家代码
             mapObj.put("leaving_years", emp.get(PayItemName.LEAVE_DATE) == null ? "" : emp.get(PayItemName.LEAVE_DATE)); // 离职年限
-            mapObj.put("net_pay", findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //实发工资
-            mapObj.put("actual_pay", findValByName(payItems,PayItemName.ACTUAL_PAY)); //应发工资
-
-            mapObj.put("tax", findValByName(payItems,PayItemName.TAX_TOTAL)); //个人所得税
+            mapObj.put("net_pay", findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY) == null ? "" : findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //实发工资
+            mapObj.put("actual_pay", findValByName(payItems,PayItemName.ACTUAL_PAY) == null ? "" : findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //应发工资
+            mapObj.put("tax", findValByName(payItems,PayItemName.TAX_TOTAL) == null ? "" : findValByName(payItems,PayItemName.TAX_TOTAL)); //个人所得税
             mapObj.put("wage_before_tax", ""); //个人收入（薪金）- 税前
             mapObj.put("wage_after_tax", ""); //个人收入（薪金）- 税后
             mapObj.put("bonus_before_tax", ""); //个人收入（年奖）- 税前
@@ -130,7 +138,7 @@ public class CompleteComputeServiceImpl {
             mapObj.put("annuity", ""); //年金
             mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
             mapObj.put("salary_calc_result_items", payItems);
-            mapObj.put("employee_service_agreement", emp.get(PayItemName.EMPLOYEE_SERVICE_AGREE));
+            mapObj.put("employee_service_agreement", emp.get(PayItemName.EMPLOYEE_SERVICE_AGREE) == null ? getEmpAgreement(empCode) : emp.get(PayItemName.EMPLOYEE_SERVICE_AGREE));
 
             processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
 
@@ -176,48 +184,74 @@ public class CompleteComputeServiceImpl {
         return "";
     }
 
-    private DBObject getEmployeeInfo(DBObject catalog, String empCode, String empGroupCode){
+    private DBObject getEmployeeInfo(DBObject catalog, String empCode, String mgrId) {
 
-       DBObject basicDBObject = null;
-       if(catalog.get("emp_info") == null) {
-           Criteria criteria = Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
-           Query query = Query.query(criteria);
-           query.fields().include("base_info");
-           basicDBObject = empGroupMongoOpt.getMongoTemplate().findOne(query, DBObject.class, EmpGroupMongoOpt.PR_EMPLOYEE_GROUP);
-       }else {
-            basicDBObject = (DBObject)catalog.get("emp_info");
-            if(basicDBObject.get(PayItemName.EMPLOYEE_CODE_CN) == null){
-                FcEmployeeRequestDTO employeeRequestDTO = new FcEmployeeRequestDTO();
-                List<String> empCodes = new ArrayList<>();
-                empCodes.add(empCode);
-                employeeRequestDTO.setEmployeeId(empCodes);
-                JsonResult<List<FcEmployeeResponseDTO>> result = employeeServiceProxy.getFcEmployeeInfos(employeeRequestDTO);
-                if(result.isSuccess()){
-                    FcEmployeeResponseDTO item = result.getData().get(0);
+        DBObject basicDBObject = null;
+        FcEmployeeResponseDTO item = getRemotedEmployee(empCode, mgrId);
+
+        if (catalog.get("emp_info") == null) {
+            Criteria criteria = Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
+            Query query = Query.query(criteria);
+            query.fields().include("base_info");
+            basicDBObject = empGroupMongoOpt.getMongoTemplate().findOne(query, DBObject.class, EmpGroupMongoOpt.PR_EMPLOYEE_GROUP);
+        } else {
+            basicDBObject = (DBObject) catalog.get("emp_info");
+            if (basicDBObject.get(PayItemName.EMPLOYEE_CODE_CN) == null) {
+
+                if (item != null) {
                     Format formatter = new SimpleDateFormat("yyyy-MM-dd");
                     basicDBObject = new BasicDBObject();
-                    basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());
-                    basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,item.getEmployeeName());
+                    basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN, item.getEmployeeId());
+                    basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN, item.getEmployeeName());
                     basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN, item.getBirthday() == null ? "" : formatter.format(item.getBirthday()));
-                    basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,"");
-                    basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN, item.getGender()? "男":"女");
-                    basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.getIdCardType());
+                    basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN, "");
+                    basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN, item.getGender() ? "男" : "女");
+                    basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN, item.getIdCardType());
                     basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN, item.getInDate() == null ? "" : formatter.format(item.getInDate()));
-                    basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.getIdNum());
-                    basicDBObject.put(PayItemName.EMPLOYEE_COMPANY_ID,item.getCompanyId());
-                    basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN,item.getCountryCode());
-                    basicDBObject.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN,item.getProvinceCode());
-                    basicDBObject.put(PayItemName.EMPLOYEE_CITY_CODE_CN,item.getCityCode());
+                    basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN, item.getIdNum());
+                    basicDBObject.put(PayItemName.EMPLOYEE_COMPANY_ID, item.getCompanyId());
+                    basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN, item.getCountryCode());
+                    basicDBObject.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN, item.getProvinceCode());
+                    basicDBObject.put(PayItemName.EMPLOYEE_CITY_CODE_CN, item.getCityCode());
                     basicDBObject.put(PayItemName.NATIONALITY, item.getCountryName());
                     basicDBObject.put(PayItemName.LEAVE_DATE, item.getOutDate() == null ? "" : formatter.format(item.getOutDate()));
-
-                    List<FcEmployeeResponseDTO.PersonalTaxInfo> taxInfos = item.getPersonalTaxInfos();
-
-
                 }
             }
-       }
-       return basicDBObject;
+        }
+
+        List<FcEmployeeResponseDTO.PersonalTaxInfo> taxInfos = item.getPersonalTaxInfos();
+        DBObject tax = new BasicDBObject();
+        tax.put("","");
+        tax.put("","");
+        basicDBObject.put("tax_info",tax);
+
+        return basicDBObject;
 
     }
+
+    private FcEmployeeResponseDTO getRemotedEmployee(String empCode, String mgrId) {
+        FcEmployeeRequestDTO employeeRequestDTO = new FcEmployeeRequestDTO();
+        List<String> empCodes = new ArrayList<>();
+        empCodes.add(empCode);
+        employeeRequestDTO.setEmployeeIds(empCodes);
+        //TODO employeeRequestDTO.set
+        JsonResult<List<FcEmployeeResponseDTO>> result = employeeServiceProxy.getFcEmployeeInfos(employeeRequestDTO);
+        if (result.isSuccess()) {
+            result.getData().get(0);
+        }
+        return null;
+    }
+
+    private String getEmpAgreement(String empCode ){
+        GetEmployeeContractsDTO contractsDTO = new GetEmployeeContractsDTO();
+        List<String> empCodes = new ArrayList<>();
+        empCodes.add(empCode);
+        contractsDTO.setEmpIds(empCodes);
+        JsonResult<List<EmployeeContractResponseDTO>> result = employeeContractProxy.getEmployeeContracts(contractsDTO);
+        if(result.isSuccess()){
+            return com.alibaba.fastjson.JSON.toJSONString(result.getData().get(0));
+        }
+        return "";
+    }
+
 }
