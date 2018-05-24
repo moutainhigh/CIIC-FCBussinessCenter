@@ -32,6 +32,8 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
     private SalaryGrantEmpHisOpt salaryGrantEmpHisOpt;
     @Autowired
     private SalaryGrantEmployeeQueryService employeeQueryService;
+    @Autowired
+    private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
 
     @Override
@@ -56,5 +58,17 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
         }
 
         return true;
+    }
+
+    /**
+     * 根据任务单编号，任务单类型，雇员编号，发放状态暂缓雇员
+     * @author chenpb
+     * @since 2018-05-23
+     * @param bo
+     * @return
+     */
+    @Override
+    public Integer deferEmployee(SalaryGrantEmployeeBO bo) {
+        return salaryGrantEmployeeMapper.deferEmployee(bo);
     }
 }
