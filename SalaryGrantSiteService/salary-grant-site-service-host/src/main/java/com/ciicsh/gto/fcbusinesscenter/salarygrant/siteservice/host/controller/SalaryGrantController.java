@@ -21,7 +21,6 @@ import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -318,11 +317,14 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/financeDetail", method = RequestMethod.POST)
-    public Result financeDetail(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result<SalaryGrantFinanceDTO> financeDetail(@RequestBody SalaryTaskHandleDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细").setContent(JSON.toJSONString(dto)));
         try {
-            salaryGrantPayrollService.toCreatePayrollForFinance(dto.getTaskCode());
-            return ResultGenerator.genSuccessResult();
+            SalaryGrantFinanceDTO financeDto = new SalaryGrantFinanceDTO();
+            SalaryGrantFinanceBO financeBo = salaryGrantPayrollService.toCreatePayrollForFinance(dto.getTaskCode());
+            financeDto.setFinanceTask(CommonTransform.convertToDTO(financeBo.getTask(), FinanceTaskDTO.class));
+            financeDto.setEmpList(CommonTransform.convertToDTOs(financeBo.getEmpList(), FinanceEmployeeDTO.class));
+            return ResultGenerator.genSuccessResult(financeDto);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("生成财务明细失败");

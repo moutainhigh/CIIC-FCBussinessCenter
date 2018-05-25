@@ -1,7 +1,8 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -12,9 +13,12 @@ import java.math.BigDecimal;
  * @author chenpb
  * @since 2018-05-25
  */
+@Getter
+@Setter
+@ToString
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class FinanceEmployeeBO {
+public class FinanceEmployeeDTO implements Serializable {
     /**
      * 任务单编号
      */
@@ -59,5 +63,4 @@ public class FinanceEmployeeBO {
      * 年终奖
      */
     private BigDecimal yearEndBonus;
-
 }

@@ -304,6 +304,16 @@
         <result column="created_time" property="createdTime" />
     </resultMap>
 
+    <resultMap id="FinanceResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO">
+        <result column="task_id" property="taskId" />
+        <result column="task_code" property="taskCode" />
+        <result column="batch_code" property="batchCode" />
+        <result column="management_id" property="managementId" />
+        <result column="management_name" property="managementName" />
+        <result column="print_date" property="printDate" />
+    </resultMap>
+
+
     <sql id="subTaskListField">
         t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code,t.grant_mode,'' as grant_mode_name, t.grant_account_code, t.grant_account_name, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,'' as task_status_name, t.approved_opinion
     </sql>
@@ -314,7 +324,7 @@
     </sql>
 
     <sql id="FinanceField">
-        s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code,  s.batch_code, s.management_id, s.management_name
+        s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code,  s.batch_code, s.management_id, s.management_name, now() print_date
     </sql>
 
     <select id="subTaskList" resultMap="PageResultMap">
@@ -344,7 +354,7 @@
           t.salary_grant_sub_task_id
     </select>
 
-    <select id="selectTaskForFinance" resultMap="PageResultMap">
+    <select id="selectTaskForFinance" resultMap="FinanceResultMap">
         select
           <include refid="FinanceField"></include>
         from
