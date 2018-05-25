@@ -19,6 +19,10 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 public class FinanceEmployeeBO {
     /**
+     * 任务单编号
+     */
+    private String taskCode;
+    /**
      * 薪资周期
      */
     private String grantCycle;

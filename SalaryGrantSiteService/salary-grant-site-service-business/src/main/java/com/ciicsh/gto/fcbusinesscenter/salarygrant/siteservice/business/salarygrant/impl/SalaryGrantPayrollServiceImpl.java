@@ -2,6 +2,9 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantPayrollService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,18 +20,21 @@ import java.util.List;
  */
 @Service
 public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService {
+    @Autowired
+    SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
     @Autowired
     SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     @Override
-    public Boolean toCreatePayrollForBusiness(String salaryGrantMainTaskCode) {
-        // todo
-        return null;
+    public Boolean toCreatePayrollForFinance(String taskCode) {
+        SalaryGrantTaskBO financeTask = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
+        List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
+        return true;
     }
 
     @Override
-    public Boolean toCreatePayrollForFinance(String salaryGrantMainTaskCode) {
+    public Boolean toCreatePayrollForBusiness(String salaryGrantMainTaskCode) {
         // todo
         return null;
     }
