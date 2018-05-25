@@ -63,6 +63,9 @@ public class SalaryGrantController {
     @Autowired
     private SalaryGrantReprieveEmployeeImportService salaryGrantReprieveEmployeeImportService;
 
+    @Autowired
+    private SalaryGrantPayrollService salaryGrantPayrollService;
+
     /**
      * 薪资发放任务单一览
      * @author chenpb
@@ -315,12 +318,13 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/financeDetail", method = RequestMethod.POST)
     public Result financeDetail(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("财务明细查询").setContent(JSON.toJSONString(dto)));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细").setContent(JSON.toJSONString(dto)));
         try {
+            salaryGrantPayrollService.toCreatePayrollForFinance(dto.getTaskCode());
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("财务明细查询异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("财务明细查询失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("生成财务明细失败");
         }
     }
 
