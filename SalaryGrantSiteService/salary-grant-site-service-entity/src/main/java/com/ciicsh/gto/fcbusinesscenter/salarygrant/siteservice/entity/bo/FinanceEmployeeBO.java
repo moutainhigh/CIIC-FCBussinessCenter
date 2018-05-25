@@ -36,6 +36,10 @@ public class FinanceEmployeeBO {
      */
     private String employeeName;
     /**
+     * 个税期间
+     */
+    private String taxCycle;
+    /**
      * 服务大类:0-人事派遣、1-人事代理、2-外包
      */
     private Integer templateType;

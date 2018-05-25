@@ -154,6 +154,7 @@
         <result column="template_type" property="templateType"/>
         <result column="company_id" property="companyId"/>
         <result column="grant_cycle" property="grantCycle"/>
+        <result column="tax_cycle" property="taxCycle"/>
         <result column="wage_payable" property="wagePayable"/>
         <result column="personal_social_security" property="personalSocialSecurity"/>
         <result column="individual_provident_fund" property="individualProvidentFund"/>
@@ -162,7 +163,7 @@
     </resultMap>
 
     <sql id="FinanceEmpField">
-        e.grant_cycle, e.company_id, e.employee_id, e.employee_name, e.template_type, e.wage_payable, e.personal_social_security, e.individual_provident_fund, e.payment_amount, e.year_end_bonus
+        e.grant_cycle, e.company_id, e.employee_id, e.employee_name, e.tax_cycle, e.template_type, e.wage_payable, e.personal_social_security, e.individual_provident_fund, e.payment_amount, e.year_end_bonus
     </sql>
 
     <select id="selectEmpForFinance" resultMap="FinanceResultMap">

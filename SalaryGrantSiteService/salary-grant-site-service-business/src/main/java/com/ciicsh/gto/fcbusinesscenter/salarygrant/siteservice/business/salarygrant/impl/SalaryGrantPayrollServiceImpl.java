@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,6 +40,16 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         SalaryGrantFinanceBO bo = new SalaryGrantFinanceBO();
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
+        if (!empList.isEmpty()) {
+            task.setTaxCycle(empList.get(0).getTaxCycle());
+            List<FinanceEmployeeBO> amountList = empList.stream().filter(x -> Integer.valueOf(0).equals(x.getPaymentAmount())).collect(Collectors.toList());
+            List<FinanceEmployeeBO> bonusList = empList.stream().filter(x -> Integer.valueOf(0).equals(x.getYearEndBonus())).collect(Collectors.toList());
+            task.setAmountNum(amountList.size());
+            task.setYearBonusNum(bonusList.size());
+        } else {
+            task.setAmountNum(0);
+            task.setYearBonusNum(0);
+        }
         bo.setTask(task);
         bo.setEmpList(empList);
         return bo;
