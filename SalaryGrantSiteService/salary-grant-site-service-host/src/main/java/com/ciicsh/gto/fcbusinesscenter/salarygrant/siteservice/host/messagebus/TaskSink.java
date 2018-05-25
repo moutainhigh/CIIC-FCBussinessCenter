@@ -27,15 +27,19 @@ public interface TaskSink {
      * 创建薪资发放工作流TOPIC
      */
     String SALARY_GRANT_MAIN_TASK_CREATE_WORK_FLOW = TOPIC_PREFIX + "salary_grant_main_task_create_work_flow";
+    @Input(SALARY_GRANT_MAIN_TASK_CREATE_WORK_FLOW)
+    MessageChannel salaryGrantMainTaskCreateWorkFlow();
 
     /**
      * 创建薪资发放任务单TOPIC
      */
-    String SALARY_GRANT_MAIN_TASK_CREATE_TASK = TOPIC_PREFIX + "salary_grant_main_task_create_task";
-
-    @Input(SALARY_GRANT_MAIN_TASK_CREATE_WORK_FLOW)
-    MessageChannel salaryGrantMainTaskCreateWorkFlow();
-
+    String SALARY_GRANT_MAIN_TASK_CREATE_TASK = "sg_compute-close-output-channel";
     @Input(SALARY_GRANT_MAIN_TASK_CREATE_TASK)
     MessageChannel salaryGrantMainTaskCreateTask();
+
+
+
+
+
+
 }

@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.ResultGen
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeRefundBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.transform.CommonTransform;
@@ -76,7 +77,7 @@ public class SalaryGrantController implements SalaryGrantProxy {
     }
 
     @Override
-    public Result<Boolean> toCreateRefundTask(SalaryGrantEmployeeRefundDTO dto) {
+    public Result<Boolean> toCreateRefundTask(SalaryGrantRefundDTO dto) {
         return null;
     }
 
