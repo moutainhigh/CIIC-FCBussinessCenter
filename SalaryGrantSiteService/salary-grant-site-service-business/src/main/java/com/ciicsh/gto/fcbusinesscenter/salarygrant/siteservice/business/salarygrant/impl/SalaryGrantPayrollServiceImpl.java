@@ -9,6 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,8 +43,8 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
         if (!empList.isEmpty()) {
             task.setTaxCycle(empList.get(0).getTaxCycle());
-            List<FinanceEmployeeBO> amountList = empList.stream().filter(x -> Integer.valueOf(0).equals(x.getPaymentAmount())).collect(Collectors.toList());
-            List<FinanceEmployeeBO> bonusList = empList.stream().filter(x -> Integer.valueOf(0).equals(x.getYearEndBonus())).collect(Collectors.toList());
+            List<FinanceEmployeeBO> amountList = empList.stream().filter(x -> BigDecimal.ZERO.compareTo(x.getPaymentAmount())==0).collect(Collectors.toList());
+            List<FinanceEmployeeBO> bonusList = empList.stream().filter(x -> BigDecimal.ZERO.compareTo(x.getYearEndBonus())==0).collect(Collectors.toList());
             task.setAmountNum(amountList.size());
             task.setYearBonusNum(bonusList.size());
         } else {
