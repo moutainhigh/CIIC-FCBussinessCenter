@@ -3,6 +3,8 @@ package com.ciicsh.caldispatchjob.Controller;
 import com.ciicsh.caldispatchjob.compute.Cal.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.caldispatchjob.entity.DroolsContext;
+import com.ciicsh.caldispatchjob.entity.EmpPayItem;
+import com.ciicsh.caldispatchjob.entity.FuncEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -13,9 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -93,10 +93,5 @@ public class TestController {
         return rowAffected;
     }
 
-    @PostMapping("/api/fireRules")
-    public void fireRules(){
-        DroolsContext context = new DroolsContext();
-        HashSet hashSet = new HashSet();
-        computeService.fire(hashSet,context);
-    }
+
 }

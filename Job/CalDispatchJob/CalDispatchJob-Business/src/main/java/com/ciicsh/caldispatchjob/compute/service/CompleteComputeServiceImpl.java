@@ -240,10 +240,56 @@ public class CompleteComputeServiceImpl {
         logger.info("公司编号：" + companyId);
         if(item != null) {
             List<FcEmployeeResponseDTO.PersonalTaxInfo> taxInfos = item.getPersonalTaxInfos();
-            if(taxInfos != null && taxInfos.size() > 0) {
+            if(taxInfos != null && taxInfos.size() > 0) { // 个税信息处理
                 FcEmployeeResponseDTO.PersonalTaxInfo taxInfo = taxInfos.get(0);
-                String taxStr = com.alibaba.fastjson.JSONObject.toJSONString(taxInfo);
-                basicDBObject.put("tax_info", taxStr);
+                //String taxStr = com.alibaba.fastjson.JSONObject.toJSONString(taxInfo);
+                DBObject tax = new BasicDBObject();
+                tax.put("reportTaxCertId", taxInfo.getReportTaxCertId());
+                tax.put("reportTaxCertNo", taxInfo.getReportTaxCertNo());
+                tax.put("reportTaxCertDueDate",taxInfo.getReportTaxCertDueDate());
+                tax.put("reportTaxCountryId", taxInfo.getReportTaxCountryId());
+                tax.put("cmyFcEmpPersonalTaxId",taxInfo.getCmyFcEmpPersonalTaxId());
+                tax.put("annualPremium", taxInfo.getAnnualPremium());
+                tax.put("companyId", taxInfo.getCompanyId());
+                tax.put("taxTerm", taxInfo.getTaxTerm());
+                tax.put("taxReturnName", taxInfo.getTaxReturnName());
+                tax.put("isSpecialStatus", taxInfo.getIsSpecialStatus());
+                tax.put("isEmployee", taxInfo.getIsEmployee());
+                tax.put("isPartner", taxInfo.getIsPartner());
+                tax.put("isForeign", taxInfo.getIsForeign());
+                tax.put("preInvestAmount", taxInfo.getPreInvestAmount());
+                tax.put("cnName", taxInfo.getCnName());
+                tax.put("arriveCnTime", taxInfo.getArriveCnTime());
+                tax.put("officeTerm", taxInfo.getOfficeTerm());
+                tax.put("prevLeaveTime", taxInfo.getPrevLeaveTime());
+                tax.put("prevLeavePlace", taxInfo.getPrevLeavePlace());
+                tax.put("churchyardJob", taxInfo.getChurchyardJob());
+                tax.put("overseasJob", taxInfo.getOverseasJob());
+                tax.put("payPlace", taxInfo.getPayPlace());
+                tax.put("overseasPayPlace", taxInfo.getOverseasPayPlace());
+                tax.put("taxPayType", taxInfo.getTaxPayType());
+                tax.put("taxSuperCode", taxInfo.getTaxSuperCode());
+                tax.put("monthlyPremium", taxInfo.getMonthlyPremium());
+                tax.put("stockOptionType", taxInfo.getStockOptionType());
+                tax.put("stockName", taxInfo.getStockName());
+                tax.put("stockCode", taxInfo.getStockCode());
+                tax.put("stockType", taxInfo.getStockType());
+                tax.put("optStrikePrice", taxInfo.getOptStrikePrice() == null ? "" : taxInfo.getOptStrikePrice().toString());
+                tax.put("optPowerPrice", taxInfo.getOptPowerPrice() == null ? "" : taxInfo.getOptPowerPrice().toString());
+                tax.put("optStockAmount", taxInfo.getOptStockAmount());
+                tax.put("optMonthlyStrikeIncome", taxInfo.getOptMonthlyStrikeIncome() == null ? "" : taxInfo.getOptMonthlyStrikeIncome().toString());
+                tax.put("appStrikePrice", taxInfo.getAppStrikePrice() == null ? "" : taxInfo.getAppStrikePrice().toString());
+                tax.put("appPowerPrice", taxInfo.getAppPowerPrice() == null ? "" : taxInfo.getAppPowerPrice().toString());
+                tax.put("appStockAmount", taxInfo.getAppStockAmount());
+                tax.put("appMonthlyStrikeIncome", taxInfo.getAppMonthlyStrikeIncome() == null ? "" : taxInfo.getAppMonthlyStrikeIncome().toString());
+                tax.put("resRegistPrice", taxInfo.getResRegistPrice() == null ? "" : taxInfo.getResRegistPrice());
+                tax.put("resJjPrice", taxInfo.getResJjPrice() == null ? "":taxInfo.getResJjPrice().toString());
+                tax.put("resJjAmount", taxInfo.getResJjAmount());
+                tax.put("resPayAmount", taxInfo.getResPayAmount() == null ? "" : taxInfo.getResPayAmount().toString());
+                tax.put("resMonthlyStrikeIncome", taxInfo.getResMonthlyStrikeIncome() == null? "" : taxInfo.getResMonthlyStrikeIncome().toString());
+
+                basicDBObject.put("tax_info", tax);
+
             }
         }
 
@@ -252,11 +298,9 @@ public class CompleteComputeServiceImpl {
 
     private FcEmployeeResponseDTO getRemotedEmployee(String empCode, String mgrId, String companyId) {
         FcEmployeeRequestDTO employeeRequestDTO = new FcEmployeeRequestDTO();
-        List<String> empCodes = new ArrayList<>();
-        empCodes.add(empCode);
-        employeeRequestDTO.setEmployeeIds(empCodes);
+        employeeRequestDTO.setEmployeeIds(empCode);
         employeeRequestDTO.setManagementId(mgrId);
-        employeeRequestDTO.setManagementId(companyId);
+        employeeRequestDTO.setCompanyId(companyId);
         JsonResult<List<FcEmployeeResponseDTO>> result = employeeServiceProxy.getFcEmployeeInfos(employeeRequestDTO);
         if (result.isSuccess() && result.getData() != null && result.getData().size() > 0) {
             return result.getData().get(0);
