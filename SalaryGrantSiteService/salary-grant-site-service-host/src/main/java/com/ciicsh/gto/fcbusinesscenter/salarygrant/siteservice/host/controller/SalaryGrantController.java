@@ -324,6 +324,7 @@ public class SalaryGrantController {
             SalaryGrantFinanceBO financeBo = salaryGrantPayrollService.createFinanceDetail(dto.getTaskCode());
             financeDto.setFinanceTask(CommonTransform.convertToDTO(financeBo.getTask(), FinanceTaskDTO.class));
             financeDto.setEmpList(CommonTransform.convertToDTOs(financeBo.getEmpList(), FinanceEmployeeDTO.class));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("财务明细").setContent(JSON.toJSONString(financeDto)));
             return ResultGenerator.genSuccessResult(financeDto);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细异常").setContent(e.getMessage()));
