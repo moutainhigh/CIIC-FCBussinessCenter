@@ -131,7 +131,7 @@
           sg_salary_grant_employee t
         SET
           t.grant_status = 1,
-          t.modified_by = #{taskCode},
+          t.modified_by = #{modifiedBy},
           t.modified_time = now()
         <where>
             <if test="taskType == 0">
