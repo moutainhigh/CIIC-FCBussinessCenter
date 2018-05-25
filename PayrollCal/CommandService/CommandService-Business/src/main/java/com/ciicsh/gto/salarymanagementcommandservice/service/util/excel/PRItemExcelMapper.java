@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.excel;
 
+import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -39,6 +40,9 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
     @Autowired
     private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
+
+    @Autowired
+    private EmployeeServiceProxy employeeServiceProxy;
 
 
     private String batchCode;
@@ -93,7 +97,8 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
         BasicDBObject rowIndex = new BasicDBObject();
         rowIndex.put("row_index",rs.getCurrentRowIndex());
-        rowIndex.put("emp_code",getEmpCode(rs));
+        setEmp(rs,rowIndex);
+        //rowIndex.put("emp_code",setEmp(rs,rowIndex));
 
         List<BasicDBObject> excelContents = Arrays.asList(excelCols).stream().map(col ->{
             BasicDBObject dbObject = new BasicDBObject();
@@ -113,7 +118,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         return excelContents;
     }
 
-    private String getEmpCode(RowSet rs){
+    private void setEmp(RowSet rs, BasicDBObject rowIndex){
 
             Object empCodeObj = identityMap.get(PayItemName.EMPLOYEE_CODE_CN);
             Object empNameObj = identityMap.get(PayItemName.EMPLOYEE_NAME_CN);
@@ -128,10 +133,14 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             BasicDBObject emp = getEmpInfo(batchCode,batchType,empCode, empName,idNum,empId);
 
             if(emp != null){
-                return String.valueOf(emp.get(PayItemName.EMPLOYEE_CODE_CN));
+                rowIndex.put("emp_code", String.valueOf(emp.get(PayItemName.EMPLOYEE_CODE_CN)));
+            }else {
+                int IDType = 1; //1:身份证 2:护照 3:军(警)官证 4:士兵证 5:台胞证 6:回乡证 7:其他
+                //return employeeServiceProxy.get(); //TODO empID, empcode, companyId
+                rowIndex.put("emp_code","");
+                rowIndex.put("companyId","");
+                rowIndex.put("emp_Id","");
             }
-            return null;
-
     }
 
     private BasicDBObject getEmpInfo(String batchCode, int batchType, String empCode, String empName, String idNum, String empId){

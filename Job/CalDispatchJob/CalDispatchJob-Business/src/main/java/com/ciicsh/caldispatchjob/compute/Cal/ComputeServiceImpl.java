@@ -488,9 +488,16 @@ public class ComputeServiceImpl {
     }
 
 
-    public void fire(){
-        //FactHandle f =  kSession.insert(e);
-        int count = kSession.fireAllRules();
+    public void fire(HashSet hashSet, DroolsContext context){
+        int count = 0;
+        FactHandle factHandle = kSession.insert(context); // 插入上下文信息
+        if(hashSet == null) {
+            count = kSession.fireAllRules();
+        }else {
+            count = kSession.fireAllRules(new CustomAgendaFilter(hashSet));
+        }
+        kSession.delete(factHandle);
+        logger.info(String.format("emp_code: %s, total excute rule counts: %d", context.getEmpPayItem().getEmpCode(), count));
         //kSession.delete(f);
     }
 }
