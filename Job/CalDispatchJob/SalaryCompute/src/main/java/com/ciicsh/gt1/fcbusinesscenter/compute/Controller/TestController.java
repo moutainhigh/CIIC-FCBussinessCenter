@@ -6,6 +6,7 @@ import com.ciicsh.caldispatchjob.entity.EmpPayItem;
 import com.ciicsh.caldispatchjob.entity.FuncEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -20,7 +21,7 @@ public class TestController {
     private ComputeServiceImpl computeService;
 
     @PostMapping("/api/fireRules")
-    public String fireRules(){
+    public String fireRules(@RequestParam  String city){
         DroolsContext context = new DroolsContext();
 
         //设置函数信息
@@ -35,7 +36,7 @@ public class TestController {
         //设置雇员信息
         EmpPayItem empPayItem = new EmpPayItem();
         Map<String,Object> payItems = new HashMap<>();
-        payItems.put("城市","上海"); //薪资项名称 和 值
+        payItems.put("城市",city); //薪资项名称 和 值
         empPayItem.setItems(payItems);
         context.setEmpPayItem(empPayItem);
         //end

@@ -1,6 +1,9 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.excel;
 
+import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.FcBaseEmpRequestDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.FcBaseEmpResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -129,17 +132,25 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             String empName = empNameObj == null ? "":rs.getProperties().get(empNameObj) == null ? "":(String)rs.getProperties().get(empNameObj);
             String idNum = idNumObj == null ? "" : rs.getProperties().get(idNumObj) == null ? "":(String)rs.getProperties().get(idNumObj);
             String empId = empIdObj == null ? "" : rs.getProperties().get(empIdObj) == null ? "":(String)rs.getProperties().get(empIdObj);
-
+            if(StringUtils.isNotEmpty(empId)){
+                rowIndex.put("emp_id",empId);
+            }
             BasicDBObject emp = getEmpInfo(batchCode,batchType,empCode, empName,idNum,empId);
 
             if(emp != null){
                 rowIndex.put("emp_code", String.valueOf(emp.get(PayItemName.EMPLOYEE_CODE_CN)));
             }else {
                 int IDType = 1; //1:身份证 2:护照 3:军(警)官证 4:士兵证 5:台胞证 6:回乡证 7:其他
-                //return employeeServiceProxy.get(); //TODO empID, empcode, companyId
-                rowIndex.put("emp_code","");
-                rowIndex.put("companyId","");
-                rowIndex.put("emp_Id","");
+                FcBaseEmpRequestDTO empRequestDTO = new FcBaseEmpRequestDTO();
+                empRequestDTO.setIdCardType(IDType);
+                empRequestDTO.setIdNum(idNum);
+                empRequestDTO.setEmployeeCode(empCode);
+                empRequestDTO.setEmployeeName(empName);
+                JsonResult<FcBaseEmpResponseDTO> result = employeeServiceProxy.getFcBaseEmpInfos(empRequestDTO); //TODO empID, empcode, companyId
+                if(result.isSuccess() && result.getData() != null) {
+                    rowIndex.put("emp_code",result.getData().getEmployeeId());
+                    rowIndex.put("companyId", result.getData().getCompanyId());
+                }
             }
     }
 
