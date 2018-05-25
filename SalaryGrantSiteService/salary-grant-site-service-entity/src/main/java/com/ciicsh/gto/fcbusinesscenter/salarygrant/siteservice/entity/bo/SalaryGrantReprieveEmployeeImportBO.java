@@ -19,6 +19,10 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantReprieveEmployeeImportBO {
     /**
+     * 薪资发放暂缓名单编号
+     */
+    private Long salarygrantReprieveEmployeeImportId;
+    /**
      * 任务单编号
      */
     private String taskCode;

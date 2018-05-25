@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantReprieveEmployeeImportMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantReprieveEmployeeImportBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,5 +59,17 @@ public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<Sa
             salaryGrantReprieveEmployeeImportMapper.insertBatch(failList);
         }
         return failList;
+    }
+
+    /**
+     * 根据任务单编号，任务单类型 查询暂缓失败雇员
+     * @author chenpb
+     * @since 2018-05-25
+     * @param bo
+     * @return
+     */
+    @Override
+    public List<SalaryGrantReprieveEmployeeImportBO> selectDeferEmployee(SalaryGrantReprieveEmployeeImportBO bo) {
+        return salaryGrantReprieveEmployeeImportMapper.selectDeferEmployee(bo);
     }
 }

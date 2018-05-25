@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantReprieveEmployeeImportBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO;
 
 import java.util.List;
@@ -28,4 +29,13 @@ public interface SalaryGrantReprieveEmployeeImportService extends IService<Salar
      * @return
      */
     List<SalaryGrantEmployeeBO> deferEmployee(List<SalaryGrantEmployeeBO> bos, String taskCode, Integer taskType, String userId);
+
+    /**
+     * 根据任务单编号，任务单类型 查询暂缓失败雇员
+     * @author chenpb
+     * @since 2018-05-25
+     * @param bo
+     * @return
+     */
+    List<SalaryGrantReprieveEmployeeImportBO> selectDeferEmployee(SalaryGrantReprieveEmployeeImportBO bo);
 }

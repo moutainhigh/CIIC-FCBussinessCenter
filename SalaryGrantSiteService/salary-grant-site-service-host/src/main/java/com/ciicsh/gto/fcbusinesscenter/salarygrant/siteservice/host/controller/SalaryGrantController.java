@@ -582,18 +582,20 @@ public class SalaryGrantController {
     }
 
     /**
-     * 导出暂缓失败雇员信息
+     * 导出暂缓失败雇员名单
      * @author chenpb
      * @date 2018-05-24
      * @param
      * @param response
      */
-    @PostMapping(value = "/exportFailList")
-    public void exportFailList(@RequestBody ImportFailDTO dto, HttpServletResponse response) {
+    @GetMapping(value = "/exportFailList")
+    public void exportFailList(SalaryTaskHandleDTO dto, HttpServletResponse response) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出暂缓失败雇员").setContent(JSON.toJSONString(dto)));
         try {
-            List<ReprieveEmpImportExcelDTO> list = CommonTransform.convertToDTOs(dto.getFailList(), ReprieveEmpImportExcelDTO.class);
-            ExcelUtil.exportExcel(list, "","暂缓失败雇员", ReprieveEmpImportExcelDTO.class, "暂缓失败雇员信息.xls", response);
+            SalaryGrantReprieveEmployeeImportBO bo = CommonTransform.convertToEntity(dto, SalaryGrantReprieveEmployeeImportBO.class);
+            List<SalaryGrantReprieveEmployeeImportBO> bos = salaryGrantReprieveEmployeeImportService.selectDeferEmployee(bo);
+            List<ReprieveEmpImportExcelDTO> list = CommonTransform.convertToDTOs(bos, ReprieveEmpImportExcelDTO.class);
+            ExcelUtil.exportExcel(list, "","暂缓失败雇员", ReprieveEmpImportExcelDTO.class, "暂缓失败雇员名单.xls", response);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出暂缓失败雇员异常").setContent(e.getMessage()));
         }

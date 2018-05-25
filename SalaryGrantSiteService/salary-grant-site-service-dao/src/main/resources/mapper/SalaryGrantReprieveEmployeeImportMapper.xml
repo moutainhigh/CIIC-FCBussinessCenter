@@ -16,6 +16,23 @@
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
 
+	<resultMap id="BoResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantReprieveEmployeeImportBO">
+		<id column="salarygrant_reprieve_employee_import_id" property="salarygrantReprieveEmployeeImportId" />
+		<result column="task_code" property="taskCode" />
+		<result column="task_type" property="taskType" />
+		<result column="employee_id" property="employeeId" />
+		<result column="employee_name" property="employeeName" />
+		<result column="import_time" property="importTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_by" property="modifiedBy" />
+		<result column="modified_time" property="modifiedTime" />
+	</resultMap>
+
+	<sql id="boListField">
+		t.salarygrant_reprieve_employee_import_id, t.task_code, t.task_type, t.employee_id, t.employee_name, t.import_time
+	</sql>
+
 	<delete id="deleteReprieveEmp" parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO">
 		delete from
 			sg_salary_grant_reprieve_employee_import
@@ -49,5 +66,16 @@
 			)
 		</foreach>
 	</insert>
+
+	<select id="selectDeferEmployee" resultMap="BoResultMap">
+		SELECT
+			<include refid="boListField"></include>
+		FROM
+			sg_salary_grant_reprieve_employee_import t
+		WHERE
+			t.task_code = #{taskCode}
+		AND
+			t.task_type = #{taskType}
+	</select>
 
 </mapper>
