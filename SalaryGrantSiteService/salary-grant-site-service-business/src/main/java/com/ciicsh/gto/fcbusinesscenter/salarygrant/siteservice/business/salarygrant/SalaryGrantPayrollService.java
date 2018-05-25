@@ -20,7 +20,7 @@ public interface SalaryGrantPayrollService {
      * @param salaryGrantMainTaskCode
      * @return Boolean
      */
-    SalaryGrantFinanceBO toCreatePayrollForFinance(String salaryGrantMainTaskCode);
+    SalaryGrantFinanceBO createFinanceDetail(String salaryGrantMainTaskCode);
 
     /**
      * 生成工资清单--业务明细

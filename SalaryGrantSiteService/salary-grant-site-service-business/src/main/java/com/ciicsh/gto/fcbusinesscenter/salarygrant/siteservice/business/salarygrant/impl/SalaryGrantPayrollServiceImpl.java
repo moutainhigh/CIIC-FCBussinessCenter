@@ -35,7 +35,7 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
      * @return
      */
     @Override
-    public SalaryGrantFinanceBO toCreatePayrollForFinance(String taskCode) {
+    public SalaryGrantFinanceBO createFinanceDetail(String taskCode) {
         SalaryGrantFinanceBO bo = new SalaryGrantFinanceBO();
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
