@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantReprieveEmployeeImportBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantReprieveEmployeeImportPO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -31,6 +31,6 @@ public interface SalaryGrantReprieveEmployeeImportMapper extends BaseMapper<Sala
      * @param list
      * @return
      */
-    Integer insertBatch(List<SalaryGrantReprieveEmployeeImportBO> list);
+    Integer insertBatch(List<SalaryGrantEmployeeBO> list);
 
 }

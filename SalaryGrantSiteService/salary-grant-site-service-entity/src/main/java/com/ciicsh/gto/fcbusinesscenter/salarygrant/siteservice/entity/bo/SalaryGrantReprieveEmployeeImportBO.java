@@ -1,5 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
+import lombok.*;
+
 import java.util.Date;
 
 /**
@@ -10,6 +12,11 @@ import java.util.Date;
  * @author gaoyang
  * @since 2018-03-06
  */
+@Getter
+@Setter
+@ToString
+@Data
+@EqualsAndHashCode(callSuper = false)
 public class SalaryGrantReprieveEmployeeImportBO {
     /**
      * 任务单编号
@@ -47,76 +54,4 @@ public class SalaryGrantReprieveEmployeeImportBO {
      * 最后修改时间
      */
     private Date modifiedTime;
-
-    public String getTaskCode() {
-        return taskCode;
-    }
-
-    public void setTaskCode(String taskCode) {
-        this.taskCode = taskCode;
-    }
-
-    public Integer getTaskType() {
-        return taskType;
-    }
-
-    public void setTaskType(Integer taskType) {
-        this.taskType = taskType;
-    }
-
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public String getEmployeeName() {
-        return employeeName;
-    }
-
-    public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
-    }
-
-    public Date getImportTime() {
-        return importTime;
-    }
-
-    public void setImportTime(Date importTime) {
-        this.importTime = importTime;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public Date getModifiedTime() {
-        return modifiedTime;
-    }
-
-    public void setModifiedTime(Date modifiedTime) {
-        this.modifiedTime = modifiedTime;
-    }
 }

@@ -41,8 +41,8 @@
 			(
 				#{item.taskCode},
 				#{item.taskType},
-				#{item.employee_id},
-				#{item.employee_name},
+				#{item.employeeId},
+				#{item.employeeName},
 				#{item.modifiedBy},
 				NOW(),
 				NOW()
