@@ -290,7 +290,7 @@ public class NormalBatchController {
         if(list.size() == 1){ // 如果有一条纪录，但 emp_info 为 "" 时，说明雇员组没有雇员
             DBObject checkEmpInfo = list.get(0);
             DBObject catalog = (DBObject)checkEmpInfo.get("catalog");
-            if(catalog.get("emp_info").equals(null)){
+            if(catalog.get("emp_info") == null){
                 return JsonResult.success(0);
             }
         }
@@ -299,7 +299,7 @@ public class NormalBatchController {
 
         logger.info("获取翻页时间 : " + String.valueOf((System.currentTimeMillis() - start)));
 
-        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
+        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map((DBObject dbObject) -> {
             SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
             itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
 

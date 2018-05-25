@@ -60,7 +60,7 @@ public class EmployeeController{
         empEmployeeQryRequestDTO.setPageNo(pageNum);
         empEmployeeQryRequestDTO.setPageSize(pageSize);
         JsonResult<Page<EmpEmployeeResponseDTO>> result
-                = employeeServiceProxy.PageEmpEmployee(empEmployeeQryRequestDTO);
+                = employeeServiceProxy.pageEmpEmployee(empEmployeeQryRequestDTO);
         Page<EmpEmployeeResponseDTO> data = result.getData();
 
         if (data != null && data.getRecords() != null && data.getRecords().size() != 0) {
