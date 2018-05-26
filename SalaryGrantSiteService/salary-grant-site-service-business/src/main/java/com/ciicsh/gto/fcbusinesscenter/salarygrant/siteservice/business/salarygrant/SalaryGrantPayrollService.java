@@ -1,5 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO;
+
 import java.util.List;
 
 /**
@@ -13,20 +15,20 @@ import java.util.List;
 public interface SalaryGrantPayrollService {
 
     /**
+     * 生成工资清单--财务明细
+     * 调用结算中心接口，明确插入的数据结构，被定时任务调用。2018-02-05后提供接口
+     * @param salaryGrantMainTaskCode
+     * @return Boolean
+     */
+    SalaryGrantFinanceBO createFinanceDetail(String salaryGrantMainTaskCode);
+
+    /**
      * 生成工资清单--业务明细
      * 调用结算中心接口，明确插入的数据结构。2018-02-05后提供接口
      * @param salaryGrantMainTaskCode
      * @return Boolean
      */
     Boolean toCreatePayrollForBusiness(String salaryGrantMainTaskCode);
-
-    /**
-     * 生成工资清单--财务明细
-     * 调用结算中心接口，明确插入的数据结构，被定时任务调用。2018-02-05后提供接口
-     * @param salaryGrantMainTaskCode
-     * @return Boolean
-     */
-    Boolean toCreatePayrollForFinance(String salaryGrantMainTaskCode);
 
     /**
      * 工资清单--预览
