@@ -1,6 +1,5 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantPayrollService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
@@ -60,26 +59,38 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
             task.setYearBonusNum(yearBonusNum.intValue());
             /** 聚合 */
             Map<String, Map<Integer, List<FinanceEmployeeBO>>> empGroup = empList.parallelStream().collect(Collectors.groupingBy(FinanceEmployeeBO::getCompanyId, Collectors.groupingBy(FinanceEmployeeBO::getTemplateType)));
-            empGroup.forEach((key,value)-> value.forEach((innerKey,innerValue)-> {
-                FinanceEmployeeBO summary = BeanUtils.instantiate(FinanceEmployeeBO.class);
-                summary.setCompanyId("小计");
-                summary.setEmployeeName(String.valueOf(innerValue.size()));
-                summary.setWagePayable(innerValue.parallelStream().map(FinanceEmployeeBO::getWagePayable).reduce(BigDecimal.ZERO, BigDecimal::add));
-                summary.setPersonalSocialSecurity(innerValue.parallelStream().map(FinanceEmployeeBO::getPersonalSocialSecurity).reduce(BigDecimal.ZERO, BigDecimal::add));
-                summary.setIndividualProvidentFund(innerValue.parallelStream().map(FinanceEmployeeBO::getIndividualProvidentFund).reduce(BigDecimal.ZERO, BigDecimal::add));
-                summary.setPaymentAmount(innerValue.parallelStream().map(FinanceEmployeeBO::getPaymentAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
-                groupList.addAll(innerValue);
-                groupList.add(summary);
-            }));
+            empGroup.forEach((key,value)-> value.forEach((innerKey,innerValue)-> { groupList.addAll(innerValue); groupList.add(summaryInfo(0, innerValue)); }));
             groupList.parallelStream().forEach(x -> x.setTemplateName(commonService.getNameByValue("employeeType", String.valueOf(x.getTemplateType()))));
+            List<FinanceEmployeeBO> summaryList = groupList.parallelStream().filter( x -> StringUtils.isEmpty(x.getEmployeeId())).collect(Collectors.toList());
+            groupList.add(summaryInfo(1, summaryList));
             financeBo.setEmpList(groupList);
-        } else {
-            task.setAmountNum(0);
-            task.setYearBonusNum(0);
         }
         financeBo.setTask(task);
         return financeBo;
     }
+
+    /**
+     * @description 汇总
+     * @author chenpb
+     * @since 2018-05-28
+     * @param list
+     * @return
+     */
+    private FinanceEmployeeBO summaryInfo (Integer type, List<FinanceEmployeeBO> list) {
+        FinanceEmployeeBO summary = BeanUtils.instantiate(FinanceEmployeeBO.class);
+        if (type==0) {
+            summary.setCompanyId("小计");
+        } else {
+            summary.setCompanyId("合计");
+        }
+        summary.setEmployeeName(String.valueOf(list.size()));
+        summary.setWagePayable(list.parallelStream().map(FinanceEmployeeBO::getWagePayable).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setPersonalSocialSecurity(list.parallelStream().map(FinanceEmployeeBO::getPersonalSocialSecurity).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setIndividualProvidentFund(list.parallelStream().map(FinanceEmployeeBO::getIndividualProvidentFund).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setPaymentAmount(list.parallelStream().map(FinanceEmployeeBO::getPaymentAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        return summary;
+    }
+
 
     @Override
     public Boolean toCreatePayrollForBusiness(String salaryGrantMainTaskCode) {
