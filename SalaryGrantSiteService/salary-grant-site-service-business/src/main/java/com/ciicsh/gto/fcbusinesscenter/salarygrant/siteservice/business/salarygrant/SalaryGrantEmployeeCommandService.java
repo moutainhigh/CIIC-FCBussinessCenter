@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 
 /**
@@ -22,7 +23,6 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      */
     boolean saveToHistory(long task_his_id, String task_code, int task_type);
 
-<<<<<<< HEAD
     /**
      * 根据任务单编号，任务单类型，雇员编号，发放状态暂缓雇员
      * @author chenpb
@@ -40,6 +40,4 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      */
     boolean updateForServiceFeeAmount(String taskCode);
 
-=======
->>>>>>> c6b3599683f9a5b5625a6444c97e4f05a56dfae6
 }
