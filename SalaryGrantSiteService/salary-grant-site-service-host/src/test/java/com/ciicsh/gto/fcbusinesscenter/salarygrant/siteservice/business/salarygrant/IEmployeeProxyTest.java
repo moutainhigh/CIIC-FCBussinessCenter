@@ -41,18 +41,20 @@ public class IEmployeeProxyTest {
         employeeProxyDTO.setEmployeeId("XTY00201");
         employeeList.add(employeeProxyDTO);
 
-        JsonResult<SalaryProxyDTO> proxyDTOJsonResult = salaryEmployeeProxy.getEmployeeSalaryServiceFee(salaryProxyDTO);
+        JsonResult<SalaryProxyDTO> proxyDTOJsonResult = salaryEmployeeProxy.getSalaryEmployeeServiceFee(salaryProxyDTO);
         if (!ObjectUtils.isEmpty(proxyDTOJsonResult)) {
             if (proxyDTOJsonResult.getCode().intValue() == 0) {
                 SalaryProxyDTO proxyDTO = proxyDTOJsonResult.getData();
                 if (!ObjectUtils.isEmpty(proxyDTO)) {
                     String batchCode = proxyDTO.getBatchCode();
-                    System.out.println("batchCode: " + batchCode);
+                    System.out.println("批次号: " + batchCode);
                     List<SalaryEmployeeProxyDTO> proxyDTOEmployeeList = proxyDTO.getEmployeeList();
                     if (!CollectionUtils.isEmpty(proxyDTOEmployeeList)) {
                         proxyDTOEmployeeList.stream().forEach(dto ->
                                 System.out.println("公司编号: " + dto.getCompanyId() + " 雇员编号: " + dto.getEmployeeId() + " 薪酬服务费: " + dto.getServiceFeeAmount())
                         );
+                    } else {
+                        System.out.println("返回雇员信息为空！");
                     }
                 }
             } else {

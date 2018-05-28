@@ -32,4 +32,12 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      */
     Integer deferEmployee(SalaryGrantEmployeeBO bo);
 
+    /**
+     * 更新雇员薪酬服务费到雇员表
+     *
+     * @param taskCode
+     * @return
+     */
+    boolean updateForServiceFeeAmount(String taskCode);
+
 }
