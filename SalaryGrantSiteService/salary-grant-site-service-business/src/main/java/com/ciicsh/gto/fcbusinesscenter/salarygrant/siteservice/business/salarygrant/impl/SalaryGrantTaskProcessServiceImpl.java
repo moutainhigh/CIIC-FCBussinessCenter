@@ -240,7 +240,6 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
     private PayrollCalcResultDTO toConvertToPayrollCalcResultDTO(DBObject dbObject){
         PayrollCalcResultDTO payrollCalcResultDTO = new PayrollCalcResultDTO();
-        payrollCalcResultDTO.setFcPayrollCalcResultId((Long)dbObject.get("_id"));
         payrollCalcResultDTO.setEmpId((String)dbObject.get("emp_id"));
         payrollCalcResultDTO.setEmpName((String)dbObject.get("emp_name"));
         payrollCalcResultDTO.setBatchId((String)dbObject.get("batch_id"));
