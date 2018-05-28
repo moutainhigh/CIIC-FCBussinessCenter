@@ -36,12 +36,6 @@ public interface PrPayrollGroupTemplateMapper extends BaseMapper<PrPayrollGroupT
     List<HashMap<String, String>> selectNameList();
 
     /**
-     * 获取薪资组模板列表
-     * @return 薪资组模板列表
-     */
-    List<KeyValuePO> getPayrollGroupTemplateNames();
-
-    /**
      * 更新薪资组，不增加version
      * @param param
      * @return
