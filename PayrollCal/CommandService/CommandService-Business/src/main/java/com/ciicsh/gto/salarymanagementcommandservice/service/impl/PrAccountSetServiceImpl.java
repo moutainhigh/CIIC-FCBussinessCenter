@@ -183,6 +183,7 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         PrPayrollAccountItemRelationPO relationPO = new PrPayrollAccountItemRelationPO();
         relationPO.setAccountSetCode(payrollAccountSetPO.getAccountSetCode());
         relationPO.setPayrollItemCode(payrollItemPO.getItemCode());
+        relationPO.setPayrollItemAlias(payrollItemPO.getItemName());
         relationPO.setActive(true);
         relationPO.setCreatedTime(new Date());
         relationPO.setCreatedBy("macor");

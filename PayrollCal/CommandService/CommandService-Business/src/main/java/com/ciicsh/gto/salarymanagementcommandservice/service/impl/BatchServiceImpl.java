@@ -163,7 +163,7 @@ public class BatchServiceImpl implements BatchService {
 
         //query = query.skip(pageindex*size).limit(size);
 
-        return null;
+        return batchCompareEmpBOList;
     }
 
     private String getItemValueFromDBObject(DBObject dbObject) {
@@ -187,6 +187,7 @@ public class BatchServiceImpl implements BatchService {
                 .include("catalog.pay_items.item_code")
                 .include("catalog.pay_items.item_value")
         ;
+
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH);

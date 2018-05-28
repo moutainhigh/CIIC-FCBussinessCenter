@@ -158,11 +158,6 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     }
 
     @Override
-    public List<KeyValuePO> getPayrollGroupTemplateNames() {
-        return prPayrollGroupTemplateMapper.getPayrollGroupTemplateNames();
-    }
-
-    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean approvePrGroupTemplate(PrPayrollGroupTemplatePO paramItem){
         boolean result = false;

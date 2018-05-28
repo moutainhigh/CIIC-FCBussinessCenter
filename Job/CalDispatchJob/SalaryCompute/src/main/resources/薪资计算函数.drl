@@ -104,7 +104,7 @@ rule "股票期权税" // {股票期权税([当年应纳股票期权税],[当年
         String para1 = func.getParameters().get(0);
         String para2 = func.getParameters().get(1);
         double shouldStockTax = (double)$context.getItemValByCode(para1); //当年应纳股票期权税
-        double alreadyStockTax = (double)$context.getItemValByCode(para2); //当年应纳股票期权税
+        double alreadyStockTax = (double)$context.getItemValByCode(para2); //当年已纳股票期权税
 
 
         func.setResult(BigDecimal.valueOf(14800.00)); // TODO

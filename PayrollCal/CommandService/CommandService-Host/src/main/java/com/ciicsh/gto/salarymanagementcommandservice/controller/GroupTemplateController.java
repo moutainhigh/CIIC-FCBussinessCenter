@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateHistoryDTO;
@@ -69,7 +70,7 @@ public class GroupTemplateController extends BaseController {
         PrPayrollGroupTemplatePO updateParam = new PrPayrollGroupTemplatePO();
         TranslatorUtils.copyNotNullProperties(param, updateParam);
         updateParam.setGroupTemplateCode(code);
-        updateParam.setModifiedBy("jiang");
+        updateParam.setModifiedBy(UserContext.getUserId());
         Integer result = prGroupTemplateService.updateItemByCode(updateParam);
         return JsonResult.success(result);
     }
@@ -80,23 +81,16 @@ public class GroupTemplateController extends BaseController {
         newParam.setGroupTemplateCode(codeGenerator.genPrGroupTemplateCode());
         // Version 生成
         newParam.setVersion("1.0");
-        newParam.setCreatedBy("jiang");
-        newParam.setModifiedBy("jiang");
+        newParam.setCreatedBy(UserContext.getUserId());
+        newParam.setModifiedBy(UserContext.getUserId());
         int result = prGroupTemplateService.newItem(newParam);
         return result > 0 ? JsonResult.success(newParam.getGroupTemplateCode()) : JsonResult.faultMessage("新建薪资组模板失败");
     }
 
     @GetMapping(value = "/prGroupTemplateName")
-    public JsonResult getPrGroupTemplateNameList(@RequestParam String query,
-                                                 @RequestParam(required = false, defaultValue = "") String managementId) {
+    public JsonResult getPrGroupTemplateNameList(@RequestParam String query) {
         List<HashMap<String, String>> resultList = prGroupTemplateService.getPrGroupTemplateNameList(query);
         return JsonResult.success(resultList);
-    }
-
-    @GetMapping("/getPayrollGroupTemplateNames")
-    public JsonResult getPayrollGroupTemplateNames(){
-        List<KeyValuePO> results = prGroupTemplateService.getPayrollGroupTemplateNames();
-        return JsonResult.success(results);
     }
 
     @DeleteMapping(value = "/prGroupTemplate/{code}")
@@ -146,7 +140,7 @@ public class GroupTemplateController extends BaseController {
         PrPayrollGroupTemplatePO updateParam = new PrPayrollGroupTemplatePO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
         updateParam.setGroupTemplateCode(code);
-        updateParam.setModifiedBy("system");
+        updateParam.setModifiedBy(UserContext.getUserId());
         boolean result = prGroupTemplateService.approvePrGroupTemplate(updateParam);
         return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_TEMPLATE_APPROVE_SUCCESS)
                 : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_TEMPLATE_APPROVE_FAIL);
