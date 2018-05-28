@@ -2,11 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
 import lombok.*;
-
-import java.util.Date;
 
 /**
  * <p>

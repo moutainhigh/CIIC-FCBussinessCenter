@@ -83,13 +83,7 @@ spring:
           content-type: application/json
           producer:
             partitionCount: 1
-
-        pr_compute-close-output-channel:
-          destination: fc_compute_close # 关帐
-          content-type: application/json
-          producer:
-            partitionCount: 1
-
+            
         pr_compute-unclose-output-channel:
           destination: fc_compute_unclose # 取消关帐
           content-type: application/json

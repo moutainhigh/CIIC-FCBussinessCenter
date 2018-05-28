@@ -9,6 +9,9 @@ public class ComputeMsg {
     private int computeStatus;
     private int batchType;
 
+    private String optID;
+    private String optName;
+
     public int getComputeStatus() {
         return computeStatus;
     }
@@ -31,6 +34,22 @@ public class ComputeMsg {
 
     public void setBatchType(int batchType) {
         this.batchType = batchType;
+    }
+
+    public String getOptID() {
+        return optID;
+    }
+
+    public void setOptID(String optID) {
+        this.optID = optID;
+    }
+
+    public String getOptName() {
+        return optName;
+    }
+
+    public void setOptName(String optName) {
+        this.optName = optName;
     }
 
     public String toString(){

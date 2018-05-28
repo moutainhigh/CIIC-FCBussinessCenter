@@ -12,6 +12,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
+import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
@@ -411,28 +412,28 @@ public class NormalBatchController {
         }
         if(rowAffected > 0) {
             if(StringUtils.isNotEmpty(batchAuditDTO.getAction()) && batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue()){ //取消关帐通知
-                CancelClosingMsg  cancelClosingMsg = new CancelClosingMsg();
-                cancelClosingMsg.setBatchCode(batchAuditDTO.getBatchCode());
+
+                CancelClosingMsg cancelClosingMsg = new CancelClosingMsg();
                 cancelClosingMsg.setBatchType(batchAuditDTO.getBatchType());
                 cancelClosingMsg.setOptID(UserContext.getUserId());
                 cancelClosingMsg.setOptName(UserContext.getName());
+                cancelClosingMsg.setBatchCode(batchAuditDTO.getBatchCode());
 
-                logger.info("取消关帐 : " + cancelClosingMsg.toString());
-
+                logger.info("发送取消关帐通知给各个业务部门 : " + cancelClosingMsg.toString());
                 sender.SendComputeUnClose(cancelClosingMsg);
+
             }
             else if(batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) { //关帐通知
-                //发送关帐消息
-                ClosingMsg closingMsg = new ClosingMsg();
-                closingMsg.setBatchType(batchAuditDTO.getBatchType());
-                closingMsg.setOptID(UserContext.getUserId());
-                closingMsg.setOptName(UserContext.getName());
-                closingMsg.setBatchCode(batchAuditDTO.getBatchCode());
 
-                logger.info("关帐 : " + closingMsg.toString());
+                ComputeMsg computeMsg = new ComputeMsg();
+                computeMsg.setBatchType(batchAuditDTO.getBatchType());
+                computeMsg.setComputeStatus(BatchStatusEnum.CLOSED.getValue());
+                computeMsg.setBatchCode(batchAuditDTO.getBatchCode());
+                computeMsg.setOptID(UserContext.getUserId());
+                computeMsg.setOptName(UserContext.getName());
 
-                sender.SendComputeClose(closingMsg);
-
+                logger.info("关帐通知给 job sync : " + computeMsg.toString());
+                sender.SendComputeCompleteAction(computeMsg);
             }
             return JsonResult.success(rowAffected);
         }

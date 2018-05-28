@@ -42,12 +42,15 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
     private SalaryGrantEmpHisOpt salaryGrantEmpHisOpt;
     @Autowired
     private SalaryGrantEmployeeQueryService employeeQueryService;
+<<<<<<< HEAD
     @Autowired
     private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
     @Autowired
     private SalaryGrantSupplierSubTaskService salaryGrantSupplierSubTaskService;
     @Autowired
     private CommonService commonService;
+=======
+>>>>>>> c6b3599683f9a5b5625a6444c97e4f05a56dfae6
 
     @Override
     public boolean saveToHistory(long task_his_id, String task_code, int task_type) {
@@ -72,6 +75,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
 
         return true;
     }
+<<<<<<< HEAD
 
     /**
      * 根据任务单编号，任务单类型，雇员编号，发放状态暂缓雇员
@@ -133,4 +137,6 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
 
         return true;
     }
+=======
+>>>>>>> c6b3599683f9a5b5625a6444c97e4f05a56dfae6
 }

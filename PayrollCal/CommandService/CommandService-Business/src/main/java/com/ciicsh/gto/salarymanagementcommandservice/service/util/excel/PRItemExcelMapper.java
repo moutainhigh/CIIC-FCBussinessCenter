@@ -1,5 +1,9 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.excel;
 
+import com.ciicsh.common.entity.JsonResult;
+import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeServiceProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.FcBaseEmpRequestDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.FcBaseEmpResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -39,6 +43,9 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
     @Autowired
     private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
+
+    @Autowired
+    private EmployeeServiceProxy employeeServiceProxy;
 
 
     private String batchCode;
@@ -93,7 +100,8 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
         BasicDBObject rowIndex = new BasicDBObject();
         rowIndex.put("row_index",rs.getCurrentRowIndex());
-        rowIndex.put("emp_code",getEmpCode(rs));
+        setEmp(rs,rowIndex);
+        //rowIndex.put("emp_code",setEmp(rs,rowIndex));
 
         List<BasicDBObject> excelContents = Arrays.asList(excelCols).stream().map(col ->{
             BasicDBObject dbObject = new BasicDBObject();
@@ -113,7 +121,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         return excelContents;
     }
 
-    private String getEmpCode(RowSet rs){
+    private void setEmp(RowSet rs, BasicDBObject rowIndex){
 
             Object empCodeObj = identityMap.get(PayItemName.EMPLOYEE_CODE_CN);
             Object empNameObj = identityMap.get(PayItemName.EMPLOYEE_NAME_CN);
@@ -124,14 +132,26 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             String empName = empNameObj == null ? "":rs.getProperties().get(empNameObj) == null ? "":(String)rs.getProperties().get(empNameObj);
             String idNum = idNumObj == null ? "" : rs.getProperties().get(idNumObj) == null ? "":(String)rs.getProperties().get(idNumObj);
             String empId = empIdObj == null ? "" : rs.getProperties().get(empIdObj) == null ? "":(String)rs.getProperties().get(empIdObj);
-
+            if(StringUtils.isNotEmpty(empId)){
+                rowIndex.put("emp_id",empId);
+            }
             BasicDBObject emp = getEmpInfo(batchCode,batchType,empCode, empName,idNum,empId);
 
             if(emp != null){
-                return String.valueOf(emp.get(PayItemName.EMPLOYEE_CODE_CN));
+                rowIndex.put("emp_code", String.valueOf(emp.get(PayItemName.EMPLOYEE_CODE_CN)));
+            }else {
+                int IDType = 1; //1:身份证 2:护照 3:军(警)官证 4:士兵证 5:台胞证 6:回乡证 7:其他
+                FcBaseEmpRequestDTO empRequestDTO = new FcBaseEmpRequestDTO();
+                empRequestDTO.setIdCardType(IDType);
+                empRequestDTO.setIdNum(idNum);
+                empRequestDTO.setEmployeeCode(empCode);
+                empRequestDTO.setEmployeeName(empName);
+                JsonResult<FcBaseEmpResponseDTO> result = employeeServiceProxy.getFcBaseEmpInfos(empRequestDTO); //TODO empID, empcode, companyId
+                if(result.isSuccess() && result.getData() != null) {
+                    rowIndex.put("emp_code",result.getData().getEmployeeId());
+                    rowIndex.put("companyId", result.getData().getCompanyId());
+                }
             }
-            return null;
-
     }
 
     private BasicDBObject getEmpInfo(String batchCode, int batchType, String empCode, String empName, String idNum, String empId){

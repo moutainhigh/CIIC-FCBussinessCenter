@@ -2,8 +2,10 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,4 +37,13 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      * @return
      */
     Integer deferEmployee(SalaryGrantEmployeeBO bo);
+
+    /**
+     * 查询财务数据
+     * @author chenpb
+     * @since 2018-05-25
+     * @param taskCode
+     * @return
+     */
+    List<FinanceEmployeeBO> selectEmpForFinance(@Param("taskCode") String taskCode);
 }
