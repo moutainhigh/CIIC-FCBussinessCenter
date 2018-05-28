@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSu
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
      */
     @Override
     public SalaryGrantFinanceBO createFinanceDetail(String taskCode) {
-        SalaryGrantFinanceBO bo = new SalaryGrantFinanceBO();
+        SalaryGrantFinanceBO bo = BeanUtils.instantiate(SalaryGrantFinanceBO.class);
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
         if (!empList.isEmpty()) {
