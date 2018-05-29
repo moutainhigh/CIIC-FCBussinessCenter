@@ -49,7 +49,7 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 	@TableField("employee_name")
 	private String employeeName;
     /**
-     * 服务大类:0-人事派遣、1-人事代理、2-外包
+     * 服务大类:1:派遣 2:代理 3:外包
      */
 	@TableField("template_type")
 	private Integer templateType;
