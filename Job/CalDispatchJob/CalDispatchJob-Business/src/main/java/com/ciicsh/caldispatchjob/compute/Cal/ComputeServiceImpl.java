@@ -116,7 +116,7 @@ public class ComputeServiceImpl {
         long start1 = System.currentTimeMillis(); //begin
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
+            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH);
 
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
             batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, AdjustBatchMongoOpt.PR_ADJUST_BATCH);

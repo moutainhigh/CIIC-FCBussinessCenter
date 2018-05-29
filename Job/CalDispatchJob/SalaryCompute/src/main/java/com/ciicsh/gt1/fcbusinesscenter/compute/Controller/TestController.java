@@ -26,7 +26,7 @@ public class TestController {
 
         //设置函数信息
         FuncEntity funcEntity = new FuncEntity();
-        funcEntity.setFuncName("城市最低生活标准");
+        funcEntity.setFuncName("最低工资标准");
         List<String> list = new ArrayList<>();
         list.add("城市");
         funcEntity.setParameters(list);
@@ -43,7 +43,7 @@ public class TestController {
 
         //设置需要触发的规则名称
         HashSet hashSet = new HashSet();
-        hashSet.add("城市最低生活标准");
+        hashSet.add("最低工资标准");
         //end
 
         //触发规则

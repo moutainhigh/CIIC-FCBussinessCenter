@@ -298,14 +298,13 @@ public class NormalBatchController {
         if(list.size() == 1){ // 如果有一条纪录，但 emp_info 为 "" 时，说明雇员组没有雇员
             DBObject checkEmpInfo = list.get(0);
             DBObject catalog = (DBObject)checkEmpInfo.get("catalog");
-            if(catalog.get("emp_info").equals(null)){
+            if(catalog.get("emp_info") == null){
                 return JsonResult.success(0);
             }
         }
         //List<DBObject> list = normalBatchMongoOpt.list(criteria).stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 
         logger.info("获取翻页时间 : " + String.valueOf((System.currentTimeMillis() - start)));
-
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = commonService.translate(list);
         PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
         result.setTotal(totalCount);
