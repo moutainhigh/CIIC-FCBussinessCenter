@@ -7,6 +7,7 @@
 		<id column="employee_id" property="employeeId" />
 		<result column="employee_name" property="employeeName" />
 		<result column="company_id" property="companyId" />
+		<result column="emp_code" property="empCode" />
 		<result column="former_name" property="formerName" />
 		<result column="id_card_type" property="idCardType" />
 		<result column="id_num" property="idNum" />
@@ -34,6 +35,7 @@
 		SELECT
 			b.company_id,
 			b.employee_id,
+			b.emp_code,
 			b.employee_name,
 			b.former_name,
 			b.id_card_type,
@@ -90,6 +92,7 @@
 		REPLACE INTO
 		pr_employee (
 			employee_id,
+			emp_code,
 			company_id,
 			id_card_type,
 			id_num,
@@ -114,6 +117,7 @@
 		VALUES
 		(
 			#{employeeId},
+			#{empCode},
 			#{companyId},
 			#{idCardType},
 			#{idNum},

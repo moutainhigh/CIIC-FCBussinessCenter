@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.common.entity.JsonResult;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.companycenter.webcommandservice.api.WorkingCalendarProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.WorkingCalendarRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.WorkingCalendarResponseDTO;
@@ -68,8 +69,8 @@ public class AccountSetController extends BaseController {
         else{
             String accountSetCode = codeGenerator.genPrAccountSetCode(accountSetDTO.getManagementId());
             accountSetDTO.setAccountSetCode(accountSetCode);
-            accountSetDTO.setCreatedBy("macor");
-            accountSetDTO.setModifiedBy("macor");
+            accountSetDTO.setCreatedBy(UserContext.getUserId());
+            accountSetDTO.setModifiedBy(UserContext.getUserId());
             PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
             boolean result = prAccountSetService.addAccountSet(payrollAccountSetPO);
             if(result){

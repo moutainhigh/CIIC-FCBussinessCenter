@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.SMUserInfoProxy;
 import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.dto.auth.SMUserInfoDTO;
 import com.ciicsh.gto.basicdataservice.api.CityServiceProxy;
@@ -10,6 +11,9 @@ import com.ciicsh.gto.basicdataservice.api.dto.CityDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.CountryDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.DicItemDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.ProvinceDTO;
+import com.ciicsh.gto.billcenter.fcmodule.api.ISalaryEmployeeProxy;
+import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryEmployeeProxyDTO;
+import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
@@ -64,6 +68,8 @@ public class CommonServiceImpl implements CommonService {
     private LogServiceProxy logService;
     @Autowired
     private SMUserInfoProxy smUserInfoProxy;
+    @Autowired
+    private ISalaryEmployeeProxy salaryEmployeeProxy;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -235,5 +241,37 @@ public class CommonServiceImpl implements CommonService {
                 return null;
             }
         }
+    }
+
+    @Override
+    public SalaryProxyDTO selectEmployeeServiceFeeAmount(String salaryGrantSubTaskCode, List<SalaryGrantEmployeePO> employeePOList) {
+        if (!CollectionUtils.isEmpty(employeePOList)) {
+            //调用账单中心接口获取雇员薪酬服务费
+            SalaryProxyDTO salaryProxyDTO = new SalaryProxyDTO();
+            //批次编号
+            salaryProxyDTO.setBatchCode(salaryGrantSubTaskCode);
+            //公司雇员信息列表
+            List<SalaryEmployeeProxyDTO> employeeList = new ArrayList<>();
+
+            employeePOList.stream().forEach(employeePO -> {
+                SalaryEmployeeProxyDTO employeeProxyDTO = new SalaryEmployeeProxyDTO();
+                employeeProxyDTO.setCompanyId(employeePO.getCompanyId());
+                employeeProxyDTO.setEmployeeId(employeePO.getEmployeeId());
+                employeeList.add(employeeProxyDTO);
+            });
+
+            com.ciicsh.gto.billcenter.fcmodule.api.common.JsonResult<SalaryProxyDTO> proxyDTOJsonResult = salaryEmployeeProxy.getSalaryEmployeeServiceFee(salaryProxyDTO);
+            if (!ObjectUtils.isEmpty(proxyDTOJsonResult)) {
+                if (proxyDTOJsonResult.getCode().intValue() == 0) {
+                    return proxyDTOJsonResult.getData();
+                } else {
+                    logService.info(LogDTO.of().setLogType(LogType.APP).setSource("雇员服务").setTitle("调用账单中心接口查询雇员薪酬服务费").setContent("调用接口未成功返回数据"));
+                }
+            } else {
+                logService.info(LogDTO.of().setLogType(LogType.APP).setSource("雇员服务").setTitle("调用账单中心接口查询雇员薪酬服务费").setContent("调用接口出现错误"));
+            }
+        }
+
+        return null;
     }
 }

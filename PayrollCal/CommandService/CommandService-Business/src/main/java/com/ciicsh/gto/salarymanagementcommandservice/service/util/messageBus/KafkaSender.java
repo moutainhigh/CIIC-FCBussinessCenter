@@ -77,21 +77,6 @@ public class KafkaSender {
         }
     }
 
-
-    /**
-     * 发送薪资关帐
-     * @param closingMsg
-     */
-    public void SendComputeClose(ClosingMsg closingMsg ){
-        try {
-            logger.info("发送关帐消息");
-            payrollSource.computeCloseOutput().send(MessageBuilder.withPayload(closingMsg).build());
-        }
-        catch (Exception ex){
-            logger.error(ex.getMessage());
-        }
-    }
-
     /**
      * 发送薪资取消关帐
      * @param cancelClosingMsg

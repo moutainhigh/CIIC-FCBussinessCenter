@@ -38,10 +38,6 @@ public interface PayrollSource {
     @Output(PR_ADJUST_BATCH_OUTPUT)
     MessageChannel adujstBatchOutput();
 
-    String PR_COMPUTE_CLOSE_OUTPUT = "pr_compute-close-output-channel";
-    @Output(PR_COMPUTE_CLOSE_OUTPUT)
-    MessageChannel computeCloseOutput();
-
     String PR_COMPUTE_UNCLOSE_OUTPUT = "pr_compute-unclose-output-channel";
     @Output(PR_COMPUTE_UNCLOSE_OUTPUT)
     MessageChannel computeUnCloseOutput();

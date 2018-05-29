@@ -1,8 +1,10 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 
 import java.util.List;
 import java.util.Map;
@@ -73,4 +75,13 @@ public interface CommonService {
      * @return String 用户名称
      */
     String getUserNameById(String userId);
+
+    /**
+     * 调用账单中心接口查询雇员薪酬服务费
+     *
+     * @param salaryGrantSubTaskCode
+     * @param employeePOList
+     * @return
+     */
+    SalaryProxyDTO selectEmployeeServiceFeeAmount(String salaryGrantSubTaskCode, List<SalaryGrantEmployeePO> employeePOList);
 }

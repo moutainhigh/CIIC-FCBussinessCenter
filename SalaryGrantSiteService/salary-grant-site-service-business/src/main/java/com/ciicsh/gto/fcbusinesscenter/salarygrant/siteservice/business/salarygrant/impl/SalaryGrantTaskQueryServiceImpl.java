@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -202,4 +203,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
         return list;
     }
 
+    @Override
+    public Map<String, Object> queryForPayment(String grant_date) {
+        return null;
+    }
 }
