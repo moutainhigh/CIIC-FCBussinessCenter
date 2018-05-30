@@ -68,8 +68,8 @@ public class FinanceEmployeeBO {
      */
     private BigDecimal yearEndBonus;
     /**
-     * 小计
+     * 汇总
      */
-    private Integer subTotalSum;
+    private Integer totalSum;
 
 }

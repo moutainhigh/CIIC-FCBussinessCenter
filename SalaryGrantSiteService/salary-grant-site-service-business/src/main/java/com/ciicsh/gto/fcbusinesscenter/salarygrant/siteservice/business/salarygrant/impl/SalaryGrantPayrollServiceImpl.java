@@ -69,7 +69,7 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
     }
 
     /**
-     * @description 统计
+     * @description 统计汇总
      * @author chenpb
      * @since 2018-05-28
      * @param type：统计类型
@@ -81,12 +81,12 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         if (type==0) {
             summary.setCompanyId("小计");
             summary.setEmployeeName(String.valueOf(list.size()));
-            summary.setSubTotalSum(list.size());
+            summary.setTotalSum(list.size());
         } else {
             summary.setCompanyId("合计");
-            Integer sum = list.parallelStream().mapToInt(FinanceEmployeeBO::getSubTotalSum).sum();
+            Integer sum = list.parallelStream().mapToInt(FinanceEmployeeBO::getTotalSum).sum();
             summary.setEmployeeName(String.valueOf(sum));
-            summary.setSubTotalSum(sum);
+            summary.setTotalSum(sum);
         }
         summary.setWagePayable(list.parallelStream().map(FinanceEmployeeBO::getWagePayable).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setPersonalSocialSecurity(list.parallelStream().map(FinanceEmployeeBO::getPersonalSocialSecurity).reduce(BigDecimal.ZERO, BigDecimal::add));
