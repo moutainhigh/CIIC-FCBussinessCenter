@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
@@ -242,14 +243,15 @@ public class PrGroupServiceImpl implements PrGroupService {
             prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
             prPayrollGroupHistoryPO.setVersion(version);
             prPayrollGroupHistoryPO.setPayrollGroupHistory(history);
-            prPayrollGroupHistoryPO.setCreatedBy("system");
-            prPayrollGroupHistoryPO.setModifiedBy("system");
+            prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
+            prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
         }
         // 更新审批历史
         ApprovalHistoryPO approvalHistoryPO = new ApprovalHistoryPO();
         approvalHistoryPO.setBizCode(paramItem.getGroupCode());
         approvalHistoryPO.setBizType(BizTypeEnum.PR_GROUP.getValue());
+        approvalHistoryPO.setCreatedBy(UserContext.getUserId());
         approvalHistoryPO.setApprovalResult(paramItem.getApprovalStatus());
         approvalHistoryPO.setComments(paramItem.getComments());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);

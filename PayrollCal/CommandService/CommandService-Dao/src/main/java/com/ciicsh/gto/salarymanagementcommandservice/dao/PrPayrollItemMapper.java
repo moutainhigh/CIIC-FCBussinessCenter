@@ -68,6 +68,6 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      * @param groupCode
      * @return
      */
-    Integer selectMaxCalPriorityOfGroup(@Param("groupCode")String groupCode);
+    Integer selectMaxCalPriorityOfGroup(@Param("groupCode")String groupCode, @Param("isTemplate")Boolean isTemplate);
 
 }
