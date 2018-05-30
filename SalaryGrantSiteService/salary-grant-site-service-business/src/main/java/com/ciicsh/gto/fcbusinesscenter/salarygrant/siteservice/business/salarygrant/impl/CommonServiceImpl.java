@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -295,7 +296,7 @@ public class CommonServiceImpl implements CommonService {
             salaryBatchDTO.setPayEmployeeCount(taskPaymentBO.getPayEmployeeCount()); //本批次将付雇员数量（正常的雇员）
             salaryBatchDTO.setApplyer(getUserNameById(taskPaymentBO.getOperatorUserId())); //申请人
             salaryBatchDTO.setApplyDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))); //申请日期
-            salaryBatchDTO.setAgentFeeAmount(null); //财务代理费
+            salaryBatchDTO.setAgentFeeAmount(new BigDecimal(0)); //财务代理费
             //is_advance，逻辑判断
             if (!ObjectUtils.isEmpty(taskPaymentBO.getBalanceGrant())) {
                 if (taskPaymentBO.getBalanceGrant() == 0) {
@@ -330,11 +331,29 @@ public class CommonServiceImpl implements CommonService {
                 salaryEmployeeDTO.setAreaCode(employeePaymentBO.getBankcardProvinceCode()); //银行地区码
                 salaryEmployeeDTO.setPaySocialinsuranceAmount(employeePaymentBO.getPersonalSocialSecurity()); //社保金额
                 salaryEmployeeDTO.setPayHousefundAmount(employeePaymentBO.getIndividualProvidentFund()); //公积金金额
-                salaryEmployeeDTO.setIfWelfarePay(employeePaymentBO.getWelfareIncluded() ? 1 : 0); //是否要付社保/公积金(1:是；0:否)
+                if (!ObjectUtils.isEmpty(employeePaymentBO.getWelfareIncluded())) {
+                    salaryEmployeeDTO.setIfWelfarePay(employeePaymentBO.getWelfareIncluded() ? 1 : 0); //是否要付社保/公积金(1:是；0:否)
+                }
                 salaryEmployeeDTO.setPayIncometaxAmount(employeePaymentBO.getPersonalIncomeTax()); //个税金额
-                salaryEmployeeDTO.setIfTaxPay(employeePaymentBO.getIfTaxPay()); //是否要付个税(1:是；0:否)
+                if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantServiceType())) {
+                    if (employeePaymentBO.getGrantServiceType() == 0) {
+                        salaryEmployeeDTO.setIfTaxPay(0); //是否要付个税(1:是；0:否)
+                    }
+
+                    if (employeePaymentBO.getGrantServiceType() == 1 || employeePaymentBO.getGrantServiceType() == 2) {
+                        salaryEmployeeDTO.setIfTaxPay(1); //是否要付个税(1:是；0:否)
+                    }
+                }
                 salaryEmployeeDTO.setSalaryAmount(employeePaymentBO.getWagePayable()); //应付工资
-                salaryEmployeeDTO.setIfSalaryPay(employeePaymentBO.getIfSalaryPay()); //是否要付工资(1:是；0:否)
+                if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantServiceType())) {
+                    if (employeePaymentBO.getGrantServiceType() == 1) {
+                        salaryEmployeeDTO.setIfSalaryPay(0); //是否要付工资(1:是；0:否)
+                    }
+
+                    if (employeePaymentBO.getGrantServiceType() == 0 || employeePaymentBO.getGrantServiceType() == 2) {
+                        salaryEmployeeDTO.setIfSalaryPay(1); //是否要付工资(1:是；0:否)
+                    }
+                }
                 salaryEmployeeDTO.setPayAmount(employeePaymentBO.getPaymentAmount()); //应付金额 实发工资
                 salaryEmployeeDTO.setSalaryMonth(employeePaymentBO.getGrantCycle()); //工资月份
                 salaryEmployeeDTO.setTaxMonth(employeePaymentBO.getTaxCycle()); //个税月份
@@ -348,7 +367,7 @@ public class CommonServiceImpl implements CommonService {
                         salaryEmployeeDTO.setSalaryStatus(employeePaymentBO.getGrantStatus()); //雇员薪资明细状态(0:正常;1:暂缓放开;2:退票完成;3:现金完成;4:调整完成;负值标识未完成/未放开)
                     }
                 }
-                salaryEmployeeDTO.setTaxStatus(employeePaymentBO.getTaxStatus()); //雇员明细状态雇员个税状态(0:正常;1:暂缓放开;负值标识未完成/未放开)
+                salaryEmployeeDTO.setTaxStatus(0); //雇员明细状态雇员个税状态(0:正常;1:暂缓放开;负值标识未完成/未放开)
 
                 employeeList.add(salaryEmployeeDTO);
             });

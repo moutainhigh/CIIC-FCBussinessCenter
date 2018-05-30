@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
@@ -223,13 +224,13 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * 每天晚上8点执行任务
      *
      */
-//    @Scheduled(cron = "0 0 20 * * ?")
-    //每2分钟执行一次
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0 20 * * ?")
+    //每30秒执行一次
+//    @Scheduled(cron = "*/30 * * * * ?")
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void queryForPayment() {
-        System.out.println("薪资发放定时任务 启动");
+//        System.out.println("薪资发放定时任务 启动");
 
         //获取次日日期
         String grantDate = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -304,6 +305,6 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
             }
         }
 
-        System.out.println("薪资发放定时任务 完成");
+//        System.out.println("薪资发放定时任务 完成");
     }
 }

@@ -130,6 +130,7 @@
             resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO"
             parameterType="java.lang.String">
         select
+            salary_grant_employee_id        salaryGrantEmployeeId  ,
             company_id                      companyId              ,
             company_name                    companyName            ,
             employee_id                     employeeId             ,
@@ -150,6 +151,7 @@
             tax_cycle                       taxCycle               ,
             contract_first_party            contractFirstParty     ,
             service_fee_amount              serviceFeeAmount       ,
+            grant_service_type              grantServiceType       ,
             grant_status                    grantStatus
         from
             sg_salary_grant_employee
