@@ -70,7 +70,7 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      * @param groupCode
      * @return
      */
-    Integer selectMaxCalPriorityOfGroup(@Param("groupCode")String groupCode);
+    Integer selectMaxCalPriorityOfGroup(@Param("groupCode")String groupCode, @Param("isTemplate")Boolean isTemplate);
 
     /**
      * 获取薪资项列表(如果有alias 优先显示)

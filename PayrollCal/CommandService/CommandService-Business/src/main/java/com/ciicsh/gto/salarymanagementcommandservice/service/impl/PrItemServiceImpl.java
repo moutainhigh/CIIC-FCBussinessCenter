@@ -109,8 +109,10 @@ public class PrItemServiceImpl implements PrItemService {
         param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
         param.setModifiedTime(new Date());
         param.setCreatedTime(new Date());
-        if(param.getItemType() == ItemTypeEnum.CALC.getValue())
-            param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(param.getPayrollGroupCode()) + 1);
+        if(param.getItemType() == ItemTypeEnum.CALC.getValue()) {
+            String groupCode = param.getPayrollGroupCode() == null ? param.getPayrollGroupTemplateCode() : param.getPayrollGroupCode();
+            param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(groupCode, !StringUtils.isEmpty(param.getPayrollGroupTemplateCode())) + 1);
+        }
         this.replaceItemNameWithCode(param);
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
