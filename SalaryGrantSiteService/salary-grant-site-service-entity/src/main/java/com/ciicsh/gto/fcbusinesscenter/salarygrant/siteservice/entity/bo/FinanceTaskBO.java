@@ -47,9 +47,9 @@ public class FinanceTaskBO {
     /**
      * 发放人数
      */
-    private Integer amountNum;
+    private Integer amountNum = 0;
     /**
      * 年终奖人数
      */
-    private Integer yearBonusNum;
+    private Integer yearBonusNum = 0;
 }
