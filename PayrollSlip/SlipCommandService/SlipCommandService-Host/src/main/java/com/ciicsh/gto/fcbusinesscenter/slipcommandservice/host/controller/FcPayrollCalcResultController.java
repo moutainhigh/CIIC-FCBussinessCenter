@@ -11,15 +11,22 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.FcPayrollCalc
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.FcPayrollCalcResultPO;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.client.MongoCursor;
+import kafka.controller.LeaderIsrAndControllerEpoch;
+import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -130,7 +137,7 @@ public class FcPayrollCalcResultController {
 
 
         String id = request.getParameter("SalaryID");
-        if (id == null || id.equals("")) {
+        if (StringUtils.isEmpty(id)) {
             return new HashMap<String, Object>(){
                 {
                     put("SalaryID", id);
@@ -146,9 +153,25 @@ public class FcPayrollCalcResultController {
 //        condList.add(new BasicDBObject("_id", id));
         BasicDBObject condition= new BasicDBObject("income_year_month", id);
 
-        Document doc = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find(condition).first();
 
-        JSONArray arr = JSON.parseArray((String)doc.get("salary_calc_result_items"));
+        Criteria criteria = Criteria.where("income_year_month").is(id);
+        Query query = Query.query(criteria);
+
+        JSONArray arr = null;
+
+        try {
+            Optional<DBObject> find = mongoConfig.mongoTemplate().find(query, DBObject.class).stream().findFirst();
+            if(find.isPresent()){
+                arr = JSON.parseArray((String)find.get().get("salary_calc_result_items"));
+
+            }
+        }catch (Exception ex){
+
+        }
+
+        //Document doc = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find(condition).first();
+
+        //JSONArray arr = JSON.parseArray((String)doc.get("salary_calc_result_items"));
 
         ArrayList<Map<String, Object>> records = new ArrayList();
 
