@@ -1,12 +1,18 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gt1.FileHandler;
+import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.FcPayrollCalcResultService;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.FcPayrollCalcResultPO;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCursor;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -32,6 +35,9 @@ public class FcPayrollCalcResultController {
 
     @Autowired
     private FcPayrollCalcResultService fcPayrollCalcResultService;
+
+    @Autowired
+    private MongoConfig mongoConfig;
 
     @RequestMapping(value = "/listFcPayrollCalcResults")
     public JsonResult list(@RequestBody String params) {
@@ -70,7 +76,6 @@ public class FcPayrollCalcResultController {
 
     @RequestMapping(value = "/SalaryQuery")
     public Map<String, Object> SalaryQuery(HttpServletRequest request) {
-        ArrayList<Map<String, Object>> list = new ArrayList();
 
         String empId = request.getParameter("EmployeeID");
         if (empId == null || empId.equals("")) {
@@ -85,30 +90,34 @@ public class FcPayrollCalcResultController {
             };
         }
 
-        Map<String, Object> params = new HashMap<String, Object>(){
-            {
-                put("empId", empId);
+        List<Object> records = new ArrayList();
+
+//        BasicDBList condList = new BasicDBList();
+//        condList.add(new BasicDBObject("empId", empId));
+        BasicDBObject condition= new BasicDBObject("emp_id", empId);
+
+        MongoCursor<Document> cursor = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find(condition).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                Document doc = cursor.next();
+                Map<String, Object> ele = new HashMap<String, Object>(){
+                    {
+                        put("SalaryID", doc.get("income_year_month"));
+                        put("SalaryMonth", doc.get("income_year_month"));
+                        put("Salary", doc.get("net_pay"));
+                    }
+                };
+                records.add(ele);
             }
-        };
-
-
-//        for (FcPayrollCalcResultPO po : fcPayrollCalcResultService.listFcPayrollCalcResults(params)) {
-//
-//            Map<String, Object> ele = new HashMap<String, Object>(){
-//                {
-//                    put("SalaryID", po.getFcPayrollCalcResultId());
-//                    put("SalaryMonth", po.getPersonnelIncomeYearMonth());
-//                    put("Salary", po.getPersonnelIncomeNetPay());
-//                }
-//            };
-//
-//            list.add(ele);
-//        }
+        } finally {
+            cursor.close();
+        }
 
         return new HashMap<String, Object>(){
             {
                 put("EmployeeID", empId);
-                put("ReturnObject", list);
+                put("ReturnObject", records);
                 put("ErrorCode", 0);
                 put("IsSuccess", true);
                 put("Message", "获取成功");
@@ -118,13 +127,13 @@ public class FcPayrollCalcResultController {
 
     @RequestMapping(value = "/DetailsSalaryQuery")
     public Map<String, Object> DetailsSalaryQuery(HttpServletRequest request) {
-        ArrayList<Map<String, Object>> list = new ArrayList();
 
-        String fcPayrollCalcResultId = request.getParameter("SalaryID");
-        if (fcPayrollCalcResultId == null || fcPayrollCalcResultId.equals("")) {
+
+        String id = request.getParameter("SalaryID");
+        if (id == null || id.equals("")) {
             return new HashMap<String, Object>(){
                 {
-                    put("SalaryID", fcPayrollCalcResultId);
+                    put("SalaryID", id);
                     put("ReturnObject", null);
                     put("ErrorCode", 0);
                     put("IsSuccess", false);
@@ -133,30 +142,31 @@ public class FcPayrollCalcResultController {
             };
         }
 
-        Map<String, Object> params = new HashMap<String, Object>(){
-            {
-                put("fcPayrollCalcResultId", fcPayrollCalcResultId);
-            }
-        };
+//        BasicDBList condList = new BasicDBList();
+//        condList.add(new BasicDBObject("_id", id));
+        BasicDBObject condition= new BasicDBObject("income_year_month", id);
 
-        FcPayrollCalcResultPO po = fcPayrollCalcResultService.getFcPayrollCalcResult(params);
+        Document doc = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find(condition).first();
 
-        JSONObject hash = JSON.parseObject(po.getSalaryCalcResultItems());
+        JSONArray arr = JSON.parseArray((String)doc.get("salary_calc_result_items"));
 
-        for (String key : hash.keySet()) {
-            Map<String, Object> item = new HashMap<String, Object>(){
+        ArrayList<Map<String, Object>> records = new ArrayList();
+
+        for (Object obj : arr) {
+            Map<String, Object> item = (Map<String, Object>) obj;
+            Map<String, Object> map = new HashMap<String, Object>(){
                 {
-                    put("ItemName", key);
-                    put("ItemValue", hash.get(key));
+                    put("ItemName", item.get("item_name"));
+                    put("ItemValue", item.get("item_value"));
                 }
             };
-            list.add(item);
+            records.add(map);
         }
 
         return new HashMap<String, Object>(){
             {
-                put("SalaryID", fcPayrollCalcResultId);
-                put("ReturnObject", list);
+                put("SalaryID", id);
+                put("ReturnObject", records);
                 put("ErrorCode", 0);
                 put("IsSuccess", true);
                 put("Message", "获取成功");

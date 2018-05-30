@@ -24,8 +24,6 @@ import java.util.Map;
  * @since 2018-02-28
  */
 @Service
-@Transactional
-@SuppressWarnings("all")
 public class PrsSubTaskServiceImpl implements PrsSubTaskService {
 
     @Autowired
