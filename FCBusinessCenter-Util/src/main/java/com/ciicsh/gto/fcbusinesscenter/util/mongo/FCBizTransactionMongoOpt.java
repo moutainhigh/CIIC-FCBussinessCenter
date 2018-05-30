@@ -62,7 +62,6 @@ public class FCBizTransactionMongoOpt extends BaseOpt {
         return this.upsert(query,update);
     }
 
-
     public int getStatus(String batchCode){
         Criteria criteria = Criteria.where("batch_code").is(batchCode);
         Query query = Query.query(criteria);

@@ -180,13 +180,11 @@ public class CompleteComputeServiceImpl {
             sender.SendComputeClose(closingMsg);
             logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
 
-
-            /*
             //初始化FC分布式事务
             int affected = initializeDistributedTransaction(batchCode,batchType);
             if(affected > 0) {
                 logger.info("初始化 %s 事务成功", EventName.FC_TRANSACTION_NAME);
-            }*/
+            }
         }
     }
 
