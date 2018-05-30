@@ -56,8 +56,7 @@ public interface SalaryGrantTaskQueryService {
     /**
      * 薪资发放定时任务
      *
-     * @param grant_date
      * @return
      */
-    Map<String, Object> queryForPayment(String grant_date);
+    void queryForPayment();
 }

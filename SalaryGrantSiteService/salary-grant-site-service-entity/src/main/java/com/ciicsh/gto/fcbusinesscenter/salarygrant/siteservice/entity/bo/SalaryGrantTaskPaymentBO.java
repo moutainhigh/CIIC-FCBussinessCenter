@@ -1,5 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
+import lombok.Data;
+import lombok.ToString;
+
 import java.math.BigDecimal;
 
 /**
@@ -9,7 +12,13 @@ import java.math.BigDecimal;
  * @version 1.0
  * @date 2018/5/25 0025
  */
+@ToString(callSuper = true)
+@Data
 public class SalaryGrantTaskPaymentBO extends SalaryGrantTaskBO {
+    /**
+     * 任务单主表编号
+     */
+    private String mainTaskCode;
     /**
      * 正常发放雇员的实发工资之和
      */

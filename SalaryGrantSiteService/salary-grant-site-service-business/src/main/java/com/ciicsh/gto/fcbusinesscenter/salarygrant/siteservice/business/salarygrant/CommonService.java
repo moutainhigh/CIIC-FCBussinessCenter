@@ -2,9 +2,12 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -84,4 +87,13 @@ public interface CommonService {
      * @return
      */
     SalaryProxyDTO selectEmployeeServiceFeeAmount(String salaryGrantSubTaskCode, List<SalaryGrantEmployeePO> employeePOList);
+
+    /**
+     * 调用结算中心发放工资清单接口
+     *
+     * @param taskPaymentBO
+     * @param employeePaymentBOList
+     * @return
+     */
+    SalaryBatchDTO saveSalaryBatchData(SalaryGrantTaskPaymentBO taskPaymentBO, List<SalaryGrantEmployeePaymentBO> employeePaymentBOList);
 }

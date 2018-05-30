@@ -12,7 +12,9 @@ import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmployeeC
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.FcEmployeeResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.entity.DistributedTranEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -68,6 +70,9 @@ public class CompleteComputeServiceImpl {
     @Autowired
     private BatchSender sender;
 
+    @Autowired
+    private FCBizTransactionMongoOpt bizTransactionMongoOpt;
+
 
     public void processCompleteCompute(String batchCode, int batchType, String userID, String userName){
 
@@ -118,7 +123,6 @@ public class CompleteComputeServiceImpl {
             mapObj.put("mgr_name", batchInfo.get("management_Name") == null ? "" : batchInfo.get("management_Name")); // 管理方名称
             mapObj.put("emp_id", empCode); // 中智雇员ID
             mapObj.put("emp_info",empInfo); // 雇员信息
-            mapObj.put("tax_info",empInfo.get("tax_info") == null ? "" : empInfo.get("tax_info")); // 雇员个税信息
             //mapObj.put("emp_name",emp.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_NAME_CN));
             //mapObj.put("id_card_type",emp.get(PayItemName.EMPLOYEE_ID_TYPE_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_ID_TYPE_CN)); //证件类型
             //mapObj.put("id_num",emp.get(PayItemName.IDENTITY_NUM) == null ? "" : emp.get(PayItemName.IDENTITY_NUM)); //证件号
@@ -166,7 +170,6 @@ public class CompleteComputeServiceImpl {
 
         logger.info("批量插入成功：" + String.valueOf(rowAffected));
 
-        /* TODO
         if(rowAffected > 0){
             ClosingMsg closingMsg = new ClosingMsg();
             closingMsg.setBatchCode(batchCode);
@@ -174,10 +177,17 @@ public class CompleteComputeServiceImpl {
             closingMsg.setOptID(userID);
             closingMsg.setOptName(userName);
 
+            sender.SendComputeClose(closingMsg);
             logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
 
-            sender.SendComputeClose(closingMsg);
-        }*/
+
+            /*
+            //初始化FC分布式事务
+            int affected = initializeDistributedTransaction(batchCode,batchType);
+            if(affected > 0) {
+                logger.info("初始化 %s 事务成功", EventName.FC_TRANSACTION_NAME);
+            }*/
+        }
     }
 
     /**
@@ -237,12 +247,10 @@ public class CompleteComputeServiceImpl {
                 Format formatter = new SimpleDateFormat("yyyy-MM-dd");
                 basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,item.getEmployeeName());
                 basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN, item.getBirthday() == null ? "" : formatter.format(item.getBirthday()));
-                basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,"");
                 basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN, item.getGender()? "男":"女");
                 basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.getIdCardType());
                 basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN, item.getInDate() == null ? "" : formatter.format(item.getInDate()));
                 basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.getIdNum());
-                basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,"");
                 basicDBObject.put(PayItemName.EMPLOYEE_FORMER_CN, item.getFormerName());
                 basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN,item.getCountryCode());
                 basicDBObject.put(PayItemName.EMPLOYEE_PROVINCE_CODE_CN,item.getProvinceCode());
@@ -298,19 +306,19 @@ public class CompleteComputeServiceImpl {
                 tax.put("stockName", taxInfo.getStockName());
                 tax.put("stockCode", taxInfo.getStockCode());
                 tax.put("stockType", taxInfo.getStockType());
-                tax.put("optStrikePrice", taxInfo.getOptStrikePrice() == null ? "" : taxInfo.getOptStrikePrice().toString());
-                tax.put("optPowerPrice", taxInfo.getOptPowerPrice() == null ? "" : taxInfo.getOptPowerPrice().toString());
+                tax.put("optStrikePrice", taxInfo.getOptStrikePrice() == null ? "" : taxInfo.getOptStrikePrice().doubleValue());
+                tax.put("optPowerPrice", taxInfo.getOptPowerPrice() == null ? "" : taxInfo.getOptPowerPrice().doubleValue());
                 tax.put("optStockAmount", taxInfo.getOptStockAmount());
-                tax.put("optMonthlyStrikeIncome", taxInfo.getOptMonthlyStrikeIncome() == null ? "" : taxInfo.getOptMonthlyStrikeIncome().toString());
-                tax.put("appStrikePrice", taxInfo.getAppStrikePrice() == null ? "" : taxInfo.getAppStrikePrice().toString());
-                tax.put("appPowerPrice", taxInfo.getAppPowerPrice() == null ? "" : taxInfo.getAppPowerPrice().toString());
+                tax.put("optMonthlyStrikeIncome", taxInfo.getOptMonthlyStrikeIncome() == null ? "" : taxInfo.getOptMonthlyStrikeIncome().doubleValue());
+                tax.put("appStrikePrice", taxInfo.getAppStrikePrice() == null ? "" : taxInfo.getAppStrikePrice().doubleValue());
+                tax.put("appPowerPrice", taxInfo.getAppPowerPrice() == null ? "" : taxInfo.getAppPowerPrice().doubleValue());
                 tax.put("appStockAmount", taxInfo.getAppStockAmount());
-                tax.put("appMonthlyStrikeIncome", taxInfo.getAppMonthlyStrikeIncome() == null ? "" : taxInfo.getAppMonthlyStrikeIncome().toString());
-                tax.put("resRegistPrice", taxInfo.getResRegistPrice() == null ? "" : taxInfo.getResRegistPrice());
-                tax.put("resJjPrice", taxInfo.getResJjPrice() == null ? "":taxInfo.getResJjPrice().toString());
+                tax.put("appMonthlyStrikeIncome", taxInfo.getAppMonthlyStrikeIncome() == null ? "" : taxInfo.getAppMonthlyStrikeIncome().doubleValue());
+                tax.put("resRegistPrice", taxInfo.getResRegistPrice() == null ? "" : taxInfo.getResRegistPrice().doubleValue());
+                tax.put("resJjPrice", taxInfo.getResJjPrice() == null ? "":taxInfo.getResJjPrice().doubleValue());
                 tax.put("resJjAmount", taxInfo.getResJjAmount());
-                tax.put("resPayAmount", taxInfo.getResPayAmount() == null ? "" : taxInfo.getResPayAmount().toString());
-                tax.put("resMonthlyStrikeIncome", taxInfo.getResMonthlyStrikeIncome() == null? "" : taxInfo.getResMonthlyStrikeIncome().toString());
+                tax.put("resPayAmount", taxInfo.getResPayAmount() == null ? "" : taxInfo.getResPayAmount().doubleValue());
+                tax.put("resMonthlyStrikeIncome", taxInfo.getResMonthlyStrikeIncome() == null? "" : taxInfo.getResMonthlyStrikeIncome().doubleValue());
 
                 basicDBObject.put("tax_info", tax);
 
@@ -342,6 +350,41 @@ public class CompleteComputeServiceImpl {
             return com.alibaba.fastjson.JSON.toJSONString(result.getData().get(0));
         }
         return "";
+    }
+
+    /**
+     * 初始化薪资计算后续分布式事务
+     */
+    private int initializeDistributedTransaction(String batchCode, int batchType){
+        DistributedTranEntity tranEntity = new DistributedTranEntity();
+        tranEntity.setTransactionName(EventName.FC_TRANSACTION_NAME);
+        tranEntity.setBatchCode(batchCode);
+        tranEntity.setBatchType(batchType);
+        tranEntity.setCompleted(false);
+        List<DBObject> events = new ArrayList<>();
+        DBObject event = new BasicDBObject();
+        event.put("event_name",EventName.FC_GRANT_EVENT);
+        event.put("event_status", 0 );
+        events.add(event);
+
+        event = new BasicDBObject();
+        event.put("event_name",EventName.FC_BILL_EVENT);
+        event.put("event_status", 0 );
+        events.add(event);
+
+        event = new BasicDBObject();
+        event.put("event_name",EventName.FC_SLIP_EVENT);
+        event.put("event_status", 0 );
+        events.add(event);
+
+        event = new BasicDBObject();
+        event.put("event_name",EventName.FC_TAX_EVENT);
+        event.put("event_status", 0 );
+        events.add(event);
+
+        tranEntity.setEvents(events);
+        return bizTransactionMongoOpt.initDistributedTransaction(tranEntity);
+
     }
 
 }
