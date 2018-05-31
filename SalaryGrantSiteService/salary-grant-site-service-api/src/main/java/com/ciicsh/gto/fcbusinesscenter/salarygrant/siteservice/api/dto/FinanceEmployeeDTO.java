@@ -44,6 +44,10 @@ public class FinanceEmployeeDTO implements Serializable {
      */
     private Integer templateType;
     /**
+     * 服务大类名
+     */
+    private String templateName;
+    /**
      * 应付工资
      */
     private BigDecimal wagePayable;

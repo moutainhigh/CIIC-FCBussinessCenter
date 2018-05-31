@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单任务单主表
  *
  * @author taka
- * @since 2018-05-14
+ * @since 2018-05-29
  */
 @TableName("prs_main_task")
 public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
@@ -105,6 +105,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
    */
   @TableField("publish_manual_date")
   private Date publishManualDate;
+
+  /**
+   * 上传智翔通日期
+   */
+  @TableField("upload_zxt_date")
+  private Date uploadZxtDate;
 
   /**
    * 主动发送备注
@@ -328,6 +334,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.publishManualDate = publishManualDate;
   }
 
+  public Date getUploadZxtDate() {
+    return uploadZxtDate;
+  }
+
+  public void setUploadZxtDate(Date uploadZxtDate) {
+    this.uploadZxtDate = uploadZxtDate;
+  }
+
   public String getPublishManualRemark() {
     return publishManualRemark;
   }
@@ -496,6 +510,7 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
             ", publishDate=" + publishDate +
             ", publishExecDate=" + publishExecDate +
             ", publishManualDate=" + publishManualDate +
+            ", uploadZxtDate=" + uploadZxtDate +
             ", publishManualRemark=" + publishManualRemark +
             ", publishState=" + publishState +
             ", publishFailLog=" + publishFailLog +

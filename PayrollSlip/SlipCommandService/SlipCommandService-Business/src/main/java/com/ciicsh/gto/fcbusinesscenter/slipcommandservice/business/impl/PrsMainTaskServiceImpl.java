@@ -24,8 +24,6 @@ import java.util.Map;
  * @since 2018-02-28
  */
 @Service
-@Transactional
-@SuppressWarnings("all")
 public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
     @Autowired
@@ -97,6 +95,13 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
                 params.put("approveTime", null);
             } else {
                 params.put("approveTime", new Date((long) params.get("approveTime")));
+            }
+        }
+        if (params.get("uploadZxtDate") != null) {
+            if (params.get("uploadZxtDate").equals("")) {
+                params.put("uploadZxtDate", null);
+            } else {
+                params.put("uploadZxtDate", new Date((long) params.get("uploadZxtDate")));
             }
         }
 

@@ -44,6 +44,10 @@ public class FinanceEmployeeBO {
      */
     private Integer templateType;
     /**
+     * 服务大类名
+     */
+    private String templateName;
+    /**
      * 应付工资
      */
     private BigDecimal wagePayable;
@@ -63,5 +67,9 @@ public class FinanceEmployeeBO {
      * 年终奖
      */
     private BigDecimal yearEndBonus;
+    /**
+     * 汇总
+     */
+    private Integer totalSum;
 
 }

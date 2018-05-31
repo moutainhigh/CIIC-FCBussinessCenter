@@ -155,7 +155,7 @@ public class CompleteComputeServiceImpl {
             mapObj.put("tax_exemption", ""); //个人免税额度
             mapObj.put("tax_year_month", ""); //报税年月
             mapObj.put("annuity", ""); //年金
-            mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
+            //mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
             mapObj.put("salary_calc_result_items", payItems);
             processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
 
@@ -177,16 +177,14 @@ public class CompleteComputeServiceImpl {
             closingMsg.setOptID(userID);
             closingMsg.setOptName(userName);
 
-            sender.SendComputeClose(closingMsg);
+            //sender.SendComputeClose(closingMsg);
             logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
 
-
-            /*
             //初始化FC分布式事务
             int affected = initializeDistributedTransaction(batchCode,batchType);
             if(affected > 0) {
                 logger.info("初始化 %s 事务成功", EventName.FC_TRANSACTION_NAME);
-            }*/
+            }
         }
     }
 

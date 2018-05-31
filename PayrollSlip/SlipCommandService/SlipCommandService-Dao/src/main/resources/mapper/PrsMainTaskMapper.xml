@@ -17,6 +17,7 @@
         <result column="publish_date" property="publishDate" />
         <result column="publish_exec_date" property="publishExecDate" />
         <result column="publish_manual_date" property="publishManualDate" />
+        <result column="upload_zxt_date" property="uploadZxtDate" />
         <result column="publish_manual_remark" property="publishManualRemark" />
         <result column="publish_state" property="publishState" />
         <result column="publish_fail_log" property="publishFailLog" />
@@ -84,8 +85,8 @@
     </select>
 
     <insert id="insert" parameterType="map">
-    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, publish_exec_date, publish_manual_date, publish_manual_remark, publish_state, publish_fail_log, payroll_type, selected_payroll_type, status, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
-    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{publishExecDate}, #{publishManualDate}, #{publishManualRemark}, #{publishState}, #{publishFailLog}, #{payrollType}, #{selectedPayrollType}, #{status}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, publish_exec_date, publish_manual_date, upload_zxt_date, publish_manual_remark, publish_state, publish_fail_log, payroll_type, selected_payroll_type, status, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
+    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{publishExecDate}, #{publishManualDate}, #{uploadZxtDate}, #{publishManualRemark}, #{publishState}, #{publishFailLog}, #{payrollType}, #{selectedPayrollType}, #{status}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
   </insert>
 
     <update id="update" parameterType="map">
@@ -113,13 +114,13 @@
             <if test="employees != null and employees != ''">
                 employees = #{employees},
             </if>
-            <if test="totalCount != null">
+            <if test="totalCount != null and totalCount != ''">
                 total_count = #{totalCount},
             </if>
-            <if test="chineseCount != null">
+            <if test="chineseCount != null and chineseCount != ''">
                 chinese_count = #{chineseCount},
             </if>
-            <if test="foreignerCount != null">
+            <if test="foreignerCount != null and foreignerCount != ''">
                 foreigner_count = #{foreignerCount},
             </if>
             <if test="publishDate != null">
@@ -130,6 +131,9 @@
             </if>
             <if test="publishManualDate != null">
                 publish_manual_date = #{publishManualDate},
+            </if>
+            <if test="uploadZxtDate != null">
+                upload_zxt_date = #{uploadZxtDate},
             </if>
             <if test="publishManualRemark != null and publishManualRemark != ''">
                 publish_manual_remark = #{publishManualRemark},
