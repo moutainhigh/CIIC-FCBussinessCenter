@@ -20,7 +20,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.AdvanceEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.company.PaymentCycleDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.company.*;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
