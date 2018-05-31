@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单任务单主表
  *
  * @author taka
- * @since 2018-05-14
+ * @since 2018-05-31
  */
 @TableName("prs_main_task")
 public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
@@ -107,6 +107,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   private Date publishManualDate;
 
   /**
+   * 上传智翔通日期
+   */
+  @TableField("upload_zxt_date")
+  private Date uploadZxtDate;
+
+  /**
    * 主动发送备注
    */
   @TableField("publish_manual_remark")
@@ -141,6 +147,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
    */
   @TableField("status")
   private Integer status;
+
+  /**
+   * 是否含纸质
+   */
+  @TableField("has_paper")
+  private Boolean hasPaper;
 
   /**
    * 修改实际发布日期原因
@@ -328,6 +340,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.publishManualDate = publishManualDate;
   }
 
+  public Date getUploadZxtDate() {
+    return uploadZxtDate;
+  }
+
+  public void setUploadZxtDate(Date uploadZxtDate) {
+    this.uploadZxtDate = uploadZxtDate;
+  }
+
   public String getPublishManualRemark() {
     return publishManualRemark;
   }
@@ -374,6 +394,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
 
   public void setStatus(Integer status) {
     this.status = status;
+  }
+
+  public Boolean getHasPaper() {
+    return hasPaper;
+  }
+
+  public void setHasPaper(Boolean hasPaper) {
+    this.hasPaper = hasPaper;
   }
 
   public String getComments() {
@@ -496,12 +524,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
             ", publishDate=" + publishDate +
             ", publishExecDate=" + publishExecDate +
             ", publishManualDate=" + publishManualDate +
+            ", uploadZxtDate=" + uploadZxtDate +
             ", publishManualRemark=" + publishManualRemark +
             ", publishState=" + publishState +
             ", publishFailLog=" + publishFailLog +
             ", payrollType=" + payrollType +
             ", selectedPayrollType=" + selectedPayrollType +
             ", status=" + status +
+            ", hasPaper=" + hasPaper +
             ", comments=" + comments +
             ", templateId=" + templateId +
             ", templateName=" + templateName +

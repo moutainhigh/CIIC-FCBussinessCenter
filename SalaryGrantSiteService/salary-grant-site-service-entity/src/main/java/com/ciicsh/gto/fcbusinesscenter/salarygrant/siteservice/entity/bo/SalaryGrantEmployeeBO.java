@@ -79,4 +79,13 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 扣个人所得税（独立库）
      */
     private BigDecimal taxIndependence;
+    /**
+     * 任务单状态
+     */
+    private String taskStatus;
+    /**
+     * 任务单ID
+     */
+    private Long taskId;
+
 }

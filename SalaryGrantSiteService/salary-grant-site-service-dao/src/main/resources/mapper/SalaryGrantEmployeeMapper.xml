@@ -130,6 +130,40 @@
             t.employee_id
     </select>
 
+    <select id="queryWaitForPaymentEmpList"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO"
+            parameterType="java.lang.String">
+        select
+            salary_grant_employee_id        salaryGrantEmployeeId  ,
+            company_id                      companyId              ,
+            company_name                    companyName            ,
+            employee_id                     employeeId             ,
+            employee_name                   employeeName           ,
+            bankcard_type                   bankcardType           ,
+            deposit_bank                    depositBank            ,
+            bankcard_id                     bankcardId             ,
+            card_num                        cardNum                ,
+            bankcard_province_code          bankcardProvinceCode   ,
+            bankcard_city_code              bankcardCityCode       ,
+            personal_social_security        personalSocialSecurity ,
+            individual_provident_fund       individualProvidentFund,
+            is_welfare_included             isWelfareIncluded      ,
+            personal_income_tax             personalIncomeTax      ,
+            wage_payable                    wagePayable            ,
+            payment_amount                  paymentAmount          ,
+            grant_cycle                     grantCycle             ,
+            tax_cycle                       taxCycle               ,
+            contract_first_party            contractFirstParty     ,
+            service_fee_amount              serviceFeeAmount       ,
+            grant_service_type              grantServiceType       ,
+            grant_status                    grantStatus
+        from
+            sg_salary_grant_employee
+        where
+            is_active = 1
+            and salary_grant_sub_task_code = #{taskCode}
+    </select>
+
     <update id="deferEmployee" parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO">
         UPDATE
           sg_salary_grant_employee t

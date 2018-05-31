@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -63,6 +64,14 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      * @return Page<SalaryGrantTaskBO>
      */
     List<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 查询薪资发放日任务单数据
+     *
+     * @param grantDate 薪资发放次日日期
+     * @return
+     */
+    List<SalaryGrantTaskPaymentBO> queryWaitForPaymentTaskList(String grantDate);
 
     /**
      * 根据主表任务单编号查询子表任务单

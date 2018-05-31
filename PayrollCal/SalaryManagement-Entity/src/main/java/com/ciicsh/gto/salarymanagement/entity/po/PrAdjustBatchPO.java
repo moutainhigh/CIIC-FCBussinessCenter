@@ -112,6 +112,22 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 	@TableField("period")
 	private String period;
 
+	/*逾期垫付日*/
+	@TableField("advance_day")
+	private int advanceDay;
+
+	/*逾期垫付日期*/
+	@TableField("advance_period")
+	private String advancePeriod;
+
+	public String getAdvancePeriod() {
+		return advancePeriod;
+	}
+
+	public void setAdvancePeriod(String advancePeriod) {
+		this.advancePeriod = advancePeriod;
+	}
+
 	public String getPeriod() {
 		return period;
 	}
@@ -247,7 +263,16 @@ public class PrAdjustBatchPO extends Model<PrAdjustBatchPO> {
 		this.hasAdvance = hasAdvance;
 	}
 
+	public int getAdvanceDay() {
+		return advanceDay;
+	}
+
+	public void setAdvanceDay(int advanceDay) {
+		this.advanceDay = advanceDay;
+	}
+
 	@Override
+
 	protected Serializable pkVal() {
 		return this.id;
 	}

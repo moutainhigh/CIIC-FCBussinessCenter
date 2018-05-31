@@ -23,8 +23,6 @@ import java.util.Map;
  * @since 2018-02-05
  */
 @Service
-@Transactional
-@SuppressWarnings("all")
 public class SalManagementServiceImpl implements SalManagementService {
 
     @Autowired

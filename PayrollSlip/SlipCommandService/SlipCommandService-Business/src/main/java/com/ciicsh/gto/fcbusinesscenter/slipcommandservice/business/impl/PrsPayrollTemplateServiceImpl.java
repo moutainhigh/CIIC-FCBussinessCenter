@@ -39,8 +39,6 @@ import java.util.Map;
  * @since 2018-01-29
  */
 @Service
-@Transactional
-@SuppressWarnings("all")
 public class PrsPayrollTemplateServiceImpl implements PrsPayrollTemplateService {
 
     @Autowired
