@@ -190,7 +190,7 @@
             and personnel_income_year_month = #{personnelIncomeYearMonth}
         </if>
         <if test="hasPaper != null">
-            has_paper = #{hasPaper},
+            and has_paper = #{hasPaper}
         </if>
     </select>
 
@@ -220,7 +220,7 @@
             and personnel_income_year_month = #{personnelIncomeYearMonth}
         </if>
         <if test="hasPaper != null">
-            has_paper = #{hasPaper},
+            and has_paper = #{hasPaper}
         </if>
         ORDER BY main_task_id DESC
         <if test="limit != null and limit != ''">
