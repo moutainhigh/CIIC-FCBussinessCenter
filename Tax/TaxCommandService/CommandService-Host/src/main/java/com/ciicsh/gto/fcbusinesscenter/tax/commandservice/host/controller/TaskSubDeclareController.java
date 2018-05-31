@@ -44,8 +44,8 @@ public class TaskSubDeclareController extends BaseController {
      * @param taskSubDeclareDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubDeclares")
-    public JsonResult<ResponseForTaskSubDeclare> queryTaskSubDeclares(@RequestBody TaskSubDeclareDTO taskSubDeclareDTO) {
+    @GetMapping(value = "/queryTaskSubDeclares")
+    public JsonResult<ResponseForTaskSubDeclare> queryTaskSubDeclares(TaskSubDeclareDTO taskSubDeclareDTO) {
         JsonResult<ResponseForTaskSubDeclare> jr = new JsonResult<>();
 
         RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
@@ -122,7 +122,7 @@ public class TaskSubDeclareController extends BaseController {
      * @param subDeclareId
      * @return
      */
-    @PostMapping(value = "/queryDeclareDetailsById/{subDeclareId}")
+    @GetMapping(value = "/queryDeclareDetailsById/{subDeclareId}")
     public JsonResult<TaskSubDeclarePO> queryDeclareDetailsById(@PathVariable(value = "subDeclareId") Long subDeclareId) {
         JsonResult<TaskSubDeclarePO> jr = new JsonResult<>();
 
@@ -205,7 +205,7 @@ public class TaskSubDeclareController extends BaseController {
      * @param mergeId
      * @return
      */
-    @PostMapping(value = "/queryTaskSubDeclareByMergeId/{mergeId}")
+    @GetMapping(value = "/queryTaskSubDeclareByMergeId/{mergeId}")
     public JsonResult<List<TaskSubDeclareDTO>> queryTaskSubDeclareByMergeId(@PathVariable(value = "mergeId") Long mergeId) {
         JsonResult<List<TaskSubDeclareDTO>> jr = new JsonResult<>();
 
@@ -240,5 +240,18 @@ public class TaskSubDeclareController extends BaseController {
         taskSubDeclareService.updateById(taskSubDeclarePO);
 
         return jr;
+    }
+
+    /**
+     * 导出离职人员
+     *
+     * @param subDeclareId
+     */
+    @RequestMapping(value = "/exportQuitPerson/{subDeclareId}", method = RequestMethod.GET)
+    public void exportQuitPerson(@PathVariable(value = "subDeclareId") Long subDeclareId, HttpServletResponse response) {
+        String fileName = "人员信息.xls";
+
+        //导出excel
+        exportExcel(response, this.exportFileService.exportQuitPerson(subDeclareId), fileName);
     }
 }

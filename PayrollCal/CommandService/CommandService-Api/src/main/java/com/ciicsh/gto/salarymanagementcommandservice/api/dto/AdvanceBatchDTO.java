@@ -9,10 +9,19 @@ public class AdvanceBatchDTO {
 
     private String batchCodes;
 
-    private boolean hasAdvance;
+    private int batchType;
+
+    private int advance;
 
     private String modifiedBy;
 
+    public int getAdvance() {
+        return advance;
+    }
+
+    public void setAdvance(int advance) {
+        this.advance = advance;
+    }
 
     public String getBatchCodes() {
         return batchCodes;
@@ -20,14 +29,6 @@ public class AdvanceBatchDTO {
 
     public void setBatchCodes(String batchCodes) {
         this.batchCodes = batchCodes;
-    }
-
-    public boolean isHasAdvance() {
-        return hasAdvance;
-    }
-
-    public void setHasAdvance(boolean hasAdvance) {
-        this.hasAdvance = hasAdvance;
     }
 
     public String getModifiedBy() {
@@ -38,6 +39,11 @@ public class AdvanceBatchDTO {
         this.modifiedBy = modifiedBy;
     }
 
+    public int getBatchType() {
+        return batchType;
+    }
 
-
+    public void setBatchType(int batchType) {
+        this.batchType = batchType;
+    }
 }

@@ -1,11 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy;
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.Result;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseSubTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.ReponseTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestSubTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.RequestTaskDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.*;
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,14 +20,35 @@ public interface SalaryGrantProxy {
      * @return
      */
     @RequestMapping(value = "/getTask", method = RequestMethod.POST)
-    public Result<ReponseTaskDTO> getTask(@RequestBody RequestTaskDTO dto);
+    Result<ReponseTaskDTO> getTask(@RequestBody RequestTaskDTO dto);
 
     /**
      *  根据主表任务单编号查询薪资发放任务单子表
+     * @author gaoyang
+     * @date 2018-04-19
      * @param dto
      * @return Result<ReponseSubTaskDTO>
      */
-    @RequestMapping(value = "/getSubTask", method = RequestMethod.POST)
+    @PostMapping("/getSubTask")
     Result<ReponseSubTaskDTO> getSubTask(@RequestBody RequestSubTaskDTO dto);
 
+    /**
+     *  根据退票雇员信息创建薪资发放任务单
+     * @author gaoyang
+     * @date 2018-05-22
+     * @param dto
+     * @return Result<Boolean>
+     */
+    @PostMapping("/toCreateRefundTask")
+    Result<Boolean> toCreateRefundTask(@RequestBody SalaryGrantRefundDTO dto);
+
+    /**
+     *  根据任务单信息进行驳回处理
+     * @author gaoyang
+     * @date 2018-05-22
+     * @param dto
+     * @return Result<Boolean>
+     */
+    @PostMapping("/toRejectTask")
+    Result<Boolean> toRejectTask(@RequestBody SalaryGrantTaskDTO dto);
 }

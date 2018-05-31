@@ -39,7 +39,7 @@ public class TaskMainProofController extends BaseController implements TaskMainP
      * @return
      */
     @Override
-    public JsonResult<ResponseForMainProof> queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO) {
+    public JsonResult<ResponseForMainProof> queryTaskMainProofByRes(@RequestBody  TaskMainProofDTO taskMainProofDTO) {
         JsonResult<ResponseForMainProof> jr = new JsonResult<>();
 
         RequestForProof requestForProof = new RequestForProof();

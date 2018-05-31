@@ -30,7 +30,7 @@
       <dependency>
           <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
           <artifactId>fcbusinesscenter-util</artifactId>
-          <version>1.0.0</version>
+          <version>1.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
@@ -79,7 +79,7 @@
       </dependency>
       <dependency>
           <groupId>com.ciicsh.gt1.billcenter</groupId>
-          <artifactId>gt1.billcenter.fcmodule-commandservice-api</artifactId>
+          <artifactId>fcmodule-service-api</artifactId>
           <version>1.0.0-SNAPSHOT</version>
       </dependency>
   </dependencies>

@@ -10,10 +10,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubP
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -35,8 +32,8 @@ public class TaskSubPaymentController extends BaseController {
      * @param taskSubPaymentDTO
      * @return
      */
-    @PostMapping(value = "querySubPayment")
-    public JsonResult<ResponseForSubPayment> querySubPayment(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
+    @GetMapping(value = "querySubPayment")
+    public JsonResult<ResponseForSubPayment> querySubPayment(TaskSubPaymentDTO taskSubPaymentDTO) {
         JsonResult<ResponseForSubPayment> jr = new JsonResult<>();
 
         RequestForSubPayment requestForSubPayment = new RequestForSubPayment();
@@ -96,7 +93,7 @@ public class TaskSubPaymentController extends BaseController {
      * @param subPaymentId
      * @return
      */
-    @PostMapping(value = "/querySubPaymentById/{subPaymentId}")
+    @GetMapping(value = "/querySubPaymentById/{subPaymentId}")
     public JsonResult<TaskSubPaymentDTO> querySubPaymentById(@PathVariable Long subPaymentId) {
         JsonResult<TaskSubPaymentDTO> jr = new JsonResult<>();
 

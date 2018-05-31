@@ -248,6 +248,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ciicsh.gt1.commonservice</groupId>
+            <artifactId>gt1.commonservice.logservice-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-core</artifactId>
             <version>2.0.0</version>

@@ -59,8 +59,8 @@
         (select
             task_sub_proof_id,
             sum(case when is_active = 1 then 1 else 0 end ) as headNumTotal,
-            sum(case when id_type = '01' and is_active = 1 then 1 else 0 end ) as chineseNumTotal,
-            sum(case when id_type != '01' and  is_active = 1 then 1 else 0 end ) as foreignerNumTotal
+            sum(case when id_type = '1' and is_active = 1 then 1 else 0 end ) as chineseNumTotal,
+            sum(case when id_type != '1' and  is_active = 1 then 1 else 0 end ) as foreignerNumTotal
         from tax_fc_task_sub_proof_detail where  task_sub_proof_id =  #{id}) sub on tsp.id = sub.task_sub_proof_id
         SET
             tsp.headcount = sub.headNumTotal,
@@ -76,8 +76,8 @@
             parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO">
         select tsp.id,
         tsp.task_no,
-        tmp.manager_no,
-        tmp.manager_name,
+        tsp.manager_no,
+        tsp.manager_name,
         tsp.declare_account,
         tsp.period,
         tsp.headcount,
@@ -87,18 +87,19 @@
         tsp.task_type,
         tsp.is_combined
         from tax_fc_task_sub_proof tsp
-        left join tax_fc_task_main_proof tmp
-        on tsp.task_main_proof_id = tmp.id
+--         left join tax_fc_task_main_proof tmp
+--         on tsp.task_main_proof_id = tmp.id
         where tsp.is_active = 1 <![CDATA[ and tsp.`status` <> '00' and tsp.`status` <> '02' ]]> and tsp.task_sub_proof_id is null
         <!--<if test="managerName != null and managerName != ''">-->
             <!--and tmp.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')-->
         <!--</if>-->
         <if test="managerNames != null and managerNames.length != 0">
-            and tmp.manager_name in
+            and (tsp.manager_name in
             <foreach collection="managerNames" item="managerName"
                      index="index" open="(" close=")" separator=",">
                 #{managerName}
             </foreach>
+            or tsp.is_combined = 1)
         </if>
         <if test="declareAccount != null and declareAccount != ''">
             and tsp.declare_account LIKE concat('%', #{declareAccount, jdbcType=VARCHAR},'%')
@@ -112,7 +113,7 @@
         <if test="taskType != null and taskType != ''">
             and tsp.task_type = #{taskType}
         </if>
-        order by tsp.created_time desc
+        order by tsp.modified_time desc
     </select>
 
     <!--根据合并的ID拼接的in条件查询合并前的子任务ID-->
@@ -125,8 +126,8 @@
     <select id="queryApplyDetailsBySubId" resultMap="BaseResultBOMap">
         select tsp.id,
         tsp.task_no,
-        tmp.manager_no,
-        tmp.manager_name,
+        tsp.manager_no,
+        tsp.manager_name,
         tsp.declare_account,
         tsp.period,
         tsp.headcount,
@@ -136,9 +137,10 @@
         tsp.task_type,
         tsp.is_combined
         from tax_fc_task_sub_proof tsp
-        left join tax_fc_task_main_proof tmp
-        on tsp.task_main_proof_id = tmp.id
+--         left join tax_fc_task_main_proof tmp
+--         on tsp.task_main_proof_id = tmp.id
         where tsp.is_active = 1 and tsp.id = #{subProofId}
+
     </select>
 
     <!-- 查询批次明细 -->

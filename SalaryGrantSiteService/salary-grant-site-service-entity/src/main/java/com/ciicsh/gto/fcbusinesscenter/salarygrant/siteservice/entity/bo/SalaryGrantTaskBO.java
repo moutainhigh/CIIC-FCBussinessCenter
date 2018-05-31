@@ -5,7 +5,6 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * <p>
@@ -53,6 +52,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      * 薪资周期
      */
     private String grantCycle;
+    /**
+     * 发放状态
+     */
+    private Integer grantStatus;
     /**
      * 薪资发放总金额（RMB）
      */
@@ -130,6 +133,22 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String taskStatusName;
     /**
+     * 状态英文名
+     */
+    private String taskStatusEn;
+    /**
+     * 操作员
+     */
+    private String operateUser;
+    /**
+     * 最后修改时间
+     */
+    private Date operateDate;
+    /**
+     * 操作
+     */
+    private String operateStep;
+    /**
      * 创建时间
      */
     private Date createdTime;
@@ -142,8 +161,20 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String userId;
     /**
-     * 创建时间
+     * 创建时间字符串
      */
     private String createdTimeStr;
+    /**
+     * 操作员
+     */
+    private String operatorUserId;
+    /**
+     * 结算发放标识:0-正常，1-垫付
+     */
+    private Integer balanceGrant;
+    /**
+     * 垫付类型:1-信用期垫付;2-偶然垫付;3-水单垫付;4-AF垫付;5-预付款垫付
+     */
+    private Integer advanceType;
 
 }

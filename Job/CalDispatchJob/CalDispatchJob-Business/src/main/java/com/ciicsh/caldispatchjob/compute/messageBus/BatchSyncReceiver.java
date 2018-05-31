@@ -70,7 +70,7 @@ public class BatchSyncReceiver {
     public void receiveComplete(ComputeMsg computeMsg){
         logger.info("received payroll compute from message: " + computeMsg);
         if(computeMsg.getBatchType() > 0) {
-            completeComputeService.processCompleteCompute(computeMsg.getBatchCode(), computeMsg.getBatchType());
+            completeComputeService.processCompleteCompute(computeMsg.getBatchCode(), computeMsg.getBatchType(),computeMsg.getOptID(),computeMsg.getOptName());
         }
     }
 

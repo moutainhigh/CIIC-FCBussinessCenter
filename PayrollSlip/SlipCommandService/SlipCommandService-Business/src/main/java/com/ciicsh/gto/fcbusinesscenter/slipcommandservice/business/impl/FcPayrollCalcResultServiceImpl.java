@@ -1,14 +1,21 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.CalResultMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import com.ciicsh.gt1.config.MongoConfig;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +25,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.FcPayrollCalc
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 薪资计算批次结果表(雇员维度) 服务实现类
@@ -35,17 +39,20 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
     @Autowired
     private FcPayrollCalcResultMapper fcPayrollCalcResultMapper;
 
-    // TODO: query mongo
     @Autowired
     private MongoConfig mongoConfig;
 
+    @Autowired
+    private CalResultMongoOpt calResultMongoOpt;
+
 
     @Override
-    public List<Document> listFcPayrollCalcResults(Map<String, Object> params) {
+    public List<Document> listFcPayrollCalcResults(String params) {
 
         List<Document> records = new ArrayList<Document>();
 
-        Document doc = new Document("batch_id", params.get("batchId"));
+        Document doc = Document.parse(params);
+
         MongoCursor<Document> cursor = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("fc_payroll_calc_result_table").find(doc).iterator();
 
         try {
@@ -143,4 +150,47 @@ public class FcPayrollCalcResultServiceImpl implements FcPayrollCalcResultServic
 
         return records;
     }
+
+
+    /**
+     * 获取自定义查询结果
+     * @param params
+     * @param sorts    1 表示升序，－1表示降序
+     * @param pageSize
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public List<DBObject> getCustomSearchResult(Map<String, Object> params, Map<String,Integer> sorts, int pageSize, int pageNum) {
+        if(params == null || params.size() == 0) return null;
+        List<DBObject> list = null;
+
+        //设置排序字段： 1 升序； －1 降序
+        DBObject fields = new BasicDBObject();
+        Iterator<String> sortKeys = sorts.keySet().iterator();
+        while (sortKeys.hasNext()){
+            fields.put(sortKeys.next(), sorts.get(sortKeys.next()));
+        }
+
+        //设置查询字段
+        BasicDBList condList = new BasicDBList();//存放查询条件的集合
+        Iterator<String> keys = params.keySet().iterator();
+        BasicDBObject query = new BasicDBObject();
+        while (keys.hasNext()){
+            query.put(keys.next(), params.get(keys.next()));
+            condList.add(query);
+        }
+        BasicDBObject condition= new BasicDBObject();//最后在将查询结果放到一个查询对象中去
+        condition.put("$and", condList);//多条件查询使用and
+
+        DBCursor cursor = calResultMongoOpt.getMongoTemplate()
+                .getCollection(CalResultMongoOpt.PR_BATCH).find(condition).sort(fields)
+                .skip((pageNum-1)*pageSize).limit(pageSize);
+        while (cursor.hasNext()){
+            //todo
+        }
+        return list;
+    }
+
+
 }

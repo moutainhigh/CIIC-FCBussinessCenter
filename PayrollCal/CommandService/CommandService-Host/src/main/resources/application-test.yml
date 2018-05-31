@@ -34,3 +34,10 @@ management:
 
 seaweed:
   masterHost: "172.16.9.19:9333"
+
+mongo:
+  host: 172.16.9.16 #172.16.9.52 172.16.9.15 172.16.9.16 sit
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%

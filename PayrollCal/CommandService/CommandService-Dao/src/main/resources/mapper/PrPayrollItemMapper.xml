@@ -31,6 +31,11 @@
 		<result column="created_by" property="createdBy" />
 		<result column="modified_by" property="modifiedBy" />
 	</resultMap>
+
+	<resultMap id="PayrollItemsMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO">
+		<result column="payroll_item_code" property="payrollItemCode" />
+		<result column="payroll_item_name" property="payrollItemName" />
+	</resultMap>
 	
 	<delete id="deleteItemByCodes">
 		DELETE FROM pr_payroll_item
@@ -41,7 +46,6 @@
 			#{item}
 		</foreach>
 	</delete>
-
 
 	<select id="getPayrollItems" parameterType="PayrollGroupExtPO" resultType="PrPayrollItemPO">
 		SELECT
@@ -268,6 +272,15 @@
 			</otherwise>
 		</choose>
 
+	</select>
+
+	<select id="selectItemNames" resultMap="PayrollItemsMap">
+		select case a.payroll_item_alias when '' then b.item_name ELSE a.payroll_item_alias end as payroll_item_name,
+		a.payroll_item_code
+		from pr_payroll_account_item_relation a,
+		(select item_name,item_code ,account_set_code from pr_payroll_item inner join (select pr_group_code, account_set_code from normal_batch_view where account_set_code = (select account_set_code from pr_normal_batch where code=#{batchCode})) as t
+		on pr_payroll_item.payroll_group_code = t.pr_group_code ) as b
+		where a.account_set_code = b.account_set_code and a.payroll_item_code = b.item_code;
 	</select>
 
 </mapper>

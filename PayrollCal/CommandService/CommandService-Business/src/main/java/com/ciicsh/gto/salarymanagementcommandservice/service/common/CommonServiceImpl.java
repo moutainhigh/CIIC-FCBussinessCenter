@@ -3,6 +3,8 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
@@ -10,8 +12,13 @@ import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +64,13 @@ public class CommonServiceImpl {
         List<PrCustBatchPO> custBatchPOList = normalBatchMapper.selectBatchListByUseLike(initialPO);
 
         PrCustBatchPO batchPO = custBatchPOList.get(0);
-        List<BathUpdateOptions> options = new ArrayList<>();
 
         List<BasicDBObject> payItems = getPayItemList(batchPO);
 
+        int rowAffected = 0;
+
         if(employees !=null && employees.size() > 0) {
-            employees.forEach(item -> { //初始化Payitems 值 （雇员主数据值）
+            for (DBObject item: employees) {
                 DBObject base_info =item.get("base_info") == null ? item :(DBObject)item.get("base_info");
                 List<BasicDBObject> clonePyItems = cloneListDBObject(payItems);
                 clonePyItems.forEach(p->{
@@ -82,16 +90,14 @@ public class CommonServiceImpl {
                         p.put("item_value", base_info.get(PayItemName.LEAVE_DATE));
                     }
                 });
-
-                setBatchOptions(options,batchPO,item,clonePyItems);
-            });
+                rowAffected += updateBatchMogodb(batchPO,item,clonePyItems);
+            }
         }else {
-            setBatchOptions(options,batchPO,null,payItems);
+            rowAffected += updateBatchMogodb(batchPO,null,payItems);
         }
         try {
             //create index
             normalBatchMongoOpt.createIndex();
-            int rowAffected = normalBatchMongoOpt.doBathUpdate(options,true);
             logger.info("add normal batch row affected : " + String.valueOf(rowAffected));
             return rowAffected;
 
@@ -142,11 +148,13 @@ public class CommonServiceImpl {
         List<PayrollAccountItemRelationExtPO> itemRelationExtsList = accountItemRelationMapper.getAccountItemRelationExts(batchPO.getAccountSetCode());
 
 
-        //计算顺序由小到大排列，越小计算优先级越高
         prList = prList.stream()
                 .filter(p-> itemRelationExtsList.stream().anyMatch(f -> f.getPayrollItemCode().equals(p.getItemCode()) && f.getIsActive()))
-                .sorted(Comparator.comparingInt(PrPayrollItemPO::getCalPriority))
+                .sorted(Comparator.comparing(PrPayrollItemPO::getCalPriority))
                 .collect(Collectors.toList());
+
+        //显示优先级，计算顺序由小到大排列
+        //prList.sort(Comparator.comparing(PrPayrollItemPO::getDisplayPriority).thenComparing(PrPayrollItemPO::getCalPriority));
 
         prList.forEach(item ->{
             BasicDBObject dbObject = new BasicDBObject();
@@ -179,38 +187,37 @@ public class CommonServiceImpl {
         return list;
     }
 
-    private void setBatchOptions(List<BathUpdateOptions> options, PrCustBatchPO batchPO, DBObject item,List<BasicDBObject> payItems){
+    private int updateBatchMogodb( PrCustBatchPO batchPO, DBObject emp,List<BasicDBObject> payItems){
 
         DBObject basicDBObject = new BasicDBObject();
 
-        BathUpdateOptions opt = new BathUpdateOptions();
-        if(item != null) {
-                    opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
+        Query query = null;
+
+        if(emp != null) {
+                    query = Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
                     .andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
                             Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(emp.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
                     )
-            ));
-            DBObject empInfo = item.get("base_info") == null ? item :(DBObject)item.get("base_info");
+            );
+            DBObject empInfo = emp.get("base_info") == null ? emp :(DBObject)emp.get("base_info");
             basicDBObject.put("emp_info", empInfo);
         }else {
-            opt.setQuery(Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
+            query = Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
                     .andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
                             Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is("") //雇员编码
                     )
-            ));
-            //basicDBObject.put("emp_info", "");
+            );
         }
         basicDBObject.put("batch_info", BatchPOToDBObject(batchPO));
         basicDBObject.put("pay_items", payItems);
+        Update update = Update.update("catalog", basicDBObject);
 
-        opt.setUpdate(Update.update("catalog", basicDBObject));
-        opt.setMulti(true);
-        opt.setUpsert(true);
-        options.add(opt);
+        WriteResult result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        return result.getN();
     }
 
     private List<BasicDBObject> cloneListDBObject(List<BasicDBObject> source){
@@ -250,5 +257,57 @@ public class CommonServiceImpl {
                 );
 
         return map;
+    }
+
+    public List<SimpleEmpPayItemDTO> translate(List<DBObject> list){
+
+        if(list.size() == 0) return null;
+
+        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
+            SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
+            itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
+
+            DBObject calalog = (DBObject)dbObject.get("catalog");
+            //DBObject empInfo = (DBObject)calalog.get("emp_info");
+            //String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
+
+            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
+            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
+            items.stream().forEach(dbItem -> {
+                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
+                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
+                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
+                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
+                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
+                simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
+                if(dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)){ //雇员姓名
+                    itemPO.setEmpName(String.valueOf(dbItem.get("item_value")));
+                }
+                simplePayItemDTOList.add(simplePayItemDTO);
+            });
+            //设置显示顺序
+            List<SimplePayItemDTO> payItemDTOS = simplePayItemDTOList.stream().sorted(Comparator.comparing(SimplePayItemDTO::getDisplay)).collect(Collectors.toList());
+            itemPO.setPayItemDTOS(payItemDTOS);
+            return itemPO;
+        }).collect(Collectors.toList());
+
+        return simplePayItemDTOS;
+    }
+
+    public Map<String, Object> JSONString2Map(String json){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> map = new HashMap<>();
+            // convert JSON string to Map
+            map = mapper.readValue(json, new TypeReference<Map<String, String>>() {});
+            return map;
+        }catch (JsonGenerationException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -1,15 +1,12 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.transform;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.core.Pagination;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Pagination;
 
 import java.util.List;
 
 /**
  * 通用分页实体转换器
- *
- * @author 李理
- * @since 2017/12/27
  */
 public class PageUtil {
     /**

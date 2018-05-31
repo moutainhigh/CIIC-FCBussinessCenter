@@ -26,6 +26,12 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
      */
     @TableId("employee_id")
 	private String employeeId;
+
+	/**
+	 * 员工ID
+	 */
+	@TableField("emp_code")
+    private String empCode;
     /**
      * 证件类别  
 1:身份证 2:护照 3:军(警)官证 4:士兵证 5:台胞证 6:回乡证 7:其他
@@ -153,6 +159,14 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 
 	public void setEmployeeId(String employeeId) {
 		this.employeeId = employeeId;
+	}
+
+	public String getEmpCode() {
+		return empCode;
+	}
+
+	public void setEmpCode(String empCode) {
+		this.empCode = empCode;
 	}
 
 	public Integer getIdCardType() {
@@ -340,6 +354,7 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 	public String toString() {
 		return "PrEmployeePO{" +
 			"employeeId=" + employeeId +
+				"empCode=" + empCode +
 			", idCardType=" + idCardType +
 			", idNum=" + idNum +
 			", employeeName=" + employeeName +

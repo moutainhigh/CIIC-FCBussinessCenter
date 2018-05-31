@@ -25,14 +25,15 @@ public class PRItemExcelReader {
     @Autowired
     private PRItemExcelMapper mapper;
 
-    public PoiItemReader<List<BasicDBObject>> getPrGroupReader(InputStream stream, int importType, Map<String,List<BasicDBObject>> payItems, List<String> identities) throws  Exception{
+    public PoiItemReader<List<BasicDBObject>> readExcel(Map<String,Object> payItemMap,Map<String,Object> identityMap,String batchCode, int batchType, InputStream stream) throws  Exception{
         PoiItemReader<List<BasicDBObject>> itemReader = new PoiItemReader<>();
         itemReader.setLinesToSkip(1);  //First line is column names
-        PushbackInputStream stream1 = new PushbackInputStream(stream);
-        itemReader.setResource(new InputStreamResource(stream1));
-        mapper.setList(payItems); //多个雇员薪资项列表
-        mapper.setImportType(importType); // 导入类型
-        mapper.setIdentities(identities); // 验证唯一性字段列表
+        PushbackInputStream excelStream = new PushbackInputStream(stream);
+        itemReader.setResource(new InputStreamResource(excelStream));
+        mapper.setPayItemMap(payItemMap);
+        mapper.setIdentityMap(identityMap);
+        mapper.setBatchCode(batchCode);
+        mapper.setBatchType(batchType);
         itemReader.setRowMapper(mapper);
         itemReader.setSkippedRowsCallback( rowSet ->{
             logger.info(rowSet.getCurrentRow().toString());

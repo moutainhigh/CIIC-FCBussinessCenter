@@ -20,6 +20,10 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantEmpDTO extends PagingDTO {
     /**
+     * 雇员信息编号
+     */
+    private Long salaryGrantEmployeeId;
+    /**
      * 雇员编号
      */
     private String employeeId;
@@ -75,6 +79,10 @@ public class SalaryGrantEmpDTO extends PagingDTO {
      * 国籍中文
      */
     private String countryName;
+    /**
+     * 发放状态:0-正常，1-手动暂缓，2-自动暂缓，3-退票，4-部分发放
+     */
+    private Integer grantStatus;
     /**
      * 发放状态中文
      */

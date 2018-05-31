@@ -14,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBa
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,8 +40,8 @@ public class CalculationBatchController extends BaseController {
      * @param calculationBatchDTO
      * @return
      */
-    @RequestMapping(value = "/queryCalculationBatchs")
-    public JsonResult<ResponseForCalBatch> queryCalculationBatchs(@RequestBody CalculationBatchDTO calculationBatchDTO) {
+    @GetMapping(value = "/queryCalculationBatchs")
+    public JsonResult<ResponseForCalBatch> queryCalculationBatchs(CalculationBatchDTO calculationBatchDTO) {
 
         JsonResult<ResponseForCalBatch> jr = new JsonResult<>();
 
@@ -62,8 +63,8 @@ public class CalculationBatchController extends BaseController {
      * @param employeeDTO
      * @return
      */
-    @RequestMapping(value = "/queryCalculationBatchDetails")
-    public JsonResult<ResponseForCalBatchDetail> queryCalculationBatchDetails(@RequestBody EmployeeDTO employeeDTO) {
+    @GetMapping(value = "/queryCalculationBatchDetails")
+    public JsonResult<ResponseForCalBatchDetail> queryCalculationBatchDetails(EmployeeDTO employeeDTO) {
 
         JsonResult<ResponseForCalBatchDetail> jr = new JsonResult<>();
 

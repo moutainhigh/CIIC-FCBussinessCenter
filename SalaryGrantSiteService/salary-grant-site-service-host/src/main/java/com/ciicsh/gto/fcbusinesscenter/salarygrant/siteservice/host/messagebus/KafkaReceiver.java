@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
+import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyReturnTicketDTO;
 import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCompleteMsgDTO;
@@ -31,11 +33,11 @@ public class KafkaReceiver {
 
     //todo 接收计算引擎消息，获取计算批次号
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_TASK)
-    public void salaryGrantMainTaskCreateTask(){
+    public void salaryGrantMainTaskCreateTask(Message<ClosingMsg> message){
         // 1、接收消息返回的计算批次号
-        String batchCode = null;
+        String batchCode = message.getPayload().getBatchCode();
         // 接收消息返回的批次类型
-        String batchType = null;
+        Integer batchType = message.getPayload().getBatchType();
         Map batchParam = new HashMap();
         batchParam.put("batchCode",batchCode);
         batchParam.put("batchType",batchType);
@@ -50,6 +52,38 @@ public class KafkaReceiver {
         String returnInfo = taskMsgDTO.toString();
         //todo 把消息返回的任务信息插入到任务日志表中
        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    }
+
+    @StreamListener(TaskSink.SALARY_GRANT_SUB_TASK_LTB_CREATE_WORK_FLOW)
+    public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
+        String returnInfo = taskMsgDTO.toString();
+        //todo 把消息返回的任务信息插入到任务日志表中
+        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    }
+
+    @StreamListener(TaskSink.SALARY_GRANT_SUB_TASK_LTW_CREATE_WORK_FLOW)
+    public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
+        String returnInfo = taskMsgDTO.toString();
+        //todo 把消息返回的任务信息插入到任务日志表中
+        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    }
+
+    @StreamListener(TaskSink.SALARY_GRANT_SUB_TASK_ST_CREATE_WORK_FLOW)
+    public void salaryGrantSubTaskSTCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
+        String returnInfo = taskMsgDTO.toString();
+        //todo 把消息返回的任务信息插入到任务日志表中
+        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    }
+
+    @StreamListener(TaskSink.SALARY_GRANT_SUPPLIER_PAYMENT_TASK_CREATE_WORK_FLOW)
+    public void salaryGrantSupplierPaymentTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
+        String returnInfo = taskMsgDTO.toString();
+        //todo 把消息返回的任务信息插入到任务日志表中
+        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
     }
 
     /**
@@ -81,5 +115,14 @@ public class KafkaReceiver {
                 ",missionId="+processCompleteMsgDTO.getMissionId()+
                 ",processDefinitionKey="+processCompleteMsgDTO.getProcessDefinitionKey();
         //logger.info("收到流程结束消息: " + returnInfo);
+    }
+
+    /**
+     * 结算中心退票消息
+     * @param message
+     */
+    @StreamListener(TaskSink.SALARY_GRANT_REFUND)
+    public void salaryGrantRefundProcess(Message<PayApplyReturnTicketDTO> message){
+
     }
 }

@@ -9,6 +9,7 @@ public class BatchAuditDTO {
     private String comments;
     private String result;
     private int batchType;
+    private String action;
 
     private String modifyBy;
     public String getModifyBy() {
@@ -19,7 +20,6 @@ public class BatchAuditDTO {
         this.modifyBy = modifyBy;
     }
 
-
     public int getBatchType() {
         return batchType;
     }
@@ -27,7 +27,6 @@ public class BatchAuditDTO {
     public void setBatchType(int batchType) {
         this.batchType = batchType;
     }
-
 
     public String getBatchCode() {
         return batchCode;
@@ -61,6 +60,11 @@ public class BatchAuditDTO {
         this.result = result;
     }
 
+    public String getAction() {
+        return action;
+    }
 
-
+    public void setAction(String action) {
+        this.action = action;
+    }
 }

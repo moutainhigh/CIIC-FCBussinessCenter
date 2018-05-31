@@ -103,8 +103,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/querySubProofInfoByTaskType")
-    public JsonResult<ResponseForSubProof> querySubProofInfoByTaskType(@RequestBody TaskProofDTO taskProofDTO) {
+    @GetMapping(value = "/querySubProofInfoByTaskType")
+    public JsonResult<ResponseForSubProof> querySubProofInfoByTaskType(TaskProofDTO taskProofDTO) {
         JsonResult<ResponseForSubProof> jr = new JsonResult<>();
 
         RequestForProof requestForProof = new RequestForProof();
@@ -226,7 +226,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @param subProofId
      * @return
      */
-    @PostMapping(value = "/queryApplyDetailsBySubId/{subProofId}")
+    @GetMapping(value = "/queryApplyDetailsBySubId/{subProofId}")
     public JsonResult<TaskSubProofBO> queryApplyDetailsBySubId(@PathVariable(value = "subProofId") Long subProofId) {
         JsonResult<TaskSubProofBO> jr = new JsonResult<>();
 
@@ -242,8 +242,8 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
      * @param taskProofDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubProofDetailBySubId")
-    public JsonResult<ResponseForSubProofDetail> queryTaskSubProofDetailBySubId(@RequestBody TaskProofDTO taskProofDTO) {
+    @GetMapping(value = "/queryTaskSubProofDetailBySubId")
+    public JsonResult<ResponseForSubProofDetail> queryTaskSubProofDetailBySubId(TaskProofDTO taskProofDTO) {
         JsonResult<ResponseForSubProofDetail> jr = new JsonResult<>();
 
         RequestForProof requestForProof = new RequestForProof();

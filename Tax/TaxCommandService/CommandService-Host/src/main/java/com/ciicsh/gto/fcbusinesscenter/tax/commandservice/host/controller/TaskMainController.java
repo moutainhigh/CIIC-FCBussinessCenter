@@ -16,9 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskM
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +55,8 @@ public class TaskMainController extends BaseController {
      * @param taskMainDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskMains")
-    public JsonResult<ResponseForTaskMain> queryTaskMains(@RequestBody TaskMainDTO taskMainDTO) {
+    @GetMapping(value = "/queryTaskMains")
+    public JsonResult<ResponseForTaskMain> queryTaskMains(TaskMainDTO taskMainDTO) {
 
         JsonResult<ResponseForTaskMain> jr = new JsonResult<>();
 
@@ -81,8 +79,8 @@ public class TaskMainController extends BaseController {
      * @param taskMainDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskMainsForDraft")
-    public JsonResult<ResponseForTaskMain> queryTaskMainsForDraft(@RequestBody TaskMainDTO taskMainDTO) {
+    @GetMapping(value = "/queryTaskMainsForDraft")
+    public JsonResult<ResponseForTaskMain> queryTaskMainsForDraft(TaskMainDTO taskMainDTO) {
 
         JsonResult<ResponseForTaskMain> jr = new JsonResult<>();
 
@@ -104,8 +102,8 @@ public class TaskMainController extends BaseController {
      * @param taskMainDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskMainsForCheck")
-    public JsonResult<ResponseForTaskMain> queryTaskMainsForCheck(@RequestBody TaskMainDTO taskMainDTO) {
+    @GetMapping(value = "/queryTaskMainsForCheck")
+    public JsonResult<ResponseForTaskMain> queryTaskMainsForCheck(TaskMainDTO taskMainDTO) {
 
         JsonResult<ResponseForTaskMain> jr = new JsonResult<>();
 
@@ -127,8 +125,8 @@ public class TaskMainController extends BaseController {
      * @param taskSubsDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskSubs")
-    public JsonResult<Map<String, List>> queryTaskSubs(@RequestBody TaskSubsDTO taskSubsDTO) {
+    @GetMapping(value = "/queryTaskSubs")
+    public JsonResult<Map<String, List>> queryTaskSubs(TaskSubsDTO taskSubsDTO) {
 
         JsonResult<Map<String, List>> jr = new JsonResult<>();
 
@@ -238,8 +236,8 @@ public class TaskMainController extends BaseController {
      * @param taskMainDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskMainDetails")
-    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetails(@RequestBody TaskMainDTO taskMainDTO) {
+    @GetMapping(value = "/queryTaskMainDetails")
+    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetails(TaskMainDTO taskMainDTO) {
 
         JsonResult<ResponseForTaskMainDetail> jr = new JsonResult<>();
 
@@ -256,8 +254,8 @@ public class TaskMainController extends BaseController {
      * @param taskMainDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskMainDetailsByCombined")
-    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetailsByCombined(@RequestBody TaskMainDTO taskMainDTO) {
+    @GetMapping(value = "/queryTaskMainDetailsByCombined")
+    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetailsByCombined(TaskMainDTO taskMainDTO) {
 
         JsonResult<ResponseForTaskMainDetail> jr = new JsonResult<>();
 
@@ -274,8 +272,8 @@ public class TaskMainController extends BaseController {
      * @param taskMainDTO
      * @return
      */
-    @RequestMapping(value = "/queryTaskMainDetailsForCombined")
-    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetailsForCombined(@RequestBody TaskMainDTO taskMainDTO) {
+    @GetMapping(value = "/queryTaskMainDetailsForCombined")
+    public JsonResult<ResponseForTaskMainDetail> queryTaskMainDetailsForCombined(TaskMainDTO taskMainDTO) {
 
         JsonResult<ResponseForTaskMainDetail> jr = new JsonResult<>();
 
@@ -333,7 +331,7 @@ public class TaskMainController extends BaseController {
      * @param taskMainDetailDTO
      * @return
      */
-    @RequestMapping(value = "/updateTaskMainDetail")
+    @PostMapping(value = "/updateTaskMainDetail")
     public JsonResult<Boolean> updateTaskMainDetail(@RequestBody TaskMainDetailDTO taskMainDetailDTO) {
 
         JsonResult<Boolean> jr = new JsonResult<>();

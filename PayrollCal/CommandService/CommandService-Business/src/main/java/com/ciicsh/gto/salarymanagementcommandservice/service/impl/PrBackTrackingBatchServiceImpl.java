@@ -43,13 +43,13 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
     private ApprovalHistoryService approvalHistoryService;
 
     @Override
-    public int updateHasAdvance(String batchCode, boolean hasAdvance, String modifiedBy) {
-        return backTrackingBatchMapper.updateHasAdvance(batchCode,hasAdvance,modifiedBy);
+    public int updateHasAdvance(List<String> batchCodes, int hasAdvance, String modifiedBy) {
+        return backTrackingBatchMapper.updateHasAdvance(batchCodes,hasAdvance,modifiedBy);
     }
 
     @Override
-    public int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy) {
-        return backTrackingBatchMapper.updateHasAdvance(batchCode,hasMoney,modifiedBy);
+    public int updateHasMoney(List<String> batchCodes, boolean hasMoney, String modifiedBy) {
+        return backTrackingBatchMapper.updateHasMoney(batchCodes,hasMoney,modifiedBy);
     }
 
     @Override
@@ -142,6 +142,13 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
     @Override
     public PrBackTrackingBatchPO getPrBackTrackingBatchPO(PrBackTrackingBatchPO prBackTrackingBatchPO){
         return backTrackingBatchMapper.selectOne(prBackTrackingBatchPO);
+    }
+
+    @Override
+    public PrBackTrackingBatchPO getPrBackTrackingBatchPO(String batchCode) {
+        PrBackTrackingBatchPO backTrackingBatchPO = new PrBackTrackingBatchPO();
+        backTrackingBatchPO.setBackTrackingBatchCode(batchCode);
+        return backTrackingBatchMapper.selectOne(backTrackingBatchPO);
     }
 
 }

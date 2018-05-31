@@ -105,6 +105,7 @@ public class ComputeServiceImpl {
                 .include("catalog.pay_items.decimal_process_type")
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
+                .include("catalog.pay_items.display_priority")
         ;
 
         //query = query.skip(pageindex*size).limit(size);
@@ -115,7 +116,7 @@ public class ComputeServiceImpl {
         long start1 = System.currentTimeMillis(); //begin
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,normalBatchMongoOpt.PR_NORMAL_BATCH);
+            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH);
 
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
             batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, AdjustBatchMongoOpt.PR_ADJUST_BATCH);
@@ -487,9 +488,16 @@ public class ComputeServiceImpl {
     }
 
 
-    public void fire(){
-        //FactHandle f =  kSession.insert(e);
-        int count = kSession.fireAllRules();
+    public void fire(HashSet hashSet, DroolsContext context){
+        int count = 0;
+        FactHandle factHandle = kSession.insert(context); // 插入上下文信息
+        if(hashSet == null) {
+            count = kSession.fireAllRules();
+        }else {
+            count = kSession.fireAllRules(new CustomAgendaFilter(hashSet));
+        }
+        kSession.delete(factHandle);
+        logger.info(String.format("emp_code: %s, total excute rule counts: %d", context.getEmpPayItem().getEmpCode(), count));
         //kSession.delete(f);
     }
 }

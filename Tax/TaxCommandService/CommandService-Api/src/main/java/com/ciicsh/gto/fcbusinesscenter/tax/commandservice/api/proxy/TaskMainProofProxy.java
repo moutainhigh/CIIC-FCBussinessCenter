@@ -21,7 +21,7 @@ public interface TaskMainProofProxy {
      * @return
      */
     @PostMapping(value = "/api/queryTaskMainProofByRes")
-    JsonResult queryTaskMainProofByRes(@RequestBody TaskMainProofDTO taskMainProofDTO);
+    JsonResult queryTaskMainProofByRes(@RequestBody  TaskMainProofDTO taskMainProofDTO);
 
     /**
      * 新建任务

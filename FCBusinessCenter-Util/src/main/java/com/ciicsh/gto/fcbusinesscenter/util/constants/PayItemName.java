@@ -47,6 +47,8 @@ public class PayItemName {
 
     public static final String EMPLOYEE_NET_PAY = "实发工资";
 
+    public static final String ACTUAL_PAY = "应发工资";
+
     public static final String SALARY_TOTAL = "工资总额(含四金)";
 
     public static final String BEFORE_TOTAL = "税前合计";
@@ -56,6 +58,10 @@ public class PayItemName {
     public static final String AFTER_TOTAL = "税后合计";
 
     public static final String TAX_TOTAL = "个税合计";
+
+    public static final String IDENTITY_NUM = "身份证号";
+
+    public static final String EMPLOYEE_ID = "员工工号";
 
 
 }

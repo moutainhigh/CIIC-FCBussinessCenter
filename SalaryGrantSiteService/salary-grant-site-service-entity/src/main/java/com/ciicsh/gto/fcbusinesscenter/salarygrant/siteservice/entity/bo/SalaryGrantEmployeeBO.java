@@ -15,6 +15,9 @@ import java.math.BigDecimal;
  * @since 2018-02-02
  */
 @Data
+@Getter
+@Setter
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
 public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -23,10 +26,6 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 服务大类名称
      */
     private String templateTypeName;
-    /**
-     * 发放账户名称
-     */
-    private String grantAccountName;
     /**
      * 发放方式名称
      */
@@ -65,4 +64,12 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 任务单编号
      */
     private String taskCode;
+    /**
+     * 任务单状态
+     */
+    private String taskStatus;
+    /**
+     * 任务单ID
+     */
+    private Long taskId;
 }

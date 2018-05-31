@@ -5,6 +5,9 @@
 #    map-underscore-to-camel-case: true
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #  type-aliases-package: com.ciicsh.gto.salarymanagement.entity
+app:
+  id: 10007024
+  name: FCBusinessComputeService
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/**.xml
@@ -77,6 +80,12 @@ spring:
 
         pr_management-output-channel:
           destination: fc_payroll_management # topic name
+          content-type: application/json
+          producer:
+            partitionCount: 1
+            
+        pr_compute-unclose-output-channel:
+          destination: fc_compute_unclose # 取消关帐
           content-type: application/json
           producer:
             partitionCount: 1

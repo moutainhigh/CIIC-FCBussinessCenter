@@ -19,21 +19,22 @@ public interface PrBackTrackingBatchService {
      * @param modifiedBy
      * @return
      */
-    int updateHasAdvance(String batchCode, boolean hasAdvance, String modifiedBy);
+    int updateHasAdvance(List<String> batchCode, int hasAdvance, String modifiedBy);
 
     /**
      * 更新批次是否垫付
-     * @param batchCode
+     * @param batchCodes
      * @param hasMoney
      * @param modifiedBy
      * @return
      */
-    int updateHasMoneny(String batchCode, boolean hasMoney, String modifiedBy);
+    int updateHasMoney(List<String> batchCodes, boolean hasMoney, String modifiedBy);
 
     int insert(PrBackTrackingBatchPO prBackTrackingBatchPO);
 
     PrBackTrackingBatchPO getPrBackTrackingBatchPO(PrBackTrackingBatchPO prBackTrackingBatchPO);
 
+    PrBackTrackingBatchPO getPrBackTrackingBatchPO(String batchCode);
 
     List<DBObject> getBackTrackingBatch(String batchCode);
     /**

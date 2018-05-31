@@ -49,7 +49,7 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 	@TableField("employee_name")
 	private String employeeName;
     /**
-     * 服务大类:0-人事派遣、1-人事代理、2-外包
+     * 服务大类:1:派遣 2:代理 3:外包
      */
 	@TableField("template_type")
 	private Integer templateType;
@@ -93,6 +93,21 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 	 */
 	@TableField("grant_account_name")
 	private String grantAccountName;
+	/**
+	 * 付款账号
+	 */
+	@TableField("payment_account_code")
+	private String paymentAccountCode;
+	/**
+	 * 付款账户名
+	 */
+	@TableField("payment_account_name")
+	private String paymentAccountName;
+	/**
+	 * 付款银行名
+	 */
+	@TableField("payment_account_bank_name")
+	private String paymentAccountBankName;
     /**
      * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
      */
@@ -794,6 +809,30 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 		this.yearEndBonus = yearEndBonus;
 	}
 
+	public String getPaymentAccountCode() {
+		return paymentAccountCode;
+	}
+
+	public void setPaymentAccountCode(String paymentAccountCode) {
+		this.paymentAccountCode = paymentAccountCode;
+	}
+
+	public String getPaymentAccountName() {
+		return paymentAccountName;
+	}
+
+	public void setPaymentAccountName(String paymentAccountName) {
+		this.paymentAccountName = paymentAccountName;
+	}
+
+	public String getPaymentAccountBankName() {
+		return paymentAccountBankName;
+	}
+
+	public void setPaymentAccountBankName(String paymentAccountBankName) {
+		this.paymentAccountBankName = paymentAccountBankName;
+	}
+
 	// 重写克隆方法子列才可以调用
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -817,6 +856,9 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 			", batchCode=" + batchCode +
 			", grantAccountCode=" + grantAccountCode +
 			", grantAccountName=" + grantAccountName +
+			", paymentAccountCode=" + paymentAccountCode +
+			", paymentAccountName=" + paymentAccountName +
+			", paymentAccountBankName=" + paymentAccountBankName +
 			", grantMode=" + grantMode +
 			", salaryGrantRuleId=" + salaryGrantRuleId +
 			", ruleType=" + ruleType +

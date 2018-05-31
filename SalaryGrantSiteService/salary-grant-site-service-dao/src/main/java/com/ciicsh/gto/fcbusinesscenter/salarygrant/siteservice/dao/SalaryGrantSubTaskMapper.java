@@ -2,9 +2,11 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -56,15 +58,6 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
     List<SalaryGrantTaskBO> querySupplierSubTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
-     * 查询供应商任务单列表
-     * 已处理:审批拒绝 3-审批拒绝、8-撤回 角色=操作员、审核员（查历史表）
-     * @param page
-     * @param salaryGrantTaskBO
-     * @return Page<SalaryGrantTaskBO>
-     */
-    List<SalaryGrantTaskBO> querySupplierSubTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
-
-    /**
      * 查询薪资发放报盘任务单列表
      * @param page
      * @param salaryGrantTaskBO
@@ -73,14 +66,21 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
     List<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
-     * 根据主表任务单编号查询字表任务单
+     * 查询薪资发放日任务单数据
+     *
+     * @param grantDate 薪资发放次日日期
+     * @return
+     */
+    List<SalaryGrantTaskPaymentBO> queryWaitForPaymentTaskList(String grantDate);
+
+    /**
+     * 根据主表任务单编号查询子表任务单
      * @author chenpb
      * @since 2018-04-23
-     * @param page
      * @param bo
      * @return
      */
-    List<SalaryGrantTaskBO> subTaskList (Pagination page, SalaryGrantTaskBO bo);
+    List<SalaryGrantTaskBO> subTaskList (SalaryGrantTaskBO bo);
 
     /**
      * 任务单编号查询任务单
@@ -90,5 +90,14 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      * @return
      */
     SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
+
+    /**
+     * 查询财务数据
+     * @author chenpb
+     * @since 2018-05-25
+     * @param taskCode
+     * @return
+     */
+    FinanceTaskBO selectTaskForFinance(@Param("taskCode") String taskCode);
 
 }

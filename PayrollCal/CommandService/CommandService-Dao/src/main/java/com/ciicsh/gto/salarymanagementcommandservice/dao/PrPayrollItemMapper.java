@@ -3,6 +3,8 @@ package com.ciicsh.gto.salarymanagementcommandservice.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
+import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
@@ -69,5 +71,12 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      * @return
      */
     Integer selectMaxCalPriorityOfGroup(@Param("groupCode")String groupCode, @Param("isTemplate")Boolean isTemplate);
+
+    /**
+     * 获取薪资项列表(如果有alias 优先显示)
+     * @param batchCode
+     * @return
+     */
+    List<PrItemInAccountSetPO> selectItemNames(@Param("batchCode")String batchCode);
 
 }

@@ -101,7 +101,7 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	/*是否垫付：0 表示未垫付，1表示已经垫付*/
 	@TableField("has_advance")
-	private Boolean hasAdvance;
+	private int hasAdvance;
 
 	/*是否来款：0表示未来款，1表示已来款*/
 	@TableField("has_money")
@@ -116,6 +116,14 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	public void setPeriod(String period) {
 		this.period = period;
+	}
+
+	public int getHasAdvance() {
+		return hasAdvance;
+	}
+
+	public void setHasAdvance(int hasAdvance) {
+		this.hasAdvance = hasAdvance;
 	}
 
 	public Long getId() {
@@ -228,14 +236,6 @@ public class PrBackTrackingBatchPO extends Model<PrBackTrackingBatchPO> {
 
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
-	}
-
-	public Boolean getHasAdvance() {
-		return hasAdvance;
-	}
-
-	public void setHasAdvance(Boolean hasAdvance) {
-		this.hasAdvance = hasAdvance;
 	}
 
 	public Boolean getHasMoney() {

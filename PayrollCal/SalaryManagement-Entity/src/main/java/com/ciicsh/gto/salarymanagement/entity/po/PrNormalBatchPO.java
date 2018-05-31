@@ -126,11 +126,22 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 
 	/*是否垫付：0 表示未垫付，1表示已经垫付*/
 	@TableField("has_advance")
-	private Boolean hasAdvance;
+	private int hasAdvance;
 
 	/*是否来款：0表示未来款，1表示已来款*/
 	@TableField("has_money")
 	private Boolean hasMoney;
+
+	@TableField("advance_period")
+	private String advancePeriod;
+
+	public String getAdvancePeriod() {
+		return advancePeriod;
+	}
+
+	public void setAdvancePeriod(String advancePeriod) {
+		this.advancePeriod = advancePeriod;
+	}
 
 	public Long getId() {
 		return id;
@@ -297,11 +308,11 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 		this.managementName = managementName;
 	}
 
-	public Boolean getHasAdvance() {
+	public int getHasAdvance() {
 		return hasAdvance;
 	}
 
-	public void setHasAdvance(Boolean hasAdvance) {
+	public void setHasAdvance(int hasAdvance) {
 		this.hasAdvance = hasAdvance;
 	}
 

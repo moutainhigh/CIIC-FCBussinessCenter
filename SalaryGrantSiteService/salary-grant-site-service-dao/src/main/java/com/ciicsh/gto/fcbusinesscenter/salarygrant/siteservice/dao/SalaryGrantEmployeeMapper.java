@@ -2,8 +2,11 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,4 +29,30 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      * @return Page<SalaryGrantEmployeeBO>
      */
     List<SalaryGrantEmployeeBO> selectBOList(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+
+    /**
+     * 根据任务单编号查询雇员信息
+     *
+     * @param taskCode
+     * @return
+     */
+    List<SalaryGrantEmployeePaymentBO> queryWaitForPaymentEmpList(String taskCode);
+
+    /**
+     * 根据任务单编号，任务单类型，雇员编号，发放状态暂缓雇员
+     * @author chenpb
+     * @since 2018-05-23
+     * @param bo
+     * @return
+     */
+    Integer deferEmployee(SalaryGrantEmployeeBO bo);
+
+    /**
+     * 查询财务数据
+     * @author chenpb
+     * @since 2018-05-25
+     * @param taskCode
+     * @return
+     */
+    List<FinanceEmployeeBO> selectEmpForFinance(@Param("taskCode") String taskCode);
 }

@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygr
 
 
 import com.baomidou.mybatisplus.service.IService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeRefundBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
@@ -32,4 +33,18 @@ public interface SalaryGrantService extends IService<SalaryGrantTaskPO> {
      * @return List<SalaryGrantSubTaskBO>
      */
     List<SalaryGrantSubTaskBO> getSubTask(SalaryGrantSubTaskBO subTaskBO);
+
+    /**
+     *  根据退票雇员信息创建薪资发放任务单
+     * @param employeeRefundList
+     * @return Boolean
+     */
+    Boolean toCreateRefundTask(List<SalaryGrantEmployeeRefundBO> employeeRefundList);
+
+    /**
+     *  根据任务单信息进行驳回处理
+     * @param salaryGrantTaskBO
+     * @return Boolean
+     */
+    Boolean toRejectTask(SalaryGrantTaskBO salaryGrantTaskBO);
 }

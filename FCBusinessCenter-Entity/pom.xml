@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
+    <!--<parent>
         <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
         <artifactId>fcbusinesscenter-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
-    </parent>
+    </parent>-->
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
     <artifactId>fcbusinesscenter-entity</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -22,5 +22,20 @@
             <version>1.16.6</version>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <url>
+                http://172.16.9.14:8081/nexus/content/repositories/releases/
+            </url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>
+                http://172.16.9.14:8081/nexus/content/repositories/snapshots/
+            </url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

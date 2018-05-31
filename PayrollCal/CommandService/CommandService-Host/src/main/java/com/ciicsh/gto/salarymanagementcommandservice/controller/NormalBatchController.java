@@ -4,9 +4,15 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
+import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
+import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
+import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
+import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
@@ -16,12 +22,10 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
-import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
@@ -34,7 +38,6 @@ import com.ciicsh.gto.salarymanagementcommandservice.translator.BathTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.BatchUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import kafka.utils.Json;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
@@ -48,6 +51,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -94,6 +98,13 @@ public class NormalBatchController {
 
     @Autowired
     private CommonServiceImpl commonService;
+
+    @Autowired
+    private PrItemService itemService;
+
+    @Autowired
+    private PrBatchExcelMapService excelMapService;
+
 
     @GetMapping("/checkEmployees/{empGroupCode}")
     public JsonResult checkEmployees(@PathVariable("empGroupCode") String empGroupCode){
@@ -209,11 +220,8 @@ public class NormalBatchController {
     @PostMapping("/uploadExcel")
     public JsonResult importExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file){
 
-        int sucessRows = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
-        if(sucessRows == -1){
-            return JsonResult.faultMessage("雇员组中已有雇员，不能用于覆盖导入");
-        }
-        return JsonResult.success(sucessRows);
+        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
+        return JsonResult.success(statistics);
 
     }
 
@@ -294,37 +302,10 @@ public class NormalBatchController {
                 return JsonResult.success(0);
             }
         }
-
         //List<DBObject> list = normalBatchMongoOpt.list(criteria).stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 
         logger.info("获取翻页时间 : " + String.valueOf((System.currentTimeMillis() - start)));
-
-        List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map((DBObject dbObject) -> {
-            SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
-            itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
-
-            DBObject calalog = (DBObject)dbObject.get("catalog");
-            DBObject empInfo = (DBObject)calalog.get("emp_info");
-            String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
-            itemPO.setEmpName(name); //雇员姓名
-
-            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
-            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
-            items.stream().forEach(dbItem -> {
-                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
-                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
-                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
-                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
-                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
-                simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
-                simplePayItemDTOList.add(simplePayItemDTO);
-            });
-            //设置显示顺序
-            List<SimplePayItemDTO> payItemDTOS = simplePayItemDTOList.stream().sorted(Comparator.comparing(SimplePayItemDTO::getDisplay)).collect(Collectors.toList());
-            itemPO.setPayItemDTOS(payItemDTOS);
-            return itemPO;
-        }).collect(Collectors.toList());
-
+        List<SimpleEmpPayItemDTO> simplePayItemDTOS = commonService.translate(list);
         PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
         result.setTotal(totalCount);
         result.setPageNum(pageNum);
@@ -394,7 +375,26 @@ public class NormalBatchController {
         }else {
             return JsonResult.success( "删除失败");
         }
+    }
 
+    @PostMapping("/api/getBatchStatus")
+    public JsonResult getBatchStatus(@RequestParam String batchCode, @RequestParam int batchType){
+        Boolean result = false;
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            PrNormalBatchPO normalBatchPO = batchService.getBatchByCode(batchCode);
+            result = normalBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            PrAdjustBatchPO adjustBatchPO = adjustBatchService.getAdjustBatchPO(batchCode);
+            result = adjustBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
+        }else {
+            PrBackTrackingBatchPO backTrackingBatchPO = backTrackingBatchService.getPrBackTrackingBatchPO(batchCode);
+            result = backTrackingBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
+        }
+        if(result) {
+            return JsonResult.faultMessage("该批次薪资已发放,不能取消关帐!");
+        }else {
+            return JsonResult.success("可以取消关帐");
+        }
     }
 
     @PostMapping("/auditBatch")
@@ -402,39 +402,36 @@ public class NormalBatchController {
         String modifiedBy = UserContext.getName();
         int rowAffected = 0 ;
         if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
-            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = normalBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode())); //.and("catalog.emp_info.is_active").is(true));
-                String jsonResult = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonResult);
-            }*/
             rowAffected = batchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
         }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
-            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = adjustBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
-                String jsonResult = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonResult);
-            }*/
             rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
 
         }else {
-            /*if (batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) {
-                List<DBObject> results = backTraceBatchMongoOpt.list(Criteria.where("batch_code").is(batchAuditDTO.getBatchCode()));
-                String jsonResult = JSON.serialize(results);
-                batchAuditDTO.setResult(jsonResult);
-            }*/
             rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), modifiedBy, batchAuditDTO.getResult());
-
         }
         if(rowAffected > 0) {
-            if(batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue() || batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()){
-                //审核通过后，发送消息
+            if(StringUtils.isNotEmpty(batchAuditDTO.getAction()) && batchAuditDTO.getStatus() == BatchStatusEnum.APPROVAL.getValue()){ //取消关帐通知
+
+                CancelClosingMsg cancelClosingMsg = new CancelClosingMsg();
+                cancelClosingMsg.setBatchType(batchAuditDTO.getBatchType());
+                cancelClosingMsg.setOptID(UserContext.getUserId());
+                cancelClosingMsg.setOptName(UserContext.getName());
+                cancelClosingMsg.setBatchCode(batchAuditDTO.getBatchCode());
+
+                logger.info("发送取消关帐通知给各个业务部门 : " + cancelClosingMsg.toString());
+                sender.SendComputeUnClose(cancelClosingMsg);
+
+            }
+            else if(batchAuditDTO.getStatus() == BatchStatusEnum.CLOSED.getValue()) { //关帐通知
+
                 ComputeMsg computeMsg = new ComputeMsg();
                 computeMsg.setBatchType(batchAuditDTO.getBatchType());
                 computeMsg.setComputeStatus(BatchStatusEnum.CLOSED.getValue());
                 computeMsg.setBatchCode(batchAuditDTO.getBatchCode());
+                computeMsg.setOptID(UserContext.getUserId());
+                computeMsg.setOptName(UserContext.getName());
 
-                logger.info("审核通过 : " + computeMsg.toString());
-
+                logger.info("关帐通知给 job sync : " + computeMsg.toString());
                 sender.SendComputeCompleteAction(computeMsg);
             }
             return JsonResult.success(rowAffected);
@@ -445,7 +442,7 @@ public class NormalBatchController {
     }
 
     @GetMapping(value = "/downLoad")
-    public void downLoadOtherBatchImportFile(@RequestParam String batchCode, @RequestParam int batchType, HttpServletResponse response) {
+    public void downLoadOtherBatchImportFile(@RequestParam String batchCode, @RequestParam int batchType, @RequestParam(required = false) String token, HttpServletResponse response) {
 
         List<DBObject> dbObjects = null;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
@@ -575,4 +572,70 @@ public class NormalBatchController {
 
         return JsonResult.success(historyBatchDTOS, "批次列表获取");
     }
+
+    @PostMapping("api/uploadExcelCols")
+    public JsonResult uploadExcelCols(String batchCode, MultipartFile file){
+
+        ExcelMapDTO mapDTO = new ExcelMapDTO();
+        try {
+            InputStream stream = file.getInputStream();
+            String[] cols = batchService.readExcelColumns(batchCode,stream);
+            mapDTO.setExcelCols(cols);
+            String[] itemNames = itemService.selectItemNames(batchCode).stream().map(p->p.getPayrollItemName()).toArray(String[]::new);
+            mapDTO.setPayItemNames(itemNames);
+
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
+        }
+
+        return JsonResult.success(mapDTO,"获取列和薪资项");
+    }
+
+    @PostMapping("api/updateExcelCols")
+    public JsonResult updateExcelCols(@RequestBody PrBatchExcelMapDTO batchExcelMapDTO){
+
+        String user = UserContext.getUserId();
+        PrBatchExcelMapPO batchExcelMapPO = excelMapService.getBatchExcelMap(batchExcelMapDTO.getBatchCode());
+        int rowAffected = 0;
+        if(batchExcelMapPO == null){
+            batchExcelMapPO = new PrBatchExcelMapPO();
+            batchExcelMapPO.setBatchCode(batchExcelMapDTO.getBatchCode());
+            batchExcelMapPO.setCreatedBy(user);
+            batchExcelMapPO.setModifiedBy(user);
+            batchExcelMapPO.setExcelCols(batchExcelMapDTO.getExcelCols());
+            batchExcelMapPO.setMappingResult(batchExcelMapDTO.getMappingResult());
+            batchExcelMapPO.setIdentityResult(batchExcelMapDTO.getIdentityResult());
+            rowAffected = excelMapService.insert(batchExcelMapPO);
+        }else {
+            batchExcelMapPO.setModifiedBy(user);
+            batchExcelMapPO.setExcelCols(batchExcelMapDTO.getExcelCols());
+            batchExcelMapPO.setMappingResult(batchExcelMapDTO.getMappingResult());
+            batchExcelMapPO.setIdentityResult(batchExcelMapDTO.getIdentityResult());
+            rowAffected = excelMapService.update(batchExcelMapPO);
+        }
+        if(rowAffected > 0){
+            return JsonResult.success("更新成功");
+        }else {
+            return JsonResult.faultMessage("更新失败");
+        }
+
+    }
+
+    @PostMapping("api/getExcelCols")
+    public JsonResult getExcelCols(@RequestParam String batchCode){
+        PrBatchExcelMapPO batchExcelMapPO = excelMapService.getBatchExcelMap(batchCode);
+        if(batchExcelMapPO == null) {
+            return JsonResult.success(null);
+
+        }else {
+            PrBatchExcelMapDTO batchExcelMapDTO = new PrBatchExcelMapDTO();
+            batchExcelMapDTO.setBatchCode(batchExcelMapPO.getBatchCode());
+            batchExcelMapDTO.setExcelCols(batchExcelMapPO.getExcelCols());
+            batchExcelMapDTO.setMappingResult(batchExcelMapPO.getMappingResult());
+            batchExcelMapDTO.setIdentityResult(batchExcelMapPO.getIdentityResult());
+            return JsonResult.success(batchExcelMapDTO);
+        }
+
+    }
+
 }

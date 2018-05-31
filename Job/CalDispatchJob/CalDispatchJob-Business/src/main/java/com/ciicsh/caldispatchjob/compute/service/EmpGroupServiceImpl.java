@@ -12,6 +12,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -61,9 +62,6 @@ public class EmpGroupServiceImpl {
                 return empIds.contains(emp.getEmployeeId());
             }).collect(Collectors.toList());
 
-            //empIds.clear();
-            //empIds.add("18016011");
-
             GetEmployeeContractsDTO contractsDTO = new GetEmployeeContractsDTO();
             contractsDTO.setEmpIds(empIds);
             JsonResult<List<EmployeeContractResponseDTO>> result = employeeContractProxy.getEmployeeContracts(contractsDTO);
@@ -80,33 +78,32 @@ public class EmpGroupServiceImpl {
 
         }
         if(mapList.size() == 0){
-            logger.info("no data");
+            logger.info("该雇员组中没有雇员服务协议");
             return 0;
         }
 
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<DBObject> empGroups = new ArrayList<>();
-        DBObject emp = null;
+        int rowAffected = 0;
 
         for (PrEmployeePO item : employees) {
-            if(checkExistEmp(empGroupCode,item.getEmployeeId())) //存在忽略
+            /*if(checkExistEmp(empGroupCode,item.getEmployeeId())) //存在忽略
                 break;
             emp = new BasicDBObject();
-            empGroups.add(emp);
             emp.put("emp_group_code",empGroupCode);
-            emp.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());
+            emp.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());*/
             BasicDBObject basicDBObject = new BasicDBObject();
-            emp.put("base_info",basicDBObject);
+            //emp.put("base_info",basicDBObject);
             basicDBObject.put(PayItemName.EMPLOYEE_CODE_CN,item.getEmployeeId());
+            basicDBObject.put(PayItemName.EMPLOYEE_ID,item.getEmpCode());
             basicDBObject.put(PayItemName.EMPLOYEE_NAME_CN,item.getEmployeeName());
             basicDBObject.put(PayItemName.EMPLOYEE_BIRTHDAY_CN, item.getBirthday() == null ? "" : formatter.format(item.getBirthday()));
-            basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,item.getDepartment());
+            //basicDBObject.put(PayItemName.EMPLOYEE_DEP_CN,item.getDepartment());
             basicDBObject.put(PayItemName.EMPLOYEE_SEX_CN, item.getGender()? "男":"女");
             basicDBObject.put(PayItemName.EMPLOYEE_ID_TYPE_CN,item.getIdCardType());
             basicDBObject.put(PayItemName.EMPLOYEE_ONBOARD_CN, item.getInDate() == null ? "" : formatter.format(item.getInDate()));
             basicDBObject.put(PayItemName.EMPLOYEE_ID_NUM_CN,item.getIdNum());
-            basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,item.getPosition());
+            //basicDBObject.put(PayItemName.EMPLOYEE_POSITION_CN,item.getPosition());
             basicDBObject.put(PayItemName.EMPLOYEE_COMPANY_ID,item.getCompanyId());
             basicDBObject.put(PayItemName.EMPLOYEE_FORMER_CN, item.getFormerName());
             basicDBObject.put(PayItemName.EMPLOYEE_COUNTRY_CODE_CN,item.getCountryCode());
@@ -119,12 +116,18 @@ public class EmpGroupServiceImpl {
             if (StringUtils.isNotEmpty(emp_json_agreement)) {
                 basicDBObject.put(PayItemName.EMPLOYEE_SERVICE_AGREE, (DBObject) JSON.parse(emp_json_agreement));
             }
+            Criteria criteria = Criteria.where("emp_group_code").is(empGroupCode).
+                    andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.getEmployeeId()));
+            Query query = Query.query(criteria);
+            Update update = Update.update("base_info",basicDBObject);
+
+            WriteResult result = empGroupMongoOpt.getMongoTemplate().upsert(query,update,EmpGroupMongoOpt.PR_EMPLOYEE_GROUP);
+            if(result != null){
+                rowAffected += result.getN();
+            }
         }
-
         empGroupMongoOpt.createIndex();
-        int rowAffected = empGroupMongoOpt.batchInsert(empGroups);
         return rowAffected;
-
     }
 
     public int batchInsertOrUpdateGroupEmployees(String empGroupCode) {

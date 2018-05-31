@@ -12,10 +12,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForTa
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,8 +38,8 @@ public class TaskSubSupplierController extends BaseController {
      * @param taskSubSupplierDTO
      * @return
      */
-    @PostMapping(value = "/queryTaskSubSupplier")
-    public JsonResult<ResponseForTaskSubSupplier> queryTaskSubSupplier(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+    @GetMapping(value = "/queryTaskSubSupplier")
+    public JsonResult<ResponseForTaskSubSupplier> queryTaskSubSupplier(TaskSubSupplierDTO taskSubSupplierDTO) {
         JsonResult<ResponseForTaskSubSupplier> jr = new JsonResult<>();
 
         RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
@@ -64,7 +61,7 @@ public class TaskSubSupplierController extends BaseController {
      * @param subSupplierId
      * @return
      */
-    @PostMapping(value = "/querySupplierDetailsById/{subSupplierId}")
+    @GetMapping(value = "/querySupplierDetailsById/{subSupplierId}")
     public JsonResult<TaskSubSupplierPO> querySupplierDetailsById(@PathVariable(value = "subSupplierId") Long subSupplierId) {
         JsonResult<TaskSubSupplierPO> jr = new JsonResult();
 
@@ -121,7 +118,7 @@ public class TaskSubSupplierController extends BaseController {
      * @param mergeId
      * @return
      */
-    @PostMapping(value = "/queryTaskSubSupplierByMergeId/{mergeId}")
+    @GetMapping(value = "/queryTaskSubSupplierByMergeId/{mergeId}")
     public JsonResult<List<TaskSubSupplierDTO>> queryTaskSubSupplierByMergeId(@PathVariable(value = "mergeId") Long mergeId) {
         JsonResult<List<TaskSubSupplierDTO>> jr = new JsonResult<>();
 

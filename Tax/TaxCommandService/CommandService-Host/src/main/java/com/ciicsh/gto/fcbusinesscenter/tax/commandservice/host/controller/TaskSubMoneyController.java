@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gt1.common.auth.ManagementInfo;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDTO;
@@ -7,18 +8,23 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskMainDetailServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.PayapplyServiceProxy;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.SalaryServiceProxy;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyProxyDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyCompanyProxyDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyEmployeeProxyDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +53,13 @@ public class TaskSubMoneyController extends BaseController {
     private PayapplyServiceProxy payapplyServiceProxy;
 
     @Autowired
+    private SalaryServiceProxy salaryServiceProxy;
+
+    @Autowired
     private TaskSubMoneyDetailService taskSubMoneyDetailService;
+
+    @Autowired
+    private TaskMainDetailServiceImpl taskMainDetailServiceImpl;
 
     /**
      * 条件查询划款子任务
@@ -55,8 +67,8 @@ public class TaskSubMoneyController extends BaseController {
      * @param taskSubMoneyDTO
      * @return
      */
-    @PostMapping(value = "querySubMoney")
-    public JsonResult<ResponseForSubMoney> querySubMoney(@RequestBody TaskSubMoneyDTO taskSubMoneyDTO) {
+    @GetMapping(value = "querySubMoney")
+    public JsonResult<ResponseForSubMoney> querySubMoney(TaskSubMoneyDTO taskSubMoneyDTO) {
         JsonResult<ResponseForSubMoney> jr = new JsonResult<>();
 
         RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
@@ -116,7 +128,7 @@ public class TaskSubMoneyController extends BaseController {
      * @param subMoneyId
      * @return
      */
-    @PostMapping(value = "/querySubMoneyById/{subMoneyId}")
+    @GetMapping(value = "/querySubMoneyById/{subMoneyId}")
     public JsonResult<TaskSubMoneyDTO> querySubMoneyById(@PathVariable Long subMoneyId) {
         JsonResult<TaskSubMoneyDTO> jr = new JsonResult<>();
 
@@ -177,6 +189,7 @@ public class TaskSubMoneyController extends BaseController {
             //payApplyProxyDTO.setReviewer("admin");
             //根据任务ID查询所有雇员
             List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(id);
+
             //设置公司信息companyList
             List<PayapplyCompanyProxyDTO> companyList = new ArrayList<>();
             //TODO 根据公司ID 暂时根据所得项目划分
@@ -199,6 +212,8 @@ public class TaskSubMoneyController extends BaseController {
                 companyList.add(payapplyCompanyProxyDTO);
             }
             payApplyProxyDTO.setCompanyList(companyList);
+            //所有薪酬计算批次号集合
+            List<String> batchNoListAll = new ArrayList<>();
             //设置雇员信息employeeList
             List<PayapplyEmployeeProxyDTO> employeeList = new ArrayList<>();
             for (TaskSubMoneyDetailPO taskSubMoneyDetailPO : taskSubMoneyDetailPOList) {
@@ -209,10 +224,55 @@ public class TaskSubMoneyController extends BaseController {
                 payapplyEmployeeProxyDTO.setCompanyId(taskSubMoneyDetailPO.getIncomeSubject());
                 payapplyEmployeeProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyDetailPO.getPeriod()));
                 payapplyEmployeeProxyDTO.setPayAmount(taskSubMoneyDetailPO.getTaxAmount());
+                //薪酬计算批次号集合
+                List<String> batchCodeList = new ArrayList<>();
+                //设置雇员薪酬计算批次
+                if(StrKit.notBlank(taskSubMoneyDetailPO.getBatchNo())){
+                    batchCodeList.add(taskSubMoneyDetailPO.getBatchNo());
+                    batchNoListAll.add(taskSubMoneyDetailPO.getBatchNo());
+                }else{
+                    //根据task_main_detail_id 查询 batch_no taskMainDetailServiceImpl
+                    Long taskMainDetailId = taskSubMoneyDetailPO.getTaskMainDetailId();
+                    EntityWrapper wrapper = new EntityWrapper();
+                    wrapper.setEntity(new TaskMainDetailPO());
+                    wrapper.and(" task_main_detail_id = {0}",taskMainDetailId);
+                    wrapper.and("is_active = {0} ", true);
+                    //根据task_main_detail_id获取主任务明细集合
+                    List<TaskMainDetailPO> taskMainDetailPOS = taskMainDetailServiceImpl.selectList(wrapper);
+                    List<String> batchNoList = taskMainDetailPOS.stream().map(TaskMainDetailPO :: getBatchNo).collect(Collectors.toList());
+                    batchCodeList.addAll(batchNoList);
+                    batchNoListAll.addAll(batchNoList);
+                }
                 employeeList.add(payapplyEmployeeProxyDTO);
             }
             payApplyProxyDTO.setEmployeeList(employeeList);
 
+            List<String> disBatchNoList = batchNoListAll.stream().distinct().collect(Collectors.toList());
+            SalaryBatchDTO salaryBatchDTO = new SalaryBatchDTO();
+            salaryBatchDTO.setBatchCodeList(disBatchNoList);
+            List<String> unExistBatchNoList = new ArrayList<>();
+            //验证薪酬批次号是否存在
+            com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult batchNoExistResult = salaryServiceProxy.notExistsBatchCodeList(salaryBatchDTO);
+            if ("0".equals(batchNoExistResult.getCode())) {
+                SalaryBatchDTO salaryBatchDTO1 = (SalaryBatchDTO)batchNoExistResult.getData();
+                unExistBatchNoList = salaryBatchDTO1.getBatchCodeList();
+            }else{
+                jr.error();
+            }
+            //不存在的薪酬批次号工资清单数据(即打卡操作)
+            for (String batchNo : unExistBatchNoList){
+                //TODO
+                System.out.println("结算中心不存在批次号:"+batchNo);
+                //调用薪资发放接口获取数据，再进行打卡
+//                SalaryBatchDTO salaryBatchDTO1 = new SalaryBatchDTO();
+//                salaryBatchDTO1.setBatchCode(batchNo);
+//
+//                com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult salaryResult = salaryServiceProxy.saveSalaryBatchData(salaryBatchDTO1);
+//                if (!"0".equals(salaryResult.getCode())) {
+//                    jr.error();
+//                }
+            }
+            //执行划款
             com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult paymentJr = payapplyServiceProxy.shIncomeTax(payApplyProxyDTO);
             if ("0".equals(paymentJr.getCode())) {
                 //更改划款任务状态以及划款凭单号

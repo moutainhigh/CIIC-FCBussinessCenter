@@ -1,5 +1,14 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -34,4 +43,57 @@ public interface CommonService {
      * @return List 字典项内容列表
      */
     List getNameByValueForList(String dicValue);
+
+    /**
+     *  调用公共服务根据国家编码查询国家名称
+     * @param countryCode 国家编码
+     * @return String 国家名称
+     */
+    String getCountryName(String countryCode);
+
+    /**
+     *  调用公共服务根据城市编码查询城市名称
+     * @param cityCode 城市编码
+     * @return String 城市名称
+     */
+    String getCityName(String cityCode);
+
+    /**
+     *  调用公共服务根据省份编码查询省份名称
+     * @param provinceCode 省份编码
+     * @return String 省份名称
+     */
+    String getProvinceName(String provinceCode);
+
+    /**
+     * 调用结算中心接口生成报盘文件
+     *
+     * @return
+     */
+    List<OfferDocumentFilePO> generateOfferDocumentFile(SalaryGrantEmployeeGroupInfoBO groupInfoBO, OfferDocumentPO offerDocumentPO);
+
+    /**
+     *  调用公共服务根据用户id查询用户名称
+     * @param userId 用户id
+     * @return String 用户名称
+     */
+    String getUserNameById(String userId);
+
+    /**
+     * 调用账单中心接口查询雇员薪酬服务费
+     *
+     * @param salaryGrantSubTaskCode
+     * @param employeePOList
+     * @return
+     */
+    SalaryProxyDTO selectEmployeeServiceFeeAmount(String salaryGrantSubTaskCode, List<SalaryGrantEmployeePO> employeePOList);
+
+    /**
+     * 调用结算中心发放工资清单接口
+     *
+     * @param taskPaymentBO
+     * @param employeePaymentBOList
+     * @return
+     */
+    SalaryBatchDTO saveSalaryBatchData(SalaryGrantTaskPaymentBO taskPaymentBO, List<SalaryGrantEmployeePaymentBO> employeePaymentBOList);
 }

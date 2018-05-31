@@ -386,7 +386,7 @@
 
 	</update>
 
-	<update id="updateHasMoneny">
+	<update id="updateHasMoney">
 		UPDATE
 		pr_normal_batch
 		SET

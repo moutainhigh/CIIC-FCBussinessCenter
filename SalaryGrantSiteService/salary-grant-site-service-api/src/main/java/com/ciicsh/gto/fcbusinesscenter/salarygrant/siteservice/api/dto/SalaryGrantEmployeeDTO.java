@@ -25,6 +25,14 @@ public class SalaryGrantEmployeeDTO extends PagingDTO implements Serializable {
      */
     private Long salaryGrantEmployeeId;
     /**
+     * 任务单类型
+     */
+    private Integer taskType;
+    /**
+     * 任务单编号
+     */
+    private String taskCode;
+    /**
      * 薪资发放任务单子表编号
      */
     private String salaryGrantSubTaskCode;

@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
@@ -18,6 +19,15 @@ import java.util.List;
  */
 @Component
 public interface SalaryGrantTaskHistoryMapper extends BaseMapper<SalaryGrantTaskHistoryPO> {
+    /**
+     * 查询供应商任务单列表
+     * 已处理:审批拒绝 3-审批拒绝、8-撤回 角色=操作员、审核员（查历史表）
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return Page<SalaryGrantTaskBO>
+     */
+    List<SalaryGrantTaskBO> querySupplierSubTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
+
     /**
      * 已处理任务单:审批拒绝 3-审批拒绝、8-撤回、9-驳回 角色=操作员、审核员
      * @author chenpb
@@ -45,4 +55,13 @@ public interface SalaryGrantTaskHistoryMapper extends BaseMapper<SalaryGrantTask
      * @return
      */
     SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
+
+    /**
+     * 任务单ID查询任务单
+     * @author chenpb
+     * @since 2018-04-25
+     * @param bo
+     * @return
+     */
+    SalaryGrantTaskBO selectTaskByTaskId(SalaryGrantTaskBO bo);
 }
