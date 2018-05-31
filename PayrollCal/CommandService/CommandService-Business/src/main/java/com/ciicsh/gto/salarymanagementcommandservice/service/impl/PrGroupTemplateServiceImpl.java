@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
@@ -82,6 +83,11 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
 
     @Override
     public int newItem(PrPayrollGroupTemplatePO param) {
+        //检查是否有重复薪资组模板名称
+        int nameExistFlg = prPayrollGroupTemplateMapper.selectCountGroupTemplateByName(param.getGroupTemplateName());
+        if (nameExistFlg > 0) {
+            throw new BusinessException("重复的薪资组模板名称");
+        }
         int result = prPayrollGroupTemplateMapper.insert(param);
         return result;
     }
@@ -184,6 +190,8 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         approvalHistoryPO.setBizType(BizTypeEnum.PR_GROUP_TEMPLATE.getValue());
         approvalHistoryPO.setApprovalResult(paramItem.getApprovalStatus());
         approvalHistoryPO.setComments(paramItem.getComments());
+        approvalHistoryPO.setCreatedName(UserContext.getName());
+        approvalHistoryPO.setCreatedBy(UserContext.getUserId());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组模板
         int updateResult = prPayrollGroupTemplateMapper.updateItemByCode(paramItem);
