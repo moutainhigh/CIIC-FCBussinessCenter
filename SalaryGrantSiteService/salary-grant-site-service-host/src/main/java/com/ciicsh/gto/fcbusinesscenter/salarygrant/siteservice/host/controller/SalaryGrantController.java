@@ -343,6 +343,7 @@ public class SalaryGrantController {
     @RequestMapping(value="/detail", method = RequestMethod.POST)
     public Result<SalaryTaskDetailDTO> detail(@RequestBody SalaryTaskDetailDTO dto) {
         Map<String, String> tags = new HashMap<>();
+        tags.put("taskId", String.valueOf(dto.getTaskId()));
         tags.put("taskCode", dto.getTaskCode());
         tags.put("taskType", String.valueOf(dto.getTaskType()));
         tags.put("taskStatus", dto.getTaskStatus());
