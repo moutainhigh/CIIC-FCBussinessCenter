@@ -1,7 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
+import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyPayStatusDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyReturnTicketDTO;
 import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
@@ -31,7 +33,10 @@ public class KafkaReceiver {
     @Autowired
     private SalaryGrantTaskProcessService salaryGrantTaskProcessService;
 
-    //todo 接收计算引擎消息，获取计算批次号
+    /**
+     * 接收计算引擎关账消息，获取计算批次号
+     * @param message
+     */
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_TASK)
     public void salaryGrantMainTaskCreateTask(Message<ClosingMsg> message){
         // 1、接收消息返回的计算批次号
@@ -123,6 +128,24 @@ public class KafkaReceiver {
      */
     @StreamListener(TaskSink.SALARY_GRANT_REFUND)
     public void salaryGrantRefundProcess(Message<PayApplyReturnTicketDTO> message){
+
+    }
+
+    /**
+     * 结算中心支付消息
+     * @param message
+     */
+    @StreamListener(TaskSink.SALARY_GRANT_PAYMENT)
+    public void salaryGrantPaymentProcess(Message<PayApplyPayStatusDTO> message){
+
+    }
+
+    /**
+     * 接收计算引擎取消关账消息，获取计算批次号
+     * @param message
+     */
+    @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CANCEL_TASK)
+    public void salaryGrantMainTaskCancelTask(Message<CancelClosingMsg> message){
 
     }
 }
