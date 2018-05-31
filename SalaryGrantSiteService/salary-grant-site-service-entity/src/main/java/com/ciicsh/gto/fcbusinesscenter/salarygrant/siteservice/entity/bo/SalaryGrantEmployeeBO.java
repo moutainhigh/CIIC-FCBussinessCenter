@@ -64,4 +64,19 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 任务单编号
      */
     private String taskCode;
+
+    /**
+     * 扣个人所得税（中智公司）
+     */
+    private BigDecimal tax;
+
+    /**
+     * 扣个人所得税（财务公司-FC）
+     */
+    private BigDecimal taxFC;
+
+    /**
+     * 扣个人所得税（独立库）
+     */
+    private BigDecimal taxIndependence;
 }
