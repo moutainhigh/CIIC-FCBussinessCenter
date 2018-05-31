@@ -24,9 +24,9 @@ public class FinanceEmployeeDTO implements Serializable {
      */
     private String taskCode;
     /**
-     * 薪资周期
+     * 个税期间
      */
-    private String grantCycle;
+    private String taxCycle;
     /**
      * 公司编号
      */

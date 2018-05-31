@@ -51,7 +51,6 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         if (!empList.isEmpty()) {
             List<FinanceEmployeeBO> subTotalList  = new ArrayList<>();
             List<FinanceEmployeeBO> groupList  = new ArrayList<>();
-            task.setTaxCycle(empList.get(0).getTaxCycle());
             /** 统计 */
             Long amountNum = empList.parallelStream().filter( x -> BigDecimal.ZERO.compareTo(x.getPaymentAmount())==0).count();
             Long yearBonusNum = empList.parallelStream().filter( x -> BigDecimal.ZERO.compareTo(x.getYearEndBonus())==0).count();
