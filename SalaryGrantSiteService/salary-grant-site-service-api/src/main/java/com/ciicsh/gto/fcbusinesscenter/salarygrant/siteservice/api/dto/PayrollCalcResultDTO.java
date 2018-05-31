@@ -40,7 +40,7 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
 	/**
 	 * 批次类型
 	 */
-	private String batchType;
+	private Integer batchType;
     /**
      * 管理方id
      */
@@ -454,11 +454,11 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
         this.empName = empName;
     }
 
-    public String getBatchType() {
+    public Integer getBatchType() {
         return batchType;
     }
 
-    public void setBatchType(String batchType) {
+    public void setBatchType(Integer batchType) {
         this.batchType = batchType;
     }
 
