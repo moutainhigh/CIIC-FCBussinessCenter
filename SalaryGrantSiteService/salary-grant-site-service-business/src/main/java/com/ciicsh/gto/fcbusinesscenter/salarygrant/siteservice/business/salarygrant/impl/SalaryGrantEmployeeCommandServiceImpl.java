@@ -133,4 +133,8 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
         return true;
     }
 
+    @Override
+    public boolean updateForRefund(String taskCode) {
+        return false;
+    }
 }

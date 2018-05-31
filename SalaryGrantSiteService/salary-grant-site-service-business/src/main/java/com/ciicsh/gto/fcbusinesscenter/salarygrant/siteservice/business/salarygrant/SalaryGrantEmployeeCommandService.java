@@ -40,4 +40,6 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      */
     boolean updateForServiceFeeAmount(String taskCode);
 
+    boolean updateForRefund(String taskCode);
+
 }
