@@ -254,6 +254,7 @@ public class PrGroupServiceImpl implements PrGroupService {
         approvalHistoryPO.setCreatedBy(UserContext.getUserId());
         approvalHistoryPO.setApprovalResult(paramItem.getApprovalStatus());
         approvalHistoryPO.setComments(paramItem.getComments());
+        approvalHistoryPO.setCreatedName(UserContext.getName());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组
         int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
