@@ -219,4 +219,17 @@
           t1.salary_grant_task_history_id
     </select>
 
+    <select id="selectTaskByTaskId" resultMap="PageResultMap">
+        select
+        <include refid="sgDetailField"></include>
+        from
+          sg_salary_grant_task_history t1
+        where
+          t1.salary_grant_task_history_id = #{taskId}
+        and
+          t1.is_active=1
+        order by
+          t1.salary_grant_task_history_id
+    </select>
+
 </mapper>

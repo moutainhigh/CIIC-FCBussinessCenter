@@ -55,4 +55,13 @@ public interface SalaryGrantTaskHistoryMapper extends BaseMapper<SalaryGrantTask
      * @return
      */
     SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
+
+    /**
+     * 任务单ID查询任务单
+     * @author chenpb
+     * @since 2018-04-25
+     * @param bo
+     * @return
+     */
+    SalaryGrantTaskBO selectTaskByTaskId(SalaryGrantTaskBO bo);
 }
