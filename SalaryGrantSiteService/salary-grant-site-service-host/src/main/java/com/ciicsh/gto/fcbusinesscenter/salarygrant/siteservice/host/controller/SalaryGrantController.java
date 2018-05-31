@@ -21,6 +21,7 @@ import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -320,7 +321,7 @@ public class SalaryGrantController {
     public Result<SalaryGrantFinanceDTO> financeDetail(@RequestBody SalaryTaskHandleDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细").setContent(JSON.toJSONString(dto)));
         try {
-            SalaryGrantFinanceDTO financeDto = new SalaryGrantFinanceDTO();
+            SalaryGrantFinanceDTO financeDto = BeanUtils.instantiate(SalaryGrantFinanceDTO.class);
             SalaryGrantFinanceBO financeBo = salaryGrantPayrollService.createFinanceDetail(dto.getTaskCode());
             financeDto.setFinanceTask(CommonTransform.convertToDTO(financeBo.getTask(), FinanceTaskDTO.class));
             financeDto.setEmpList(CommonTransform.convertToDTOs(financeBo.getEmpList(), FinanceEmployeeDTO.class));
@@ -342,6 +343,7 @@ public class SalaryGrantController {
     @RequestMapping(value="/detail", method = RequestMethod.POST)
     public Result<SalaryTaskDetailDTO> detail(@RequestBody SalaryTaskDetailDTO dto) {
         Map<String, String> tags = new HashMap<>();
+        tags.put("taskId", String.valueOf(dto.getTaskId()));
         tags.put("taskCode", dto.getTaskCode());
         tags.put("taskType", String.valueOf(dto.getTaskType()));
         tags.put("taskStatus", dto.getTaskStatus());

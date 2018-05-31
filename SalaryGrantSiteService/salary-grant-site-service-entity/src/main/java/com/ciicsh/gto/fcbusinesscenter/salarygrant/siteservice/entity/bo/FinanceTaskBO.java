@@ -41,6 +41,10 @@ public class FinanceTaskBO {
      */
     private String managementName;
     /**
+     * 薪资周期
+     */
+    private String grantCycle;
+    /**
      * 打印日期
      */
     private Date printDate;

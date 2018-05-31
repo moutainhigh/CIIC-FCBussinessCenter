@@ -18,6 +18,10 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryTaskDTO extends PagingDTO {
     /**
+     * 任务单ID
+     */
+    private Long taskId;
+    /**
      * 任务单编号
      */
     private String taskCode;

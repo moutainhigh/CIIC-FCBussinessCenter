@@ -38,6 +38,10 @@ public class FinanceTaskDTO {
      */
     private String managementName;
     /**
+     * 薪资周期
+     */
+    private String grantCycle;
+    /**
      * 打印日期
      */
     @JsonFormat(pattern="yyyy-MM-dd")

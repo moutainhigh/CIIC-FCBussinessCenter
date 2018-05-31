@@ -64,4 +64,12 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 任务单编号
      */
     private String taskCode;
+    /**
+     * 任务单状态
+     */
+    private String taskStatus;
+    /**
+     * 任务单ID
+     */
+    private Long taskId;
 }
