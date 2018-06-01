@@ -3,10 +3,12 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantPayrollService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
     CommonService commonService;
 
     @Autowired
+    SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
+
+    @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
     @Autowired
@@ -46,9 +51,12 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
     @Override
     public SalaryGrantFinanceBO createFinanceDetail(String taskCode) {
         SalaryGrantFinanceBO financeBo = BeanUtils.instantiate(SalaryGrantFinanceBO.class);
+        SalaryGrantTaskBO mainBo = BeanUtils.instantiate(SalaryGrantTaskBO.class);
+        mainBo.setTaskCode(taskCode);
+        mainBo = salaryGrantMainTaskMapper.selectTaskByTaskCode(mainBo);
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
-        if (!empList.isEmpty()) {
+        if (task!=null && !empList.isEmpty()) {
             List<FinanceEmployeeBO> subTotalList  = new ArrayList<>();
             List<FinanceEmployeeBO> groupList  = new ArrayList<>();
             /** 统计 */
@@ -62,6 +70,8 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
             groupList.parallelStream().forEach(x -> x.setTemplateName(commonService.getNameByValue("employeeType", String.valueOf(x.getTemplateType()))));
             groupList.add(summaryInfo(1, subTotalList));
             financeBo.setEmpList(groupList);
+            task.setOperatorUserId(commonService.getUserNameById(mainBo.getOperatorUserId()));
+            task.setApproveUserId(commonService.getUserNameById(mainBo.getApproveUserId()));
         }
         financeBo.setTask(task);
         return financeBo;
@@ -90,6 +100,9 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         summary.setWagePayable(list.parallelStream().map(FinanceEmployeeBO::getWagePayable).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setPersonalSocialSecurity(list.parallelStream().map(FinanceEmployeeBO::getPersonalSocialSecurity).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setIndividualProvidentFund(list.parallelStream().map(FinanceEmployeeBO::getIndividualProvidentFund).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTax(list.parallelStream().map(FinanceEmployeeBO::getTax).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTaxFC(list.parallelStream().map(FinanceEmployeeBO::getTaxFC).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTaxIndependence(list.parallelStream().map(FinanceEmployeeBO::getTaxIndependence).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setPaymentAmount(list.parallelStream().map(FinanceEmployeeBO::getPaymentAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
         return summary;
     }

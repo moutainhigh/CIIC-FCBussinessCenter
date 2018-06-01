@@ -56,4 +56,12 @@ public class FinanceTaskBO {
      * 年终奖人数
      */
     private Integer yearBonusNum = 0;
+    /**
+     * 操作员
+     */
+    private String operatorUserId;
+    /**
+     * 审核员
+     */
+    private String approveUserId;
 }

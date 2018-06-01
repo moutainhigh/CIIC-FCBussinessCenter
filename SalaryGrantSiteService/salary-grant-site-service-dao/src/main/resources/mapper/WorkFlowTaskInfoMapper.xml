@@ -40,6 +40,8 @@
           t.work_flow_process_id = t1.work_flow_process_id
         and
           t1.task_code = #{taskCode}
+        and
+          t1.is_active = 1
         order by
           t.work_flow_task_info_id
     </select>
