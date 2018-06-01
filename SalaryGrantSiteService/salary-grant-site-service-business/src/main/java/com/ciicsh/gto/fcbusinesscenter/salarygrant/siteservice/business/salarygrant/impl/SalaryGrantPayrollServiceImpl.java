@@ -57,8 +57,6 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
         if (task!=null && !empList.isEmpty()) {
-            task.setOperatorUserId(mainBo.getOperatorUserId());
-            task.setApproveUserId(mainBo.getApproveUserId());
             List<FinanceEmployeeBO> subTotalList  = new ArrayList<>();
             List<FinanceEmployeeBO> groupList  = new ArrayList<>();
             /** 统计 */
@@ -72,6 +70,8 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
             groupList.parallelStream().forEach(x -> x.setTemplateName(commonService.getNameByValue("employeeType", String.valueOf(x.getTemplateType()))));
             groupList.add(summaryInfo(1, subTotalList));
             financeBo.setEmpList(groupList);
+            task.setOperatorUserId(commonService.getUserNameById(mainBo.getOperatorUserId()));
+            task.setApproveUserId(commonService.getUserNameById(mainBo.getApproveUserId()));
         }
         financeBo.setTask(task);
         return financeBo;
