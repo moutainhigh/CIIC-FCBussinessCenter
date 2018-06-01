@@ -60,6 +60,22 @@ public class FinanceEmployeeDTO implements Serializable {
      */
     private BigDecimal individualProvidentFund;
     /**
+     * 申报账户类别
+     */
+    private Integer declarationAccountCategory;
+    /**
+     * 扣个人所得税（中智公司）
+     */
+    private BigDecimal tax;
+    /**
+     * 扣个人所得税（财务公司-FC）
+     */
+    private BigDecimal taxFC;
+    /**
+     * 扣个人所得税（独立库）
+     */
+    private BigDecimal taxIndependence;
+    /**
      * 发放金额
      */
     private BigDecimal paymentAmount;
