@@ -32,6 +32,9 @@ public class PrCustBatchPO {
     //薪资日期
     private String period;
 
+    //实际薪资日期
+    private String actualPeriod;
+
     //薪资开始日
     private int startDay;
 

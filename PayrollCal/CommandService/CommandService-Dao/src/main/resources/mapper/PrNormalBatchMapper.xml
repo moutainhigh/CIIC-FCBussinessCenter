@@ -29,6 +29,7 @@
 		<result column="management_name" property="managementName"/>
 		<result column="account_set_code" property="accountSetCode"/>
 		<result column="period" property="period"/>
+		<result column="actual_period" property="actualPeriod"/>
 		<result column="status" property="status"/>
 		<result column="start_date" property="beginDate"/>
 		<result column="end_date" property="endDate"/>
@@ -68,6 +69,7 @@
 		a.management_name,
 		a.account_set_code,
 		a.period,
+		a.actual_period,
 		a.status,
 		a.start_date,
 		a.end_date,
@@ -113,6 +115,7 @@
 		a.management_name,
 		a.account_set_code,
 		a.period,
+		a.actual_period,
 		a.status,
 		a.start_date,
 		a.end_date,
@@ -164,6 +167,7 @@
 		a.management_name,
 		a.account_set_code,
 		a.period,
+		a.actual_period,
 		a.status,
 		a.start_date,
 		a.end_date,
