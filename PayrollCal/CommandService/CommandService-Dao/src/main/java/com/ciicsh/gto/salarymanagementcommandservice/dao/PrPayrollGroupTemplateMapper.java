@@ -55,4 +55,11 @@ public interface PrPayrollGroupTemplateMapper extends BaseMapper<PrPayrollGroupT
      * @return
      */
     List<HashMap<String, String>> selectGroupTemplateNameListByName(@Param("name") String name);
+
+    /**
+     * 根据模板名称查找模板是否存在
+     * @param name
+     * @return
+     */
+    Integer selectCountGroupTemplateByName(@Param("name") String name);
 }

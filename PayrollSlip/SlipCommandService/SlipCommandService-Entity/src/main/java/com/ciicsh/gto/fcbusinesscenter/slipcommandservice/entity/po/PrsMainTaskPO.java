@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单任务单主表
  *
  * @author taka
- * @since 2018-05-29
+ * @since 2018-05-31
  */
 @TableName("prs_main_task")
 public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
@@ -147,6 +147,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
    */
   @TableField("status")
   private Integer status;
+
+  /**
+   * 是否含纸质
+   */
+  @TableField("has_paper")
+  private Boolean hasPaper;
 
   /**
    * 修改实际发布日期原因
@@ -390,6 +396,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.status = status;
   }
 
+  public Boolean getHasPaper() {
+    return hasPaper;
+  }
+
+  public void setHasPaper(Boolean hasPaper) {
+    this.hasPaper = hasPaper;
+  }
+
   public String getComments() {
     return comments;
   }
@@ -517,6 +531,7 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
             ", payrollType=" + payrollType +
             ", selectedPayrollType=" + selectedPayrollType +
             ", status=" + status +
+            ", hasPaper=" + hasPaper +
             ", comments=" + comments +
             ", templateId=" + templateId +
             ", templateName=" + templateName +

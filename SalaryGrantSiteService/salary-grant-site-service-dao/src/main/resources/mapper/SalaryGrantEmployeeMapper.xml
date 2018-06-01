@@ -57,6 +57,10 @@
         <result column="contract_first_party" property="contractFirstParty"/>
         <result column="is_welfare_included" property="isWelfareIncluded"/>
         <result column="service_fee_amount" property="serviceFeeAmount"/>
+        <result column="declaration_account" property="declarationAccount"/>
+        <result column="declaration_account_category" property="declarationAccountCategory"/>
+        <result column="contribution_account" property="contributionAccount"/>
+        <result column="contribution_account_category" property="contributionAccountCategory"/>
         <result column="remark" property="remark"/>
         <result column="change_log" property="changeLog"/>
         <result column="adjust_compare_info" property="adjustCompareInfo"/>

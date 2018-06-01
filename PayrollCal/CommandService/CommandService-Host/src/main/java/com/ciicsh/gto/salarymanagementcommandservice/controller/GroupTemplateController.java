@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateHistoryDTO;
@@ -83,7 +84,12 @@ public class GroupTemplateController extends BaseController {
         newParam.setVersion("1.0");
         newParam.setCreatedBy(UserContext.getUserId());
         newParam.setModifiedBy(UserContext.getUserId());
-        int result = prGroupTemplateService.newItem(newParam);
+        int result;
+        try {
+            result = prGroupTemplateService.newItem(newParam);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         return result > 0 ? JsonResult.success(newParam.getGroupTemplateCode()) : JsonResult.faultMessage("新建薪资组模板失败");
     }
 

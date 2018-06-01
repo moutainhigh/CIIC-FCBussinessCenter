@@ -91,7 +91,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     public SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO salaryGrantTaskBO) {
         SalaryGrantTaskBO bo;
         if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantTaskBO.getTaskStatus())) {
-            bo = salaryGrantTaskHistoryMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+            bo = salaryGrantTaskHistoryMapper.selectTaskByTaskId(salaryGrantTaskBO);
         } else if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantTaskBO.getTaskType())) {
             bo = salaryGrantMainTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
         } else {

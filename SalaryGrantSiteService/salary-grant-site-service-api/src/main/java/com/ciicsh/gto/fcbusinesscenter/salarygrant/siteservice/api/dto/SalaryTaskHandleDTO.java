@@ -18,6 +18,10 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryTaskHandleDTO extends PagingDTO {
     /**
+     * 任务单ID
+     */
+    private Long taskId;
+    /**
      * 计算批次号
      */
     private String batchCode;
@@ -25,6 +29,10 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      * 发放类型
      */
     private Integer grantType;
+    /**
+     * 薪资发放日期
+     */
+    private String grantDate;
     /**
      * 任务单编号
      */

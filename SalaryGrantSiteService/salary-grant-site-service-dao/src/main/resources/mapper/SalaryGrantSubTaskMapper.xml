@@ -335,6 +335,7 @@
         <result column="batch_code" property="batchCode" />
         <result column="management_id" property="managementId" />
         <result column="management_name" property="managementName" />
+        <result column="grant_cycle" property="grantCycle" />
         <result column="print_date" property="printDate" />
     </resultMap>
 
@@ -349,7 +350,7 @@
     </sql>
 
     <sql id="FinanceField">
-        s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code,  s.batch_code, s.management_id, s.management_name, now() print_date
+        s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code,  s.batch_code, s.management_id, s.management_name, s.grant_cycle, now() print_date
     </sql>
 
     <select id="subTaskList" resultMap="PageResultMap">

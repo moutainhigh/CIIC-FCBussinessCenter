@@ -72,5 +72,17 @@ public interface TaskSink {
     @Input(SALARY_GRANT_REFUND)
     MessageChannel salaryGrantRefundProcess();
 
+    /**
+     * 结算中心支付TOPIC
+     */
+    String SALARY_GRANT_PAYMENT = "pay-apply-pay-status-stream";
+    @Input(SALARY_GRANT_PAYMENT)
+    MessageChannel salaryGrantPaymentProcess();
 
+    /**
+     * 失效薪资发放任务单TOPIC
+     */
+    String SALARY_GRANT_MAIN_TASK_CANCEL_TASK = "sg_compute-unclose-output-channel";
+    @Input(SALARY_GRANT_MAIN_TASK_CANCEL_TASK)
+    MessageChannel salaryGrantMainTaskCancelTask();
 }
