@@ -57,7 +57,7 @@ public interface PrGroupService {
      * @param to
      * @return 导入结果
      */
-    boolean importPrGroup(String from, String to);
+    boolean importPrGroup(String from, String to, Boolean fromTemplate);
 
     /**
      * 删除薪资组
