@@ -16,13 +16,17 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,7 +94,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
         try {
             //查询任务单子表记录列表
             EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
-            subTaskPOEntityWrapper.where("salary_grant_sub_task_code = {0} task_status = 2", taskCode);
+            subTaskPOEntityWrapper.where("salary_grant_sub_task_code = {0} task_status = 2 and is_active = 1", taskCode);
             List<SalaryGrantSubTaskPO> salaryGrantSubTaskPOList = salaryGrantSupplierSubTaskService.selectList(subTaskPOEntityWrapper);
             if (!CollectionUtils.isEmpty(salaryGrantSubTaskPOList)) {
                 //循环处理任务单子表记录
@@ -99,8 +103,8 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
                     String salaryGrantSubTaskCode = subTaskPO.getSalaryGrantSubTaskCode();
                     //根据子任务单编号查询雇员信息表记录列表
                     EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
-                    employeePOEntityWrapper.where("salary_grant_sub_task_code = {0}", salaryGrantSubTaskCode);
-                    List<SalaryGrantEmployeePO> employeePOList = selectList(employeePOEntityWrapper);
+                    employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", salaryGrantSubTaskCode);
+                    List<SalaryGrantEmployeePO> employeePOList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
                     if (!CollectionUtils.isEmpty(employeePOList)) {
                         //根据子任务单编号、子任务单雇员信息记录列表调用账单中心接口获取雇员薪酬服务费
                         SalaryProxyDTO salaryProxyDTO = commonService.selectEmployeeServiceFeeAmount(salaryGrantSubTaskCode, employeePOList);
@@ -119,7 +123,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
                                     grantEmployeePOEntityWrapper.where("salary_grant_sub_task_code = {0}", batchCode)
                                             .where("company_id = {0}", dto.getCompanyId())
                                             .where("employee_id = {0}", dto.getEmployeeId());
-                                    update(employeePO, grantEmployeePOEntityWrapper);
+                                    salaryGrantEmployeeMapper.update(employeePO, grantEmployeePOEntityWrapper);
                                 });
                             }
                         }
@@ -133,4 +137,44 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
         return true;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean updateForRefund(String taskCode, List<EmployeeReturnTicketDTO> employeeReturnTicketDTOList) {
+        try {
+            if (!CollectionUtils.isEmpty(employeeReturnTicketDTOList)) {
+                //根据发放批次号查询雇员信息列表
+                EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+                employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", taskCode);
+                List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
+                if (!CollectionUtils.isEmpty(employeeList)) {
+                    employeeReturnTicketDTOList.stream().forEach(employeeReturnTicketDTO -> {
+                        String companyId = employeeReturnTicketDTO.getCompanyId(); //公司ID
+                        String employeeId = employeeReturnTicketDTO.getEmployeeId(); //雇员ID
+                        String employeeBankAccount = employeeReturnTicketDTO.getEmployeeBankAccount(); //雇员银行账号
+                        BigDecimal payAmount = employeeReturnTicketDTO.getPayAmount(); //支付金额
+
+                        //筛选批次雇员信息
+                        SalaryGrantEmployeePO salaryGrantEmployeePO = employeeList.stream().filter(employeePO ->
+                            !StringUtils.isEmpty(employeePO.getCompanyId()) && employeePO.getCompanyId().equals(companyId) &&
+                            !StringUtils.isEmpty(employeePO.getEmployeeId()) && employeePO.getEmployeeId().equals(employeeId) &&
+                            !StringUtils.isEmpty(employeePO.getCardNum()) && employeePO.getCardNum().equals(employeeBankAccount) &&
+                            !ObjectUtils.isEmpty(employeePO.getPaymentAmount()) && employeePO.getPaymentAmount().compareTo(payAmount) == 0
+                        ).findFirst().orElse(null);
+
+                        //筛选雇员存在时更新雇员信息
+                        if (!ObjectUtils.isEmpty(salaryGrantEmployeePO)) {
+                            SalaryGrantEmployeePO updateEmployeePO = new SalaryGrantEmployeePO();
+                            updateEmployeePO.setSalaryGrantEmployeeId(salaryGrantEmployeePO.getSalaryGrantEmployeeId());
+                            updateEmployeePO.setGrantStatus(3); //发放状态:3-退票
+                            salaryGrantEmployeeMapper.updateById(updateEmployeePO);
+                        }
+                    });
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
 }
