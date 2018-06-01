@@ -122,6 +122,9 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Override
     public int addList(List<PrPayrollItemPO> paramList) {
+        if (paramList == null || paramList.size() == 0) {
+            return 0;
+        }
         PrPayrollItemPO first = paramList.get(0);
         // 将所在薪资组的审核状态更新为草稿
         this.updateRelatedGroupStatus(first);

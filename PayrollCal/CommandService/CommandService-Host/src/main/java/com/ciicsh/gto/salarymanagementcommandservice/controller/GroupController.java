@@ -62,7 +62,7 @@ public class GroupController implements PayrollGroupProxy{
         try {
             importResult = prGroupService.importPrGroup(from, to, fromTemplate);
         } catch (BusinessException be) {
-            JsonResult.faultMessage(be.getMessage());
+            return JsonResult.faultMessage(be.getMessage());
         }
         if (!importResult) {
             throw new BusinessException("薪资组导入失败");
