@@ -169,8 +169,9 @@ public class PrGroupServiceImpl implements PrGroupService {
             i.setModifiedTime(new Date());
         });
         //删除原来存在于该薪资组的薪资项
-        int deleteItemResult = prPayrollItemMapper.deleteItemByGroupCode(to);
-        if (deleteItemResult == 0) {
+        try {
+            prPayrollItemMapper.deleteItemByGroupCode(to);
+        } catch (RuntimeException e) {
             throw new BusinessException("导入目标薪资组中薪资项删除失败");
         }
         int insertItemResult = itemService.addList(items);
