@@ -169,6 +169,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String operatorUserId;
     /**
+     * 审核员
+     */
+    private String approveUserId;
+    /**
      * 结算发放标识:0-正常，1-垫付
      */
     private Integer balanceGrant;

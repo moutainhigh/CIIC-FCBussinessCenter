@@ -54,4 +54,12 @@ public class FinanceTaskDTO {
      * 年终奖人数
      */
     private Integer yearBonusNum;
+    /**
+     * 操作员
+     */
+    private String operatorUserId;
+    /**
+     * 审核员
+     */
+    private String approveUserId;
 }
