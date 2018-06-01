@@ -290,7 +290,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
                     salaryGrantSubTaskPO.setTaskStatus("6");
                     //更新条件
                     EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
-                    subTaskPOEntityWrapper.where("salary_grant_sub_task_code = {0}", taskCode);
+                    subTaskPOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", taskCode);
                     salaryGrantSubTaskMapper.update(salaryGrantSubTaskPO, subTaskPOEntityWrapper);
 
                     //更新任务单主表状态
@@ -299,7 +299,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
                     salaryGrantMainTaskPO.setTaskStatus("6");
                     //更新条件
                     EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
-                    mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0}", mainTaskCode);
+                    mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
                     salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
                 }
             }

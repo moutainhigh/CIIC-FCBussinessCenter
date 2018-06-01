@@ -152,7 +152,8 @@
             contract_first_party            contractFirstParty     ,
             service_fee_amount              serviceFeeAmount       ,
             grant_service_type              grantServiceType       ,
-            grant_status                    grantStatus
+            grant_status                    grantStatus            ,
+            declaration_account_category    declarationAccountCategory
         from
             sg_salary_grant_employee
         where
