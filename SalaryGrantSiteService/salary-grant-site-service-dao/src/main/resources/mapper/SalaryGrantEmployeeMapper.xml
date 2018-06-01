@@ -205,15 +205,15 @@
     </resultMap>
 
     <sql id="FinanceEmpField">
-        e.grant_cycle, e.company_id, e.employee_id, e.employee_name, e.tax_cycle, e.template_type, e.wage_payable, e.personal_social_security, e.individual_provident_fund, e.payment_amount, e.year_end_bonus, e.declaration_account_category,
-        CASE WHEN e.declaration_account_category=1 THEN e.personal_income_tax ELSE 0  END tax,
-        CASE WHEN e.declaration_account_category=1 THEN e.personal_income_tax ELSE 0  END tax_fc,
-        CASE WHEN e.declaration_account_category=2 THEN e.personal_income_tax ELSE 0  END tax_Independence
+        ${alias}.grant_cycle, ${alias}.company_id, ${alias}.employee_id, ${alias}.employee_name, ${alias}.tax_cycle, ${alias}.template_type, ${alias}.wage_payable, ${alias}.personal_social_security, ${alias}.individual_provident_fund, ${alias}.payment_amount, ${alias}.year_end_bonus, ${alias}.declaration_account_category,
+        CASE WHEN ${alias}.declaration_account_category=1 THEN ${alias}.personal_income_tax ELSE 0  END tax,
+        CASE WHEN ${alias}.declaration_account_category=1 THEN ${alias}.personal_income_tax ELSE 0  END tax_fc,
+        CASE WHEN ${alias}.declaration_account_category=2 THEN ${alias}.personal_income_tax ELSE 0  END tax_Independence
     </sql>
 
     <select id="selectEmpForFinance" resultMap="FinanceResultMap">
         SELECT
-          <include refid="FinanceEmpField"></include>
+          <include refid="FinanceEmpField"><property name="alias" value="e"/></include>
         FROM
           sg_salary_grant_employee e
         WHERE EXISTS
