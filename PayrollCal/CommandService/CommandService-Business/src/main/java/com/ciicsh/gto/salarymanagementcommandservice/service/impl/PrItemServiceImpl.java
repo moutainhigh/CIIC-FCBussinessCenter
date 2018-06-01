@@ -64,6 +64,7 @@ public class PrItemServiceImpl implements PrItemService {
         PrPayrollItemPO param = new PrPayrollItemPO();
         param.setPayrollGroupCode(groupCode);
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
+        ew.orderBy("created_time", true);
 //        ew.isNull("payroll_group_template_code");
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
