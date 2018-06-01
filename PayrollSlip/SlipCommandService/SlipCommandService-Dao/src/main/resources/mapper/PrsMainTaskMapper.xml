@@ -169,7 +169,7 @@
         SELECT COUNT(*) FROM prs_main_task
         WHERE is_active = 1
         <if test="status != null and status != ''">
-            and status = #{status}
+            and status IN (${status})
         </if>
         <if test="mainTaskId != null and mainTaskId != ''">
             and main_task_id = #{mainTaskId}
@@ -199,7 +199,7 @@
         FROM prs_main_task
         WHERE is_active = 1
         <if test="status != null and status != ''">
-            and status = #{status}
+            and status IN (${status})
         </if>
         <if test="mainTaskId != null and mainTaskId != ''">
             and main_task_id = #{mainTaskId}
