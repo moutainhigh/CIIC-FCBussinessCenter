@@ -18,9 +18,11 @@
         <result column="publish_exec_date" property="publishExecDate" />
         <result column="publish_manual_date" property="publishManualDate" />
         <result column="upload_zxt_date" property="uploadZxtDate" />
+        <result column="upload_exec_date" property="uploadExecDate" />
         <result column="publish_manual_remark" property="publishManualRemark" />
         <result column="publish_state" property="publishState" />
         <result column="publish_fail_log" property="publishFailLog" />
+        <result column="upload_state" property="uploadState" />
         <result column="payroll_type" property="payrollType" />
         <result column="selected_payroll_type" property="selectedPayrollType" />
         <result column="status" property="status" />
@@ -62,8 +64,8 @@
     </select>
 
     <insert id="insert" parameterType="map">
-    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, publish_exec_date, publish_manual_date, upload_zxt_date, publish_manual_remark, publish_state, publish_fail_log, payroll_type, selected_payroll_type, status, has_paper, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
-    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{publishExecDate}, #{publishManualDate}, #{uploadZxtDate}, #{publishManualRemark}, #{publishState}, #{publishFailLog}, #{payrollType}, #{selectedPayrollType}, #{status}, #{hasPaper}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, publish_exec_date, publish_manual_date, upload_zxt_date, upload_exec_date, publish_manual_remark, publish_state, publish_fail_log, upload_state, payroll_type, selected_payroll_type, status, has_paper, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
+    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{publishExecDate}, #{publishManualDate}, #{uploadZxtDate}, #{uploadExecDate}, #{publishManualRemark}, #{publishState}, #{publishFailLog}, #{uploadState}, #{payrollType}, #{selectedPayrollType}, #{status}, #{hasPaper}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
   </insert>
 
     <update id="update" parameterType="map">
@@ -112,6 +114,9 @@
             <if test="uploadZxtDate != null">
                 upload_zxt_date = #{uploadZxtDate},
             </if>
+            <if test="uploadExecDate != null">
+                upload_exec_date = #{uploadExecDate},
+            </if>
             <if test="publishManualRemark != null and publishManualRemark != ''">
                 publish_manual_remark = #{publishManualRemark},
             </if>
@@ -120,6 +125,9 @@
             </if>
             <if test="publishFailLog != null and publishFailLog != ''">
                 publish_fail_log = #{publishFailLog},
+            </if>
+            <if test="uploadState != null and uploadState != ''">
+                upload_state = #{uploadState},
             </if>
             <if test="payrollType != null and payrollType != ''">
                 payroll_type = #{payrollType},
@@ -130,7 +138,7 @@
             <if test="status != null and status != ''">
                 status = #{status},
             </if>
-            <if test="hasPaper != null">
+            <if test="hasPaper != null and hasPaper != ''">
                 has_paper = #{hasPaper},
             </if>
             <if test="comments != null and comments != ''">

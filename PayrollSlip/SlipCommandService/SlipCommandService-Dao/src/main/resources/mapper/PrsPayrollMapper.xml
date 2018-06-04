@@ -9,6 +9,7 @@
         <result column="management_name" property="managementName" />
         <result column="employee_id" property="employeeId" />
         <result column="employee_name" property="employeeName" />
+        <result column="net_pay" property="netPay" />
         <result column="period" property="period" />
         <result column="personnel_income_year_month" property="personnelIncomeYearMonth" />
         <result column="batch_id" property="batchId" />
@@ -45,8 +46,8 @@
   </select>
 
     <insert id="insert" parameterType="map">
-    INSERT INTO prs_payroll(payroll_code, management_id, management_name, employee_id, employee_name, period, personnel_income_year_month, batch_id, template_id, template_name, channel, items, remark, created_by, modified_by)
-    VALUES (#{payrollCode}, #{managementId}, #{managementName}, #{employeeId}, #{employeeName}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{items}, #{remark}, #{createdBy}, #{modifiedBy})
+    INSERT INTO prs_payroll(payroll_code, management_id, management_name, employee_id, employee_name, net_pay, period, personnel_income_year_month, batch_id, template_id, template_name, channel, items, remark, created_by, modified_by)
+    VALUES (#{payrollCode}, #{managementId}, #{managementName}, #{employeeId}, #{employeeName}, #{netPay}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{items}, #{remark}, #{createdBy}, #{modifiedBy})
   </insert>
 
     <update id="update" parameterType="map">
@@ -67,6 +68,9 @@
             </if>
             <if test="employeeName != null and employeeName != ''">
                 employee_name = #{employeeName},
+            </if>
+            <if test="netPay != null and netPay != ''">
+                net_pay = #{netPay},
             </if>
             <if test="period != null and period != ''">
                 period = #{period},
@@ -104,14 +108,20 @@
     </update>
 
     <select id="total"  resultType="int">
-    SELECT COUNT(*) FROM prs_payroll
-    WHERE is_active = 1
-  </select>
+        SELECT COUNT(*) FROM prs_payroll
+        WHERE is_active = 1
+        <if test="employeeId != null and employeeId != ''">
+            and employee_id = #{employeeId}
+        </if>
+    </select>
 
     <select id="list"  resultMap="BaseResultMap">
         SELECT *
         FROM prs_payroll
         WHERE is_active = 1
+        <if test="employeeId != null and employeeId != ''">
+            and employee_id = #{employeeId}
+        </if>
         ORDER BY id DESC
         <if test="limit != null and limit != ''">
             LIMIT #{limit}

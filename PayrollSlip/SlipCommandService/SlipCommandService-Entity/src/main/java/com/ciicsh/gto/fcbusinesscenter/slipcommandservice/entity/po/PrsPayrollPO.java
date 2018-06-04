@@ -59,6 +59,12 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
   private String employeeName;
 
   /**
+   * 实发工资
+   */
+  @TableField("net_pay")
+  private String netPay;
+
+  /**
    * 薪资周期
    */
   @TableField("period")
@@ -186,6 +192,14 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
     this.employeeName = employeeName;
   }
 
+  public String getNetPay() {
+    return netPay;
+  }
+
+  public void setNetPay(String netPay) {
+    this.netPay = netPay;
+  }
+
   public String getPeriod() {
     return period;
   }
@@ -306,6 +320,7 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
             ", managementName=" + managementName +
             ", employeeId=" + employeeId +
             ", employeeName=" + employeeName +
+            ", netPay=" + netPay +
             ", period=" + period +
             ", personnelIncomeYearMonth=" + personnelIncomeYearMonth +
             ", batchId=" + batchId +
