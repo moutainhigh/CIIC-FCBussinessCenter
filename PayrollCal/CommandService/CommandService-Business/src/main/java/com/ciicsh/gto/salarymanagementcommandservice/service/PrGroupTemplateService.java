@@ -101,4 +101,12 @@ public interface PrGroupTemplateService {
      * @return
      */
     boolean publishPrGroupTemplate(String code);
+
+    /**
+     * 导入薪资组模板
+     * @param from
+     * @param to
+     * @return 导入结果
+     */
+    boolean importPrGroupTemplate(String from, String to, Boolean fromTemplate);
 }

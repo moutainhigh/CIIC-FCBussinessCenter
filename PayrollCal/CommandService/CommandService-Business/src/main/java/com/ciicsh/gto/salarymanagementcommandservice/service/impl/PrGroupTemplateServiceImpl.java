@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
@@ -88,6 +89,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         if (nameExistFlg > 0) {
             throw new BusinessException("重复的薪资组模板名称");
         }
+        param.setApprovalStatus(ApprovalStatusEnum.APPROVE.getValue());
         int result = prPayrollGroupTemplateMapper.insert(param);
         return result;
     }
@@ -213,21 +215,23 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         if (items == null || items.size()<1){
             result.put("FAILURE", failList);
         }
-        items.stream()
-                .filter(item -> item.getType().equals(ItemTypeEnum.CALC.getValue()))
-                .forEach(item ->{
-                    List<String> itemNames = getPayItems(item.getFormula());
-                    if (itemNames.stream()
-                            .anyMatch(str -> str.trim().equals(prItemName))){
-                        failList.add(item.getName());
-                    }
-                });
+        if (items != null) {
+            items.stream()
+                    .filter(item -> item.getType().equals(ItemTypeEnum.CALC.getValue()))
+                    .forEach(item ->{
+                        List<String> itemNames = getPayItems(item.getFormula());
+                        if (itemNames.stream()
+                                .anyMatch(str -> str.trim().equals(prItemName))){
+                            failList.add(item.getName());
+                        }
+                    });
+        }
         return result;
     }
 
     @Override
     public List<HashMap<String, String>> getPrGroupTemplateNameList(String query) {
-        List<HashMap<String, String>> result = new ArrayList<>(50);
+        List<HashMap<String, String>> result;
         result = prPayrollGroupTemplateMapper.selectGroupTemplateNameListByName(query);
         return result;
     }
@@ -287,6 +291,42 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
             });
         });
 
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public boolean importPrGroupTemplate(String from, String to, Boolean fromTemplate) {
+
+        //获取from薪资组中的薪资项
+        List<PrPayrollItemPO> items;
+        if (fromTemplate) {
+            items = prItemService.getListByGroupTemplateCode(from);
+        } else {
+            items = prItemService.getListByGroupCode(from);
+        }
+
+        if (items == null || items.size() == 0) {
+            throw new BusinessException("导入薪资组中无薪资项");
+        }
+        items.forEach(i -> {
+            i.setPayrollGroupTemplateCode(to);
+            i.setParentItemCode(null);
+            i.setCreatedBy(UserContext.getUserId());
+            i.setModifiedBy(UserContext.getUserId());
+            i.setCreatedTime(new Date());
+            i.setModifiedTime(new Date());
+        });
+        //删除原来存在于该薪资组模板的薪资项
+        try {
+            prPayrollItemMapper.deleteItemByGroupTemplateCode(to);
+        } catch (RuntimeException e) {
+            throw new BusinessException("导入目标薪资组模板中薪资项删除失败");
+        }
+        int insertItemResult = prItemService.addList(items);
+        if (insertItemResult == 0) {
+            throw new BusinessException("导入薪资组模板中薪资项时失败");
+        }
         return true;
     }
 
