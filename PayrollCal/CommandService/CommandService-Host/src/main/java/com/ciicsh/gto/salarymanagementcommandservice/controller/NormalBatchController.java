@@ -120,8 +120,8 @@ public class NormalBatchController {
         prNormalBatchPO.setManagementName(batchDTO.getManagementName());
         prNormalBatchPO.setPeriod(batchDTO.getPeriod());
         prNormalBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
-        prNormalBatchPO.setCreatedBy(UserContext.getName());
-        prNormalBatchPO.setModifiedBy(UserContext.getName());
+        prNormalBatchPO.setCreatedBy(UserContext.getUserId());
+        prNormalBatchPO.setModifiedBy(UserContext.getUserId());
 
         PrPayrollAccountSetPO accountSetPO = accountSetService.getAccountSetInfo(batchDTO.getAccountSetCode());
 
@@ -218,9 +218,9 @@ public class NormalBatchController {
     }
 
     @PostMapping("/uploadExcel")
-    public JsonResult importExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file){
+    public JsonResult importExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file){
 
-        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
+        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, batchType,importType,file);
         return JsonResult.success(statistics);
 
     }

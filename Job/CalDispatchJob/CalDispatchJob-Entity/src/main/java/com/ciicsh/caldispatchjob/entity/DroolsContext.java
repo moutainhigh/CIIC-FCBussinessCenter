@@ -15,6 +15,7 @@ public class DroolsContext {
 
     private EmpPayItem empPayItem;
     private List<FuncEntity> funcEntityList;
+    private BatchContext batchContext;
 
     public EmpPayItem getEmpPayItem() {
         return empPayItem;
@@ -30,6 +31,14 @@ public class DroolsContext {
 
     public List<FuncEntity> getFuncEntityList() {
         return this.funcEntityList;
+    }
+
+    public BatchContext getBatchContext() {
+        return batchContext;
+    }
+
+    public void setBatchContext(BatchContext batchContext) {
+        this.batchContext = batchContext;
     }
 
     public boolean existFunction(String funcName){

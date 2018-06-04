@@ -122,6 +122,7 @@ public class CommonServiceImpl {
         dbObject.put("payroll_type",batchPO.getPayrollType());
         dbObject.put("period",batchPO.getPeriod());
         dbObject.put("status",batchPO.getStatus());
+        dbObject.put("actual_period",batchPO.getActualPeriod());
         return dbObject;
     }
 

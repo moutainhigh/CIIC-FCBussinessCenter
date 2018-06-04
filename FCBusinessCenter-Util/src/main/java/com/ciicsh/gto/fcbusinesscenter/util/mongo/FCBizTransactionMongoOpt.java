@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.util.mongo;
 
 import com.ciicsh.gt1.BaseOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.entity.BatchTypeEnum;
 import com.ciicsh.gto.fcbusinesscenter.util.entity.DistributedTranEntity;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
