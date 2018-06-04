@@ -41,6 +41,22 @@ public class GroupTemplateController extends BaseController {
     @Autowired
     private PrGroupTemplateServiceImpl prGroupTemplateService;
 
+    @GetMapping(value = "/importPrGroupTemplate")
+    public JsonResult importPrGroupTemplate(@RequestParam String from,
+                                    @RequestParam String to,
+                                    @RequestParam(defaultValue = "true") Boolean fromTemplate) {
+        boolean importResult;
+        try {
+            importResult = prGroupTemplateService.importPrGroupTemplate(from, to, fromTemplate);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
+        if (!importResult) {
+            throw new BusinessException("薪资组模板导入失败");
+        }
+        return JsonResult.success("导入成功");
+    }
+
     @PostMapping(value = "/prGroupTemplateQuery")
     public JsonResult searchPrGroupTemplateList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                                 @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
