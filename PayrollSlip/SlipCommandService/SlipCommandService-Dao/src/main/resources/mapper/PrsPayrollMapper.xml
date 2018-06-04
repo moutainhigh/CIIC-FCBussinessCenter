@@ -5,22 +5,18 @@
     <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO">
         <id column="id" property="id" />
         <result column="payroll_code" property="payrollCode" />
-        <result column="title" property="title" />
         <result column="management_id" property="managementId" />
         <result column="management_name" property="managementName" />
         <result column="employee_id" property="employeeId" />
+        <result column="employee_name" property="employeeName" />
         <result column="period" property="period" />
         <result column="personnel_income_year_month" property="personnelIncomeYearMonth" />
         <result column="batch_id" property="batchId" />
         <result column="template_id" property="templateId" />
         <result column="template_name" property="templateName" />
         <result column="channel" property="channel" />
-        <result column="data_object" property="dataObject" />
+        <result column="items" property="items" />
         <result column="remark" property="remark" />
-        <result column="status" property="status" />
-        <result column="approver" property="approver" />
-        <result column="approve_time" property="approveTime" />
-        <result column="approve_remark" property="approveRemark" />
         <result column="is_active" property="isActive" />
         <result column="created_time" property="createdTime" />
         <result column="modified_time" property="modifiedTime" />
@@ -28,44 +24,11 @@
         <result column="modified_by" property="modifiedBy" />
     </resultMap>
 
-    <select id="total"  resultType="int">
-        SELECT COUNT(*) FROM prs_payroll
-        WHERE is_active = 1
-    </select>
-
     <select id="all"  resultMap="BaseResultMap">
-        SELECT *
-        FROM prs_payroll
-        WHERE is_active = 1
-    </select>
-
-    <select id="list"  resultMap="BaseResultMap">
-        SELECT *
-        FROM prs_payroll
-        WHERE is_active = 1
-        <if test="id != null and id != ''">
-            and id = #{id}
-        </if>
-        <if test="managementId != null and managementId != ''">
-            and management_id = #{managementId}
-        </if>
-        <if test="managementName != null and managementName != ''">
-            and management_name like concat('%', #{managementName}, '%')
-        </if>
-        <if test="period != null and period != ''">
-            and period = #{period}
-        </if>
-        <if test="batchId != null and batchId != ''">
-            and batch_id = #{batchId}
-        </if>
-        ORDER BY payroll_id DESC
-        <if test="limit != null and limit != ''">
-            LIMIT #{limit}
-        </if>
-        <if test="offset != null and offset != ''">
-            OFFSET #{offset}
-        </if>
-    </select>
+    SELECT *
+    FROM prs_payroll
+    WHERE is_active = 1
+  </select>
 
     <select id="get"  resultMap="BaseResultMap">
     SELECT *
@@ -75,15 +38,15 @@
   </select>
 
     <select id="last"  resultMap="BaseResultMap">
-        SELECT *
-        FROM prs_payroll
-        ORDER by id desc
-        LIMIT 1;
-    </select>
+    SELECT *
+    FROM prs_payroll
+    ORDER by id desc
+    LIMIT 1;
+  </select>
 
     <insert id="insert" parameterType="map">
-    INSERT INTO prs_payroll(payroll_code, title, management_id, management_name, employee_id, period, personnel_income_year_month, batch_id, template_id, template_name, channel, data_object, remark, status, approver, approve_time, approve_remark, created_by, modified_by)
-    VALUES (#{payrollCode}, #{title}, #{managementId}, #{managementName}, #{employeeId}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{dataObject}, #{remark}, #{status}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+    INSERT INTO prs_payroll(payroll_code, management_id, management_name, employee_id, employee_name, period, personnel_income_year_month, batch_id, template_id, template_name, channel, items, remark, created_by, modified_by)
+    VALUES (#{payrollCode}, #{managementId}, #{managementName}, #{employeeId}, #{employeeName}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{items}, #{remark}, #{createdBy}, #{modifiedBy})
   </insert>
 
     <update id="update" parameterType="map">
@@ -93,9 +56,6 @@
             <if test="payrollCode != null and payrollCode != ''">
                 payroll_code = #{payrollCode},
             </if>
-            <if test="title != null and title != ''">
-                title = #{title},
-            </if>
             <if test="managementId != null and managementId != ''">
                 management_id = #{managementId},
             </if>
@@ -104,6 +64,9 @@
             </if>
             <if test="employeeId != null and employeeId != ''">
                 employee_id = #{employeeId},
+            </if>
+            <if test="employeeName != null and employeeName != ''">
+                employee_name = #{employeeName},
             </if>
             <if test="period != null and period != ''">
                 period = #{period},
@@ -123,23 +86,11 @@
             <if test="channel != null and channel != ''">
                 channel = #{channel},
             </if>
-            <if test="dataObject != null and dataObject != ''">
-                data_object = #{dataObject},
+            <if test="items != null and items != ''">
+                items = #{items},
             </if>
             <if test="remark != null and remark != ''">
                 remark = #{remark},
-            </if>
-            <if test="status != null and status != ''">
-                status = #{status},
-            </if>
-            <if test="approver != null and approver != ''">
-                approver = #{approver},
-            </if>
-            <if test="approveTime != null">
-                approve_time = #{approveTime},
-            </if>
-            <if test="approveRemark != null and approveRemark != ''">
-                approve_remark = #{approveRemark},
             </if>
             <if test="isActive != null">
                 is_active = #{isActive},
@@ -151,4 +102,23 @@
         </trim>
         WHERE id = #{id}
     </update>
+
+    <select id="total"  resultType="int">
+    SELECT COUNT(*) FROM prs_payroll
+    WHERE is_active = 1
+  </select>
+
+    <select id="list"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_payroll
+        WHERE is_active = 1
+        ORDER BY id DESC
+        <if test="limit != null and limit != ''">
+            LIMIT #{limit}
+        </if>
+        <if test="offset != null and offset != ''">
+            OFFSET #{offset}
+        </if>
+    </select>
+
 </mapper>
