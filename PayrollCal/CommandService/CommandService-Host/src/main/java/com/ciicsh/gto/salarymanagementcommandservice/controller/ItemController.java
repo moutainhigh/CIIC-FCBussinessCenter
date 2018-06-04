@@ -155,7 +155,7 @@ public class ItemController extends BaseController{
         try {
             resultId = itemService.addItem(newParam);
         } catch (BusinessException be) {
-            JsonResult.faultMessage(be.getMessage());
+            return JsonResult.faultMessage(be.getMessage());
         }
         return resultId > 0 ? JsonResult.success(newParam.getItemCode()) : JsonResult.faultMessage("新建薪资项失败");
     }

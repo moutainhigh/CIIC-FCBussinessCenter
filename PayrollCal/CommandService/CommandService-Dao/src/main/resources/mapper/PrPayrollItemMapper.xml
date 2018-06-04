@@ -256,11 +256,22 @@
 
 	<select id="selectMaxCalPriorityOfGroup" resultType="int">
 		SELECT
-			max(cal_priority)
+			CASE
+				WHEN max(cal_priority) IS NULL THEN 0
+				ELSE max(cal_priority)
+			END
 		FROM
 			pr_payroll_item
 		WHERE
-			payroll_group_code = #{groupCode}
+		<choose>
+			<when test="isTemplate != false">
+				payroll_group_template_code = #{groupCode}
+			</when>
+			<otherwise>
+				payroll_group_code = #{groupCode}
+			</otherwise>
+		</choose>
+
 	</select>
 
 	<select id="selectItemNames" resultMap="PayrollItemsMap">

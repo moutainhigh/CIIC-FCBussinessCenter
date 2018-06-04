@@ -16,11 +16,15 @@ import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.entity.DistributedTranEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
+import com.ciicsh.gto.salarymanagement.entity.enums.AdvanceEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.company.*;
+import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +77,11 @@ public class CompleteComputeServiceImpl {
     @Autowired
     private FCBizTransactionMongoOpt bizTransactionMongoOpt;
 
+    @Autowired
+    private CompanyProxy companyProxy;
+
+    @Autowired
+    private PrNormalBatchService normalBatchService;
 
     public void processCompleteCompute(String batchCode, int batchType, String userID, String userName){
 
@@ -108,6 +117,9 @@ public class CompleteComputeServiceImpl {
             query.fields().include("origin_batch_code");
             batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
+
+        List<String> companyIds = new ArrayList<>();
+
         List<DBObject> list = batchList.stream().map(item -> {
             DBObject catalog = (DBObject)item.get("catalog");
             String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
@@ -123,12 +135,10 @@ public class CompleteComputeServiceImpl {
             mapObj.put("mgr_name", batchInfo.get("management_Name") == null ? "" : batchInfo.get("management_Name")); // 管理方名称
             mapObj.put("emp_id", empCode); // 中智雇员ID
             mapObj.put("emp_info",empInfo); // 雇员信息
-            //mapObj.put("emp_name",emp.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_NAME_CN));
-            //mapObj.put("id_card_type",emp.get(PayItemName.EMPLOYEE_ID_TYPE_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_ID_TYPE_CN)); //证件类型
-            //mapObj.put("id_num",emp.get(PayItemName.IDENTITY_NUM) == null ? "" : emp.get(PayItemName.IDENTITY_NUM)); //证件号
-            //mapObj.put("company_id",emp.get(PayItemName.EMPLOYEE_COMPANY_ID) == null ? "" : emp.get(PayItemName.EMPLOYEE_COMPANY_ID));
-            //mapObj.put("country_code", emp.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN) == null ? "" : emp.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN));  // 国家代码
-            //mapObj.put("employee_service_agreement", emp.get(PayItemName.EMPLOYEE_SERVICE_AGREE) == null ? getEmpAgreement(empCode) : emp.get(PayItemName.EMPLOYEE_SERVICE_AGREE));
+            String company_id = empInfo.get(PayItemName.EMPLOYEE_COMPANY_ID) == null ? "" : (String) empInfo.get(PayItemName.EMPLOYEE_COMPANY_ID);
+            if(StringUtils.isNotEmpty(company_id)){
+                companyIds.add(company_id);
+            }
             mapObj.put("income_year_month", batchInfo.get("period") == null ? "" : batchInfo.get("period")); //工资年月
             mapObj.put("leaving_years", empInfo.get(PayItemName.LEAVE_DATE) == null ? "" : empInfo.get(PayItemName.LEAVE_DATE)); // 离职年限
             mapObj.put("net_pay", findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY) == null ? "" : findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //实发工资
@@ -155,7 +165,7 @@ public class CompleteComputeServiceImpl {
             mapObj.put("tax_exemption", ""); //个人免税额度
             mapObj.put("tax_year_month", ""); //报税年月
             mapObj.put("annuity", ""); //年金
-            mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
+            //mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
             mapObj.put("salary_calc_result_items", payItems);
             processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
 
@@ -171,20 +181,20 @@ public class CompleteComputeServiceImpl {
         logger.info("批量插入成功：" + String.valueOf(rowAffected));
 
         if(rowAffected > 0){
-            ClosingMsg closingMsg = new ClosingMsg();
-            closingMsg.setBatchCode(batchCode);
-            closingMsg.setBatchType(batchType);
-            closingMsg.setOptID(userID);
-            closingMsg.setOptName(userName);
 
-            sender.SendComputeClose(closingMsg);
-            logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
+            int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
 
-            //初始化FC分布式事务
-            int affected = initializeDistributedTransaction(batchCode,batchType);
             if(affected > 0) {
-                logger.info("初始化 %s 事务成功", EventName.FC_TRANSACTION_NAME);
+                ClosingMsg closingMsg = new ClosingMsg();
+                closingMsg.setBatchCode(batchCode);
+                closingMsg.setBatchType(batchType);
+                closingMsg.setOptID(userID);
+                closingMsg.setOptName(userName);
+
+                //sender.SendComputeClose(closingMsg);
+                logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
             }
+
         }
     }
 
@@ -383,6 +393,45 @@ public class CompleteComputeServiceImpl {
         tranEntity.setEvents(events);
         return bizTransactionMongoOpt.initDistributedTransaction(tranEntity);
 
+    }
+
+    private int updateAdvance(List<String> companyIds,String batchCode, int batchType){
+
+        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<PaymentCycleDTO>> result = companyProxy.listPaymentInfo(companyIds);
+        List<PaymentCycleDTO> fcPaymentCycleDTOS = result.getObject();
+        if(fcPaymentCycleDTOS != null && fcPaymentCycleDTOS.size() > 0){
+            int size = fcPaymentCycleDTOS.size();
+            int count = 0;
+            for (PaymentCycleDTO item : fcPaymentCycleDTOS){
+                if(item.getHasCreditPayment()){
+                    count ++;
+                }
+            }
+
+            if(count == size){ //周期垫付
+                Optional<PaymentCycleDTO> findMin = fcPaymentCycleDTOS.stream().sorted((item1,item2) -> item1.getPaymentCycle().compareTo(item2.getPaymentCycle())).findFirst();
+                if(findMin.isPresent()){
+                    int minAdvanceDay = findMin.get().getPaymentCycle(); // 最小垫付周期日
+                    //boolean hasAdvance = true;
+
+                    if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+                        PrNormalBatchPO prNormalBatchPO = new PrNormalBatchPO();
+                        prNormalBatchPO.setCode(batchCode);
+                        prNormalBatchPO.setHasAdvance(AdvanceEnum.CIRCLE.getValue()); //0表示未垫付，1 表示周期垫付，2表示偶然垫付，3表示水单垫付
+                        prNormalBatchPO.setAdvanceDay(minAdvanceDay);
+                        prNormalBatchPO.setModifiedBy("sys");
+                        return normalBatchService.update(prNormalBatchPO);
+
+                    }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
+
+                    }else {
+
+                    }
+                }
+            }
+        }
+
+        return 0;
     }
 
 }

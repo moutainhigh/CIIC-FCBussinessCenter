@@ -15,10 +15,10 @@ import static org.junit.Assert.assertTrue;
  * @Description: 工作日历单元测试
  * @Date: Created in 14:20 2017/12/28
  */
-@RunWith(SpringRunner.class)
+// @RunWith(SpringRunner.class)
 public class WorkingCalendarTest extends BaseTest{
 
-    @Test
+    // @Test
     public void testAdd(){
         WorkingCalendarPageDTO workingCalendarPageDTO = new WorkingCalendarPageDTO();
         Random random = new Random();
@@ -33,19 +33,19 @@ public class WorkingCalendarTest extends BaseTest{
     }
 
 
-    @Test
+    // @Test
     public void testSelect(){
         JSONObject jr = testRestTemplate.getForObject("/api/getWorkingCalendarPage", JSONObject.class);
         assertTrue(jr.get("errCode").equals("0"));
     }
 
 
-//    @Test
+//    // @Test
 //    public void testupdate(){
 //
 //    }
 //
-//    @Test
+//    // @Test
 //    public void testDelect(){
 //
 //    }

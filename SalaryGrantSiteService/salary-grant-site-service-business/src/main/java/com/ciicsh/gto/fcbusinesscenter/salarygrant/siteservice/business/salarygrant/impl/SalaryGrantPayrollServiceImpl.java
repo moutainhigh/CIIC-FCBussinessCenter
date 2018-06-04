@@ -48,10 +48,9 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         SalaryGrantFinanceBO financeBo = BeanUtils.instantiate(SalaryGrantFinanceBO.class);
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
-        if (!empList.isEmpty()) {
+        if (task!=null && !empList.isEmpty()) {
             List<FinanceEmployeeBO> subTotalList  = new ArrayList<>();
             List<FinanceEmployeeBO> groupList  = new ArrayList<>();
-            task.setTaxCycle(empList.get(0).getTaxCycle());
             /** 统计 */
             Long amountNum = empList.parallelStream().filter( x -> BigDecimal.ZERO.compareTo(x.getPaymentAmount())==0).count();
             Long yearBonusNum = empList.parallelStream().filter( x -> BigDecimal.ZERO.compareTo(x.getYearEndBonus())==0).count();
@@ -63,6 +62,8 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
             groupList.parallelStream().forEach(x -> x.setTemplateName(commonService.getNameByValue("employeeType", String.valueOf(x.getTemplateType()))));
             groupList.add(summaryInfo(1, subTotalList));
             financeBo.setEmpList(groupList);
+            task.setOperatorUserId(commonService.getUserNameById(task.getOperatorUserId()));
+            task.setApproveUserId(commonService.getUserNameById(task.getApproveUserId()));
         }
         financeBo.setTask(task);
         return financeBo;
@@ -91,6 +92,9 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         summary.setWagePayable(list.parallelStream().map(FinanceEmployeeBO::getWagePayable).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setPersonalSocialSecurity(list.parallelStream().map(FinanceEmployeeBO::getPersonalSocialSecurity).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setIndividualProvidentFund(list.parallelStream().map(FinanceEmployeeBO::getIndividualProvidentFund).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTax(list.parallelStream().map(FinanceEmployeeBO::getTax).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTaxFC(list.parallelStream().map(FinanceEmployeeBO::getTaxFC).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTaxIndependence(list.parallelStream().map(FinanceEmployeeBO::getTaxIndependence).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setPaymentAmount(list.parallelStream().map(FinanceEmployeeBO::getPaymentAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
         return summary;
     }

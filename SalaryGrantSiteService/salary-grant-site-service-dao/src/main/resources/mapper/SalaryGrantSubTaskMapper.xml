@@ -335,6 +335,7 @@
         <result column="batch_code" property="batchCode" />
         <result column="management_id" property="managementId" />
         <result column="management_name" property="managementName" />
+        <result column="grant_cycle" property="grantCycle" />
         <result column="print_date" property="printDate" />
     </resultMap>
 
@@ -349,7 +350,7 @@
     </sql>
 
     <sql id="FinanceField">
-        s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code,  s.batch_code, s.management_id, s.management_name, now() print_date
+        m.operator_user_id, m.approve_user_id, s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code,  s.batch_code, s.management_id, s.management_name, s.grant_cycle, now() print_date
     </sql>
 
     <select id="subTaskList" resultMap="PageResultMap">
@@ -381,13 +382,19 @@
 
     <select id="selectTaskForFinance" resultMap="FinanceResultMap">
         select
-          <include refid="FinanceField"></include>
+            <include refid="FinanceField"></include>
         from
-          sg_salary_grant_sub_task s
+            sg_salary_grant_main_task m,sg_salary_grant_sub_task s
         where
-          s.salary_grant_main_task_code = #{taskCode}
-        AND
-          s.grant_mode = 1
+            m.salary_grant_main_task_code = s.salary_grant_main_task_code
+        and
+            m.salary_grant_main_task_code = #{taskCode}
+        and
+            m.is_active = 1
+        and
+            s.grant_mode = 1
+        and
+            s.is_active = 1
     </select>
 
 </mapper>

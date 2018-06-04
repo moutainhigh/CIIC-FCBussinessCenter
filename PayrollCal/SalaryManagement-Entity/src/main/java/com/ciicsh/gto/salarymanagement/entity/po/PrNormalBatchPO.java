@@ -132,6 +132,11 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 	@TableField("has_money")
 	private Boolean hasMoney;
 
+	/*周期垫付日*/
+	@TableField("advance_day")
+	private int advanceDay;
+
+	/*逾期垫付日期*/
 	@TableField("advance_period")
 	private String advancePeriod;
 
@@ -322,6 +327,14 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 
 	public void setHasMoney(Boolean hasMoney) {
 		this.hasMoney = hasMoney;
+	}
+
+	public int getAdvanceDay() {
+		return advanceDay;
+	}
+
+	public void setAdvanceDay(int advanceDay) {
+		this.advanceDay = advanceDay;
 	}
 
 	@Override

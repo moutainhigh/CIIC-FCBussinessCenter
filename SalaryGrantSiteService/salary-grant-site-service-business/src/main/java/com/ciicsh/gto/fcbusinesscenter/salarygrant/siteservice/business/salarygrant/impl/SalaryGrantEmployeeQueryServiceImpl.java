@@ -59,7 +59,9 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     public Page<SalaryGrantEmployeeBO> queryEmployeeTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
         Page<SalaryGrantEmployeeBO> employeeBOList;
         //查询主表的雇员信息
-        if (salaryGrantEmployeeBO.getTaskType() == SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.intValue()) {
+        if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantEmployeeBO.getTaskStatus())) {
+            employeeBOList = queryEmpHisInfo(salaryGrantEmployeeBO.getTaskId(), page.getCurrent(), page.getSize());
+        } else if (salaryGrantEmployeeBO.getTaskType() == SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.intValue()) {
             salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
             employeeBOList = queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
         } else {
