@@ -56,8 +56,14 @@ public class GroupController implements PayrollGroupProxy{
 
     @GetMapping(value = "/importPrGroup")
     public JsonResult importPrGroup(@RequestParam String from,
-                                    @RequestParam String to) {
-        boolean importResult = prGroupService.importPrGroup(from, to);
+                                    @RequestParam String to,
+                                    @RequestParam(defaultValue = "false") Boolean fromTemplate) {
+        boolean importResult;
+        try {
+            importResult = prGroupService.importPrGroup(from, to, fromTemplate);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         if (!importResult) {
             throw new BusinessException("薪资组导入失败");
         }
@@ -169,7 +175,12 @@ public class GroupController implements PayrollGroupProxy{
 
         newParam.setCreatedBy(UserContext.getUserId());
         newParam.setModifiedBy(UserContext.getUserId());
-        int result= prGroupService.addItem(newParam);
+        int result;
+        try {
+            result = prGroupService.addItem(newParam);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
     }
 

@@ -138,4 +138,13 @@
 		LIMIT 50
 	</select>
 
+	<select id="selectCountGroupByName" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			pr_payroll_group
+		WHERE
+			group_name = #{name}
+	</select>
+
 </mapper>

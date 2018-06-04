@@ -3,15 +3,14 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollBaseItemMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupHistoryMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
@@ -26,11 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -104,8 +99,14 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollGroupPO paramItem) {
+        //检查是否有重复薪资组模板名称
+        int nameExistFlg = prPayrollGroupMapper.selectCountGroupByName(paramItem.getGroupName());
+        if (nameExistFlg > 0) {
+            throw new BusinessException("重复的薪资组名称");
+        }
         paramItem.setGroupCode(codeGenerator.genPrGroupCode(paramItem.getManagementId()));
         paramItem.setVersion("1.0");
+        paramItem.setApprovalStatus(ApprovalStatusEnum.APPROVE.getValue());
         int result = prPayrollGroupMapper.insert(paramItem);;
 
         if (StringUtils.isEmpty(paramItem.getGroupTemplateCode())) {
@@ -151,31 +152,36 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public boolean importPrGroup(String from, String to) {
-
-        PrPayrollGroupPO toEntity = this.getItemByCode(to);
+    public boolean importPrGroup(String from, String to, Boolean fromTemplate) {
 
         //获取from薪资组中的薪资项
-        PrPayrollItemPO param = new PrPayrollItemPO();
-        param.setPayrollGroupCode(from);
-        EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
-        List<PrPayrollItemPO> items = prPayrollItemMapper.selectList(ew);
+        List<PrPayrollItemPO> items;
+        if (fromTemplate) {
+            items = itemService.getListByGroupTemplateCode(from);
+        } else {
+            items = itemService.getListByGroupCode(from);
+        }
 
         if (items == null || items.size() == 0) {
-            throw new RuntimeException("导入薪资组中无薪资项");
+            throw new BusinessException("导入薪资组中无薪资项");
         }
         items.forEach(i -> {
             i.setPayrollGroupCode(to);
             i.setParentItemCode(null);
+            i.setCreatedBy(UserContext.getUserId());
+            i.setModifiedBy(UserContext.getUserId());
+            i.setCreatedTime(new Date());
+            i.setModifiedTime(new Date());
         });
         //删除原来存在于该薪资组的薪资项
-        int deleteItemResult = prPayrollItemMapper.deleteItemByGroupCode(to);
-        if (deleteItemResult == 0) {
-            throw new RuntimeException("导入目标薪资组中薪资项删除失败");
+        try {
+            prPayrollItemMapper.deleteItemByGroupCode(to);
+        } catch (RuntimeException e) {
+            throw new BusinessException("导入目标薪资组中薪资项删除失败");
         }
         int insertItemResult = itemService.addList(items);
         if (insertItemResult == 0) {
-            throw new RuntimeException("导入薪资组中薪资项时失败");
+            throw new BusinessException("导入薪资组中薪资项时失败");
         }
         return true;
     }

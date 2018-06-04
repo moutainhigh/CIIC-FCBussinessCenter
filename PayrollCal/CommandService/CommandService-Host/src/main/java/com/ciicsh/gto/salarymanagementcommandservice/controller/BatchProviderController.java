@@ -189,7 +189,7 @@ public class BatchProviderController implements BatchProxy {
     @PostMapping("/compareBatch")
     public JsonResult compareBatch(@RequestBody BatchCompareRequestDTO obj) {
 
-        //TODO
+        //TODO Excel对比
 //        ObjectMapper
         List<BatchCompareEmpBO> batchCompareEmpBOList = batchService.compareBatch(obj.getSrc(), obj.getSrcBatchType()
                 , obj.getTgt(), obj.getTgtBatchType()

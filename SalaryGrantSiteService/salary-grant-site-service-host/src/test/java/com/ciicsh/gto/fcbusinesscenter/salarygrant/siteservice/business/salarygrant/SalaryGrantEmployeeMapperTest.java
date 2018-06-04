@@ -1,7 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +30,14 @@ public class SalaryGrantEmployeeMapperTest {
     public void queryWaitForPaymentEmpList() {
         String taskCode = "CT201803280000000002";
         List<SalaryGrantEmployeePaymentBO> employeePaymentBOList = salaryGrantEmployeeMapper.queryWaitForPaymentEmpList(taskCode);
+        System.out.println("--------------------------");
+    }
+
+    @Test
+    public void queryList() {
+        EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+        employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", "LTB20180328000000002");
+        List<SalaryGrantEmployeePO> salaryGrantEmployeePOList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
         System.out.println("--------------------------");
     }
 }

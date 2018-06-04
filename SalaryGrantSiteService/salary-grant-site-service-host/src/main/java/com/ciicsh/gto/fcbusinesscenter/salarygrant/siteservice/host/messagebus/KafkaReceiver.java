@@ -2,7 +2,9 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyPayStatusDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyReturnTicketDTO;
 import com.ciicsh.gto.sheetservice.api.MsgConstants;
@@ -14,8 +16,11 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +37,8 @@ public class KafkaReceiver {
 
     @Autowired
     private SalaryGrantTaskProcessService salaryGrantTaskProcessService;
+    @Autowired
+    private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
 
     /**
      * 接收计算引擎关账消息，获取计算批次号
@@ -126,9 +133,18 @@ public class KafkaReceiver {
      * 结算中心退票消息
      * @param message
      */
+    @Transactional(rollbackFor = Exception.class)
     @StreamListener(TaskSink.SALARY_GRANT_REFUND)
     public void salaryGrantRefundProcess(Message<PayApplyReturnTicketDTO> message){
+        PayApplyReturnTicketDTO payApplyReturnTicketDTO = message.getPayload();
+        if (!ObjectUtils.isEmpty(payApplyReturnTicketDTO)) {
+            //发放批次号
+            String taskCode = payApplyReturnTicketDTO.getSequenceNo();
+            //退票雇员信息列表
+            List<EmployeeReturnTicketDTO> refundEmployeeList = payApplyReturnTicketDTO.getEmployeeReturnTicketDTOList();
 
+            salaryGrantEmployeeCommandService.updateForRefund(taskCode, refundEmployeeList);
+        }
     }
 
     /**

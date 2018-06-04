@@ -12,9 +12,12 @@ import java.util.List;
 public interface BatchService {
 
     /**
-     * 对比批次
      * @param sourceBatchCode
+     * @param srcBatchType
      * @param targetBatchCode
+     * @param tgtBatchType
+     * @param compareKeys
+     * @param compareMap
      * @return
      */
     List<BatchCompareEmpBO> compareBatch(String sourceBatchCode,
