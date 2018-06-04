@@ -109,8 +109,8 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   /**
    * 上传智翔通日期
    */
-  @TableField("upload_zxt_date")
-  private Date uploadZxtDate;
+  @TableField("upload_date")
+  private Date uploadDate;
 
   /**
    * 上传智翔通执行日期
@@ -352,12 +352,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.publishManualDate = publishManualDate;
   }
 
-  public Date getUploadZxtDate() {
-    return uploadZxtDate;
+  public Date getUploadDate() {
+    return uploadDate;
   }
 
-  public void setUploadZxtDate(Date uploadZxtDate) {
-    this.uploadZxtDate = uploadZxtDate;
+  public void setUploadDate(Date uploadDate) {
+    this.uploadDate = uploadDate;
   }
 
   public Date getUploadExecDate() {
@@ -552,7 +552,7 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
             ", publishDate=" + publishDate +
             ", publishExecDate=" + publishExecDate +
             ", publishManualDate=" + publishManualDate +
-            ", uploadZxtDate=" + uploadZxtDate +
+            ", uploadDate=" + uploadDate +
             ", uploadExecDate=" + uploadExecDate +
             ", publishManualRemark=" + publishManualRemark +
             ", publishState=" + publishState +
