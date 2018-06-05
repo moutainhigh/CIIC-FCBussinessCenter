@@ -3,12 +3,10 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantPayrollService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +31,6 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
     CommonService commonService;
 
     @Autowired
-    SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
-
-    @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
     @Autowired
@@ -51,9 +46,6 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
     @Override
     public SalaryGrantFinanceBO createFinanceDetail(String taskCode) {
         SalaryGrantFinanceBO financeBo = BeanUtils.instantiate(SalaryGrantFinanceBO.class);
-        SalaryGrantTaskBO mainBo = BeanUtils.instantiate(SalaryGrantTaskBO.class);
-        mainBo.setTaskCode(taskCode);
-        mainBo = salaryGrantMainTaskMapper.selectTaskByTaskCode(mainBo);
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
         if (task!=null && !empList.isEmpty()) {
@@ -70,8 +62,8 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
             groupList.parallelStream().forEach(x -> x.setTemplateName(commonService.getNameByValue("employeeType", String.valueOf(x.getTemplateType()))));
             groupList.add(summaryInfo(1, subTotalList));
             financeBo.setEmpList(groupList);
-            task.setOperatorUserId(commonService.getUserNameById(mainBo.getOperatorUserId()));
-            task.setApproveUserId(commonService.getUserNameById(mainBo.getApproveUserId()));
+            task.setOperatorUserId(commonService.getUserNameById(task.getOperatorUserId()));
+            task.setApproveUserId(commonService.getUserNameById(task.getApproveUserId()));
         }
         financeBo.setTask(task);
         return financeBo;

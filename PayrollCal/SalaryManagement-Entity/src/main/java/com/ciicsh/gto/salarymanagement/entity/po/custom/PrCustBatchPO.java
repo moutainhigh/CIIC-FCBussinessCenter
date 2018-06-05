@@ -78,4 +78,7 @@ public class PrCustBatchPO {
     //是否继承薪资组模版
     private boolean isTemplate;
 
+    //创建人
+    private String createdBy;
+
 }

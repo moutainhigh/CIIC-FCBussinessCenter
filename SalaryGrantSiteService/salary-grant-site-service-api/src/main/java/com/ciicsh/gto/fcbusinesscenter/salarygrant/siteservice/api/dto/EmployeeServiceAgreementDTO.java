@@ -98,7 +98,7 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
      */
     private Integer contractType;
     /**
-     * 合同我方（AF/FC/BPO）
+     * 合同我方（1-AF/2-FC/3-BPO）
      */
     private String contractFirstParty;
     /**
@@ -113,6 +113,26 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
      * 付款银行名
      */
     private String paymentBankName;
+    /**
+     * 个税期间 (0-当月 1-下月 2-下下月)
+     */
+    private Integer taxPeriod;
+    /**
+     * 申报账户
+     */
+    private String declarationAccount;
+    /**
+     * 申报账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)
+     */
+    private Integer declarationAccountCategory;
+    /**
+     * 缴纳账户
+     */
+    private String contributionAccount;
+    /**
+     * 缴纳账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)
+     */
+    private Integer contributionAccountCategory;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -308,5 +328,45 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
 
     public void setPaymentBankName(String paymentBankName) {
         this.paymentBankName = paymentBankName;
+    }
+
+    public Integer getTaxPeriod() {
+        return taxPeriod;
+    }
+
+    public void setTaxPeriod(Integer taxPeriod) {
+        this.taxPeriod = taxPeriod;
+    }
+
+    public String getDeclarationAccount() {
+        return declarationAccount;
+    }
+
+    public void setDeclarationAccount(String declarationAccount) {
+        this.declarationAccount = declarationAccount;
+    }
+
+    public Integer getDeclarationAccountCategory() {
+        return declarationAccountCategory;
+    }
+
+    public void setDeclarationAccountCategory(Integer declarationAccountCategory) {
+        this.declarationAccountCategory = declarationAccountCategory;
+    }
+
+    public String getContributionAccount() {
+        return contributionAccount;
+    }
+
+    public void setContributionAccount(String contributionAccount) {
+        this.contributionAccount = contributionAccount;
+    }
+
+    public Integer getContributionAccountCategory() {
+        return contributionAccountCategory;
+    }
+
+    public void setContributionAccountCategory(Integer contributionAccountCategory) {
+        this.contributionAccountCategory = contributionAccountCategory;
     }
 }

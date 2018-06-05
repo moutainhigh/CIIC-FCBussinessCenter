@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -55,4 +56,6 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      * @return
      */
     List<FinanceEmployeeBO> selectEmpForFinance(@Param("taskCode") String taskCode);
+
+    List<SalaryGrantFinanceBO> selectFinanceData(@Param("taskCode") String taskCode);
 }

@@ -96,6 +96,7 @@ public class ComputeServiceImpl {
 
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN)
+                .include("catalog.batch_info.period")
                 .include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.cal_priority")
@@ -175,6 +176,14 @@ public class ComputeServiceImpl {
         DBObject catalog = (DBObject) dbObject.get("catalog");
         String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
         List<DBObject> items = ((List<DBObject>) catalog.get("pay_items"));
+
+        /*获取计算期间，并传递给drools context*/
+        DBObject batch = (DBObject)catalog.get("batch_info");
+        String period = batch.get("actual_period") == null ? "" : (String)batch.get("actual_period");
+        BatchContext batchContext = new BatchContext();
+        batchContext.setPeriod(period);
+        context.setBatchContext(batchContext);
+        //end
 
         Bindings bindings = new SimpleBindings();
 

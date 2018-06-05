@@ -99,6 +99,11 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollGroupPO paramItem) {
+        //检查是否有重复薪资组模板名称
+        int nameExistFlg = prPayrollGroupMapper.selectCountGroupByName(paramItem.getGroupName());
+        if (nameExistFlg > 0) {
+            throw new BusinessException("重复的薪资组名称");
+        }
         paramItem.setGroupCode(codeGenerator.genPrGroupCode(paramItem.getManagementId()));
         paramItem.setVersion("1.0");
         paramItem.setApprovalStatus(ApprovalStatusEnum.APPROVE.getValue());

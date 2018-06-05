@@ -40,6 +40,8 @@
 		<result column="group_name" property="prGroupName"/>
 		<result column="pr_group_code" property="prGroupCode"/>
 		<result column="is_template" property="isTemplate"/>
+		<result column="created_by" property="createdBy"/>
+
 
 	</resultMap>
 
@@ -74,6 +76,7 @@
 		a.start_date,
 		a.end_date,
 		a.created_time,
+		a.created_by,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
 		c.name as empGroupName,
@@ -120,6 +123,7 @@
 		a.start_date,
 		a.end_date,
 		a.created_time,
+		a.created_by,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
 		c.name as empGroupName,
@@ -172,6 +176,7 @@
 		a.start_date,
 		a.end_date,
 		a.created_time,
+		a.created_by,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
 		c.name as empGroupName,
