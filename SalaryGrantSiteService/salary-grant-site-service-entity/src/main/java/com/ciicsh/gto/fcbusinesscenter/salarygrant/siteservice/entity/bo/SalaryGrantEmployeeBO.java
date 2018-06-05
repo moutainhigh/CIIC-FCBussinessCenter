@@ -68,12 +68,17 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
     /**
      * 扣个人所得税（中智公司）
      */
-    private BigDecimal tax;
+    private BigDecimal taxAF;
 
     /**
      * 扣个人所得税（财务公司-FC）
      */
     private BigDecimal taxFC;
+
+    /**
+     * 扣个人所得税（外服公司-BPO）
+     */
+    private BigDecimal taxBPO;
 
     /**
      * 扣个人所得税（独立库）
