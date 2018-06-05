@@ -15,7 +15,7 @@ import java.util.Date;
  * 已发布的工资单
  *
  * @author taka
- * @since 2018-06-04
+ * @since 2018-06-05
  */
 @TableName("prs_payroll")
 public class PrsPayrollPO extends Model<PrsPayrollPO> {
@@ -33,6 +33,12 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
    */
   @TableField("payroll_code")
   private String payrollCode;
+
+  /**
+   * 任务单id
+   */
+  @TableField("main_task_id")
+  private String mainTaskId;
 
   /**
    * 管理方ID
@@ -158,6 +164,14 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
 
   public void setPayrollCode(String payrollCode) {
     this.payrollCode = payrollCode;
+  }
+
+  public String getMainTaskId() {
+    return mainTaskId;
+  }
+
+  public void setMainTaskId(String mainTaskId) {
+    this.mainTaskId = mainTaskId;
   }
 
   public String getManagementId() {
@@ -316,6 +330,7 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
     return "PrsPayrollPO{" +
             "id=" + id +
             ", payrollCode=" + payrollCode +
+            ", mainTaskId=" + mainTaskId +
             ", managementId=" + managementId +
             ", managementName=" + managementName +
             ", employeeId=" + employeeId +
