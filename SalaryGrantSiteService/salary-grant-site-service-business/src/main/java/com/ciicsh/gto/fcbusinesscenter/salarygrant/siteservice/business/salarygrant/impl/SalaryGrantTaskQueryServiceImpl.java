@@ -206,7 +206,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
         if (!list.isEmpty()) {
-            list.stream().forEach(x -> {
+            list.parallelStream().forEach(x -> {
                 if (StringUtils.isNotBlank(x.getGrantMode())) {
                     x.setGrantModeName(commonService.getNameByValue("sgGrantMode", x.getGrantMode()));
                 }
@@ -218,6 +218,18 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
         return list;
     }
 
+    /**
+     * 同步结算中心支付状态
+     * @author chenpb
+     * @since 2018-06-05
+     * @param taskCode
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean syncPayStatus(String taskCode) {
+        return true;
+    }
     /**
      * 每天晚上8点执行任务
      *
