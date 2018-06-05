@@ -1,9 +1,15 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.messagebus;
 
+import com.alibaba.fastjson.JSON;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.logservice.client.LogClientService;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyPayStatusDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyReturnTicketDTO;
@@ -34,11 +40,17 @@ import java.util.Map;
 @EnableBinding(value = TaskSink.class)
 @Component
 public class KafkaReceiver {
-
+    /**
+     * 记录日志
+     */
+    @Autowired
+    LogClientService logClientService;
     @Autowired
     private SalaryGrantTaskProcessService salaryGrantTaskProcessService;
     @Autowired
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
+    @Autowired
+    private SalaryGrantTaskQueryService salaryGrantTaskQueryService;
 
     /**
      * 接收计算引擎关账消息，获取计算批次号
@@ -152,8 +164,17 @@ public class KafkaReceiver {
      * @param message
      */
     @StreamListener(TaskSink.SALARY_GRANT_PAYMENT)
-    public void salaryGrantPaymentProcess(Message<PayApplyPayStatusDTO> message){
-
+    public void salaryGrantPaymentProcess(Message<PayApplyPayStatusDTO> message) {
+        try {
+            PayApplyPayStatusDTO dto = message.getPayload();
+            if (!ObjectUtils.isEmpty(dto) && SalaryGrantBizConsts.SETTLEMENT_CENTER_BUSINESS_TYPE_SG.equals(dto.getBusinessType()) && SalaryGrantBizConsts.SETTLEMENT_CENTER_PAY_STATUS_SUCCESS.equals(dto.getPayStatus())) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> start").setContent(JSON.toJSONString(dto)));
+                salaryGrantTaskQueryService.syncPayStatus(dto.getSequenceNo());
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> end"));
+            }
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> exception").setContent(e.getMessage()));
+        }
     }
 
     /**

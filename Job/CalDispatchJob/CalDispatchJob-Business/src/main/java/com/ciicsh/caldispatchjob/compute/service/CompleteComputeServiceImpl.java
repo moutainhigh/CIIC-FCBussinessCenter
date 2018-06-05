@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.Format;
@@ -173,29 +174,7 @@ public class CompleteComputeServiceImpl {
 
         }).collect(Collectors.toList());
 
-        int deletedAffected = closeAccountMongoOpt.batchDelete(Criteria.where("batch_id").is(batchCode)); // 幂等操作
-        logger.info("幂等删除：" + String.valueOf(deletedAffected));
-
-        int rowAffected = closeAccountMongoOpt.batchInsert(list);
-
-        logger.info("批量插入成功：" + String.valueOf(rowAffected));
-
-        if(rowAffected > 0){
-
-            int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
-
-            if(affected > 0) {
-                ClosingMsg closingMsg = new ClosingMsg();
-                closingMsg.setBatchCode(batchCode);
-                closingMsg.setBatchType(batchType);
-                closingMsg.setOptID(userID);
-                closingMsg.setOptName(userName);
-
-                //sender.SendComputeClose(closingMsg);
-                logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
-            }
-
-        }
+        doBizTransaction(batchCode, batchType,list, userID, userName ,companyIds);
     }
 
     /**
@@ -432,6 +411,38 @@ public class CompleteComputeServiceImpl {
         }
 
         return 0;
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class)
+    private void doBizTransaction(String batchCode, int batchType,List<DBObject> list,String userID, String userName, List<String> companyIds){
+
+        int deletedAffected = closeAccountMongoOpt.batchDelete(Criteria.where("batch_id").is(batchCode)); // 幂等操作
+        logger.info("幂等删除：" + String.valueOf(deletedAffected));
+
+        int rowAffected = closeAccountMongoOpt.batchInsert(list);
+
+        logger.info("批量插入成功：" + String.valueOf(rowAffected));
+
+        initializeDistributedTransaction(batchCode,batchType);
+
+        logger.info("初始化分布式事务：" + String.valueOf(rowAffected));
+
+        if(rowAffected > 0){
+
+            int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
+
+            if(affected > 0) {
+                ClosingMsg closingMsg = new ClosingMsg();
+                closingMsg.setBatchCode(batchCode);
+                closingMsg.setBatchType(batchType);
+                closingMsg.setOptID(userID);
+                closingMsg.setOptName(userName);
+
+                sender.SendComputeClose(closingMsg);
+                logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
+            }
+
+        }
     }
 
 }
