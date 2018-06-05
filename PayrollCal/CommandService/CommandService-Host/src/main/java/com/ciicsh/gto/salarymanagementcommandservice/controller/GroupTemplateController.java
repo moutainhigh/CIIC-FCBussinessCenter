@@ -2,6 +2,8 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupTemplateHistoryDTO;
@@ -39,6 +41,22 @@ public class GroupTemplateController extends BaseController {
     @Autowired
     private PrGroupTemplateServiceImpl prGroupTemplateService;
 
+    @GetMapping(value = "/importPrGroupTemplate")
+    public JsonResult importPrGroupTemplate(@RequestParam String from,
+                                    @RequestParam String to,
+                                    @RequestParam(defaultValue = "true") Boolean fromTemplate) {
+        boolean importResult;
+        try {
+            importResult = prGroupTemplateService.importPrGroupTemplate(from, to, fromTemplate);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
+        if (!importResult) {
+            throw new BusinessException("薪资组模板导入失败");
+        }
+        return JsonResult.success("导入成功");
+    }
+
     @PostMapping(value = "/prGroupTemplateQuery")
     public JsonResult searchPrGroupTemplateList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                                 @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
@@ -69,7 +87,7 @@ public class GroupTemplateController extends BaseController {
         PrPayrollGroupTemplatePO updateParam = new PrPayrollGroupTemplatePO();
         TranslatorUtils.copyNotNullProperties(param, updateParam);
         updateParam.setGroupTemplateCode(code);
-        updateParam.setModifiedBy("jiang");
+        updateParam.setModifiedBy(UserContext.getUserId());
         Integer result = prGroupTemplateService.updateItemByCode(updateParam);
         return JsonResult.success(result);
     }
@@ -80,23 +98,21 @@ public class GroupTemplateController extends BaseController {
         newParam.setGroupTemplateCode(codeGenerator.genPrGroupTemplateCode());
         // Version 生成
         newParam.setVersion("1.0");
-        newParam.setCreatedBy("jiang");
-        newParam.setModifiedBy("jiang");
-        int result = prGroupTemplateService.newItem(newParam);
+        newParam.setCreatedBy(UserContext.getUserId());
+        newParam.setModifiedBy(UserContext.getUserId());
+        int result;
+        try {
+            result = prGroupTemplateService.newItem(newParam);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         return result > 0 ? JsonResult.success(newParam.getGroupTemplateCode()) : JsonResult.faultMessage("新建薪资组模板失败");
     }
 
     @GetMapping(value = "/prGroupTemplateName")
-    public JsonResult getPrGroupTemplateNameList(@RequestParam String query,
-                                                 @RequestParam(required = false, defaultValue = "") String managementId) {
+    public JsonResult getPrGroupTemplateNameList(@RequestParam String query) {
         List<HashMap<String, String>> resultList = prGroupTemplateService.getPrGroupTemplateNameList(query);
         return JsonResult.success(resultList);
-    }
-
-    @GetMapping("/getPayrollGroupTemplateNames")
-    public JsonResult getPayrollGroupTemplateNames(){
-        List<KeyValuePO> results = prGroupTemplateService.getPayrollGroupTemplateNames();
-        return JsonResult.success(results);
     }
 
     @DeleteMapping(value = "/prGroupTemplate/{code}")
@@ -146,7 +162,7 @@ public class GroupTemplateController extends BaseController {
         PrPayrollGroupTemplatePO updateParam = new PrPayrollGroupTemplatePO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
         updateParam.setGroupTemplateCode(code);
-        updateParam.setModifiedBy("system");
+        updateParam.setModifiedBy(UserContext.getUserId());
         boolean result = prGroupTemplateService.approvePrGroupTemplate(updateParam);
         return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_TEMPLATE_APPROVE_SUCCESS)
                 : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_TEMPLATE_APPROVE_FAIL);

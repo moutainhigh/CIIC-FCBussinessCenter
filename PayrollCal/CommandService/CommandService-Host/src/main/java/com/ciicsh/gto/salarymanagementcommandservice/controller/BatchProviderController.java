@@ -6,6 +6,7 @@ import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
@@ -188,14 +189,14 @@ public class BatchProviderController implements BatchProxy {
     @PostMapping("/compareBatch")
     public JsonResult compareBatch(@RequestBody BatchCompareRequestDTO obj) {
 
-        //TODO
+        //TODO Excel对比
 //        ObjectMapper
-        batchService.compareBatch(obj.getSrc(), obj.getSrcBatchType()
+        List<BatchCompareEmpBO> batchCompareEmpBOList = batchService.compareBatch(obj.getSrc(), obj.getSrcBatchType()
                 , obj.getTgt(), obj.getTgtBatchType()
                 , Arrays.asList(obj.getCompareKeysStr().split(","))
                 , obj.getMapping());
 
-        return null;
+        return JsonResult.success(batchCompareEmpBOList);
     }
 
     @GetMapping("/batchPayrollSchema")

@@ -29,6 +29,7 @@
 		<result column="management_name" property="managementName"/>
 		<result column="account_set_code" property="accountSetCode"/>
 		<result column="period" property="period"/>
+		<result column="actual_period" property="actualPeriod"/>
 		<result column="status" property="status"/>
 		<result column="start_date" property="beginDate"/>
 		<result column="end_date" property="endDate"/>
@@ -39,6 +40,8 @@
 		<result column="group_name" property="prGroupName"/>
 		<result column="pr_group_code" property="prGroupCode"/>
 		<result column="is_template" property="isTemplate"/>
+		<result column="created_by" property="createdBy"/>
+
 
 	</resultMap>
 
@@ -68,10 +71,12 @@
 		a.management_name,
 		a.account_set_code,
 		a.period,
+		a.actual_period,
 		a.status,
 		a.start_date,
 		a.end_date,
 		a.created_time,
+		a.created_by,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
 		c.name as empGroupName,
@@ -113,10 +118,12 @@
 		a.management_name,
 		a.account_set_code,
 		a.period,
+		a.actual_period,
 		a.status,
 		a.start_date,
 		a.end_date,
 		a.created_time,
+		a.created_by,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
 		c.name as empGroupName,
@@ -164,10 +171,12 @@
 		a.management_name,
 		a.account_set_code,
 		a.period,
+		a.actual_period,
 		a.status,
 		a.start_date,
 		a.end_date,
 		a.created_time,
+		a.created_by,
 		b.account_set_name as accountSetName,
 		b.payroll_period,
 		c.name as empGroupName,
@@ -287,7 +296,10 @@
 			start_date = #{startDate},
 			end_date = #{endDate},
 		</if>
-		<if test="status !=0">
+		<if test="advancePeriod != null">
+			advance_period = #{advancePeriod},
+		</if>
+		<if test="status !=0 and status != null">
 			status = #{status},
 		</if>
 		<if test="hasAdvance !=0">
@@ -295,6 +307,9 @@
 		</if>
 		<if test="hasMoney !=0">
 			has_money = #{hasMoney},
+		</if>
+		<if test="advanceDay !=0">
+			advance_day = #{advanceDay},
 		</if>
 		<if test="resultData != '' and resultData != null">
 			result_data = #{resultData},

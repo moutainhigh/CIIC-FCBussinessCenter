@@ -2,14 +2,13 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constan
 
 public class JsonParseConsts {
     /** 雇员服务协议*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA = "data";
     /** 雇员中智终身编号*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_EMLOYEE_ID = "empId";
     /** 公司名称*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_NAME = "companyName";
     /** 公司编号*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_ID = "companyCode";
-    /** 雇佣性质（当前公司）：0-派遣，1-代理，2-外包*/
+    /** 雇佣性质（当前公司）：1:派遣 2:代理 3:外包*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_EMPLOYED_TYPE = "employedType";
     /** 服务周期规则Id*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CYCLE_RULE_ID = "cycleRuleId";
@@ -21,14 +20,26 @@ public class JsonParseConsts {
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE = "grantServiceType";
     /** 薪资发放规则Id*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_EMP_SALARY_GRANT_RULE_ID = "grantRuleId";
-    /** 汇率计算方式（0 - 固定， 1 - 实时）*/
+    /** 汇率计算方式（0 - 固定， 1 - 实时，2-记账）*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_CALC_MODE = "exechangeRateSettlementType";
-    /** 是否供应商*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_IS_SUPPLIER = "isSupplier";
+    /** 币种（CNY-人民币，USD-美元，EUR-欧元）*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CURRENCY_TYPE = "currencyType";
+    /** 汇率*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_RATE = "exchangeRate";
+    /** 是否包括社保和公积金*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_IS_WELFARE_INCLUDED = "isWelfareIncluded";
     /** 供应商名称*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_NAME = "supplierName";
     /** 供应商收款账户*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE = "supplierAccountReceivale";
+    /** 供应商收款账户名称*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE_NAME = "supplierAccountReceivaleName";
+    /** 付款账号*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT = "paymentBankAccount";
+    /** 付款账户名*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT_NAME = "paymentBankAccountName";
+    /** 付款银行名*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_NAME = "paymentBankName";
     /** 账单结算信息*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_BILL_INFO = "billingInfo";
     /** 业务合同编号*/
@@ -37,6 +48,27 @@ public class JsonParseConsts {
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_TYPE = "contractType";
     /** 合同我方（AF/FC/BPO）*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_FIRST_PARTY = "contractFirstParty";
+    /** 个税信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_INFO = "taxInfo";
+    /** 个税期间（0-当月 1-下月 2-下下月）*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_PERIOD = "taxPeriod";
+    /** 申报账户信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_DECLARATION_ACCOUNT = "declarationAccount";
+    /** 缴纳账户信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRIBUTION_ACCOUNT = "contributionAccount";
+    /** 个税账户*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT = "account";
+    /** 个税账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY = "accountCategory";
+
+    /** 扣社保小计*/
+    public static final String EMLOYEE_RESULT_ITMES_SOCIAL_SECURITY = "扣社保小计";
+    /** 扣公积金小计*/
+    public static final String EMLOYEE_RESULT_ITMES_PROVIDENT_FUND = "扣公积金小计";
+    /** 年度奖金*/
+    public static final String EMLOYEE_RESULT_ITMES_YEAR_BONUS = "年度奖金";
+    /** 实际工作年限数*/
+    public static final String EMLOYEE_RESULT_ITMES_LEAVING_YEARS = "实际工作年限数";
 
     /** 雇员变更日志:国籍*/
     public static final String EMLOYEE_CHANGE_LOG_FIELD1 = "country_code";

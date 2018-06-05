@@ -64,6 +64,7 @@ public class PrItemServiceImpl implements PrItemService {
         PrPayrollItemPO param = new PrPayrollItemPO();
         param.setPayrollGroupCode(groupCode);
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
+        ew.orderBy("created_time", true);
 //        ew.isNull("payroll_group_template_code");
         List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
         PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
@@ -109,8 +110,11 @@ public class PrItemServiceImpl implements PrItemService {
         param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
         param.setModifiedTime(new Date());
         param.setCreatedTime(new Date());
-        if(param.getItemType() == ItemTypeEnum.CALC.getValue())
-            param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(param.getPayrollGroupCode()) + 1);
+        if(param.getItemType() == ItemTypeEnum.CALC.getValue()) {
+            String groupCode = param.getPayrollGroupCode() == null ? param.getPayrollGroupTemplateCode() : param.getPayrollGroupCode();
+            param.setCalPriority(prPayrollItemMapper.selectMaxCalPriorityOfGroup(groupCode,
+                    StringUtils.isEmpty(param.getPayrollGroupCode())) + 1);
+        }
         this.replaceItemNameWithCode(param);
         int insertResult = prPayrollItemMapper.insert(param);
         return insertResult;
@@ -118,6 +122,9 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Override
     public int addList(List<PrPayrollItemPO> paramList) {
+        if (paramList == null || paramList.size() == 0) {
+            return 0;
+        }
         PrPayrollItemPO first = paramList.get(0);
         // 将所在薪资组的审核状态更新为草稿
         this.updateRelatedGroupStatus(first);

@@ -5,7 +5,6 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -45,7 +44,7 @@ public interface SalaryGrantTaskQueryService {
     Page<WorkFlowTaskInfoBO> operation(SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
-     * @description 根据主表任务单编号查询子表任务单
+     * 根据主表任务单编号查询子表任务单
      * @author chenpb
      * @since 2018-05-10
      * @param salaryGrantTaskBO
@@ -54,10 +53,18 @@ public interface SalaryGrantTaskQueryService {
     List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
-     * 薪资发放定时任务
-     *
-     * @param grant_date
+     * 同步结算中心支付状态
+     * @author chenpb
+     * @since 2018-06-05
+     * @param taskCode
      * @return
      */
-    Map<String, Object> queryForPayment(String grant_date);
+    Boolean syncPayStatus(String taskCode);
+
+    /**
+     * 薪资发放定时任务
+     *
+     * @return
+     */
+    void queryForPayment();
 }

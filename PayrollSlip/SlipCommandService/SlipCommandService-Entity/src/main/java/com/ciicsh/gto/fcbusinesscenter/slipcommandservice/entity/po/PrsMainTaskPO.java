@@ -15,7 +15,7 @@ import java.util.Date;
  * 工资单任务单主表
  *
  * @author taka
- * @since 2018-05-14
+ * @since 2018-06-04
  */
 @TableName("prs_main_task")
 public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
@@ -107,13 +107,25 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   private Date publishManualDate;
 
   /**
+   * 上传智翔通日期
+   */
+  @TableField("upload_date")
+  private Date uploadDate;
+
+  /**
+   * 上传智翔通执行日期
+   */
+  @TableField("upload_exec_date")
+  private Date uploadExecDate;
+
+  /**
    * 主动发送备注
    */
   @TableField("publish_manual_remark")
   private String publishManualRemark;
 
   /**
-   * 邮件发送状态 1: 待发送 2: 发送中 3: 发送成功 4: 发送失败
+   * 邮件发送状态 0: 无关 1: 待发送 2: 发送中 3: 发送成功 4: 发送失败
    */
   @TableField("publish_state")
   private Integer publishState;
@@ -123,6 +135,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
    */
   @TableField("publish_fail_log")
   private String publishFailLog;
+
+  /**
+   * 上传状态 0: 无关 1: 待上传 2: 已上传
+   */
+  @TableField("upload_state")
+  private Integer uploadState;
 
   /**
    * 工资单类型:0-通用，1-纸质，2-邮件，3-网上查看
@@ -141,6 +159,12 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
    */
   @TableField("status")
   private Integer status;
+
+  /**
+   * 是否含纸质
+   */
+  @TableField("has_paper")
+  private Integer hasPaper;
 
   /**
    * 修改实际发布日期原因
@@ -328,6 +352,22 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.publishManualDate = publishManualDate;
   }
 
+  public Date getUploadDate() {
+    return uploadDate;
+  }
+
+  public void setUploadDate(Date uploadDate) {
+    this.uploadDate = uploadDate;
+  }
+
+  public Date getUploadExecDate() {
+    return uploadExecDate;
+  }
+
+  public void setUploadExecDate(Date uploadExecDate) {
+    this.uploadExecDate = uploadExecDate;
+  }
+
   public String getPublishManualRemark() {
     return publishManualRemark;
   }
@@ -352,6 +392,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
     this.publishFailLog = publishFailLog;
   }
 
+  public Integer getUploadState() {
+    return uploadState;
+  }
+
+  public void setUploadState(Integer uploadState) {
+    this.uploadState = uploadState;
+  }
+
   public Integer getPayrollType() {
     return payrollType;
   }
@@ -374,6 +422,14 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
 
   public void setStatus(Integer status) {
     this.status = status;
+  }
+
+  public Integer getHasPaper() {
+    return hasPaper;
+  }
+
+  public void setHasPaper(Integer hasPaper) {
+    this.hasPaper = hasPaper;
   }
 
   public String getComments() {
@@ -496,12 +552,16 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
             ", publishDate=" + publishDate +
             ", publishExecDate=" + publishExecDate +
             ", publishManualDate=" + publishManualDate +
+            ", uploadDate=" + uploadDate +
+            ", uploadExecDate=" + uploadExecDate +
             ", publishManualRemark=" + publishManualRemark +
             ", publishState=" + publishState +
             ", publishFailLog=" + publishFailLog +
+            ", uploadState=" + uploadState +
             ", payrollType=" + payrollType +
             ", selectedPayrollType=" + selectedPayrollType +
             ", status=" + status +
+            ", hasPaper=" + hasPaper +
             ", comments=" + comments +
             ", templateId=" + templateId +
             ", templateName=" + templateName +

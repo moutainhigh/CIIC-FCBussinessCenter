@@ -74,13 +74,6 @@ public interface PrGroupTemplateService {
      */
     Map<String, Object> deletePrItemFromGroupTemplate(String prGroupTemplateId, String prItemId, String prItemName);
 
-
-    /**
-     * 获取薪资组模板列表
-     * @return 薪资组模板列表
-     */
-    List<KeyValuePO> getPayrollGroupTemplateNames();
-
     /**
      * 审核薪资组模板
      * @param paramItem
@@ -108,4 +101,12 @@ public interface PrGroupTemplateService {
      * @return
      */
     boolean publishPrGroupTemplate(String code);
+
+    /**
+     * 导入薪资组模板
+     * @param from
+     * @param to
+     * @return 导入结果
+     */
+    boolean importPrGroupTemplate(String from, String to, Boolean fromTemplate);
 }

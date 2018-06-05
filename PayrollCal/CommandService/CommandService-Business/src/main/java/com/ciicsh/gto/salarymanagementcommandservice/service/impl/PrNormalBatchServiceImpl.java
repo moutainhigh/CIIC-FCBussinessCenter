@@ -127,20 +127,13 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
     @Override
-    public ExcelUploadStatistics uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file) {
+    public ExcelUploadStatistics uploadEmpPRItemsByExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file) {
 
         List<List<BasicDBObject>> excelRows = new ArrayList<>();// 读取 excel 数据，存储格式行索引，行内容的map
 
         PrBatchExcelMapPO batchExcelMapPO = batchExcelMapService.getBatchExcelMap(batchCode);
         Map<String,Object> identityMap = commonService.JSONString2Map(batchExcelMapPO.getIdentityResult()); //获取一个或多个字段唯一性集合
-        List<String> identityList = Arrays.asList(itemNames.split(","));// payItem 唯一性列组合
-        List<String> excelIdentityCols = identityList.stream().map(p -> { // EXCEL 唯一性列组合
-            if(identityMap.keySet().contains(p)){
-                return (String)identityMap.get(p);
-            }else {
-                return "";
-            }
-        }).filter(col-> StringUtils.isNotEmpty(col)).collect(Collectors.toList());
+        List<String> excelIdentityCols = identityMap.values().stream().map(p-> p.toString()).collect(Collectors.toList());
 
         try {
             Map<String,Object> payItemMap = commonService.JSONString2Map(batchExcelMapPO.getMappingResult()); //获取多个薪资项与EXCEL列映射集合（KEY薪资项名称，VALUE EXCEL列名称）
@@ -191,13 +184,13 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
             return itemBO;
         }).collect(Collectors.groupingBy(ExcelItemBO::getGroupValues));
 
-        List<ExcelItemBO> sucessItems = new ArrayList<>();
+        List<ExcelItemBO> successItems = new ArrayList<>();
         List<String> failedItems = new ArrayList<>();
 
         for (String key:maps.keySet()) {
             List<ExcelItemBO> find = maps.get(key);
             if(find.size() == 1){
-                sucessItems.add(find.get(0));
+                successItems.add(find.get(0));
             }else {
                 String rowIndex = "";
                 for (ExcelItemBO failedItem : find) {
@@ -211,11 +204,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
             }
         }
         int rowAffect = 0;
-        if(sucessItems.size() > 0){
+        if(successItems.size() > 0){
 
             //获取可以导入的数据
             excelRows = excelRows.stream().filter(row -> {
-                return sucessItems.stream().anyMatch(successItem -> {
+                return successItems.stream().anyMatch(successItem -> {
                     return (int)row.get(0).get("row_index") == successItem.getRowIndex();
                 });
             }).collect(Collectors.toList());
@@ -224,7 +217,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         }
 
         ExcelUploadStatistics statistics = new ExcelUploadStatistics();
-        int total = sucessItems.size() + failedItems.size();
+        int total = successItems.size() + failedItems.size();
         int success = rowAffect;
         int failed = total - success;
         if(failed > 0){

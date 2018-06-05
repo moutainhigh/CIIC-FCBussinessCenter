@@ -9,6 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
@@ -105,6 +106,9 @@ public class NormalBatchController {
     @Autowired
     private PrBatchExcelMapService excelMapService;
 
+    @Autowired
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
+
 
     @GetMapping("/checkEmployees/{empGroupCode}")
     public JsonResult checkEmployees(@PathVariable("empGroupCode") String empGroupCode){
@@ -120,8 +124,8 @@ public class NormalBatchController {
         prNormalBatchPO.setManagementName(batchDTO.getManagementName());
         prNormalBatchPO.setPeriod(batchDTO.getPeriod());
         prNormalBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
-        prNormalBatchPO.setCreatedBy(UserContext.getName());
-        prNormalBatchPO.setModifiedBy(UserContext.getName());
+        prNormalBatchPO.setCreatedBy(UserContext.getUserId());
+        prNormalBatchPO.setModifiedBy(UserContext.getUserId());
 
         PrPayrollAccountSetPO accountSetPO = accountSetService.getAccountSetInfo(batchDTO.getAccountSetCode());
 
@@ -218,9 +222,9 @@ public class NormalBatchController {
     }
 
     @PostMapping("/uploadExcel")
-    public JsonResult importExcel(String batchCode, String empGroupCode, String itemNames, int batchType, int importType, MultipartFile file){
+    public JsonResult importExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file){
 
-        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode,itemNames, batchType,importType,file);
+        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, batchType,importType,file);
         return JsonResult.success(statistics);
 
     }
@@ -298,14 +302,13 @@ public class NormalBatchController {
         if(list.size() == 1){ // 如果有一条纪录，但 emp_info 为 "" 时，说明雇员组没有雇员
             DBObject checkEmpInfo = list.get(0);
             DBObject catalog = (DBObject)checkEmpInfo.get("catalog");
-            if(catalog.get("emp_info").equals(null)){
+            if(catalog.get("emp_info") == null){
                 return JsonResult.success(0);
             }
         }
         //List<DBObject> list = normalBatchMongoOpt.list(criteria).stream().skip((pageNum-1) * pageSize).limit(pageSize).collect(Collectors.toList());
 
         logger.info("获取翻页时间 : " + String.valueOf((System.currentTimeMillis() - start)));
-
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = commonService.translate(list);
         PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
         result.setTotal(totalCount);
@@ -381,6 +384,10 @@ public class NormalBatchController {
     @PostMapping("/api/getBatchStatus")
     public JsonResult getBatchStatus(@RequestParam String batchCode, @RequestParam int batchType){
         Boolean result = false;
+
+        int status = fcBizTransactionMongoOpt.getTransactionStatus(batchCode);
+        result = status > 0 ? false :true;
+        /*
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             PrNormalBatchPO normalBatchPO = batchService.getBatchByCode(batchCode);
             result = normalBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
@@ -390,9 +397,9 @@ public class NormalBatchController {
         }else {
             PrBackTrackingBatchPO backTrackingBatchPO = backTrackingBatchService.getPrBackTrackingBatchPO(batchCode);
             result = backTrackingBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
-        }
-        if(result) {
-            return JsonResult.faultMessage("该批次薪资已发放,不能取消关帐!");
+        }*/
+        if(!result) {
+            return JsonResult.faultMessage("该批次不能取消关帐，请联系相关人员处理!");
         }else {
             return JsonResult.success("可以取消关帐");
         }

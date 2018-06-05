@@ -4,6 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.Paging
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
 	/**
 	 * 批次类型
 	 */
-	private String batchType;
+	private Integer batchType;
     /**
      * 管理方id
      */
@@ -160,19 +161,11 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
     /**
      * 薪资计算结果（雇员维度）
      */
-	private String salaryCalcResultItems;
+	private List salaryCalcResultItems;
     /**
      * 雇员服务协议
      */
-	private String employeeServiceAgreement;
-    /**
-     * 备注
-     */
-	private String remark;
-    /**
-     * 是否可用
-     */
-	private Boolean isActive;
+	private EmployeeServiceAgreementDTO employeeServiceAgreement;
 
 	public Long getFcPayrollCalcResultId() {
 		return fcPayrollCalcResultId;
@@ -414,36 +407,20 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
 		this.contractFirstParty = contractFirstParty;
 	}
 
-	public String getSalaryCalcResultItems() {
+	public List getSalaryCalcResultItems() {
 		return salaryCalcResultItems;
 	}
 
-	public void setSalaryCalcResultItems(String salaryCalcResultItems) {
+	public void setSalaryCalcResultItems(List salaryCalcResultItems) {
 		this.salaryCalcResultItems = salaryCalcResultItems;
 	}
 
-	public String getEmployeeServiceAgreement() {
+	public EmployeeServiceAgreementDTO getEmployeeServiceAgreement() {
 		return employeeServiceAgreement;
 	}
 
-	public void setEmployeeServiceAgreement(String employeeServiceAgreement) {
+	public void setEmployeeServiceAgreement(EmployeeServiceAgreementDTO employeeServiceAgreement) {
 		this.employeeServiceAgreement = employeeServiceAgreement;
-	}
-
-	public String getRemark() {
-		return remark;
-	}
-
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-
-	public Boolean getActive() {
-		return isActive;
-	}
-
-	public void setActive(Boolean isActive) {
-		this.isActive = isActive;
 	}
 
     public String getEmpName() {
@@ -454,11 +431,11 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
         this.empName = empName;
     }
 
-    public String getBatchType() {
+    public Integer getBatchType() {
         return batchType;
     }
 
-    public void setBatchType(String batchType) {
+    public void setBatchType(Integer batchType) {
         this.batchType = batchType;
     }
 
@@ -521,8 +498,6 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
 			", contractFirstParty=" + contractFirstParty +
 			", salaryCalcResultItems=" + salaryCalcResultItems +
 			", employeeServiceAgreement=" + employeeServiceAgreement +
-			", remark=" + remark +
-			", isActive=" + isActive +
             ", empName=" + empName +
             ", batchType=" + batchType +
             ", mgrId=" + mgrId +

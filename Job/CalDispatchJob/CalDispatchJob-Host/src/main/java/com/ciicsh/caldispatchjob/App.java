@@ -21,7 +21,12 @@ import javax.script.ScriptEngine;
         )
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
 @EnableDiscoveryClient
-@EnableFeignClients({"com.ciicsh.gto.companycenter.webcommandservice.api"})// 指定对应中心的 @FeignClient 所在对应的包
+@EnableFeignClients(
+        {
+                "com.ciicsh.gto.companycenter.webcommandservice.api",
+                "com.ciicsh.gto.salecenter.apiservice.api"
+        }
+        )// 指定对应中心的 @FeignClient 所在对应的包
 public class App {
     public static void main(String[] args){
         SpringApplication.run(App.class, args);

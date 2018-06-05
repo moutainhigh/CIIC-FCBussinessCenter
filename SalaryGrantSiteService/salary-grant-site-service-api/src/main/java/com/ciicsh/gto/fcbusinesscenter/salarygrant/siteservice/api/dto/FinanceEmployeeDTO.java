@@ -24,9 +24,9 @@ public class FinanceEmployeeDTO implements Serializable {
      */
     private String taskCode;
     /**
-     * 薪资周期
+     * 个税期间
      */
-    private String grantCycle;
+    private String taxCycle;
     /**
      * 公司编号
      */
@@ -44,6 +44,10 @@ public class FinanceEmployeeDTO implements Serializable {
      */
     private Integer templateType;
     /**
+     * 服务大类名
+     */
+    private String templateName;
+    /**
      * 应付工资
      */
     private BigDecimal wagePayable;
@@ -55,6 +59,26 @@ public class FinanceEmployeeDTO implements Serializable {
      * 个人公积金
      */
     private BigDecimal individualProvidentFund;
+    /**
+     * 申报账户类别
+     */
+    private Integer declarationAccountCategory;
+    /**
+     * 扣个人所得税（中智公司）
+     */
+    private BigDecimal taxAF;
+    /**
+     * 扣个人所得税（财务公司-FC）
+     */
+    private BigDecimal taxFC;
+    /**
+     * 扣个人所得税（外服-BPO）
+     */
+    private BigDecimal taxBPO;
+    /**
+     * 扣个人所得税（独立库）
+     */
+    private BigDecimal taxIndependence;
     /**
      * 发放金额
      */

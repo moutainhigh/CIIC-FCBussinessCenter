@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,14 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
     List<SalaryGrantEmployeeBO> selectBOList(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
 
     /**
+     * 根据任务单编号查询雇员信息
+     *
+     * @param taskCode
+     * @return
+     */
+    List<SalaryGrantEmployeePaymentBO> queryWaitForPaymentEmpList(String taskCode);
+
+    /**
      * 根据任务单编号，任务单类型，雇员编号，发放状态暂缓雇员
      * @author chenpb
      * @since 2018-05-23
@@ -46,4 +56,6 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      * @return
      */
     List<FinanceEmployeeBO> selectEmpForFinance(@Param("taskCode") String taskCode);
+
+    List<SalaryGrantFinanceBO> selectFinanceData(@Param("taskCode") String taskCode);
 }

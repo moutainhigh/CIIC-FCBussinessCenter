@@ -3,6 +3,9 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -39,5 +42,14 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      * @return
      */
     boolean updateForServiceFeeAmount(String taskCode);
+
+    /**
+     * 更新退票的雇员信息
+     *
+     * @param taskCode 批次号
+     * @param employeeReturnTicketDTOList 退票雇员信息列表
+     * @return
+     */
+    boolean updateForRefund(String taskCode, List<EmployeeReturnTicketDTO> employeeReturnTicketDTOList);
 
 }

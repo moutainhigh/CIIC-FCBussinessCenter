@@ -76,8 +76,8 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         else {
             String empGroupCode = codeGenerator.genEmpGroupCode(prEmpGroupDTO.getManagementId());
             prEmpGroupDTO.setEmpGroupCode(empGroupCode);
-            prEmpGroupDTO.setCreatedBy("macor");
-            prEmpGroupDTO.setModifiedBy("macor");
+            prEmpGroupDTO.setCreatedBy(UserContext.getUserId());
+            prEmpGroupDTO.setModifiedBy(UserContext.getUserId());
             PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
 
             Integer result = employeeGroupService.addEmployeeGroup(empGroupPO);

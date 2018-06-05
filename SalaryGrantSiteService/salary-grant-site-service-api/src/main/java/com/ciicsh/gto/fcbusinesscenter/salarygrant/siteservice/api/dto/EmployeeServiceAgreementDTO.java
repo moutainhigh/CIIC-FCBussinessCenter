@@ -4,6 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.Paging
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -55,9 +56,9 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
     /**
      * 薪资发放规则Id
      */
-    private Long salaryGrantRuleId;
+    private List<Integer> salaryGrantRuleId;
     /**
-     * 汇率计算方式:0 - 固定， 1 - 实时
+     * 汇率计算方式:0 - 固定，1 - 实时，2-记账
      */
     private Integer exchangeCalcMode;
     /**
@@ -77,10 +78,6 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
      */
     private BigDecimal customerAgreedExchangeRate;
     /**
-     * 是否供应商
-     */
-    private Boolean isSupplier;
-    /**
      * 供应商名称
      */
     private String supplierName;
@@ -88,6 +85,10 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
      * 供应商收款账户
      */
     private String supplierAccountReceivale;
+    /**
+     * 供应商收款账户名称
+     */
+    private String supplierAccountReceivaleName;
     /**
      * 业务合同编号（Entity Id）- HT+分类+YY+5位数字
      */
@@ -97,9 +98,41 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
      */
     private Integer contractType;
     /**
-     * 合同我方（AF/FC/BPO）
+     * 合同我方（1-AF/2-FC/3-BPO）
      */
     private String contractFirstParty;
+    /**
+     * 付款账号
+     */
+    private String paymentBankAccount;
+    /**
+     * 付款账户名
+     */
+    private String paymentBankAccountName;
+    /**
+     * 付款银行名
+     */
+    private String paymentBankName;
+    /**
+     * 个税期间 (0-当月 1-下月 2-下下月)
+     */
+    private Integer taxPeriod;
+    /**
+     * 申报账户
+     */
+    private String declarationAccount;
+    /**
+     * 申报账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)
+     */
+    private Integer declarationAccountCategory;
+    /**
+     * 缴纳账户
+     */
+    private String contributionAccount;
+    /**
+     * 缴纳账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)
+     */
+    private Integer contributionAccountCategory;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -193,20 +226,12 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
         this.grantServiceType = grantServiceType;
     }
 
-    public Long getSalaryGrantRuleId() {
+    public List<Integer> getSalaryGrantRuleId() {
         return salaryGrantRuleId;
     }
 
-    public void setSalaryGrantRuleId(Long salaryGrantRuleId) {
+    public void setSalaryGrantRuleId(List<Integer> salaryGrantRuleId) {
         this.salaryGrantRuleId = salaryGrantRuleId;
-    }
-
-    public Boolean getSupplier() {
-        return isSupplier;
-    }
-
-    public void setSupplier(Boolean supplier) {
-        isSupplier = supplier;
     }
 
     public String getSupplierName() {
@@ -271,5 +296,77 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
 
     public void setContractFirstParty(String contractFirstParty) {
         this.contractFirstParty = contractFirstParty;
+    }
+
+    public String getSupplierAccountReceivaleName() {
+        return supplierAccountReceivaleName;
+    }
+
+    public void setSupplierAccountReceivaleName(String supplierAccountReceivaleName) {
+        this.supplierAccountReceivaleName = supplierAccountReceivaleName;
+    }
+
+    public String getPaymentBankAccount() {
+        return paymentBankAccount;
+    }
+
+    public void setPaymentBankAccount(String paymentBankAccount) {
+        this.paymentBankAccount = paymentBankAccount;
+    }
+
+    public String getPaymentBankAccountName() {
+        return paymentBankAccountName;
+    }
+
+    public void setPaymentBankAccountName(String paymentBankAccountName) {
+        this.paymentBankAccountName = paymentBankAccountName;
+    }
+
+    public String getPaymentBankName() {
+        return paymentBankName;
+    }
+
+    public void setPaymentBankName(String paymentBankName) {
+        this.paymentBankName = paymentBankName;
+    }
+
+    public Integer getTaxPeriod() {
+        return taxPeriod;
+    }
+
+    public void setTaxPeriod(Integer taxPeriod) {
+        this.taxPeriod = taxPeriod;
+    }
+
+    public String getDeclarationAccount() {
+        return declarationAccount;
+    }
+
+    public void setDeclarationAccount(String declarationAccount) {
+        this.declarationAccount = declarationAccount;
+    }
+
+    public Integer getDeclarationAccountCategory() {
+        return declarationAccountCategory;
+    }
+
+    public void setDeclarationAccountCategory(Integer declarationAccountCategory) {
+        this.declarationAccountCategory = declarationAccountCategory;
+    }
+
+    public String getContributionAccount() {
+        return contributionAccount;
+    }
+
+    public void setContributionAccount(String contributionAccount) {
+        this.contributionAccount = contributionAccount;
+    }
+
+    public Integer getContributionAccountCategory() {
+        return contributionAccountCategory;
+    }
+
+    public void setContributionAccountCategory(Integer contributionAccountCategory) {
+        this.contributionAccountCategory = contributionAccountCategory;
     }
 }

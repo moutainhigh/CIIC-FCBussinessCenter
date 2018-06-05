@@ -1,5 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,8 @@ public interface PrsPayrollService {
     PrsPayrollPO getPrsPayroll(Map<String, Object> params);
 
     Boolean addPrsPayroll(Map<String, Object> params);
+
+    Boolean addPrsPayrolls(ArrayList<Map<String, Object>> objs);
 
     Boolean updatePrsPayroll(Map<String, Object> params);
 }
