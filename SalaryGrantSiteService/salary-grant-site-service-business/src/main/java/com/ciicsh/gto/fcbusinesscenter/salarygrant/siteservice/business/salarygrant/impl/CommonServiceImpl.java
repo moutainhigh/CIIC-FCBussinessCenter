@@ -337,11 +337,17 @@ public class CommonServiceImpl implements CommonService {
                 salaryEmployeeDTO.setPayIncometaxAmount(employeePaymentBO.getPersonalIncomeTax()); //个税金额
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantServiceType())) {
                     if (employeePaymentBO.getGrantServiceType() == 0) {
-                        salaryEmployeeDTO.setIfTaxPay(0); //是否要付个税(1:是；0:否)
-                    }
+                        salaryEmployeeDTO.setIfTaxPay(0); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
+                    } else {
+                        if (!ObjectUtils.isEmpty(employeePaymentBO.getDeclarationAccountCategory())) {
+                            if (employeePaymentBO.getDeclarationAccountCategory() == 1) {
+                                salaryEmployeeDTO.setIfTaxPay(2); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
+                            }
 
-                    if (employeePaymentBO.getGrantServiceType() == 1 || employeePaymentBO.getGrantServiceType() == 2) {
-                        salaryEmployeeDTO.setIfTaxPay(1); //是否要付个税(1:是；0:否)
+                            if (employeePaymentBO.getDeclarationAccountCategory() == 2) {
+                                salaryEmployeeDTO.setIfTaxPay(3); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
+                            }
+                        }
                     }
                 }
                 salaryEmployeeDTO.setSalaryAmount(employeePaymentBO.getWagePayable()); //应付工资

@@ -281,6 +281,26 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 	 */
 	@TableField("service_fee_amount")
 	private BigDecimal serviceFeeAmount;
+	/**
+	 * 申报账户
+	 */
+	@TableField("declaration_account")
+	private String declarationAccount;
+	/**
+	 * 申报账户类别:1-大库（FC目前服务协议只配置FC大库），2-独立库
+	 */
+	@TableField("declaration_account_category")
+	private Integer declarationAccountCategory;
+	/**
+	 * 缴纳账户
+	 */
+	@TableField("contribution_account")
+	private String contributionAccount;
+	/**
+	 * 缴纳账户类别:1-大库（FC目前服务协议只配置FC大库），2-独立库
+	 */
+	@TableField("contribution_account_category")
+	private Integer contributionAccountCategory;
     /**
      * 备注
      */
@@ -833,6 +853,38 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 		this.paymentAccountBankName = paymentAccountBankName;
 	}
 
+	public String getDeclarationAccount() {
+		return declarationAccount;
+	}
+
+	public void setDeclarationAccount(String declarationAccount) {
+		this.declarationAccount = declarationAccount;
+	}
+
+	public Integer getDeclarationAccountCategory() {
+		return declarationAccountCategory;
+	}
+
+	public void setDeclarationAccountCategory(Integer declarationAccountCategory) {
+		this.declarationAccountCategory = declarationAccountCategory;
+	}
+
+	public String getContributionAccount() {
+		return contributionAccount;
+	}
+
+	public void setContributionAccount(String contributionAccount) {
+		this.contributionAccount = contributionAccount;
+	}
+
+	public Integer getContributionAccountCategory() {
+		return contributionAccountCategory;
+	}
+
+	public void setContributionAccountCategory(Integer contributionAccountCategory) {
+		this.contributionAccountCategory = contributionAccountCategory;
+	}
+
 	// 重写克隆方法子列才可以调用
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -894,6 +946,10 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
             ", contractFirstParty=" + contractFirstParty +
             ", isWelfareIncluded=" + isWelfareIncluded +
 			", serviceFeeAmount=" + serviceFeeAmount +
+			", declarationAccount=" + declarationAccount +
+			", declarationAccountCategory=" + declarationAccountCategory +
+			", contributionAccount=" + contributionAccount +
+			", contributionAccountCategory=" + contributionAccountCategory +
 			", remark=" + remark +
 			", changeLog=" + changeLog +
             ", adjustCompareInfo=" + adjustCompareInfo +

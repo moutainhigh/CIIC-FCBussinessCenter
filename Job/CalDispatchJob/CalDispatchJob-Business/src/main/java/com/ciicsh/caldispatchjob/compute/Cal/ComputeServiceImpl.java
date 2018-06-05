@@ -96,6 +96,7 @@ public class ComputeServiceImpl {
 
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN)
+                .include("catalog.batch_info.period")
                 .include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.cal_priority")
@@ -176,6 +177,14 @@ public class ComputeServiceImpl {
         String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
         List<DBObject> items = ((List<DBObject>) catalog.get("pay_items"));
 
+        /*获取计算期间，并传递给drools context*/
+        DBObject batch = (DBObject)catalog.get("batch_info");
+        String period = batch.get("actual_period") == null ? "" : (String)batch.get("actual_period");
+        BatchContext batchContext = new BatchContext();
+        batchContext.setPeriod(period);
+        context.setBatchContext(batchContext);
+        //end
+
         Bindings bindings = new SimpleBindings();
 
         //set drools context
@@ -206,9 +215,9 @@ public class ComputeServiceImpl {
             //处理计算项
             if (itemType == ItemTypeEnum.CALC.getValue()) {
 
-                //int calPriority = (int) item.get("cal_priority");
-                //String itemName = item.get("item_name") == null ? "" : (String) item.get("item_name");
-                //logger.info(String.format("薪资项目－%s | 计算优先级－%d", itemName, calPriority));
+                int calPriority = (int) item.get("cal_priority");
+                String itemName = item.get("item_name") == null ? "" : (String) item.get("item_name");
+                logger.info(String.format("薪资项目－%s | 计算优先级－%d", itemName, calPriority));
 
                 int processType = item.get("decimal_process_type") == null ? DecimalProcessTypeEnum.ROUND.getValue() : (int) item.get("decimal_process_type");//小数处理方式 1 - 四舍五入 2 - 简单去位
 
@@ -244,7 +253,12 @@ public class ComputeServiceImpl {
                     } else { // 四舍五入
                         result = Arith.round(computeResult.doubleValue(), 2);
                     }
-                    item.put("item_value", result);
+
+                    if(StringUtils.isNotEmpty(itemName) && itemName.equals(PayItemName.EMPLOYEE_NET_PAY) && result < 0){
+                        item.put("item_value", 0.0);
+                    }else {
+                        item.put("item_value", result);
+                    }
                     bindings.put(itemCode, result); // 设置计算项的值
                     context.getFuncEntityList().clear(); // 清除FIRE 过的函数
 

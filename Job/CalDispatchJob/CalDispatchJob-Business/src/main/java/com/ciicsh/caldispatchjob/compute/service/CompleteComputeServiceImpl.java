@@ -20,7 +20,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.AdvanceEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
-import com.ciicsh.gto.salecenter.apiservice.api.dto.company.PaymentCycleDTO;
+import com.ciicsh.gto.salecenter.apiservice.api.dto.company.*;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -139,7 +139,7 @@ public class CompleteComputeServiceImpl {
             if(StringUtils.isNotEmpty(company_id)){
                 companyIds.add(company_id);
             }
-            mapObj.put("income_year_month", batchInfo.get("period") == null ? "" : batchInfo.get("period")); //工资年月
+            mapObj.put("income_year_month", batchInfo.get("actual_period") == null ? "" : batchInfo.get("actual_period")); //工资年月
             mapObj.put("leaving_years", empInfo.get(PayItemName.LEAVE_DATE) == null ? "" : empInfo.get(PayItemName.LEAVE_DATE)); // 离职年限
             mapObj.put("net_pay", findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY) == null ? "" : findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //实发工资
             mapObj.put("actual_pay", findValByName(payItems,PayItemName.ACTUAL_PAY) == null ? "" : findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //应发工资
