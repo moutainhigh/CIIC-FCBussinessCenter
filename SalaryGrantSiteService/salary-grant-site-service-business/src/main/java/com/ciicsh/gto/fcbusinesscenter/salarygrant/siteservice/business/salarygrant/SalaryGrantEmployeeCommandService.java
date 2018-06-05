@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 
@@ -52,4 +53,11 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      */
     boolean updateForRefund(String taskCode, List<EmployeeReturnTicketDTO> employeeReturnTicketDTOList);
 
+    /**
+     * 暂缓人员信息进入暂缓池
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    boolean processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO);
 }

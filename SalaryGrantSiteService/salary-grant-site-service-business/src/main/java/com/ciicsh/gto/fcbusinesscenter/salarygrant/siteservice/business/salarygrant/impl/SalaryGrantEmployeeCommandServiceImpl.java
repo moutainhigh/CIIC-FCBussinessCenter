@@ -13,6 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
@@ -174,6 +175,25 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
         } catch (Exception e) {
             return false;
         }
+
+        return true;
+    }
+
+    @Override
+    public boolean processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO) {
+        //任务单类型
+        Integer taskType = salaryGrantTaskBO.getTaskType();
+        EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+        if (0 == taskType) {
+            //查询任务单主表雇员
+            employeePOEntityWrapper.where("salary_grant_main_task_code = {0}", salaryGrantTaskBO.getTaskCode());
+        } else {
+            //查询任务单子表雇员
+            employeePOEntityWrapper.where("salary_grant_sub_task_code = {0}", salaryGrantTaskBO.getTaskCode());
+        }
+        employeePOEntityWrapper.where("grant_status = 1 and is_active = 1");
+        List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
+
 
         return true;
     }
