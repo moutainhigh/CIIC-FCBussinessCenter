@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryEmployeeProxyDTO;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
@@ -162,7 +163,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
                         if (!ObjectUtils.isEmpty(salaryGrantEmployeePO)) {
                             SalaryGrantEmployeePO updateEmployeePO = new SalaryGrantEmployeePO();
                             updateEmployeePO.setSalaryGrantEmployeeId(salaryGrantEmployeePO.getSalaryGrantEmployeeId());
-                            updateEmployeePO.setGrantStatus(3); //发放状态:3-退票
+                            updateEmployeePO.setGrantStatus(SalaryGrantBizConsts.GRANT_STATUS_REFUND); //发放状态:3-退票
                             salaryGrantEmployeeMapper.updateById(updateEmployeePO);
                         }
                     });

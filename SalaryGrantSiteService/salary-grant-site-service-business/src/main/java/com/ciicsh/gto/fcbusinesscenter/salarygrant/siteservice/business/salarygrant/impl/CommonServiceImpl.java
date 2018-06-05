@@ -17,6 +17,7 @@ import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.DeferredPoolProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.PaymentDeferredRequestDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
@@ -341,15 +342,18 @@ public class CommonServiceImpl implements CommonService {
                 }
                 salaryEmployeeDTO.setPayIncometaxAmount(employeePaymentBO.getPersonalIncomeTax()); //个税金额
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantServiceType())) {
-                    if (employeePaymentBO.getGrantServiceType() == 0) {
+                    //发放服务标识：0-薪资发放
+                    if (employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT) {
                         salaryEmployeeDTO.setIfTaxPay(0); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
                     } else {
                         if (!ObjectUtils.isEmpty(employeePaymentBO.getDeclarationAccountCategory())) {
-                            if (employeePaymentBO.getDeclarationAccountCategory() == 1) {
+                            //申报账户类别: 1-大库（FC目前服务协议只配置FC大库）
+                            if (employeePaymentBO.getDeclarationAccountCategory() == SalaryGrantBizConsts.DECLARATION_ACCOUNT_CATEGORY_DEPOT_BIG) {
                                 salaryEmployeeDTO.setIfTaxPay(2); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
                             }
 
-                            if (employeePaymentBO.getDeclarationAccountCategory() == 2) {
+                            //申报账户类别: 2-独立库
+                            if (employeePaymentBO.getDeclarationAccountCategory() == SalaryGrantBizConsts.DECLARATION_ACCOUNT_CATEGORY_DEPOT_INDEPENDENT) {
                                 salaryEmployeeDTO.setIfTaxPay(3); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
                             }
                         }
@@ -357,11 +361,13 @@ public class CommonServiceImpl implements CommonService {
                 }
                 salaryEmployeeDTO.setSalaryAmount(employeePaymentBO.getWagePayable()); //应付工资
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantServiceType())) {
-                    if (employeePaymentBO.getGrantServiceType() == 1) {
+                    //发放服务标识：1-个税
+                    if (employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_TAX) {
                         salaryEmployeeDTO.setIfSalaryPay(0); //是否要付工资(1:是；0:否)
                     }
 
-                    if (employeePaymentBO.getGrantServiceType() == 0 || employeePaymentBO.getGrantServiceType() == 2) {
+                    //发放服务标识：0-薪资发放，2-薪资发放 + 个税
+                    if (employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT || employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT_AND_TAX) {
                         salaryEmployeeDTO.setIfSalaryPay(1); //是否要付工资(1:是；0:否)
                     }
                 }
@@ -372,7 +378,7 @@ public class CommonServiceImpl implements CommonService {
                 salaryEmployeeDTO.setServiceFee(employeePaymentBO.getServiceFeeAmount()); //个人薪酬服务费
                 //如果雇员是暂缓grant_status（1-手动、2-自动）不发放，则置为-1；否则赋值为对应grant_status的值
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantStatus())) {
-                    if (employeePaymentBO.getGrantStatus() == 1 || employeePaymentBO.getGrantStatus() == 2) {
+                    if (employeePaymentBO.getGrantStatus() == SalaryGrantBizConsts.GRANT_STATUS_MANUAL_REPRIEVE || employeePaymentBO.getGrantStatus() == SalaryGrantBizConsts.GRANT_STATUS_AUTO_REPRIEVE) {
                         salaryEmployeeDTO.setSalaryStatus(-1); //雇员薪资明细状态(0:正常;1:暂缓放开;2:退票完成;3:现金完成;4:调整完成;负值标识未完成/未放开)
                     } else {
                         salaryEmployeeDTO.setSalaryStatus(employeePaymentBO.getGrantStatus()); //雇员薪资明细状态(0:正常;1:暂缓放开;2:退票完成;3:现金完成;4:调整完成;负值标识未完成/未放开)
