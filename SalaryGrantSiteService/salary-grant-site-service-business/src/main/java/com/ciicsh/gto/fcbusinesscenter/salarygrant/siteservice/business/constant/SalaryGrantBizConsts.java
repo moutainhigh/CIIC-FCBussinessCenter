@@ -136,5 +136,11 @@ public class SalaryGrantBizConsts {
     public static final Integer TAX_PERIOD_NEXT_MONTH = 1;
     /** 个税期间：2-下下月*/
     public static final Integer TAX_PERIOD_NEXT_TWO_MONTH = 2;
+
+    /** 结算中心业务类型*/
+    public static final Integer SETTLEMENT_CENTER_BUSINESS_TYPE_SG = 5;
+    /** 结算中心支付状态*/
+    public static final Integer SETTLEMENT_CENTER_PAY_STATUS_SUCCESS = 9;
+
 }
 
