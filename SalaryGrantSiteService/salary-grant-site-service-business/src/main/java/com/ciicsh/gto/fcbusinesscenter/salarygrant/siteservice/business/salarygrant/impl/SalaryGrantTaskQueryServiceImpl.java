@@ -109,7 +109,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
 
     /**
      * 根据任务单编号查询操作记录
-     *
+     * @author chenpb
+     * @since 2018-05-10
      * @param bo
      * @return
      */
@@ -236,7 +237,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean syncPayStatus(String taskCode) {
+    public void syncPayStatus(String taskCode) {
         SalaryGrantSubTaskPO subTask = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
         subTask.setSalaryGrantSubTaskCode(taskCode);
         subTask.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
@@ -244,7 +245,6 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
         salaryGrantMainTaskMapper.syncTaskInfo(subTask.getSalaryGrantMainTaskCode(), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
         batchProxy.updateBatchStatus(getBatchAuditDTO(subTask));
         fcBizTransactionMongoOpt.commitEvent(subTask.getBatchCode(), subTask.getGrantType(), EventName.FC_GRANT_EVENT, 1);
-        return true;
     }
 
     /**
