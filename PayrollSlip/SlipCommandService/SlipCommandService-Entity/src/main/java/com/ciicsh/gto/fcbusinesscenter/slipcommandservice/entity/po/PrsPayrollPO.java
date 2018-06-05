@@ -12,10 +12,10 @@ import java.util.Date;
 
 
 /**
- * 工资单
+ * 已发布的工资单
  *
  * @author taka
- * @since 2018-02-11
+ * @since 2018-06-04
  */
 @TableName("prs_payroll")
 public class PrsPayrollPO extends Model<PrsPayrollPO> {
@@ -33,12 +33,6 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
    */
   @TableField("payroll_code")
   private String payrollCode;
-
-  /**
-   * 工资单标题
-   */
-  @TableField("title")
-  private String title;
 
   /**
    * 管理方ID
@@ -59,10 +53,22 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
   private String employeeId;
 
   /**
+   * 雇员ID
+   */
+  @TableField("employee_name")
+  private String employeeName;
+
+  /**
+   * 实发工资
+   */
+  @TableField("net_pay")
+  private String netPay;
+
+  /**
    * 薪资周期
    */
-  @TableField("salary_period")
-  private String salaryPeriod;
+  @TableField("period")
+  private String period;
 
   /**
    * 工资年月
@@ -95,40 +101,16 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
   private Integer channel;
 
   /**
-   * 数据对象\r\n[    \r\n{"Key":"","Value":"","ShowTitle":"","DataType":"","Note":""},    {"Key":"","Value":"","ShowTitle":"","DataType":"","Note":""},    {"Key":"","Value":"","ShowTitle":"","DataType":"","Note":""}\r\n]
+   * 薪资项
    */
-  @TableField("data_object")
-  private String dataObject;
+  @TableField("items")
+  private String items;
 
   /**
    * 备注
    */
   @TableField("remark")
   private String remark;
-
-  /**
-   * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效
-   */
-  @TableField("status")
-  private Integer status;
-
-  /**
-   * 审批人
-   */
-  @TableField("approver")
-  private String approver;
-
-  /**
-   * 审批时间
-   */
-  @TableField("approve_time")
-  private Date approveTime;
-
-  /**
-   * 审批备注
-   */
-  @TableField("approve_remark")
-  private String approveRemark;
 
   /**
    * 是否可用
@@ -178,14 +160,6 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
     this.payrollCode = payrollCode;
   }
 
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
   public String getManagementId() {
     return managementId;
   }
@@ -210,12 +184,28 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
     this.employeeId = employeeId;
   }
 
-  public String getSalaryPeriod() {
-    return salaryPeriod;
+  public String getEmployeeName() {
+    return employeeName;
   }
 
-  public void setSalaryPeriod(String salaryPeriod) {
-    this.salaryPeriod = salaryPeriod;
+  public void setEmployeeName(String employeeName) {
+    this.employeeName = employeeName;
+  }
+
+  public String getNetPay() {
+    return netPay;
+  }
+
+  public void setNetPay(String netPay) {
+    this.netPay = netPay;
+  }
+
+  public String getPeriod() {
+    return period;
+  }
+
+  public void setPeriod(String period) {
+    this.period = period;
   }
 
   public String getPersonnelIncomeYearMonth() {
@@ -258,12 +248,12 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
     this.channel = channel;
   }
 
-  public String getDataObject() {
-    return dataObject;
+  public String getItems() {
+    return items;
   }
 
-  public void setDataObject(String dataObject) {
-    this.dataObject = dataObject;
+  public void setItems(String items) {
+    this.items = items;
   }
 
   public String getRemark() {
@@ -272,38 +262,6 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
 
   public void setRemark(String remark) {
     this.remark = remark;
-  }
-
-  public Integer getStatus() {
-    return status;
-  }
-
-  public void setStatus(Integer status) {
-    this.status = status;
-  }
-
-  public String getApprover() {
-    return approver;
-  }
-
-  public void setApprover(String approver) {
-    this.approver = approver;
-  }
-
-  public Date getApproveTime() {
-    return approveTime;
-  }
-
-  public void setApproveTime(Date approveTime) {
-    this.approveTime = approveTime;
-  }
-
-  public String getApproveRemark() {
-    return approveRemark;
-  }
-
-  public void setApproveRemark(String approveRemark) {
-    this.approveRemark = approveRemark;
   }
 
   public Boolean getIsActive() {
@@ -358,22 +316,19 @@ public class PrsPayrollPO extends Model<PrsPayrollPO> {
     return "PrsPayrollPO{" +
             "id=" + id +
             ", payrollCode=" + payrollCode +
-            ", title=" + title +
             ", managementId=" + managementId +
             ", managementName=" + managementName +
             ", employeeId=" + employeeId +
-            ", salaryPeriod=" + salaryPeriod +
+            ", employeeName=" + employeeName +
+            ", netPay=" + netPay +
+            ", period=" + period +
             ", personnelIncomeYearMonth=" + personnelIncomeYearMonth +
             ", batchId=" + batchId +
             ", templateId=" + templateId +
             ", templateName=" + templateName +
             ", channel=" + channel +
-            ", dataObject=" + dataObject +
+            ", items=" + items +
             ", remark=" + remark +
-            ", status=" + status +
-            ", approver=" + approver +
-            ", approveTime=" + approveTime +
-            ", approveRemark=" + approveRemark +
             ", isActive=" + isActive +
             ", createdTime=" + createdTime +
             ", modifiedTime=" + modifiedTime +
