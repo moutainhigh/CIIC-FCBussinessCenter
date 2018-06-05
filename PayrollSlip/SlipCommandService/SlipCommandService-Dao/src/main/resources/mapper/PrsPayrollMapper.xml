@@ -114,8 +114,23 @@
     <select id="total"  resultType="int">
         SELECT COUNT(*) FROM prs_payroll
         WHERE is_active = 1
+        <if test="mainTaskId != null and mainTaskId != ''">
+            and main_task_id = #{mainTaskId}
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
         <if test="employeeId != null and employeeId != ''">
             and employee_id = #{employeeId}
+        </if>
+        <if test="employeeName != null and employeeName != ''">
+            and employee_name = #{employeeName}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
         </if>
     </select>
 
@@ -123,8 +138,23 @@
         SELECT *
         FROM prs_payroll
         WHERE is_active = 1
+        <if test="mainTaskId != null and mainTaskId != ''">
+            and main_task_id = #{mainTaskId}
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
         <if test="employeeId != null and employeeId != ''">
             and employee_id = #{employeeId}
+        </if>
+        <if test="employeeName != null and employeeName != ''">
+            and employee_name = #{employeeName}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
         </if>
         ORDER BY id DESC
         <if test="limit != null and limit != ''">
