@@ -22,6 +22,7 @@ import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.PageInfo;
+import kafka.utils.Json;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -83,11 +84,14 @@ public class GroupController implements PayrollGroupProxy{
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
-        newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
         newEntity.setGroupName(newName);
         newEntity.setManagementId(managementId);
-        newEntity.setVersion("1.0");
-        boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
+        boolean result;
+        try {
+            result = prGroupService.copyPrGroup(srcEntity, newEntity);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         return result ? JsonResult.success(newEntity.getGroupCode(), MessageConst.PAYROLL_GROUP_COPY_SUCCESS)
                 : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_COPY_FAIL);
     }
