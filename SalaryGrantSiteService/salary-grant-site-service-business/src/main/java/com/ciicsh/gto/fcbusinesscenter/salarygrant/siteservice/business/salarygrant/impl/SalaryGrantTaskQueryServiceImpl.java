@@ -12,8 +12,13 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -42,13 +47,17 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     @Autowired
     SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
-    @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
     SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
     @Autowired
+    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    @Autowired
     WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
+    @Autowired
+    BatchProxy batchProxy;
+    @Autowired
+    FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
 
     /**
      * 查询薪资发放任务单列表
@@ -206,7 +215,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
         if (!list.isEmpty()) {
-            list.stream().forEach(x -> {
+            list.parallelStream().forEach(x -> {
                 if (StringUtils.isNotBlank(x.getGrantMode())) {
                     x.setGrantModeName(commonService.getNameByValue("sgGrantMode", x.getGrantMode()));
                 }
@@ -218,6 +227,41 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
         return list;
     }
 
+    /**
+     * 同步结算中心支付状态
+     * @author chenpb
+     * @since 2018-06-05
+     * @param taskCode
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean syncPayStatus(String taskCode) {
+        SalaryGrantSubTaskPO subTask = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
+        subTask.setSalaryGrantSubTaskCode(taskCode);
+        subTask.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+        subTask = salaryGrantSubTaskMapper.syncTaskInfo(subTask);
+        salaryGrantMainTaskMapper.syncTaskInfo(subTask.getSalaryGrantMainTaskCode(), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+        batchProxy.updateBatchStatus(getBatchAuditDTO(subTask));
+        fcBizTransactionMongoOpt.commitEvent(subTask.getBatchCode(), subTask.getGrantType(), EventName.FC_GRANT_EVENT, 1);
+        return true;
+    }
+
+    /**
+     * 获取批次信息
+     * @author chenpb
+     * @since 2018-06-05
+     * @param po
+     * @return
+     */
+    private BatchAuditDTO getBatchAuditDTO(SalaryGrantSubTaskPO po) {
+        BatchAuditDTO batchAuditDTO = BeanUtils.instantiate(BatchAuditDTO.class);
+        batchAuditDTO.setBatchCode(po.getBatchCode());
+        batchAuditDTO.setBatchType(po.getGrantType());
+        batchAuditDTO.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
+        batchAuditDTO.setStatus(8);
+        return batchAuditDTO;
+    }
     /**
      * 每天晚上8点执行任务
      *

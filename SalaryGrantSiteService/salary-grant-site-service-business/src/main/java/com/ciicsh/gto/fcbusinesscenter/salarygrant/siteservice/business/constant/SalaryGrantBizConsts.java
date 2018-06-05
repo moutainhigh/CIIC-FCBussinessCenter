@@ -3,6 +3,8 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constan
 public class SalaryGrantBizConsts {
     /** 发放服务标识：0-薪资发放*/
     public static final Integer GRANT_SERVICE_TYPE_GRANT = 0;
+    /** 发放服务标识：1-个税*/
+    public static final Integer GRANT_SERVICE_TYPE_TAX = 1;
     /** 发放服务标识：2-薪资发放 + 个税*/
     public static final Integer GRANT_SERVICE_TYPE_GRANT_AND_TAX = 2;
     /** 国籍：中国*/
@@ -127,6 +129,21 @@ public class SalaryGrantBizConsts {
     public static final String TASK_ADOPT= "adopt";
     public static final String TASK_REFUSE= "refuse";
     public static final String TASK_CANCEL= "cancel";
+
+    /** 系统 英文常量*/
+    public static final String SYSTEM_EN= "system";
+
+    /** 个税期间：0-当月*/
+    public static final Integer TAX_PERIOD_CURRENT_MONTH = 0;
+    /** 个税期间：1-下月*/
+    public static final Integer TAX_PERIOD_NEXT_MONTH = 1;
+    /** 个税期间：2-下下月*/
+    public static final Integer TAX_PERIOD_NEXT_TWO_MONTH = 2;
+
+    /** 结算中心业务类型*/
+    public static final Integer SETTLEMENT_CENTER_BUSINESS_TYPE_SG = 5;
+    /** 结算中心支付状态*/
+    public static final Integer SETTLEMENT_CENTER_PAY_STATUS_SUCCESS = 9;
 
 }
 

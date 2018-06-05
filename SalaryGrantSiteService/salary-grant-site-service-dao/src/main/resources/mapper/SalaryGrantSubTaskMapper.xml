@@ -397,4 +397,19 @@
             s.is_active = 1
     </select>
 
+    <update id="syncTaskInfo">
+        update
+            sg_salary_grant_sub_task s
+        set
+            s.task_status = #{taskStatus},
+            s.modified_time = now()
+        <where>
+            <if test="salaryGrantSubTaskCode != null and salaryGrantSubTaskCode != ''">
+                and  s.salary_grant_sub_task_code = #{salaryGrantSubTaskCode}
+            </if>
+            and s.task_type=1
+            and s.is_active=1
+        </where>
+    </update>
+
 </mapper>

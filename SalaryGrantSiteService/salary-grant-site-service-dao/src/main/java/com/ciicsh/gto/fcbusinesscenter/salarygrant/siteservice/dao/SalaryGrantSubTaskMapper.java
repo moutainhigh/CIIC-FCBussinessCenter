@@ -100,4 +100,13 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      */
     FinanceTaskBO selectTaskForFinance(@Param("taskCode") String taskCode);
 
+    /**
+     * 同步结算中心薪资发放信息
+     * @author chenpb
+     * @since 2018-06-05
+     * @param po
+     * @return
+     */
+    SalaryGrantSubTaskPO syncTaskInfo(SalaryGrantSubTaskPO po);
+
 }

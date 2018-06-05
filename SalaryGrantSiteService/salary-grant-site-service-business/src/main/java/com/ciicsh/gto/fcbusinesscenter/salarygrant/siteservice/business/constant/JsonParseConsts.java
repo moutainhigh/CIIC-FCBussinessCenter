@@ -48,6 +48,27 @@ public class JsonParseConsts {
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_TYPE = "contractType";
     /** 合同我方（AF/FC/BPO）*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_FIRST_PARTY = "contractFirstParty";
+    /** 个税信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_INFO = "taxInfo";
+    /** 个税期间（0-当月 1-下月 2-下下月）*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_PERIOD = "taxPeriod";
+    /** 申报账户信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_DECLARATION_ACCOUNT = "declarationAccount";
+    /** 缴纳账户信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRIBUTION_ACCOUNT = "contributionAccount";
+    /** 个税账户*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT = "account";
+    /** 个税账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY = "accountCategory";
+
+    /** 扣社保小计*/
+    public static final String EMLOYEE_RESULT_ITMES_SOCIAL_SECURITY = "扣社保小计";
+    /** 扣公积金小计*/
+    public static final String EMLOYEE_RESULT_ITMES_PROVIDENT_FUND = "扣公积金小计";
+    /** 年度奖金*/
+    public static final String EMLOYEE_RESULT_ITMES_YEAR_BONUS = "年度奖金";
+    /** 实际工作年限数*/
+    public static final String EMLOYEE_RESULT_ITMES_LEAVING_YEARS = "实际工作年限数";
 
     /** 雇员变更日志:国籍*/
     public static final String EMLOYEE_CHANGE_LOG_FIELD1 = "country_code";
