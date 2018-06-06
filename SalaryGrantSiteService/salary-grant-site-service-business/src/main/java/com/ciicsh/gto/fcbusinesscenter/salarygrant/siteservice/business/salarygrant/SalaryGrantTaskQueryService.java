@@ -59,7 +59,7 @@ public interface SalaryGrantTaskQueryService {
      * @param taskCode
      * @return
      */
-    Boolean syncPayStatus(String taskCode);
+    void syncPayStatus(String taskCode);
 
     /**
      * 薪资发放定时任务
