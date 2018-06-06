@@ -237,11 +237,11 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
         List<BatchAuditDTO> auditList = new ArrayList<>();
         String subTaskStr = getSubTaskCodes(list);
         List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
-        getSyncParams(pos, batchList, auditList);
+        getSyncParams(pos, auditList, batchList);
         salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
         salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-//        batchProxy.updateBatchListStatus(auditList);
-//        fcBizTransactionMongoOpt.commitBatchEvents(batchList, EventName.FC_GRANT_EVENT, 1);
+        batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+        fcBizTransactionMongoOpt.commitBatchEvents(batchList.parallelStream().distinct().collect(Collectors.toList()), EventName.FC_GRANT_EVENT, 1);
     }
 
     /**
@@ -249,21 +249,20 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @author chenpb
      * @since 2018-06-06
      * @param poList
-     * @param batchList
      * @param auditList
+     * @param batchList
      */
-    private void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<String> batchList, List<BatchAuditDTO> auditList) {
+    private void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList, List<String> batchList) {
         if (!poList.isEmpty()) {
             poList.parallelStream().forEach(y -> {
                 BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
                 dto.setBatchCode(y.getBatchCode());
-                dto.setBatchType(y.getGrantType());
+                dto.setBatchType(y.getGrantMode());
                 dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
                 dto.setStatus(8);
                 auditList.add(dto);
             });
-            batchList = poList.parallelStream().map(x -> x.getBatchCode()).distinct().collect(Collectors.toList());
-            auditList.parallelStream().distinct().collect(Collectors.toList());
+            poList.parallelStream().forEach(x -> batchList.add(x.getBatchCode()));
         }
     }
 
