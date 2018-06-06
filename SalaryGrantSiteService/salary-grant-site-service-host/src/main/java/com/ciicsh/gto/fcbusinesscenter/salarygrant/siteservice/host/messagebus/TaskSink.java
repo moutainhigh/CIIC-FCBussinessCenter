@@ -75,7 +75,7 @@ public interface TaskSink {
     /**
      * 结算中心支付TOPIC
      */
-    String SALARY_GRANT_PAYMENT = "pay-apply-pay-status-stream";
+    String SALARY_GRANT_PAYMENT = "pay-apply-pay-status-stream-input-channel";
     @Input(SALARY_GRANT_PAYMENT)
     MessageChannel salaryGrantPaymentProcess();
 

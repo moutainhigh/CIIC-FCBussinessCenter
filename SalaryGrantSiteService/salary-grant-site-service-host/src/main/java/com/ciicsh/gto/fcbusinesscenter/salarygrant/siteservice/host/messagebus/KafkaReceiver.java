@@ -169,7 +169,7 @@ public class KafkaReceiver {
             PayApplyPayStatusDTO dto = message.getPayload();
             if (!ObjectUtils.isEmpty(dto) && SalaryGrantBizConsts.SETTLEMENT_CENTER_BUSINESS_TYPE_SG.equals(dto.getBusinessType()) && SalaryGrantBizConsts.SETTLEMENT_CENTER_PAY_STATUS_SUCCESS.equals(dto.getPayStatus())) {
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> start").setContent(JSON.toJSONString(dto)));
-                salaryGrantTaskQueryService.syncPayStatus(dto.getSequenceNo());
+                salaryGrantTaskQueryService.syncPayStatus(dto.getPayApplySalaryDTOList());
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> end"));
             }
         } catch (Exception e) {

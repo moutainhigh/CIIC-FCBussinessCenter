@@ -16,6 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +30,8 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -225,19 +228,21 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     /**
      * 同步结算中心支付状态
      * @author chenpb
-     * @since 2018-06-05
-     * @param taskCode
-     * @return
+     * @since 2018-06-06
+     * @param list
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void syncPayStatus(String taskCode) {
+    public void syncPayStatus(List<PayapplySalaryDTO> list) {
+        List<BatchAuditDTO> auditList = new ArrayList<>();
+        List<BatchAuditDTO> auditLists = new ArrayList<>();
+        String subTaskStr = getSubTaskCodes(list);
+        SalaryGrantTaskBO bo = BeanUtils.instantiate(SalaryGrantTaskBO.class);
         SalaryGrantSubTaskPO subTask = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
-        subTask.setSalaryGrantSubTaskCode(taskCode);
-        subTask.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-        subTask = salaryGrantSubTaskMapper.syncTaskInfo(subTask);
-        salaryGrantMainTaskMapper.syncTaskInfo(subTask.getSalaryGrantMainTaskCode(), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-        batchProxy.updateBatchStatus(getBatchAuditDTO(subTask));
+        List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
+        salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+        salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+        batchProxy.updateBatchStatus(getBatchAuditDTO(bo));
         fcBizTransactionMongoOpt.commitEvent(subTask.getBatchCode(), subTask.getGrantType(), EventName.FC_GRANT_EVENT, 1);
     }
 
@@ -245,17 +250,48 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * 获取批次信息
      * @author chenpb
      * @since 2018-06-05
-     * @param po
+     * @param bo
      * @return
      */
-    private BatchAuditDTO getBatchAuditDTO(SalaryGrantSubTaskPO po) {
+    private BatchAuditDTO getBatchAuditDTO(SalaryGrantTaskBO bo) {
         BatchAuditDTO batchAuditDTO = BeanUtils.instantiate(BatchAuditDTO.class);
-        batchAuditDTO.setBatchCode(po.getBatchCode());
-        batchAuditDTO.setBatchType(po.getGrantType());
+        batchAuditDTO.setBatchCode(bo.getBatchCode());
+        batchAuditDTO.setBatchType(bo.getGrantType());
         batchAuditDTO.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
         batchAuditDTO.setStatus(8);
         return batchAuditDTO;
     }
+
+    /**
+     * 获取subTaskCode一览
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     * @return
+     */
+    public static String getSubTaskCodes (List<PayapplySalaryDTO> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").collect(Collectors.toList());
+        return String.join(",",taskCodes);
+    }
+
+    /**
+     * 获取mainTaskCode一览
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     * @return
+     */
+    public static String getMainTaskCodes (List<SalaryGrantSubTaskPO> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSalaryGrantMainTaskCode() + "'").collect(Collectors.toList());
+        return String.join(",",taskCodes);
+    }
+
     /**
      * 每天晚上8点执行任务
      *
