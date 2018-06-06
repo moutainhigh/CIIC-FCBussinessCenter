@@ -173,10 +173,7 @@ public class CommonServiceImpl {
             dbObject.put("item_type",item.getItemType());
             dbObject.put("item_code",item.getItemCode());
             dbObject.put("default_value",item.getDefaultValue());
-
             setPayItemValue(dataType,item.getDefaultValue(),dbObject);
-
-            dbObject.put("item_value",item.getItemValue());
             dbObject.put("item_condition",item.getItemCondition());
             dbObject.put("formula_content",item.getFormulaContent());
             //dbObject.put("origin_formula",item.getOriginFormula());

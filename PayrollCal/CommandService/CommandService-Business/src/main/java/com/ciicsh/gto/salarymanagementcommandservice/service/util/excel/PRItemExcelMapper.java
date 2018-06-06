@@ -13,6 +13,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.excel.RowMapper;
@@ -106,13 +107,17 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
                 if (Objects.equals(col, entry.getValue())) {
                     dbObject.put("payItem_name", entry.getKey());
                     if(entry.getKey().equals(PayItemName.EMPLOYEE_CODE_CN)){
-                        empCode = String.valueOf(col);
+                        empCode = String.valueOf(rs.getProperties().get(col));
                     }
+
+                    dbObject.put("col_name",col);
+                    dbObject.put("col_value",rs.getProperties().get(col));
+                    excelContents.add(dbObject);
+
+                    continue;
                 }
             }
-            dbObject.put("col_name",col);
-            dbObject.put("col_value",rs.getProperties().get(col));
-            excelContents.add(dbObject);
+
         }
 
         BasicDBObject rowIndex = new BasicDBObject();
@@ -120,7 +125,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         if(StringUtils.isEmpty(empCode)) {
             setEmp(rs, rowIndex);
         }else {
-            rowIndex.put("row_index",empCode);
+            rowIndex.put("emp_code",empCode);
         }
 
         excelContents.add(0,rowIndex); // add row index object
