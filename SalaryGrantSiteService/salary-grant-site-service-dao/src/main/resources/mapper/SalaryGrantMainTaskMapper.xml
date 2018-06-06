@@ -392,4 +392,16 @@
           t1.is_active=1
     </select>
 
+    <update id="syncTaskInfo">
+        update
+            sg_salary_grant_main_task m
+        set
+            m.task_status = #{taskStatus},
+            m.modified_time = now()
+        where
+            m.salary_grant_main_task_code in (${taskCodes})
+         and
+            m.is_active=1
+    </update>
+
 </mapper>

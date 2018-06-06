@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO">
         <id column="id" property="id" />
         <result column="payroll_code" property="payrollCode" />
+        <result column="main_task_id" property="mainTaskId" />
         <result column="management_id" property="managementId" />
         <result column="management_name" property="managementName" />
         <result column="employee_id" property="employeeId" />
@@ -46,8 +47,8 @@
   </select>
 
     <insert id="insert" parameterType="map">
-    INSERT INTO prs_payroll(payroll_code, management_id, management_name, employee_id, employee_name, net_pay, period, personnel_income_year_month, batch_id, template_id, template_name, channel, items, remark, created_by, modified_by)
-    VALUES (#{payrollCode}, #{managementId}, #{managementName}, #{employeeId}, #{employeeName}, #{netPay}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{items}, #{remark}, #{createdBy}, #{modifiedBy})
+    INSERT INTO prs_payroll(payroll_code, main_task_id, management_id, management_name, employee_id, employee_name, net_pay, period, personnel_income_year_month, batch_id, template_id, template_name, channel, items, remark, created_by, modified_by)
+    VALUES (#{payrollCode}, #{mainTaskId}, #{managementId}, #{managementName}, #{employeeId}, #{employeeName}, #{netPay}, #{period}, #{personnelIncomeYearMonth}, #{batchId}, #{templateId}, #{templateName}, #{channel}, #{items}, #{remark}, #{createdBy}, #{modifiedBy})
   </insert>
 
     <update id="update" parameterType="map">
@@ -56,6 +57,9 @@
         <trim suffixOverrides=",">
             <if test="payrollCode != null and payrollCode != ''">
                 payroll_code = #{payrollCode},
+            </if>
+            <if test="mainTaskId != null and mainTaskId != ''">
+                main_task_id = #{mainTaskId},
             </if>
             <if test="managementId != null and managementId != ''">
                 management_id = #{managementId},
@@ -110,8 +114,23 @@
     <select id="total"  resultType="int">
         SELECT COUNT(*) FROM prs_payroll
         WHERE is_active = 1
+        <if test="mainTaskId != null and mainTaskId != ''">
+            and main_task_id = #{mainTaskId}
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
         <if test="employeeId != null and employeeId != ''">
             and employee_id = #{employeeId}
+        </if>
+        <if test="employeeName != null and employeeName != ''">
+            and employee_name = #{employeeName}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
         </if>
     </select>
 
@@ -119,8 +138,23 @@
         SELECT *
         FROM prs_payroll
         WHERE is_active = 1
+        <if test="mainTaskId != null and mainTaskId != ''">
+            and main_task_id = #{mainTaskId}
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
         <if test="employeeId != null and employeeId != ''">
             and employee_id = #{employeeId}
+        </if>
+        <if test="employeeName != null and employeeName != ''">
+            and employee_name = #{employeeName}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
         </if>
         ORDER BY id DESC
         <if test="limit != null and limit != ''">

@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,7 +134,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
         PrBatchExcelMapPO batchExcelMapPO = batchExcelMapService.getBatchExcelMap(batchCode);
         Map<String,Object> identityMap = commonService.JSONString2Map(batchExcelMapPO.getIdentityResult()); //获取一个或多个字段唯一性集合
-        List<String> excelIdentityCols = identityMap.values().stream().map(p-> p.toString()).collect(Collectors.toList());
+        List<String> excelIdentityCols = identityMap.keySet().stream().map(p-> p).collect(Collectors.toList());
 
         try {
             Map<String,Object> payItemMap = commonService.JSONString2Map(batchExcelMapPO.getMappingResult()); //获取多个薪资项与EXCEL列映射集合（KEY薪资项名称，VALUE EXCEL列名称）
@@ -310,7 +311,12 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
                         payItems.forEach(item -> {
                             Object colVal = getExcelColumnValue(row, item.get("item_name"));
-                            item.put("item_value", colVal);
+                            int dataType = item.get("data_type") == null ? 0 : (int)item.get("data_type");
+                            if(dataType == DataTypeEnum.DATE.getValue() && colVal != null && colVal != ""){
+                                item.put("item_value", TimeStamp2Date(colVal.toString()));
+                            }else {
+                                item.put("item_value", colVal);
+                            }
                         });
                         rowAffected += updateItems(batchCode, empCode, true, null, null, null, batchType, payItems); // update items
                     }
@@ -341,7 +347,12 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                         List<BasicDBObject> clonePayItems = cloneListDBObject(payItems);
                         for (BasicDBObject item : clonePayItems) {
                             Object colVal = getExcelColumnValue(row, item.get("item_name"));
-                            item.put("item_value", colVal);
+                            int dataType = item.get("data_type") == null ? 0 : (int)item.get("data_type");
+                            if(dataType == DataTypeEnum.DATE.getValue() && colVal != null && colVal != ""){
+                                item.put("item_value", TimeStamp2Date(colVal.toString()));
+                            }else {
+                                item.put("item_value", colVal);
+                            }
                         }
                         rowAffected += updateItems(batchCode, empCode, false, empGroupCode, prGroupCode, catalog, batchType, clonePayItems);
                     }
@@ -370,6 +381,13 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
            return find.get().get("col_value");
        }
        return null;
+    }
+
+     private String TimeStamp2Date(String timestampString) {
+        String formats = "yyyy-MM-dd";
+        Long timestamp = Long.parseLong(timestampString); //Long.parseLong(timestampString) * 1000;
+        String date = new SimpleDateFormat(formats, Locale.CHINA).format(new Date(timestamp));
+        return date;
     }
 
     private int updateItems(String batchCode,String empCode, boolean empExistGroup, String empGroupCode, String prGroupCode,

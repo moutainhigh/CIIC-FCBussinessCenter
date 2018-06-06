@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -63,5 +64,15 @@ public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTas
      * @return
      */
     SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
+
+    /**
+     * 同步结算中心薪资发放信息
+     * @author chenpb
+     * @since 2018-06-05
+     * @param taskCodes
+     * @param taskStatus
+     * @return
+     */
+    Integer syncTaskInfo(@Param("taskCodes") String taskCodes, @Param("taskStatus") String taskStatus);
 
 }

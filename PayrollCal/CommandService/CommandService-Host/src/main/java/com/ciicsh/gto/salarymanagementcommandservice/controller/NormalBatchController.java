@@ -224,8 +224,12 @@ public class NormalBatchController {
     @PostMapping("/uploadExcel")
     public JsonResult importExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file){
 
-        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, batchType,importType,file);
-        return JsonResult.success(statistics);
+        try {
+            ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, batchType, importType, file);
+            return JsonResult.success(statistics);
+        }catch (Exception ex){
+            return JsonResult.faultMessage("数据导入失败！");
+        }
 
     }
 

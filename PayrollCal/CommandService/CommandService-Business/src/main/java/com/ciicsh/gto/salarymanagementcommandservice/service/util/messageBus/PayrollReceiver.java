@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus;
 
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
@@ -44,7 +45,11 @@ public class PayrollReceiver {
             paramGroup.setManagementId(managementId);
             paramGroup.setCreatedBy("sys");
             paramGroup.setModifiedBy("sys");
-            prGroupService.addItem(paramGroup);
+            try {
+                prGroupService.addItem(paramGroup);
+            } catch (BusinessException be) {
+                logger.warn(be.getMessage());
+            }
         });
     }
 }

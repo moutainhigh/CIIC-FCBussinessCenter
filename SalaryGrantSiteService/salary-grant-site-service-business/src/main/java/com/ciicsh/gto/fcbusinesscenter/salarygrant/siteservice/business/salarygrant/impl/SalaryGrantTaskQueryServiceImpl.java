@@ -12,8 +12,14 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,6 +30,7 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,13 +49,17 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     @Autowired
     SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
-    @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
     SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
     @Autowired
+    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    @Autowired
     WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
+    @Autowired
+    BatchProxy batchProxy;
+    @Autowired
+    FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
 
     /**
      * 查询薪资发放任务单列表
@@ -100,7 +111,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
 
     /**
      * 根据任务单编号查询操作记录
-     *
+     * @author chenpb
+     * @since 2018-05-10
      * @param bo
      * @return
      */
@@ -121,8 +133,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     private Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.submitList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
@@ -135,8 +146,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     private Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.approveList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
@@ -149,8 +159,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     private Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.haveApprovedList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
@@ -163,8 +172,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     private Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.passList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
@@ -177,8 +185,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     private Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.rejectList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
@@ -191,8 +198,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      */
     private Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.invalidList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
@@ -221,15 +227,75 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     /**
      * 同步结算中心支付状态
      * @author chenpb
-     * @since 2018-06-05
-     * @param taskCode
-     * @return
+     * @since 2018-06-06
+     * @param list
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean syncPayStatus(String taskCode) {
-        return true;
+    public void syncPayStatus(List<PayapplySalaryDTO> list) {
+        List<String> batchList = new ArrayList<>();
+        List<BatchAuditDTO> auditList = new ArrayList<>();
+        String subTaskStr = getSubTaskCodes(list);
+        List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
+        getSyncParams(pos, auditList, batchList);
+        salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+        salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+        batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+        fcBizTransactionMongoOpt.commitBatchEvents(batchList.parallelStream().distinct().collect(Collectors.toList()), EventName.FC_GRANT_EVENT, 1);
     }
+
+    /**
+     * 同步参数
+     * @author chenpb
+     * @since 2018-06-06
+     * @param poList
+     * @param auditList
+     * @param batchList
+     */
+    private void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList, List<String> batchList) {
+        if (!poList.isEmpty()) {
+            poList.parallelStream().forEach(y -> {
+                BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
+                dto.setBatchCode(y.getBatchCode());
+                dto.setBatchType(y.getGrantMode());
+                dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
+                dto.setStatus(8);
+                auditList.add(dto);
+            });
+            poList.parallelStream().forEach(x -> batchList.add(x.getBatchCode()));
+        }
+    }
+
+    /**
+     * 获取subTaskCode一览
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     * @return
+     */
+    public static String getSubTaskCodes (List<PayapplySalaryDTO> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").collect(Collectors.toList());
+        return String.join(",",taskCodes);
+    }
+
+    /**
+     * 获取mainTaskCode一览
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     * @return
+     */
+    public static String getMainTaskCodes (List<SalaryGrantSubTaskPO> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSalaryGrantMainTaskCode() + "'").collect(Collectors.toList());
+        return String.join(",",taskCodes);
+    }
+
     /**
      * 每天晚上8点执行任务
      *

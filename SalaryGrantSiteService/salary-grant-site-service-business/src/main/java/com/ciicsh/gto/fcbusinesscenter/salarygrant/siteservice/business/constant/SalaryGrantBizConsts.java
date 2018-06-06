@@ -132,6 +132,9 @@ public class SalaryGrantBizConsts {
     public static final String TASK_REFUSE= "refuse";
     public static final String TASK_CANCEL= "cancel";
 
+    /** 系统 英文常量*/
+    public static final String SYSTEM_EN= "system";
+
     /** 个税期间：0-当月*/
     public static final Integer TAX_PERIOD_CURRENT_MONTH = 0;
     /** 个税期间：1-下月*/

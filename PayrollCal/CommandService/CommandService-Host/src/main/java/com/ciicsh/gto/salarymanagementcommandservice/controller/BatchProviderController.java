@@ -172,6 +172,15 @@ public class BatchProviderController implements BatchProxy {
     }
 
     @Override
+    public int updateBatchListStatus(List<BatchAuditDTO> batchAuditDTOs) {
+        int rowAffected = 0;
+        for (BatchAuditDTO batchAuditDTO: batchAuditDTOs) {
+            rowAffected += updateBatchStatus(batchAuditDTO);
+        }
+        return rowAffected;
+    }
+
+    @Override
     public JsonResult<List<String>> getBatchIdListByManagementId(@RequestParam("mgrId") String mgrId) {
         JsonResult<List<String>> result = new JsonResult<>();
 
