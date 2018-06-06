@@ -65,6 +65,14 @@ public interface BatchProxy {
     int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO);
 
     /**
+     * 批量更新批次状态
+     * @param batchAuditDTOs
+     * @return
+     */
+    @PostMapping("/updateBatchListStatus")
+    int updateBatchListStatus(@RequestBody List<BatchAuditDTO> batchAuditDTOs);
+
+    /**
      * 获取批量列表ID 状态：未来款，未垫付，帐套已关闭
      * @param mgrId
      * @return
