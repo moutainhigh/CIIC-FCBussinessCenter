@@ -31,7 +31,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -234,32 +233,38 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void syncPayStatus(List<PayapplySalaryDTO> list) {
+        List<String> batchList = new ArrayList<>();
         List<BatchAuditDTO> auditList = new ArrayList<>();
-        List<BatchAuditDTO> auditLists = new ArrayList<>();
         String subTaskStr = getSubTaskCodes(list);
-        SalaryGrantTaskBO bo = BeanUtils.instantiate(SalaryGrantTaskBO.class);
-        SalaryGrantSubTaskPO subTask = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
         List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
+        getSyncParams(pos, batchList, auditList);
         salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
         salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-        batchProxy.updateBatchStatus(getBatchAuditDTO(bo));
-        fcBizTransactionMongoOpt.commitEvent(subTask.getBatchCode(), subTask.getGrantType(), EventName.FC_GRANT_EVENT, 1);
+//        batchProxy.updateBatchListStatus(auditList);
+//        fcBizTransactionMongoOpt.commitBatchEvents(batchList, EventName.FC_GRANT_EVENT, 1);
     }
 
     /**
-     * 获取批次信息
+     * 同步参数
      * @author chenpb
-     * @since 2018-06-05
-     * @param bo
-     * @return
+     * @since 2018-06-06
+     * @param poList
+     * @param batchList
+     * @param auditList
      */
-    private BatchAuditDTO getBatchAuditDTO(SalaryGrantTaskBO bo) {
-        BatchAuditDTO batchAuditDTO = BeanUtils.instantiate(BatchAuditDTO.class);
-        batchAuditDTO.setBatchCode(bo.getBatchCode());
-        batchAuditDTO.setBatchType(bo.getGrantType());
-        batchAuditDTO.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
-        batchAuditDTO.setStatus(8);
-        return batchAuditDTO;
+    private void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<String> batchList, List<BatchAuditDTO> auditList) {
+        if (!poList.isEmpty()) {
+            poList.parallelStream().forEach(y -> {
+                BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
+                dto.setBatchCode(y.getBatchCode());
+                dto.setBatchType(y.getGrantType());
+                dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
+                dto.setStatus(8);
+                auditList.add(dto);
+            });
+            batchList = poList.parallelStream().map(x -> x.getBatchCode()).distinct().collect(Collectors.toList());
+            auditList.parallelStream().distinct().collect(Collectors.toList());
+        }
     }
 
     /**
