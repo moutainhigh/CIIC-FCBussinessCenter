@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 
 import java.util.List;
 
@@ -55,11 +56,10 @@ public interface SalaryGrantTaskQueryService {
     /**
      * 同步结算中心支付状态
      * @author chenpb
-     * @since 2018-06-05
-     * @param taskCode
-     * @return
+     * @since 2018-06-06
+     * @param list
      */
-    void syncPayStatus(String taskCode);
+    void syncPayStatus(List<PayapplySalaryDTO> list);
 
     /**
      * 薪资发放定时任务
