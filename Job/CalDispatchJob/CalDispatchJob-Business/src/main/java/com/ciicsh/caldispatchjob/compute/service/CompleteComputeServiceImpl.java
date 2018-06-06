@@ -376,19 +376,19 @@ public class CompleteComputeServiceImpl {
 
     private int updateAdvance(List<String> companyIds,String batchCode, int batchType){
 
-        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<PaymentCycleDTO>> result = companyProxy.listPaymentInfo(companyIds);
-        List<PaymentCycleDTO> fcPaymentCycleDTOS = result.getObject();
+        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<FcPaymentCycleDTO>> result = companyProxy.listPaymentInfo(companyIds);
+        List<FcPaymentCycleDTO> fcPaymentCycleDTOS = result.getObject();
         if(fcPaymentCycleDTOS != null && fcPaymentCycleDTOS.size() > 0){
             int size = fcPaymentCycleDTOS.size();
             int count = 0;
-            for (PaymentCycleDTO item : fcPaymentCycleDTOS){
-                if(item.getHasCreditPayment()){
+            for (FcPaymentCycleDTO item : fcPaymentCycleDTOS){
+                if(item.isHasCreditPayment()){
                     count ++;
                 }
             }
 
             if(count == size){ //周期垫付
-                Optional<PaymentCycleDTO> findMin = fcPaymentCycleDTOS.stream().sorted((item1,item2) -> item1.getPaymentCycle().compareTo(item2.getPaymentCycle())).findFirst();
+                Optional<FcPaymentCycleDTO> findMin = fcPaymentCycleDTOS.stream().sorted((item1,item2) -> item1.getPaymentCycle().compareTo(item2.getPaymentCycle())).findFirst();
                 if(findMin.isPresent()){
                     int minAdvanceDay = findMin.get().getPaymentCycle(); // 最小垫付周期日
                     //boolean hasAdvance = true;

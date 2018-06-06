@@ -134,8 +134,6 @@ under the License.
         -->
         <server>
             <id>drools-workbench</id>
-            <!--<username>bill</username>
-            <password>$tart123</password>-->
             <username>admin</username>
             <password>admin</password>
             <configuration>
@@ -150,7 +148,7 @@ under the License.
 
 
 
-        <!-- -->
+        <!--
         <server>
             <id>nexus-releases</id>
             <username>admin</username>
@@ -165,7 +163,7 @@ under the License.
             <id>nexus</id>
             <username>admin</username>
             <password>admin123</password>
-        </server>
+        </server> -->
 
 
     </servers>
@@ -191,7 +189,7 @@ under the License.
           <name>user release version</name>
           <url>http://repo1.maven.org/maven2</url>
         </mirror>
-    -->
+
 
         <mirror>
             <id>release</id>
@@ -204,7 +202,7 @@ under the License.
             <mirrorOf>localpublic</mirrorOf>
             <name>public</name>
             <url>http://172.16.9.14:8081/nexus/content/groups/public/</url>
-        </mirror>
+        </mirror>-->
 
     </mirrors>
 
@@ -236,7 +234,6 @@ under the License.
                 <repository>
                     <id>drools-workbench</id>
                     <name>Guvnor M2 Repo</name>
-                    <!--<url>http://172.16.9.29:8080/kie-drools-wb/maven2/</url>-->
                     <url>http://172.16.100.103:8080/kie-drools-wb/maven2/</url>
                     <layout>default</layout>
                     <releases>
@@ -249,21 +246,6 @@ under the License.
                     </snapshots>
                 </repository>
 
-                <repository>
-                    <id>localsnapshots</id>
-                    <name>local snapshots</name>
-                    <url>http://172.16.9.14:8081/nexus/content/repositories/snapshots/</url>
-                </repository>
-                <repository>
-                    <id>localpublic</id>
-                    <name>local public</name>
-                    <url>http://172.16.9.14:8081/nexus/content/groups/public/</url>
-                </repository>
-                <repository>
-                    <id>localreleases</id>
-                    <name>local releases</name>
-                    <url>http://172.16.9.14:8081/nexus/content/repositories/releases/</url>
-                </repository>
             </repositories>
             <activation>
                 <activeByDefault>true</activeByDefault>    <!--这里要设置成true -->

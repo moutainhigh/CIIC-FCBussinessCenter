@@ -62,5 +62,5 @@ public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
      * @param name
      * @return
      */
-    Integer selectCountGroupByName(@Param("name") String name);
+    Integer selectCountGroupByNameAndManagement(@Param("name") String name, @Param("managementId") String managementId);
 }
