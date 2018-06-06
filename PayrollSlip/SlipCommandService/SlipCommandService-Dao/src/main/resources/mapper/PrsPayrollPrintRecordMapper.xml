@@ -21,10 +21,7 @@
         <result column="modified_by" property="modifiedBy" />
     </resultMap>
 
-    <select id="total"  resultType="int">
-        SELECT COUNT(*) FROM prs_payroll_print_record
-        WHERE is_active = 1
-    </select>
+
 
     <select id="all"  resultMap="BaseResultMap">
         SELECT *
@@ -95,6 +92,29 @@
         </trim>
         WHERE id = #{id}
     </update>
+
+    <select id="total"  resultType="int">
+        SELECT COUNT(*) FROM prs_payroll_print_record
+        WHERE is_active = 1
+        <if test="taskId != null and taskId != ''">
+            and task_id = #{taskId}
+        </if>
+        <if test="taskTitle != null and taskTitle != ''">
+            and task_title like concat('%', #{taskTitle}, '%')
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id = #{managementId}
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+    </select>
 
   <select id="list"  resultMap="BaseResultMap">
     SELECT *
