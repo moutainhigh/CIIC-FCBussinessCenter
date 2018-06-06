@@ -18,6 +18,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
             List<SalaryGrantEmployeeBO> employeeBOList = salaryGrantEmployeeBOPage.getRecords();
             if (!CollectionUtils.isEmpty(employeeBOList)) {
                 //保存雇员信息到MongoDB中
-                DBObject dbObject = new BasicDBList();
+                DBObject dbObject = new BasicDBObject();
                 dbObject.put("task_his_id", task_his_id);
                 dbObject.put("employeeInfo", employeeBOList);
                 salaryGrantEmpHisOpt.getMongoTemplate().insert(dbObject, SalaryGrantEmpHisOpt.SG_EMP_HIS);
