@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -46,21 +47,23 @@ import java.util.stream.Collectors;
 @Service
 public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryService {
     @Autowired
-    CommonService commonService;
+    private CommonService commonService;
     @Autowired
-    SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
+    private SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
-    SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
+    private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
-    SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
+    private SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
     @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
     @Autowired
-    WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
+    private WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
     @Autowired
-    BatchProxy batchProxy;
+    private BatchProxy batchProxy;
     @Autowired
-    FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
+    @Autowired
+    private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
 
     /**
      * 查询薪资发放任务单列表
@@ -259,7 +262,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
             poList.parallelStream().forEach(y -> {
                 BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
                 dto.setBatchCode(y.getBatchCode());
-                dto.setBatchType(y.getGrantMode());
+                dto.setBatchType(y.getGrantType());
                 dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
                 dto.setStatus(8);
                 auditList.add(dto);
@@ -305,9 +308,11 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param msg
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void cancelClosing(CancelClosingMsg msg) {
-
+        SalaryGrantTaskBO bo = salaryGrantMainTaskMapper.selectByTBatchInfo(msg.getBatchCode(), msg.getBatchType());
+        if (!ObjectUtils.isEmpty(bo)) {
+            salaryGrantWorkFlowService.doCancelTask(bo);
+        }
     }
 
     /**
