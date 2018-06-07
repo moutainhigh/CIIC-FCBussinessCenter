@@ -233,15 +233,17 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void syncPayStatus(List<PayapplySalaryDTO> list) {
-        List<String> batchList = new ArrayList<>();
-        List<BatchAuditDTO> auditList = new ArrayList<>();
         String subTaskStr = getSubTaskCodes(list);
         List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
-        getSyncParams(pos, auditList, batchList);
-        salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-        salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-        batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
-        fcBizTransactionMongoOpt.commitBatchEvents(batchList.parallelStream().distinct().collect(Collectors.toList()), EventName.FC_GRANT_EVENT, 1);
+        if (!pos.isEmpty()) {
+            List<String> batchList = new ArrayList<>();
+            List<BatchAuditDTO> auditList = new ArrayList<>();
+            getSyncParams(pos, auditList, batchList);
+            salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+            salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+            batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+            fcBizTransactionMongoOpt.commitBatchEvents(batchList.parallelStream().distinct().collect(Collectors.toList()), EventName.FC_GRANT_EVENT, 1);
+        }
     }
 
     /**

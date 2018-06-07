@@ -412,6 +412,8 @@
             t.task_type=1
         and
             t.is_active=1
+        and
+            t.task_status != '7'
     </select>
 
     <update id="syncTaskInfo">
@@ -424,8 +426,6 @@
             s.salary_grant_sub_task_code in (${taskCodes})
         and
             s.task_type = 1
-        and
-            s.task_status != '7'
         and
             s.is_active = 1
     </update>
