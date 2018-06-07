@@ -409,9 +409,9 @@
         where
             t.salary_grant_sub_task_code in (${taskCodes})
         and
-            t.task_type=1
+            t.task_type = 1
         and
-            t.is_active=1
+            t.is_active = 1
         and
             t.task_status != '7'
     </select>
