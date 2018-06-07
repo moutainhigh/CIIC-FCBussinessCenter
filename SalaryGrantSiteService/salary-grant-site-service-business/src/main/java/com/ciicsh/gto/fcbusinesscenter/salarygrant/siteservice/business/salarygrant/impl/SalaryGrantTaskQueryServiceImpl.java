@@ -267,7 +267,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
-     * 获取subTaskCode一览
+     * 获取subTaskCode列表
      * @author chenpb
      * @since 2018-06-06
      * @param list
@@ -282,7 +282,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
-     * 获取mainTaskCode一览
+     * 获取mainTaskCode列表
      * @author chenpb
      * @since 2018-06-06
      * @param list
