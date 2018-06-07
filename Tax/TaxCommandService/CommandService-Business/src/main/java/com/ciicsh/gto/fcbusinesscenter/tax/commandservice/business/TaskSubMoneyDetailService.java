@@ -25,4 +25,11 @@ public interface TaskSubMoneyDetailService {
      * @return
      */
     List<TaskSubMoneyDetailPO> querySubMonetDetailsBySubMoneyId(Long subMoneyId);
+
+    /**
+     * 根据计算批次明细ID集合查询划款明细集合
+     * @param taskSubMoneyDetailIdsList
+     * @return
+     */
+    List<TaskSubMoneyDetailPO> querySubMonetDetailsByBatchDetailIds(List<Long> taskSubMoneyDetailIdsList);
 }
