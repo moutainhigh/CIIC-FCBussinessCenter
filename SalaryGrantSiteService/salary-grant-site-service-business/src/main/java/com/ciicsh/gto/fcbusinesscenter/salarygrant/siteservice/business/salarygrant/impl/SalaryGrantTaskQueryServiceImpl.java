@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
@@ -63,11 +64,10 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
 
     /**
      * 查询薪资发放任务单列表
-     *
-     * @param bo
-     * @return Page<SalaryGrantTaskBO>
      * @author chenpb
      * @since 2018-04-25
+     * @param bo
+     * @return Page<SalaryGrantTaskBO>
      */
     @Override
     public Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO bo) {
@@ -90,11 +90,11 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
-     * @param salaryGrantTaskBO
-     * @return
-     * @description 根据任务单编号查询任务单
+     * 根据任务单编号查询任务单
      * @author chenpb
      * @since 2018-04-25
+     * @param salaryGrantTaskBO
+     * @return
      */
     @Override
     public SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO salaryGrantTaskBO) {
@@ -124,12 +124,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 待提交任务单：0-草稿 角色=操作员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 待提交任务单：0-草稿 角色=操作员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.submitList(page, salaryGrantTaskBO);
@@ -137,12 +137,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 待审批任务单:1-审批中 角色=审核员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 待审批任务单:1-审批中 角色=审核员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.approveList(page, salaryGrantTaskBO);
@@ -150,12 +150,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 已处理任务单:1-审批中 角色=操作员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:1-审批中 角色=操作员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.haveApprovedList(page, salaryGrantTaskBO);
@@ -163,12 +163,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 已处理任务单:审批通过 2-审批通过、6-未支付、7-已支付 角色=操作员、审核员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:审批通过 2-审批通过、6-未支付、7-已支付 角色=操作员、审核员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.passList(page, salaryGrantTaskBO);
@@ -176,12 +176,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 已处理任务单:审批拒绝 3-审批拒绝、8-撤回、9-驳回 角色=操作员、审核员（查历史表）
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:审批拒绝 3-审批拒绝、8-撤回、9-驳回 角色=操作员、审核员（查历史表）
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.rejectList(page, salaryGrantTaskBO);
@@ -189,12 +189,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 已处理任务单:已处理:4-失效 角色=操作员、审核员（查历史表）
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:已处理:4-失效 角色=操作员、审核员（查历史表）
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.invalidList(page, salaryGrantTaskBO);
@@ -202,11 +202,11 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
-     * @param salaryGrantTaskBO
-     * @return
-     * @description 根据主表任务单编号查询子表任务单
+     * 根据主表任务单编号查询子表任务单
      * @author chenpb
      * @since 2018-05-10
+     * @param salaryGrantTaskBO
+     * @return
      */
     @Override
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
@@ -254,7 +254,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param auditList
      * @param batchList
      */
-    private void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList, List<String> batchList) {
+    private static void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList, List<String> batchList) {
         if (!poList.isEmpty()) {
             poList.parallelStream().forEach(y -> {
                 BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
@@ -275,12 +275,12 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param list
      * @return
      */
-    public static String getSubTaskCodes (List<PayapplySalaryDTO> list) {
+    private static String getSubTaskCodes(List<PayapplySalaryDTO> list) {
         if (list.isEmpty()) {
             return "";
         }
         List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").collect(Collectors.toList());
-        return String.join(",",taskCodes);
+        return String.join(",", taskCodes);
     }
 
     /**
@@ -290,17 +290,28 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @param list
      * @return
      */
-    public static String getMainTaskCodes (List<SalaryGrantSubTaskPO> list) {
+    private static String getMainTaskCodes(List<SalaryGrantSubTaskPO> list) {
         if (list.isEmpty()) {
             return "";
         }
         List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSalaryGrantMainTaskCode() + "'").collect(Collectors.toList());
-        return String.join(",",taskCodes);
+        return String.join(",", taskCodes);
+    }
+
+    /**
+     * 取消关账
+     * @author chenpb
+     * @since 2018-06-07
+     * @param msg
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelClosing(CancelClosingMsg msg) {
+
     }
 
     /**
      * 每天晚上8点执行任务
-     *
      */
     @Scheduled(cron = "0 0 20 * * ?")
     //每30秒执行一次
