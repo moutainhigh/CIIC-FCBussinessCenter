@@ -1,9 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 
 import java.util.List;
@@ -16,7 +18,7 @@ import java.util.List;
  * @author gaoyang
  * @since 2018-04-17
  */
-public interface SalaryGrantTaskQueryService {
+public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTaskPO> {
 
     /**
      * 查询薪资发放任务单列表
