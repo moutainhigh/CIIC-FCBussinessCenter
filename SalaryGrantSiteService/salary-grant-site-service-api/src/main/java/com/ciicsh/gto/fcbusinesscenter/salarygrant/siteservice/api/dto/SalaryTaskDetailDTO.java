@@ -19,6 +19,10 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class SalaryTaskDetailDTO extends PagingDTO implements Serializable {
     /**
+     * 任务单ID
+     */
+    private Long taskId;
+    /**
      * 任务单编号
      */
     private String taskCode;

@@ -17,12 +17,16 @@
         <result column="publish_date" property="publishDate" />
         <result column="publish_exec_date" property="publishExecDate" />
         <result column="publish_manual_date" property="publishManualDate" />
+        <result column="upload_date" property="uploadDate" />
+        <result column="upload_exec_date" property="uploadExecDate" />
         <result column="publish_manual_remark" property="publishManualRemark" />
         <result column="publish_state" property="publishState" />
         <result column="publish_fail_log" property="publishFailLog" />
+        <result column="upload_state" property="uploadState" />
         <result column="payroll_type" property="payrollType" />
         <result column="selected_payroll_type" property="selectedPayrollType" />
         <result column="status" property="status" />
+        <result column="has_paper" property="hasPaper" />
         <result column="comments" property="comments" />
         <result column="template_id" property="templateId" />
         <result column="template_name" property="templateName" />
@@ -37,31 +41,7 @@
         <result column="modified_time" property="modifiedTime" />
     </resultMap>
 
-    <select id="total"  resultType="int">
-        SELECT COUNT(*) FROM prs_main_task
-        WHERE is_active = 1
-        <if test="status != null and status != ''">
-            and status = #{status}
-        </if>
-        <if test="mainTaskId != null and mainTaskId != ''">
-            and main_task_id = #{mainTaskId}
-        </if>
-        <if test="title != null and title != ''">
-            and title like concat('%', #{title}, '%')
-        </if>
-        <if test="managementId != null and managementId != ''">
-            and management_id IN (${managementId})
-        </if>
-        <if test="managementName != null and managementName != ''">
-            and management_name like concat('%', #{managementName}, '%')
-        </if>
-        <if test="batchId != null and batchId != ''">
-            and batch_id = #{batchId}
-        </if>
-        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
-            and personnel_income_year_month = #{personnelIncomeYearMonth}
-        </if>
-    </select>
+
 
     <select id="all"  resultMap="BaseResultMap">
         SELECT *
@@ -84,8 +64,8 @@
     </select>
 
     <insert id="insert" parameterType="map">
-    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, publish_exec_date, publish_manual_date, publish_manual_remark, publish_state, publish_fail_log, payroll_type, selected_payroll_type, status, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
-    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{publishExecDate}, #{publishManualDate}, #{publishManualRemark}, #{publishState}, #{publishFailLog}, #{payrollType}, #{selectedPayrollType}, #{status}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
+    INSERT INTO prs_main_task(main_task_id, title, management_id, management_name, batch_id, period, personnel_income_year_month, employees, total_count, chinese_count, foreigner_count, publish_date, publish_exec_date, publish_manual_date, upload_date, upload_exec_date, publish_manual_remark, publish_state, publish_fail_log, upload_state, payroll_type, selected_payroll_type, status, has_paper, comments, template_id, template_name, remark, approver, approve_time, approve_remark, created_by, modified_by)
+    VALUES (#{mainTaskId}, #{title}, #{managementId}, #{managementName}, #{batchId}, #{period}, #{personnelIncomeYearMonth}, #{employees}, #{totalCount}, #{chineseCount}, #{foreignerCount}, #{publishDate}, #{publishExecDate}, #{publishManualDate}, #{uploadDate}, #{uploadExecDate}, #{publishManualRemark}, #{publishState}, #{publishFailLog}, #{uploadState}, #{payrollType}, #{selectedPayrollType}, #{status}, #{hasPaper}, #{comments}, #{templateId}, #{templateName}, #{remark}, #{approver}, #{approveTime}, #{approveRemark}, #{createdBy}, #{modifiedBy})
   </insert>
 
     <update id="update" parameterType="map">
@@ -113,13 +93,13 @@
             <if test="employees != null and employees != ''">
                 employees = #{employees},
             </if>
-            <if test="totalCount != null">
+            <if test="totalCount != null and totalCount != ''">
                 total_count = #{totalCount},
             </if>
-            <if test="chineseCount != null">
+            <if test="chineseCount != null and chineseCount != ''">
                 chinese_count = #{chineseCount},
             </if>
-            <if test="foreignerCount != null">
+            <if test="foreignerCount != null and foreignerCount != ''">
                 foreigner_count = #{foreignerCount},
             </if>
             <if test="publishDate != null">
@@ -131,6 +111,12 @@
             <if test="publishManualDate != null">
                 publish_manual_date = #{publishManualDate},
             </if>
+            <if test="uploadDate != null">
+                upload_date = #{uploadDate},
+            </if>
+            <if test="uploadExecDate != null">
+                upload_exec_date = #{uploadExecDate},
+            </if>
             <if test="publishManualRemark != null and publishManualRemark != ''">
                 publish_manual_remark = #{publishManualRemark},
             </if>
@@ -140,6 +126,9 @@
             <if test="publishFailLog != null and publishFailLog != ''">
                 publish_fail_log = #{publishFailLog},
             </if>
+            <if test="uploadState != null and uploadState != ''">
+                upload_state = #{uploadState},
+            </if>
             <if test="payrollType != null and payrollType != ''">
                 payroll_type = #{payrollType},
             </if>
@@ -148,6 +137,9 @@
             </if>
             <if test="status != null and status != ''">
                 status = #{status},
+            </if>
+            <if test="hasPaper != null and hasPaper != ''">
+                has_paper = #{hasPaper},
             </if>
             <if test="comments != null and comments != ''">
                 comments = #{comments},
@@ -181,12 +173,11 @@
         WHERE main_task_id = #{mainTaskId}
     </update>
 
-    <select id="list"  resultMap="BaseResultMap">
-        SELECT *
-        FROM prs_main_task
+    <select id="total"  resultType="int">
+        SELECT COUNT(*) FROM prs_main_task
         WHERE is_active = 1
         <if test="status != null and status != ''">
-            and status = #{status}
+            and status IN (${status})
         </if>
         <if test="mainTaskId != null and mainTaskId != ''">
             and main_task_id = #{mainTaskId}
@@ -205,6 +196,39 @@
         </if>
         <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
             and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+        <if test="hasPaper != null">
+            and has_paper = #{hasPaper}
+        </if>
+    </select>
+
+    <select id="list"  resultMap="BaseResultMap">
+        SELECT *
+        FROM prs_main_task
+        WHERE is_active = 1
+        <if test="status != null and status != ''">
+            and status IN (${status})
+        </if>
+        <if test="mainTaskId != null and mainTaskId != ''">
+            and main_task_id = #{mainTaskId}
+        </if>
+        <if test="title != null and title != ''">
+            and title like concat('%', #{title}, '%')
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
+        <if test="batchId != null and batchId != ''">
+            and batch_id = #{batchId}
+        </if>
+        <if test="personnelIncomeYearMonth != null and personnelIncomeYearMonth != ''">
+            and personnel_income_year_month = #{personnelIncomeYearMonth}
+        </if>
+        <if test="hasPaper != null">
+            and has_paper = #{hasPaper}
         </if>
         ORDER BY main_task_id DESC
         <if test="limit != null and limit != ''">

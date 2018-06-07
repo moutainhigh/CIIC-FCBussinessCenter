@@ -1,0 +1,30 @@
+DROP TABLE IF EXISTS `prs_payroll_template`;
+
+CREATE TABLE `prs_payroll_template` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `template_code` varchar(20) DEFAULT '' COMMENT '模板Code',
+  `template_name` varchar(40) DEFAULT '' COMMENT '模板名称',
+  `management_id` varchar(15) NOT NULL COMMENT '管理方ID',
+  `management_name` varchar(30) DEFAULT '' COMMENT '管理方名称',
+  `account_code` varchar(20) NOT NULL COMMENT '薪资账套code',
+  `account_name` varchar(40) DEFAULT NULL COMMENT '薪资账套名称',
+  `account_items` json DEFAULT NULL COMMENT '薪资项json',
+  `template_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '模板类型：0：通用 1：纸质 2：邮件 3：网上查看',
+  `template_file_name` varchar(30) DEFAULT NULL COMMENT '模板文件名称',
+  `template_file_url` varchar(100) DEFAULT NULL COMMENT '模板文件上传url',
+  `email_title` varchar(100) DEFAULT NULL COMMENT '邮件标题',
+  `email_content` text DEFAULT NULL COMMENT '邮件内容',
+  `html` mediumtext COMMENT '模板html',
+  `effective_time` datetime DEFAULT NULL COMMENT '生效时间',
+  `invalid_time` datetime DEFAULT NULL COMMENT '失效时间',
+  `if_encrypt` bit(1) DEFAULT b'0' COMMENT '是否加密',
+  `status` tinyint(2) DEFAULT '0' COMMENT '状态',
+  `comments` varchar(100) DEFAULT NULL COMMENT '审核意见',
+  `remark` varchar(200) DEFAULT NULL COMMENT '备注',
+  `is_active` bit(1) NOT NULL DEFAULT b'1' COMMENT '是否禁用',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据创建时间',
+  `modified_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `created_by` varchar(20) NOT NULL COMMENT '创建人',
+  `modified_by` varchar(20) DEFAULT '' COMMENT '最后修改人',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='工资单模板';

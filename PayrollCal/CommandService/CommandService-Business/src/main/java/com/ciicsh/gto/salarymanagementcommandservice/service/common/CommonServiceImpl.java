@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
@@ -122,6 +123,7 @@ public class CommonServiceImpl {
         dbObject.put("payroll_type",batchPO.getPayrollType());
         dbObject.put("period",batchPO.getPeriod());
         dbObject.put("status",batchPO.getStatus());
+        dbObject.put("actual_period",batchPO.getActualPeriod());
         return dbObject;
     }
 
@@ -161,24 +163,23 @@ public class CommonServiceImpl {
             Optional<PayrollAccountItemRelationExtPO> find =
                     itemRelationExtsList.stream().filter(r -> r.getPayrollItemCode().equals(item.getItemCode()) && StringUtils.isNotEmpty(r.getPayrollItemAlias())).findFirst();
             if(find.isPresent()){
-                //item.setItemName(find.get().getPayrollItemAlias());
                 dbObject.put("item_name",find.get().getPayrollItemAlias()); // 设置别名
             }else {
                 dbObject.put("item_name",item.getItemName());
 
             }
-            dbObject.put("item_code",item.getItemCode());
-            dbObject.put("item_value",item.getItemValue());
-            dbObject.put("item_type",item.getItemType());
+            int dataType = item.getDataType().intValue();
             dbObject.put("data_type",item.getDataType());
-            //dbObject.put("management_id",item.getManagementId());
+            dbObject.put("item_type",item.getItemType());
+            dbObject.put("item_code",item.getItemCode());
+            dbObject.put("default_value",item.getDefaultValue());
+            setPayItemValue(dataType,item.getDefaultValue(),dbObject);
             dbObject.put("item_condition",item.getItemCondition());
             dbObject.put("formula_content",item.getFormulaContent());
             //dbObject.put("origin_formula",item.getOriginFormula());
             dbObject.put("cal_precision",item.getCalPrecision());
             dbObject.put("cal_priority",item.getCalPriority());
             dbObject.put("default_value_style",item.getDefaultValueStyle());
-            dbObject.put("default_value",item.getDefaultValue());
             dbObject.put("decimal_process_type",item.getDecimalProcessType());
             dbObject.put("display_priority",item.getDisplayPriority());
             list.add(dbObject);
@@ -309,5 +310,21 @@ public class CommonServiceImpl {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void setPayItemValue(int dataType, String defaultValue, BasicDBObject dbObject){
+        if(StringUtils.isEmpty(defaultValue)){
+            if (dataType == DataTypeEnum.NUM.getValue()){
+                dbObject.put("item_value", 0);
+            }else {
+                dbObject.put("item_value", "");
+            }
+        }else {
+            if (dataType == DataTypeEnum.NUM.getValue()){
+                dbObject.put("item_value", Double.parseDouble(defaultValue));
+            }else {
+                dbObject.put("item_value", defaultValue);
+            }
+        }
     }
 }

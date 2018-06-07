@@ -164,5 +164,21 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      * 创建时间字符串
      */
     private String createdTimeStr;
+    /**
+     * 操作员
+     */
+    private String operatorUserId;
+    /**
+     * 审核员
+     */
+    private String approveUserId;
+    /**
+     * 结算发放标识:0-正常，1-垫付
+     */
+    private Integer balanceGrant;
+    /**
+     * 垫付类型:1-信用期垫付;2-偶然垫付;3-水单垫付;4-AF垫付;5-预付款垫付
+     */
+    private Integer advanceType;
 
 }

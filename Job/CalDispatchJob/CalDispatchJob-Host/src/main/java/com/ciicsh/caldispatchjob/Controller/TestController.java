@@ -5,6 +5,8 @@ import com.ciicsh.caldispatchjob.compute.service.NormalBatchServiceImpl;
 import com.ciicsh.caldispatchjob.entity.DroolsContext;
 import com.ciicsh.caldispatchjob.entity.EmpPayItem;
 import com.ciicsh.caldispatchjob.entity.FuncEntity;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -35,6 +37,9 @@ public class TestController {
 
     @Autowired
     private ComputeServiceImpl computeService;
+
+    @Autowired
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
 
     @PostMapping("/updatePayItem")
     public void updatePayItem(){
@@ -91,6 +96,13 @@ public class TestController {
     public int delete(){
         int rowAffected = normalBatchMongoOpt.delete(Criteria.where("_id").gt(new ObjectId("5ab36576270c214517f50fbf")));
         return rowAffected;
+    }
+
+    @PostMapping("/doTransaction")
+    public int doTranscation(){
+        List<String> batchCodes = new ArrayList<>();
+        batchCodes.add("GL1800255_201808_0000000268");
+        return fcBizTransactionMongoOpt.commitBatchEvents(batchCodes, EventName.FC_GRANT_EVENT,0);
     }
 
 

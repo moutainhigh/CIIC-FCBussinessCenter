@@ -15,7 +15,7 @@ public class CommonHelper {
      * 获取当前用户管理方ID 列表 字符串 ， 格式："'GL001','GL002','GL003',... 用于 SQL IN 语句"
      * @return
      */
-    public static String getManagementIDs(){
+    public static String getManagementIDs() {
         List<ManagementInfo> list = UserContext.getManagementInfoLists();
         if(list == null || list.size() ==0 ){
             return "";

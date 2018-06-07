@@ -15,12 +15,14 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmployeeChangeLogBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantMainTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
@@ -29,12 +31,17 @@ import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -179,7 +186,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         // 4、生成薪资发放任务单的entity_id
         Map entityParam = new HashMap(2);
         // todo 定义薪资发放code, 写在常量类中。
-        entityParam.put("idCode","");
+        entityParam.put("idCode","SGT");
         String entityId = commonService.getEntityIdForSalaryGrantTask(entityParam);
         if(!StringUtil.isEmpty(entityId)){
             salaryGrantMainTaskPO.setSalaryGrantMainTaskCode(entityId);
@@ -240,25 +247,63 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
     private PayrollCalcResultDTO toConvertToPayrollCalcResultDTO(DBObject dbObject){
         PayrollCalcResultDTO payrollCalcResultDTO = new PayrollCalcResultDTO();
-        payrollCalcResultDTO.setEmpId((String)dbObject.get("emp_id"));
-        payrollCalcResultDTO.setEmpName((String)dbObject.get("emp_name"));
-        payrollCalcResultDTO.setBatchId((String)dbObject.get("batch_id"));
-        payrollCalcResultDTO.setRefBatchId((String)dbObject.get("ref_batch_id"));
-        payrollCalcResultDTO.setBatchType((String)dbObject.get("batch_type"));
-        payrollCalcResultDTO.setMgrId((String)dbObject.get("mgr_id"));
-        payrollCalcResultDTO.setMgrName((String)dbObject.get("mgr_name"));
-        payrollCalcResultDTO.setCountryCode((String)dbObject.get("country_code"));
-        payrollCalcResultDTO.setPersonnelIncomeNetPay((BigDecimal)dbObject.get("net_pay"));
-        payrollCalcResultDTO.setPersonnelIncomeTax((BigDecimal)dbObject.get("tax"));
-        payrollCalcResultDTO.setPersonnelSocialSecurity((BigDecimal)dbObject.get("social_security"));
-        payrollCalcResultDTO.setPersonnelProvidentFund((BigDecimal)dbObject.get("provident_fund"));
-        payrollCalcResultDTO.setPersonnelIncomeYearMonth((String)dbObject.get("income_year_month"));
-        payrollCalcResultDTO.setTaxYearMonth((String)dbObject.get("tax_year_month"));
-        payrollCalcResultDTO.setContractFirstParty((String)dbObject.get("contract_first_party"));
-        payrollCalcResultDTO.setSalaryCalcResultItems((String)dbObject.get("salary_calc_result_items"));
-        payrollCalcResultDTO.setEmployeeServiceAgreement((String)dbObject.get("employee_service_agreement"));
-        payrollCalcResultDTO.setEmployeeServiceAgreement((String)dbObject.get("employee_service_agreement"));
-        payrollCalcResultDTO.setPersonnelIncomeYearlyBonusAfterTax((BigDecimal)dbObject.get("bonus_after_tax"));
+        payrollCalcResultDTO.setBatchId(ObjectUtils.isEmpty(dbObject.get("batch_id"))  ? "" : (String)dbObject.get("batch_id"));
+        payrollCalcResultDTO.setRefBatchId(ObjectUtils.isEmpty(dbObject.get("ref_batch_id")) ? "" : (String)dbObject.get("ref_batch_id"));
+        payrollCalcResultDTO.setBatchType(ObjectUtils.isEmpty(dbObject.get("batch_type")) ? null : (Integer) dbObject.get("batch_type"));
+        payrollCalcResultDTO.setMgrId(ObjectUtils.isEmpty(dbObject.get("mgr_id")) ? "" : (String)dbObject.get("mgr_id"));
+        payrollCalcResultDTO.setMgrName(ObjectUtils.isEmpty(dbObject.get("mgr_name")) ? "" : (String)dbObject.get("mgr_name"));
+        payrollCalcResultDTO.setPersonnelIncomeYearMonth(ObjectUtils.isEmpty(dbObject.get("income_year_month")) ? "" : (String)dbObject.get("income_year_month"));
+        payrollCalcResultDTO.setTaxYearMonth(ObjectUtils.isEmpty(dbObject.get("tax_year_month")) ? "" : (String)dbObject.get("tax_year_month"));
+        payrollCalcResultDTO.setSalaryCalcResultItems(ObjectUtils.isEmpty(dbObject.get("salary_calc_result_items") ) ? null : (List<CalcResultItemBO>)dbObject.get("salary_calc_result_items"));
+        DBObject empInfo = (DBObject) (dbObject.get("emp_info"));
+        payrollCalcResultDTO.setEmpId(ObjectUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_CODE_CN)) ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_CODE_CN));
+        payrollCalcResultDTO.setEmpName(ObjectUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_NAME_CN)) ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN));
+        payrollCalcResultDTO.setCountryCode(ObjectUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN)) ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN));
+
+        DBObject employeeServiceAgreement = (DBObject) empInfo.get(PayItemName.EMPLOYEE_SERVICE_AGREE);
+        DBObject billingInfo = (DBObject) (employeeServiceAgreement.get("billingInfo"));
+        payrollCalcResultDTO.setContractFirstParty(ObjectUtils.isEmpty(billingInfo.get("contractFirstParty")) ? "" : (String)dbObject.get("contractFirstParty"));
+        List<DBObject> resultItemsList = (List<DBObject>)dbObject.get("salary_calc_result_items");
+        payrollCalcResultDTO.setPersonnelIncomeNetPay(ObjectUtils.isEmpty(findValByName(resultItemsList,PayItemName.EMPLOYEE_NET_PAY)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,PayItemName.EMPLOYEE_NET_PAY).toString()));
+        payrollCalcResultDTO.setPersonnelIncomeTax(ObjectUtils.isEmpty(findValByName(resultItemsList,PayItemName.TAX_TOTAL)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,PayItemName.TAX_TOTAL).toString()));
+        payrollCalcResultDTO.setPersonnelSocialSecurity(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_SOCIAL_SECURITY)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_SOCIAL_SECURITY).toString()));
+        payrollCalcResultDTO.setPersonnelProvidentFund(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_PROVIDENT_FUND)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_PROVIDENT_FUND).toString()));
+        payrollCalcResultDTO.setPersonnelIncomeYearlyBonusAfterTax(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_YEAR_BONUS)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_YEAR_BONUS).toString()));
+        payrollCalcResultDTO.setLeavingYears(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_LEAVING_YEARS)) ? 0 : Integer.valueOf(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_LEAVING_YEARS).toString()));
+
+        EmployeeServiceAgreementDTO employeeServiceAgreementDTO = new EmployeeServiceAgreementDTO();
+        employeeServiceAgreementDTO.setEmployeeId(ObjectUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_CODE_CN)) ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_CODE_CN));
+        employeeServiceAgreementDTO.setCompanyId(ObjectUtils.isEmpty(employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_ID)) ? "" : (String)employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_ID));
+        employeeServiceAgreementDTO.setCompanyName(ObjectUtils.isEmpty(employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_NAME)) ? "" : (String)employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_NAME));
+        employeeServiceAgreementDTO.setTemplateType(ObjectUtils.isEmpty(employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMPLOYED_TYPE)) ? 0 : (Integer) employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMPLOYED_TYPE));
+        employeeServiceAgreementDTO.setCycleRuleId(ObjectUtils.isEmpty(employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CYCLE_RULE_ID)) ? 0 : (Integer) employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CYCLE_RULE_ID));
+        DBObject salaryGrantInfo = (DBObject) employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
+        employeeServiceAgreementDTO.setGrantType(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_TYPE)) ? 1 : (Integer)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_TYPE));
+        employeeServiceAgreementDTO.setGrantServiceType(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE)) ? 0 :  (Integer)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE));
+        employeeServiceAgreementDTO.setSalaryGrantRuleId(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMP_SALARY_GRANT_RULE_ID)) ? null : (List)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMP_SALARY_GRANT_RULE_ID));
+        employeeServiceAgreementDTO.setExchangeCalcMode(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_CALC_MODE)) ? 1 : (Integer)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_CALC_MODE));
+        employeeServiceAgreementDTO.setCurrencyCode(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CURRENCY_TYPE)) ? "" : (String)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CURRENCY_TYPE));
+        employeeServiceAgreementDTO.setCustomerAgreedExchangeRate(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_RATE)) ? BigDecimal.ONE : new BigDecimal(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_RATE).toString()));
+        employeeServiceAgreementDTO.setWelfareIncluded(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_IS_WELFARE_INCLUDED)) ? false : (Boolean) salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_IS_WELFARE_INCLUDED) == null);
+        employeeServiceAgreementDTO.setSupplierName(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_NAME)) ? "" : (String)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_NAME));
+        employeeServiceAgreementDTO.setSupplierAccountReceivale(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE)) ? "" : (String)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE));
+        employeeServiceAgreementDTO.setSupplierAccountReceivaleName(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE_NAME)) ? "" : (String)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE_NAME));
+        employeeServiceAgreementDTO.setPaymentBankAccount(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT)) ? "" : (String)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT));
+        employeeServiceAgreementDTO.setPaymentBankAccountName(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT_NAME)) ? "" : (String)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT_NAME));
+        employeeServiceAgreementDTO.setPaymentBankName(ObjectUtils.isEmpty(salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_NAME)) ? "" : (String)salaryGrantInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_NAME));
+
+        employeeServiceAgreementDTO.setContractId(ObjectUtils.isEmpty(billingInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_CONTRACTID)) ? "" : (String)billingInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_CONTRACTID));
+        employeeServiceAgreementDTO.setContractType(ObjectUtils.isEmpty(billingInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_TYPE)) ? 1 : (Integer)billingInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_TYPE));
+        employeeServiceAgreementDTO.setContractFirstParty(ObjectUtils.isEmpty(billingInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_FIRST_PARTY)) ? "" : (String)billingInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_FIRST_PARTY));
+        DBObject taxInfo = (DBObject) (employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_INFO));
+        employeeServiceAgreementDTO.setTaxPeriod(ObjectUtils.isEmpty(taxInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_PERIOD)) ? 0 : (Integer)taxInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_PERIOD));
+        DBObject declarationAccount = (DBObject) (taxInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_DECLARATION_ACCOUNT));
+        employeeServiceAgreementDTO.setDeclarationAccount(ObjectUtils.isEmpty(declarationAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT)) ? "" : (String)declarationAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT));
+        employeeServiceAgreementDTO.setDeclarationAccountCategory(ObjectUtils.isEmpty(declarationAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY)) ? 1 : (Integer)declarationAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY));
+        DBObject contributionAccount = (DBObject) (taxInfo.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRIBUTION_ACCOUNT));
+        employeeServiceAgreementDTO.setContributionAccount(ObjectUtils.isEmpty(contributionAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT)) ? "" : (String)contributionAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT));
+        employeeServiceAgreementDTO.setContributionAccountCategory(ObjectUtils.isEmpty(contributionAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY)) ? 1 : (Integer)contributionAccount.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY));
+        payrollCalcResultDTO.setEmployeeServiceAgreement(employeeServiceAgreementDTO);
 
         return payrollCalcResultDTO;
     }
@@ -313,9 +358,9 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             // 从第一个雇员计算结果信息获取薪资发放日期、薪资发放时段、参考批次号赋值给任务单信息。
             PayrollCalcResultDTO payrollCalcResultDTOOne = payrollCalcResultDTOList.get(0);
             // 获取雇员服务协议字段信息Json格式
-            employeeServiceAgreement = payrollCalcResultDTOOne.getEmployeeServiceAgreement();
+            //employeeServiceAgreement = payrollCalcResultDTOOne.getEmployeeServiceAgreement();
             // 解析雇员服务协议字段信息Json格式
-            EmployeeServiceAgreementDTO employeeServiceAgreementDTOOne = this.toParseJsonForEmployeeServiceAgreement(employeeServiceAgreement);
+            EmployeeServiceAgreementDTO employeeServiceAgreementDTOOne = payrollCalcResultDTOOne.getEmployeeServiceAgreement(); //this.toParseJsonForEmployeeServiceAgreement(employeeServiceAgreement);
             // 查询服务周期规则
             ruleParam.put("cycleRuleId", employeeServiceAgreementDTOOne.getCycleRuleId());
             CycleRuleDTO cycleRuleDTO = this.getCycleRule(ruleParam);
@@ -329,9 +374,9 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
             for(PayrollCalcResultDTO payrollCalcResultDTO : payrollCalcResultDTOList){
                 // 获取雇员服务协议字段信息Json格式
-                employeeServiceAgreement = payrollCalcResultDTO.getEmployeeServiceAgreement();
+                //employeeServiceAgreement = payrollCalcResultDTO.getEmployeeServiceAgreement();
                 // 解析雇员服务协议字段信息Json格式
-                EmployeeServiceAgreementDTO employeeServiceAgreementDTO = this.toParseJsonForEmployeeServiceAgreement(employeeServiceAgreement);
+                EmployeeServiceAgreementDTO employeeServiceAgreementDTO = payrollCalcResultDTO.getEmployeeServiceAgreement();//this.toParseJsonForEmployeeServiceAgreement(employeeServiceAgreement);
 
                 // 2、遍历查询只有发放或者发放+个税的雇员信息。
                 /* 3、解析批次结果数据，根据雇员服务协议
@@ -454,7 +499,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         // 1、遍历批次数据信息PayrollCalcResultDTO，把雇员相关的信息存储在自己的数据结构中PayrollCalcResultBO
         if(payrollCalcResultDTOList != null && payrollCalcResultDTOList.size() > 0){
             // 雇员服务协议信息
-            String employeeServiceAgreement = null;
+            String employeeServiceAgreement ;
             // 发放服务标识
             Integer grantServiceType = SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT;
             // 薪资发放日期
@@ -467,9 +512,9 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
             for(PayrollCalcResultDTO payrollCalcResultDTO : payrollCalcResultDTOList){
                 // 获取雇员服务协议字段信息Json格式
-                employeeServiceAgreement = payrollCalcResultDTO.getEmployeeServiceAgreement();
+                //employeeServiceAgreement = payrollCalcResultDTO.getEmployeeServiceAgreement();
                 // 解析雇员服务协议字段信息Json格式
-                EmployeeServiceAgreementDTO employeeServiceAgreementDTO = this.toParseJsonForEmployeeServiceAgreement(employeeServiceAgreement);
+                EmployeeServiceAgreementDTO employeeServiceAgreementDTO = payrollCalcResultDTO.getEmployeeServiceAgreement();//this.toParseJsonForEmployeeServiceAgreement(employeeServiceAgreement);
                 // 查询服务周期规则
                 ruleParam.put("cycleRuleId", employeeServiceAgreementDTO.getCycleRuleId());
                 CycleRuleDTO cycleRuleDTO = this.getCycleRule(ruleParam);
@@ -747,23 +792,37 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
     private EmployeeServiceAgreementDTO toParseJsonForEmployeeServiceAgreement(String jsonStr){
         EmployeeServiceAgreementDTO employeeServiceAgreementDTO = new EmployeeServiceAgreementDTO();
         JSONObject dataObject = JSON.parseObject(jsonStr);
-        employeeServiceAgreementDTO.setEmployeeId(dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMLOYEE_ID));
-        employeeServiceAgreementDTO.setCompanyId(dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_ID));
-        employeeServiceAgreementDTO.setCompanyName(dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_NAME));
-        employeeServiceAgreementDTO.setTemplateType(dataObject.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMPLOYED_TYPE));
-        employeeServiceAgreementDTO.setCycleRuleId(dataObject.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CYCLE_RULE_ID));
+        employeeServiceAgreementDTO.setEmployeeId(dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMLOYEE_ID) == null ? "" : dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMLOYEE_ID));
+        employeeServiceAgreementDTO.setCompanyId(dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_ID) == null ? "" : dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_ID));
+        employeeServiceAgreementDTO.setCompanyName(dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_NAME) == null ? "" : dataObject.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_COMPANY_NAME));
+        employeeServiceAgreementDTO.setTemplateType(dataObject.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMPLOYED_TYPE) == null ? 0 : dataObject.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMPLOYED_TYPE));
+        employeeServiceAgreementDTO.setCycleRuleId(dataObject.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CYCLE_RULE_ID) == null ? 0 : dataObject.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CYCLE_RULE_ID));
         JSONObject salaryGrantInfo = dataObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
-        employeeServiceAgreementDTO.setGrantType(salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_TYPE));
-        employeeServiceAgreementDTO.setGrantServiceType(salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE));
-        employeeServiceAgreementDTO.setSalaryGrantRuleId(salaryGrantInfo.getLong(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMP_SALARY_GRANT_RULE_ID));
-        employeeServiceAgreementDTO.setExchangeCalcMode(salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_CALC_MODE));
-        employeeServiceAgreementDTO.setSupplier(salaryGrantInfo.getBoolean(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_IS_SUPPLIER));
-        employeeServiceAgreementDTO.setSupplierName(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_NAME));
-        employeeServiceAgreementDTO.setSupplierAccountReceivale(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE));
+        employeeServiceAgreementDTO.setGrantType(salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_TYPE) == null ? 1 : salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_TYPE));
+        employeeServiceAgreementDTO.setGrantServiceType(salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE) == null ? 0 : salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE));
+        employeeServiceAgreementDTO.setSalaryGrantRuleId(salaryGrantInfo.getJSONArray(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMP_SALARY_GRANT_RULE_ID) == null ? null : (List)salaryGrantInfo.getJSONArray(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EMP_SALARY_GRANT_RULE_ID));
+        employeeServiceAgreementDTO.setExchangeCalcMode(salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_CALC_MODE) == null ? 1 : salaryGrantInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_CALC_MODE));
+        employeeServiceAgreementDTO.setCurrencyCode(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CURRENCY_TYPE) == null ? "" : salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CURRENCY_TYPE));
+        employeeServiceAgreementDTO.setCustomerAgreedExchangeRate(salaryGrantInfo.getBigDecimal(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_RATE) == null ? BigDecimal.ONE : salaryGrantInfo.getBigDecimal(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_RATE));
+        employeeServiceAgreementDTO.setWelfareIncluded(salaryGrantInfo.getBoolean(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_IS_WELFARE_INCLUDED) == null ? false : salaryGrantInfo.getBoolean(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_IS_WELFARE_INCLUDED) == null);
+        employeeServiceAgreementDTO.setSupplierName(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_NAME) == null ? "" : salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_NAME));
+        employeeServiceAgreementDTO.setSupplierAccountReceivale(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE) == null ? "" : salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE));
+        employeeServiceAgreementDTO.setSupplierAccountReceivaleName(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE_NAME) == null ? "" : salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE_NAME));
+        employeeServiceAgreementDTO.setPaymentBankAccount(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT) == null ? "" : salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT));
+        employeeServiceAgreementDTO.setPaymentBankAccountName(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT_NAME) == null ? "" : salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT_NAME));
+        employeeServiceAgreementDTO.setPaymentBankName(salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_NAME) == null ? "" : salaryGrantInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_NAME));
         JSONObject billInfo = dataObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_BILL_INFO);
-        employeeServiceAgreementDTO.setContractId(billInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_CONTRACTID));
-        employeeServiceAgreementDTO.setContractType(billInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_TYPE));
-        employeeServiceAgreementDTO.setContractFirstParty(billInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_FIRST_PARTY));
+        employeeServiceAgreementDTO.setContractId(billInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_CONTRACTID) == null ? "" : billInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_CONTRACTID));
+        employeeServiceAgreementDTO.setContractType(billInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_TYPE) == null ? 1 : billInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_TYPE));
+        employeeServiceAgreementDTO.setContractFirstParty(billInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_FIRST_PARTY) == null ? "" : billInfo.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRACT_FIRST_PARTY));
+        JSONObject taxInfo = dataObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_INFO);
+        employeeServiceAgreementDTO.setTaxPeriod(taxInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_PERIOD) == null ? 0 : taxInfo.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_PERIOD));
+        JSONObject declarationAccount = taxInfo.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_DECLARATION_ACCOUNT);
+        employeeServiceAgreementDTO.setDeclarationAccount(declarationAccount.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT) == null ? "" : declarationAccount.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT));
+        employeeServiceAgreementDTO.setDeclarationAccountCategory(declarationAccount.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY) == null ? 1 : declarationAccount.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY));
+        JSONObject contributionAccount = taxInfo.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRIBUTION_ACCOUNT);
+        employeeServiceAgreementDTO.setContributionAccount(contributionAccount.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT) == null ? "" : contributionAccount.getString(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT));
+        employeeServiceAgreementDTO.setContributionAccountCategory(contributionAccount.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY) == null ? 1 : contributionAccount.getInteger(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY));
         return employeeServiceAgreementDTO;
     }
 
@@ -795,15 +854,16 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         salaryGrantEmployeePO.setCompanyId(employeeServiceAgreementDTO.getCompanyId());
         salaryGrantEmployeePO.setCompanyName(employeeServiceAgreementDTO.getCompanyName());
         salaryGrantEmployeePO.setEmployeeServiceAgreementId(employeeServiceAgreementDTO.getEmployeeServiceAgreementId());
-        salaryGrantEmployeePO.setGrantCycle(payrollCalcResultDTO.getPersonnelIncomeYearMonth());
-        salaryGrantEmployeePO.setTaxCycle(payrollCalcResultDTO.getTaxYearMonth());
+        String grantCycle = payrollCalcResultDTO.getPersonnelIncomeYearMonth();
+        salaryGrantEmployeePO.setGrantCycle(grantCycle);
+        //salaryGrantEmployeePO.setTaxCycle(payrollCalcResultDTO.getTaxYearMonth());
         Integer grantMode = employeeServiceAgreementDTO.getGrantType();
-        String grantAccountCode = "";
+        String grantAccountCode;
         // 上海本地发放：发放账户=发放方式=中智上海账户
         if(SalaryGrantBizConsts.GRANT_MODE_LOCAL.equals(grantMode)){
             grantAccountCode = String.valueOf(grantMode);
         }else if(SalaryGrantBizConsts.GRANT_MODE_SUPPLIER.equals(grantMode)){
-            // 供应商发放：发放账户=雇员服务协议中的supplierAccountReceivale供应商收款账户，配合isSupplier是否供应商进行判断赋值,按照供应商收款账户拆分。
+            // 供应商发放：发放账户=雇员服务协议中的supplierAccountReceivale供应商收款账户，配合grantType=2是否供应商进行判断赋值,按照供应商收款账户拆分。
             grantAccountCode = employeeServiceAgreementDTO.getSupplierAccountReceivale();
         }else if(SalaryGrantBizConsts.GRANT_MODE_SUPPLIER.equals(grantMode)){
             // 中智代发（客户账户）发放：发放账户=companyCode 按照公司进行拆分。
@@ -814,7 +874,8 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         }
         salaryGrantEmployeePO.setGrantAccountCode(grantAccountCode);
         salaryGrantEmployeePO.setGrantMode(grantMode);
-        salaryGrantEmployeePO.setSalaryGrantRuleId(employeeServiceAgreementDTO.getSalaryGrantRuleId());
+        // todo need to split
+        //salaryGrantEmployeePO.setSalaryGrantRuleId(employeeServiceAgreementDTO.getSalaryGrantRuleId());
         salaryGrantEmployeePO.setDefaultCard(true);
         salaryGrantEmployeePO.setWagePayable(payrollCalcResultDTO.getPersonnelIncomeWageBeforeTax());
         salaryGrantEmployeePO.setPersonalSocialSecurity(payrollCalcResultDTO.getPersonnelSocialSecurity());
@@ -823,20 +884,50 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         salaryGrantEmployeePO.setPaymentAmountRMB(payrollCalcResultDTO.getPersonnelIncomeNetPay());
         salaryGrantEmployeePO.setPaymentAmount(payrollCalcResultDTO.getPersonnelIncomeNetPay());
         salaryGrantEmployeePO.setCountryCode(payrollCalcResultDTO.getCountryCode());
-        salaryGrantEmployeePO.setGrantServiceType(employeeServiceAgreementDTO.getGrantServiceType());
+        Integer grantServiceType = employeeServiceAgreementDTO.getGrantServiceType();
+        salaryGrantEmployeePO.setGrantServiceType(grantServiceType);
         salaryGrantEmployeePO.setContractType(employeeServiceAgreementDTO.getContractType());
         salaryGrantEmployeePO.setContractId(employeeServiceAgreementDTO.getContractId());
-        // AF-1/FC-2/BPO-3 做值转换，客服中心存的是字母，结算中心接的数据是1、2、3
-        String contractFirstParty = "";
-        if(SalaryGrantBizConsts.CONTRACT_FIRST_PARTY_CMY_1.equals(employeeServiceAgreementDTO.getContractFirstParty())){
-            contractFirstParty = SalaryGrantBizConsts.CONTRACT_FIRST_PARTY_STM_1;
-        }else if(SalaryGrantBizConsts.CONTRACT_FIRST_PARTY_CMY_2.equals(employeeServiceAgreementDTO.getContractFirstParty())){
-            contractFirstParty = SalaryGrantBizConsts.CONTRACT_FIRST_PARTY_STM_2;
-        }else{
-            contractFirstParty = SalaryGrantBizConsts.CONTRACT_FIRST_PARTY_STM_3;
-        }
-        salaryGrantEmployeePO.setContractFirstParty(contractFirstParty);
+        salaryGrantEmployeePO.setContractFirstParty(employeeServiceAgreementDTO.getContractFirstParty());
         salaryGrantEmployeePO.setWelfareIncluded(employeeServiceAgreementDTO.getWelfareIncluded());
+        salaryGrantEmployeePO.setPaymentAccountCode(employeeServiceAgreementDTO.getPaymentBankAccount());
+        salaryGrantEmployeePO.setPaymentAccountName(employeeServiceAgreementDTO.getPaymentBankAccountName());
+        salaryGrantEmployeePO.setPaymentAccountBankName(employeeServiceAgreementDTO.getPaymentBankName());
+        if(SalaryGrantBizConsts.GRANT_SERVICE_TYPE_TAX.equals(grantServiceType) || SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT_AND_TAX.equals(grantServiceType)){
+            Integer taxPeriod = employeeServiceAgreementDTO.getTaxPeriod();
+            if(taxPeriod == SalaryGrantBizConsts.TAX_PERIOD_CURRENT_MONTH ){
+                salaryGrantEmployeePO.setTaxCycle(grantCycle);
+            }else if(taxPeriod == SalaryGrantBizConsts.TAX_PERIOD_NEXT_MONTH){
+                DateFormat df = new SimpleDateFormat("yyyy-MM");
+                try {
+                    Calendar ct = Calendar.getInstance();
+                    ct.setTime(df.parse(grantCycle));
+                    ct.add(Calendar.MONTH, +1);
+                    salaryGrantEmployeePO.setTaxCycle(ct.getTime().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                DateFormat df = new SimpleDateFormat("yyyy-MM");
+                try {
+                    Calendar ct = Calendar.getInstance();
+                    ct.setTime(df.parse(grantCycle));
+                    ct.add(Calendar.MONTH, +2);
+                    salaryGrantEmployeePO.setTaxCycle(ct.getTime().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }else{
+            salaryGrantEmployeePO.setTaxCycle("");
+        }
+        salaryGrantEmployeePO.setDeclarationAccount(employeeServiceAgreementDTO.getDeclarationAccount());
+        salaryGrantEmployeePO.setDeclarationAccountCategory(employeeServiceAgreementDTO.getDeclarationAccountCategory());
+        salaryGrantEmployeePO.setContributionAccount(employeeServiceAgreementDTO.getContributionAccount());
+        salaryGrantEmployeePO.setContributionAccountCategory(employeeServiceAgreementDTO.getContributionAccountCategory());
+        /* 从雇员服务协议获取的币种和汇率，作为参考，看后面是否需要使用。目前币种和汇率没有指定到银行卡。
+        salaryGrantEmployeePO.setCurrencyCode(employeeServiceAgreementDTO.getCurrencyCode());
+        salaryGrantEmployeePO.setExchange(employeeServiceAgreementDTO.getCustomerAgreedExchangeRate());*/
         return salaryGrantEmployeePO;
     }
 
@@ -2323,8 +2414,8 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
     @Override
     public Page<SalaryGrantMainTaskBO> querySalaryGrantMainTaskPage(Page<SalaryGrantMainTaskBO> page, SalaryGrantMainTaskBO salaryGrantMainTaskBO) {
-        page.setRecords(salaryGrantMainTaskMapper.querySalaryGrantMainTaskList(page, salaryGrantMainTaskBO));
-        return page;
+        // todo
+        return null;
     }
 
     @Override
@@ -2401,4 +2492,19 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         }
         return map;
     }
+
+    /**
+     * 根据薪资项名称查询薪资项列表返回对应薪资项的值
+     * @param list 薪资项列表
+     * @param payItemName 薪资项名称item_name
+     * @return Object 薪资项的值item_value
+     */
+    private Object findValByName(List<DBObject> list, String payItemName) {
+        Optional<DBObject> find = list.stream().filter(p -> p.get("item_name").equals(payItemName)).findFirst();
+        if (find.isPresent()) {
+            return find.get().get("item_value");
+        }
+        return "";
+    }
+
 }

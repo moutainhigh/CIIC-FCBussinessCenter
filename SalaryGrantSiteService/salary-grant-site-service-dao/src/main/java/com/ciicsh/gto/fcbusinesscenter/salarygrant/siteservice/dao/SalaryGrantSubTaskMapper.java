@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -65,6 +66,14 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
     List<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
+     * 查询薪资发放日任务单数据
+     *
+     * @param grantDate 薪资发放次日日期
+     * @return
+     */
+    List<SalaryGrantTaskPaymentBO> queryWaitForPaymentTaskList(String grantDate);
+
+    /**
      * 根据主表任务单编号查询子表任务单
      * @author chenpb
      * @since 2018-04-23
@@ -83,6 +92,15 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
     SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
 
     /**
+     * 根据任务单编号列表查询任务单一览
+     * @author chenpb
+     * @since 2018-06-06
+     * @param taskCodes
+     * @return
+     */
+    List<SalaryGrantSubTaskPO> selectListByTaskCodes (@Param("taskCodes") String taskCodes);
+
+    /**
      * 查询财务数据
      * @author chenpb
      * @since 2018-05-25
@@ -90,5 +108,15 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      * @return
      */
     FinanceTaskBO selectTaskForFinance(@Param("taskCode") String taskCode);
+
+    /**
+     * 同步结算中心薪资发放信息
+     * @author chenpb
+     * @since 2018-06-05
+     * @param taskCodes
+     * @param taskStatus
+     * @return
+     */
+    Integer syncTaskInfo(@Param("taskCodes") String taskCodes, @Param("taskStatus") String taskStatus);
 
 }

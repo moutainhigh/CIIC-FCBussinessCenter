@@ -27,7 +27,7 @@ start(){
   if [ $? -eq "0" ]; then
     echo "${APP_NAME} is already running. pid=${pid} ."
   else
-    nohup java -Xms384m -Xmx512m -jar $APP_NAME --spring.profiles.active=$ENV > $LOG_FILE 2>&1 &
+    nohup java -Xms384m -Xmx512m -jar -Dspring.profiles.active=$ENV $APP_NAME  > $LOG_FILE 2>&1 &
   fi
 }
 

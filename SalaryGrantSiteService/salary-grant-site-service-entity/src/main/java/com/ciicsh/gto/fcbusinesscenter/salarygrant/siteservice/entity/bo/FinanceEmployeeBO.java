@@ -44,6 +44,10 @@ public class FinanceEmployeeBO {
      */
     private Integer templateType;
     /**
+     * 服务大类名
+     */
+    private String templateName;
+    /**
      * 应付工资
      */
     private BigDecimal wagePayable;
@@ -56,6 +60,27 @@ public class FinanceEmployeeBO {
      */
     private BigDecimal individualProvidentFund;
     /**
+     * 申报账户类别
+     */
+    private Integer declarationAccountCategory;
+    /**
+     * 扣个人所得税（中智公司）
+     */
+    private BigDecimal taxAF;
+    /**
+     * 扣个人所得税（财务公司-FC）
+     */
+    private BigDecimal taxFC;
+
+    /**
+     * 扣个人所得税（外服-BPO）
+     */
+    private BigDecimal taxBPO;
+    /**
+     * 扣个人所得税（独立库）
+     */
+    private BigDecimal taxIndependence;
+    /**
      * 发放金额
      */
     private BigDecimal paymentAmount;
@@ -63,5 +88,9 @@ public class FinanceEmployeeBO {
      * 年终奖
      */
     private BigDecimal yearEndBonus;
+    /**
+     * 汇总
+     */
+    private Integer totalSum;
 
 }

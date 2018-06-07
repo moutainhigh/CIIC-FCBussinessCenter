@@ -13,6 +13,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.excel.RowMapper;
@@ -98,30 +99,41 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             excelCols = rs.getMetaData().getColumnNames();
         }
 
-        BasicDBObject rowIndex = new BasicDBObject();
-        rowIndex.put("row_index",rs.getCurrentRowIndex());
-        setEmp(rs,rowIndex);
-        //rowIndex.put("emp_code",setEmp(rs,rowIndex));
-
-        List<BasicDBObject> excelContents = Arrays.asList(excelCols).stream().map(col ->{
+        String empCode = null;
+        List<BasicDBObject> excelContents = new ArrayList<>();
+        for (String col: Arrays.asList(excelCols)) {
             BasicDBObject dbObject = new BasicDBObject();
             for (Map.Entry<String, Object> entry : payItemMap.entrySet()) {
                 if (Objects.equals(col, entry.getValue())) {
                     dbObject.put("payItem_name", entry.getKey());
+                    if(entry.getKey().equals(PayItemName.EMPLOYEE_CODE_CN)){
+                        empCode = String.valueOf(rs.getProperties().get(col));
+                    }
+
+                    dbObject.put("col_name",col);
+                    dbObject.put("col_value",rs.getProperties().get(col));
+                    excelContents.add(dbObject);
+
+                    continue;
                 }
             }
-            dbObject.put("col_name",col);
-            dbObject.put("col_value",rs.getProperties().get(col));
-            return dbObject;
 
-        }).collect(Collectors.toList());
+        }
+
+        BasicDBObject rowIndex = new BasicDBObject();
+        rowIndex.put("row_index",rs.getCurrentRowIndex());
+        if(StringUtils.isEmpty(empCode)) {
+            setEmp(rs, rowIndex);
+        }else {
+            rowIndex.put("emp_code",empCode);
+        }
 
         excelContents.add(0,rowIndex); // add row index object
 
         return excelContents;
     }
 
-    private void setEmp(RowSet rs, BasicDBObject rowIndex){
+    private void setEmp(RowSet rs, BasicDBObject rowIndex){ //TODO 目前支持四个字段唯一性组合
 
             Object empCodeObj = identityMap.get(PayItemName.EMPLOYEE_CODE_CN);
             Object empNameObj = identityMap.get(PayItemName.EMPLOYEE_NAME_CN);
@@ -156,25 +168,30 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
 
     private BasicDBObject getEmpInfo(String batchCode, int batchType, String empCode, String empName, String idNum, String empId){
         List<DBObject> batchList = null;
+        String searchPrefix = "catalog.emp_info.";
 
         Criteria criteria = Criteria.where("batch_code").is(batchCode);
         if(StringUtils.isNotEmpty(empCode)){
             criteria = criteria.and(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
         }
         if(StringUtils.isNotEmpty(empName)){
-            criteria = criteria.and(PayItemName.EMPLOYEE_NAME_CN).is(empName);
+            criteria = criteria.and(searchPrefix+PayItemName.EMPLOYEE_NAME_CN).is(empName);
         }
         if(StringUtils.isNotEmpty(idNum)){
-            criteria = criteria.and(PayItemName.IDENTITY_NUM).is(idNum);
+            criteria = criteria.and(searchPrefix+PayItemName.IDENTITY_NUM).is(idNum);
         }
         if(StringUtils.isNotEmpty(empId)){
-            criteria = criteria.and(PayItemName.EMPLOYEE_ID).is(empId);
+            criteria = criteria.and(searchPrefix+PayItemName.EMPLOYEE_ID).is(empId);
         }
         Query query = new Query(criteria);
         query.fields()
                 .include("batch_code")
                 .include(PayItemName.EMPLOYEE_CODE_CN)
-                .include("catalog.pay_items.item_type")
+                .include(searchPrefix+PayItemName.EMPLOYEE_NAME_CN)
+                .include(searchPrefix+PayItemName.IDENTITY_NUM)
+                .include(searchPrefix+PayItemName.EMPLOYEE_ID)
+                ;
+                /*.include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.cal_priority")
                 .include("catalog.pay_items.item_name")
@@ -183,7 +200,7 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
                 .include("catalog.pay_items.decimal_process_type")
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
-                .include("catalog.pay_items.display_priority");
+                .include("catalog.pay_items.display_priority");*/
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息

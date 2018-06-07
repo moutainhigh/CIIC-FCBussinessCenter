@@ -22,6 +22,7 @@ import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.PageInfo;
+import kafka.utils.Json;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,8 +57,14 @@ public class GroupController implements PayrollGroupProxy{
 
     @GetMapping(value = "/importPrGroup")
     public JsonResult importPrGroup(@RequestParam String from,
-                                    @RequestParam String to) {
-        boolean importResult = prGroupService.importPrGroup(from, to);
+                                    @RequestParam String to,
+                                    @RequestParam(defaultValue = "false") Boolean fromTemplate) {
+        boolean importResult;
+        try {
+            importResult = prGroupService.importPrGroup(from, to, fromTemplate);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         if (!importResult) {
             throw new BusinessException("薪资组导入失败");
         }
@@ -77,11 +84,14 @@ public class GroupController implements PayrollGroupProxy{
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
-        newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
         newEntity.setGroupName(newName);
         newEntity.setManagementId(managementId);
-        newEntity.setVersion("1.0");
-        boolean result = prGroupService.copyPrGroup(srcEntity, newEntity);
+        boolean result;
+        try {
+            result = prGroupService.copyPrGroup(srcEntity, newEntity);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         return result ? JsonResult.success(newEntity.getGroupCode(), MessageConst.PAYROLL_GROUP_COPY_SUCCESS)
                 : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_COPY_FAIL);
     }
@@ -169,7 +179,12 @@ public class GroupController implements PayrollGroupProxy{
 
         newParam.setCreatedBy(UserContext.getUserId());
         newParam.setModifiedBy(UserContext.getUserId());
-        int result= prGroupService.addItem(newParam);
+        int result;
+        try {
+            result = prGroupService.addItem(newParam);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         return result > 0 ? JsonResult.success(newParam.getGroupCode()) : JsonResult.faultMessage("新建薪资组失败");
     }
 
