@@ -400,8 +400,10 @@
             m.modified_time = now()
         where
             m.salary_grant_main_task_code in (${taskCodes})
-         and
-            m.is_active=1
+        and
+            m.task_status != '7'
+        and
+            m.is_active = 1
     </update>
 
 </mapper>

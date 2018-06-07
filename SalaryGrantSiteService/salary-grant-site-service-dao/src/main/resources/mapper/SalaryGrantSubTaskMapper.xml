@@ -423,9 +423,11 @@
         where
             s.salary_grant_sub_task_code in (${taskCodes})
         and
-            s.task_type=1
-         and
-            s.is_active=1
+            s.task_type = 1
+        and
+            s.task_status != '7'
+        and
+            s.is_active = 1
     </update>
 
 </mapper>
