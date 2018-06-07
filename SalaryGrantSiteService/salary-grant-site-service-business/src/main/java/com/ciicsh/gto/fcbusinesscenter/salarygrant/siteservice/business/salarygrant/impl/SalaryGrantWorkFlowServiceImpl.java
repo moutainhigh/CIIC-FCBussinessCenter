@@ -189,7 +189,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         salaryGrantTaskHistoryPO.setGrantTime(salaryGrantMainTaskPO.getGrantTime()); //薪资发放时段:1-上午，2-下午
         salaryGrantTaskHistoryPO.setGrantType(salaryGrantMainTaskPO.getGrantType()); //发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
         salaryGrantTaskHistoryPO.setInvalidReason(salaryGrantMainTaskPO.getInvalidReason()); //失效原因
-        salaryGrantTaskHistoryPO.setActive(salaryGrantMainTaskPO.getActive()); //1-有效，0-无效
+        //salaryGrantTaskHistoryPO.setActive(salaryGrantMainTaskPO.getActive()); //1-有效，0-无效
         salaryGrantTaskHistoryPO.setAdvance(salaryGrantMainTaskPO.getAdvance()); //是否垫付:0-否，1-是
         salaryGrantTaskHistoryPO.setAdversion(salaryGrantMainTaskPO.getAdversion()); //是否内转:0-非内转，1-内转
         salaryGrantTaskHistoryPO.setIncludeForeignCurrency(salaryGrantMainTaskPO.getIncludeForeignCurrency()); //外币发放标识:0-否，1-是
@@ -243,7 +243,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         salaryGrantTaskHistoryPO.setGrantTime(salaryGrantSubTaskPO.getGrantTime()); //薪资发放时段:1-上午，2-下午
         salaryGrantTaskHistoryPO.setGrantType(salaryGrantSubTaskPO.getGrantType()); //发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
         //失效原因 未设置
-        salaryGrantTaskHistoryPO.setActive(salaryGrantSubTaskPO.getActive()); //1-有效，0-无效
+        //salaryGrantTaskHistoryPO.setActive(salaryGrantSubTaskPO.getActive()); //1-有效，0-无效
         salaryGrantTaskHistoryPO.setAdvance(salaryGrantSubTaskPO.getAdvance()); //是否垫付:0-否，1-是
         salaryGrantTaskHistoryPO.setAdversion(salaryGrantSubTaskPO.getAdversion()); //是否内转:0-非内转，1-内转
 

@@ -85,6 +85,6 @@ public class DeferredPoolProxyTest {
         paymentDeferredRequestDTO.setEmployeeInfos(employeeInfoList);
 
         JsonResult jsonResult = deferredPoolProxy.addDeferredPool(paymentDeferredRequestDTO);
-        System.out.println("----------------------------------------");
+        System.out.println("jsonResult: " + jsonResult);
     }
 }
