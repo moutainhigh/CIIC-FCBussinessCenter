@@ -14,8 +14,6 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
-import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
@@ -60,8 +58,6 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     private WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
     @Autowired
     private BatchProxy batchProxy;
-    @Autowired
-    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
     @Autowired
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
 
@@ -239,13 +235,11 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
         String subTaskStr = getSubTaskCodes(list);
         List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
         if (!pos.isEmpty()) {
-            List<String> batchList = new ArrayList<>();
             List<BatchAuditDTO> auditList = new ArrayList<>();
-            getSyncParams(pos, auditList, batchList);
+            getSyncParams(pos, auditList);
             salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
             salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
             batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
-            fcBizTransactionMongoOpt.commitBatchEvents(batchList.parallelStream().distinct().collect(Collectors.toList()), EventName.FC_GRANT_EVENT, 1);
         }
     }
 
@@ -255,9 +249,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
      * @since 2018-06-06
      * @param poList
      * @param auditList
-     * @param batchList
      */
-    private static void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList, List<String> batchList) {
+    private static void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList) {
         if (!poList.isEmpty()) {
             poList.parallelStream().forEach(y -> {
                 BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
@@ -267,7 +260,6 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
                 dto.setStatus(8);
                 auditList.add(dto);
             });
-            poList.parallelStream().forEach(x -> batchList.add(x.getBatchCode()));
         }
     }
 
