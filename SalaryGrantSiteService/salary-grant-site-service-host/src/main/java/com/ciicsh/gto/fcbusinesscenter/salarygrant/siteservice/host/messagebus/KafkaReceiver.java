@@ -165,15 +165,17 @@ public class KafkaReceiver {
      */
     @StreamListener(TaskSink.SALARY_GRANT_PAYMENT)
     public void salaryGrantPaymentProcess(Message<PayApplyPayStatusDTO> message) {
+        PayApplyPayStatusDTO dto = message.getPayload();
         try {
-            PayApplyPayStatusDTO dto = message.getPayload();
             if (!ObjectUtils.isEmpty(dto) && !ObjectUtils.isEmpty(dto.getPayApplySalaryDTOList()) && dto.getPayApplySalaryDTOList().size()>0 && SalaryGrantBizConsts.SETTLEMENT_CENTER_BUSINESS_TYPE_SG.equals(dto.getBusinessType()) && SalaryGrantBizConsts.SETTLEMENT_CENTER_PAY_STATUS_SUCCESS.equals(dto.getPayStatus())) {
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> start").setContent(JSON.toJSONString(dto)));
                 salaryGrantTaskQueryService.syncPayStatus(dto.getPayApplySalaryDTOList());
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> end"));
             }
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> exception").setContent(e.getMessage()));
+            Map map = new HashMap();
+            map.put("PayApplyPayStatusDTO", JSON.toJSONString(dto));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> exception").setContent(e.getMessage()).setTags(map));
         }
     }
 
@@ -182,7 +184,18 @@ public class KafkaReceiver {
      * @param message
      */
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CANCEL_TASK)
-    public void salaryGrantMainTaskCancelTask(Message<CancelClosingMsg> message){
-
+    public void salaryGrantMainTaskCancelTask(Message<CancelClosingMsg> message) {
+        CancelClosingMsg cancelClosingMsg = message.getPayload();
+        try {
+            if (!ObjectUtils.isEmpty(cancelClosingMsg)) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> start").setContent(JSON.toJSONString(cancelClosingMsg)));
+                salaryGrantTaskQueryService.cancelClosing(cancelClosingMsg);
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> end"));
+            }
+        } catch (Exception e) {
+            Map map = new HashMap();
+            map.put("CancelClosingMsg", JSON.toJSONString(cancelClosingMsg));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> exception").setContent(e.getMessage()).setTags(map));
+        }
     }
 }

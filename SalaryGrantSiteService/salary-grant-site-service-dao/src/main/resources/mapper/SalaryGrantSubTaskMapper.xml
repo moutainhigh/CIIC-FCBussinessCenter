@@ -350,7 +350,7 @@
     </sql>
 
     <sql id="sgPaymentField">
-        t.salary_grant_main_task_code, t.batch_code, t.grant_mode
+        t.salary_grant_main_task_code, t.batch_code, t.grant_mode, t.grant_type
     </sql>
 
     <sql id="FinanceField">
@@ -412,6 +412,8 @@
             t.task_type=1
         and
             t.is_active=1
+        and
+            t.task_status != '7'
     </select>
 
     <update id="syncTaskInfo">
@@ -423,9 +425,9 @@
         where
             s.salary_grant_sub_task_code in (${taskCodes})
         and
-            s.task_type=1
-         and
-            s.is_active=1
+            s.task_type = 1
+        and
+            s.is_active = 1
     </update>
 
 </mapper>

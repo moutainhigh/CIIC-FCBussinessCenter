@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
@@ -60,6 +61,14 @@ public interface SalaryGrantTaskQueryService {
      * @param list
      */
     void syncPayStatus(List<PayapplySalaryDTO> list);
+
+    /**
+     * 取消关账
+     * @author chenpb
+     * @since 2018-06-07
+     * @param msg
+     */
+    void cancelClosing(CancelClosingMsg msg);
 
     /**
      * 薪资发放定时任务

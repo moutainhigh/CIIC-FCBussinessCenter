@@ -75,4 +75,13 @@ public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTas
      */
     Integer syncTaskInfo(@Param("taskCodes") String taskCodes, @Param("taskStatus") String taskStatus);
 
+    /**
+     * 根据batchCode和grantType查询任务单
+     * @author chenpb
+     * @since 2018-06-07
+     * @param batchCode
+     * @param grantType
+     * @return
+     */
+    SalaryGrantTaskBO selectByTBatchInfo(@Param("batchCode") String batchCode, @Param("grantType") Integer grantType);
 }
