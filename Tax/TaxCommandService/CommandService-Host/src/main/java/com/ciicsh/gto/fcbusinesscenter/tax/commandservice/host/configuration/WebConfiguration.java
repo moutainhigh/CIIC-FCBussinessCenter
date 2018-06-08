@@ -48,7 +48,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         dataInterceptor.addPathPatterns("/tax/queryCalculationBatchDetails");
         dataInterceptor.addPathPatterns("/tax/queryTaxBatchDetailByRes");
         dataInterceptor.addPathPatterns("/tax/exportSubDeclare/**");
-        dataInterceptor.addPathPatterns("/tax/exportDeclareBySubject/**");
+        dataInterceptor.addPathPatterns("/tax/exportDeclareOnLine/**");
         dataInterceptor.addPathPatterns("/tax/querySubDeclareDetailsByParams");
         dataInterceptor.addPathPatterns("/tax/querySubDeclareDetailsByCombined");
         dataInterceptor.addPathPatterns("/tax/querySubDeclareDetailsForCombined");

@@ -28,13 +28,11 @@ import java.util.stream.Collectors;
 @Service
 public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService {
     @Autowired
-    CommonService commonService;
-
+    private CommonService commonService;
     @Autowired
-    SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
-
+    private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     /**
      * 生成财务报表

@@ -56,6 +56,10 @@
             <groupId>com.ciicsh.gt1.commonservice</groupId>
             <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

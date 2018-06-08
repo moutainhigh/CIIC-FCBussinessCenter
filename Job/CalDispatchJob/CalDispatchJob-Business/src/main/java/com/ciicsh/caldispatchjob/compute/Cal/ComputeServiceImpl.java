@@ -96,7 +96,7 @@ public class ComputeServiceImpl {
 
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN)
-                .include("catalog.batch_info.period")
+                .include("catalog.batch_info.actual_period")
                 .include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.cal_priority")
@@ -129,10 +129,11 @@ public class ComputeServiceImpl {
 
 
         List<DBObject> finalBatchList = batchList;
-        List<DBObject> others = null;
 
         try {
-            others = pool.submit(()-> finalBatchList.parallelStream().map(dbObject -> runCompute(dbObject,batchCode,batchType)).collect(Collectors.toList())).get();
+            runCompute(batchList.get(0),batchCode,batchType);
+            //List<DBObject> others = pool.submit(()-> finalBatchList.parallelStream().map(dbObject -> runCompute(dbObject,batchCode,batchType)).collect(Collectors.toList())).get();
+            //logger.info("get total: " + String.valueOf(others.size()));
         } catch (Exception e) {
             logger.info(e.getMessage());
         }
@@ -156,7 +157,7 @@ public class ComputeServiceImpl {
 
         long end = System.currentTimeMillis();
 
-        logger.info("get total: " + String.valueOf(others.size()));
+        //logger.info("get total: " + String.valueOf(others.size()));
         logger.info("actual total: " + String.valueOf(finalBatchList.size()));
         logger.info("获取计算核数量 cores " + String.valueOf(cores));
 
@@ -167,119 +168,132 @@ public class ComputeServiceImpl {
     }
 
     private DBObject runCompute(DBObject dbObject,String batchCode,int batchType) {
-        DroolsContext context = new DroolsContext();
-        Map<String, CompiledScript> scripts = null;
 
-        if(scripts == null){
-            scripts = new HashMap<>();
-        }
-        DBObject catalog = (DBObject) dbObject.get("catalog");
-        String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
-        List<DBObject> items = ((List<DBObject>) catalog.get("pay_items"));
+        try {
+
+            DroolsContext context = new DroolsContext();
+            Map<String, CompiledScript> scripts = null;
+
+            if (scripts == null) {
+                scripts = new HashMap<>();
+            }
+            DBObject catalog = (DBObject) dbObject.get("catalog");
+            String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
+            List<DBObject> items = ((List<DBObject>) catalog.get("pay_items"));
 
         /*获取计算期间，并传递给drools context*/
-        DBObject batch = (DBObject)catalog.get("batch_info");
-        String period = batch.get("actual_period") == null ? "" : (String)batch.get("actual_period");
-        BatchContext batchContext = new BatchContext();
-        batchContext.setPeriod(period);
-        context.setBatchContext(batchContext);
-        //end
+            DBObject batch = (DBObject) catalog.get("batch_info");
+            String period = batch.get("actual_period") == null ? "" : (String) batch.get("actual_period");
+            BatchContext batchContext = new BatchContext();
+            batchContext.setPeriod(period);
+            context.setBatchContext(batchContext);
+            //end
 
-        Bindings bindings = new SimpleBindings();
+            Bindings bindings = new SimpleBindings();
 
-        //set drools context
-        EmpPayItem empPayItem = new EmpPayItem();
-        empPayItem.setItems(bindings);
-        empPayItem.setEmpCode(empCode);
-        context.setEmpPayItem(empPayItem); //用于规则引擎计算
+            //set drools context
+            EmpPayItem empPayItem = new EmpPayItem();
+            empPayItem.setItems(bindings);
+            empPayItem.setEmpCode(empCode);
+            context.setEmpPayItem(empPayItem); //用于规则引擎计算
 
-        context.getFuncEntityList().clear(); // set each employee function result null
-        //end
+            context.getFuncEntityList().clear(); // set each employee function result null
+            //end
 
-        CompiledScript compiled = null;
+            CompiledScript compiled = null;
 
-        for (DBObject item : items) {
+            for (DBObject item : items) {
 
-            int dataType = item.get("data_type") == null ? 1 : (int) item.get("data_type"); // 数据格式: 1-文本,2-数字,3-日期,4-布尔
-
-            String itemCode = (String) item.get("item_code");
-
-            if (dataType == DataTypeEnum.NUM.getValue()) {
-                bindings.put(itemCode, new BigDecimal(String.valueOf(item.get("item_value") == null ? 0 : item.get("item_value")))); //设置导入项和固定项的值
-            } else {
-                bindings.put(itemCode, item.get("item_value")); //设置导入项和固定项的值
-            }
-
-            int itemType = item.get("item_type") == null ? 0 : (int) item.get("item_type"); // 薪资项类型
-
-            //处理计算项
-            if (itemType == ItemTypeEnum.CALC.getValue()) {
-
-                int calPriority = (int) item.get("cal_priority");
-                String itemName = item.get("item_name") == null ? "" : (String) item.get("item_name");
-                logger.info(String.format("薪资项目－%s | 计算优先级－%d", itemName, calPriority));
-
-                int processType = item.get("decimal_process_type") == null ? DecimalProcessTypeEnum.ROUND.getValue() : (int) item.get("decimal_process_type");//小数处理方式 1 - 四舍五入 2 - 简单去位
-
-                String condition = item.get("item_condition") == null ? "" : (String) item.get("item_condition");//计算条件
-                String formulaContent = item.get("formula_content") == null ? "" : (String) item.get("formula_content"); //计算公式
-                if (StringUtils.isEmpty(formulaContent)) return dbObject;
-
-                condition = Special2Normal(condition); //特殊字符转化
-                formulaContent = Special2Normal(formulaContent); //特殊字符转化
-                String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
                 try {
 
-                    if (scripts.get(itemCode) == null) {
-                        compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
-                        scripts.put(itemCode, compiled);
+                    int dataType = item.get("data_type") == null ? 1 : (int) item.get("data_type"); // 数据格式: 1-文本,2-数字,3-日期,4-布尔
+
+                    String itemCode = (String) item.get("item_code");
+
+                    if (dataType == DataTypeEnum.NUM.getValue()) {
+                        bindings.put(itemCode, new BigDecimal(String.valueOf(item.get("item_value") == null ? 0 : item.get("item_value")))); //设置导入项和固定项的值
                     } else {
-                        compiled = scripts.get(itemCode);
+                        bindings.put(itemCode, item.get("item_value")); //设置导入项和固定项的值
                     }
 
-                    for (FuncEntity fun : context.getFuncEntityList()) {
-                        //公式的函数名 替换成 公式的函数值
-                        bindings.put(REPLACE_FUNC_PREFIX + fun.getFuncName(), fun.getResult());
+                    int itemType = item.get("item_type") == null ? 0 : (int) item.get("item_type"); // 薪资项类型
+
+                    //处理计算项
+                    if (itemType == ItemTypeEnum.CALC.getValue()) {
+
+                        int calPriority = (int) item.get("cal_priority");
+                        String itemName = item.get("item_name") == null ? "" : (String) item.get("item_name");
+                        logger.info(String.format("薪资项目－%s | 计算优先级－%d", itemName, calPriority));
+
+                        int processType = item.get("decimal_process_type") == null ? DecimalProcessTypeEnum.ROUND.getValue() : (int) item.get("decimal_process_type");//小数处理方式 1 - 四舍五入 2 - 简单去位
+
+                        String condition = item.get("item_condition") == null ? "" : (String) item.get("item_condition");//计算条件
+                        String formulaContent = item.get("formula_content") == null ? "" : (String) item.get("formula_content"); //计算公式
+                        if (StringUtils.isEmpty(formulaContent)) return dbObject;
+
+                        condition = Special2Normal(condition); //特殊字符转化
+                        formulaContent = Special2Normal(formulaContent); //特殊字符转化
+                        String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
+                        try {
+
+                            if (scripts.get(itemCode) == null) {
+                                compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
+                                scripts.put(itemCode, compiled);
+                            } else {
+                                compiled = scripts.get(itemCode);
+                            }
+
+                            for (FuncEntity fun : context.getFuncEntityList()) {
+                                //公式的函数名 替换成 公式的函数值
+                                bindings.put(REPLACE_FUNC_PREFIX + fun.getFuncName(), fun.getResult());
+                            }
+
+                            Object compiledResult = compiled.eval(bindings); // run JS method
+
+                            BigDecimal computeResult = context.getBigDecimal(compiledResult);
+
+                            double result;
+                            if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
+                                result = Arith.round(computeResult.doubleValue(), 0);
+
+                            } else { // 四舍五入
+                                result = Arith.round(computeResult.doubleValue(), 2);
+                            }
+
+                            if (StringUtils.isNotEmpty(itemName) && itemName.equals(PayItemName.EMPLOYEE_NET_PAY) && result < 0) {
+                                item.put("item_value", 0.0);
+                            } else {
+                                item.put("item_value", result);
+                            }
+                            bindings.put(itemCode, result); // 设置计算项的值
+                            context.getFuncEntityList().clear(); // 清除FIRE 过的函数
+
+                        } catch (Exception se) {
+                            logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
+                        }
+
                     }
-
-                    Object compiledResult = compiled.eval(bindings); // run JS method
-
-                    BigDecimal computeResult = context.getBigDecimal(compiledResult);
-
-                    double result;
-                    if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
-                        result = Arith.round(computeResult.doubleValue(), 0);
-
-                    } else { // 四舍五入
-                        result = Arith.round(computeResult.doubleValue(), 2);
-                    }
-
-                    if(StringUtils.isNotEmpty(itemName) && itemName.equals(PayItemName.EMPLOYEE_NET_PAY) && result < 0){
-                        item.put("item_value", 0.0);
-                    }else {
-                        item.put("item_value", result);
-                    }
-                    bindings.put(itemCode, result); // 设置计算项的值
-                    context.getFuncEntityList().clear(); // 清除FIRE 过的函数
-
-                } catch (Exception se) {
-                    logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
+                }catch (Exception ex){
+                    logger.info(ex.getMessage());
                 }
-
             }
+
+            if (batchType == BatchTypeEnum.NORMAL.getValue()) {
+                normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+            } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
+                adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+            } else {
+                backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
+                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+            }
+            return dbObject;
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
         }
 
-        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
-        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
-        }else {
-            backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
-        }
-        return dbObject;
+        return null;
     }
 
 

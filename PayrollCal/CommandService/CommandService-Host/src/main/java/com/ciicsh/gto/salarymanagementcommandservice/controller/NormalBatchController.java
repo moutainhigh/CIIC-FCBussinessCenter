@@ -650,4 +650,15 @@ public class NormalBatchController {
 
     }
 
+    @GetMapping("api/checkMapping")
+    public JsonResult checkMapping(@RequestParam String batchCode){
+        PrBatchExcelMapPO batchExcelMapPO = excelMapService.getBatchExcelMap(batchCode);
+        if(batchExcelMapPO == null) {
+            return JsonResult.faultMessage("请先配置Excel映射关系!");
+        }else {
+            return JsonResult.success("");
+        }
+
+    }
+
 }

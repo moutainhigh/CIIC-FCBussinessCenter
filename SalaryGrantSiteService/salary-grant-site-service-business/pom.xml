@@ -87,5 +87,10 @@
           <artifactId>webcommandservice-api</artifactId>
           <version>1.0.0-SNAPSHOT</version>
       </dependency>
+      <dependency>
+          <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+          <artifactId>fcbusinesscenter-entity</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
+      </dependency>
   </dependencies>
 </project>
