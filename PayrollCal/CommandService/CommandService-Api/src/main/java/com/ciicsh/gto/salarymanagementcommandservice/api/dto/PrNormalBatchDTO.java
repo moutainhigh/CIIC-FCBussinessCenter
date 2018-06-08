@@ -91,6 +91,12 @@ public class PrNormalBatchDTO{
      * 是否来款
      */
 	private Boolean hasMoney;
+
+    private int hasAdvance;
+
+    private int advanceDay;
+
+    private String advancePeriod;
     /**
      * 数据创建时间
      */
