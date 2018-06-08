@@ -57,7 +57,7 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
     /**
      * 离职年限
      */
-	private Integer leavingYears;
+	private Double leavingYears;
     /**
      * 实发工资
      */
@@ -199,11 +199,11 @@ public class PayrollCalcResultDTO extends PagingDTO implements Serializable {
 		this.refBatchId = refBatchId;
 	}
 
-	public Integer getLeavingYears() {
+	public Double getLeavingYears() {
 		return leavingYears;
 	}
 
-	public void setLeavingYears(Integer leavingYears) {
+	public void setLeavingYears(Double leavingYears) {
 		this.leavingYears = leavingYears;
 	}
 
