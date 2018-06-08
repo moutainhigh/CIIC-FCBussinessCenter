@@ -89,7 +89,7 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void returnSubTask(SalaryGrantTaskBO bo) {
-        this.taskProcessing(bo, SalaryGrantBizConsts.TASK_STATUS_REFUSE);
+        taskProcessing(bo, SalaryGrantBizConsts.TASK_STATUS_REFUSE);
     }
 
     /**
@@ -102,7 +102,7 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void retreatSubTask(SalaryGrantTaskBO bo) {
-        this.taskProcessing(bo, SalaryGrantBizConsts.TASK_STATUS_RETREAT);
+        taskProcessing(bo, SalaryGrantBizConsts.TASK_STATUS_RETREAT);
     }
 
     private void taskProcessing (SalaryGrantTaskBO bo, String status) {
