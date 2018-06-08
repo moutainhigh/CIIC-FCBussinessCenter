@@ -38,6 +38,10 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      */
     private String grantDate;
     /**
+     * 薪资发放时段:1-上午，2-下午
+     */
+    private Integer grantTime;
+    /**
      * 任务单编号
      */
     private String taskCode;
