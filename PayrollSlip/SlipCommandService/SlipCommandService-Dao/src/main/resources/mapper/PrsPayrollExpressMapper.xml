@@ -19,10 +19,7 @@
 		<result column="modified_by" property="modifiedBy" />
   </resultMap>
 
-  <select id="total"  resultType="int">
-    SELECT COUNT(*) FROM prs_payroll_express
-    WHERE is_active = 1
-  </select>
+
 
   <select id="all"  resultMap="BaseResultMap">
     SELECT *
@@ -87,6 +84,14 @@
     </trim>
     WHERE id = #{id}
   </update>
+
+    <select id="total"  resultType="int">
+    SELECT COUNT(*) FROM prs_payroll_express
+    WHERE is_active = 1
+    <if test="taskId != null and taskId != ''">
+        and task_id = #{taskId}
+    </if>
+  </select>
 
   <select id="list"  resultMap="BaseResultMap">
     SELECT *

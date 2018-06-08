@@ -7,12 +7,8 @@ import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
-import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
-import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
-import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
@@ -60,13 +56,14 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
+    private final static String DEFAULT_VERSION = "1.0";
+
     @Override
     public PageInfo<PrPayrollGroupPO> getList(PrPayrollGroupPO param, Integer pageNum, Integer pageSize) {
         List<PrPayrollGroupPO> resultList;
         PageHelper.startPage(pageNum, pageSize);
         resultList = prPayrollGroupMapper.selectListByEntityUseLike(param);
-        PageInfo<PrPayrollGroupPO> pageInfo = new PageInfo<>(resultList);
-        return  pageInfo;
+        return new PageInfo<>(resultList);
     }
 
     @Override
@@ -75,16 +72,14 @@ public class PrGroupServiceImpl implements PrGroupService {
         param.setGroupTemplateCode(templateCode);
         param.setIsActive(true);
         EntityWrapper<PrPayrollGroupPO> ew = new EntityWrapper<>(param);
-        List<PrPayrollGroupPO> resultList = prPayrollGroupMapper.selectList(ew);
-        return resultList;
+        return prPayrollGroupMapper.selectList(ew);
     }
 
     @Override
     public PrPayrollGroupPO getItemByCode(String code) {
         PrPayrollGroupPO param = new PrPayrollGroupPO();
         param.setGroupCode(code);
-        PrPayrollGroupPO result = prPayrollGroupMapper.selectOne(param);
-        return result;
+        return prPayrollGroupMapper.selectOne(param);
     }
 
     @Override
@@ -100,15 +95,14 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollGroupPO paramItem) {
         //检查是否有重复薪资组模板名称
-        int nameExistFlg = prPayrollGroupMapper.selectCountGroupByName(paramItem.getGroupName());
-        if (nameExistFlg > 0) {
+        if (this.nameExistCheck(paramItem.getGroupName(), paramItem)) {
             throw new BusinessException("重复的薪资组名称");
         }
         paramItem.setGroupCode(codeGenerator.genPrGroupCode(paramItem.getManagementId()));
-        paramItem.setVersion("1.0");
+        paramItem.setVersion(DEFAULT_VERSION);
+        paramItem.setGroupName(paramItem.getManagementId() + "-" + paramItem.getGroupName());
         paramItem.setApprovalStatus(ApprovalStatusEnum.APPROVE.getValue());
-        int result = prPayrollGroupMapper.insert(paramItem);;
-
+        int result;
         if (StringUtils.isEmpty(paramItem.getGroupTemplateCode())) {
             List<PrPayrollBaseItemPO> paramList = prPayrollBaseItemMapper.selectList(
                     new EntityWrapper<>(new PrPayrollBaseItemPO()));
@@ -129,6 +123,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                     })
                     .collect(Collectors.toList());
             itemService.addList(itemList);
+            result = prPayrollGroupMapper.insert(paramItem);
             return result;
         }
 
@@ -146,8 +141,8 @@ public class PrGroupServiceImpl implements PrGroupService {
                 })
                 .collect(Collectors.toList());
         itemService.addList(itemList);
+        result = prPayrollGroupMapper.insert(paramItem);
         return result;
-
     }
 
     @Override
@@ -210,10 +205,16 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity) {
 
-        boolean result = false;
+        //检查是否有重复薪资组模板名称
+        if (this.nameExistCheck(newEntity.getGroupName(), newEntity)) {
+            throw new BusinessException("重复的薪资组名称");
+        }
+        newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
+        newEntity.setVersion(DEFAULT_VERSION);
+        newEntity.setApprovalStatus(ApprovalStatusEnum.APPROVE.getValue());
         int prGroupAddResult = prPayrollGroupMapper.insert(newEntity);
         if (prGroupAddResult == 0) {
-            throw new RuntimeException("复制薪资组失败");
+            throw new BusinessException("复制薪资组失败");
         }
         List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(srcEntity.getGroupCode());
         itemList.forEach(i -> {
@@ -221,16 +222,15 @@ public class PrGroupServiceImpl implements PrGroupService {
         });
         int itemAddResult = itemService.addList(itemList);
         if (itemAddResult == 0) {
-            throw new RuntimeException("复制薪资项失败");
+            throw new BusinessException("复制薪资项失败");
         }
-        result = true;
-        return result;
+        return true;
     }
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean approvePrGroup(PrPayrollGroupPO paramItem) {
-        boolean result = false;
+        boolean result;
         if (paramItem.getApprovalStatus() == 2) {
             // 获取该薪资组中的薪资项数据
             List<PrPayrollItemPO> items = this.getListByGroupCode(paramItem.getGroupCode());
@@ -243,12 +243,11 @@ public class PrGroupServiceImpl implements PrGroupService {
 //            jsonObject.put(PayrollGroupHistoryKey.PR_ITEMS, itemsJsonStr);
 //            jsonObject.put(PayrollGroupHistoryKey.PR_GROUP, groupJsonStr);
 //            String history = JSON.toJSONString(itemsJsonStr);
-            String history = itemsJsonStr;
             // 保存历史数据
             PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
             prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
             prPayrollGroupHistoryPO.setVersion(version);
-            prPayrollGroupHistoryPO.setPayrollGroupHistory(history);
+            prPayrollGroupHistoryPO.setPayrollGroupHistory(itemsJsonStr);
             prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
             prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
@@ -270,8 +269,7 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     @Override
     public PrPayrollGroupHistoryPO getLastVersion(String srcCode) {
-        PrPayrollGroupHistoryPO lastVersionData = prPayrollGroupHistoryMapper.selectLastVersionByCode(srcCode);
-        return lastVersionData;
+        return prPayrollGroupHistoryMapper.selectLastVersionByCode(srcCode);
     }
 
     @Override
@@ -296,7 +294,17 @@ public class PrGroupServiceImpl implements PrGroupService {
         PrPayrollItemPO param = new PrPayrollItemPO();
         param.setPayrollGroupCode(groupCode);
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
-        List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
-        return resultList;
+        return prPayrollItemMapper.selectList(ew);
+    }
+
+    private boolean nameExistCheck(String userInputName, PrPayrollGroupPO param) {
+        int nameExistFlg;
+        if (userInputName == null) {
+            nameExistFlg = prPayrollGroupMapper.selectCountGroupByNameAndManagement(param.getGroupName(), param.getManagementId());
+        } else {
+            String name = param.getManagementId() + "-" + userInputName;
+            nameExistFlg = prPayrollGroupMapper.selectCountGroupByNameAndManagement(name, param.getManagementId());
+        }
+        return nameExistFlg != 0;
     }
 }

@@ -8,7 +8,8 @@ import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -63,19 +64,19 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
     /**
      * 来华时间
      */
-	private Date comingToChinaDate;
+	private LocalDate comingToChinaDate;
     /**
      * 任职期限
      */
-	private Date termOfService;
+	private LocalDate termOfService;
     /**
      * 预计离境时间
      */
-	private Date expectedLeaveDate;
+	private LocalDate expectedLeaveDate;
     /**
      * 预计离境地点
      */
-	private Date expectedLeavePlace;
+	private String expectedLeavePlace;
     /**
      * 境内职务
      */
@@ -188,11 +189,11 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
     /**
      * 创建时间
      */
-	private Date createdTime;
+	private LocalDateTime createdTime;
     /**
      * 修改时间
      */
-	private Date modifiedTime;
+	private LocalDateTime modifiedTime;
     /**
      * 创建人
      */
@@ -202,6 +203,45 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
      */
 	private String modifiedBy;
 
+	/**
+	 * 工号
+	 */
+	private String workNumber;
+
+	/**
+	 * 性别
+	 */
+	private String gender;
+
+	/**
+	 * 出生年月
+	 */
+	private LocalDate birthday;
+
+	/**
+	 * 联系电话
+	 */
+	private String mobile;
+
+	/**
+	 * 公司编号
+	 */
+	private String companyNo;
+
+	/**
+	 * 适用公式
+	 */
+	private String applicableFormula;
+
+	/**
+	 * 入职日期
+	 */
+	private LocalDate entryDate;
+
+	/**
+	 * 离职日期
+	 */
+	private LocalDate leaveDate;
 
 	public Long getId() {
 		return id;
@@ -275,35 +315,35 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 		this.chineseName = chineseName;
 	}
 
-	public Date getComingToChinaDate() {
+	public LocalDate getComingToChinaDate() {
 		return comingToChinaDate;
 	}
 
-	public void setComingToChinaDate(Date comingToChinaDate) {
+	public void setComingToChinaDate(LocalDate comingToChinaDate) {
 		this.comingToChinaDate = comingToChinaDate;
 	}
 
-	public Date getTermOfService() {
+	public LocalDate getTermOfService() {
 		return termOfService;
 	}
 
-	public void setTermOfService(Date termOfService) {
+	public void setTermOfService(LocalDate termOfService) {
 		this.termOfService = termOfService;
 	}
 
-	public Date getExpectedLeaveDate() {
+	public LocalDate getExpectedLeaveDate() {
 		return expectedLeaveDate;
 	}
 
-	public void setExpectedLeaveDate(Date expectedLeaveDate) {
+	public void setExpectedLeaveDate(LocalDate expectedLeaveDate) {
 		this.expectedLeaveDate = expectedLeaveDate;
 	}
 
-	public Date getExpectedLeavePlace() {
+	public String getExpectedLeavePlace() {
 		return expectedLeavePlace;
 	}
 
-	public void setExpectedLeavePlace(Date expectedLeavePlace) {
+	public void setExpectedLeavePlace(String expectedLeavePlace) {
 		this.expectedLeavePlace = expectedLeavePlace;
 	}
 
@@ -523,19 +563,19 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
+	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(Date createdTime) {
+	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
 	}
 
-	public Date getModifiedTime() {
+	public LocalDateTime getModifiedTime() {
 		return modifiedTime;
 	}
 
-	public void setModifiedTime(Date modifiedTime) {
+	public void setModifiedTime(LocalDateTime modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
 
@@ -555,6 +595,70 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getWorkNumber() {
+		return workNumber;
+	}
+
+	public void setWorkNumber(String workNumber) {
+		this.workNumber = workNumber;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public LocalDate getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(LocalDate birthday) {
+		this.birthday = birthday;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getCompanyNo() {
+		return companyNo;
+	}
+
+	public void setCompanyNo(String companyNo) {
+		this.companyNo = companyNo;
+	}
+
+	public String getApplicableFormula() {
+		return applicableFormula;
+	}
+
+	public void setApplicableFormula(String applicableFormula) {
+		this.applicableFormula = applicableFormula;
+	}
+
+	public LocalDate getEntryDate() {
+		return entryDate;
+	}
+
+	public void setEntryDate(LocalDate entryDate) {
+		this.entryDate = entryDate;
+	}
+
+	public LocalDate getLeaveDate() {
+		return leaveDate;
+	}
+
+	public void setLeaveDate(LocalDate leaveDate) {
+		this.leaveDate = leaveDate;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -563,50 +667,58 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 	@Override
 	public String toString() {
 		return "EmployeeInfoBatchPO{" +
-			"id=" + id +
-			", calBatchDetailId=" + calBatchDetailId +
-			", nationality=" + nationality +
-			", isDisability=" + isDisability +
-			", isEmployee=" + isEmployee +
-			", isInvestor=" + isInvestor +
-			", isOverseas=" + isOverseas +
-			", personalInvestment=" + personalInvestment +
-			", chineseName=" + chineseName +
-			", comingToChinaDate=" + comingToChinaDate +
-			", termOfService=" + termOfService +
-			", expectedLeaveDate=" + expectedLeaveDate +
-			", expectedLeavePlace=" + expectedLeavePlace +
-			", domesticDuty=" + domesticDuty +
-			", overseasDuty=" + overseasDuty +
-			", paymentPlace=" + paymentPlace +
-			", paymentOverseasPlace=" + paymentOverseasPlace +
-			", burden=" + burden +
-			", recognitionCode=" + recognitionCode +
-			", annualPremium=" + annualPremium +
-			", monthlyPremium=" + monthlyPremium +
-			", stockOptionCategory=" + stockOptionCategory +
-			", stockName=" + stockName +
-			", stockCode=" + stockCode +
-			", stockType=" + stockType +
-			", optionMarketValue=" + optionMarketValue +
-			", optionExerciseValue=" + optionExerciseValue +
-			", optionQuantity=" + optionQuantity +
-			", optionExerciseIncome=" + optionExerciseIncome +
-			", incrementExerciseValue=" + incrementExerciseValue +
-			", incrementImplementValue=" + incrementImplementValue +
-			", incrementQuantity=" + incrementQuantity +
-			", incrementExerciseIncome=" + incrementExerciseIncome +
-			", restrictRegisterValue=" + restrictRegisterValue +
-			", restrictRelieveValue=" + restrictRelieveValue +
-			", restrictRelieveQuantity=" + restrictRelieveQuantity +
-			", restrictTotal=" + restrictTotal +
-			", restrictPayment=" + restrictPayment +
-			", restrictExerciseIncome=" + restrictExerciseIncome +
-			", isActive=" + isActive +
-			", createdTime=" + createdTime +
-			", modifiedTime=" + modifiedTime +
-			", createdBy=" + createdBy +
-			", modifiedBy=" + modifiedBy +
-			"}";
+				"id=" + id +
+				", calBatchDetailId=" + calBatchDetailId +
+				", nationality='" + nationality + '\'' +
+				", isDisability=" + isDisability +
+				", isEmployee=" + isEmployee +
+				", isInvestor=" + isInvestor +
+				", isOverseas=" + isOverseas +
+				", personalInvestment=" + personalInvestment +
+				", chineseName='" + chineseName + '\'' +
+				", comingToChinaDate=" + comingToChinaDate +
+				", termOfService=" + termOfService +
+				", expectedLeaveDate=" + expectedLeaveDate +
+				", expectedLeavePlace='" + expectedLeavePlace + '\'' +
+				", domesticDuty='" + domesticDuty + '\'' +
+				", overseasDuty='" + overseasDuty + '\'' +
+				", paymentPlace='" + paymentPlace + '\'' +
+				", paymentOverseasPlace='" + paymentOverseasPlace + '\'' +
+				", burden='" + burden + '\'' +
+				", recognitionCode='" + recognitionCode + '\'' +
+				", annualPremium=" + annualPremium +
+				", monthlyPremium=" + monthlyPremium +
+				", stockOptionCategory='" + stockOptionCategory + '\'' +
+				", stockName='" + stockName + '\'' +
+				", stockCode='" + stockCode + '\'' +
+				", stockType='" + stockType + '\'' +
+				", optionMarketValue=" + optionMarketValue +
+				", optionExerciseValue=" + optionExerciseValue +
+				", optionQuantity=" + optionQuantity +
+				", optionExerciseIncome=" + optionExerciseIncome +
+				", incrementExerciseValue=" + incrementExerciseValue +
+				", incrementImplementValue=" + incrementImplementValue +
+				", incrementQuantity=" + incrementQuantity +
+				", incrementExerciseIncome=" + incrementExerciseIncome +
+				", restrictRegisterValue=" + restrictRegisterValue +
+				", restrictRelieveValue=" + restrictRelieveValue +
+				", restrictRelieveQuantity=" + restrictRelieveQuantity +
+				", restrictTotal=" + restrictTotal +
+				", restrictPayment=" + restrictPayment +
+				", restrictExerciseIncome=" + restrictExerciseIncome +
+				", isActive=" + isActive +
+				", createdTime=" + createdTime +
+				", modifiedTime=" + modifiedTime +
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", workNumber='" + workNumber + '\'' +
+				", gender='" + gender + '\'' +
+				", birthday=" + birthday +
+				", mobile='" + mobile + '\'' +
+				", companyNo='" + companyNo + '\'' +
+				", applicableFormula='" + applicableFormula + '\'' +
+				", entryDate=" + entryDate +
+				", leaveDate=" + leaveDate +
+				'}';
 	}
 }

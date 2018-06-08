@@ -30,22 +30,7 @@
         <result column="modified_by" property="modifiedBy" />
     </resultMap>
 
-    <select id="total"  resultType="int">
-        SELECT COUNT(*) FROM prs_payroll_template
-        WHERE is_active = 1
-        <if test="templateCode != null and templateCode != ''">
-            and template_code = #{templateCode}
-        </if>
-        <if test="templateName != null and templateName != ''">
-            and template_name like concat('%', #{templateName}, '%')
-        </if>
-        <if test="managementId != null and managementId != ''">
-            and management_id IN (${managementId})
-        </if>
-        <if test="managementName != null and managementName != ''">
-            and management_name like concat('%', #{managementName}, '%')
-        </if>
-    </select>
+
 
     <select id="all"  resultMap="BaseResultMap">
         SELECT *
@@ -143,6 +128,23 @@
         </trim>
         WHERE id = #{id}
     </update>
+
+    <select id="total"  resultType="int">
+        SELECT COUNT(*) FROM prs_payroll_template
+        WHERE is_active = 1
+        <if test="templateCode != null and templateCode != ''">
+            and template_code = #{templateCode}
+        </if>
+        <if test="templateName != null and templateName != ''">
+            and template_name like concat('%', #{templateName}, '%')
+        </if>
+        <if test="managementId != null and managementId != ''">
+            and management_id IN (${managementId})
+        </if>
+        <if test="managementName != null and managementName != ''">
+            and management_name like concat('%', #{managementName}, '%')
+        </if>
+    </select>
 
   <select id="list"  resultMap="BaseResultMap">
     SELECT *

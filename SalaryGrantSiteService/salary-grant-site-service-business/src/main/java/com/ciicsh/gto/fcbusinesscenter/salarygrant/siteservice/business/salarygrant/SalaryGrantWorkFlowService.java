@@ -4,6 +4,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskMissionRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 
 import java.util.Map;
 
@@ -65,4 +66,12 @@ public interface SalaryGrantWorkFlowService {
     // todo
     // 任务单流程--查看流程日志（对业务系统的工作流任务日志表进行查询，工作流引擎目前不提供维护流程日志的功能）
     //List querySalaryGrantWorkFlowLog(Map paramMap);
+
+    /**
+     * 失效操作
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO);
 }

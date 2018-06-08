@@ -3,21 +3,22 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.billcenter.fcmodule.api.ISalaryEmployeeProxy;
-import com.ciicsh.gto.billcenter.fcmodule.api.common.JsonResult;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryEmployeeProxyDTO;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,7 +66,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
             List<SalaryGrantEmployeeBO> employeeBOList = salaryGrantEmployeeBOPage.getRecords();
             if (!CollectionUtils.isEmpty(employeeBOList)) {
                 //保存雇员信息到MongoDB中
-                DBObject dbObject = new BasicDBList();
+                DBObject dbObject = new BasicDBObject();
                 dbObject.put("task_his_id", task_his_id);
                 dbObject.put("employeeInfo", employeeBOList);
                 salaryGrantEmpHisOpt.getMongoTemplate().insert(dbObject, SalaryGrantEmpHisOpt.SG_EMP_HIS);
@@ -165,7 +164,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
                         if (!ObjectUtils.isEmpty(salaryGrantEmployeePO)) {
                             SalaryGrantEmployeePO updateEmployeePO = new SalaryGrantEmployeePO();
                             updateEmployeePO.setSalaryGrantEmployeeId(salaryGrantEmployeePO.getSalaryGrantEmployeeId());
-                            updateEmployeePO.setGrantStatus(3); //发放状态:3-退票
+                            updateEmployeePO.setGrantStatus(SalaryGrantBizConsts.GRANT_STATUS_REFUND); //发放状态:3-退票
                             salaryGrantEmployeeMapper.updateById(updateEmployeePO);
                         }
                     });
@@ -176,5 +175,23 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
         }
 
         return true;
+    }
+
+    @Override
+    public boolean processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO) {
+        //任务单类型
+        Integer taskType = salaryGrantTaskBO.getTaskType();
+        EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+        if (0 == taskType) {
+            //查询任务单主表雇员
+            employeePOEntityWrapper.where("salary_grant_main_task_code = {0}", salaryGrantTaskBO.getTaskCode());
+        } else {
+            //查询任务单子表雇员
+            employeePOEntityWrapper.where("salary_grant_sub_task_code = {0}", salaryGrantTaskBO.getTaskCode());
+        }
+        employeePOEntityWrapper.where("grant_status = 1 and is_active = 1");
+        List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
+
+        return commonService.addDeferredPool(salaryGrantTaskBO, employeeList);
     }
 }

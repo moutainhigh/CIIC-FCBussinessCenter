@@ -224,8 +224,12 @@ public class NormalBatchController {
     @PostMapping("/uploadExcel")
     public JsonResult importExcel(String batchCode, String empGroupCode, int batchType, int importType, MultipartFile file){
 
-        ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, batchType,importType,file);
-        return JsonResult.success(statistics);
+        try {
+            ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, batchType, importType, file);
+            return JsonResult.success(statistics);
+        }catch (Exception ex){
+            return JsonResult.faultMessage("数据导入失败！");
+        }
 
     }
 
@@ -642,6 +646,17 @@ public class NormalBatchController {
             batchExcelMapDTO.setMappingResult(batchExcelMapPO.getMappingResult());
             batchExcelMapDTO.setIdentityResult(batchExcelMapPO.getIdentityResult());
             return JsonResult.success(batchExcelMapDTO);
+        }
+
+    }
+
+    @GetMapping("api/checkMapping")
+    public JsonResult checkMapping(@RequestParam String batchCode){
+        PrBatchExcelMapPO batchExcelMapPO = excelMapService.getBatchExcelMap(batchCode);
+        if(batchExcelMapPO == null) {
+            return JsonResult.faultMessage("请先配置Excel映射关系!");
+        }else {
+            return JsonResult.success("");
         }
 
     }

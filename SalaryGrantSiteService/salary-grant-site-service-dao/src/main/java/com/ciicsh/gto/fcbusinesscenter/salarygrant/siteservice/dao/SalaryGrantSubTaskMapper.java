@@ -92,6 +92,15 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
     SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO bo);
 
     /**
+     * 根据任务单编号列表查询任务单一览
+     * @author chenpb
+     * @since 2018-06-06
+     * @param taskCodes
+     * @return
+     */
+    List<SalaryGrantSubTaskPO> selectListByTaskCodes (@Param("taskCodes") String taskCodes);
+
+    /**
      * 查询财务数据
      * @author chenpb
      * @since 2018-05-25
@@ -99,5 +108,15 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      * @return
      */
     FinanceTaskBO selectTaskForFinance(@Param("taskCode") String taskCode);
+
+    /**
+     * 同步结算中心薪资发放信息
+     * @author chenpb
+     * @since 2018-06-05
+     * @param taskCodes
+     * @param taskStatus
+     * @return
+     */
+    Integer syncTaskInfo(@Param("taskCodes") String taskCodes, @Param("taskStatus") String taskStatus);
 
 }

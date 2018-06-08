@@ -38,6 +38,11 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
      */
 	@TableField("task_code")
 	private String taskCode;
+	/**
+	 * 主表编号
+	 */
+	@TableField("main_task_code")
+	private String mainTaskCode;
     /**
      * 管理方编号
      */
@@ -529,6 +534,14 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 
 	public void setBalanceGrant(Integer balanceGrant) {
 		this.balanceGrant = balanceGrant;
+	}
+
+	public String getMainTaskCode() {
+		return mainTaskCode;
+	}
+
+	public void setMainTaskCode(String mainTaskCode) {
+		this.mainTaskCode = mainTaskCode;
 	}
 
 	@Override

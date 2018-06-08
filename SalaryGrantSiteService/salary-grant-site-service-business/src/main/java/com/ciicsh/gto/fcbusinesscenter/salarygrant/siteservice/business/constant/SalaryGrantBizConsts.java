@@ -59,6 +59,8 @@ public class SalaryGrantBizConsts {
     public static final String SALARY_GRANT_TASK_TYPE_SUB = "sub";
     /** 发放状态:0-正常*/
     public static final Integer GRANT_STATUS_NORMAL = 0;
+    /** 发放状态:1-手动暂缓*/
+    public static final Integer GRANT_STATUS_MANUAL_REPRIEVE = 1;
     /** 发放状态:2-自动暂缓*/
     public static final Integer GRANT_STATUS_AUTO_REPRIEVE = 2;
     /** 发放状态:3-退票*/
@@ -130,6 +132,9 @@ public class SalaryGrantBizConsts {
     public static final String TASK_REFUSE= "refuse";
     public static final String TASK_CANCEL= "cancel";
 
+    /** 系统 英文常量*/
+    public static final String SYSTEM_EN= "system";
+
     /** 个税期间：0-当月*/
     public static final Integer TAX_PERIOD_CURRENT_MONTH = 0;
     /** 个税期间：1-下月*/
@@ -141,6 +146,11 @@ public class SalaryGrantBizConsts {
     public static final Integer SETTLEMENT_CENTER_BUSINESS_TYPE_SG = 5;
     /** 结算中心支付状态*/
     public static final Integer SETTLEMENT_CENTER_PAY_STATUS_SUCCESS = 9;
+
+    /** 申报账户类别: 1-大库（FC目前服务协议只配置FC大库） */
+    public static final int DECLARATION_ACCOUNT_CATEGORY_DEPOT_BIG = 1;
+    /** 申报账户类别: 2-独立库 */
+    public static final int DECLARATION_ACCOUNT_CATEGORY_DEPOT_INDEPENDENT = 2;
 
 }
 

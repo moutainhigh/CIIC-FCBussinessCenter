@@ -269,7 +269,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         payrollCalcResultDTO.setPersonnelSocialSecurity(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_SOCIAL_SECURITY)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_SOCIAL_SECURITY).toString()));
         payrollCalcResultDTO.setPersonnelProvidentFund(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_PROVIDENT_FUND)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_PROVIDENT_FUND).toString()));
         payrollCalcResultDTO.setPersonnelIncomeYearlyBonusAfterTax(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_YEAR_BONUS)) ? BigDecimal.ZERO : new BigDecimal(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_YEAR_BONUS).toString()));
-        payrollCalcResultDTO.setLeavingYears(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_LEAVING_YEARS)) ? 0 : Integer.valueOf(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_LEAVING_YEARS).toString()));
+        payrollCalcResultDTO.setLeavingYears(ObjectUtils.isEmpty(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_LEAVING_YEARS)) ? 0 : Double.valueOf(findValByName(resultItemsList,JsonParseConsts.EMLOYEE_RESULT_ITMES_LEAVING_YEARS).toString()));
 
         EmployeeServiceAgreementDTO employeeServiceAgreementDTO = new EmployeeServiceAgreementDTO();
         employeeServiceAgreementDTO.setEmployeeId(ObjectUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_CODE_CN)) ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_CODE_CN));

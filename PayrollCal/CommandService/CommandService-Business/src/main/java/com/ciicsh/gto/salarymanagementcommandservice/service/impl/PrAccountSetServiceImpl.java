@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
@@ -53,7 +54,7 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
             }
         }
         catch (Exception ex){
-            return false;
+            throw new BusinessException("添加薪资帐套异常");
         }
     }
 

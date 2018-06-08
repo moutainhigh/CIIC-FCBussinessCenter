@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -673,6 +675,59 @@ public class DateTimeKit {
 		LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
 		LocalDate localDate = localDateTime.toLocalDate();
 		return localDate;
+	}
+
+	/**
+	  * lastDay (yyyyMMdd)
+	  * @param dateStr (yyyyMMdd)
+	  * @return
+	  */
+	public static String getLastDayFromStr(String dateStr) {
+		String lastDay = null;
+		LocalDate beginDateTime = LocalDate.parse(dateStr, DateTimeFormatter.BASIC_ISO_DATE);
+		LocalDate now = beginDateTime.with(TemporalAdjusters.lastDayOfMonth());
+		Date end = Date.from(now.atStartOfDay(ZoneId.systemDefault()).plusDays(1L).minusNanos(1L).toInstant());
+		format(end,"yyyyMMdd");
+		return lastDay;
+	}
+
+	/**
+	 * 本月最后一天
+	 * @param dateStr(yyyyMMdd)
+	 * @return (yyyy-MM-dd)
+	 */
+	public static String getLastDayForMonth(String dateStr){
+		LocalDate today = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+		//本月的第一天
+		LocalDate firstDay = LocalDate.of(today.getYear(),today.getMonth(),1);
+		String firstDayStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(firstDay);
+		return firstDayStr;
+	}
+
+	/**
+	 * 根据日期字符串获取本年度第一天
+	 * @param dateStr(yyyyMMdd)
+	 * @return (yyyy-MM-dd)
+	 */
+	public static String getFirstDayForYear(String dateStr){
+		LocalDate today = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+		//本年第一天
+		LocalDate firstYearDay = LocalDate.of(today.getYear(),1,1);
+		String firstYearDayStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(firstYearDay);
+		return firstYearDayStr;
+	}
+
+	/**
+	 * 根据日期字符串获取本年度最后一天
+	 * @param dateStr(yyyyMMdd)
+	 * @return(yyyy-MM-dd)
+	 */
+	public static String getLastDayForYear(String dateStr){
+		LocalDate today = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+		//本年最后一天
+		LocalDate lastYearDay = LocalDate.of(today.getYear(),12,31);
+		String lastYearDayStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(lastYearDay);
+		return lastYearDayStr;
 	}
 
 	// ------------------------------------------------------------------------ Private method end

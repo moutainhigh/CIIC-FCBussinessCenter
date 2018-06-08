@@ -43,9 +43,22 @@ public class FCBizTransactionMongoOpt extends BaseOpt {
         this.getMongoTemplate().indexOps(EVENT_SOURCING).ensureIndex(indexDefinition);
     }
 
+    /*单个提交更新*/
     public int commitEvent(String batchCode, int bathType, String eventName, int status){
         Criteria criteria = Criteria.where("batch_code").is(batchCode)
                 .and("batch_type").is(bathType)
+                .and("events").elemMatch(Criteria.where("event_name").is(eventName));
+        Query query = Query.query(criteria);
+        Update update = Update.update("events.$.event_status",status);
+        return this.upsert(query,update);
+    }
+
+    /*批量提交更新*/
+    public int commitBatchEvents(List<String> batchCodes, String eventName, int status){
+        if(batchCodes == null || batchCodes.size() == 0){
+            return 0;
+        }
+        Criteria criteria = Criteria.where("batch_code").in(batchCodes)
                 .and("events").elemMatch(Criteria.where("event_name").is(eventName));
         Query query = Query.query(criteria);
         Update update = Update.update("events.$.event_status",status);
