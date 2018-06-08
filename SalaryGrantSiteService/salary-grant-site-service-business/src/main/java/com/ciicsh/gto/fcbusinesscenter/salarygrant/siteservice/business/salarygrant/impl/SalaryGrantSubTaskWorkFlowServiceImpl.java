@@ -47,8 +47,8 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
-            subPo.setModifiedBy(bo.getUserId());
             subPo.setModifiedTime(new Date());
+            subPo.setModifiedBy(bo.getUserId());
             subPo.setGrantDate(bo.getGrantDate());
             subPo.setGrantTime(bo.getGrantTime());
             subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL);
@@ -69,8 +69,8 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
-            subPo.setModifiedBy(bo.getUserId());
             subPo.setModifiedTime(new Date());
+            subPo.setModifiedBy(bo.getUserId());
             if (SalaryGrantBizConsts.GRANT_MODE_LOCAL.equals(subPo.getGrantMode())) {
                 subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS);
             } else if (SalaryGrantBizConsts.GRANT_MODE_SUPPLIER.equals(subPo.getGrantMode())) {
@@ -111,8 +111,8 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
-            subPo.setModifiedBy(bo.getUserId());
             subPo.setModifiedTime(new Date());
+            subPo.setModifiedBy(bo.getUserId());
             subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
             salaryGrantSubTaskMapper.updateById(subPo);
             BeanUtils.copyProperties(subPo, historyPO);
