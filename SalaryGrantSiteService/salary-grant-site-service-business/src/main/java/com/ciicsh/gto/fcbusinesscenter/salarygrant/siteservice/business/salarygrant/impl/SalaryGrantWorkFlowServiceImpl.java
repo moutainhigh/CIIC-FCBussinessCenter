@@ -1,11 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskMissionRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
@@ -17,19 +17,21 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.Result;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -53,6 +55,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
     @Autowired
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
+    @Autowired
+    private CommonService commonService;
 
     @Override
     public Map startSalaryGrantTaskProcess(SalaryGrantTaskMissionRequestDTO salaryGrantTaskMissionRequestDTO) {
@@ -104,7 +108,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         //任务单主表操作
         //查询薪资发放任务单主表记录
         EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
-        mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", salaryGrantTaskBO.getTaskCode());
+        mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and grant_type in (1, 2, 3) and task_status in (0, 1, 2) and is_active = 1", salaryGrantTaskBO.getTaskCode());
         List<SalaryGrantMainTaskPO> salaryGrantMainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
 
         //任务单子表操作
@@ -269,5 +273,55 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         salaryGrantTaskHistoryPO.setWorkFlowUserInfo(salaryGrantSubTaskPO.getWorkFlowUserInfo()); //任务流转信息
 
         return salaryGrantTaskHistoryPO;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Boolean updateGrantDateAndTime(SalaryGrantTaskBO salaryGrantTaskBO) {
+        //查询条件(更新条件)
+        EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
+        mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", salaryGrantTaskBO.getTaskCode());
+        List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
+        if (!CollectionUtils.isEmpty(mainTaskPOList)) {
+            mainTaskPOList.stream().forEach(mainTaskPO -> {
+                if (!salaryGrantTaskBO.getGrantDate().equals(mainTaskPO.getGrantDate()) || salaryGrantTaskBO.getGrantTime().compareTo(mainTaskPO.getGrantTime()) != 0) {
+                    //更新字段
+                    SalaryGrantMainTaskPO salaryGrantMainTaskPO = new SalaryGrantMainTaskPO();
+                    salaryGrantMainTaskPO.setGrantDate(salaryGrantTaskBO.getGrantDate()); //薪资发放日期
+                    salaryGrantMainTaskPO.setGrantTime(salaryGrantTaskBO.getGrantTime()); //薪资发放时段:1-上午，2-下午
+
+                    salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
+
+                    SalaryGrantEmployeePO salaryGrantEmployeePO = new SalaryGrantEmployeePO();
+                    salaryGrantEmployeePO.setGrantDate(salaryGrantTaskBO.getGrantDate()); //薪资发放日期
+                    salaryGrantEmployeePO.setGrantTime(salaryGrantTaskBO.getGrantTime()); //薪资发放时段:1-上午，2-下午
+
+                    EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+                    employeePOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", salaryGrantTaskBO.getTaskCode());
+                    salaryGrantEmployeeMapper.update(salaryGrantEmployeePO, employeePOEntityWrapper);
+                }
+            });
+        }
+
+        return true;
+    }
+
+    @Override
+    public Boolean isOverdue(SalaryGrantTaskBO salaryGrantTaskBO) {
+        //查询管理方发放批次信息
+        List<PrNormalBatchDTO> batchDTOList =  commonService.getBatchListByManagementId(salaryGrantTaskBO.getManagementId());
+        if (!CollectionUtils.isEmpty(batchDTOList)) {
+            //过滤batchList的status in (8,9)的记录
+            List<PrNormalBatchDTO> filterBatchDTOList = batchDTOList.stream().filter(normalBatchDTO -> 8 == normalBatchDTO.getStatus() || 9 == normalBatchDTO.getStatus()).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(filterBatchDTOList)) {
+                //按照修改时间升序排序
+                List<PrNormalBatchDTO> sortBatchDTOList = filterBatchDTOList.stream().sorted(Comparator.comparing(PrNormalBatchDTO::getModifiedTime)).collect(Collectors.toList());
+                sortBatchDTOList.stream().forEach(prNormalBatchDTO -> {
+
+                });
+            }
+        }
+
+        return false;
     }
 }

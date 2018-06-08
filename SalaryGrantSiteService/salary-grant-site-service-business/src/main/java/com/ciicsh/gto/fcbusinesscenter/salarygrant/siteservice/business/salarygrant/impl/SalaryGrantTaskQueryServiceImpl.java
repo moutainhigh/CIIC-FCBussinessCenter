@@ -61,6 +61,7 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     @Autowired
     FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
 
+
     /**
      * 查询薪资发放任务单列表
      *
@@ -377,6 +378,17 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
                     EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
                     mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
                     salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
+                }
+
+                //查询任务单主表记录
+                EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
+                mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
+                List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
+                if (!CollectionUtils.isEmpty(mainTaskPOList)) {
+                    mainTaskPOList.stream().forEach(salaryGrantMainTaskPO -> {
+                        //更新mongodb中标记为1
+                        fcBizTransactionMongoOpt.commitEvent(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType(), EventName.FC_GRANT_EVENT, 1);
+                    });
                 }
             }
         }

@@ -68,10 +68,26 @@ public interface SalaryGrantWorkFlowService {
     //List querySalaryGrantWorkFlowLog(Map paramMap);
 
     /**
-     * 失效操作
+     * 流程节点处理：1.失效操作
      *
      * @param salaryGrantTaskBO
      * @return
      */
     Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 流程节点处理：2.提交 - 修改薪资发放日和薪资发放时段信息
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean updateGrantDateAndTime(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 流程节点处理：2.提交 - 判断是否逾期
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean isOverdue(SalaryGrantTaskBO salaryGrantTaskBO);
 }

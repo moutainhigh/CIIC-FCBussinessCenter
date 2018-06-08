@@ -29,6 +29,9 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.page.Pagination;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.BankFileProxy;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.SalaryServiceProxy;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult;
@@ -81,6 +84,8 @@ public class CommonServiceImpl implements CommonService {
     private SalaryServiceProxy salaryServiceProxy;
     @Autowired
     private DeferredPoolProxy deferredPoolProxy;
+    @Autowired
+    private BatchProxy batchProxy;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -450,5 +455,11 @@ public class CommonServiceImpl implements CommonService {
         }
 
         return false;
+    }
+
+    @Override
+    public List<PrNormalBatchDTO> getBatchListByManagementId(String managementId) {
+        Pagination<PrNormalBatchDTO> prNormalBatchDTOPagination = batchProxy.getBatchListByManagementId(managementId, null, 1, Integer.MAX_VALUE);
+        return prNormalBatchDTOPagination.getList();
     }
 }
