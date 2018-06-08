@@ -52,4 +52,33 @@
 		a.is_active
 	</sql>
 
+	<insert id="insertAccountItemRelationList" parameterType="PrPayrollAccountItemRelationPO">
+		INSERT INTO
+		pr_payroll_account_item_relation(
+			id,
+			account_set_code,
+			payroll_item_code,
+			payroll_item_alias,
+			is_active,
+			created_time,
+			modified_time,
+			created_by,
+			modified_by
+		)
+		VALUES
+		<foreach collection="list" item="item" index= "index" separator=",">
+		(
+			#{item.id},
+			#{item.accountSetCode},
+			#{item.payrollItemCode},
+			#{item.payrollItemAlias},
+			#{item.isActive},
+			sysdate(),
+			sysdate(),
+			#{item.createdBy},
+			#{item.modifiedBy}
+		)
+		</foreach>
+	</insert>
+
 </mapper>
