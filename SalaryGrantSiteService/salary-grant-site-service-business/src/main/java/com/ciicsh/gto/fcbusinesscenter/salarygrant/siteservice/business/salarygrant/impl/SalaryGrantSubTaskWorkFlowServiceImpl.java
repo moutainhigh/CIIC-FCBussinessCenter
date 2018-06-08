@@ -70,16 +70,16 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void retreatSubTask(SalaryGrantTaskBO bo) {
-        SalaryGrantSubTaskPO po = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
+        SalaryGrantSubTaskPO subPo = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
         SalaryGrantTaskHistoryPO historyPO = BeanUtils.instantiate(SalaryGrantTaskHistoryPO.class);
-        po.setSalaryGrantSubTaskId(bo.getTaskId());
-        po = salaryGrantSubTaskMapper.selectById(po);
-        po.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
-        po.setModifiedBy(bo.getUserId());
-        po.setModifiedTime(new Date());
-        salaryGrantSubTaskMapper.updateById(po);
-        BeanUtils.copyProperties(po, historyPO);
-        assignValue(po,historyPO);
+        subPo.setSalaryGrantSubTaskId(bo.getTaskId());
+        subPo = salaryGrantSubTaskMapper.selectById(subPo);
+        subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
+        subPo.setModifiedBy(bo.getUserId());
+        subPo.setModifiedTime(new Date());
+        salaryGrantSubTaskMapper.updateById(subPo);
+        BeanUtils.copyProperties(subPo, historyPO);
+        assignValue(subPo,historyPO);
         salaryGrantTaskHistoryMapper.insert(historyPO);
         salaryGrantEmployeeCommandService.saveToHistory(historyPO.getSalaryGrantTaskHistoryId(), historyPO.getTaskCode(), historyPO.getTaskType());
     }
