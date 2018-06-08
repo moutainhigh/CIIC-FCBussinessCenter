@@ -122,10 +122,10 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         }
     }
 
-    private static void assignValue (SalaryGrantSubTaskPO subPo, SalaryGrantTaskHistoryPO hisPO, String status) {
-        hisPO.setTaskId(subPo.getSalaryGrantSubTaskId());
-        hisPO.setTaskCode(subPo.getSalaryGrantSubTaskCode());
-        hisPO.setMainTaskCode(subPo.getSalaryGrantMainTaskCode());
-        hisPO.setTaskStatus(status);
+    private static void assignValue (SalaryGrantSubTaskPO subPo, SalaryGrantTaskHistoryPO hisPo, String status) {
+        hisPo.setTaskId(subPo.getSalaryGrantSubTaskId());
+        hisPo.setTaskCode(subPo.getSalaryGrantSubTaskCode());
+        hisPo.setMainTaskCode(subPo.getSalaryGrantMainTaskCode());
+        hisPo.setTaskStatus(status);
     }
 }
