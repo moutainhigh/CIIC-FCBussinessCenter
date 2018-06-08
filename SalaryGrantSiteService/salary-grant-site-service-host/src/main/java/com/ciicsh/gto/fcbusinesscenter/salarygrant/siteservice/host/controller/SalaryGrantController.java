@@ -67,6 +67,9 @@ public class SalaryGrantController {
     @Autowired
     private SalaryGrantPayrollService salaryGrantPayrollService;
 
+    @Autowired
+    private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
+
     /**
      * 薪资发放任务单一览
      * @author chenpb
@@ -203,8 +206,11 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/subRetract", method = RequestMethod.POST)
     public Result subRetract(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回").setContent(JSON.toJSONString(dto)));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setUserId(UserContext.getUserId());
+            salaryGrantSubTaskWorkFlowService.retreatSubTask(bo);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回异常").setContent(e.getMessage()));
@@ -239,8 +245,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/pass", method = RequestMethod.POST)
     public Result pass(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批通过").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批通过").setContent(JSON.toJSONString(dto)));
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批异常").setContent(e.getMessage()));
@@ -257,8 +263,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/reject", method = RequestMethod.POST)
     public Result reject(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回").setContent(JSON.toJSONString(dto)));
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回异常").setContent(e.getMessage()));

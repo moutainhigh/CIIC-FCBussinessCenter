@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 
 /**
@@ -17,23 +18,23 @@ public interface SalaryGrantSubTaskWorkFlowService extends IService<SalaryGrantS
      * 任务单流程--提交（调用工作流引擎）
      * @return
      */
-    Boolean doSubmitTask();
+    void submitSubTask(SalaryGrantTaskBO bo);
 
     /**
      * 任务单流程--审批通过（调用工作流引擎）
      * @return
      */
-    Boolean doApproveTask();
+    void approveSubTask(SalaryGrantTaskBO bo);
 
     /**
      * 任务单流程--退回（调用工作流引擎）
      * @return
      */
-    Boolean doReturnTask();
+    void returnSubTask(SalaryGrantTaskBO bo);
 
     /**
      * 任务单流程--撤回（调用工作流引擎）
-     * @return
+     * @param bo
      */
-    Boolean doRetreatTask();
+    void retreatSubTask(SalaryGrantTaskBO bo);
 }
