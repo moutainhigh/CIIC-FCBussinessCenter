@@ -34,6 +34,10 @@ public class ComputeReceiver {
      * @param batchCode
      */
     private void processPayrollCompute(String batchCode,int batchType){
-        computeService.processCompute(batchCode,batchType);
+        try {
+            computeService.processCompute(batchCode, batchType);
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
+        }
     }
 }

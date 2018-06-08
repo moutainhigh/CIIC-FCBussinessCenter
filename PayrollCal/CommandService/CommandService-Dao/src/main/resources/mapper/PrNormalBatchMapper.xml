@@ -449,6 +449,10 @@
             management_id,
             management_name,
             has_money,
+			advance_day,
+			has_advance,
+			advance_period,
+			status,
             created_time
 		FROM
 			pr_normal_batch
@@ -469,6 +473,10 @@
             nb.management_id,
             nb.management_name,
             ab.has_money,
+			ab.advance_day,
+			ab.has_advance,
+			ab.advance_period,
+			ab.status,
             ab.created_time
 		FROM
 			pr_adjust_batch ab
@@ -491,6 +499,10 @@
             nb.management_id,
             nb.management_name,
             btb.has_money,
+			btb.advance_day,
+			btb.has_advance,
+			btb.advance_period,
+			btb.status,
             btb.created_time
 		FROM
 			pr_back_tracking_batch btb

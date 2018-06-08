@@ -287,7 +287,7 @@ public class ExportAboutWithholdingReportSh extends BaseService {
             if (null == cellT) {
                 cellT = row.createCell(19);
             }
-            cellT.setCellValue(taskSubDeclareDetailPO.getTaxRate() == null ? "" : taskSubDeclareDetailPO.getTaxRate().toString());
+            cellT.setCellValue(taskSubDeclareDetailPO.getTaxRate());
             //速算扣除数-U列quick_cal_deduct
             HSSFCell cellU = row.getCell(20);
             if (null == cellU) {
