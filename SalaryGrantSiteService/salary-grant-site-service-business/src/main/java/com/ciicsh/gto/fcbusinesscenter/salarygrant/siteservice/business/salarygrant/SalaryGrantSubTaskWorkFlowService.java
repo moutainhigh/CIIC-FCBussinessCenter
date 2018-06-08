@@ -16,19 +16,19 @@ public interface SalaryGrantSubTaskWorkFlowService extends IService<SalaryGrantS
 
     /**
      * 任务单流程--提交（调用工作流引擎）
-     * @return
+     * @param bo
      */
     void submitSubTask(SalaryGrantTaskBO bo);
 
     /**
      * 任务单流程--审批通过（调用工作流引擎）
-     * @return
+     * @param bo
      */
     void approveSubTask(SalaryGrantTaskBO bo);
 
     /**
      * 任务单流程--退回（调用工作流引擎）
-     * @return
+     * @param bo
      */
     void returnSubTask(SalaryGrantTaskBO bo);
 

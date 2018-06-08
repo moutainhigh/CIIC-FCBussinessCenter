@@ -26,6 +26,10 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      */
     private String batchCode;
     /**
+     * 发放方式
+     */
+    private String grantMode;
+    /**
      * 发放类型
      */
     private Integer grantType;
@@ -33,6 +37,10 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      * 薪资发放日期
      */
     private String grantDate;
+    /**
+     * 薪资发放时段:1-上午，2-下午
+     */
+    private Integer grantTime;
     /**
      * 任务单编号
      */
