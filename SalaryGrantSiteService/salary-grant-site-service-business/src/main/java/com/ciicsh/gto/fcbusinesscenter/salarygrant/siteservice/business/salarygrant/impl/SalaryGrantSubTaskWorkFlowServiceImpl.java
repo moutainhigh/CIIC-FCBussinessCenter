@@ -49,9 +49,9 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         if (!ObjectUtils.isEmpty(subPo)) {
             subPo.setModifiedBy(bo.getUserId());
             subPo.setModifiedTime(new Date());
-            subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL);
             subPo.setGrantDate(bo.getGrantDate());
             subPo.setGrantTime(bo.getGrantTime());
+            subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL);
             salaryGrantSubTaskMapper.updateById(subPo);
         }
     }
@@ -111,9 +111,9 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
-            subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
             subPo.setModifiedBy(bo.getUserId());
             subPo.setModifiedTime(new Date());
+            subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
             salaryGrantSubTaskMapper.updateById(subPo);
             BeanUtils.copyProperties(subPo, historyPO);
             assignValue(subPo,historyPO, status);
@@ -123,9 +123,9 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
     }
 
     private static void assignValue (SalaryGrantSubTaskPO subPo, SalaryGrantTaskHistoryPO hisPo, String status) {
+        hisPo.setTaskStatus(status);
         hisPo.setTaskId(subPo.getSalaryGrantSubTaskId());
         hisPo.setTaskCode(subPo.getSalaryGrantSubTaskCode());
         hisPo.setMainTaskCode(subPo.getSalaryGrantMainTaskCode());
-        hisPo.setTaskStatus(status);
     }
 }
