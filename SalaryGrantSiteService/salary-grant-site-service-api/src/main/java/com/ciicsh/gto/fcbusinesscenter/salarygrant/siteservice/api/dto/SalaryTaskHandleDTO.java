@@ -58,6 +58,10 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      */
     private String invalidReason;
     /**
+     * 撤回原因
+     */
+    private String remark;
+    /**
      * 薪资项
      */
     private List<SalaryTaskItemDTO> itemInfo;
