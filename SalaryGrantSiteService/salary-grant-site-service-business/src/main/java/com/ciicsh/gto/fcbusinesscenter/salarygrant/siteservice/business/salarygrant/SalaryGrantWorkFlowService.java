@@ -90,4 +90,28 @@ public interface SalaryGrantWorkFlowService {
      * @return
      */
     Boolean isOverdue(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 流程节点处理：2.提交处理总方法
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 流程节点处理：3.退回
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean doReturnTask (SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 流程节点处理：4.通过
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean doApproveTask (SalaryGrantTaskBO salaryGrantTaskBO);
 }

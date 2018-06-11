@@ -26,10 +26,13 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.page.Pagination;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.BankFileProxy;
@@ -461,5 +464,16 @@ public class CommonServiceImpl implements CommonService {
     public List<PrNormalBatchDTO> getBatchListByManagementId(String managementId) {
         Pagination<PrNormalBatchDTO> prNormalBatchDTOPagination = batchProxy.getBatchListByManagementId(managementId, null, 1, Integer.MAX_VALUE);
         return prNormalBatchDTOPagination.getList();
+    }
+
+    @Override
+    public PrBatchDTO getBatchInfo(String batchCode, int batchType) {
+        return batchProxy.getBatchInfo(batchCode, batchType);
+    }
+
+    @Override
+    public int updateBatchStatus(SalaryGrantMainTaskPO salaryGrantMainTaskPO, PrNormalBatchDTO prNormalBatchDTO) {
+        BatchAuditDTO batchAuditDTO = new BatchAuditDTO();
+        return batchProxy.updateBatchStatus(batchAuditDTO);
     }
 }
