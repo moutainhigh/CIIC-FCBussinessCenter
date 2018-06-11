@@ -1799,7 +1799,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                     zipOut.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                throw e;
             }
         }
     }

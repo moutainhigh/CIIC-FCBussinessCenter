@@ -20,6 +20,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.AdvanceEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.company.*;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
@@ -84,6 +85,9 @@ public class CompleteComputeServiceImpl {
     @Autowired
     private PrNormalBatchService normalBatchService;
 
+    @Autowired
+    private CommonServiceImpl commonService;
+
     public void processCompleteCompute(String batchCode, int batchType, String userID, String userName){
 
         List<DBObject> batchList = null;
@@ -95,7 +99,7 @@ public class CompleteComputeServiceImpl {
                 include(PayItemName.EMPLOYEE_CODE_CN)
                 .include("catalog.emp_info")
                 .include("catalog.emp_info.country_code")
-                .include("catalog.batch_info.period")
+                .include("catalog.batch_info.actual_period")
                 .include("catalog.batch_info.management_ID")
                 .include("catalog.batch_info.management_Name")
                 .include("catalog.pay_items.item_name")
@@ -131,6 +135,10 @@ public class CompleteComputeServiceImpl {
             DBObject mapObj = new BasicDBObject();
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("batch_id", batchCode);  // 批次ID
+
+            long version = commonService.getBatchVersion(batchCode) + 1;
+            mapObj.put("version", version); // 批次版本号
+
             mapObj.put("batch_ref_id",item.get("origin_batch_code") == null ? "" :item.get("origin_batch_code")); // 该批次引用ID
             mapObj.put("mgr_id", mgrId); // 管理方ID
             mapObj.put("mgr_name", batchInfo.get("management_Name") == null ? "" : batchInfo.get("management_Name")); // 管理方名称
@@ -438,11 +446,15 @@ public class CompleteComputeServiceImpl {
                 closingMsg.setOptID(userID);
                 closingMsg.setOptName(userName);
 
+                long version = commonService.getBatchVersion(batchCode);
+                closingMsg.setVersion(version);
+
                 sender.SendComputeClose(closingMsg);
                 logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
             }
 
         }
     }
+
 
 }

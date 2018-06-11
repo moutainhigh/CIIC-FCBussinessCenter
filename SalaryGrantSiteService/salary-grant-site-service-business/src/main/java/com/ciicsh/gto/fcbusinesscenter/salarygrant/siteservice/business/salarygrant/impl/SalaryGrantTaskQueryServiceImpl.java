@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
@@ -65,7 +66,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
     @Autowired
     private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
-
+    @Autowired
+    private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
 
     /**
      * 查询薪资发放任务单列表
@@ -227,6 +229,45 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             });
         }
         return list;
+    }
+
+    /**
+     * 审批通过
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    @Override
+    public void approvalPass(SalaryGrantTaskBO bo) {
+        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+            salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
+        }
+    }
+
+    /**
+     * 审批退回
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    @Override
+    public void approvalReject(SalaryGrantTaskBO bo) {
+        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+            salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
+        }
+    }
+
+    /**
+     * 详情提交
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    @Override
+    public void detailSubmit(SalaryGrantTaskBO bo) {
+        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+            salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
+        }
     }
 
     /**

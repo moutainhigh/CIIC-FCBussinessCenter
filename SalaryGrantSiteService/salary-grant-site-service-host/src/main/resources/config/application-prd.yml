@@ -23,6 +23,13 @@ zipkin:
   enabled: true
 sleuth:
   percentage: 0.1
+druid:
+#  configPathBasic:  /data/appdatas/gt1/gtobasicdb_prd.properties
+  configPathBusiness:  /data/appdatas/gt1/gtobusinessdb_prd.properties
+#  configPathPayroll:  /data/appdatas/gt1/gtopayrolldb_prd.properties
+#  configPathProduct:  /data/appdatas/gt1/gtoproductdb_prd.properties
+#  configPathSm:  /data/appdatas/gt1/gtosmdb_prd.properties
+#  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_prd.properties
 
 mongo:
   host: 172.16.22.113

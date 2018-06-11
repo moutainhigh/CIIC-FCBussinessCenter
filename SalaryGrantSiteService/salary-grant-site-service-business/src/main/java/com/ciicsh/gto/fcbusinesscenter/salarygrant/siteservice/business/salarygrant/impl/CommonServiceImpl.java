@@ -46,6 +46,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -474,6 +475,20 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public int updateBatchStatus(SalaryGrantMainTaskPO salaryGrantMainTaskPO, PrNormalBatchDTO prNormalBatchDTO) {
         BatchAuditDTO batchAuditDTO = new BatchAuditDTO();
-        return batchProxy.updateBatchStatus(batchAuditDTO);
+        //薪资发放日期
+        String grantDate = salaryGrantMainTaskPO.getGrantDate();
+        //增加天数
+        int advanceDay = prNormalBatchDTO.getAdvanceDay();
+
+        if (!StringUtils.isEmpty(grantDate)){
+            grantDate = grantDate.replace("-", "");
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            LocalDate grantDateDate = LocalDate.parse(grantDate, dateTimeFormatter);
+            grantDateDate = grantDateDate.plusDays(advanceDay);
+            batchAuditDTO.setAdvancePeriod(grantDateDate.format(dateTimeFormatter));
+            return batchProxy.updateBatchStatus(batchAuditDTO);
+        }
+
+        return 0;
     }
 }

@@ -42,6 +42,7 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
                    @Param("comments") String comments,
                    @Param("status") int status,
                    @Param("modifiedBy") String modifiedBy,
+                   @Param("advancePeriod") String advancePeriod,
                    @Param("result") String result);
 
 
