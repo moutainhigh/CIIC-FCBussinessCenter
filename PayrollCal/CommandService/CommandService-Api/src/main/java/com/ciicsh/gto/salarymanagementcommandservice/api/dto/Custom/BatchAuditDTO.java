@@ -10,8 +10,17 @@ public class BatchAuditDTO {
     private String result;
     private int batchType;
     private String action;
-
     private String modifyBy;
+    private String advancePeriod;
+
+    public String getAdvancePeriod() {
+        return advancePeriod;
+    }
+
+    public void setAdvancePeriod(String advancePeriod) {
+        this.advancePeriod = advancePeriod;
+    }
+
     public String getModifyBy() {
         return modifyBy;
     }

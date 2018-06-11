@@ -48,11 +48,10 @@ public class FuncEntity {
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append(funcName);
-
+        sb.append("(");
         if(this.parameters != null && this.parameters.size() > 0) {
             int total = this.parameters.size();
             int count = 0;
-            sb.append("(");
             for (String para : this.parameters) {
                 count++;
                 sb.append(para);
@@ -60,8 +59,8 @@ public class FuncEntity {
                     sb.append(",");
                 }
             }
-            sb.append(")");
         }
+        sb.append(")");
         return sb.toString(); // 无参数 funcName, 有参数 funcName([para1],[para2],...)
     }
 

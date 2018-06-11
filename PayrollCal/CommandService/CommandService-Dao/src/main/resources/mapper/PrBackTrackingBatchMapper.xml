@@ -35,10 +35,17 @@
 		UPDATE
 		pr_back_tracking_batch
 		SET
-		status = #{status},
-		comments = #{comments},
+		<if test="status !=0 and status != null">
+			status = #{status},
+		</if>
+		<if test="comments != '' and comments != null">
+			comments = #{comments},
+		</if>
+		<if test="advancePeriod != '' and advancePeriod != null">
+			advance_period = #{advancePeriod},
+		</if>
 		<if test="result != '' and result != null">
-			back_emp_result = #{result},
+			result_data = #{result},
 		</if>
 		modified_by = #{modifiedBy},
 		modified_time = sysdate()
