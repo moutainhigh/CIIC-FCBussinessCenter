@@ -333,14 +333,19 @@ public class CommonServiceImpl {
     }
 
     public long getBatchVersion(String batchCode){
-        long version = 0L;
-        Criteria criteria = Criteria.where("batch_code").is(batchCode);
+        long version = 0;
+        Criteria criteria = Criteria.where("batch_id").is(batchCode);
         Query query = Query.query(criteria);
         query.fields().include("version");
 
-        Optional<DBObject> versionObj = closeAccountMongoOpt.getMongoTemplate().find(query,DBObject.class).stream().findFirst();
+        List<DBObject> list =  closeAccountMongoOpt.getMongoTemplate().find(query,DBObject.class,CloseAccountMongoOpt.PR_PAYROLL_CAL_RESULT);
+        if(list == null || list.size() == 0){
+            return version;
+        }
+
+        Optional<DBObject> versionObj = list.stream().findFirst();
         if(versionObj.isPresent()){
-            version = versionObj.get().get("version") == null ? 0L : (long)versionObj.get().get("version");
+            version = versionObj.get().get("version") == null ? 0 : (long)versionObj.get().get("version");
         }
         return version;
     }

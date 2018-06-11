@@ -136,7 +136,7 @@ public class CompleteComputeServiceImpl {
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("batch_id", batchCode);  // 批次ID
 
-            long version = commonService.getBatchVersion(batchCode);
+            long version = commonService.getBatchVersion(batchCode) + 1;
             mapObj.put("version", version); // 批次版本号
 
             mapObj.put("batch_ref_id",item.get("origin_batch_code") == null ? "" :item.get("origin_batch_code")); // 该批次引用ID
