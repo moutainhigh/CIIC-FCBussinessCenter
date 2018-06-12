@@ -1,8 +1,16 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +22,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsMainTaskSe
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +37,9 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
     @Autowired
     private PrsMainTaskMapper prsMainTaskMapper;
+
+    @Autowired
+    private MongoConfig mongoConfig;
 
     @Override
     public List<PrsMainTaskPO> listPrsMainTasks(Map<String, Object> params) {
@@ -72,6 +84,26 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
     }
 
     @Override
+    public List<Document> getTaskEmps(Map<String, Object> params) {
+        List<Document> emps = new ArrayList<Document>();
+
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+        BasicDBObject filter = new BasicDBObject();
+        filter.put("task_id", params.get("mainTaskId"));
+        MongoCursor<Document> cursor = coll.find(filter).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                emps.add(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return emps;
+    }
+
+    @Override
     public Boolean addPrsMainTask(Map<String, Object> params) {
 
         UserInfoBO currUser = UserContext.getUser();
@@ -105,6 +137,11 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        for (Object emp : JSONObject.parseArray((String)params.remove("employees"))) {
+            coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+        }
 
         prsMainTaskMapper.insert(params);
 
@@ -161,6 +198,13 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        coll.deleteMany(new BasicDBObject("task_id", params.get("mainTaskId")));
+
+        for (Object emp : JSONObject.parseArray((String)params.remove("employees"))) {
+            coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+        }
 
         prsMainTaskMapper.update(params);
 

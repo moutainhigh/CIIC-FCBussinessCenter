@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsMainTaskPO;
+import org.bson.Document;
 
 /**
  * 工资单任务单主表 服务类
@@ -18,6 +19,8 @@ public interface PrsMainTaskService {
     Page<PrsMainTaskPO> pagePrsMainTasks(Map<String, Object> params);
 
     PrsMainTaskPO getPrsMainTask(Map<String, Object> params);
+
+    List<Document> getTaskEmps(Map<String, Object> params);
 
     Boolean addPrsMainTask(Map<String, Object> params);
 
