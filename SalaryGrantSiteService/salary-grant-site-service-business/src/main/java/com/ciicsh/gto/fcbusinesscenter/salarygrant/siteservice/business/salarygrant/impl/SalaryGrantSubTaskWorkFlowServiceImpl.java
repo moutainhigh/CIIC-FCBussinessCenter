@@ -71,6 +71,7 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         if (!ObjectUtils.isEmpty(subPo)) {
             subPo.setModifiedTime(new Date());
             subPo.setModifiedBy(bo.getUserId());
+            subPo.setApprovedOpinion(bo.getApprovedOpinion());
             if (SalaryGrantBizConsts.GRANT_MODE_LOCAL.equals(subPo.getGrantMode())) {
                 subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS);
             } else if (SalaryGrantBizConsts.GRANT_MODE_SUPPLIER.equals(subPo.getGrantMode())) {
@@ -113,6 +114,7 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         if (!ObjectUtils.isEmpty(subPo)) {
             subPo.setModifiedTime(new Date());
             subPo.setModifiedBy(bo.getUserId());
+            subPo.setApprovedOpinion(bo.getApprovedOpinion());
             subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
             salaryGrantSubTaskMapper.updateById(subPo);
             BeanUtils.copyProperties(subPo, historyPO);

@@ -237,7 +237,7 @@ public class SalaryGrantController {
     }
 
     /**
-     * 通过
+     * 审批通过
      * @author chenpb
      * @date 2018-05-14
      * @param
@@ -258,7 +258,7 @@ public class SalaryGrantController {
     }
 
     /**
-     * 退回
+     * 审批退回
      * @author chenpb
      * @date 2018-05-14
      * @param
