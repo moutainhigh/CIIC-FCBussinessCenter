@@ -180,7 +180,7 @@ public class SalaryGrantController {
     }
 
     /**
-     * 任务单撤回
+     * 主任务单撤回
      * @author chenpb
      * @date 2018-04-27
      * @param
@@ -219,24 +219,6 @@ public class SalaryGrantController {
     }
 
     /**
-     * 审批
-     * @author chenpb
-     * @date 2018-04-26
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/approve", method = RequestMethod.POST)
-    public Result approve(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批").setContent(JSON.toJSONString(dto)));
-        try {
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("审批失败");
-        }
-    }
-
-    /**
      * 审批通过
      * @author chenpb
      * @date 2018-05-14
@@ -252,8 +234,8 @@ public class SalaryGrantController {
             salaryGrantTaskQueryService.approvalPass(bo);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("审批失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("通过异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("审批通过失败");
         }
     }
 
