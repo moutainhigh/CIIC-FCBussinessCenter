@@ -319,6 +319,30 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 	@TableField("batch_no")
 	private String batchNo;
 
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public String getBatchNo() {
+		return batchNo;
+	}
+
+	public void setBatchNo(String batchNo) {
+		this.batchNo = batchNo;
+	}
+
 	public BigDecimal getTaxReal() {
 		return taxReal;
 	}
