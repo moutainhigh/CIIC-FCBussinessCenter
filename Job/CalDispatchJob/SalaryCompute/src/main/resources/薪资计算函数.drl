@@ -56,7 +56,7 @@ rule "连续工龄" // {连续工龄([首次参加工作日期],[离职日期])}
         // 首次参加工作日期
         String firstWorkingDate = String.valueOf($context.getItemValByCode(para1));
         // 离职日期
-        String leaveDate = (String)$context.getItemValByCode(para2);
+        String leaveDate = String.valueOf($context.getItemValByCode(para2));
 
         LocalDate beginDate = LocalDate.parse(firstWorkingDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         LocalDate endDate = LocalDate.parse(leaveDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -114,7 +114,7 @@ rule "劳务税" // {劳务税([劳务费])}
     then
         FuncEntity func = $context.getFuncEntity("劳务税");
         String para1 = func.getParameters().get(0);
-        BigDecimal laborCosts = new BigDecimal(String.valueOf($context.getItemValByCode(para1))); //劳务费
+        Double laborCosts = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); //劳务费
 
         func.setResult(new BigDecimal("800.00")); // TODO
 end
@@ -181,8 +181,8 @@ rule "长病假扣除比例" // {长病假扣除比例([城市],[工龄],[连续
         String para3 = func.getParameters().get(2);
 
         String city = (String)$context.getItemValByCode(para1); // 城市
-        double workingAge = (double)$context.getItemValByCode(para2); // 工龄
-        double continueAge = (double)$context.getItemValByCode(para3); // 连续工龄
+        Double workingAge = Double.parseDouble(String.valueOf($context.getItemValByCode(para2))); // 工龄
+        Double continueAge = Double.parseDouble(String.valueOf($context.getItemValByCode(para3))); // 连续工龄
 
         if((city.equals("扬州") || city.equals("上海")) && workingAge < 1){
             func.setResult(new BigDecimal("0.6"));
@@ -209,7 +209,8 @@ rule "长病假扣除比例" // {长病假扣除比例([城市],[工龄],[连续
 end
 
 /**
-** 标准薪资组,薪资项17
+ * 标准薪资组,薪资项17
+ *
 */
 rule "实际工龄" // {实际工龄([入职日期],[离职日期])}
     when
@@ -220,10 +221,7 @@ rule "实际工龄" // {实际工龄([入职日期],[离职日期])}
         String para2 = func.getParameters().get(1);
         String dateOnBoard = String.valueOf($context.getItemValByCode(para1)); // 入职日期
         String leaveDate = String.valueOf($context.getItemValByCode(para2)); // 离职日期
-        // 天数差
-        long days;
-        // 工作年限
-        BigDecimal workYears;
+
         LocalDate localDateBegin = LocalDate.parse(dateOnBoard);
         LocalDate localDateEnd = LocalDate.now();
         // 离职日期不为空，天数差=离职-入职
@@ -240,8 +238,9 @@ rule "实际工龄" // {实际工龄([入职日期],[离职日期])}
             localDateEnd = periodBegin.with(TemporalAdjusters.lastDayOfMonth());
         }
         // 得到入职和离职(或者是计薪月最后一天)的天数差
-        days = ChronoUnit.DAYS.between(localDateBegin, localDateEnd);
-        workYears = new BigDecimal(days).divide(new BigDecimal(365), 6, BigDecimal.ROUND_HALF_UP);
+        long days = ChronoUnit.DAYS.between(localDateBegin, localDateEnd);
+        // 工作年限
+        BigDecimal workYears = new BigDecimal(days).divide(new BigDecimal(365), 6, BigDecimal.ROUND_HALF_UP);
 
         func.setResult(workYears);
 end
@@ -321,18 +320,18 @@ rule "一般个人所得税" // {一般个人所得税([应纳税所得额])}
     then
         FuncEntity func = $context.getFuncEntity("一般个人所得税");
         String para1 = func.getParameters().get(0);
-        BigDecimal par1 = new BigDecimal(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+        Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
 
         func.setResult(BigDecimal.ZERO); // TODO
 end
 
 /**
- ** 标准薪资组
- ** >0&&<=0.5 0.5
- ** >0.5&&<=1 1.0
- ** >1&&<=1.5 1.5
- ** >11.5&&<=12 12.0
- ** >12&&<=12.5 12.5
+ * 标准薪资组
+ * >0&&<=0.5 0.5
+ * >0.5&&<=1 1.0
+ * >1&&<=1.5 1.5
+ * >11.5&&<=12 12.0
+ * >12&&<=12.5 12.5
  */
 rule "实际工作年限数" // 离职日期－入职日期 是0.5档 （离职日期为空，按工作日历）
     when
@@ -451,7 +450,7 @@ rule "税率" // {税率([应纳税所得额])}
         FuncEntity func = $context.getFuncEntity("税率");
         String para1 = func.getParameters().get(0);
 
-        BigDecimal par1 = new BigDecimal(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+        Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
 
         func.setResult(BigDecimal.ZERO); // TODO
 end
@@ -466,7 +465,7 @@ rule "速扣数" // {速扣数([应纳税所得额])}
         FuncEntity func = $context.getFuncEntity("速扣数");
         String para1 = func.getParameters().get(0);
 
-        BigDecimal par1 = new BigDecimal(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+        Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
 
         func.setResult(BigDecimal.ZERO); // TODO
 end
