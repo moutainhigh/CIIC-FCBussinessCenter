@@ -79,4 +79,26 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      */
     List<PrItemInAccountSetPO> selectItemNames(@Param("batchCode")String batchCode);
 
+    /**
+     * 获取已审核的薪资项
+     * @param param
+     * @return
+     */
+    List<PrPayrollItemPO> selectApprovedGroupItems(PrPayrollItemPO param);
+
+    /**
+     * 获取已审核的薪资项
+     * @param param
+     * @return
+     */
+    List<PrPayrollItemPO> selectApprovedGroupTemplateItems(PrPayrollItemPO param);
+
+    /**
+     * 将草稿薪资项插入审批通过表
+     * @param items
+     * @return
+     */
+    Integer insertBatchApprovedItemsByGroup(@Param("payrollGroupCode") String prGroupCode,
+                                            @Param("prGroupTemplateCode") String prGroupTemplateCode);
+
 }
