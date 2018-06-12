@@ -114,4 +114,20 @@ public interface SalaryGrantWorkFlowService {
      * @return
      */
     Boolean doApproveTask (SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 流程节点处理：5.撤回
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean doRetreatTask (SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 流程节点处理：6.驳回
+     *
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Boolean doRejectTask (SalaryGrantTaskBO salaryGrantTaskBO);
 }
