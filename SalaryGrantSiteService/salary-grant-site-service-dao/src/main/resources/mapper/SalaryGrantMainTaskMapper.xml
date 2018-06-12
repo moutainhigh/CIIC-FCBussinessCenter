@@ -45,6 +45,7 @@
 
     <!-- query task page list,include main task and sub task -->
     <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        <result column="task_id" property="taskId" />
         <result column="task_code" property="taskCode" />
         <result column="management_id" property="managementId" />
         <result column="management_name" property="managementName" />
