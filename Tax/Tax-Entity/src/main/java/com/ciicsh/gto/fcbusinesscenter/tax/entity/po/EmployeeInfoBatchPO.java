@@ -1,13 +1,16 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -16,7 +19,6 @@ import java.util.Date;
  * </p>
  *
  * @author wuhua
- * @since 2018-05-21
  */
 @TableName("tax_fc_employee_info_batch")
 public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
@@ -75,7 +77,7 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
     /**
      * 预计离境地点
      */
-	private Date expectedLeavePlace;
+	private String expectedLeavePlace;
     /**
      * 境内职务
      */
@@ -185,23 +187,123 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
      */
     @TableLogic
 	private Boolean isActive;
-    /**
-     * 创建时间
-     */
-	private Date createdTime;
-    /**
-     * 修改时间
-     */
-	private Date modifiedTime;
-    /**
-     * 创建人
-     */
+	/**
+	 * 创建时间
+	 */
+	@TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
+	/**
+	 * 修改时间
+	 */
+	@TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
+	/**
+	 * 创建人
+	 */
+	@TableField(value="created_by",fill = FieldFill.INSERT)
 	private String createdBy;
-    /**
-     * 修改人
-     */
+	/**
+	 * 修改人
+	 */
+	@TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
+	/**
+	 * 工号
+	 */
+	private String workNumber;
+	/**
+	 * 性别
+	 */
+	private String gender;
+	/**
+	 * 出生日期
+	 */
+	private Date birthday;
+	/**
+	 * 联系电话
+	 */
+	private String mobile;
+	/**
+	 * 公司编号
+	 */
+	private String companyNo;
+	/**
+	 * 适用公式
+	 */
+	private String applicableFormula;
+	/**
+	 * 入职日期
+	 */
+	private Date entryDate;
+	/**
+	 * 离职日期
+	 */
+	private Date leaveDate;
+
+	public Date getLeaveDate() {
+		return leaveDate;
+	}
+
+	public void setLeaveDate(Date leaveDate) {
+		this.leaveDate = leaveDate;
+	}
+
+	public Date getEntryDate() {
+		return entryDate;
+	}
+
+	public void setEntryDate(Date entryDate) {
+		this.entryDate = entryDate;
+	}
+
+	public String getWorkNumber() {
+		return workNumber;
+	}
+
+	public void setWorkNumber(String workNumber) {
+		this.workNumber = workNumber;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getCompanyNo() {
+		return companyNo;
+	}
+
+	public void setCompanyNo(String companyNo) {
+		this.companyNo = companyNo;
+	}
+
+	public String getApplicableFormula() {
+		return applicableFormula;
+	}
+
+	public void setApplicableFormula(String applicableFormula) {
+		this.applicableFormula = applicableFormula;
+	}
 
 	public Long getId() {
 		return id;
@@ -299,11 +401,11 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 		this.expectedLeaveDate = expectedLeaveDate;
 	}
 
-	public Date getExpectedLeavePlace() {
+	public String getExpectedLeavePlace() {
 		return expectedLeavePlace;
 	}
 
-	public void setExpectedLeavePlace(Date expectedLeavePlace) {
+	public void setExpectedLeavePlace(String expectedLeavePlace) {
 		this.expectedLeavePlace = expectedLeavePlace;
 	}
 
@@ -523,22 +625,6 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 		this.isActive = isActive;
 	}
 
-	public Date getCreatedTime() {
-		return createdTime;
-	}
-
-	public void setCreatedTime(Date createdTime) {
-		this.createdTime = createdTime;
-	}
-
-	public Date getModifiedTime() {
-		return modifiedTime;
-	}
-
-	public void setModifiedTime(Date modifiedTime) {
-		this.modifiedTime = modifiedTime;
-	}
-
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -553,6 +639,22 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
+	}
+
+	public LocalDateTime getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(LocalDateTime createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public LocalDateTime getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(LocalDateTime modifiedTime) {
+		this.modifiedTime = modifiedTime;
 	}
 
 	@Override

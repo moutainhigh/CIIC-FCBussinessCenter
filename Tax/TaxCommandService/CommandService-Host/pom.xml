@@ -71,10 +71,10 @@
             <artifactId>spring-cloud-starter-bus-kafka</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
@@ -175,6 +175,16 @@
         <dependency>
         <groupId>com.ciicsh.gt1</groupId>
         <artifactId>common-entity</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>fcbusinesscenter-entity</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>mongo-client</artifactId>
         </dependency>
 
     </dependencies>

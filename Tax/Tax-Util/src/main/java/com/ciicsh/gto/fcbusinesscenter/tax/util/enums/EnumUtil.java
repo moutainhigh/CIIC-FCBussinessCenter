@@ -49,6 +49,10 @@ public class EnumUtil {
      * 划款状态(记录结算中心划款状态使用)
      */
     public static final String PAY_STATUS = "PS";
+    /**
+     * 批次类型
+     */
+    public static final String BATCH_TYPE = "BT";
 
     /**
      * 获取枚举中文
@@ -61,7 +65,12 @@ public class EnumUtil {
 
         if (StrKit.isNotEmpty(type) && StrKit.isNotEmpty(key)) {
             if (type.equals(EnumUtil.BATCH_NO_STATUS)) {
-                return BatchNoStatus.valueOf(EnumUtil.BATCH_NO_STATUS + key).getMessage();
+                for (BatchNoStatus b : BatchNoStatus.values()) {
+                    if (b.getCode().equals(key)) {
+                        return b.getDesc();
+                    }
+                }
+                return null;
             } else if (type.equals(EnumUtil.IT_TYPE)) {
                 String value = "";
                 Map<String,String> map = BasicData.getInstance().getCertType();
@@ -70,7 +79,12 @@ public class EnumUtil {
                 }
                 return value;
             } else if (type.equals(EnumUtil.INCOME_SUBJECT)) {
-                return IncomeSubject.valueOf(EnumUtil.INCOME_SUBJECT + key).getMessage();
+                for (IncomeSubject is : IncomeSubject.values()) {
+                    if (is.getCode().equals(key)) {
+                        return is.getDesc();
+                    }
+                }
+                return null;
             } else if (type.equals(EnumUtil.VOUCHER_STATUS)) {
                 return VoucherStatus.valueOf(EnumUtil.VOUCHER_STATUS + key).getMessage();
             } else if (type.equals(EnumUtil.BUSINESS_STATUS)) {
@@ -83,6 +97,13 @@ public class EnumUtil {
                 return SourceTypeForLog.valueOf(EnumUtil.SOURCE_TYPE + key).getMessage();
             } else if(type.equals(EnumUtil.PAY_STATUS)){
                 return PayStatus.valueOf(EnumUtil.PAY_STATUS + key).getMessage();
+            } else if(type.equals(EnumUtil.BATCH_TYPE)){
+                for (BatchType is : BatchType.values()) {
+                    if (is.getCode().equals(key)) {
+                        return is.getDesc();
+                    }
+                }
+                return null;
             }
         }
 

@@ -1,31 +1,31 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.util.enums;
 
 /**
- * 薪酬计算批次状态
+ * 薪酬计算批次类型
  * @author wuhua
  */
-public enum BatchNoStatus {
+public enum BatchType {
 
     /**
-     * 已关账
+     * 正常
      */
-    close("00","已关账"),
+    normal("00","正常"),
 
     /**
-     * 取消关账
+     * 调整
      */
-    unclose("01","取消关账"),
+    ajust("01","调整"),
 
     /**
-     * 已发放
+     * 回溯
      */
-    payroll("02","已发放");
+    backdate("02","回溯");
 
     private String  code;
 
     private String  desc;
 
-    private BatchNoStatus(String code,String desc)
+    private BatchType(String code, String desc)
     {
 
         this.code = code;

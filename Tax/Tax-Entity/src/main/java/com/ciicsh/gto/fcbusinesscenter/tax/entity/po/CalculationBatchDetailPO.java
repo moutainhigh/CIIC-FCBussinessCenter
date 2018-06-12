@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
@@ -296,88 +297,58 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 	 */
 	private BigDecimal exerciseTaxAmount;
 	/**
-	 * 离职金
+	 * 是否可用
 	 */
-	private BigDecimal separationPayment;
+	@TableLogic
+	private Boolean isActive;
+
 	/**
-	 * 离职金免税额
+	 * 创建人
 	 */
-	private BigDecimal separationPaymentTaxFee;
+	@TableField(value="created_by",fill = FieldFill.INSERT)
+	private String createdBy;
 	/**
-	 * 年度奖金
+	 * 修改人
 	 */
-	private BigDecimal annualBonus;
+	@TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedBy;
+
 	/**
-	 * 劳务费
+	 * 批次号
 	 */
-	private BigDecimal serviceCharge;
-	/**
-	 * 利息、股息、红利所得
-	 */
-	private BigDecimal incomeFromInterest;
-	/**
-	 * 偶然所得
-	 */
-	private BigDecimal fortuitousIncome;
-	/**
-	 * 商业保险
-	 */
-	private BigDecimal commercialInsurance;
+	@TableField("batch_no")
+	private String batchNo;
 
-	public BigDecimal getSeparationPayment() {
-		return separationPayment;
+	public String getBatchNo() {
+		return batchNo;
 	}
 
-	public void setSeparationPayment(BigDecimal separationPayment) {
-		this.separationPayment = separationPayment;
+	public void setBatchNo(String batchNo) {
+		this.batchNo = batchNo;
 	}
 
-	public BigDecimal getSeparationPaymentTaxFee() {
-		return separationPaymentTaxFee;
+	public String getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setSeparationPaymentTaxFee(BigDecimal separationPaymentTaxFee) {
-		this.separationPaymentTaxFee = separationPaymentTaxFee;
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
-	public BigDecimal getAnnualBonus() {
-		return annualBonus;
+	public String getModifiedBy() {
+		return modifiedBy;
 	}
 
-	public void setAnnualBonus(BigDecimal annualBonus) {
-		this.annualBonus = annualBonus;
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
 	}
 
-	public BigDecimal getServiceCharge() {
-		return serviceCharge;
+	public Boolean getActive() {
+		return isActive;
 	}
 
-	public void setServiceCharge(BigDecimal serviceCharge) {
-		this.serviceCharge = serviceCharge;
-	}
-
-	public BigDecimal getIncomeFromInterest() {
-		return incomeFromInterest;
-	}
-
-	public void setIncomeFromInterest(BigDecimal incomeFromInterest) {
-		this.incomeFromInterest = incomeFromInterest;
-	}
-
-	public BigDecimal getFortuitousIncome() {
-		return fortuitousIncome;
-	}
-
-	public void setFortuitousIncome(BigDecimal fortuitousIncome) {
-		this.fortuitousIncome = fortuitousIncome;
-	}
-
-	public BigDecimal getCommercialInsurance() {
-		return commercialInsurance;
-	}
-
-	public void setCommercialInsurance(BigDecimal commercialInsurance) {
-		this.commercialInsurance = commercialInsurance;
+	public void setActive(Boolean active) {
+		isActive = active;
 	}
 
 	public BigDecimal getTaxReal() {

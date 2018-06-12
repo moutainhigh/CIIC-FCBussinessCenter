@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
@@ -15,7 +16,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmploye
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatch;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.collector.CollectorsUtil;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -76,7 +76,10 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
     private TaskMainMapper taskMainMapper;
 
     @Autowired
-    public TaskNoService taskNoService;
+    private TaskNoService taskNoService;
+
+    @Autowired
+    private WorkflowService workflowService;
 
     @Override
     public ResponseForCalBatch queryCalculationBatchs(RequestForCalBatch requestForCalBatch) {
@@ -100,8 +103,6 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         calculationBatchPOList = baseMapper.selectPage(page,wrapper);//baseMapper.selectPage(page, wrapper);
 
         for(CalculationBatchPO p: calculationBatchPOList){
-            //状态中文转化
-            p.setStatusName(EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,p.getStatus()));
             //查询由当前批次创建的任务
             List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //组合任务编号
@@ -115,6 +116,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
         return responseForCalBatch;
     }
+
+
 
     /**
      * 查询批次明细
@@ -443,6 +446,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     taskSubSupplierService.updateById(taskSubSupplierPO);
                 }
             }
+
+            //启动工作流
+            this.workflowService.startProcess(p.getId().toString(),WorkflowService.Process.fc_tax_main_task_audit,null);
     }
 
 

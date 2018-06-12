@@ -16,6 +16,8 @@ public class JsonResult<T> {
      */
     public static enum ReturnCode{
 
+        SUCCESS(""),
+
         TOKEN_ERROR("登录异常"),
 
         FAIL("异常"),
@@ -28,7 +30,9 @@ public class JsonResult<T> {
 
         DE_ER01("任务内有未确认的合并明细，不能提交任务"),
 
-        SU_ER01("任务内有未确认的合并明细，不能提交任务");
+        SU_ER01("任务内有未确认的合并明细，不能提交任务"),
+
+        CONSTRAINTS_1("相关批次已取消关账，不能提交");
 
         private String  message;
 
