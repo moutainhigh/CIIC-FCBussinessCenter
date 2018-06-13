@@ -356,7 +356,6 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     public void cancelClosing(CancelClosingMsg msg) {
         SalaryGrantTaskBO bo = salaryGrantMainTaskMapper.selectByTBatchInfo(msg.getBatchCode(), msg.getBatchType());
         if (!ObjectUtils.isEmpty(bo) && Long.valueOf(msg.getVersion()).compareTo(bo.getBatchVersion()) == 1) {
-            bo.setBatchVersion(msg.getVersion());
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("取消关账").setTitle("关账业务处理").setContent(JSON.toJSONString(bo)));
             salaryGrantWorkFlowService.doCancelTask(bo);
         }
