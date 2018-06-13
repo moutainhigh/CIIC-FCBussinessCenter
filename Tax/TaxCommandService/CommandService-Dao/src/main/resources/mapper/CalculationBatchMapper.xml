@@ -142,4 +142,36 @@
 		ORDER BY t2.created_time desc
 	</select>
 
+	<!--根据批次id删除明细信息-->
+	<update id="cancelDetailsByCalBatchId">
+		update tax_fc_calculation_batch_detail t1
+		inner join tax_fc_calculation_batch t2
+		on t1.calculation_batch_id = t2.id
+		SET
+		t1.is_active = false
+		where t2.id = #{calBatchId}
+	</update>
+	<!--根据批次id删除个税信息-->
+	<update id="cancelInfosByCalBatchId">
+		update tax_fc_employee_info_batch t1
+		inner join tax_fc_calculation_batch_detail t2
+		on t1.cal_batch_detail_id = t2.id
+		inner join tax_fc_calculation_batch t3
+		on t2.calculation_batch_id = t3.id
+		SET
+		t1.is_active = false
+		where t3.id = #{calBatchId}
+	</update>
+	<!--根据批次id删除服务信息-->
+	<update id="cancelServicesByCalBatchId">
+		update tax_fc_employee_service_batch t1
+		inner join tax_fc_calculation_batch_detail t2
+		on t1.cal_batch_detail_id = t2.id
+		inner join tax_fc_calculation_batch t3
+		on t2.calculation_batch_id = t3.id
+		SET
+		t1.is_active = false
+		where t3.id = #{calBatchId}
+	</update>
+
 </mapper>
