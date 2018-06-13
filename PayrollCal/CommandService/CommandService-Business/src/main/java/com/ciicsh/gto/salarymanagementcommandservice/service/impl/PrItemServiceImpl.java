@@ -59,41 +59,67 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
+    public List<PrPayrollItemPO> getListByGroupCode(String groupCode, boolean draftFlg) {
+        return getListByGroupCode(groupCode, 0, 0, draftFlg).getList();
+    }
+
+    @Override
     public PageInfo<PrPayrollItemPO> getListByGroupCode(String groupCode, Integer pageNum, Integer pageSize) {
+        return this.getListByGroupCode(groupCode , pageNum, pageSize, false);
+    }
+
+    @Override
+    public PageInfo<PrPayrollItemPO> getListByGroupCode(String groupCode, Integer pageNum, Integer pageSize, boolean draftFlg) {
         PageHelper.startPage(pageNum, pageSize);
         PrPayrollItemPO param = new PrPayrollItemPO();
         param.setPayrollGroupCode(groupCode);
-        EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
-        ew.orderBy("created_time", true);
-//        ew.isNull("payroll_group_template_code");
-        List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
-        PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
-        return pageInfo;
+        List<PrPayrollItemPO> resultList;
+        if (draftFlg) {
+            EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
+            ew.orderBy("created_time", true);
+            resultList = prPayrollItemMapper.selectList(ew);
+        } else {
+            resultList = prPayrollItemMapper.selectApprovedGroupItems(param);
+        }
+        return new PageInfo<>(resultList);
     }
 
     @Override
     public List<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode) {
-        return getListByGroupTemplateCode(groupTemplateCode, 0, 0).getList();
+        return this.getListByGroupTemplateCode(groupTemplateCode, 0, 0).getList();
+    }
+
+    @Override
+    public List<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, boolean draftFlg) {
+        return this.getListByGroupTemplateCode(groupTemplateCode, 0, 0, false).getList();
     }
 
     @Override
     public PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, Integer pageNum, Integer pageSize) {
+        return this.getListByGroupTemplateCode(groupTemplateCode, pageNum, pageSize, false);
+    }
+
+    @Override
+    public PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, Integer pageNum, Integer pageSize, boolean draftFlg) {
         PageHelper.startPage(pageNum, pageSize);
         PrPayrollItemPO param = new PrPayrollItemPO();
         param.setPayrollGroupTemplateCode(groupTemplateCode);
-        EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
-        ew.isNull("payroll_group_code").or().eq("payroll_group_code", "");
-        List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
-        PageInfo<PrPayrollItemPO> pageInfo = new PageInfo<>(resultList);
-        return pageInfo;
+        List<PrPayrollItemPO> resultList;
+        if (draftFlg) {
+            EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
+            ew.isNull("payroll_group_code").or().eq("payroll_group_code", "");
+            resultList = prPayrollItemMapper.selectList(ew);
+        } else {
+            resultList = prPayrollItemMapper.selectApprovedGroupTemplateItems(param);
+        }
+        return new PageInfo<>(resultList);
     }
 
     @Override
     public PrPayrollItemPO getItemByCode(String code) {
         PrPayrollItemPO param = new PrPayrollItemPO();
         param.setItemCode(code);
-        PrPayrollItemPO result = prPayrollItemMapper.selectOne(param);
-        return result;
+        return prPayrollItemMapper.selectOne(param);
     }
 
     @Override
@@ -116,8 +142,7 @@ public class PrItemServiceImpl implements PrItemService {
                     StringUtils.isEmpty(param.getPayrollGroupCode())) + 1);
         }
         this.replaceItemNameWithCode(param);
-        int insertResult = prPayrollItemMapper.insert(param);
-        return insertResult;
+        return prPayrollItemMapper.insert(param);
     }
 
     @Override
@@ -134,8 +159,7 @@ public class PrItemServiceImpl implements PrItemService {
             i.setModifiedTime(new Date());
             i.setCreatedTime(new Date());
         });
-        int insertResult = prPayrollItemMapper.insertBatchItems(paramList);
-        return insertResult;
+        return prPayrollItemMapper.insertBatchItems(paramList);
     }
 
     @Override

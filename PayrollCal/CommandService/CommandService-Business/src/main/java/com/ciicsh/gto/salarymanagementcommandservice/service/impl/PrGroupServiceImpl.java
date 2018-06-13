@@ -85,9 +85,6 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int updateItemByCode(PrPayrollGroupPO paramItem) {
-        if (paramItem.getApprovalStatus() == null) {
-            paramItem.setApprovalStatus(0);
-        }
         return prPayrollGroupMapper.updateItemByCode(paramItem);
     }
 
@@ -262,6 +259,7 @@ public class PrGroupServiceImpl implements PrGroupService {
         approvalHistoryPO.setCreatedName(UserContext.getName());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组
+        prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
         int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
         return result;
