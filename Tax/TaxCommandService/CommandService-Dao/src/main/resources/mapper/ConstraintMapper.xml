@@ -14,7 +14,63 @@
 	</select>
 
 	<!--                                               任务流程约束                                                           -->
-	<!--任务相关的批次是否为'取消关账'-->
+
+	<!--主任务相关的批次是否为最新版本-->
+	<select id="selectNumsForTaskMainByVersion" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*) from tax_fc_task_main t1,tax_fc_calculation_batch t2,tax_fc_calculation_batch_task_main t3
+		where t1.id = t3.task_main_id and t2.id = t3.cal_batch_id
+		and t2.version_no != t3.version_no
+		and t1.id in
+		<foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+			#{taskId}
+		</foreach>
+	</select>
+
+	<!--申报任务相关的批次是否为最新版本-->
+	<select id="selectNumsForTaskDeclareByVersion" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*) from tax_fc_task_sub_declare t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
+		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id
+		and t3.version_no != t4.version_no
+		and t1.id in
+		<foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+			#{taskId}
+		</foreach>
+	</select>
+
+	<!--划款任务相关的批次是否为最新版本-->
+	<select id="selectNumsForTaskMoneyByVersion" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*) from tax_fc_task_sub_money t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
+		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id
+		and t3.version_no != t4.version_no
+		and t1.id in
+		<foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+			#{taskId}
+		</foreach>
+	</select>
+
+	<!--缴纳任务相关的批次是否为最新版本-->
+	<select id="selectNumsForTaskPaymentByVersion" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*) from tax_fc_task_sub_payment t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
+		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id
+		and t3.version_no != t4.version_no
+		and t1.id in
+		<foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+			#{taskId}
+		</foreach>
+	</select>
+
+	<!--供应商处理任务相关的批次是否为最新版本-->
+	<select id="selectNumsForTaskSupplierByVersion" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*) from tax_fc_task_sub_supplier t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
+		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id
+		and t3.version_no != t4.version_no
+		and t1.id in
+		<foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+			#{taskId}
+		</foreach>
+	</select>
+
+	<!--主任务相关的批次是否为'取消关账'-->
 	<select id="selectNumsForTaskMain" resultType="java.lang.Integer" parameterType="java.lang.String">
 		select count(*) from tax_fc_task_main t1,tax_fc_calculation_batch t2,tax_fc_calculation_batch_task_main t3
 		where t1.id = t3.task_main_id and t2.id = t3.cal_batch_id
@@ -25,7 +81,7 @@
 		</foreach>
 	</select>
 
-	<!--任务相关的批次是否为'取消关账'-->
+	<!--申报任务相关的批次是否为'取消关账'-->
 	<select id="selectNumsForTaskDeclare" resultType="java.lang.Integer" parameterType="java.lang.String">
 		select count(*) from tax_fc_task_sub_declare t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
 		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id
@@ -36,7 +92,7 @@
 		</foreach>
 	</select>
 
-	<!--任务相关的批次是否为'取消关账'-->
+	<!--划款任务相关的批次是否为'取消关账'-->
 	<select id="selectNumsForTaskMoney" resultType="java.lang.Integer" parameterType="java.lang.String">
 		select count(*) from tax_fc_task_sub_money t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
 		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id
@@ -47,7 +103,7 @@
 		</foreach>
 	</select>
 
-	<!--任务相关的批次是否为'取消关账'-->
+	<!--缴纳任务相关的批次是否为'取消关账'-->
 	<select id="selectNumsForTaskPayment" resultType="java.lang.Integer" parameterType="java.lang.String">
 		select count(*) from tax_fc_task_sub_payment t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
 		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id
@@ -58,7 +114,7 @@
 		</foreach>
 	</select>
 
-	<!--任务相关的批次是否为'取消关账'-->
+	<!--供应商处理任务相关的批次是否为'取消关账'-->
 	<select id="selectNumsForTaskSupplier" resultType="java.lang.Integer" parameterType="java.lang.String">
 		select count(*) from tax_fc_task_sub_supplier t1,tax_fc_task_main t2,tax_fc_calculation_batch t3,tax_fc_calculation_batch_task_main t4
 		where t1.task_main_id = t2.id,t2.id = t4.task_main_id and t3.id = t4.cal_batch_id

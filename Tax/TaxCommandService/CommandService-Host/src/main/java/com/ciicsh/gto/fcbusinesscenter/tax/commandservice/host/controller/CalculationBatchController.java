@@ -93,8 +93,8 @@ public class CalculationBatchController extends BaseController {
 
         //检查约束
         int i = this.constraintService.checkBatch(calculationBatchDTO.getBatchIds());
-        if(i > 0){
-            jr.fill(JsonResult.ReturnCode.CONSTRAINTS_2);
+        if(i == ConstraintService.C1){
+            jr.fill(JsonResult.ReturnCode.CONSTRAINTS_1);
             return jr;
         }
 

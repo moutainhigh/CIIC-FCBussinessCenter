@@ -160,7 +160,11 @@ public class TaskMainController extends BaseController {
         //检查约束
         int i = this.constraintService.checkTask(taskMainDTO.getTaskMainIds(),ConstraintService.TASK_MAIN);
         if(i > 0){
-            jr.fill(JsonResult.ReturnCode.CONSTRAINTS_1);
+            if(i == ConstraintService.C2){
+                jr.fill(JsonResult.ReturnCode.CONSTRAINTS_2);
+            }else if(i == ConstraintService.C3){
+                jr.fill(JsonResult.ReturnCode.CONSTRAINTS_3);
+            }
             return jr;
         }
 
