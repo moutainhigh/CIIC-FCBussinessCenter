@@ -450,6 +450,7 @@
 	</update>
 
 	<select id="selectAllBatchCodesByManagementId" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
+		SELECT * FROM (
 		SELECT
 			code,
 			actual_period,
@@ -523,6 +524,8 @@
             <if test="batchCode != '' and batchCode != null">
                 AND btb.back_tracking_batch_code LIKE concat('%', #{batchCode})
             </if>
+		) union_result
+		ORDER BY code
 	</select>
 
 	<select id="selectBatchPayrollSchema" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">

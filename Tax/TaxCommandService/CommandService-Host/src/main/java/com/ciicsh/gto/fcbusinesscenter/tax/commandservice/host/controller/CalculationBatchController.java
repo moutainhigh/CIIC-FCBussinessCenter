@@ -5,6 +5,7 @@ import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.CalculationBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.EmployeeDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ConstraintService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.CalculationBatchServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatch;
@@ -29,10 +30,13 @@ import java.util.stream.Collectors;
 public class CalculationBatchController extends BaseController {
 
     @Autowired
-    public CalculationBatchServiceImpl calculationBatchService;
+    private CalculationBatchServiceImpl calculationBatchService;
 
     @Autowired
-    public TaskNoService taskNoService;
+    private TaskNoService taskNoService;
+
+    @Autowired
+    private ConstraintService constraintService;
 
     /**
      * 查询计算批次列表

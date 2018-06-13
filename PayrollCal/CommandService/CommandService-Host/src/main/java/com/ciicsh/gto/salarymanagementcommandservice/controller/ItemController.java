@@ -59,10 +59,10 @@ public class ItemController extends BaseController{
         PageInfo<PrPayrollItemPO> pageInfo;
         if (GROUP_TEMPLATE == parentType) {
             // 获取薪资组模板的薪资项
-            pageInfo = itemService.getListByGroupTemplateCode(groupCode, pageNum, pageSize);
+            pageInfo = itemService.getListByGroupTemplateCode(groupCode, pageNum, pageSize, true);
         } else if (GROUP == parentType) {
             // 获取薪资组的薪资项
-            pageInfo = itemService.getListByGroupCode(groupCode, pageNum, pageSize);
+            pageInfo = itemService.getListByGroupCode(groupCode, pageNum, pageSize, true);
         } else {
             return JsonResult.faultMessage("非法的参数parentType: " + parentType);
         }

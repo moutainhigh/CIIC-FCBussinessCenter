@@ -70,8 +70,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
 
     @Override
     public List<PrPayrollGroupTemplatePO> getList(PrPayrollGroupTemplatePO param) {
-        List<PrPayrollGroupTemplatePO> resultList = prPayrollGroupTemplateMapper.selectListByEntityUseLike(param);
-        return resultList;
+        return prPayrollGroupTemplateMapper.selectListByEntityUseLike(param);
     }
 
     @Override
@@ -105,13 +104,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateItemByCode(PrPayrollGroupTemplatePO param) {
-        if (param.getApprovalStatus() == null) {
-            param.setApprovalStatus(0);
-        }
-        EntityWrapper<PrPayrollGroupTemplatePO> ew = new EntityWrapper<>();
-        ew.setEntity(param);
-        int result = prPayrollGroupTemplateMapper.updateItemByCode(param);
-        return result;
+        return prPayrollGroupTemplateMapper.updateItemByCode(param);
     }
 
     @Override
@@ -345,7 +338,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         PrPayrollItemPO param = new PrPayrollItemPO();
         param.setPayrollGroupTemplateCode(groupCode);
         EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
-        List<PrPayrollItemPO> resultList = prPayrollItemMapper.selectList(ew);
-        return resultList;
+        ew.isNull("payroll_group_code").or().eq("payroll_group_code", "");
+        return prPayrollItemMapper.selectList(ew);
     }
 }

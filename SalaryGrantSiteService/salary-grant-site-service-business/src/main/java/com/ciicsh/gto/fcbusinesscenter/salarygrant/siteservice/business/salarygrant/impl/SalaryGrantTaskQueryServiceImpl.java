@@ -349,7 +349,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Override
     public void cancelClosing(CancelClosingMsg msg) {
         SalaryGrantTaskBO bo = salaryGrantMainTaskMapper.selectByTBatchInfo(msg.getBatchCode(), msg.getBatchType());
-        if (!ObjectUtils.isEmpty(bo)) {
+        if (!ObjectUtils.isEmpty(bo) && Long.valueOf(msg.getVersion()).compareTo(bo.getBatchVersion()) == 1) {
+            bo.setBatchVersion(msg.getVersion());
             salaryGrantWorkFlowService.doCancelTask(bo);
         }
     }

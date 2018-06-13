@@ -9,16 +9,34 @@ public enum BatchNoStatus {
     /**
      * 已关账
      */
-    BNS00("已关账");
+    close("00","已关账"),
 
-    private String  message;
+    /**
+     * 取消关账
+     */
+    unclose("01","取消关账"),
 
-    private BatchNoStatus(String message)
+    /**
+     * 已发放
+     */
+    payroll("02","已发放");
+
+    private String  code;
+
+    private String  desc;
+
+    private BatchNoStatus(String code,String desc)
     {
-        this.message = message;
+
+        this.code = code;
+        this.desc = desc;
     }
 
-    public String getMessage() {
-        return message;
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getDesc() {
+        return this.desc;
     }
 }

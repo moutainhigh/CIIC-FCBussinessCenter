@@ -1,9 +1,11 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
@@ -186,22 +188,6 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
      */
     @TableLogic
 	private Boolean isActive;
-    /**
-     * 创建时间
-     */
-	private LocalDateTime createdTime;
-    /**
-     * 修改时间
-     */
-	private LocalDateTime modifiedTime;
-    /**
-     * 创建人
-     */
-	private String createdBy;
-    /**
-     * 修改人
-     */
-	private String modifiedBy;
 
 	/**
 	 * 工号
@@ -242,6 +228,29 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 	 * 离职日期
 	 */
 	private LocalDate leaveDate;
+
+	/**
+	 * 创建时间
+	 */
+	@TableField(value="created_time",fill = FieldFill.INSERT)
+	private LocalDateTime createdTime;
+	/**
+	 * 修改时间
+	 */
+	@TableField(value="modified_time",fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime modifiedTime;
+	/**
+	 * 创建人
+	 */
+	@TableField(value="created_by",fill = FieldFill.INSERT)
+	private String createdBy;
+	/**
+	 * 修改人
+	 */
+	@TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedBy;
+
+
 
 	public Long getId() {
 		return id;
