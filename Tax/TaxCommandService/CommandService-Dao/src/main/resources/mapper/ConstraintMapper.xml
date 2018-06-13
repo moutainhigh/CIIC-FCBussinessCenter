@@ -2,6 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.ConstraintMapper">
 
+	<!--                                               创建任务约束                                                           -->
+	<!--批次是否为取消关账-->
+	<select id="selectNumsForBatch" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(*) from tax_fc_calculation_batch t
+		where t.status = '01'
+		and t.id in
+		<foreach collection="batchIds" item="batchId" open="(" separator="," close=")">
+			#{batchId}
+		</foreach>
+	</select>
+
+	<!--                                               任务流程约束                                                           -->
 	<!--任务相关的批次是否为'取消关账'-->
 	<select id="selectNumsForTaskMain" resultType="java.lang.Integer" parameterType="java.lang.String">
 		select count(*) from tax_fc_task_main t1,tax_fc_calculation_batch t2,tax_fc_calculation_batch_task_main t3

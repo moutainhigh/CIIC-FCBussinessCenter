@@ -79,6 +79,11 @@ public class TaskSubMoneyDTO {
      */
     private String areaType;
 
+    /**
+     * 划款状态
+     */
+    private String payStatus;
+
     public Long getId() {
         return id;
     }
@@ -223,6 +228,14 @@ public class TaskSubMoneyDTO {
         this.mainIds = mainIds;
     }
 
+    public String getPayStatus() {
+        return payStatus;
+    }
+
+    public void setPayStatus(String payStatus) {
+        this.payStatus = payStatus;
+    }
+
     @Override
     public String toString() {
         return "TaskSubMoneyDTO{" +
@@ -244,6 +257,7 @@ public class TaskSubMoneyDTO {
                 ", chineseNum=" + chineseNum +
                 ", foreignerNum=" + foreignerNum +
                 ", areaType='" + areaType + '\'' +
+                ", payStatus='" + payStatus + '\'' +
                 '}';
     }
 }

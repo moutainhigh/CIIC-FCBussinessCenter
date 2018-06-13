@@ -448,7 +448,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
             }
 
             //启动工作流
-            this.workflowService.startProcess(p.getId().toString(),WorkflowService.Process.fc_tax_main_task_audit,null);
+//            this.workflowService.startProcess(p.getId().toString(),WorkflowService.Process.fc_tax_main_task_audit,null);
     }
 
 
@@ -469,10 +469,13 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         int i = 0;
         for(String batchId : batchIds){
 
+            CalculationBatchPO calculationBatchPO = baseMapper.selectById(new Long(batchId));
+
             CalculationBatchTaskMainPO calculationBatchTaskMainPO = new CalculationBatchTaskMainPO();
             calculationBatchTaskMainPO.setTaskMainId(p.getId());//主任务id
             calculationBatchTaskMainPO.setCalBatchId(new Long(batchId));//计算批次id
             calculationBatchTaskMainPO.setBatchNo(batchNos[i]);//计算批次号
+            calculationBatchTaskMainPO.setVersionNo(calculationBatchPO.getVersionNo());//批次版本号
             //新增批次和主任务的关联记录
             calculationBatchTaskMainService.insert(calculationBatchTaskMainPO);
             i++;

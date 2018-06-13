@@ -18,6 +18,23 @@ public class ConstraintServiceImpl implements ConstraintService {
     private final int C1=1;//批次已取消关账
 
     @Override
+    public int checkBatch(String[] Ids) {
+
+        //返回值
+        int ri = 0;
+        int count = 1;//默认验证失败
+
+        count = constraintMapper.selectNumsForBatch(Ids);
+
+        if(count > 0){
+            return C1;
+        }
+
+        return ri;
+
+    }
+
+    @Override
     public int checkTask(String[] taskIds , String taskType) {
 
         //返回值

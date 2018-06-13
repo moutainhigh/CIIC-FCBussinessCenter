@@ -11,6 +11,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
@@ -51,6 +52,8 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
     private SalaryGrantSupplierSubTaskService salaryGrantSupplierSubTaskService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
     @Override
     public boolean saveToHistory(long task_his_id, String task_code, int task_type) {
@@ -179,19 +182,30 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
 
     @Override
     public boolean processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO) {
-        //任务单类型
-        Integer taskType = salaryGrantTaskBO.getTaskType();
-        EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
-        if (0 == taskType) {
-            //查询任务单主表雇员
-            employeePOEntityWrapper.where("salary_grant_main_task_code = {0}", salaryGrantTaskBO.getTaskCode());
-        } else {
-            //查询任务单子表雇员
-            employeePOEntityWrapper.where("salary_grant_sub_task_code = {0}", salaryGrantTaskBO.getTaskCode());
-        }
-        employeePOEntityWrapper.where("grant_status = 1 and is_active = 1");
-        List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
+        //（1）传入参数：SalaryGrantTaskBO（taskCode、managementId、managementName、batchCode、grantCycle、taskType）
+        //（2）根据传入的参数taskCode，查询任务单子表信息SalaryGrantSubTaskPO，
+        //     查询条件：子表.salary_grant_sub_task_code =SalaryGrantTaskBO. taskCode and is_active = 1
+        EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
+        subTaskPOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", salaryGrantTaskBO.getTaskCode());
+        List<SalaryGrantSubTaskPO> subTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
+        if (!CollectionUtils.isEmpty(subTaskPOList)) {
+            for (SalaryGrantSubTaskPO subTaskPO : subTaskPOList) {
+                //（3）查询暂缓雇员信息(sg_salary_grant_employee)，查询结果为employeeList
+                //           查询条件：(salary_grant_sub_task_code = taskCode or  salary_grant_main_task_code= taskCode)  and grant_status=1 and is_active=1
+                //           查询结果字段：如下面雇员信息表格所列字段
+                EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+                employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and grant_status = 1 and is_active = 1", subTaskPO.getSalaryGrantSubTaskCode());
+                List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
 
-        return commonService.addDeferredPool(salaryGrantTaskBO, employeeList);
+                //（4）调用客服中心暂缓池操作接口，把SalaryGrantTaskBO赋值给接口的主表信息，把employeeList赋值到雇员信息中。
+                //     SalaryGrantTaskBO. taskCode=SalaryGrantSubTaskPO. salaryGrantMainTaskCode，
+                //     把任务单子表对应的任务单主表编号传给暂缓池接口的主表信息中
+                //（5）根据客服中心暂缓池操作接口的返回值，判断processReprieveToPoll方法的返回值是true or false。--待客服中心接口确认后再定
+                salaryGrantTaskBO.setTaskCode(subTaskPO.getSalaryGrantMainTaskCode());
+                return commonService.addDeferredPool(salaryGrantTaskBO, employeeList);
+            }
+        }
+
+        return false;
     }
 }

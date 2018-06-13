@@ -1,9 +1,9 @@
-database:
-  host: 172.16.9.15
-  port: 3306
-  databasename: gtobusinessdb
-  username: root
-  password: a111111
+#database:
+#  host: 172.16.9.15
+#  port: 3306
+#  databasename: gtobusinessdb
+#  username: root
+#  password: a111111
 eureka:
   client:
 #    register-with-eureka: false
