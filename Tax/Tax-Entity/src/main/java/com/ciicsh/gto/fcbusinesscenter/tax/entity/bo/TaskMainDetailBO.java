@@ -237,6 +237,16 @@ public class TaskMainDetailBO {
 
     private String managerNo;
 
+    private BigDecimal taxReal;
+
+    public BigDecimal getTaxReal() {
+        return taxReal;
+    }
+
+    public void setTaxReal(BigDecimal taxReal) {
+        this.taxReal = taxReal;
+    }
+
     public Long getCalculationBatchDetailId() {
         return calculationBatchDetailId;
     }

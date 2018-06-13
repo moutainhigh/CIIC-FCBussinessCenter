@@ -14,6 +14,10 @@ public interface ConstraintService {
     String TASK_MAIN_PROOF = "TMP";//完税凭证主任务
     String TASK_SUB_PROOF = "TSP";//完税凭证子任务
 
+    int C1=1;//批次已取消关账
+    int C2=2;//任务相关批次已取消关账
+    int C3=3;//批次版本非最新
+
     /**
      * 检查批次约束
      * @param Ids
