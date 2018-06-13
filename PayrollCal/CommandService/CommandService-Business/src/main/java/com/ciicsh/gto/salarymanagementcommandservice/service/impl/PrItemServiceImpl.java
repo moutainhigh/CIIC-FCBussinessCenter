@@ -319,9 +319,9 @@ public class PrItemServiceImpl implements PrItemService {
 
         List<PrPayrollItemPO> itemPOList;
         if (!StringUtils.isEmpty(param.getPayrollGroupCode())) {
-            itemPOList = this.getListByGroupCode(param.getPayrollGroupCode());
+            itemPOList = this.getListByGroupCode(param.getPayrollGroupCode(), true);
         } else {
-            itemPOList = this.getListByGroupTemplateCode(param.getPayrollGroupTemplateCode());
+            itemPOList = this.getListByGroupTemplateCode(param.getPayrollGroupTemplateCode(), true);
         }
 
         if (!StringUtils.isEmpty(param.getFormulaContent())) {

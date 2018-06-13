@@ -111,7 +111,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
             return JsonResult.faultMessage("编辑失败,已经存在在同一个管理方下相同的雇员组，请检查！");
         }
         else{
-            prEmpGroupDTO.setModifiedBy("bill");
+            prEmpGroupDTO.setModifiedBy(UserContext.getUserId());
             prEmpGroupDTO.setModifiedTime(new Date());
             PrEmpGroupPO empGroupPO  = EmployeeGroupTranslator.toPrEmpGroupPO(prEmpGroupDTO);
             Integer result = employeeGroupService.editEmployeeGroup(empGroupPO);
@@ -172,9 +172,7 @@ public class EmployeeGroupController extends BaseController implements EmployeeG
         PrEmpGroupDTO empGroupDTO = EmployeeGroupTranslator.toPrEmpGroupDTO(empGroupPO);
         //set management name -- added by bill 2018-05-04
         Optional<ManagementInfo> find = UserContext.getManagementInfoLists().stream().filter(mgrInfo -> mgrInfo.getManagementId().equals(empGroupDTO.getManagementId())).findFirst();
-        if(find.isPresent()){
-            empGroupDTO.setManagementName(find.get().getManagementName());
-        }
+        find.ifPresent(managementInfo -> empGroupDTO.setManagementName(managementInfo.getManagementName()));
         return JsonResult.success(empGroupDTO);
     }
 }

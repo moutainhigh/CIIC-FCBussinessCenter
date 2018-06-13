@@ -161,20 +161,19 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean approvePrGroupTemplate(PrPayrollGroupTemplatePO paramItem){
-        boolean result = false;
+        boolean result;
         if (paramItem.getApprovalStatus() == 2) {
             // 获取该薪资组模板中的薪资项数据
-            List<PrPayrollItemPO> items = this.getListByGroupTemplateCode(paramItem.getGroupTemplateCode());
+            List<PrPayrollItemPO> items = prItemService.getListByGroupTemplateCode(paramItem.getGroupTemplateCode());
             String itemsJsonStr = JSON.toJSONString(items);
             // 获取更新前的薪资组模板数据
             PrPayrollGroupTemplatePO prGroupTemplate = this.getItemByCode(paramItem.getGroupTemplateCode());
             String version = prGroupTemplate.getVersion();
-            String history = itemsJsonStr;
             // 保存历史数据
             PrPayrollGroupTemplateHistoryPO prPayrollGroupTemplateHistoryPO = new PrPayrollGroupTemplateHistoryPO();
             prPayrollGroupTemplateHistoryPO.setPayrollGroupTemplateCode(paramItem.getGroupTemplateCode());
             prPayrollGroupTemplateHistoryPO.setVersion(version);
-            prPayrollGroupTemplateHistoryPO.setPayrollGroupTemplateHistory(history);
+            prPayrollGroupTemplateHistoryPO.setPayrollGroupTemplateHistory(itemsJsonStr);
             prPayrollGroupTemplateHistoryPO.setCreatedBy(UserContext.getUserId());
             prPayrollGroupTemplateHistoryPO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupTemplateHistoryMapper.insert(prPayrollGroupTemplateHistoryPO);
@@ -189,6 +188,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         approvalHistoryPO.setCreatedBy(UserContext.getUserId());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组模板
+        prPayrollItemMapper.insertBatchApprovedItemsByGroup(null, paramItem.getGroupTemplateCode());
         int updateResult = prPayrollGroupTemplateMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
         return result;
@@ -196,8 +196,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
 
     @Override
     public PrPayrollGroupTemplateHistoryPO getLastVersion(String srcCode){
-        PrPayrollGroupTemplateHistoryPO lastVersionData = prPayrollGroupTemplateHistoryMapper.selectLastVersionByCode(srcCode);
-        return lastVersionData;
+        return prPayrollGroupTemplateHistoryMapper.selectLastVersionByCode(srcCode);
     }
 
 
@@ -332,13 +331,5 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
             nameList.add(m.group(1));
         }
         return nameList;
-    }
-
-    private List<PrPayrollItemPO> getListByGroupTemplateCode(String groupCode) {
-        PrPayrollItemPO param = new PrPayrollItemPO();
-        param.setPayrollGroupTemplateCode(groupCode);
-        EntityWrapper<PrPayrollItemPO> ew = new EntityWrapper<>(param);
-        ew.isNull("payroll_group_code").or().eq("payroll_group_code", "");
-        return prPayrollItemMapper.selectList(ew);
     }
 }

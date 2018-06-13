@@ -129,8 +129,7 @@ public class ItemController extends BaseController{
         BeanUtils.copyProperties(paramItem, newParam);
 //        newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
         if (!StringUtils.isEmpty(newParam.getPayrollGroupTemplateCode())){
-            List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(
-                    paramItem.getPayrollGroupTemplateCode(),0,0).getList();
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(paramItem.getPayrollGroupTemplateCode(), true);
             if (itemList != null) {
                 if (itemList.stream()
                         .anyMatch(i -> i.getItemName().equals(newParam.getItemName()))) {
@@ -139,8 +138,7 @@ public class ItemController extends BaseController{
             }
         }
         if (!StringUtils.isEmpty(newParam.getPayrollGroupCode())){
-            List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(
-                    newParam.getPayrollGroupCode(),0,0).getList();
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(newParam.getPayrollGroupCode(), true);
             if (itemList != null) {
                 if (itemList.stream()
                         .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
