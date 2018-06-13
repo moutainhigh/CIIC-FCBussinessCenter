@@ -91,6 +91,13 @@ public class CalculationBatchController extends BaseController {
 
         JsonResult<Boolean> jr = new JsonResult<>();
 
+        //检查约束
+        int i = this.constraintService.checkBatch(calculationBatchDTO.getBatchIds());
+        if(i > 0){
+            jr.fill(JsonResult.ReturnCode.CONSTRAINTS_2);
+            return jr;
+        }
+
         RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
         BeanUtils.copyProperties(calculationBatchDTO, requestForMainTaskMain);
         calculationBatchService.createMainTask(requestForMainTaskMain);
