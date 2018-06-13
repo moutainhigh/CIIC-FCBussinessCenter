@@ -554,7 +554,7 @@ public class SalaryGrantController {
                 SalaryTaskEmpExcelDTO excelDTO =  CommonTransform.convertToDTO(i, SalaryTaskEmpExcelDTO.class);
                 lists.add(excelDTO);
             });
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员明细").setContent(JSON.toJSONString(lists)));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("雇员明细").setContent(JSON.toJSONString(lists)));
             ExcelUtil.exportExcel(lists, "","雇员信息", SalaryTaskEmpExcelDTO.class, "薪资发放雇员信息.xls", response);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息异常").setContent(e.getMessage()));
@@ -576,11 +576,10 @@ public class SalaryGrantController {
             if (list.isEmpty()) {
                 return ResultGenerator.genServerFailResult("无暂缓雇员");
             }
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单").setContent(JSON.toJSONString(list)));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓名单").setContent(JSON.toJSONString(list)));
             List<SalaryGrantEmployeeBO> bos = CommonTransform.convertToEntities(list, SalaryGrantEmployeeBO.class);
             bos = salaryGrantReprieveEmployeeImportService.deferEmployee(bos, taskCode, taskType, UserContext.getUserId());
             List<ReprieveEmpImportExcelDTO> failList = CommonTransform.convertToEntities(bos, ReprieveEmpImportExcelDTO.class);
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓失败名单").setContent(JSON.toJSONString(failList)));
             return ResultGenerator.genSuccessResult(failList);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓名单异常").setContent(e.getMessage()));
