@@ -16,6 +16,8 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
@@ -62,6 +64,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     private BatchProxy batchProxy;
     @Autowired
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
+    @Autowired
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
     @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
 
@@ -430,6 +434,17 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
                     EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
                     mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
                     salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
+                }
+
+                //查询任务单主表记录
+                EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
+                mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
+                List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
+                if (!CollectionUtils.isEmpty(mainTaskPOList)) {
+                    mainTaskPOList.stream().forEach(salaryGrantMainTaskPO -> {
+                        //更新mongodb中标记为1
+                        fcBizTransactionMongoOpt.commitEvent(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType(), EventName.FC_GRANT_EVENT, 1);
+                    });
                 }
             }
         }

@@ -1,9 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
+import com.google.gson.JsonObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,15 @@ public class CommonServiceTest {
     public void queryUserName(){
         String userName = commonService.getUserNameById("XTY00699");
         System.out.println("userName: " + userName);
+    }
+
+    /**
+     * 查询管理方的发放批次信息
+     */
+    @Test
+    public void getBatchListByManagementId() {
+        List<PrNormalBatchDTO> batchDTOList =  commonService.getBatchListByManagementId("GL170001");
+        System.out.println("batchDTOList: \n" + JSONObject.toJSONString(batchDTOList));
     }
 
 }

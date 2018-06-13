@@ -65,6 +65,10 @@ public class EnumUtil {
      * 性别
      */
     public static final String GENDER_TYPE = "GENDER";
+    /**
+     * 批次类型
+     */
+    public static final String BATCH_TYPE = "BT";
 
     /**
      * 线下模板证件类型(广东)
@@ -154,8 +158,13 @@ public class EnumUtil {
     public static final String getMessage(String type, String key) {
 
         if (StrKit.isNotEmpty(type) && StrKit.isNotEmpty(key)) {
-            if (type.equals(EnumUtil.BATCH_NO_STATUS)) {
-                return BatchNoStatus.valueOf(EnumUtil.BATCH_NO_STATUS + key).getMessage();
+            if (type.equals(EnumUtil.BATCH_NO_STATUS))  {
+                for (BatchNoStatus b : BatchNoStatus.values()) {
+                    if (b.getCode().equals(key)) {
+                        return b.getDesc();
+                    }
+                }
+                return null;
             } else if (type.equals(EnumUtil.IT_TYPE)) {
                 String value = "";
                 Map<String,String> map = BasicData.getInstance().getCertType();
@@ -197,7 +206,16 @@ public class EnumUtil {
                     }
                 }
                 return null;
-            } else if(type.equals(EnumUtil.ID_TYPE_OFFLINE_GD)){
+            }
+            else if(type.equals(EnumUtil.BATCH_TYPE)){
+                for (BatchType is : BatchType.values()) {
+                    if (is.getCode().equals(key)) {
+                        return is.getDesc();
+                    }
+                }
+                return null;
+            }
+            else if(type.equals(EnumUtil.ID_TYPE_OFFLINE_GD)){
                 for (IdTypeEnumsAboutGdOffline item : IdTypeEnumsAboutGdOffline.values()) {
                     if (item.getCode().equals(key)) {
                         return item.getDesc();

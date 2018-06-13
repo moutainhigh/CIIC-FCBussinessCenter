@@ -45,6 +45,7 @@
 
     <!-- query task page list,include main task and sub task -->
     <resultMap id="PageResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO">
+        <result column="task_id" property="taskId" />
         <result column="task_code" property="taskCode" />
         <result column="management_id" property="managementId" />
         <result column="management_name" property="managementName" />
@@ -77,7 +78,7 @@
 
     <sql id="sgDetailField">
         t1.salary_grant_main_task_id task_id, t1.salary_grant_main_task_code task_code, t1.batch_code, t1.management_id, t1.management_name, t1.grant_type, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type, t1.task_status,
-		t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count, t1.operator_user_id, t1.approve_user_id
+		t1.approved_opinion, t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count, t1.operator_user_id, t1.approve_user_id
     </sql>
 
     <sql id="sgListField">

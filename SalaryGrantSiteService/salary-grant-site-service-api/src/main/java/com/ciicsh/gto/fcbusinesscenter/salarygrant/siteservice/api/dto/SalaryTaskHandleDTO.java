@@ -54,9 +54,17 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      */
     private String taskStatus;
     /**
+     * 审批意见
+     */
+    private String approvedOpinion;
+    /**
      * 失效原因
      */
     private String invalidReason;
+    /**
+     * 撤回原因
+     */
+    private String remark;
     /**
      * 薪资项
      */
