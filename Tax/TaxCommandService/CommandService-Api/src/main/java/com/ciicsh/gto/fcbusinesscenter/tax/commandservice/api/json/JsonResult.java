@@ -32,7 +32,9 @@ public class JsonResult<T> {
 
         SU_ER01("任务内有未确认的合并明细，不能提交任务"),
 
-        CONSTRAINTS_1("相关批次已取消关账，不能提交");
+        CONSTRAINTS_1("相关批次已取消关账，不能提交"),
+
+        CONSTRAINTS_2("有批次已取消关账，不能创建任务");
 
         private String  message;
 

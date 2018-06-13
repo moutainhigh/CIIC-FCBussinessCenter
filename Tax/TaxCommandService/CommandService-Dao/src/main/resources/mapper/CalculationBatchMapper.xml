@@ -78,6 +78,7 @@
 		<result column="is_transfer_supported" property="transferSupported" />
 		<result column="is_proof" property="proof" />
 		<result column="is_proofed" property="proofed" />
+		<result column="tax_real" property="taxReal" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
@@ -89,7 +90,7 @@
 	<!-- 查询批次明细 -->
 	<select id="queryCalculationBatchDetails" parameterType="java.util.Map" resultMap="BaseResultMap">
 		SELECT
-		t2.id,t1.batch_no
+		t2.id,t1.batch_no,t2.tax_real
 		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
 		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
 		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return
@@ -144,33 +145,49 @@
 
 	<!--根据批次id删除明细信息-->
 	<update id="cancelDetailsByCalBatchId">
-		update tax_fc_calculation_batch_detail t1
+		/*update tax_fc_calculation_batch_detail t1
 		inner join tax_fc_calculation_batch t2
 		on t1.calculation_batch_id = t2.id
 		SET
 		t1.is_active = false
+		where t2.id = #{calBatchId}*/
+		delete tax_fc_calculation_batch_detail t1
+		inner join tax_fc_calculation_batch t2
+		on t1.calculation_batch_id = t2.id
 		where t2.id = #{calBatchId}
 	</update>
 	<!--根据批次id删除个税信息-->
 	<update id="cancelInfosByCalBatchId">
-		update tax_fc_employee_info_batch t1
+		/*update tax_fc_employee_info_batch t1
 		inner join tax_fc_calculation_batch_detail t2
 		on t1.cal_batch_detail_id = t2.id
 		inner join tax_fc_calculation_batch t3
 		on t2.calculation_batch_id = t3.id
 		SET
 		t1.is_active = false
+		where t3.id = #{calBatchId}*/
+		delete tax_fc_employee_info_batch t1
+		inner join tax_fc_calculation_batch_detail t2
+		on t1.cal_batch_detail_id = t2.id
+		inner join tax_fc_calculation_batch t3
+		on t2.calculation_batch_id = t3.id
 		where t3.id = #{calBatchId}
 	</update>
 	<!--根据批次id删除服务信息-->
 	<update id="cancelServicesByCalBatchId">
-		update tax_fc_employee_service_batch t1
+		/*update tax_fc_employee_service_batch t1
 		inner join tax_fc_calculation_batch_detail t2
 		on t1.cal_batch_detail_id = t2.id
 		inner join tax_fc_calculation_batch t3
 		on t2.calculation_batch_id = t3.id
 		SET
 		t1.is_active = false
+		where t3.id = #{calBatchId}*/
+		delete tax_fc_employee_service_batch t1
+		inner join tax_fc_calculation_batch_detail t2
+		on t1.cal_batch_detail_id = t2.id
+		inner join tax_fc_calculation_batch t3
+		on t2.calculation_batch_id = t3.id
 		where t3.id = #{calBatchId}
 	</update>
 

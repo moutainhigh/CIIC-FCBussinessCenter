@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -81,6 +82,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
         //批次号
         String batchCode = closingMsg.getBatchCode();
+        //版本号
+        long versionNo = closingMsg.getVersion();
 
         //批次查询条件
         EntityWrapper wrapper = new EntityWrapper();
@@ -89,8 +92,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         //根据批次号查询批次
         CalculationBatchPO calculationBatchPO = calculationBatchService.selectOne(wrapper);
 
-        //如果批次已存在，且状态不为“取消关账”，则不更新批次信息
-        if(calculationBatchPO != null && !(calculationBatchPO.getStatus().equals(BatchNoStatus.unclose.getCode()))){
+        //如果批次已存在，且版本更高，则不更新批次信息
+        if(calculationBatchPO != null && calculationBatchPO.getVersionNo() >= versionNo){
             return;
         }
 
@@ -106,7 +109,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             mainBO.setManagerName(convert(dBObject,"mgr_name",String.class));//管理方名称
             String status = BatchNoStatus.close.getCode();//状态：已关账
             mainBO.setIncomeYearMonth(str2Date(convert(dBObject,"income_year_month",String.class),"yyyyMM"));//薪资期间
-            int version_no = 1;//初始版本为1
+            int version_no = (int)versionNo;//版本号
 
             //todo  总税金、总人数、中方人数、外方人数
 
@@ -128,7 +131,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 newCal.setStatus(status);
                 newCal.setBatchType(this.getBatchType(closingMsg.getBatchType()));
                 newCal.setParentBatchNo(convert(dBObject,"batch_ref_id",String.class));
-                newCal.setVersionNo(newCal.getVersionNo()+1);
+                newCal.setVersionNo(version_no);
                 this.calculationBatchService.updateById(newCal);
             }
 
@@ -511,7 +514,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             CalculationBatchPO calculationBatchPO = calculationBatchService.selectOne(wrapper);
 
             //状态为已关账，则可以取消
-            if(calculationBatchPO!=null && calculationBatchPO.getStatus().equals(BatchNoStatus.close.getCode())){
+            if(calculationBatchPO!=null && calculationBatchPO.getVersionNo()==cancelClosingMsg.getVersion()){
                 calculationBatchPO.setStatus(BatchNoStatus.unclose.getCode());
                 calculationBatchService.updateById(calculationBatchPO);
                 this.cancelBatchInfos(calculationBatchPO.getId());
@@ -703,4 +706,5 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         return bd;
 
     }
+
 }

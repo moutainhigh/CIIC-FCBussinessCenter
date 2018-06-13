@@ -57,6 +57,16 @@ public class CalculationBatchTaskMainPO extends Model<CalculationBatchTaskMainPO
 	@TableField(exist = false)
 	private TaskMainPO taskMainPOs;
 
+	private int versionNo;
+
+	public int getVersionNo() {
+		return versionNo;
+	}
+
+	public void setVersionNo(int versionNo) {
+		this.versionNo = versionNo;
+	}
+
 	public TaskMainPO getTaskMainPOs() {
 		return taskMainPOs;
 	}

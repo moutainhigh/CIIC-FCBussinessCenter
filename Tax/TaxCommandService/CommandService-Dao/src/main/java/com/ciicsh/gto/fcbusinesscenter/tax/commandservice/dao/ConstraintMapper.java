@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
  * @author wuhua
  */
 public interface ConstraintMapper{
+    //批次是否为'取消关账'
+    int selectNumsForBatch(@Param("batchIds")String[] batchIds);
 
     //主任务相关的批次是否为'取消关账'
     int selectNumsForTaskMain(@Param("taskIds")String[] taskIds);

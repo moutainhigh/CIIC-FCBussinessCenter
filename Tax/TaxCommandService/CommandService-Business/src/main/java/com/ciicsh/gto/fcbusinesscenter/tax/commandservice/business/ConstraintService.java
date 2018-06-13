@@ -15,6 +15,12 @@ public interface ConstraintService {
     String TASK_SUB_PROOF = "TSP";//完税凭证子任务
 
     /**
+     * 检查批次约束
+     * @param Ids
+     * @return
+     */
+    int checkBatch(String[] Ids);
+    /**
      * 检查任务约束
      * @param taskIds
      * @param taskType

@@ -9,17 +9,17 @@ public enum BatchType {
     /**
      * 正常
      */
-    normal("00","正常"),
+    normal("00","正常批次"),
 
     /**
      * 调整
      */
-    ajust("01","调整"),
+    ajust("01","调整批次"),
 
     /**
      * 回溯
      */
-    backdate("02","回溯");
+    backdate("02","回溯批次");
 
     private String  code;
 
