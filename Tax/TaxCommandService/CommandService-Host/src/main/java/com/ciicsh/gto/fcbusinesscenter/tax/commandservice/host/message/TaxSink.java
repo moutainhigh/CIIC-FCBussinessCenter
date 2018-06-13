@@ -14,6 +14,18 @@ public interface TaxSink {
      * 结算中心划款topic
      */
     String PAY_APPLY_PAY_STATUS_STREAM = "pay-apply-pay-status-stream";
+    /**
+     * 计算引擎关账topic
+     */
+    String PR_COMPUTE_CLOSE_OUTPUT_CHANNEL = "pr-compute-close-output-channel";
+    /**
+     * 计算引擎取消关账topic
+     */
+    String PR_COMPUTE_UNCLOSE_OUTPUT_CHANNEL = "pr-compute-unclose-output-channel";
+    /**
+     * 工作流topic
+     */
+    String WORKFLOW_CHANNEL = "workflow-channel";
 
 
     /**
@@ -22,5 +34,26 @@ public interface TaxSink {
      */
     @Input(PAY_APPLY_PAY_STATUS_STREAM)
     MessageChannel moneyMessage();
+
+    /**
+     * 监听计算引擎关账消息
+     * @return
+     */
+    @Input(PR_COMPUTE_CLOSE_OUTPUT_CHANNEL)
+    MessageChannel clMessage();
+
+    /**
+     * 监听计算引擎取消关账消息
+     * @return
+     */
+    @Input(PR_COMPUTE_UNCLOSE_OUTPUT_CHANNEL)
+    MessageChannel unclMessage();
+
+    /**
+     * 监听工作引擎消息
+     * @return
+     */
+    @Input(WORKFLOW_CHANNEL)
+    MessageChannel wfMessage();
 
 }

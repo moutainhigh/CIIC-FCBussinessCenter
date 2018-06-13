@@ -14,17 +14,27 @@ import com.ciicsh.gto.basicdataservice.api.dto.ProvinceDTO;
 import com.ciicsh.gto.billcenter.fcmodule.api.ISalaryEmployeeProxy;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryEmployeeProxyDTO;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.DeferredPoolProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.PaymentDeferredRequestDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.page.Pagination;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.BankFileProxy;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.SalaryServiceProxy;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult;
@@ -36,6 +46,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -75,6 +86,10 @@ public class CommonServiceImpl implements CommonService {
     private ISalaryEmployeeProxy salaryEmployeeProxy;
     @Autowired
     private SalaryServiceProxy salaryServiceProxy;
+    @Autowired
+    private DeferredPoolProxy deferredPoolProxy;
+    @Autowired
+    private BatchProxy batchProxy;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -336,15 +351,18 @@ public class CommonServiceImpl implements CommonService {
                 }
                 salaryEmployeeDTO.setPayIncometaxAmount(employeePaymentBO.getPersonalIncomeTax()); //个税金额
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantServiceType())) {
-                    if (employeePaymentBO.getGrantServiceType() == 0) {
+                    //发放服务标识：0-薪资发放
+                    if (employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT) {
                         salaryEmployeeDTO.setIfTaxPay(0); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
                     } else {
                         if (!ObjectUtils.isEmpty(employeePaymentBO.getDeclarationAccountCategory())) {
-                            if (employeePaymentBO.getDeclarationAccountCategory() == 1) {
+                            //申报账户类别: 1-大库（FC目前服务协议只配置FC大库）
+                            if (employeePaymentBO.getDeclarationAccountCategory() == SalaryGrantBizConsts.DECLARATION_ACCOUNT_CATEGORY_DEPOT_BIG) {
                                 salaryEmployeeDTO.setIfTaxPay(2); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
                             }
 
-                            if (employeePaymentBO.getDeclarationAccountCategory() == 2) {
+                            //申报账户类别: 2-独立库
+                            if (employeePaymentBO.getDeclarationAccountCategory() == SalaryGrantBizConsts.DECLARATION_ACCOUNT_CATEGORY_DEPOT_INDEPENDENT) {
                                 salaryEmployeeDTO.setIfTaxPay(3); //是否要付个税(0否，1AF大库，2FC大库，3独立库)
                             }
                         }
@@ -352,11 +370,13 @@ public class CommonServiceImpl implements CommonService {
                 }
                 salaryEmployeeDTO.setSalaryAmount(employeePaymentBO.getWagePayable()); //应付工资
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantServiceType())) {
-                    if (employeePaymentBO.getGrantServiceType() == 1) {
+                    //发放服务标识：1-个税
+                    if (employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_TAX) {
                         salaryEmployeeDTO.setIfSalaryPay(0); //是否要付工资(1:是；0:否)
                     }
 
-                    if (employeePaymentBO.getGrantServiceType() == 0 || employeePaymentBO.getGrantServiceType() == 2) {
+                    //发放服务标识：0-薪资发放，2-薪资发放 + 个税
+                    if (employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT || employeePaymentBO.getGrantServiceType() == SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT_AND_TAX) {
                         salaryEmployeeDTO.setIfSalaryPay(1); //是否要付工资(1:是；0:否)
                     }
                 }
@@ -367,7 +387,7 @@ public class CommonServiceImpl implements CommonService {
                 salaryEmployeeDTO.setServiceFee(employeePaymentBO.getServiceFeeAmount()); //个人薪酬服务费
                 //如果雇员是暂缓grant_status（1-手动、2-自动）不发放，则置为-1；否则赋值为对应grant_status的值
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantStatus())) {
-                    if (employeePaymentBO.getGrantStatus() == 1 || employeePaymentBO.getGrantStatus() == 2) {
+                    if (employeePaymentBO.getGrantStatus() == SalaryGrantBizConsts.GRANT_STATUS_MANUAL_REPRIEVE || employeePaymentBO.getGrantStatus() == SalaryGrantBizConsts.GRANT_STATUS_AUTO_REPRIEVE) {
                         salaryEmployeeDTO.setSalaryStatus(-1); //雇员薪资明细状态(0:正常;1:暂缓放开;2:退票完成;3:现金完成;4:调整完成;负值标识未完成/未放开)
                     } else {
                         salaryEmployeeDTO.setSalaryStatus(employeePaymentBO.getGrantStatus()); //雇员薪资明细状态(0:正常;1:暂缓放开;2:退票完成;3:现金完成;4:调整完成;负值标识未完成/未放开)
@@ -393,5 +413,82 @@ public class CommonServiceImpl implements CommonService {
         }
 
         return null;
+    }
+
+    @Override
+    public Boolean addDeferredPool(SalaryGrantTaskBO salaryGrantTaskBO, List<SalaryGrantEmployeePO> employeeList) {
+        PaymentDeferredRequestDTO paymentDeferredRequestDTO = new PaymentDeferredRequestDTO();
+        paymentDeferredRequestDTO.setTaskCode(salaryGrantTaskBO.getTaskCode());             //任务单编号
+        paymentDeferredRequestDTO.setBatchCode(salaryGrantTaskBO.getBatchCode());           //薪酬计算批次号
+        paymentDeferredRequestDTO.setManagementId(salaryGrantTaskBO.getManagementId());     //管理方编号
+        paymentDeferredRequestDTO.setManagementName(salaryGrantTaskBO.getManagementName()); //管理方名称
+        paymentDeferredRequestDTO.setGrantCycle(salaryGrantTaskBO.getGrantCycle());         //薪资周期
+
+        List<PaymentDeferredRequestDTO.EmployeeInfo> employeeInfoList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(employeeList)) {
+            employeeList.stream().forEach(employeePO -> {
+                PaymentDeferredRequestDTO.EmployeeInfo employeeInfo = new PaymentDeferredRequestDTO.EmployeeInfo();
+                employeeInfo.setEmployeeId(employeePO.getEmployeeId());             //雇员编号
+                employeeInfo.setEmployeeName(employeePO.getEmployeeName());         //雇员名称
+                employeeInfo.setCompanyId(employeePO.getCompanyId());               //公司编号
+                employeeInfo.setCompanyName(employeePO.getCompanyName());           //公司名称
+                employeeInfo.setCardNum(employeePO.getCardNum());                   //收款人账号
+                employeeInfo.setAccountName(employeePO.getAccountName());           //收款人姓名
+                employeeInfo.setBankcode(employeePO.getBankCode());                 //收款行行号
+                employeeInfo.setDepositeBank(employeePO.getDepositBank());          //收款行名称
+                employeeInfo.setPaymentAmountRmb(employeePO.getPaymentAmountRMB()); //人民币金额
+                employeeInfo.setPaymentAmount(employeePO.getPaymentAmount());       //发放金额
+                employeeInfo.setCurrencyCode(employeePO.getCurrencyCode());         //发放币种
+                employeeInfo.setGrantMode(employeePO.getGrantMode());               //发放方式
+                employeeInfo.setGrantStatus(employeePO.getGrantStatus());           //发放状态
+                employeeInfo.setReprieveType(employeePO.getReprieveType());         //暂缓类型
+                employeeInfo.setCountryCode(employeePO.getCountryCode());           //国籍
+
+                employeeInfoList.add(employeeInfo);
+            });
+        }
+
+        paymentDeferredRequestDTO.setEmployeeInfos(employeeInfoList);
+
+        com.ciicsh.common.entity.JsonResult jsonResult = deferredPoolProxy.addDeferredPool(paymentDeferredRequestDTO);
+        if (!ObjectUtils.isEmpty(jsonResult)) {
+            return jsonResult.isSuccess();
+        } else {
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("暂缓人员信息进入暂缓池").setTitle("调用客服中心暂缓池操作接口").setContent("调用接口异常"));
+        }
+
+        return false;
+    }
+
+    @Override
+    public List<PrNormalBatchDTO> getBatchListByManagementId(String managementId) {
+        Pagination<PrNormalBatchDTO> prNormalBatchDTOPagination = batchProxy.getBatchListByManagementId(managementId, null, 1, Integer.MAX_VALUE);
+        return prNormalBatchDTOPagination.getList();
+    }
+
+    @Override
+    public PrBatchDTO getBatchInfo(String batchCode, int batchType) {
+        return batchProxy.getBatchInfo(batchCode, batchType);
+    }
+
+    @Override
+    public int updateBatchStatus(SalaryGrantMainTaskPO salaryGrantMainTaskPO, PrNormalBatchDTO prNormalBatchDTO) {
+        BatchAuditDTO batchAuditDTO = new BatchAuditDTO();
+        //薪资发放日期
+        String grantDate = salaryGrantMainTaskPO.getGrantDate();
+        //增加天数
+        int advanceDay = prNormalBatchDTO.getAdvanceDay();
+
+        if (!StringUtils.isEmpty(grantDate)){
+            grantDate = grantDate.replace("-", "");
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            LocalDate grantDateDate = LocalDate.parse(grantDate, dateTimeFormatter);
+            grantDateDate = grantDateDate.plusDays(advanceDay);
+            batchAuditDTO.setAdvancePeriod(grantDateDate.format(dateTimeFormatter));
+            return batchProxy.updateBatchStatus(batchAuditDTO);
+        }
+
+        return 0;
     }
 }

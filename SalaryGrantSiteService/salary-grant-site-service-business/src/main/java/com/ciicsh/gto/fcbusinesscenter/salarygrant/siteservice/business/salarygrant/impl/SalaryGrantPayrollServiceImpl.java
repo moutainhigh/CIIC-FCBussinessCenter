@@ -28,13 +28,11 @@ import java.util.stream.Collectors;
 @Service
 public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService {
     @Autowired
-    CommonService commonService;
-
+    private CommonService commonService;
     @Autowired
-    SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
-
+    private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     /**
      * 生成财务报表
@@ -92,8 +90,9 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
         summary.setWagePayable(list.parallelStream().map(FinanceEmployeeBO::getWagePayable).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setPersonalSocialSecurity(list.parallelStream().map(FinanceEmployeeBO::getPersonalSocialSecurity).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setIndividualProvidentFund(list.parallelStream().map(FinanceEmployeeBO::getIndividualProvidentFund).reduce(BigDecimal.ZERO, BigDecimal::add));
-        summary.setTax(list.parallelStream().map(FinanceEmployeeBO::getTax).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTaxAF(list.parallelStream().map(FinanceEmployeeBO::getTaxAF).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setTaxFC(list.parallelStream().map(FinanceEmployeeBO::getTaxFC).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.setTaxBPO(list.parallelStream().map(FinanceEmployeeBO::getTaxBPO).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setTaxIndependence(list.parallelStream().map(FinanceEmployeeBO::getTaxIndependence).reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.setPaymentAmount(list.parallelStream().map(FinanceEmployeeBO::getPaymentAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
         return summary;

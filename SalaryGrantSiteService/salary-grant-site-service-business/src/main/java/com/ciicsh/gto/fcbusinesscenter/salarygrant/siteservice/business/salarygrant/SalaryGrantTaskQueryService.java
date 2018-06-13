@@ -1,11 +1,14 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.IService;
+import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -15,7 +18,7 @@ import java.util.Map;
  * @author gaoyang
  * @since 2018-04-17
  */
-public interface SalaryGrantTaskQueryService {
+public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTaskPO> {
 
     /**
      * 查询薪资发放任务单列表
@@ -45,13 +48,53 @@ public interface SalaryGrantTaskQueryService {
     Page<WorkFlowTaskInfoBO> operation(SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
-     * @description 根据主表任务单编号查询子表任务单
+     * 根据主表任务单编号查询子表任务单
      * @author chenpb
      * @since 2018-05-10
      * @param salaryGrantTaskBO
      * @return
      */
     List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 同步结算中心支付状态
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     */
+    void syncPayStatus(List<PayapplySalaryDTO> list);
+
+    /**
+     * 取消关账
+     * @author chenpb
+     * @since 2018-06-07
+     * @param msg
+     */
+    void cancelClosing(CancelClosingMsg msg);
+
+    /**
+     * 审批通过
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    void approvalPass(SalaryGrantTaskBO bo);
+
+    /**
+     * 审批退回
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    void approvalReject(SalaryGrantTaskBO bo);
+
+    /**
+     * 详情提交
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    void detailSubmit(SalaryGrantTaskBO bo);
 
     /**
      * 薪资发放定时任务

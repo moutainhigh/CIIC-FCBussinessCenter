@@ -18,8 +18,11 @@ import com.ciicsh.gto.fcbusinesscenter.util.entity.DistributedTranEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.AdvanceEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.company.*;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
@@ -31,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.Format;
@@ -83,6 +87,9 @@ public class CompleteComputeServiceImpl {
     @Autowired
     private PrNormalBatchService normalBatchService;
 
+    @Autowired
+    private CommonServiceImpl commonService;
+
     public void processCompleteCompute(String batchCode, int batchType, String userID, String userName){
 
         List<DBObject> batchList = null;
@@ -94,11 +101,12 @@ public class CompleteComputeServiceImpl {
                 include(PayItemName.EMPLOYEE_CODE_CN)
                 .include("catalog.emp_info")
                 .include("catalog.emp_info.country_code")
-                .include("catalog.batch_info.period")
+                .include("catalog.batch_info.actual_period")
                 .include("catalog.batch_info.management_ID")
                 .include("catalog.batch_info.management_Name")
+                .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.item_name")
-                .include("catalog.pay_items.item_code")
+                .include("catalog.pay_items.cal_precision")
                 .include("catalog.pay_items.item_value")
         ;
 
@@ -127,9 +135,26 @@ public class CompleteComputeServiceImpl {
             String mgrId = batchInfo.get("management_ID") == null ? "" : (String) batchInfo.get("management_ID");
             DBObject empInfo = getEmployeeInfo(catalog,empCode,mgrId);
             List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
+            payItems = payItems.stream().map(pItem -> {
+                        DBObject tranItem = new BasicDBObject();
+                        int dataType = pItem.get("data_type") == null ? 0 : (int) pItem.get("data_type");
+                        int precision = pItem.get("cal_precision") == null ? 2 : (int) pItem.get("cal_precision");
+                        Object itemVal =  pItem.get("item_value");
+                        if (dataType == DataTypeEnum.NUM.getValue()) {
+                            tranItem.put("item_value_str", BizArith.roundStr(itemVal, precision));
+                        }
+                        tranItem.put("item_name",pItem.get("item_name"));
+                        tranItem.put("item_value",pItem.get("item_value"));
+                        return tranItem;
+                    }
+                ).collect(Collectors.toList());
             DBObject mapObj = new BasicDBObject();
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("batch_id", batchCode);  // 批次ID
+
+            long version = commonService.getBatchVersion(batchCode) + 1;
+            mapObj.put("version", version); // 批次版本号
+
             mapObj.put("batch_ref_id",item.get("origin_batch_code") == null ? "" :item.get("origin_batch_code")); // 该批次引用ID
             mapObj.put("mgr_id", mgrId); // 管理方ID
             mapObj.put("mgr_name", batchInfo.get("management_Name") == null ? "" : batchInfo.get("management_Name")); // 管理方名称
@@ -173,29 +198,7 @@ public class CompleteComputeServiceImpl {
 
         }).collect(Collectors.toList());
 
-        int deletedAffected = closeAccountMongoOpt.batchDelete(Criteria.where("batch_id").is(batchCode)); // 幂等操作
-        logger.info("幂等删除：" + String.valueOf(deletedAffected));
-
-        int rowAffected = closeAccountMongoOpt.batchInsert(list);
-
-        logger.info("批量插入成功：" + String.valueOf(rowAffected));
-
-        if(rowAffected > 0){
-
-            int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
-
-            if(affected > 0) {
-                ClosingMsg closingMsg = new ClosingMsg();
-                closingMsg.setBatchCode(batchCode);
-                closingMsg.setBatchType(batchType);
-                closingMsg.setOptID(userID);
-                closingMsg.setOptName(userName);
-
-                //sender.SendComputeClose(closingMsg);
-                logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
-            }
-
-        }
+        doBizTransaction(batchCode, batchType,list, userID, userName ,companyIds);
     }
 
     /**
@@ -397,19 +400,19 @@ public class CompleteComputeServiceImpl {
 
     private int updateAdvance(List<String> companyIds,String batchCode, int batchType){
 
-        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<PaymentCycleDTO>> result = companyProxy.listPaymentInfo(companyIds);
-        List<PaymentCycleDTO> fcPaymentCycleDTOS = result.getObject();
+        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<FcPaymentCycleDTO>> result = companyProxy.listPaymentInfo(companyIds);
+        List<FcPaymentCycleDTO> fcPaymentCycleDTOS = result.getObject();
         if(fcPaymentCycleDTOS != null && fcPaymentCycleDTOS.size() > 0){
             int size = fcPaymentCycleDTOS.size();
             int count = 0;
-            for (PaymentCycleDTO item : fcPaymentCycleDTOS){
-                if(item.getHasCreditPayment()){
+            for (FcPaymentCycleDTO item : fcPaymentCycleDTOS){
+                if(item.isHasCreditPayment()){
                     count ++;
                 }
             }
 
             if(count == size){ //周期垫付
-                Optional<PaymentCycleDTO> findMin = fcPaymentCycleDTOS.stream().sorted((item1,item2) -> item1.getPaymentCycle().compareTo(item2.getPaymentCycle())).findFirst();
+                Optional<FcPaymentCycleDTO> findMin = fcPaymentCycleDTOS.stream().sorted((item1,item2) -> item1.getPaymentCycle().compareTo(item2.getPaymentCycle())).findFirst();
                 if(findMin.isPresent()){
                     int minAdvanceDay = findMin.get().getPaymentCycle(); // 最小垫付周期日
                     //boolean hasAdvance = true;
@@ -433,5 +436,44 @@ public class CompleteComputeServiceImpl {
 
         return 0;
     }
+
+    @Transactional(rollbackFor = RuntimeException.class)
+    private void doBizTransaction(String batchCode, int batchType,List<DBObject> list,String userID, String userName, List<String> companyIds){
+
+        int deletedAffected = closeAccountMongoOpt.batchDelete(Criteria.where("batch_id").is(batchCode)); // 幂等操作
+        logger.info("幂等删除：" + String.valueOf(deletedAffected));
+
+        int rowAffected = closeAccountMongoOpt.batchInsert(list);
+
+        logger.info("批量插入成功：" + String.valueOf(rowAffected));
+
+        initializeDistributedTransaction(batchCode,batchType);
+
+        logger.info("初始化分布式事务：" + String.valueOf(rowAffected));
+
+        if(rowAffected > 0){
+
+            int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
+
+            if(affected > 0){
+                logger.info("产生周期垫付");
+            }
+
+            ClosingMsg closingMsg = new ClosingMsg();
+            closingMsg.setBatchCode(batchCode);
+            closingMsg.setBatchType(batchType);
+            closingMsg.setOptID(userID);
+            closingMsg.setOptName(userName);
+
+            long version = commonService.getBatchVersion(batchCode);
+            closingMsg.setVersion(version);
+
+            sender.SendComputeClose(closingMsg);
+            logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
+
+
+        }
+    }
+
 
 }

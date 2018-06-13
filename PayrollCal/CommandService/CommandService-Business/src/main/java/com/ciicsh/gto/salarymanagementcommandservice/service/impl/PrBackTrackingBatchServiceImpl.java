@@ -105,9 +105,9 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
     }
 
     @Override
-    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String advancePeriod, String result) {
         if(status == BatchStatusEnum.COMPUTING.getValue()){
-            return backTrackingBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+            return backTrackingBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
         }
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
         int approvalResult = 0;
@@ -126,7 +126,7 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
         historyPO.setComments(comments);
         approvalHistoryService.addApprovalHistory(historyPO);
 
-        return backTrackingBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+        return backTrackingBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
     }
 
     @Override

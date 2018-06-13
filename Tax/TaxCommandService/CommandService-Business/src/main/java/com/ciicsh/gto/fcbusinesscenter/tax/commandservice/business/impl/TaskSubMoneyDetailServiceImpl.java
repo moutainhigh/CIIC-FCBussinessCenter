@@ -104,4 +104,25 @@ public class TaskSubMoneyDetailServiceImpl extends ServiceImpl<TaskSubMoneyDetai
         taskSubMoneyDetailPOList = baseMapper.selectList(wrapper);
         return taskSubMoneyDetailPOList;
     }
+
+    /**
+     * 根据计算批次明细ID集合查询划款明细集合
+     * @param taskSubMoneyDetailIdsList
+     * @return
+     */
+    @Override
+    public List<TaskSubMoneyDetailPO> querySubMonetDetailsByBatchDetailIds(List<Long> taskSubMoneyDetailIdsList) {
+        List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOS = new ArrayList<>();
+        try {
+            //查询划款明细集合
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new TaskSubMoneyDetailPO());
+            wrapper.in("calculation_batch_detail_id", taskSubMoneyDetailIdsList);
+            wrapper.andNew("is_active = {0} ", true);
+            taskSubMoneyDetailPOS = baseMapper.selectList(wrapper);
+        } catch (Exception e) {
+            throw e;
+        }
+        return taskSubMoneyDetailPOS;
+    }
 }

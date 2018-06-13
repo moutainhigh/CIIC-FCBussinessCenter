@@ -11,8 +11,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollGroupHistoryDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollItemDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrFunctionsMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
+import com.ciicsh.gto.salarymanagementcommandservice.service.common.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.*;
 import com.ciicsh.gto.salarymanagementcommandservice.util.CommonUtils;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
@@ -22,7 +21,6 @@ import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.PageInfo;
-import kafka.utils.Json;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;

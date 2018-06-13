@@ -16,6 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalc
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
@@ -148,19 +149,18 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
                         EmpCalcResultBO empCalcResultBO = new EmpCalcResultBO();
                         //薪资项结果列表
                         List<CalcResultItemBO> empCalcResultItemsList = new ArrayList<>();
-
+                        DBObject empInfo = (DBObject) (dbObject.get("emp_info"));
                         //雇员编号
-                        empCalcResultBO.setEmployeeId(StringUtils.isEmpty(dbObject.get("emp_id")) ? null : dbObject.get("emp_id").toString());
+                        empCalcResultBO.setEmployeeId(StringUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_CODE_CN) ) ? null : empInfo.get(PayItemName.EMPLOYEE_CODE_CN) .toString());
                         //公司编号
-                        empCalcResultBO.setCompanyId(StringUtils.isEmpty(dbObject.get("company_id")) ? null : dbObject.get("company_id").toString());
+                        empCalcResultBO.setCompanyId(StringUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN)) ? null : empInfo.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN).toString());
 
                         //发放币种:CNY-人民币，USD-美元，EUR-欧元
-                        String employeeServiceAgreementJSONStr = StringUtils.isEmpty(dbObject.get("employee_service_agreement")) ? null : dbObject.get("employee_service_agreement").toString();
-                        if (!StringUtils.isEmpty(employeeServiceAgreementJSONStr)) {
-                            JSONObject employeeServiceAgreementJSONObject = JSON.parseObject(employeeServiceAgreementJSONStr);
-                            JSONObject salaryGrantInfoJSONObject = employeeServiceAgreementJSONObject.getJSONObject(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
-                            if (!ObjectUtils.isEmpty(salaryGrantInfoJSONObject)) {
-                                empCalcResultBO.setCurrencyCode(ObjectUtils.isEmpty(salaryGrantInfoJSONObject.get("currencyType")) ? null : salaryGrantInfoJSONObject.get("currencyType").toString());
+                        DBObject employeeServiceAgreement = (DBObject) empInfo.get(PayItemName.EMPLOYEE_SERVICE_AGREE);
+                        if (!ObjectUtils.isEmpty(employeeServiceAgreement)) {
+                            DBObject salaryGrantInfo = (DBObject) employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
+                            if (!ObjectUtils.isEmpty(salaryGrantInfo.get("currencyType"))) {
+                                empCalcResultBO.setCurrencyCode(salaryGrantInfo.get("currencyType").toString());
                             } else {
                                 //解析发放币种失败时抛异常
                                 throw new RuntimeException("雇员服务协议薪资发放信息中币种不能为空！");

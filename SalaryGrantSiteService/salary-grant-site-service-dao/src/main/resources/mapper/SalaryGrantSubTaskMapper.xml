@@ -346,7 +346,11 @@
 
     <sql id="sgDetailField">
         t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code,  t.batch_code, t.management_id, t.management_name, t.grant_type, t.grant_cycle, t.grant_date, t.grant_time, t.created_time, t.task_type,t.task_status,
-        t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count, 0 as local_grant_count, 0 as supplier_grant_count
+        t.approved_opinion, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count, 0 as local_grant_count, 0 as supplier_grant_count
+    </sql>
+
+    <sql id="sgPaymentField">
+        t.salary_grant_main_task_code, t.batch_code, t.grant_mode, t.grant_type
     </sql>
 
     <sql id="FinanceField">
@@ -396,5 +400,34 @@
         and
             s.is_active = 1
     </select>
+
+    <select id="selectListByTaskCodes" resultMap="BaseResultMap">
+        select
+            <include refid="sgPaymentField"></include>
+        from
+            sg_salary_grant_sub_task t
+        where
+            t.salary_grant_sub_task_code in (${taskCodes})
+        and
+            t.task_type = 1
+        and
+            t.is_active = 1
+        and
+            t.task_status != '7'
+    </select>
+
+    <update id="syncTaskInfo">
+        update
+            sg_salary_grant_sub_task s
+        set
+            s.task_status = #{taskStatus},
+            s.modified_time = now()
+        where
+            s.salary_grant_sub_task_code in (${taskCodes})
+        and
+            s.task_type = 1
+        and
+            s.is_active = 1
+    </update>
 
 </mapper>

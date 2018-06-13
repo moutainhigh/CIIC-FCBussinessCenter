@@ -1,17 +1,18 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 
-import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.CloseAccountMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -47,10 +48,16 @@ public class CommonServiceImpl {
     private PrPayrollItemMapper prPayrollItemMapper;
 
     @Autowired
+    private PrItemService itemService;
+
+    @Autowired
     private PrPayrollAccountItemRelationMapper accountItemRelationMapper;
 
     @Autowired
     private PrNormalBatchMapper normalBatchMapper;
+
+    @Autowired
+    private CloseAccountMongoOpt closeAccountMongoOpt;
 
     /**
      * 批量更新或者插入数据
@@ -132,22 +139,19 @@ public class CommonServiceImpl {
         List<PrPayrollItemPO> prList = null;
         List<BasicDBObject> list = new ArrayList<>();
 
-        PayrollGroupExtPO payrollGroupExtPO = new PayrollGroupExtPO();
-        payrollGroupExtPO.setManagementId(batchPO.getManagementId());
-        if(batchPO.isTemplate()) {
-            payrollGroupExtPO.setPayrollGroupCode("");
-            payrollGroupExtPO.setPayrollGroupTemplateCode(batchPO.getPrGroupCode());
-        }else {
-            payrollGroupExtPO.setPayrollGroupCode(batchPO.getPrGroupCode());
-            payrollGroupExtPO.setPayrollGroupTemplateCode("");
-
-        }
         //获取薪资组或薪资组模版下的薪资项列表
-        prList = prPayrollItemMapper.getPayrollItems(payrollGroupExtPO);
+        if(batchPO.isTemplate()) {
+            prList =  itemService.getListByGroupTemplateCode(batchPO.getPrGroupCode());
+            //payrollGroupExtPO.setPayrollGroupCode("");
+            //payrollGroupExtPO.setPayrollGroupTemplateCode(batchPO.getPrGroupCode());
+        }else {
+            //payrollGroupExtPO.setPayrollGroupCode(batchPO.getPrGroupCode());
+            //payrollGroupExtPO.setPayrollGroupTemplateCode("");
+            prList =  itemService.getListByGroupCode(batchPO.getPrGroupCode());
+        }
 
         //获取薪资帐套下的薪资项列表
         List<PayrollAccountItemRelationExtPO> itemRelationExtsList = accountItemRelationMapper.getAccountItemRelationExts(batchPO.getAccountSetCode());
-
 
         prList = prList.stream()
                 .filter(p-> itemRelationExtsList.stream().anyMatch(f -> f.getPayrollItemCode().equals(p.getItemCode()) && f.getIsActive()))
@@ -162,24 +166,23 @@ public class CommonServiceImpl {
             Optional<PayrollAccountItemRelationExtPO> find =
                     itemRelationExtsList.stream().filter(r -> r.getPayrollItemCode().equals(item.getItemCode()) && StringUtils.isNotEmpty(r.getPayrollItemAlias())).findFirst();
             if(find.isPresent()){
-                //item.setItemName(find.get().getPayrollItemAlias());
                 dbObject.put("item_name",find.get().getPayrollItemAlias()); // 设置别名
             }else {
                 dbObject.put("item_name",item.getItemName());
 
             }
-            dbObject.put("item_code",item.getItemCode());
-            dbObject.put("item_value",item.getItemValue());
-            dbObject.put("item_type",item.getItemType());
+            int dataType = item.getDataType().intValue();
             dbObject.put("data_type",item.getDataType());
-            //dbObject.put("management_id",item.getManagementId());
+            dbObject.put("item_type",item.getItemType());
+            dbObject.put("item_code",item.getItemCode());
+            dbObject.put("default_value",item.getDefaultValue());
+            setPayItemValue(dataType,item.getDefaultValue(),dbObject);
             dbObject.put("item_condition",item.getItemCondition());
             dbObject.put("formula_content",item.getFormulaContent());
             //dbObject.put("origin_formula",item.getOriginFormula());
             dbObject.put("cal_precision",item.getCalPrecision());
             dbObject.put("cal_priority",item.getCalPriority());
             dbObject.put("default_value_style",item.getDefaultValueStyle());
-            dbObject.put("default_value",item.getDefaultValue());
             dbObject.put("decimal_process_type",item.getDecimalProcessType());
             dbObject.put("display_priority",item.getDisplayPriority());
             list.add(dbObject);
@@ -310,5 +313,39 @@ public class CommonServiceImpl {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void setPayItemValue(int dataType, String defaultValue, BasicDBObject dbObject){
+        if(StringUtils.isEmpty(defaultValue)){
+            if (dataType == DataTypeEnum.NUM.getValue()){
+                dbObject.put("item_value", 0);
+            }else {
+                dbObject.put("item_value", "");
+            }
+        }else {
+            if (dataType == DataTypeEnum.NUM.getValue()){
+                dbObject.put("item_value", Double.parseDouble(defaultValue));
+            }else {
+                dbObject.put("item_value", defaultValue);
+            }
+        }
+    }
+
+    public long getBatchVersion(String batchCode){
+        long version = 0;
+        Criteria criteria = Criteria.where("batch_id").is(batchCode);
+        Query query = Query.query(criteria);
+        query.fields().include("version");
+
+        List<DBObject> list =  closeAccountMongoOpt.getMongoTemplate().find(query,DBObject.class,CloseAccountMongoOpt.PR_PAYROLL_CAL_RESULT);
+        if(list == null || list.size() == 0){
+            return version;
+        }
+
+        Optional<DBObject> versionObj = list.stream().findFirst();
+        if(versionObj.isPresent()){
+            version = versionObj.get().get("version") == null ? 0 : (long)versionObj.get().get("version");
+        }
+        return version;
     }
 }

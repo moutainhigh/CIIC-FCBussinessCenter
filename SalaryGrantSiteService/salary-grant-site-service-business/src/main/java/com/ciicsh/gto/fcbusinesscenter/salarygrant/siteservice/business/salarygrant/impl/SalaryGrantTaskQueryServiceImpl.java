@@ -1,10 +1,15 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -12,8 +17,17 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.logservice.client.LogClientService;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,6 +38,7 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,27 +51,36 @@ import java.util.stream.Collectors;
  * @since 2018-04-17
  */
 @Service
-public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryService {
+public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMainTaskMapper, SalaryGrantMainTaskPO> implements SalaryGrantTaskQueryService {
     @Autowired
-    CommonService commonService;
+    LogClientService logClientService;
     @Autowired
-    SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
+    private CommonService commonService;
     @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    private SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
     @Autowired
-    SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
+    private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
-    SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
+    private SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
     @Autowired
-    WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
+    private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    @Autowired
+    private WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
+    @Autowired
+    private BatchProxy batchProxy;
+    @Autowired
+    private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
+    @Autowired
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
+    @Autowired
+    private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
 
     /**
      * 查询薪资发放任务单列表
-     *
-     * @param bo
-     * @return Page<SalaryGrantTaskBO>
      * @author chenpb
      * @since 2018-04-25
+     * @param bo
+     * @return Page<SalaryGrantTaskBO>
      */
     @Override
     public Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO bo) {
@@ -79,11 +103,11 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
-     * @param salaryGrantTaskBO
-     * @return
-     * @description 根据任务单编号查询任务单
+     * 根据任务单编号查询任务单
      * @author chenpb
      * @since 2018-04-25
+     * @param salaryGrantTaskBO
+     * @return
      */
     @Override
     public SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO salaryGrantTaskBO) {
@@ -100,7 +124,8 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
 
     /**
      * 根据任务单编号查询操作记录
-     *
+     * @author chenpb
+     * @since 2018-05-10
      * @param bo
      * @return
      */
@@ -112,101 +137,95 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 待提交任务单：0-草稿 角色=操作员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 待提交任务单：0-草稿 角色=操作员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.submitList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
+     * 待审批任务单:1-审批中 角色=审核员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 待审批任务单:1-审批中 角色=审核员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForApprovePage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.approveList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
+     * 已处理任务单:1-审批中 角色=操作员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:1-审批中 角色=操作员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForHaveApprovedPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.haveApprovedList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
+     * 已处理任务单:审批通过 2-审批通过、6-未支付、7-已支付 角色=操作员、审核员
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:审批通过 2-审批通过、6-未支付、7-已支付 角色=操作员、审核员
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForPassPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantMainTaskMapper.passList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
+     * 已处理任务单:审批拒绝 3-审批拒绝、8-撤回、9-驳回 角色=操作员、审核员（查历史表）
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:审批拒绝 3-审批拒绝、8-撤回、9-驳回 角色=操作员、审核员（查历史表）
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.rejectList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
+     * 已处理任务单:已处理:4-失效 角色=操作员、审核员（查历史表）
+     * @author chenpb
+     * @since 2018-04-23
      * @param page
      * @param salaryGrantTaskBO
      * @return
-     * @description 已处理任务单:已处理:4-失效 角色=操作员、审核员（查历史表）
-     * @author chenpb
-     * @since 2018-04-23
      */
     private Page<SalaryGrantTaskBO> queryTaskForInvalidPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantTaskHistoryMapper.invalidList(page, salaryGrantTaskBO);
-        page.setRecords(list);
-        return page;
+        return page.setRecords(list);
     }
 
     /**
-     * @param salaryGrantTaskBO
-     * @return
-     * @description 根据主表任务单编号查询子表任务单
+     * 根据主表任务单编号查询子表任务单
      * @author chenpb
      * @since 2018-05-10
+     * @param salaryGrantTaskBO
+     * @return
      */
     @Override
     public List<SalaryGrantTaskBO> querySubTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         List<SalaryGrantTaskBO> list = salaryGrantSubTaskMapper.subTaskList(salaryGrantTaskBO);
         if (!list.isEmpty()) {
-            list.stream().forEach(x -> {
+            list.parallelStream().forEach(x -> {
                 if (StringUtils.isNotBlank(x.getGrantMode())) {
                     x.setGrantModeName(commonService.getNameByValue("sgGrantMode", x.getGrantMode()));
                 }
@@ -219,8 +238,132 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
     }
 
     /**
+     * 审批通过
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    @Override
+    public void approvalPass(SalaryGrantTaskBO bo) {
+        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+            salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
+        }
+    }
+
+    /**
+     * 审批退回
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    @Override
+    public void approvalReject(SalaryGrantTaskBO bo) {
+        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+            salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
+        }
+    }
+
+    /**
+     * 详情提交
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    @Override
+    public void detailSubmit(SalaryGrantTaskBO bo) {
+        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+            salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
+        }
+    }
+
+    /**
+     * 同步结算中心支付状态
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void syncPayStatus(List<PayapplySalaryDTO> list) {
+        String subTaskStr = getSubTaskCodes(list);
+        List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
+        if (!pos.isEmpty()) {
+            List<BatchAuditDTO> auditList = new ArrayList<>();
+            getSyncParams(pos, auditList);
+            salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+            salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+            batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+        }
+    }
+
+    /**
+     * 同步参数
+     * @author chenpb
+     * @since 2018-06-06
+     * @param poList
+     * @param auditList
+     */
+    private static void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList) {
+        if (!poList.isEmpty()) {
+            poList.parallelStream().forEach(y -> {
+                BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
+                dto.setBatchCode(y.getBatchCode());
+                dto.setBatchType(y.getGrantType());
+                dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
+                dto.setStatus(8);
+                auditList.add(dto);
+            });
+        }
+    }
+
+    /**
+     * 获取subTaskCode列表
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     * @return
+     */
+    private static String getSubTaskCodes(List<PayapplySalaryDTO> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").collect(Collectors.toList());
+        return String.join(",", taskCodes);
+    }
+
+    /**
+     * 获取mainTaskCode列表
+     * @author chenpb
+     * @since 2018-06-06
+     * @param list
+     * @return
+     */
+    private static String getMainTaskCodes(List<SalaryGrantSubTaskPO> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSalaryGrantMainTaskCode() + "'").collect(Collectors.toList());
+        return String.join(",", taskCodes);
+    }
+
+    /**
+     * 取消关账
+     * @author chenpb
+     * @since 2018-06-07
+     * @param msg
+     */
+    @Override
+    public void cancelClosing(CancelClosingMsg msg) {
+        SalaryGrantTaskBO bo = salaryGrantMainTaskMapper.selectByTBatchInfo(msg.getBatchCode(), msg.getBatchType());
+        if (!ObjectUtils.isEmpty(bo) && Long.valueOf(msg.getVersion()).compareTo(bo.getBatchVersion()) != -1) {
+            bo.setBatchVersion(msg.getVersion());
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("取消关账").setTitle("关账业务处理").setContent(JSON.toJSONString(bo)));
+            salaryGrantWorkFlowService.doCancelTask(bo);
+        }
+    }
+
+    /**
      * 每天晚上8点执行任务
-     *
      */
     @Scheduled(cron = "0 0 20 * * ?")
     //每30秒执行一次
@@ -299,6 +442,17 @@ public class SalaryGrantTaskQueryServiceImpl implements SalaryGrantTaskQueryServ
                     EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
                     mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
                     salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
+                }
+
+                //查询任务单主表记录
+                EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
+                mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
+                List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
+                if (!CollectionUtils.isEmpty(mainTaskPOList)) {
+                    mainTaskPOList.stream().forEach(salaryGrantMainTaskPO -> {
+                        //更新mongodb中标记为1
+                        fcBizTransactionMongoOpt.commitEvent(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType(), EventName.FC_GRANT_EVENT, 1);
+                    });
                 }
             }
         }

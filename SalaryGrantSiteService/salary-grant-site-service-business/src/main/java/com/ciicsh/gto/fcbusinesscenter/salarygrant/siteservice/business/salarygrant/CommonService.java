@@ -3,10 +3,14 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 
 import java.util.List;
@@ -96,4 +100,35 @@ public interface CommonService {
      * @return
      */
     SalaryBatchDTO saveSalaryBatchData(SalaryGrantTaskPaymentBO taskPaymentBO, List<SalaryGrantEmployeePaymentBO> employeePaymentBOList);
+
+    /**
+     * 调用客服中心暂缓池操作接口
+     *
+     * @param salaryGrantTaskBO
+     * @param employeeList
+     * @return
+     */
+    Boolean addDeferredPool(SalaryGrantTaskBO salaryGrantTaskBO, List<SalaryGrantEmployeePO> employeeList);
+
+    /**
+     * 根据管理方ID获取批次列表
+     *
+     * @param managementId
+     * @return
+     */
+    List<PrNormalBatchDTO> getBatchListByManagementId(String managementId);
+
+    /**
+     * 获取一个批次计算结果 BY 批次编号 JSON 格式
+     *
+     * @return
+     */
+    PrBatchDTO getBatchInfo(String batchCode, int batchType);
+
+    /**
+     * 更新批次状态
+     *
+     * @return
+     */
+    int updateBatchStatus(SalaryGrantMainTaskPO salaryGrantMainTaskPO, PrNormalBatchDTO prNormalBatchDTO);
 }

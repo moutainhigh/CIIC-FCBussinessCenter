@@ -3,7 +3,9 @@ package com.ciicsh.gto.fcbusinesscenter.util.mongo;
 import com.ciicsh.gt1.BaseOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.entity.BatchTypeEnum;
 import com.ciicsh.gto.fcbusinesscenter.util.entity.DistributedTranEntity;
+import com.ciicsh.gto.fcbusinesscenter.util.entity.TransactionStatusEnum;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +40,25 @@ public class FCBizTransactionMongoOpt extends BaseOpt {
         DBObject indexOptions = new BasicDBObject();
         indexOptions.put("batch_code",1);
         CompoundIndexDefinition indexDefinition = new CompoundIndexDefinition(indexOptions);
-        mongoTemplate.indexOps(EVENT_SOURCING).ensureIndex(indexDefinition);
+        this.getMongoTemplate().indexOps(EVENT_SOURCING).ensureIndex(indexDefinition);
     }
 
+    /*单个提交更新*/
     public int commitEvent(String batchCode, int bathType, String eventName, int status){
         Criteria criteria = Criteria.where("batch_code").is(batchCode)
                 .and("batch_type").is(bathType)
+                .and("events").elemMatch(Criteria.where("event_name").is(eventName));
+        Query query = Query.query(criteria);
+        Update update = Update.update("events.$.event_status",status);
+        return this.upsert(query,update);
+    }
+
+    /*批量提交更新*/
+    public int commitBatchEvents(List<String> batchCodes, String eventName, int status){
+        if(batchCodes == null || batchCodes.size() == 0){
+            return 0;
+        }
+        Criteria criteria = Criteria.where("batch_code").in(batchCodes)
                 .and("events").elemMatch(Criteria.where("event_name").is(eventName));
         Query query = Query.query(criteria);
         Update update = Update.update("events.$.event_status",status);
@@ -63,15 +78,18 @@ public class FCBizTransactionMongoOpt extends BaseOpt {
         return this.upsert(query,update);
     }
 
-    public int getStatus(String batchCode){
-        Criteria criteria = Criteria.where("batch_code").is(batchCode);
-        Query query = Query.query(criteria);
-        DBObject find = mongoTemplate.findOne(query,DBObject.class);
-        int status = (Integer) find.get("completed");
-        /*List<DBObject> events = (List<DBObject>) find.get("events");
-        for (DBObject event: events) {
-            event.get("event_name")
-        }*/
-        return status;
+    public int getTransactionStatus(String batchCode){
+
+        DBObject query = new BasicDBObject();
+        query.put("batch_code",batchCode);
+        DBCursor cursor = this.getMongoTemplate().getCollection(EVENT_SOURCING).find(query);
+        while (cursor.hasNext()){
+            DBObject find =cursor.next();
+            List<DBObject> events = (List<DBObject>) find.get("events");
+            boolean validate = events.stream().anyMatch(p -> (int)p.get("event_status") == TransactionStatusEnum.COMPLETE.getValue());
+            return validate ? TransactionStatusEnum.COMPLETE.getValue() : TransactionStatusEnum.UNCOMPLETE.getValue();
+        }
+        return 0;
+
     }
 }

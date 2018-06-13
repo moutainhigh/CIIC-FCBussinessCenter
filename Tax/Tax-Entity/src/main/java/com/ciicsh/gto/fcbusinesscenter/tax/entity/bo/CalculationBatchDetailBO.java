@@ -224,6 +224,19 @@ public class CalculationBatchDetailBO {
      */
     private String[] managerNames;
 
+    /**
+     * 税金
+     */
+    private BigDecimal taxReal;
+
+    public BigDecimal getTaxReal() {
+        return taxReal;
+    }
+
+    public void setTaxReal(BigDecimal taxReal) {
+        this.taxReal = taxReal;
+    }
+
     public Boolean getProof() {
         return isProof;
     }

@@ -97,11 +97,11 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
                 params.put("approveTime", new Date((long) params.get("approveTime")));
             }
         }
-        if (params.get("uploadZxtDate") != null) {
-            if (params.get("uploadZxtDate").equals("")) {
-                params.put("uploadZxtDate", null);
+        if (params.get("uploadDate") != null) {
+            if (params.get("uploadDate").equals("")) {
+                params.put("uploadDate", null);
             } else {
-                params.put("uploadZxtDate", new Date((long) params.get("uploadZxtDate")));
+                params.put("uploadDate", new Date((long) params.get("uploadDate")));
             }
         }
 
@@ -128,11 +128,36 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
                 params.put("publishDate", new Date((long) params.get("publishDate")));
             }
         }
+
+        if (params.get("publishExecDate") != null) {
+            if (params.get("publishExecDate").equals("")) {
+                params.put("publishExecDate", null);
+            } else {
+                params.put("publishExecDate", new Date((long) params.get("publishExecDate")));
+            }
+        }
+
         if (params.get("approveTime") != null) {
             if (params.get("approveTime").equals("")) {
                 params.put("approveTime", null);
             } else {
                 params.put("approveTime", new Date((long) params.get("approveTime")));
+            }
+        }
+
+        if (params.get("uploadDate") != null) {
+            if (params.get("uploadDate").equals("")) {
+                params.put("uploadDate", null);
+            } else {
+                params.put("uploadDate", new Date((long) params.get("uploadDate")));
+            }
+        }
+
+        if (params.get("uploadExecDate") != null) {
+            if (params.get("uploadExecDate").equals("")) {
+                params.put("uploadExecDate", null);
+            } else {
+                params.put("uploadExecDate", new Date((long) params.get("uploadExecDate")));
             }
         }
 

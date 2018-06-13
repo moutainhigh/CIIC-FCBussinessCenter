@@ -10,7 +10,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.github.pagehelper.PageInfo;

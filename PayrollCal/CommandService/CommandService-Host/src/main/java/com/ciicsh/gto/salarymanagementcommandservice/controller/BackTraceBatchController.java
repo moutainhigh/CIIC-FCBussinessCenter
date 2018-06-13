@@ -6,13 +6,12 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
-import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
-import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
+import com.ciicsh.gto.salarymanagementcommandservice.service.common.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageInfo;
 import com.mongodb.DBObject;
@@ -27,9 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by bill on 18/1/23.

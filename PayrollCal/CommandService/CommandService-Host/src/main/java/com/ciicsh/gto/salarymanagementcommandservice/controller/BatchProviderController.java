@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
+import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
@@ -17,10 +18,6 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.page.Pagination;
 import com.ciicsh.gto.salarymanagement.entity.dto.BatchCompareRequestDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.BatchPayrollSchemaDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrBackTrackingBatchPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.BatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
@@ -162,14 +159,25 @@ public class BatchProviderController implements BatchProxy {
     public int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO) {
         int rowAffected = 0;
         if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
-            rowAffected = normalBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getResult());
+            rowAffected = normalBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getAdvancePeriod(), batchAuditDTO.getResult());
         }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
-            rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getResult());
+            rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(),batchAuditDTO.getAdvancePeriod(), batchAuditDTO.getResult());
         }else {
-            rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getResult());
+            rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getAdvancePeriod(), batchAuditDTO.getResult());
         }
         return rowAffected;
     }
+
+
+    @Override
+    public int updateBatchListStatus(@RequestBody List<BatchAuditDTO> batchAuditDTOs) {
+        int rowAffected = 0;
+        for (BatchAuditDTO batchAuditDTO: batchAuditDTOs) {
+            rowAffected += updateBatchStatus(batchAuditDTO);
+        }
+        return rowAffected;
+    }
+
 
     @Override
     public JsonResult<List<String>> getBatchIdListByManagementId(@RequestParam("mgrId") String mgrId) {

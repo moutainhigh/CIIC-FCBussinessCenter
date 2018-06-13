@@ -56,7 +56,7 @@ public interface PrNormalBatchService {
      * @param modifiedBy
      * @return
      */
-    int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result);
+    int auditBatch(String batchCode, String comments, int status, String modifiedBy, String advancePeriod, String result);
 
     /**
      * 更新批次是否来款

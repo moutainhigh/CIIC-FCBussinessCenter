@@ -14,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollSer
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,15 +83,28 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
             params.put("modifiedBy", "1");
         }
 
-        if (params.get("approveTime") != null) {
-            if (params.get("approveTime").equals("")) {
-                params.put("approveTime", null);
-            } else {
-                params.put("approveTime", new Date((long) params.get("approveTime")));
-            }
-        }
+
 
         prsPayrollMapper.insert(params);
+
+        return true;
+    }
+
+    @Override
+    public Boolean addPrsPayrolls(ArrayList<Map<String, Object>> objs) {
+        UserInfoBO currUser = UserContext.getUser();
+
+        for (Map<String, Object> params : objs) {
+            if (currUser != null) {
+                params.put("createdBy", currUser.getDisplayName());
+                params.put("modifiedBy", currUser.getDisplayName());
+            } else {
+                params.put("createdBy", "1");
+                params.put("modifiedBy", "1");
+            }
+
+            prsPayrollMapper.insert(params);
+        }
 
         return true;
     }
@@ -104,13 +118,7 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
             params.put("modifiedBy", "1");
         }
 
-        if (params.get("approveTime") != null) {
-            if (params.get("approveTime").equals("")) {
-                params.put("approveTime", null);
-            } else {
-                params.put("approveTime", new Date((long) params.get("approveTime")));
-            }
-        }
+
 
         prsPayrollMapper.update(params);
 

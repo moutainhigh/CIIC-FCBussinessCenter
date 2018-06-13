@@ -10,22 +10,19 @@ import com.ciicsh.gto.salarymanagement.entity.enums.*;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBatchExcelMapService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.excel.PRExcelColumnsReader;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.excel.PRItemExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,7 +131,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
         PrBatchExcelMapPO batchExcelMapPO = batchExcelMapService.getBatchExcelMap(batchCode);
         Map<String,Object> identityMap = commonService.JSONString2Map(batchExcelMapPO.getIdentityResult()); //获取一个或多个字段唯一性集合
-        List<String> excelIdentityCols = identityMap.values().stream().map(p-> p.toString()).collect(Collectors.toList());
+        List<String> excelIdentityCols = identityMap.keySet().stream().map(p-> p).collect(Collectors.toList());
 
         try {
             Map<String,Object> payItemMap = commonService.JSONString2Map(batchExcelMapPO.getMappingResult()); //获取多个薪资项与EXCEL列映射集合（KEY薪资项名称，VALUE EXCEL列名称）
@@ -282,8 +280,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         int rowAffected = 0;
 
         List<List<BasicDBObject>> filterRows = excelRows.stream().filter(row -> row.stream()
-                .anyMatch(col -> col.get("payItem_name") != null &&
-                        (String)col.get("payItem_name") != "")).collect(Collectors.toList());
+                .anyMatch(col -> (col.get("payItem_name") != null && !col.get("payItem_name").equals("")))).collect(Collectors.toList());
         BasicDBObject emp = null;
 
         for (List<BasicDBObject> row : filterRows) {
@@ -309,8 +306,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                         List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
 
                         payItems.forEach(item -> {
-                            Object colVal = getExcelColumnValue(row, item.get("item_name"));
-                            item.put("item_value", colVal);
+                            setItemValue(item,row);
                         });
                         rowAffected += updateItems(batchCode, empCode, true, null, null, null, batchType, payItems); // update items
                     }
@@ -340,8 +336,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                         List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
                         List<BasicDBObject> clonePayItems = cloneListDBObject(payItems);
                         for (BasicDBObject item : clonePayItems) {
-                            Object colVal = getExcelColumnValue(row, item.get("item_name"));
-                            item.put("item_value", colVal);
+                            setItemValue(item,row);
                         }
                         rowAffected += updateItems(batchCode, empCode, false, empGroupCode, prGroupCode, catalog, batchType, clonePayItems);
                     }
@@ -364,12 +359,37 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return rowAffected;
     }
 
+    private void setItemValue(BasicDBObject item,List<BasicDBObject> row){
+        Object colVal = getExcelColumnValue(row, item.get("item_name"));
+        int dataType = item.get("data_type") == null ? 0 : (int)item.get("data_type");
+        int precision = item.get("cal_precision") == null ? 2 : (int)item.get("cal_precision");
+        if(dataType == DataTypeEnum.DATE.getValue() && colVal != null && !colVal.equals("")){
+            item.put("item_value", TimeStamp2Date(colVal.toString()));
+        }else if(dataType == DataTypeEnum.NUM.getValue()){
+            if(colVal == null || colVal.equals("")){
+                item.put("item_value", BizArith.round(0,precision));
+            }else {
+                item.put("item_value", BizArith.round(colVal,precision));
+            }
+        }
+        else {
+            item.put("item_value", colVal);
+        }
+    }
+
     private Object getExcelColumnValue(List<BasicDBObject> row, Object payItemName){
        Optional<BasicDBObject> find = row.stream().filter(col -> col.get("payItem_name") != null && col.get("payItem_name").equals(payItemName)).findFirst();
        if(find.isPresent()){
            return find.get().get("col_value");
        }
        return null;
+    }
+
+     private String TimeStamp2Date(String timestampString) {
+        String formats = "yyyy-MM-dd";
+        Long timestamp = Long.parseLong(timestampString); //Long.parseLong(timestampString) * 1000;
+        String date = new SimpleDateFormat(formats, Locale.CHINA).format(new Date(timestamp));
+        return date;
     }
 
     private int updateItems(String batchCode,String empCode, boolean empExistGroup, String empGroupCode, String prGroupCode,
@@ -425,9 +445,9 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String advancePeriod, String result) {
         if(status == BatchStatusEnum.COMPUTING.getValue()){
-            return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+            return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
         }
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
         int approvalResult = 0;
@@ -443,11 +463,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         historyPO.setApprovalResult(approvalResult);
         historyPO.setBizCode(batchCode);
         historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
-        historyPO.setCreatedBy("bill"); //TODO
+        historyPO.setCreatedBy("bill");
         historyPO.setCreatedName("bill");
         historyPO.setComments(comments);
         approvalHistoryService.addApprovalHistory(historyPO);
-        return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+        return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
     }
 
     @Override

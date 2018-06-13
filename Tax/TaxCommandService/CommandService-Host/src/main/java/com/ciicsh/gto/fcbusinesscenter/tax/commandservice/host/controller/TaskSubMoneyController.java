@@ -5,14 +5,13 @@ import com.ciicsh.gt1.common.auth.ManagementInfo;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.EmployeeInfoBatchService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskMainDetailServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -60,6 +59,9 @@ public class TaskSubMoneyController extends BaseController {
 
     @Autowired
     private TaskMainDetailServiceImpl taskMainDetailServiceImpl;
+
+    @Autowired
+    private EmployeeInfoBatchService employeeInfoBatchService;
 
     /**
      * 条件查询划款子任务
@@ -182,22 +184,28 @@ public class TaskSubMoneyController extends BaseController {
             payApplyProxyDTO.setReceiveAccountId(12);
             //收款账号
             payApplyProxyDTO.setReceiveAccount(taskSubMoneyPO.getPaymentAccount());
-            //总经理
-            //分管领导
-            //部门经理
-            //审核人
+            //总经理president
+            //分管领导leader
+            //部门经理departmentManager
+            //审核人reviewer
             //payApplyProxyDTO.setReviewer("admin");
             //根据任务ID查询所有雇员
             List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(id);
-
+            //划款明细计算批次明细ID
+            List<Long> batchIds = taskSubMoneyDetailPOList.stream().map(TaskSubMoneyDetailPO::getCalculationBatchDetailId).collect(Collectors.toList());
+            //根据划款明细计算批次明细ID查询雇员个税信息
+            List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchService.queryEmployeeInfoBatchesByBatchIds(batchIds);
+            //公司编号为key的雇员信息map
+            Map<String, List<EmployeeInfoBatchPO>> companyMap =
+                    employeeInfoBatchPOList.stream().collect(groupingBy(EmployeeInfoBatchPO::getCompanyNo));
+            Map<Long,String> batchDetailIdMap = employeeInfoBatchPOList.stream().collect(Collectors.toMap(EmployeeInfoBatchPO::getCalBatchDetailId,EmployeeInfoBatchPO ::getCompanyNo));
             //设置公司信息companyList
             List<PayapplyCompanyProxyDTO> companyList = new ArrayList<>();
-            //TODO 根据公司ID 暂时根据所得项目划分
-            Map<String, List<TaskSubMoneyDetailPO>> taskSubMoneyDetailPOMap =
-                    taskSubMoneyDetailPOList.stream().collect(groupingBy(TaskSubMoneyDetailPO::getIncomeSubject));
-            for (String key : taskSubMoneyDetailPOMap.keySet()) {
-                //根据key获取对应的划款明细对象集合
-                List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOS = taskSubMoneyDetailPOMap.get(key);
+            for (String key : companyMap.keySet()) {
+                //根据key获取对应的雇员个税信息
+                List<EmployeeInfoBatchPO> employeeInfoBatchPOS = companyMap.get(key);
+                List<Long> taskSubMoneyDetailIdsList = employeeInfoBatchPOS.stream().map(EmployeeInfoBatchPO :: getCalBatchDetailId).collect(Collectors.toList());
+                List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOS = taskSubMoneyDetailService.querySubMonetDetailsByBatchDetailIds(taskSubMoneyDetailIdsList);
                 //根据划款明细对象集合求出个税总金额
                 BigDecimal taxAmountSum = taskSubMoneyDetailPOS.stream()
                         //将TaskSubMoneyDetailPO对象的tax_aount取出来map为Bigdecimal
@@ -206,7 +214,8 @@ public class TaskSubMoneyController extends BaseController {
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 PayapplyCompanyProxyDTO payapplyCompanyProxyDTO = new PayapplyCompanyProxyDTO();
                 payapplyCompanyProxyDTO.setCompanyId(key);
-                payapplyCompanyProxyDTO.setCompanyName(taskSubMoneyDetailPOS.get(0).getIncomeSubject());
+                // TODO 公司名称暂时没有
+                payapplyCompanyProxyDTO.setCompanyName("test");
                 payapplyCompanyProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyPO.getPeriod()));
                 payapplyCompanyProxyDTO.setPayAmount(taxAmountSum);
                 companyList.add(payapplyCompanyProxyDTO);
@@ -217,11 +226,12 @@ public class TaskSubMoneyController extends BaseController {
             //设置雇员信息employeeList
             List<PayapplyEmployeeProxyDTO> employeeList = new ArrayList<>();
             for (TaskSubMoneyDetailPO taskSubMoneyDetailPO : taskSubMoneyDetailPOList) {
+                //获取公司编号
+                String companyNo = taskSubMoneyDetailPO.getCalculationBatchDetailId() == null ? "" : batchDetailIdMap.getOrDefault(taskSubMoneyDetailPO.getCalculationBatchDetailId(),"");
                 PayapplyEmployeeProxyDTO payapplyEmployeeProxyDTO = new PayapplyEmployeeProxyDTO();
                 payapplyEmployeeProxyDTO.setEmployeeId(taskSubMoneyDetailPO.getEmployeeNo());
                 payapplyEmployeeProxyDTO.setEmployeeName(taskSubMoneyDetailPO.getEmployeeName());
-                //TODO 暂时使用所得项目
-                payapplyEmployeeProxyDTO.setCompanyId(taskSubMoneyDetailPO.getIncomeSubject());
+                payapplyEmployeeProxyDTO.setCompanyId(companyNo);
                 payapplyEmployeeProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyDetailPO.getPeriod()));
                 payapplyEmployeeProxyDTO.setPayAmount(taskSubMoneyDetailPO.getTaxAmount());
                 //薪酬计算批次号集合
@@ -243,6 +253,8 @@ public class TaskSubMoneyController extends BaseController {
                     batchCodeList.addAll(batchNoList);
                     batchNoListAll.addAll(batchNoList);
                 }
+                //设置批次号
+                payapplyEmployeeProxyDTO.setBatchCodeList(batchCodeList);
                 employeeList.add(payapplyEmployeeProxyDTO);
             }
             payApplyProxyDTO.setEmployeeList(employeeList);

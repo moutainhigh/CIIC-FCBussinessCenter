@@ -56,6 +56,26 @@
             <groupId>com.ciicsh.gt1.commonservice</groupId>
             <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>mongo-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>fcbusinesscenter-entity</artifactId>
+        </dependency>
+
+        <!--工作流-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.commonservice</groupId>
+            <artifactId>gt1.commonservice.sheetservice-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
