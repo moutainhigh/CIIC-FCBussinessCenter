@@ -15,6 +15,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.online.sh.ExportAboutForeignNormalSalarySh;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.online.sh.ExportAboutReductionExemptionSh;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.online.sz.*;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.voucher.ExportAboutVoucherPuDong;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.voucher.ExportAboutVoucherSanFenJu;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.voucher.ExportAboutVoucherXuHui;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TemplateFileBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
@@ -37,7 +40,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,20 +154,14 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
     @Autowired
     private ExportAboutFortuitousIncomeSz exportAboutFortuitousIncomeSz;
 
-    /**
-     * 完税凭证徐汇模板列表初始大小20
-     */
-    private static final int INITIAL_XH_SIZE = 20;
+    @Autowired
+    private ExportAboutVoucherXuHui exportAboutVoucherXuHui;
 
-    /**
-     * 完税凭证三分局模板列表初始大小19
-     */
-    private static final int INITIAL_SFJ_SIZE = 19;
+    @Autowired
+    private ExportAboutVoucherSanFenJu exportAboutVoucherSanFenJu;
 
-    /**
-     * 完税凭证浦东模板列表初始大小18*2
-     */
-    private static final int INITIAL_PD_SIZE = 36;
+    @Autowired
+    private ExportAboutVoucherPuDong exportAboutVoucherPuDong;
 
     /**
      * 所得项目_正常工资薪金收入
@@ -184,8 +180,8 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
 
 
     @Override
-    public Map<String,Object> exportForDeclareOffline(Long subDeclareId) {
-        Map<String,Object> map = new HashMap<>();
+    public Map<String, Object> exportForDeclareOffline(Long subDeclareId) {
+        Map<String, Object> map = new HashMap<>();
         HSSFWorkbook wb = null;
         try {
             //根据申报子任务ID查询申报信息
@@ -197,7 +193,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             //00-本地,01-异地
             if ("00".equals(taskSubDeclarePO.getAreaType())) {
                 fileName = "扣缴个人所得税报告表.xls";
-                wb = exportAboutWithholdingReport.getWithholdingReportWB(taskSubDeclarePO,taskSubDeclareDetailPOList,fileName,"voucher");
+                wb = exportAboutWithholdingReport.getWithholdingReportWB(taskSubDeclarePO, taskSubDeclareDetailPOList, fileName, "voucher");
             } else {
                 // TODO 异地分地区 深圳网页版,广东申报信息 判断城市还没确定
                 //申报明细计算批次明细ID
@@ -209,15 +205,15 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchImpl.selectList(wrapper);
                 // TODO 临时定义城市编号
                 String cityCode = "110";
-                if("110".equals(cityCode)){
+                if ("110".equals(cityCode)) {
                     fileName = "深圳网页版.xls";
-                    wb = exportAboutDeclarationInformationSz.getDeclarationInformationWB(taskSubDeclareDetailPOList,employeeInfoBatchPOList,fileName,"sz");
-                }else if("111".equals(cityCode)){
+                    wb = exportAboutDeclarationInformationSz.getDeclarationInformationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, fileName, "sz");
+                } else if ("111".equals(cityCode)) {
                     fileName = "申报信息模板.xls";
-                    wb = exportAboutDeclarationInformationGd.getDeclarationInformationWB(taskSubDeclareDetailPOList,employeeInfoBatchPOList,fileName,"gd");
+                    wb = exportAboutDeclarationInformationGd.getDeclarationInformationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, fileName, "gd");
                 }
             }
-            map.put("fileName",fileName);
+            map.put("fileName", fileName);
         } catch (Exception e) {
             if (wb != null) {
                 try {
@@ -230,16 +226,14 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             }
             throw e;
         }
-        map.put("wb",wb);
+        map.put("wb", wb);
         return map;
     }
 
     @Override
     public HSSFWorkbook exportForDeclareOnline(Long subDeclareId) {
-
         POIFSFileSystem fs = null;
         HSSFWorkbook wb = null;
-
         try {
             //根据申报子任务ID查询申报信息
             TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
@@ -297,82 +291,20 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             String fileName = "";
             //用于存放模板列表头部
             Map<String, String> map = new HashMap<>(16);
-            // TODO 测试代码："蓝天科技上海独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技无锡独立户"=>"完税凭证_浦东"
+            // TODO 测试代码："联想独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技独立户"=>"完税凭证_浦东"
             //根据申报账户选择模板
             if ("联想独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_三分局.xls";
-                //获取POIFSFileSystem对象
-                fs = getFSFileSystem(fileName, "voucher");
-                //通过POIFSFileSystem对象获取WB对象
-                wb = getHSSFWorkbook(fs);
-                //扣缴义务人名称
-                map.put("withholdingAgent", "上海中智");
-                //扣缴义务人代码(税务电脑编码)
-                map.put("withholdingAgentCode", "BM123456789");
-                //扣缴义务人电话
-                map.put("withholdingAgentPhone", "18201880000");
-                //换开人姓名
-                map.put("changePersonName", "admin");
-                //换开人身份证号码
-                map.put("changePersonIdNo", "321281199001011234");
-                //根据不同的业务需要处理wb
-                this.exportAboutSFJ(wb, map, taskSubProofDetailPOList);
+                wb = exportAboutVoucherSanFenJu.getSanFenJuVoucherWB(taskSubProofDetailPOList, fileName, "voucher");
             } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_徐汇.xls";
-                //获取POIFSFileSystem对象
-                fs = getFSFileSystem(fileName, "voucher");
-                //通过POIFSFileSystem对象获取WB对象
-                wb = getHSSFWorkbook(fs);
-                //单位税号（必填）
-                map.put("unitNumber", "TEST123456");
-                //单位名称（必填）
-                map.put("unitName", "上海中智");
-                //根据不同的业务需要处理wb
-                this.exportAboutXH(wb, map, taskSubProofDetailPOList);
+                wb = exportAboutVoucherXuHui.getXuHuiVoucherWB(taskSubProofDetailPOList, fileName, "voucher");
             } else if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
                 fileName = "完税凭证_浦东.xls";
-                //获取POIFSFileSystem对象
-                fs = getFSFileSystem(fileName, "voucher");
-                //通过POIFSFileSystem对象获取WB对象
-                wb = getHSSFWorkbook(fs);
-                //扣缴单位
-                map.put("withholdingUnit", "上海中智");
-                //电脑编码
-                map.put("withholdingCode", "123456789");
-                //通用缴款书流水号
-                map.put("generalPaymentBook", "147258369");
-                //办税人员
-                map.put("taxationPersonnel", "admin");
-                //联系电话
-                map.put("phone", "18201886666");
-                //换开份数
-                map.put("changeNum", "2");
-                //换开原因
-                map.put("changeReason", "重新申报");
-                //根据不同的业务需要处理wb
-                this.exportAboutPD(wb, map, taskSubProofDetailPOList);
+                wb = exportAboutVoucherPuDong.getPuDongVoucherWB(taskSubProofDetailPOList, fileName, "voucher");
             } else {
                 fileName = "完税凭证_浦东.xls";
-                //获取POIFSFileSystem对象
-                fs = getFSFileSystem(fileName, "voucher");
-                //通过POIFSFileSystem对象获取WB对象
-                wb = getHSSFWorkbook(fs);
-                //扣缴单位
-                map.put("withholdingUnit", "上海中智");
-                //电脑编码
-                map.put("withholdingCode", "123456789");
-                //通用缴款书流水号
-                map.put("generalPaymentBook", "147258369");
-                //办税人员
-                map.put("taxationPersonnel", "admin");
-                //联系电话
-                map.put("phone", "18201886666");
-                //换开份数
-                map.put("changeNum", "2");
-                //换开原因
-                map.put("changeReason", "重新申报");
-                //根据不同的业务需要处理wb
-                this.exportAboutPD(wb, map, taskSubProofDetailPOList);
+                wb = exportAboutVoucherPuDong.getPuDongVoucherWB(taskSubProofDetailPOList, fileName, "voucher");
             }
         } catch (Exception e) {
             if (wb != null) {
@@ -386,397 +318,6 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         }
 
         return wb;
-    }
-
-    /**
-     * 完税凭证处理(徐汇)
-     *
-     * @param wb
-     * @param map
-     * @param taskSubProofDetailPOList
-     */
-    @Override
-    public void exportAboutXH(HSSFWorkbook wb, Map<String, String> map, List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
-        // 读取了模板内所有sheet内容
-        HSSFSheet sheet = wb.getSheetAt(0);
-        //单位税号A3
-        HSSFRow rowA3 = sheet.getRow(2);
-        if (null == rowA3) {
-            rowA3 = sheet.createRow(2);
-        }
-        HSSFCell cellA3 = rowA3.getCell(0);
-        if (null == cellA3) {
-            cellA3 = rowA3.createCell(0);
-        }
-        cellA3.setCellValue(cellA3.getStringCellValue() + map.get("unitNumber"));
-        //单位名称A4
-        HSSFRow rowA4 = sheet.getRow(3);
-        if (null == rowA4) {
-            rowA4 = sheet.createRow(3);
-        }
-        HSSFCell cellA4 = rowA4.getCell(0);
-        if (null == cellA4) {
-            cellA4 = rowA4.createCell(0);
-        }
-        cellA4.setCellValue(cellA4.getStringCellValue() + map.get("unitName"));
-
-        //如果结果集大于模板列表初始大小
-        if (taskSubProofDetailPOList.size() > INITIAL_XH_SIZE) {
-            int rows = taskSubProofDetailPOList.size() - INITIAL_XH_SIZE;
-            //插入行数据
-            super.insertRow(sheet, 8, rows);
-        }
-
-        // 在相应的单元格进行赋值
-        int rowIndex = 6;
-        for (TaskSubProofDetailPO taskSubProofDetailPO : taskSubProofDetailPOList) {
-            HSSFRow row = sheet.getRow(rowIndex);
-            if (null == row) {
-                row = sheet.createRow(rowIndex);
-            }
-            //A列-证件类型
-            HSSFCell cellA = row.getCell(0);
-            if (null == cellA) {
-                cellA = row.createCell(0);
-            }
-            cellA.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, taskSubProofDetailPO.getIdType()));
-
-            //B列-证件号
-            HSSFCell cellB = row.getCell(1);
-            if (null == cellB) {
-                cellB = row.createCell(1);
-            }
-            cellB.setCellValue(taskSubProofDetailPO.getIdNo());
-
-            //C列-姓名
-            HSSFCell cellC = row.getCell(2);
-            if (null == cellC) {
-                cellC = row.createCell(2);
-            }
-            cellC.setCellValue(taskSubProofDetailPO.getEmployeeName());
-
-            //D列-税款期间
-            HSSFCell cellD = row.getCell(3);
-            if (null == cellD) {
-                cellD = row.createCell(3);
-            }
-            String period = "";
-            String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
-            String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
-            if (incomeStart.equals(incomeEnd)) {
-                period = incomeStart;
-            } else {
-                period = incomeStart + "~" + incomeEnd;
-            }
-            cellD.setCellValue(period);
-            rowIndex++;
-        }
-    }
-
-    /**
-     * 完税凭证模板处理(三分局)
-     *
-     * @param wb
-     * @param map
-     * @param taskSubProofDetailPOList
-     */
-    @Override
-    public void exportAboutSFJ(HSSFWorkbook wb, Map<String, String> map, List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
-        // 读取了模板内所有sheet内容
-        HSSFSheet sheet = wb.getSheetAt(0);
-        //第2行
-        HSSFRow row3 = sheet.getRow(2);
-        if (null == row3) {
-            row3 = sheet.createRow(2);
-        }
-        //填表日期相关信息-A3
-        HSSFCell cellA3 = row3.getCell(0);
-        if (null == cellA3) {
-            cellA3 = row3.createCell(1);
-        }
-        //获取原文本框的值
-        String oldDateStr = cellA3.getStringCellValue();
-        //年
-        int year = LocalDate.now().getYear();
-        //月
-        int month = LocalDate.now().getMonthValue();
-        //日
-        int day = LocalDate.now().getDayOfMonth();
-        //匹配空白字符,包括空格、制表符、换页符
-        String[] arrs = oldDateStr.split("\\s+");
-        StringBuilder stringBuilder = new StringBuilder("");
-        for (int i = 0; i < arrs.length; i++) {
-            stringBuilder.append(arrs[i]);
-            if (i == 0) {
-                stringBuilder.append(year);
-            } else if (i == 1) {
-                stringBuilder.append(month);
-            } else if (i == 2) {
-                stringBuilder.append(day);
-            }
-        }
-        cellA3.setCellValue(stringBuilder.toString());
-        //第5行
-        HSSFRow row5 = sheet.getRow(4);
-        if (null == row5) {
-            row5 = sheet.createRow(4);
-        }
-        //扣缴义务人名称B5
-        HSSFCell cellB5 = row5.getCell(1);
-        if (null == cellB5) {
-            cellB5 = row5.createCell(1);
-        }
-        cellB5.setCellValue(map.get("withholdingAgent"));
-        //扣缴义务人代码(税务电脑编码)I5
-        HSSFCell cellI5 = row5.getCell(8);
-        if (null == cellI5) {
-            cellI5 = row5.createCell(8);
-        }
-        cellI5.setCellValue(map.get("withholdingAgentCode"));
-        //第6行
-        HSSFRow row6 = sheet.getRow(5);
-        if (null == row6) {
-            row6 = sheet.createRow(5);
-        }
-        //扣缴义务人电话B6
-        HSSFCell cellB6 = row6.getCell(1);
-        if (null == cellB6) {
-            cellB6 = row6.createCell(1);
-        }
-        cellB6.setCellValue(map.get("withholdingAgentPhone"));
-        //换开人姓名E6
-        HSSFCell cellE6 = row6.getCell(4);
-        if (null == cellE6) {
-            cellE6 = row6.createCell(4);
-        }
-        cellE6.setCellValue(map.get("changePersonName"));
-        //换开人身份证号码H6
-        HSSFCell cellH6 = row6.getCell(7);
-        if (null == cellH6) {
-            cellH6 = row6.createCell(7);
-        }
-        cellH6.setCellValue(map.get("changePersonIdNo"));
-        //如果结果集大于模板列表初始大小
-        if (taskSubProofDetailPOList.size() > INITIAL_SFJ_SIZE) {
-            int rows = taskSubProofDetailPOList.size() - INITIAL_SFJ_SIZE;
-            //插入行数据
-            super.insertRow(sheet, 14, rows);
-        }
-        // 在相应的单元格进行赋值
-        int rowIndex = 12;
-        for (TaskSubProofDetailPO taskSubProofDetailPO : taskSubProofDetailPOList) {
-            HSSFRow row = sheet.getRow(rowIndex);
-            if (null == row) {
-                row = sheet.createRow(rowIndex);
-            }
-            //B列-税种
-            HSSFCell cellB = row.getCell(1);
-            if (null == cellB) {
-                cellB = row.createCell(1);
-            }
-            cellB.setCellValue(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, taskSubProofDetailPO.getIncomeSubject()));
-
-            //D列-姓名
-            HSSFCell cellD = row.getCell(3);
-            if (null == cellD) {
-                cellD = row.createCell(3);
-            }
-            cellD.setCellValue(taskSubProofDetailPO.getEmployeeName());
-
-            //F列-证件号
-            HSSFCell cellF = row.getCell(5);
-            if (null == cellF) {
-                cellF = row.createCell(5);
-            }
-            cellF.setCellValue(taskSubProofDetailPO.getIdNo());
-
-            //H列-税款期间
-            HSSFCell cellH = row.getCell(7);
-            if (null == cellH) {
-                cellH = row.createCell(7);
-            }
-            String period = "";
-            String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
-            String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
-            if (incomeStart.equals(incomeEnd)) {
-                period = incomeStart;
-            } else {
-                period = incomeStart + "~" + incomeEnd;
-            }
-            cellH.setCellValue(period);
-            rowIndex++;
-        }
-    }
-
-    /**
-     * 完税凭证模板处理(浦东)
-     *
-     * @param wb
-     * @param map
-     * @param taskSubProofDetailPOList
-     */
-    @Override
-    public void exportAboutPD(HSSFWorkbook wb, Map<String, String> map, List<TaskSubProofDetailPO> taskSubProofDetailPOList) {
-        // 读取了模板内所有sheet内容
-        HSSFSheet sheet = wb.getSheetAt(0);
-        //第4行
-        HSSFRow row4 = sheet.getRow(3);
-        if (null == row4) {
-            row4 = sheet.createRow(3);
-        }
-        //扣缴单位-C4
-        HSSFCell cellC4 = row4.getCell(2);
-        if (null == cellC4) {
-            cellC4 = row4.createCell(2);
-        }
-        cellC4.setCellValue(map.get("withholdingUnit"));
-        //电脑编码-E4
-        HSSFCell cellE4 = row4.getCell(4);
-        if (null == cellE4) {
-            cellE4 = row4.createCell(4);
-        }
-        cellE4.setCellValue(map.get("withholdingCode"));
-        //通用缴款书流水号-I4
-        HSSFCell cellI4 = row4.getCell(8);
-        if (null == cellI4) {
-            cellI4 = row4.createCell(8);
-        }
-        cellI4.setCellValue(map.get("generalPaymentBook"));
-        //办税人员-C5
-        HSSFRow row5 = sheet.getRow(4);
-        if (null == row5) {
-            row5 = sheet.createRow(4);
-        }
-        HSSFCell cellC5 = row5.getCell(2);
-        if (null == cellC5) {
-            cellC5 = row5.createCell(2);
-        }
-        cellC5.setCellValue(map.get("taxationPersonnel"));
-        //联系电话-E5
-        HSSFCell cellE5 = row5.getCell(4);
-        if (null == cellE5) {
-            cellE5 = row5.createCell(4);
-        }
-        cellE5.setCellValue(map.get("phone"));
-        //换开份数-G5
-        HSSFCell cellG5 = row5.getCell(6);
-        if (null == cellG5) {
-            cellG5 = row5.createCell(6);
-        }
-        cellG5.setCellValue(map.get("changeNum"));
-        //换开原因-I5
-        HSSFCell cellI5 = row5.getCell(8);
-        if (null == cellI5) {
-            cellI5 = row5.createCell(8);
-        }
-        cellI5.setCellValue(map.get("changeReason"));
-        //如果结果集大于模板列表初始大小
-        if (taskSubProofDetailPOList.size() > INITIAL_PD_SIZE) {
-            //由于每行显示2条数据,所以大于36条数据部分需要没2条数据添加插入一行,
-            int rows = (taskSubProofDetailPOList.size() - INITIAL_PD_SIZE) / 2;
-            //插入行数据
-            super.insertRow(sheet, 8, rows);
-        }
-        //在相应的单元格进行赋值
-        int rowIndex = 6;
-        //序号
-        int num = 1;
-        for (TaskSubProofDetailPO taskSubProofDetailPO : taskSubProofDetailPOList) {
-            //如果是基数行
-            if (num % 2 == 1) {
-                HSSFRow row = sheet.getRow(rowIndex);
-                if (null == row) {
-                    row = sheet.createRow(rowIndex);
-                }
-                //序号-B列
-                HSSFCell cellB = row.getCell(1);
-                if (null == cellB) {
-                    cellB = row.createCell(1);
-                }
-                cellB.setCellValue(num);
-                //姓名-C列
-                HSSFCell cellC = row.getCell(2);
-                if (null == cellC) {
-                    cellC = row.createCell(2);
-                }
-                cellC.setCellValue(taskSubProofDetailPO.getEmployeeName());
-                //证件号-D列
-                HSSFCell cellD = row.getCell(3);
-                if (null == cellD) {
-                    cellD = row.createCell(3);
-                }
-                cellD.setCellValue(taskSubProofDetailPO.getIdNo());
-
-                //证件类型-E列
-                HSSFCell cellE = row.getCell(4);
-                if (null == cellE) {
-                    cellE = row.createCell(4);
-                }
-                cellE.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, taskSubProofDetailPO.getIdType()));
-
-                //所属期-F列
-                HSSFCell cellF = row.getCell(5);
-                if (null == cellF) {
-                    cellF = row.createCell(5);
-                }
-                String period = "";
-                String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
-                String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
-                if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
-                    period = incomeStart;
-                } else {
-                    period = incomeStart + "~" + incomeEnd;
-                }
-                cellF.setCellValue(period);
-            } else {
-                HSSFRow row = sheet.getRow(rowIndex);
-                if (null == row) {
-                    row = sheet.createRow(rowIndex);
-                }
-                //序号-G列
-                HSSFCell cellG = row.getCell(6);
-                if (null == cellG) {
-                    cellG = row.createCell(6);
-                }
-                cellG.setCellValue(num);
-                //姓名-H列
-                HSSFCell cellH = row.getCell(7);
-                if (null == cellH) {
-                    cellH = row.createCell(7);
-                }
-                cellH.setCellValue(taskSubProofDetailPO.getEmployeeName());
-                //证件号-I列
-                HSSFCell cellI = row.getCell(8);
-                if (null == cellI) {
-                    cellI = row.createCell(8);
-                }
-                cellI.setCellValue(taskSubProofDetailPO.getIdNo());
-
-                //证件类型-J列
-                HSSFCell cellJ = row.getCell(9);
-                if (null == cellJ) {
-                    cellJ = row.createCell(9);
-                }
-                cellJ.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, taskSubProofDetailPO.getIdType()));
-
-                //所属期-K列
-                HSSFCell cellK = row.getCell(10);
-                if (null == cellK) {
-                    cellK = row.createCell(10);
-                }
-                String period = "";
-                String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
-                String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
-                if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
-                    period = incomeStart;
-                } else {
-                    period = incomeStart + "~" + incomeEnd;
-                }
-                cellK.setCellValue(period);
-                rowIndex++;
-            }
-            num++;
-        }
     }
 
     /**
@@ -1354,8 +895,8 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Map<String,Object> getCompressedFileByte(Long subDeclareId, String tempFileName, String dateStrFolder) throws Exception {
-        Map<String,Object> map = new HashMap<>();
+    public Map<String, Object> getCompressedFileByte(Long subDeclareId, String tempFileName, String dateStrFolder) throws Exception {
+        Map<String, Object> map = new HashMap<>();
         //根据申报ID查询申报信息
         TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
         //根据申报子任务ID查询申报明细
@@ -1416,8 +957,8 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 deleteAll(fileTemp);
             }
         }
-        map.put("zipName",zipName);
-        map.put("byte",buffer);
+        map.put("zipName", zipName);
+        map.put("byte", buffer);
         return map;
     }
 
@@ -1435,11 +976,11 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         // TODO 根据地区生成临时文件
         List<TemplateFileBO> templateFileBOList = null;
         //00:本地,01:异地
-        if("00".equals(taskSubDeclarePO.getAreaType())){
+        if ("00".equals(taskSubDeclarePO.getAreaType())) {
             zipName = "上海地区个税模板对应关系.zip";
             //获取上海本地根据模板生产的临时文件集合
             templateFileBOList = getTemplateFileListBySubDeclareIdAboutSH(taskSubDeclareDetailPOList, employeeInfoBatchPOList);
-        }else{
+        } else {
 //            // TODO 江苏
 //            zipName = "江苏模板.zip";
 //            templateFileBOList = getTemplateFileListBySubDeclareIdAboutJS(taskSubDeclareDetailPOList, employeeInfoBatchPOList);
@@ -1492,55 +1033,55 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         //解除劳动合同一次性补偿金
         TemplateFileBO templateFileLabor = new TemplateFileBO();
         templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
-        templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls","sh"));
+        templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "sh"));
         templateFileLabor.setType(true);
         templateFileBOList.add(templateFileLabor);
         //劳务报酬所得
         TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
         templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
-        templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls","sh"));
+        templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls", "sh"));
         templateFileLaborIncome.setType(true);
         templateFileBOList.add(templateFileLaborIncome);
         //利息、股息、红利所得
         TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
         templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
-        templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls","sh"));
+        templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "sh"));
         templateFileIDDIncome.setType(true);
         templateFileBOList.add(templateFileIDDIncome);
         //偶然所得
         TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
         templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
-        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls","sh"));
+        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls", "sh"));
         templateFileFortuitousIncome.setType(true);
         templateFileBOList.add(templateFileFortuitousIncome);
         //全年一次性奖金收入
         TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
         templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
-        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls","sh"));
+        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "sh"));
         templateFileBonusIncomeYear.setType(true);
         templateFileBOList.add(templateFileBonusIncomeYear);
         //人员信息
         TemplateFileBO templateFilePerson = new TemplateFileBO();
         templateFilePerson.setTemplateName("人员信息.xls");
-        templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls","sh"));
+        templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "sh"));
         templateFilePerson.setType(true);
         templateFileBOList.add(templateFilePerson);
         //商业保险commercial insurance
         TemplateFileBO templateFileCI = new TemplateFileBO();
         templateFileCI.setTemplateName("商业保险.xls");
-        templateFileCI.setWb(exportAboutCommercialInsuranceSh.getCommercialInsuranceWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "商业保险.xls","sh"));
+        templateFileCI.setWb(exportAboutCommercialInsuranceSh.getCommercialInsuranceWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "商业保险.xls", "sh"));
         templateFileCI.setType(true);
         templateFileBOList.add(templateFileCI);
         //外籍人员正常工资薪金
         TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
         templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySh.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls","sh"));
+        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySh.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sh"));
         templateFileForeignNormalSalary.setType(true);
         templateFileBOList.add(templateFileForeignNormalSalary);
         //正常工资薪金
         TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
         templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls","sh"));
+        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sh"));
         templateFileNormalSalary.setType(true);
         templateFileBOList.add(templateFileNormalSalary);
         //个人股票期权行权收入(文件夹)Personal stock option revenue
@@ -1552,19 +1093,19 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         TemplateFileBO templateFileStockOption = new TemplateFileBO();
         templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
         templateFileStockOption.setType(true);
-        templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls","sh"));
+        templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls", "sh"));
         templateFileStockSubList.add(templateFileStockOption);
         //个人股票期权行权收入-股票增值权
         TemplateFileBO templateFileStockAR = new TemplateFileBO();
         templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
         templateFileStockAR.setType(true);
-        templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls","sh"));
+        templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls", "sh"));
         templateFileStockSubList.add(templateFileStockAR);
         //个人股票期权行权收入-限制性股票
         TemplateFileBO templateFileRStock = new TemplateFileBO();
         templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
         templateFileRStock.setType(true);
-        templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls","sh"));
+        templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls", "sh"));
         templateFileStockSubList.add(templateFileRStock);
 
         templateFileStock.setTemplateFileBOList(templateFileStockSubList);
@@ -1580,62 +1121,62 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      * @param employeeInfoBatchPOList
      * @return
      */
-    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutJS(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList){
+    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutJS(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
 
         //解除劳动合同一次性补偿金
         TemplateFileBO templateFileLabor = new TemplateFileBO();
         templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
-        templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls","js"));
+        templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "js"));
         templateFileLabor.setType(true);
         templateFileBOList.add(templateFileLabor);
 
         //劳务报酬所得
         TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
         templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
-        templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls","js"));
+        templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls", "js"));
         templateFileLaborIncome.setType(true);
         templateFileBOList.add(templateFileLaborIncome);
 
         //利息、股息、红利所得
         TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
         templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
-        templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls","js"));
+        templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "js"));
         templateFileIDDIncome.setType(true);
         templateFileBOList.add(templateFileIDDIncome);
 
         //偶然所得
         TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
         templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
-        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls","js"));
+        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls", "js"));
         templateFileFortuitousIncome.setType(true);
         templateFileBOList.add(templateFileFortuitousIncome);
 
         //全年一次性奖金收入
         TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
         templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
-        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls","js"));
+        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "js"));
         templateFileBonusIncomeYear.setType(true);
         templateFileBOList.add(templateFileBonusIncomeYear);
 
         //人员信息
         TemplateFileBO templateFilePerson = new TemplateFileBO();
         templateFilePerson.setTemplateName("人员信息.xls");
-        templateFilePerson.setWb(exportAboutPersonInfoJs.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls","js"));
+        templateFilePerson.setWb(exportAboutPersonInfoJs.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "js"));
         templateFilePerson.setType(true);
         templateFileBOList.add(templateFilePerson);
 
         //外籍人员正常工资薪金
         TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
         templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalaryJs.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls","js"));
+        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalaryJs.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "js"));
         templateFileForeignNormalSalary.setType(true);
         templateFileBOList.add(templateFileForeignNormalSalary);
 
         //正常工资薪金
         TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
         templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls","js"));
+        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "js"));
         templateFileNormalSalary.setType(true);
         templateFileBOList.add(templateFileNormalSalary);
 
@@ -1648,19 +1189,19 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         TemplateFileBO templateFileStockOption = new TemplateFileBO();
         templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
         templateFileStockOption.setType(true);
-        templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls","js"));
+        templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls", "js"));
         templateFileStockSubList.add(templateFileStockOption);
         //个人股票期权行权收入-股票增值权
         TemplateFileBO templateFileStockAR = new TemplateFileBO();
         templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
         templateFileStockAR.setType(true);
-        templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls","js"));
+        templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls", "js"));
         templateFileStockSubList.add(templateFileStockAR);
         //个人股票期权行权收入-限制性股票
         TemplateFileBO templateFileRStock = new TemplateFileBO();
         templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
         templateFileRStock.setType(true);
-        templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls","js"));
+        templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls", "js"));
         templateFileStockSubList.add(templateFileRStock);
 
         templateFileStock.setTemplateFileBOList(templateFileStockSubList);
@@ -1675,62 +1216,62 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      * @param employeeInfoBatchPOList
      * @return
      */
-    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSZ(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList){
+    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSZ(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
 
         //解除劳动合同一次性补偿金
         TemplateFileBO templateFileLabor = new TemplateFileBO();
         templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
-        templateFileLabor.setWb(exportAboutLaborRescissionSz.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls","sz"));
+        templateFileLabor.setWb(exportAboutLaborRescissionSz.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "sz"));
         templateFileLabor.setType(true);
         templateFileBOList.add(templateFileLabor);
 
         //劳务报酬所得
         TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
         templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
-        templateFileLaborIncome.setWb(exportAboutLaborIncomeSz.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls","sz"));
+        templateFileLaborIncome.setWb(exportAboutLaborIncomeSz.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls", "sz"));
         templateFileLaborIncome.setType(true);
         templateFileBOList.add(templateFileLaborIncome);
 
         //利息、股息、红利所得
         TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
         templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
-        templateFileIDDIncome.setWb(exportAboutIDDIncomeSz.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls","sz"));
+        templateFileIDDIncome.setWb(exportAboutIDDIncomeSz.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "sz"));
         templateFileIDDIncome.setType(true);
         templateFileBOList.add(templateFileIDDIncome);
 
         //偶然所得
         TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
         templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
-        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncomeSz.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls","sz"));
+        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncomeSz.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls", "sz"));
         templateFileFortuitousIncome.setType(true);
         templateFileBOList.add(templateFileFortuitousIncome);
 
         //全年一次性奖金收入
         TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
         templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
-        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYearSz.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls","sz"));
+        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYearSz.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "sz"));
         templateFileBonusIncomeYear.setType(true);
         templateFileBOList.add(templateFileBonusIncomeYear);
 
         //人员信息
         TemplateFileBO templateFilePerson = new TemplateFileBO();
         templateFilePerson.setTemplateName("人员信息.xls");
-        templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls","sz"));
+        templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "sz"));
         templateFilePerson.setType(true);
         templateFileBOList.add(templateFilePerson);
 
         //外籍人员正常工资薪金
         TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
         templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySz.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls","sz"));
+        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySz.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sz"));
         templateFileForeignNormalSalary.setType(true);
         templateFileBOList.add(templateFileForeignNormalSalary);
 
         //正常工资薪金
         TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
         templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalarySz.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls","sz"));
+        templateFileNormalSalary.setWb(exportAboutNormalSalarySz.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sz"));
         templateFileNormalSalary.setType(true);
         templateFileBOList.add(templateFileNormalSalary);
 
@@ -1743,19 +1284,19 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         TemplateFileBO templateFileStockOption = new TemplateFileBO();
         templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
         templateFileStockOption.setType(true);
-        templateFileStockOption.setWb(exportAboutStockOptionSz.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls","sz"));
+        templateFileStockOption.setWb(exportAboutStockOptionSz.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls", "sz"));
         templateFileStockSubList.add(templateFileStockOption);
         //个人股票期权行权收入-股票增值权
         TemplateFileBO templateFileStockAR = new TemplateFileBO();
         templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
         templateFileStockAR.setType(true);
-        templateFileStockAR.setWb(exportAboutStockAppreciationSz.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls","sz"));
+        templateFileStockAR.setWb(exportAboutStockAppreciationSz.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls", "sz"));
         templateFileStockSubList.add(templateFileStockAR);
         //个人股票期权行权收入-限制性股票
         TemplateFileBO templateFileRStock = new TemplateFileBO();
         templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
         templateFileRStock.setType(true);
-        templateFileRStock.setWb(exportAboutRestrictiveStockSz.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls","sz"));
+        templateFileRStock.setWb(exportAboutRestrictiveStockSz.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls", "sz"));
         templateFileStockSubList.add(templateFileRStock);
 
         templateFileStock.setTemplateFileBOList(templateFileStockSubList);
