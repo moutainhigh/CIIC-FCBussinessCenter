@@ -18,9 +18,11 @@ import com.ciicsh.gto.fcbusinesscenter.util.entity.DistributedTranEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.AdvanceEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
 import com.ciicsh.gto.salecenter.apiservice.api.dto.company.*;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
@@ -102,8 +104,9 @@ public class CompleteComputeServiceImpl {
                 .include("catalog.batch_info.actual_period")
                 .include("catalog.batch_info.management_ID")
                 .include("catalog.batch_info.management_Name")
+                .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.item_name")
-                .include("catalog.pay_items.item_code")
+                .include("catalog.pay_items.cal_precision")
                 .include("catalog.pay_items.item_value")
         ;
 
@@ -132,6 +135,19 @@ public class CompleteComputeServiceImpl {
             String mgrId = batchInfo.get("management_ID") == null ? "" : (String) batchInfo.get("management_ID");
             DBObject empInfo = getEmployeeInfo(catalog,empCode,mgrId);
             List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
+            payItems = payItems.stream().map(pItem -> {
+                        DBObject tranItem = new BasicDBObject();
+                        int dataType = pItem.get("data_type") == null ? 0 : (int) pItem.get("data_type");
+                        int precision = pItem.get("cal_precision") == null ? 2 : (int) pItem.get("cal_precision");
+                        Object itemVal = pItem.get("item_value") == null ? 0 : (int) pItem.get("item_value");
+                        if (dataType == DataTypeEnum.NUM.getValue()) {
+                            tranItem.put("item_value_str", BizArith.roundStr(itemVal, precision));
+                        }
+                        tranItem.put("item_name",pItem.get("item_name"));
+                        tranItem.put("item_value",pItem.get("item_value"));
+                        return tranItem;
+                    }
+                ).collect(Collectors.toList());
             DBObject mapObj = new BasicDBObject();
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("batch_id", batchCode);  // 批次ID

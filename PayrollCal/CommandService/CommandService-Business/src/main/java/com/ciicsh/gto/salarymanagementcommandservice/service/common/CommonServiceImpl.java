@@ -14,6 +14,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -47,6 +48,9 @@ public class CommonServiceImpl {
 
     @Autowired
     private PrPayrollItemMapper prPayrollItemMapper;
+
+    @Autowired
+    private PrItemService itemService;
 
     @Autowired
     private PrPayrollAccountItemRelationMapper accountItemRelationMapper;
@@ -137,22 +141,19 @@ public class CommonServiceImpl {
         List<PrPayrollItemPO> prList = null;
         List<BasicDBObject> list = new ArrayList<>();
 
-        PayrollGroupExtPO payrollGroupExtPO = new PayrollGroupExtPO();
-        payrollGroupExtPO.setManagementId(batchPO.getManagementId());
-        if(batchPO.isTemplate()) {
-            payrollGroupExtPO.setPayrollGroupCode("");
-            payrollGroupExtPO.setPayrollGroupTemplateCode(batchPO.getPrGroupCode());
-        }else {
-            payrollGroupExtPO.setPayrollGroupCode(batchPO.getPrGroupCode());
-            payrollGroupExtPO.setPayrollGroupTemplateCode("");
-
-        }
         //获取薪资组或薪资组模版下的薪资项列表
-        prList = prPayrollItemMapper.getPayrollItems(payrollGroupExtPO);
+        if(batchPO.isTemplate()) {
+            prList =  itemService.getListByGroupTemplateCode(batchPO.getPrGroupCode());
+            //payrollGroupExtPO.setPayrollGroupCode("");
+            //payrollGroupExtPO.setPayrollGroupTemplateCode(batchPO.getPrGroupCode());
+        }else {
+            //payrollGroupExtPO.setPayrollGroupCode(batchPO.getPrGroupCode());
+            //payrollGroupExtPO.setPayrollGroupTemplateCode("");
+            prList =  itemService.getListByGroupCode(batchPO.getPrGroupCode());
+        }
 
         //获取薪资帐套下的薪资项列表
         List<PayrollAccountItemRelationExtPO> itemRelationExtsList = accountItemRelationMapper.getAccountItemRelationExts(batchPO.getAccountSetCode());
-
 
         prList = prList.stream()
                 .filter(p-> itemRelationExtsList.stream().anyMatch(f -> f.getPayrollItemCode().equals(p.getItemCode()) && f.getIsActive()))
