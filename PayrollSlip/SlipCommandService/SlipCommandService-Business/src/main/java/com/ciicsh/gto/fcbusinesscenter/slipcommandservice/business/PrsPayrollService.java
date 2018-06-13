@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO;
+import org.bson.Document;
 
 /**
  * 工资单 服务类
@@ -16,7 +17,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO
 public interface PrsPayrollService {
     List<PrsPayrollPO> listPrsPayrolls(Map<String, Object> params);
 
-    Page<PrsPayrollPO> pagePrsPayrolls(Map<String, Object> params);
+    Page<Document> pagePrsPayrolls(String params);
 
     PrsPayrollPO getPrsPayroll(Map<String, Object> params);
 

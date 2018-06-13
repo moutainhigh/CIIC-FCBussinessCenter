@@ -40,7 +40,7 @@ public class PrsPayrollController {
     }
 
     @RequestMapping(value = "/pagePrsPayrolls")
-    public JsonResult page(@RequestBody Map<String, Object> params) {
+    public JsonResult page(@RequestBody String params) {
         return JsonResult.success(prsPayrollService.pagePrsPayrolls(params));
     }
 

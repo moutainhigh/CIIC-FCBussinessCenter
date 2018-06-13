@@ -1,8 +1,14 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +36,9 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     @Autowired
     private PrsPayrollMapper prsPayrollMapper;
 
+    @Autowired
+    private MongoConfig mongoConfig;
+
     @Override
     public List<PrsPayrollPO> listPrsPayrolls(Map<String, Object> params) {
 
@@ -39,29 +48,42 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     }
 
     @Override
-    public Page<PrsPayrollPO> pagePrsPayrolls(Map<String, Object> params) {
+    public Page<Document> pagePrsPayrolls(String params) {
         int limit = 20;
         int offset = 0;
 
-        int currentPage = params.get("currentPage") == null ? 1 : (int) params.get("currentPage");
+        Document query = Document.parse(params);
 
-        if (params.get("pageSize") != null) {
-            limit =  (int) params.get("pageSize");
+        int currentPage = query.containsKey("currentPage") ? (int) query.remove("currentPage") : 1;
+
+        if (query.containsKey("pageSize")) {
+            limit =  (int) query.remove("pageSize");
         }
 
         if (currentPage > 1) {
             offset = (currentPage - 1) * limit;
         }
 
-        params.put("limit", limit);
-        params.put("offset", offset);
+        List<Document> emps = new ArrayList<Document>();
 
-        int total = prsPayrollMapper.total(params);
-        List<PrsPayrollPO> records = prsPayrollMapper.list(params);
-        Page<PrsPayrollPO> page = new Page<>();
-        page.setRecords(records);
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
+
+        long total = coll.count(query);
+
+        MongoCursor<Document> cursor = coll.find(query).skip(offset).limit(limit).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                emps.add(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
+
+        Page<Document> page = new Page<>();
+        page.setRecords(emps);
         page.setCurrent(currentPage);
-        page.setTotal(total);
+        page.setTotal((int)total);
         page.setSize(limit);
 
         return page;
@@ -92,18 +114,10 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
 
     @Override
     public Boolean addPrsPayrolls(ArrayList<Map<String, Object>> objs) {
-        UserInfoBO currUser = UserContext.getUser();
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
 
         for (Map<String, Object> params : objs) {
-            if (currUser != null) {
-                params.put("createdBy", currUser.getDisplayName());
-                params.put("modifiedBy", currUser.getDisplayName());
-            } else {
-                params.put("createdBy", "1");
-                params.put("modifiedBy", "1");
-            }
-
-            prsPayrollMapper.insert(params);
+            coll.insertOne(Document.parse(JSONObject.toJSONString(params)));
         }
 
         return true;

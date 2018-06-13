@@ -139,7 +139,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
         MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
 
-        for (Object emp : JSONObject.parseArray((String)params.remove("employees"))) {
+        for (Object emp : (ArrayList)params.remove("employees")) {
             coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
         }
 
@@ -198,12 +198,14 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
-        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+        if (params.get("employees") != null) {
+            MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
 
-        coll.deleteMany(new BasicDBObject("task_id", params.get("mainTaskId")));
+            coll.deleteMany(new BasicDBObject("task_id", params.get("mainTaskId")));
 
-        for (Object emp : JSONObject.parseArray((String)params.remove("employees"))) {
-            coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+            for (Object emp : (ArrayList)params.remove("employees")) {
+                coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+            }
         }
 
         prsMainTaskMapper.update(params);
