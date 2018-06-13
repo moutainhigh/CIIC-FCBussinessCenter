@@ -139,7 +139,7 @@ public class CompleteComputeServiceImpl {
                         DBObject tranItem = new BasicDBObject();
                         int dataType = pItem.get("data_type") == null ? 0 : (int) pItem.get("data_type");
                         int precision = pItem.get("cal_precision") == null ? 2 : (int) pItem.get("cal_precision");
-                        Object itemVal = pItem.get("item_value") == null ? 0 : (int) pItem.get("item_value");
+                        Object itemVal =  pItem.get("item_value");
                         if (dataType == DataTypeEnum.NUM.getValue()) {
                             tranItem.put("item_value_str", BizArith.roundStr(itemVal, precision));
                         }

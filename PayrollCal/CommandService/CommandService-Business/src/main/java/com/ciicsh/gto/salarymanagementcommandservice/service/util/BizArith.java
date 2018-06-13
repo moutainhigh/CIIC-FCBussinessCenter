@@ -113,7 +113,7 @@ public class BizArith {
             throw new IllegalArgumentException(
                     "The scale must be a positive integer or zero");
         }
-        BigDecimal b = new BigDecimal(v.toString());
+        BigDecimal b = new BigDecimal(String.valueOf(v));
         return b.setScale(scale, BigDecimal.ROUND_HALF_UP).toString();
     }
 }
