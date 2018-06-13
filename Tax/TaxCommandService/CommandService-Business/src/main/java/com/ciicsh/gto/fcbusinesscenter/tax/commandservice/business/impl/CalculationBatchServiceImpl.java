@@ -338,7 +338,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = declareTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, CollectorsUtil.summingBigDecimal(TaskSubDeclareDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, CollectorsUtil.summingBigDecimal(TaskSubDeclareDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = declareTaskDetail.stream()
@@ -368,7 +368,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = moneyTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, CollectorsUtil.summingBigDecimal(TaskSubMoneyDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, CollectorsUtil.summingBigDecimal(TaskSubMoneyDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = moneyTaskDetail.stream()
@@ -396,7 +396,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = paymentTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, CollectorsUtil.summingBigDecimal(TaskSubPaymentDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, CollectorsUtil.summingBigDecimal(TaskSubPaymentDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = paymentTaskDetail.stream()
@@ -424,7 +424,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = supportTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, CollectorsUtil.summingBigDecimal(TaskSubSupplierDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, CollectorsUtil.summingBigDecimal(TaskSubSupplierDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = supportTaskDetail.stream()
@@ -550,7 +550,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
                 BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
 //                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
-                BigDecimal taxAmount=new BigDecimal(0);//应纳税额
+                BigDecimal taxReal=new BigDecimal(0);//税金
 
                 List<TaskMainDetailPO> tps = entry.getValue();
                 //计算合并后的各项值
@@ -564,7 +564,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
                     deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
 //                    deduction = deduction.add(tp.getDeduction());
-                    taxAmount = taxAmount.add(tp.getTaxAmount());
+                    taxReal = taxReal.add(tp.getTaxReal());
                 }
 
                 taskMainDetailPO.setIncomeTotal(incomeTotal);
@@ -573,7 +573,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 taskMainDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
                 taskMainDetailPO.setDeductHouseFund(deductHouseFund);
                 taskMainDetailPO.setDeduction(new BigDecimal(3500));
-                taskMainDetailPO.setTaxAmount(taxAmount);
+                taskMainDetailPO.setTaxReal(taxReal);
                 //更新合并后数据值
                 this.taskMainDetailService.updateById(taskMainDetailPO);
 
