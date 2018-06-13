@@ -36,6 +36,7 @@
         <result column="operator_user_id" property="operatorUserId" />
         <result column="approve_user_id" property="approveUserId" />
         <result column="work_flow_user_info" property="workFlowUserInfo" />
+        <result column="batch_version" property="batchVersion" />
 		<result column="is_active" property="isActive" />
 		<result column="created_by" property="createdBy" />
 		<result column="created_time" property="createdTime" />
