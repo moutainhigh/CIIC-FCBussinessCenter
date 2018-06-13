@@ -43,11 +43,11 @@ public class ComputeController { //websocket long connection
         int rowAffected = 0;
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            rowAffected = batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill",""); //TODO
+            rowAffected = batchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "sys","","");
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
-            rowAffected = adjustBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "bill","");
+            rowAffected = adjustBatchService.auditBatch(batchCode,"", BatchStatusEnum.COMPUTING.getValue(), "sys","","");
         }else if(batchType == BatchTypeEnum.BACK.getValue()) {
-            rowAffected = backTrackingBatchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "bill", "");
+            rowAffected = backTrackingBatchService.auditBatch(batchCode, "", BatchStatusEnum.COMPUTING.getValue(), "sys", "","");
         }
 
         if(rowAffected > 0) {

@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 
 import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.CloseAccountMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
@@ -52,6 +53,9 @@ public class CommonServiceImpl {
 
     @Autowired
     private PrNormalBatchMapper normalBatchMapper;
+
+    @Autowired
+    private CloseAccountMongoOpt closeAccountMongoOpt;
 
     /**
      * 批量更新或者插入数据
@@ -326,5 +330,23 @@ public class CommonServiceImpl {
                 dbObject.put("item_value", defaultValue);
             }
         }
+    }
+
+    public long getBatchVersion(String batchCode){
+        long version = 0;
+        Criteria criteria = Criteria.where("batch_id").is(batchCode);
+        Query query = Query.query(criteria);
+        query.fields().include("version");
+
+        List<DBObject> list =  closeAccountMongoOpt.getMongoTemplate().find(query,DBObject.class,CloseAccountMongoOpt.PR_PAYROLL_CAL_RESULT);
+        if(list == null || list.size() == 0){
+            return version;
+        }
+
+        Optional<DBObject> versionObj = list.stream().findFirst();
+        if(versionObj.isPresent()){
+            version = versionObj.get().get("version") == null ? 0 : (long)versionObj.get().get("version");
+        }
+        return version;
     }
 }

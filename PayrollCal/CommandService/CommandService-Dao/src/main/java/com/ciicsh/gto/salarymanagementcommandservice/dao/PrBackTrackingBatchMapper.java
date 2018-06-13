@@ -32,6 +32,7 @@ public interface PrBackTrackingBatchMapper extends BaseMapper<PrBackTrackingBatc
                    @Param("comments") String comments,
                    @Param("status") int status,
                    @Param("modifiedBy") String modifiedBy,
+                   @Param("advancePeriod") String advancePeriod,
                    @Param("result") String result);
 
     int checkBackTraceBatch(@Param("originBatchCode") String originBatchCode);

@@ -6,6 +6,7 @@ import com.ciicsh.gto.companycenter.webcommandservice.api.WorkingCalendarProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.WorkingCalendarRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.WorkingCalendarResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountSetDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountSetExtensionDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
@@ -72,7 +73,12 @@ public class AccountSetController extends BaseController {
             accountSetDTO.setCreatedBy(UserContext.getUserId());
             accountSetDTO.setModifiedBy(UserContext.getUserId());
             PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
-            boolean result = prAccountSetService.addAccountSet(payrollAccountSetPO);
+            boolean result;
+            try {
+                result = prAccountSetService.addAccountSet(payrollAccountSetPO);
+            } catch (BusinessException be) {
+                return JsonResult.faultMessage(be.getMessage());
+            }
             if(result){
                 PrPayrollAccountSetExtensionPO extensionPO = prAccountSetService.getPayrollAccountSetExtByCode(accountSetCode);
                 PrPayrollAccountSetExtensionDTO extensionDTO = null;

@@ -26,10 +26,9 @@ import java.util.List;
 @Service
 public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<SalaryGrantReprieveEmployeeImportMapper, SalaryGrantReprieveEmployeeImportPO> implements SalaryGrantReprieveEmployeeImportService {
     @Autowired
-    SalaryGrantReprieveEmployeeImportMapper salaryGrantReprieveEmployeeImportMapper;
-
+    private SalaryGrantReprieveEmployeeImportMapper salaryGrantReprieveEmployeeImportMapper;
     @Autowired
-    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     /**
      * 根据任务单编号，任务单类型，雇员编号，发放状态暂缓雇员

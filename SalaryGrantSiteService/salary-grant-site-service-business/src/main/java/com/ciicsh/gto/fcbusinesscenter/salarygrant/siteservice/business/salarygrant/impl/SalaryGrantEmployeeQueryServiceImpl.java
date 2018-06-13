@@ -159,8 +159,8 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
                         DBObject employeeServiceAgreement = (DBObject) empInfo.get(PayItemName.EMPLOYEE_SERVICE_AGREE);
                         if (!ObjectUtils.isEmpty(employeeServiceAgreement)) {
                             DBObject salaryGrantInfo = (DBObject) employeeServiceAgreement.get(JsonParseConsts.EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO);
-                            if (!ObjectUtils.isEmpty(salaryGrantInfo)) {
-                                empCalcResultBO.setCurrencyCode(ObjectUtils.isEmpty(salaryGrantInfo.get("currencyType")) ? null : salaryGrantInfo.get("currencyType").toString());
+                            if (!ObjectUtils.isEmpty(salaryGrantInfo.get("currencyType"))) {
+                                empCalcResultBO.setCurrencyCode(salaryGrantInfo.get("currencyType").toString());
                             } else {
                                 //解析发放币种失败时抛异常
                                 throw new RuntimeException("雇员服务协议薪资发放信息中币种不能为空！");

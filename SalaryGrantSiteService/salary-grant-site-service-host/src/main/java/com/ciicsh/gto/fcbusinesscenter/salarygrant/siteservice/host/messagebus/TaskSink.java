@@ -80,7 +80,7 @@ public interface TaskSink {
     MessageChannel salaryGrantPaymentProcess();
 
     /**
-     * 失效薪资发放任务单TOPIC
+     * 取消关帐TOPIC
      */
     String SALARY_GRANT_MAIN_TASK_CANCEL_TASK = "sg_compute-unclose-output-channel";
     @Input(SALARY_GRANT_MAIN_TASK_CANCEL_TASK)

@@ -443,9 +443,9 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String advancePeriod, String result) {
         if(status == BatchStatusEnum.COMPUTING.getValue()){
-            return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+            return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
         }
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
         int approvalResult = 0;
@@ -461,11 +461,11 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         historyPO.setApprovalResult(approvalResult);
         historyPO.setBizCode(batchCode);
         historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
-        historyPO.setCreatedBy("bill"); //TODO
+        historyPO.setCreatedBy("bill");
         historyPO.setCreatedName("bill");
         historyPO.setComments(comments);
         approvalHistoryService.addApprovalHistory(historyPO);
-        return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,result);
+        return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
     }
 
     @Override
