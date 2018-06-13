@@ -24,13 +24,15 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration addInterceptor = registry.addInterceptor(getAuthenticateInterceptor());
 
+        // 拦截配置
+        addInterceptor.addPathPatterns("/**");
+
         // 排除配置
 //        addInterceptor.excludePathPatterns("/error");
           addInterceptor.excludePathPatterns("/api/prBatch/**");
           addInterceptor.excludePathPatterns("/api/prAccountSet/**");
 
 
-        // 拦截配置
-        addInterceptor.addPathPatterns("/**");
+
     }
 }

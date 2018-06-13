@@ -20,11 +20,19 @@ import java.util.Map;
 public interface PrItemService {
 
     /**
-     * 获取薪资项列表 from 薪资组
-     * @param code
+     * 获取薪资项列表 from 薪资组 无草稿项
+     * @param groupCode
      * @return 结果列表
      */
     List<PrPayrollItemPO> getListByGroupCode(String groupCode);
+
+    /**
+     * 获取薪资项列表 from 薪资组
+     * @param groupCode
+     * @param draftFlg
+     * @return
+     */
+    List<PrPayrollItemPO> getListByGroupCode(String groupCode, boolean draftFlg);
 
     /**
      * 获取薪资项列表 from 薪资组 分页
@@ -36,20 +44,48 @@ public interface PrItemService {
     PageInfo<PrPayrollItemPO> getListByGroupCode(String code, Integer pageNum, Integer pageSize);
 
     /**
-     * 获取薪资项列表 from 薪资组模板
-     * @param code
+     * 获取薪资项列表 from 薪资组 分页 无草稿项
+     * @param groupCode
+     * @param pageNum
+     * @param pageSize
+     * @param draftFlg
+     * @return
+     */
+    PageInfo<PrPayrollItemPO> getListByGroupCode(String groupCode, Integer pageNum, Integer pageSize, boolean draftFlg);
+
+    /**
+     * 获取薪资项列表 from 薪资组模板 无草稿项
+     * @param groupTemplateCode
      * @return 结果列表
      */
     List<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode);
+
+    /**
+     * 获取薪资项列表 from 薪资组模板
+     * @param groupTemplateCode
+     * @param draftFlg
+     * @return 结果列表
+     */
+    List<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, boolean draftFlg);
+
+    /**
+     * 获取薪资项列表 from 薪资组模板 分页 无草稿项
+     * @param code
+     * @param pageNum
+     * @param pageSize
+     * @return 结果列表
+     */
+    PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, Integer pageNum, Integer pageSize);
 
     /**
      * 获取薪资项列表 from 薪资组模板 分页
      * @param code
      * @param pageNum
      * @param pageSize
+     * @param draftFlg
      * @return 结果列表
      */
-    PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String code, Integer pageNum, Integer pageSize);
+    PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, Integer pageNum, Integer pageSize, boolean draftFlg);
 
     /**
      * 获取一个薪资项
@@ -98,7 +134,6 @@ public interface PrItemService {
      * @return
      */
     int deleteItemByPrGroupCode(String groupCode);
-
 
     /**
      * 获取薪资项列表

@@ -34,4 +34,6 @@ public interface PrPayrollAccountItemRelationMapper extends BaseMapper<PrPayroll
      * @return 返回薪资账套扩展薪资项关系数据
      */
     List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(@Param("accountSetCode") String accountSetCode);
+
+    Integer insertAccountItemRelationList(List<PrPayrollAccountItemRelationPO> list);
 }

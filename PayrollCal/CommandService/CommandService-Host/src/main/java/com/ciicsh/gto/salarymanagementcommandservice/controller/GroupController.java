@@ -222,7 +222,7 @@ public class GroupController implements PayrollGroupProxy{
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
         updateParam.setGroupCode(code);
-        updateParam.setModifiedBy("system");
+        updateParam.setModifiedBy(UserContext.getUserId());
         boolean result = prGroupService.approvePrGroup(updateParam);
         return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_APPROVE_SUCCESS)
                 : JsonResult.faultMessage(MessageConst.PAYROLL_GROUP_APPROVE_FAIL);

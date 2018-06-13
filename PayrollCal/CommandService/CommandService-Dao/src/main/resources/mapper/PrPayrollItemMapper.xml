@@ -21,10 +21,12 @@
 		<result column="full_formula" property="fullFormula" />
         <result column="origin_formula" property="originFormula" />
 		<result column="formula_content" property="formulaContent" />
+		<result column="origin_condition" property="originCondition" />
 		<result column="item_condition" property="itemCondition" />
 		<result column="cal_priority" property="calPriority" />
 		<result column="display_priority" property="displayPriority" />
 		<result column="remark" property="remark" />
+		<result column="can_lock" property="canLock" />
 		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
@@ -282,5 +284,113 @@
 		on pr_payroll_item.payroll_group_code = t.pr_group_code ) as b
 		where a.account_set_code = b.account_set_code and a.payroll_item_code = b.item_code;
 	</select>
+
+	<select id="selectApprovedGroupItems" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO" resultMap="BaseResultMap">
+		SELECT
+		<include refid="PayrollItem_All_Columns" />
+		FROM
+		pr_approved_payroll_item
+		WHERE
+		is_active = 1
+		AND
+		payroll_group_code = #{payrollGroupCode}
+	</select>
+
+	<select id="selectApprovedGroupTemplateItems" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO" resultMap="BaseResultMap">
+		SELECT
+		<include refid="PayrollItem_All_Columns" />
+		FROM
+		pr_approved_payroll_item
+		WHERE
+		is_active = 1
+		AND
+		payroll_group_template_code = #{payrollGroupTemplateCode}
+		AND
+		(
+			payroll_group_code = ''
+			OR
+			payroll_group_code IS NULL
+		)
+	</select>
+
+	<insert id="insertBatchApprovedItemsByGroup">
+		REPLACE INTO pr_approved_payroll_item
+		(
+			item_code,
+			parent_item_code,
+			management_id,
+			payroll_group_code,
+			payroll_group_template_code,
+			item_name,
+			item_type,
+			base_item_code,
+			data_type,
+			default_value_style,
+			default_value,
+			decimal_process_type,
+			cal_precision,
+			full_formula,
+			origin_formula,
+			formula_content,
+			origin_condition,
+			item_condition,
+			cal_priority,
+			display_priority,
+			can_lock,
+			remark,
+			item_value,
+			is_active,
+			created_time,
+			modified_time,
+			created_by,
+			modified_by
+		)
+		SELECT
+			item_code,
+			parent_item_code,
+			management_id,
+			payroll_group_code,
+			payroll_group_template_code,
+			item_name,
+			item_type,
+			base_item_code,
+			data_type,
+			default_value_style,
+			default_value,
+			decimal_process_type,
+			cal_precision,
+			full_formula,
+			origin_formula,
+			formula_content,
+			origin_condition,
+			item_condition,
+			cal_priority,
+			display_priority,
+			can_lock,
+			remark,
+			item_value,
+			is_active,
+			sysdate(),
+			sysdate(),
+			created_by,
+			modified_by
+		FROM
+			pr_payroll_item
+		WHERE
+		<choose>
+		    <when test="prGroupTemplateCode == null ">
+				payroll_group_code = #{payrollGroupCode}
+			</when>
+		    <when test="prGroupTemplateCode != null ">
+				prGroupTemplateCode = #{prGroupTemplateCode}
+				AND
+				(
+					payrollGroupCode = ''
+					OR
+					payrollGroupCode IS NULL
+				)
+			</when>
+	    </choose>
+	</insert>
 
 </mapper>

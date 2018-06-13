@@ -439,19 +439,22 @@ public class CompleteComputeServiceImpl {
 
             int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
 
-            if(affected > 0) {
-                ClosingMsg closingMsg = new ClosingMsg();
-                closingMsg.setBatchCode(batchCode);
-                closingMsg.setBatchType(batchType);
-                closingMsg.setOptID(userID);
-                closingMsg.setOptName(userName);
-
-                long version = commonService.getBatchVersion(batchCode);
-                closingMsg.setVersion(version);
-
-                sender.SendComputeClose(closingMsg);
-                logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
+            if(affected > 0){
+                logger.info("产生周期垫付");
             }
+
+            ClosingMsg closingMsg = new ClosingMsg();
+            closingMsg.setBatchCode(batchCode);
+            closingMsg.setBatchType(batchType);
+            closingMsg.setOptID(userID);
+            closingMsg.setOptName(userName);
+
+            long version = commonService.getBatchVersion(batchCode);
+            closingMsg.setVersion(version);
+
+            sender.SendComputeClose(closingMsg);
+            logger.info("发送关帐通知各个业务部门 : " + closingMsg.toString());
+
 
         }
     }

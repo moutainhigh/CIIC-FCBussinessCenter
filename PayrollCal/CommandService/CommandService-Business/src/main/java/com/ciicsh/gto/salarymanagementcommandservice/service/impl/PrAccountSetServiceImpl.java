@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.po.KeyValuePO;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
@@ -124,7 +125,8 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
                     .map(item->toPayrollAccountItemRelationPO(item,payrollAccountSetPO))
                     .collect(Collectors.toList());
             if(null != relations && relations.size() > 0){
-                relations.forEach(x->relationMapper.insert(x));
+                relationMapper.insertAccountItemRelationList(relations);
+//                relations.forEach(x->relationMapper.insert(x));
             }
         }
     }
@@ -143,8 +145,7 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        PageInfo<PrPayrollAccountSetPO> pageInfo = new PageInfo<>(resultList);
-        return  pageInfo;
+        return new PageInfo<>(resultList);
     }
 
     @Override
@@ -156,8 +157,7 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        PageInfo<PrPayrollAccountSetExtensionPO> pageInfo = new PageInfo<>(results);
-        return  pageInfo;
+        return new PageInfo<>(results);
     }
 
     @Override
@@ -187,9 +187,9 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         relationPO.setPayrollItemAlias(payrollItemPO.getItemName());
         relationPO.setActive(true);
         relationPO.setCreatedTime(new Date());
-        relationPO.setCreatedBy("macor");
+        relationPO.setCreatedBy(UserContext.getUserId());
         relationPO.setModifiedTime(new Date());
-        relationPO.setModifiedBy("macor");
+        relationPO.setModifiedBy(UserContext.getUserId());
         return relationPO;
     }
 }
