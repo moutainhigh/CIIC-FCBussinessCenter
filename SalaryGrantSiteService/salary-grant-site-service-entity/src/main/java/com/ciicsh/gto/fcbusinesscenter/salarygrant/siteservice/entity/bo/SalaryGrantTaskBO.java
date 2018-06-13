@@ -183,5 +183,5 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
     /**
      * 版本号
      */
-    private Long version;
+    private Long batchVersion;
 }
