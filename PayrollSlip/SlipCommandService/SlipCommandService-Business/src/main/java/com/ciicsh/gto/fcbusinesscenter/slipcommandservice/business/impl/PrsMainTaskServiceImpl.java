@@ -231,25 +231,9 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
         }
 
         if (params.get("updConds") != null) {
-//            BasicDBObject filter = new BasicDBObject();
-//            Map<String, Object> query = (Map)params.remove("updConds");
-//            Iterator<String> itQuery = query.keySet().iterator();
-//            while (itQuery.hasNext()){
-//                String col = itQuery.next();
-//                filter.put(col, query.get(col));
-//            }
             BasicDBObject filter = new BasicDBObject((Map)params.remove("updConds"));
-
             BasicDBObject fields = new BasicDBObject((Map)params.remove("updFields"));
-
             BasicDBObject update = new BasicDBObject("$set", fields);
-
-//            Map<String, Object> fields = (Map)params.remove("updFields");
-//            Iterator<String> itFields = fields.keySet().iterator();
-//            while (itFields.hasNext()){
-//                String col = itFields.next();
-//                update.put(col, fields.get(col));
-//            }
 
             coll.updateMany(filter, update);
         }
