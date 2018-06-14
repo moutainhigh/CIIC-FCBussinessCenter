@@ -299,6 +299,28 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
 	 */
 	private BigDecimal exerciseTaxAmount;
 
+	//税前合计
+	private BigDecimal preTaxAggregate;
+
+	//免税津贴
+	private BigDecimal dutyFreeAllowance;
+
+	public BigDecimal getPreTaxAggregate() {
+		return preTaxAggregate;
+	}
+
+	public void setPreTaxAggregate(BigDecimal preTaxAggregate) {
+		this.preTaxAggregate = preTaxAggregate;
+	}
+
+	public BigDecimal getDutyFreeAllowance() {
+		return dutyFreeAllowance;
+	}
+
+	public void setDutyFreeAllowance(BigDecimal dutyFreeAllowance) {
+		this.dutyFreeAllowance = dutyFreeAllowance;
+	}
+
 	public BigDecimal getTaxReal() {
 		return taxReal;
 	}
@@ -831,7 +853,7 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
 
 	public String groupBys(){
 
-		return this.employeeNo + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
+		return this.employeeNo + this.declareAccount + DateTimeFormatter.ofPattern("yyyy-MM").format(this.period) + this.incomeSubject;
 	}
 
 	@Override
