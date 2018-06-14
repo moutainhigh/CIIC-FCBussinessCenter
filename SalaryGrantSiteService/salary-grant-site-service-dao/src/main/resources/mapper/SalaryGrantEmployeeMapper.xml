@@ -207,7 +207,7 @@
     </resultMap>
 
     <sql id="FinanceEmpField">
-        ${alias}.grant_cycle, ${alias}.company_id, ${alias}.employee_id, ${alias}.employee_name, ${alias}.tax_cycle, ${alias}.template_type, ${alias}.wage_payable, ${alias}.personal_social_security, ${alias}.individual_provident_fund, ${alias}.payment_amount, ${alias}.year_end_bonus, ${alias}.declaration_account_category,
+        ${alias}.salary_grant_employee_id, ${alias}.company_id, ${alias}.employee_id, ${alias}.employee_name, ${alias}.grant_cycle, ${alias}.tax_cycle, ${alias}.template_type, ${alias}.wage_payable, ${alias}.personal_social_security, ${alias}.individual_provident_fund, ${alias}.payment_amount, ${alias}.year_end_bonus, ${alias}.declaration_account_category,
         0 tax_af,
         CASE WHEN ${alias}.contribution_account_category=1 THEN ${alias}.personal_income_tax ELSE 0  END tax_fc,
         0 tax_bpo,
@@ -240,7 +240,6 @@
           e.company_id, e.template_type, e.employee_id
     </select>
 
-
     <resultMap id="FinanceDataResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO">
         <id column="task_id" property="taskId"/>
         <result column="task_code" property="taskCode"/>
@@ -252,6 +251,7 @@
         <result column="operator_user_id" property="operatorUserId"/>
         <result column="approve_user_id" property="approveUserId"/>
         <collection property="empList" ofType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO">
+            <result column="salary_grant_employee_id" property="salaryGrantEmployeeId"/>
             <result column="employee_id" property="employeeId"/>
             <result column="employee_name" property="employeeName"/>
             <result column="template_type" property="templateType"/>
@@ -278,7 +278,7 @@
 	    s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code, s.batch_code, s.management_id, s.management_name, s.grant_cycle, now() print_date,
     </sql>
     <sql id="FinanceEmpInfoField">
-	    e.company_id, e.employee_id, e.employee_name, e.tax_cycle, e.template_type, e.wage_payable, e.personal_social_security, e.individual_provident_fund, e.payment_amount, e.year_end_bonus, e.declaration_account_category,
+	    e.salary_grant_employee_id, e.company_id, e.employee_id, e.employee_name, e.tax_cycle, e.template_type, e.wage_payable, e.personal_social_security, e.individual_provident_fund, e.payment_amount, e.year_end_bonus, e.declaration_account_category,
         0 tax_af,
         CASE WHEN e.declaration_account_category=1 THEN e.personal_income_tax ELSE 0 END tax_fc,
         0 tax_bpo,
