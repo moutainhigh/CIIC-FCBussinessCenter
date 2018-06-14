@@ -15,9 +15,11 @@ import org.bson.Document;
  * @since 2018-02-09
  */
 public interface PrsPayrollService {
-    List<PrsPayrollPO> listPrsPayrolls(Map<String, Object> params);
+    List<Document> listPrsPayrolls(Map<String, Object> params);
 
-    Page<Document> pagePrsPayrolls(String params);
+    Page<Document> pagePrsPayrolls(Map<String, Object> params);
+
+    Boolean deletePrsPayrolls(ArrayList<String> ids);
 
     PrsPayrollPO getPrsPayroll(Map<String, Object> params);
 

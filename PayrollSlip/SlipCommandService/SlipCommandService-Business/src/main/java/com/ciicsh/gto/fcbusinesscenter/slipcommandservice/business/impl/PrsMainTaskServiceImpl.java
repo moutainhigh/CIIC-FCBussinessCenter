@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -94,13 +98,33 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
         try {
             while (cursor.hasNext()) {
-                emps.add(cursor.next());
+                Document emp = cursor.next();
+                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
+                emps.add(emp);
             }
         } finally {
             cursor.close();
         }
 
         return emps;
+    }
+
+    @Override
+    public Boolean deleteTaskEmps(Map<String, Object> query) {
+
+        Iterator<String> itQuery = query.keySet().iterator();
+        BasicDBList queyElements = new BasicDBList();
+        while (itQuery.hasNext()){
+            String col = itQuery.next();
+            queyElements.add(new BasicDBObject(col, query.get(col)));
+        }
+        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
+
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        coll.deleteMany(queryCond);
+
+        return true;
     }
 
     @Override
@@ -198,13 +222,41 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
         if (params.get("employees") != null) {
-            MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
-
-            coll.deleteMany(new BasicDBObject("task_id", params.get("mainTaskId")));
-
-            for (Object emp : (ArrayList)params.remove("employees")) {
+            for (Map<String, Object> emp : (ArrayList<Map<String, Object>>)params.remove("employees")) {
                 coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+            }
+        }
+
+        if (params.get("updConds") != null) {
+//            BasicDBObject filter = new BasicDBObject();
+//            Map<String, Object> query = (Map)params.remove("updConds");
+//            Iterator<String> itQuery = query.keySet().iterator();
+//            while (itQuery.hasNext()){
+//                String col = itQuery.next();
+//                filter.put(col, query.get(col));
+//            }
+            BasicDBObject filter = new BasicDBObject((Map)params.remove("updConds"));
+
+            BasicDBObject fields = new BasicDBObject((Map)params.remove("updFields"));
+
+            BasicDBObject update = new BasicDBObject("$set", fields);
+
+//            Map<String, Object> fields = (Map)params.remove("updFields");
+//            Iterator<String> itFields = fields.keySet().iterator();
+//            while (itFields.hasNext()){
+//                String col = itFields.next();
+//                update.put(col, fields.get(col));
+//            }
+
+            coll.updateMany(filter, update);
+        }
+
+        if (params.get("delObjectIds") != null) {
+            for (String id : (ArrayList<String>)params.remove("delObjectIds")) {
+                coll.deleteOne(new Document("_id", new ObjectId(id)));
             }
         }
 

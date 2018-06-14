@@ -22,6 +22,8 @@ public interface PrsMainTaskService {
 
     List<Document> getTaskEmps(Map<String, Object> params);
 
+    Boolean deleteTaskEmps(Map<String, Object> query);
+
     Boolean addPrsMainTask(Map<String, Object> params);
 
     Boolean updatePrsMainTask(Map<String, Object> params);
