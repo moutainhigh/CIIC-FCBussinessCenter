@@ -216,7 +216,7 @@
 
     <select id="selectEmpForFinance" resultMap="FinanceResultMap">
         SELECT
-          DISTINCT <include refid="FinanceEmpField"><property name="alias" value="e"/></include>
+           <include refid="FinanceEmpField"><property name="alias" value="e"/></include>
         FROM
           sg_salary_grant_employee e
         WHERE EXISTS
