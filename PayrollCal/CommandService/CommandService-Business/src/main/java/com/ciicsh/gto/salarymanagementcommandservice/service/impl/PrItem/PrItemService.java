@@ -1,4 +1,4 @@
-package com.ciicsh.gto.salarymanagementcommandservice.service;
+package com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem;
 
 import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;

@@ -225,6 +225,99 @@ public class TaskSubMoneyDetailPO{
 	 */
 	private String batchNo;
 
+	/**
+	 * 税金
+	 */
+	private BigDecimal taxReal;
+	/**
+	 * 年金
+	 */
+	private BigDecimal annuity;
+	/**
+	 * 实际工作年限数
+	 */
+	private Integer workingYears;
+	/**
+	 * 商业健康保险费
+	 */
+	private BigDecimal businessHealthInsurance;
+	/**
+	 * 税延养老保险费
+	 */
+	private BigDecimal endowmentInsurance;
+	/**
+	 * 境内天数
+	 */
+	private Integer domesticDays;
+	/**
+	 * 境外天数
+	 */
+	private Integer overseasDays;
+	/**
+	 * 境内所得境内支付
+	 */
+	private BigDecimal domesticIncomeDomesticPayment;
+	/**
+	 * 境内所得境外支付
+	 */
+	private BigDecimal domesticIncomeOverseasPayment;
+	/**
+	 * 境外所得境内支付
+	 */
+	private BigDecimal overseasIncomeDomesticPayment;
+	/**
+	 * 境外所得境外支付
+	 */
+	private BigDecimal overseasIncomeOverseasPayment;
+	/**
+	 * 住房补贴
+	 */
+	private BigDecimal housingSubsidy;
+	/**
+	 * 伙食补贴
+	 */
+	private BigDecimal mealAllowance;
+	/**
+	 * 洗衣费
+	 */
+	private BigDecimal laundryFee;
+	/**
+	 * 搬迁费
+	 */
+	private BigDecimal removingIndemnityFee;
+	/**
+	 * 出差补贴
+	 */
+	private BigDecimal missionallowance;
+	/**
+	 * 探亲费
+	 */
+	private BigDecimal visitingRelativesFee;
+	/**
+	 * 语言培训费
+	 */
+	private BigDecimal languageTrainingFee;
+	/**
+	 * 子女教育经费
+	 */
+	private BigDecimal educationFunds;
+	/**
+	 * 本月行权收入
+	 */
+	private BigDecimal exerciseIncomeMonth;
+	/**
+	 * 本年度累计行权收入(不含本月)
+	 */
+	private BigDecimal exerciseIncomeYear;
+	/**
+	 * 规定月份数
+	 */
+	private Integer numberOfMonths;
+	/**
+	 * 本年累计已纳税额
+	 */
+	private BigDecimal exerciseTaxAmount;
+
 	public String getBatchNo() {
 		return batchNo;
 	}
@@ -554,6 +647,190 @@ public class TaskSubMoneyDetailPO{
 		this.incomeSubjectName = incomeSubjectName;
 	}
 
+	public BigDecimal getTaxReal() {
+		return taxReal;
+	}
+
+	public void setTaxReal(BigDecimal taxReal) {
+		this.taxReal = taxReal;
+	}
+
+	public BigDecimal getAnnuity() {
+		return annuity;
+	}
+
+	public void setAnnuity(BigDecimal annuity) {
+		this.annuity = annuity;
+	}
+
+	public Integer getWorkingYears() {
+		return workingYears;
+	}
+
+	public void setWorkingYears(Integer workingYears) {
+		this.workingYears = workingYears;
+	}
+
+	public BigDecimal getBusinessHealthInsurance() {
+		return businessHealthInsurance;
+	}
+
+	public void setBusinessHealthInsurance(BigDecimal businessHealthInsurance) {
+		this.businessHealthInsurance = businessHealthInsurance;
+	}
+
+	public BigDecimal getEndowmentInsurance() {
+		return endowmentInsurance;
+	}
+
+	public void setEndowmentInsurance(BigDecimal endowmentInsurance) {
+		this.endowmentInsurance = endowmentInsurance;
+	}
+
+	public Integer getDomesticDays() {
+		return domesticDays;
+	}
+
+	public void setDomesticDays(Integer domesticDays) {
+		this.domesticDays = domesticDays;
+	}
+
+	public Integer getOverseasDays() {
+		return overseasDays;
+	}
+
+	public void setOverseasDays(Integer overseasDays) {
+		this.overseasDays = overseasDays;
+	}
+
+	public BigDecimal getDomesticIncomeDomesticPayment() {
+		return domesticIncomeDomesticPayment;
+	}
+
+	public void setDomesticIncomeDomesticPayment(BigDecimal domesticIncomeDomesticPayment) {
+		this.domesticIncomeDomesticPayment = domesticIncomeDomesticPayment;
+	}
+
+	public BigDecimal getDomesticIncomeOverseasPayment() {
+		return domesticIncomeOverseasPayment;
+	}
+
+	public void setDomesticIncomeOverseasPayment(BigDecimal domesticIncomeOverseasPayment) {
+		this.domesticIncomeOverseasPayment = domesticIncomeOverseasPayment;
+	}
+
+	public BigDecimal getOverseasIncomeDomesticPayment() {
+		return overseasIncomeDomesticPayment;
+	}
+
+	public void setOverseasIncomeDomesticPayment(BigDecimal overseasIncomeDomesticPayment) {
+		this.overseasIncomeDomesticPayment = overseasIncomeDomesticPayment;
+	}
+
+	public BigDecimal getOverseasIncomeOverseasPayment() {
+		return overseasIncomeOverseasPayment;
+	}
+
+	public void setOverseasIncomeOverseasPayment(BigDecimal overseasIncomeOverseasPayment) {
+		this.overseasIncomeOverseasPayment = overseasIncomeOverseasPayment;
+	}
+
+	public BigDecimal getHousingSubsidy() {
+		return housingSubsidy;
+	}
+
+	public void setHousingSubsidy(BigDecimal housingSubsidy) {
+		this.housingSubsidy = housingSubsidy;
+	}
+
+	public BigDecimal getMealAllowance() {
+		return mealAllowance;
+	}
+
+	public void setMealAllowance(BigDecimal mealAllowance) {
+		this.mealAllowance = mealAllowance;
+	}
+
+	public BigDecimal getLaundryFee() {
+		return laundryFee;
+	}
+
+	public void setLaundryFee(BigDecimal laundryFee) {
+		this.laundryFee = laundryFee;
+	}
+
+	public BigDecimal getRemovingIndemnityFee() {
+		return removingIndemnityFee;
+	}
+
+	public void setRemovingIndemnityFee(BigDecimal removingIndemnityFee) {
+		this.removingIndemnityFee = removingIndemnityFee;
+	}
+
+	public BigDecimal getMissionallowance() {
+		return missionallowance;
+	}
+
+	public void setMissionallowance(BigDecimal missionallowance) {
+		this.missionallowance = missionallowance;
+	}
+
+	public BigDecimal getVisitingRelativesFee() {
+		return visitingRelativesFee;
+	}
+
+	public void setVisitingRelativesFee(BigDecimal visitingRelativesFee) {
+		this.visitingRelativesFee = visitingRelativesFee;
+	}
+
+	public BigDecimal getLanguageTrainingFee() {
+		return languageTrainingFee;
+	}
+
+	public void setLanguageTrainingFee(BigDecimal languageTrainingFee) {
+		this.languageTrainingFee = languageTrainingFee;
+	}
+
+	public BigDecimal getEducationFunds() {
+		return educationFunds;
+	}
+
+	public void setEducationFunds(BigDecimal educationFunds) {
+		this.educationFunds = educationFunds;
+	}
+
+	public BigDecimal getExerciseIncomeMonth() {
+		return exerciseIncomeMonth;
+	}
+
+	public void setExerciseIncomeMonth(BigDecimal exerciseIncomeMonth) {
+		this.exerciseIncomeMonth = exerciseIncomeMonth;
+	}
+
+	public BigDecimal getExerciseIncomeYear() {
+		return exerciseIncomeYear;
+	}
+
+	public void setExerciseIncomeYear(BigDecimal exerciseIncomeYear) {
+		this.exerciseIncomeYear = exerciseIncomeYear;
+	}
+
+	public Integer getNumberOfMonths() {
+		return numberOfMonths;
+	}
+
+	public void setNumberOfMonths(Integer numberOfMonths) {
+		this.numberOfMonths = numberOfMonths;
+	}
+
+	public BigDecimal getExerciseTaxAmount() {
+		return exerciseTaxAmount;
+	}
+
+	public void setExerciseTaxAmount(BigDecimal exerciseTaxAmount) {
+		this.exerciseTaxAmount = exerciseTaxAmount;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubMoneyDetailPO{" +
@@ -596,6 +873,31 @@ public class TaskSubMoneyDetailPO{
 				", modifiedTime=" + modifiedTime +
 				", createdBy='" + createdBy + '\'' +
 				", modifiedBy='" + modifiedBy + '\'' +
+				", taskMainDetailId=" + taskMainDetailId +
+				", batchNo='" + batchNo + '\'' +
+				", taxReal=" + taxReal +
+				", annuity=" + annuity +
+				", workingYears=" + workingYears +
+				", businessHealthInsurance=" + businessHealthInsurance +
+				", endowmentInsurance=" + endowmentInsurance +
+				", domesticDays=" + domesticDays +
+				", overseasDays=" + overseasDays +
+				", domesticIncomeDomesticPayment=" + domesticIncomeDomesticPayment +
+				", domesticIncomeOverseasPayment=" + domesticIncomeOverseasPayment +
+				", overseasIncomeDomesticPayment=" + overseasIncomeDomesticPayment +
+				", overseasIncomeOverseasPayment=" + overseasIncomeOverseasPayment +
+				", housingSubsidy=" + housingSubsidy +
+				", mealAllowance=" + mealAllowance +
+				", laundryFee=" + laundryFee +
+				", removingIndemnityFee=" + removingIndemnityFee +
+				", missionallowance=" + missionallowance +
+				", visitingRelativesFee=" + visitingRelativesFee +
+				", languageTrainingFee=" + languageTrainingFee +
+				", educationFunds=" + educationFunds +
+				", exerciseIncomeMonth=" + exerciseIncomeMonth +
+				", exerciseIncomeYear=" + exerciseIncomeYear +
+				", numberOfMonths=" + numberOfMonths +
+				", exerciseTaxAmount=" + exerciseTaxAmount +
 				'}';
 	}
 }

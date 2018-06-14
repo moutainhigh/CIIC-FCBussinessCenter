@@ -15,7 +15,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;

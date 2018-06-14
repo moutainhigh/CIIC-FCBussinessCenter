@@ -57,5 +57,12 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      */
     List<FinanceEmployeeBO> selectEmpForFinance(@Param("taskCode") String taskCode);
 
-    List<SalaryGrantFinanceBO> selectFinanceData(@Param("taskCode") String taskCode);
+    /**
+     * 财务报表数据
+     * @author chenpb
+     * @since 2018-05-29
+     * @param taskCode
+     * @return
+     */
+    SalaryGrantFinanceBO selectFinanceData(@Param("taskCode") String taskCode);
 }

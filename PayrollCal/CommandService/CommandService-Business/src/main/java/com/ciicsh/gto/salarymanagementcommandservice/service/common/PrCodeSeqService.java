@@ -1,4 +1,4 @@
-package com.ciicsh.gto.salarymanagementcommandservice.service;
+package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 
 /**
  * Created by jiangtianning on 2017/11/23.

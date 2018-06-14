@@ -9,10 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMa
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeInfoBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeServiceBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch.*;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeServiceBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchNoStatus;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
@@ -23,7 +20,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -81,6 +80,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
         //批次号
         String batchCode = closingMsg.getBatchCode();
+        //版本号
+        long versionNo = closingMsg.getVersion();
 
         //批次查询条件
         EntityWrapper wrapper = new EntityWrapper();
@@ -89,8 +90,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         //根据批次号查询批次
         CalculationBatchPO calculationBatchPO = calculationBatchService.selectOne(wrapper);
 
-        //如果批次已存在，且状态不为“取消关账”，则不更新批次信息
-        if(calculationBatchPO != null && !(calculationBatchPO.getStatus().equals(BatchNoStatus.unclose.getCode()))){
+        //如果批次已存在，且版本更高，则不更新批次信息
+        if(calculationBatchPO != null && calculationBatchPO.getVersionNo() >= versionNo){
             return;
         }
 
@@ -104,33 +105,16 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             mainBO.setBatchNo(batchCode);//计算批次号
             mainBO.setManagerNo(convert(dBObject,"mgr_id",String.class));//管理方编号
             mainBO.setManagerName(convert(dBObject,"mgr_name",String.class));//管理方名称
-            String status = BatchNoStatus.close.getCode();//状态：已关账
+            mainBO.setStatus(BatchNoStatus.close.getCode());//状态：已关账
             mainBO.setIncomeYearMonth(str2Date(convert(dBObject,"income_year_month",String.class),"yyyyMM"));//薪资期间
-            int version_no = 1;//初始版本为1
+            mainBO.setVersionNo((int)versionNo);//版本号
+            mainBO.setBatchRefId(convert(dBObject,"batch_ref_id",String.class));//相关批次号
+            //新增或更新批次主信息
+            this.batchInfo(newCal,calculationBatchPO,mainBO);
 
             //todo  总税金、总人数、中方人数、外方人数
 
-            //如果批次不存在，新增批次；否则更新批次主信息
-            if(calculationBatchPO == null){
-                newCal.setBatchNo(mainBO.getBatchNo());
-                newCal.setManagerNo(mainBO.getManagerNo());
-                newCal.setManagerName(mainBO.getManagerName());
-                newCal.setStatus(status);
-                newCal.setBatchType(this.getBatchType(closingMsg.getBatchType()));
-                newCal.setParentBatchNo(convert(dBObject,"batch_ref_id",String.class));
-                newCal.setVersionNo(version_no);
-                this.calculationBatchService.insert(newCal);
-            }else{
-                newCal.setId(calculationBatchPO.getId());
-                newCal.setBatchNo(mainBO.getBatchNo());
-                newCal.setManagerNo(mainBO.getManagerNo());
-                newCal.setManagerName(mainBO.getManagerName());
-                newCal.setStatus(status);
-                newCal.setBatchType(this.getBatchType(closingMsg.getBatchType()));
-                newCal.setParentBatchNo(convert(dBObject,"batch_ref_id",String.class));
-                newCal.setVersionNo(newCal.getVersionNo()+1);
-                this.calculationBatchService.updateById(newCal);
-            }
+
 
             //批次明细
             list.stream().forEach(item -> {
@@ -243,58 +227,64 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
                 results.stream().forEach(result -> {
 
-                    //薪资项(item_name,item_code,item_value)
+                    //薪资项(item_name,item_code,item_value,item_value_str)
                     String item_name = convert(result,"item_name",String.class);
+                    String key = null;
+                    if(result.containsField("item_value_str")){
+                        key = "item_value_str";
+                    }else{
+                        key = "item_value";
+                    }
 
                     if(StrKit.isNotEmpty(item_name)){
                         switch(item_name){
-                            case "薪金个税" : calResultBO.setAmountSalary(convert(result,"item_value",BigDecimal.class));
-                            case "劳务个税" : calResultBO.setAmountService(convert(result,"item_value",BigDecimal.class));
-                            case "年终奖税" : calResultBO.setAmountBonus(convert(result,"item_value",BigDecimal.class));
-                            case "离职金税" : calResultBO.setAmountLeave(convert(result,"item_value",BigDecimal.class));
-                            case "股票期权税" : calResultBO.setAmountOption(convert(result,"item_value",BigDecimal.class));
-                            case "利息、股息、红利所得税" : calResultBO.setAmountStock(convert(result,"item_value",BigDecimal.class));
-                            case "偶然所得税" : calResultBO.setAmountAcc(convert(result,"item_value",BigDecimal.class));
-                            case "收入额" : calResultBO.setIncomeTotal(convert(result,"item_value",BigDecimal.class));
-                            case "免税所得" : calResultBO.setIncomeDutyfree(convert(result,"item_value",BigDecimal.class));
-                            case "养老保险费合计_报税用" : calResultBO.setDeductRetirementInsurance(convert(result,"item_value",BigDecimal.class));
-                            case "医疗保险费合计_报税用" : calResultBO.setDeductMedicalInsurance(convert(result,"item_value",BigDecimal.class));
-                            case "失业保险费合计_报税用" : calResultBO.setDeductDlenessInsurance(convert(result,"item_value",BigDecimal.class));
-                            case "住房公积金合计（报税用）" : calResultBO.setDeductHouseFund(convert(result,"item_value",BigDecimal.class));
-                            case "允许扣除的税费" : calResultBO.setDeductTakeoff(convert(result,"item_value",BigDecimal.class));
-                            case "企业年金个人部分" : calResultBO.setAnnuity(convert(result,"item_value",BigDecimal.class));
-                            case "商业保险" : calResultBO.setBusinessHealthInsurance(convert(result,"item_value",BigDecimal.class));
-                            case "税延养老保险费" : calResultBO.setEndowmentInsurance(convert(result,"item_value",BigDecimal.class));
-                            case "免抵额" : calResultBO.setDeduction(convert(result,"item_value",BigDecimal.class));
-                            case "准予扣除的捐赠额" : calResultBO.setDonation(convert(result,"item_value",BigDecimal.class));
-                            case "减免税额" : calResultBO.setTaxDeduction(convert(result,"item_value",BigDecimal.class));
-                            case "境内天数" : calResultBO.setDomesticDays(convert(result,"item_value",Integer.class));
-                            case "境外天数" : calResultBO.setOverseasDays(convert(result,"item_value",Integer.class));
-                            case "境内所得境内支付" : calResultBO.setDomesticIncomeDomesticPayment(convert(result,"item_value",BigDecimal.class));
-                            case "境内所得境外支付" : calResultBO.setDomesticIncomeOverseasPayment(convert(result,"item_value",BigDecimal.class));
-                            case "境外所得境内支付" : calResultBO.setOverseasIncomeDomesticPayment(convert(result,"item_value",BigDecimal.class));
-                            case "境外所得境外支付" : calResultBO.setOverseasIncomeOverseasPayment(convert(result,"item_value",BigDecimal.class));
-                            case "其它扣款_报税用" : calResultBO.setOtherDeductions(convert(result,"item_value",BigDecimal.class));
-                            case "免税住房补贴" : calResultBO.setHousingSubsidy(convert(result,"item_value",BigDecimal.class));
-                            case "免税伙食补贴" : calResultBO.setMealAllowance(convert(result,"item_value",BigDecimal.class));
-                            case "免税洗衣费" : calResultBO.setLaundryFee(convert(result,"item_value",BigDecimal.class));
-                            case "免税搬迁费" : calResultBO.setRemovingIndemnityFee(convert(result,"item_value",BigDecimal.class));
-                            case "免税出差补贴" : calResultBO.setMissionallowance(convert(result,"item_value",BigDecimal.class));
-                            case "免税探亲费" : calResultBO.setVisitingRelativesFee(convert(result,"item_value",BigDecimal.class));
-                            case "免税语言培训费" : calResultBO.setLanguageTrainingFee(convert(result,"item_value",BigDecimal.class));
-                            case "免税子女教育经费" : calResultBO.setEducationFunds(convert(result,"item_value",BigDecimal.class));
-                            case "年度奖金" : calResultBO.setAnnualBonus(convert(result,"item_value",BigDecimal.class));
-                            case "偶然所得" : calResultBO.setFortuitousIncome(convert(result,"item_value",BigDecimal.class));
-                            case "利息、股息、红利所得" : calResultBO.setIncomeFromInterest(convert(result,"item_value",BigDecimal.class));
-                            case "劳务费" : calResultBO.setServiceCharge(convert(result,"item_value",BigDecimal.class));
-                            case "劳务费_允许扣除的税费" : calResultBO.setServiceDeductTakeoff(convert(result,"item_value",BigDecimal.class));
-                            case "离职金" : calResultBO.setSeparationPayment(convert(result,"item_value",BigDecimal.class));
-                            case "离职金免税额" : calResultBO.setSeparationPaymentTaxFee(convert(result,"item_value",BigDecimal.class));
-                            case "实际工作年限数" : calResultBO.setWorkingYears(convert(result,"item_value",Integer.class));
-                            case "本月行权收入" : calResultBO.setExerciseIncomeMonth(convert(result,"item_value",BigDecimal.class));
-                            case "本年度累计行权收入(不含本月)" : calResultBO.setExerciseIncomeYear(convert(result,"item_value",BigDecimal.class));
-                            case "规定月份数" : calResultBO.setNumberOfMonths(convert(result,"item_value",Integer.class));
-                            case "本年累计已纳税额" : calResultBO.setExerciseTaxAmount(convert(result,"item_value",BigDecimal.class));
+                            case "薪金个税" : calResultBO.setAmountSalary(convert(result,key,BigDecimal.class));
+                            case "劳务个税" : calResultBO.setAmountService(convert(result,key,BigDecimal.class));
+                            case "年终奖税" : calResultBO.setAmountBonus(convert(result,key,BigDecimal.class));
+                            case "离职金税" : calResultBO.setAmountLeave(convert(result,key,BigDecimal.class));
+                            case "股票期权税" : calResultBO.setAmountOption(convert(result,key,BigDecimal.class));
+                            case "利息、股息、红利所得税" : calResultBO.setAmountStock(convert(result,key,BigDecimal.class));
+                            case "偶然所得税" : calResultBO.setAmountAcc(convert(result,key,BigDecimal.class));
+                            case "收入额" : calResultBO.setIncomeTotal(convert(result,key,BigDecimal.class));
+                            case "免税所得" : calResultBO.setIncomeDutyfree(convert(result,key,BigDecimal.class));
+                            case "养老保险费合计_报税用" : calResultBO.setDeductRetirementInsurance(convert(result,key,BigDecimal.class));
+                            case "医疗保险费合计_报税用" : calResultBO.setDeductMedicalInsurance(convert(result,key,BigDecimal.class));
+                            case "失业保险费合计_报税用" : calResultBO.setDeductDlenessInsurance(convert(result,key,BigDecimal.class));
+                            case "住房公积金合计（报税用）" : calResultBO.setDeductHouseFund(convert(result,key,BigDecimal.class));
+                            case "允许扣除的税费" : calResultBO.setDeductTakeoff(convert(result,key,BigDecimal.class));
+                            case "企业年金个人部分" : calResultBO.setAnnuity(convert(result,key,BigDecimal.class));
+                            case "商业保险" : calResultBO.setBusinessHealthInsurance(convert(result,key,BigDecimal.class));
+                            case "税延养老保险费" : calResultBO.setEndowmentInsurance(convert(result,key,BigDecimal.class));
+                            case "免抵额" : calResultBO.setDeduction(convert(result,key,BigDecimal.class));
+                            case "准予扣除的捐赠额" : calResultBO.setDonation(convert(result,key,BigDecimal.class));
+                            case "减免税额" : calResultBO.setTaxDeduction(convert(result,key,BigDecimal.class));
+//                            case "境内天数" : calResultBO.setDomesticDays(convert(result,key,Integer.class));
+//                            case "境外天数" : calResultBO.setOverseasDays(convert(result,key,Integer.class));
+                            case "境内所得境内支付" : calResultBO.setDomesticIncomeDomesticPayment(convert(result,key,BigDecimal.class));
+                            case "境内所得境外支付" : calResultBO.setDomesticIncomeOverseasPayment(convert(result,key,BigDecimal.class));
+                            case "境外所得境内支付" : calResultBO.setOverseasIncomeDomesticPayment(convert(result,key,BigDecimal.class));
+                            case "境外所得境外支付" : calResultBO.setOverseasIncomeOverseasPayment(convert(result,key,BigDecimal.class));
+                            case "其它扣款_报税用" : calResultBO.setOtherDeductions(convert(result,key,BigDecimal.class));
+                            case "免税住房补贴" : calResultBO.setHousingSubsidy(convert(result,key,BigDecimal.class));
+                            case "免税伙食补贴" : calResultBO.setMealAllowance(convert(result,key,BigDecimal.class));
+                            case "免税洗衣费" : calResultBO.setLaundryFee(convert(result,key,BigDecimal.class));
+                            case "免税搬迁费" : calResultBO.setRemovingIndemnityFee(convert(result,key,BigDecimal.class));
+                            case "免税出差补贴" : calResultBO.setMissionallowance(convert(result,key,BigDecimal.class));
+                            case "免税探亲费" : calResultBO.setVisitingRelativesFee(convert(result,key,BigDecimal.class));
+                            case "免税语言培训费" : calResultBO.setLanguageTrainingFee(convert(result,key,BigDecimal.class));
+                            case "免税子女教育经费" : calResultBO.setEducationFunds(convert(result,key,BigDecimal.class));
+                            case "年度奖金" : calResultBO.setAnnualBonus(convert(result,key,BigDecimal.class));
+                            case "偶然所得" : calResultBO.setFortuitousIncome(convert(result,key,BigDecimal.class));
+                            case "利息、股息、红利所得" : calResultBO.setIncomeFromInterest(convert(result,key,BigDecimal.class));
+                            case "劳务费" : calResultBO.setServiceCharge(convert(result,key,BigDecimal.class));
+                            case "劳务费_允许扣除的税费" : calResultBO.setServiceDeductTakeoff(convert(result,key,BigDecimal.class));
+                            case "离职金" : calResultBO.setSeparationPayment(convert(result,key,BigDecimal.class));
+                            case "离职金免税额" : calResultBO.setSeparationPaymentTaxFee(convert(result,key,BigDecimal.class));
+                            case "实际工作年限数" : calResultBO.setWorkingYears(convert(result,key,Integer.class));
+                            case "本月行权收入" : calResultBO.setExerciseIncomeMonth(convert(result,key,BigDecimal.class));
+                            case "本年度累计行权收入(不含本月)" : calResultBO.setExerciseIncomeYear(convert(result,key,BigDecimal.class));
+//                            case "规定月份数" : calResultBO.setNumberOfMonths(convert(result,key,Integer.class));
+                            case "本年累计已纳税额" : calResultBO.setExerciseTaxAmount(convert(result,key,BigDecimal.class));
                         }
                     }
 
@@ -410,7 +400,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //年奖税
-                if(calResultBO.getAmountBonus()!=null && calResultBO.getAmountBonus().compareTo(BigDecimal.ZERO)==1){
+                if(calResultBO.getAnnualBonus()!=null && calResultBO.getAnnualBonus().compareTo(BigDecimal.ZERO)==1){
                     CalculationBatchDetailPO calculationBatchDetailPO = this.getBatchDetailPO( empInfoBO, taxInfoBO, agreementBO, newCal);
                     calculationBatchDetailPO.setTaxReal(calResultBO.getAmountBonus());//税金
                     calculationBatchDetailPO.setPeriod(this.UDateToLocalDate(agreementBO.getPeriod()));//所得期间
@@ -430,7 +420,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //劳务税
-                if(calResultBO.getAmountService()!=null && calResultBO.getAmountService().compareTo(BigDecimal.ZERO)==1
+                if(calResultBO.getServiceCharge()!=null && calResultBO.getServiceCharge().compareTo(BigDecimal.ZERO)==1
                         && taxInfoBO.getEmployee()!=null && !(taxInfoBO.getEmployee())){
                     CalculationBatchDetailPO calculationBatchDetailPO = this.getBatchDetailPO(empInfoBO, taxInfoBO, agreementBO, newCal);
                     calculationBatchDetailPO.setTaxReal(calResultBO.getAmountService());//税金
@@ -495,6 +485,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 }
 
             });
+
+            //将批次置为有效
+            this.updateValid(newCal);
         }
     }
 
@@ -511,7 +504,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             CalculationBatchPO calculationBatchPO = calculationBatchService.selectOne(wrapper);
 
             //状态为已关账，则可以取消
-            if(calculationBatchPO!=null && calculationBatchPO.getStatus().equals(BatchNoStatus.close.getCode())){
+            if(calculationBatchPO!=null && calculationBatchPO.getVersionNo()==cancelClosingMsg.getVersion()){
                 calculationBatchPO.setStatus(BatchNoStatus.unclose.getCode());
                 calculationBatchService.updateById(calculationBatchPO);
                 this.cancelBatchInfos(calculationBatchPO.getId());
@@ -529,7 +522,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
     //取值
     private <T> T convert(DBObject dBObject,String key,Class<T> clazz){
 
-        try {
+//        try {
 
             //key不存在的处理
             if(!dBObject.containsField(key) || dBObject.get(key) == null){
@@ -559,11 +552,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 return clazz.cast(dBObject.get(key));
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        return null;
+//        return null;
     }
 
     /**
@@ -703,4 +696,36 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         return bd;
 
     }
+
+    //新增或更新批次主信息
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRES_NEW)
+    public void batchInfo(CalculationBatchPO newCal,CalculationBatchPO oldCal,MainBO mainBO){
+
+        newCal.setBatchNo(mainBO.getBatchNo());
+        newCal.setManagerNo(mainBO.getManagerNo());
+        newCal.setManagerName(mainBO.getManagerName());
+        newCal.setStatus(mainBO.getStatus());
+        newCal.setBatchType(mainBO.getBatchType());
+        newCal.setParentBatchNo(mainBO.getBatchRefId());
+        newCal.setVersionNo(mainBO.getVersionNo());
+        newCal.setValid(false);//初始置为无效
+
+        //如果批次不存在，新增批次；否则更新批次主信息
+        if(oldCal == null){
+            this.calculationBatchService.insert(newCal);
+        }else{
+            newCal.setId(oldCal.getId());
+            this.calculationBatchService.updateById(newCal);
+        }
+
+    }
+
+    //将主任务置为有效
+    private void updateValid(CalculationBatchPO cal){
+        CalculationBatchPO p = new CalculationBatchPO();
+        p.setId(cal.getId());
+        p.setValid(true);
+        this.calculationBatchService.updateById(p);
+    }
+
 }

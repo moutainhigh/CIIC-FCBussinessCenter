@@ -1,17 +1,17 @@
-package com.ciicsh.caldispatchjob.entity;
+package com.ciicsh.gto.salarymanagementcommandservice.service.util;
 
 import java.math.BigDecimal;
 
 /**
- * Created by bill on 18/1/17.
+ * Created by bill on 18/6/13.
  */
-public class Arith {
+public class BizArith {
 
     // 默认除法运算精度
     private static final int DEF_DIV_SCALE = 10;
 
     // 这个类不能实例化
-    private Arith() {
+    private BizArith() {
     }
 
     /**
@@ -99,14 +99,21 @@ public class Arith {
         return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
+    public static double round(Object v, int scale) {
+        if (scale < 0) {
+            throw new IllegalArgumentException("The scale must be a positive integer or zero");
+        }
+        BigDecimal b = new BigDecimal(v.toString());
+        BigDecimal one = new BigDecimal("1");
+        return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
     public static String roundStr(Object v, int scale) {
         if (scale < 0) {
             throw new IllegalArgumentException(
                     "The scale must be a positive integer or zero");
         }
-        BigDecimal b = new BigDecimal(v.toString());
+        BigDecimal b = new BigDecimal(String.valueOf(v));
         return b.setScale(scale, BigDecimal.ROUND_HALF_UP).toString();
     }
 }
-
-

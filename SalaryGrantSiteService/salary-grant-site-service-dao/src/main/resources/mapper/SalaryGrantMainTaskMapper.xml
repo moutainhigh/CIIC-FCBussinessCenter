@@ -75,6 +75,7 @@
         <result column="created_time" property="createdTime" />
         <result column="operator_user_id" property="operatorUserId" />
         <result column="approve_user_id" property="approveUserId" />
+        <result column="batch_version" property="batchVersion" />
     </resultMap>
 
     <sql id="sgDetailField">
@@ -98,7 +99,7 @@
     </sql>
 
     <sql id="cancelCloseField">
-        m.salary_grant_main_task_id task_id, m.salary_grant_main_task_code task_code, '取消关账' as invalid_reason
+        m.salary_grant_main_task_id task_id, m.salary_grant_main_task_code task_code, m.batch_version, '取消关账' as invalid_reason
     </sql>
 
 	<select id="submitList" resultMap="PageResultMap">

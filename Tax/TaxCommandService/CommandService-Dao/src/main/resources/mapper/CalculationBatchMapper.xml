@@ -78,6 +78,29 @@
 		<result column="is_transfer_supported" property="transferSupported" />
 		<result column="is_proof" property="proof" />
 		<result column="is_proofed" property="proofed" />
+		<result column="tax_real" property="taxReal" />
+		<result column="annuity" property="annuity" />
+		<result column="working_years" property="workingYears" />
+		<result column="business_health_insurance" property="businessHealthInsurance" />
+		<result column="endowment_insurance" property="endowmentInsurance" />
+		<result column="domestic_days" property="domesticDays" />
+		<result column="overseas_days" property="overseasDays" />
+		<result column="domestic_income_domestic_payment" property="domesticIncomeDomesticPayment" />
+		<result column="domestic_income_overseas_payment" property="domesticIncomeOverseasPayment" />
+		<result column="overseas_income_domestic_payment" property="overseasIncomeDomesticPayment" />
+		<result column="overseas_income_overseas_payment" property="overseasIncomeOverseasPayment" />
+		<result column="housing_subsidy" property="housingSubsidy" />
+		<result column="meal_allowance" property="mealAllowance" />
+		<result column="laundry_fee" property="laundryFee" />
+		<result column="removing_indemnity_fee" property="removingIndemnityFee" />
+		<result column="missionallowance" property="missionallowance" />
+		<result column="visiting_relatives_fee" property="visitingRelativesFee" />
+		<result column="language_training_fee" property="languageTrainingFee" />
+		<result column="education_funds" property="educationFunds" />
+		<result column="exercise_income_month" property="exerciseIncomeMonth" />
+		<result column="exercise_income_year" property="exerciseIncomeYear" />
+		<result column="number_of_months" property="numberOfMonths" />
+		<result column="exercise_tax_amount" property="exerciseTaxAmount" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
@@ -89,7 +112,7 @@
 	<!-- 查询批次明细 -->
 	<select id="queryCalculationBatchDetails" parameterType="java.util.Map" resultMap="BaseResultMap">
 		SELECT
-		t2.id,t1.batch_no
+		t2.id,t1.batch_no,t2.tax_real
 		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
 		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
 		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return
@@ -118,7 +141,30 @@
 	<!-- 查询批次明细 -->
 	<select id="queryCalculationBatchDetailsByBatchIds" resultMap="BaseResultMap">
 		SELECT
-		t2.id,t1.batch_no
+		t2.id,t1.batch_no,
+		t2.tax_real,
+		t2.annuity,
+		t2.working_years,
+		t2.business_health_insurance,
+		t2.endowment_insurance,
+		t2.domestic_days,
+		t2.overseas_days,
+		t2.domestic_income_domestic_payment,
+		t2.domestic_income_overseas_payment,
+		t2.overseas_income_domestic_payment,
+		t2.overseas_income_overseas_payment,
+		t2.housing_subsidy,
+		t2.meal_allowance,
+		t2.laundry_fee,
+		t2.removing_indemnity_fee,
+		t2.missionallowance,
+		t2.visiting_relatives_fee,
+		t2.language_training_fee,
+		t2.education_funds,
+		t2.exercise_income_month,
+		t2.exercise_income_year,
+		t2.number_of_months,
+		t2.exercise_tax_amount
 		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
 		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
 		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return
@@ -144,33 +190,49 @@
 
 	<!--根据批次id删除明细信息-->
 	<update id="cancelDetailsByCalBatchId">
-		update tax_fc_calculation_batch_detail t1
+		/*update tax_fc_calculation_batch_detail t1
 		inner join tax_fc_calculation_batch t2
 		on t1.calculation_batch_id = t2.id
 		SET
 		t1.is_active = false
+		where t2.id = #{calBatchId}*/
+		delete tax_fc_calculation_batch_detail t1
+		inner join tax_fc_calculation_batch t2
+		on t1.calculation_batch_id = t2.id
 		where t2.id = #{calBatchId}
 	</update>
 	<!--根据批次id删除个税信息-->
 	<update id="cancelInfosByCalBatchId">
-		update tax_fc_employee_info_batch t1
+		/*update tax_fc_employee_info_batch t1
 		inner join tax_fc_calculation_batch_detail t2
 		on t1.cal_batch_detail_id = t2.id
 		inner join tax_fc_calculation_batch t3
 		on t2.calculation_batch_id = t3.id
 		SET
 		t1.is_active = false
+		where t3.id = #{calBatchId}*/
+		delete tax_fc_employee_info_batch t1
+		inner join tax_fc_calculation_batch_detail t2
+		on t1.cal_batch_detail_id = t2.id
+		inner join tax_fc_calculation_batch t3
+		on t2.calculation_batch_id = t3.id
 		where t3.id = #{calBatchId}
 	</update>
 	<!--根据批次id删除服务信息-->
 	<update id="cancelServicesByCalBatchId">
-		update tax_fc_employee_service_batch t1
+		/*update tax_fc_employee_service_batch t1
 		inner join tax_fc_calculation_batch_detail t2
 		on t1.cal_batch_detail_id = t2.id
 		inner join tax_fc_calculation_batch t3
 		on t2.calculation_batch_id = t3.id
 		SET
 		t1.is_active = false
+		where t3.id = #{calBatchId}*/
+		delete tax_fc_employee_service_batch t1
+		inner join tax_fc_calculation_batch_detail t2
+		on t1.cal_batch_detail_id = t2.id
+		inner join tax_fc_calculation_batch t3
+		on t2.calculation_batch_id = t3.id
 		where t3.id = #{calBatchId}
 	</update>
 

@@ -119,7 +119,7 @@
                 and t.employee_name like concat('%', #{employeeName}, '%')
             </if>
             <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
-            <if test="grantStatus != null and grantStatus != ''">
+            <if test="grantStatus != null">
                 and t.grant_status=#{grantStatus}
             </if>
             <if test="remark != null and remark != ''">
@@ -242,17 +242,15 @@
 
 
     <resultMap id="FinanceDataResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO">
-        <association property="task" javaType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO">
-            <result column="task_id" property="taskId"/>
-            <result column="task_code" property="taskCode"/>
-            <result column="batch_code" property="batchCode"/>
-            <result column="management_id" property="managementId"/>
-            <result column="management_name" property="managementName"/>
-            <result column="grant_cycle" property="taxCycle"/>
-            <result column="print_date" property="printDate"/>
-            <result column="operator_user_id" property="operatorUserId"/>
-            <result column="approve_user_id" property="approveUserId"/>
-        </association>
+        <id column="task_id" property="taskId"/>
+        <result column="task_code" property="taskCode"/>
+        <result column="batch_code" property="batchCode"/>
+        <result column="management_id" property="managementId"/>
+        <result column="management_name" property="managementName"/>
+        <result column="grant_cycle" property="taxCycle"/>
+        <result column="print_date" property="printDate"/>
+        <result column="operator_user_id" property="operatorUserId"/>
+        <result column="approve_user_id" property="approveUserId"/>
         <collection property="empList" ofType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO">
             <result column="employee_id" property="employeeId"/>
             <result column="employee_name" property="employeeName"/>

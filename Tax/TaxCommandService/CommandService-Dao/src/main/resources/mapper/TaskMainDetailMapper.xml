@@ -56,6 +56,7 @@
         <result column="is_transfer_supported" property="transferSupported" />
         <result column="is_proof" property="proof" />
         <result column="is_proofed" property="proofed" />
+        <result column="tax_real" property="taxReal" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -66,7 +67,7 @@
     <!-- 查询主任务明细 -->
     <select id="queryTaskMainDetails" parameterType="java.util.Map" resultMap="BaseResultMap">
         SELECT
-        t1.id,t1.task_main_id,t1.task_main_detail_id,t1.is_combine_confirmed
+        t1.id,t1.task_main_id,t1.task_main_detail_id,t1.is_combine_confirmed,t1.tax_real
         ,t1.employee_no,t1.employee_name,t1.id_type,t1.id_no,t1.period,t1.income_subject,t1.income_total,t1.income_dutyfree,t1.deduct_retirement_insurance,t1.deduct_medical_insurance
         ,t1.deduct_dleness_insurance,t1.deduct_property,t1.deduct_house_fund,t1.deduct_takeoff,t1.deduct_other,t1.deduct_total,t1.deduction,t1.donation,t1.income_for_tax
         ,t1.tax_rate,t1.quick_cal_deduct,t1.tax_amount,t1.tax_deduction,t1.tax_withhold_amount,t1.tax_withholded_amount,t1.tax_remedy_or_return

@@ -79,7 +79,7 @@ public class EmpGroupServiceImpl {
         }
         if(mapList.size() == 0){
             logger.info("该雇员组中没有雇员服务协议");
-            return 0;
+            //return 0;
         }
 
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
