@@ -313,6 +313,28 @@ public class TaskSubPaymentDetailPO{
 	 */
 	private BigDecimal exerciseTaxAmount;
 
+	//税前合计
+	private BigDecimal preTaxAggregate;
+
+	//免税津贴
+	private BigDecimal dutyFreeAllowance;
+
+	public BigDecimal getPreTaxAggregate() {
+		return preTaxAggregate;
+	}
+
+	public void setPreTaxAggregate(BigDecimal preTaxAggregate) {
+		this.preTaxAggregate = preTaxAggregate;
+	}
+
+	public BigDecimal getDutyFreeAllowance() {
+		return dutyFreeAllowance;
+	}
+
+	public void setDutyFreeAllowance(BigDecimal dutyFreeAllowance) {
+		this.dutyFreeAllowance = dutyFreeAllowance;
+	}
+
 	public Long getTaskMainDetailId() {
 		return taskMainDetailId;
 	}
