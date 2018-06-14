@@ -123,6 +123,19 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 
 	private int versionNo;
 
+	/**
+	 * 是否有效
+	 */
+	private Boolean isValid;
+
+	public Boolean getValid() {
+		return isValid;
+	}
+
+	public void setValid(Boolean valid) {
+		isValid = valid;
+	}
+
 	public int getVersionNo() {
 		return versionNo;
 	}

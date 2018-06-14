@@ -9,10 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMa
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeInfoBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeServiceBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch.*;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeServiceBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchNoStatus;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
@@ -23,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -107,33 +105,16 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             mainBO.setBatchNo(batchCode);//计算批次号
             mainBO.setManagerNo(convert(dBObject,"mgr_id",String.class));//管理方编号
             mainBO.setManagerName(convert(dBObject,"mgr_name",String.class));//管理方名称
-            String status = BatchNoStatus.close.getCode();//状态：已关账
+            mainBO.setStatus(BatchNoStatus.close.getCode());//状态：已关账
             mainBO.setIncomeYearMonth(str2Date(convert(dBObject,"income_year_month",String.class),"yyyyMM"));//薪资期间
-            int version_no = (int)versionNo;//版本号
+            mainBO.setVersionNo((int)versionNo);//版本号
+            mainBO.setBatchRefId(convert(dBObject,"batch_ref_id",String.class));//相关批次号
+            //新增或更新批次主信息
+            this.batchInfo(newCal,calculationBatchPO,mainBO);
 
             //todo  总税金、总人数、中方人数、外方人数
 
-            //如果批次不存在，新增批次；否则更新批次主信息
-            if(calculationBatchPO == null){
-                newCal.setBatchNo(mainBO.getBatchNo());
-                newCal.setManagerNo(mainBO.getManagerNo());
-                newCal.setManagerName(mainBO.getManagerName());
-                newCal.setStatus(status);
-                newCal.setBatchType(this.getBatchType(closingMsg.getBatchType()));
-                newCal.setParentBatchNo(convert(dBObject,"batch_ref_id",String.class));
-                newCal.setVersionNo(version_no);
-                this.calculationBatchService.insert(newCal);
-            }else{
-                newCal.setId(calculationBatchPO.getId());
-                newCal.setBatchNo(mainBO.getBatchNo());
-                newCal.setManagerNo(mainBO.getManagerNo());
-                newCal.setManagerName(mainBO.getManagerName());
-                newCal.setStatus(status);
-                newCal.setBatchType(this.getBatchType(closingMsg.getBatchType()));
-                newCal.setParentBatchNo(convert(dBObject,"batch_ref_id",String.class));
-                newCal.setVersionNo(version_no);
-                this.calculationBatchService.updateById(newCal);
-            }
+
 
             //批次明细
             list.stream().forEach(item -> {
@@ -504,6 +485,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 }
 
             });
+
+            //将批次置为有效
+            this.updateValid(newCal);
         }
     }
 
@@ -538,7 +522,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
     //取值
     private <T> T convert(DBObject dBObject,String key,Class<T> clazz){
 
-        try {
+//        try {
 
             //key不存在的处理
             if(!dBObject.containsField(key) || dBObject.get(key) == null){
@@ -568,11 +552,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 return clazz.cast(dBObject.get(key));
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        return null;
+//        return null;
     }
 
     /**
@@ -711,6 +695,37 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         }
         return bd;
 
+    }
+
+    //新增或更新批次主信息
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRES_NEW)
+    public void batchInfo(CalculationBatchPO newCal,CalculationBatchPO oldCal,MainBO mainBO){
+
+        newCal.setBatchNo(mainBO.getBatchNo());
+        newCal.setManagerNo(mainBO.getManagerNo());
+        newCal.setManagerName(mainBO.getManagerName());
+        newCal.setStatus(mainBO.getStatus());
+        newCal.setBatchType(mainBO.getBatchType());
+        newCal.setParentBatchNo(mainBO.getBatchRefId());
+        newCal.setVersionNo(mainBO.getVersionNo());
+        newCal.setValid(false);//初始置为无效
+
+        //如果批次不存在，新增批次；否则更新批次主信息
+        if(oldCal == null){
+            this.calculationBatchService.insert(newCal);
+        }else{
+            newCal.setId(oldCal.getId());
+            this.calculationBatchService.updateById(newCal);
+        }
+
+    }
+
+    //将主任务置为有效
+    private void updateValid(CalculationBatchPO cal){
+        CalculationBatchPO p = new CalculationBatchPO();
+        p.setId(cal.getId());
+        p.setValid(true);
+        this.calculationBatchService.updateById(p);
     }
 
 }
