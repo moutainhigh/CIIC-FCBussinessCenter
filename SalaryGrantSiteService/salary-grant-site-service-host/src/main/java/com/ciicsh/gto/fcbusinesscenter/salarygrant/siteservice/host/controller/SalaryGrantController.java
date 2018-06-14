@@ -275,7 +275,7 @@ public class SalaryGrantController {
             SalaryGrantEmployeeBO bo = CommonTransform.convertToEntity(dto, SalaryGrantEmployeeBO.class);
             page = salaryGrantEmployeeQueryService.queryEmployeeInfoChanged(page, bo);
             if (!page.getRecords().isEmpty()) {
-                page.getRecords().stream().forEach(x -> {if(StringUtils.isNotBlank(x.getCountryCode())){x.setCountryName(commonService.getCountryName(x.getCountryCode()));}});
+                page.getRecords().parallelStream().forEach(x -> {if(StringUtils.isNotBlank(x.getCountryCode())){x.setCountryName(commonService.getCountryName(x.getCountryCode()));}});
             }
             Pagination<ChangedEmpInfoDTO> pagination = PageUtil.changeWapper( page, ChangedEmpInfoDTO.class);
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员").setContent(JSON.toJSONString(pagination)));
@@ -436,7 +436,7 @@ public class SalaryGrantController {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复").setContent(JSON.toJSONString(dto)));
         try {
             List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
-            list.stream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
+            list.parallelStream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
             salaryGrantEmployeeCommandService.updateBatchById(list);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
@@ -457,7 +457,7 @@ public class SalaryGrantController {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓").setContent(JSON.toJSONString(dto)));
         try {
             List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
-            list.stream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
+            list.parallelStream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
             salaryGrantEmployeeCommandService.updateBatchById(list);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
