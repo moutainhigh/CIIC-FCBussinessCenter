@@ -14,6 +14,7 @@ import javax.script.ScriptEngine;
         "com.ciicsh.gt1",
         "com.ciicsh.gto.fcbusinesscenter.util",
         "com.ciicsh.gto.salarymanagementcommandservice.dao",
+        "com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem",
         "com.ciicsh.gto.salarymanagementcommandservice.service.common",
         "com.ciicsh.caldispatchjob.compute.Cal",
         "com.ciicsh.gt1.fcbusinesscenter.compute"}

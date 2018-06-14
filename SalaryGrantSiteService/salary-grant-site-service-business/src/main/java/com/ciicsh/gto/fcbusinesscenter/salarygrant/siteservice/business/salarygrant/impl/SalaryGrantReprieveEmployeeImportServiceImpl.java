@@ -44,7 +44,7 @@ public class SalaryGrantReprieveEmployeeImportServiceImpl extends ServiceImpl<Sa
     @Transactional(rollbackFor = Exception.class)
     public List<SalaryGrantEmployeeBO> deferEmployee(List<SalaryGrantEmployeeBO> bos, String taskCode, Integer taskType, String userId) {
         List<SalaryGrantEmployeeBO> failList = new ArrayList<>();
-        bos.stream().forEach(x -> {
+        bos.parallelStream().forEach(x -> {
             x.setTaskCode(taskCode);
             x.setTaskType(taskType);
             x.setModifiedBy(userId);

@@ -1,6 +1,5 @@
-package com.ciicsh.gto.salarymanagementcommandservice.service.util;
+package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrCodeSeqService;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Component;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jiangtianning on 2017/11/20.

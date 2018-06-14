@@ -121,13 +121,26 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	@TableField(exist = false)
 	private String batchTypeName;
 
-	private int versionNo;
+	private Integer versionNo;
 
-	public int getVersionNo() {
+	/**
+	 * 是否有效
+	 */
+	private Boolean isValid;
+
+	public Boolean getValid() {
+		return isValid;
+	}
+
+	public void setValid(Boolean valid) {
+		isValid = valid;
+	}
+
+	public Integer getVersionNo() {
 		return versionNo;
 	}
 
-	public void setVersionNo(int versionNo) {
+	public void setVersionNo(Integer versionNo) {
 		this.versionNo = versionNo;
 	}
 

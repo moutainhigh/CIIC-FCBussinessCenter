@@ -93,24 +93,49 @@ spring:
             brokers: 172.16.9.17:9092,172.16.9.18:9092
             zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
             autoAddPartitions: true
-            replicationFactor: 2
+#            replicationFactor: 2
         bindings:
-          pay_apply_pay_status_stream:
+          pay-apply-pay-status-stream:
             destination: pay_apply_pay_status_stream
             content-type: application/json
             group: ${spring.application.name}
             consumer:
               partitioned: false
-          sleuth:
-            destination: sleuth-itdev
-    data:
-      mongodb:
-        uri: mongodb://ciicit:ciicit!%23%25@172.16.9.15:27017/payroll_db
-    zipkin:
-      base-url: http://172.16.9.24:9623 #ZipkinService地址
-      enabled: true
-    sleuth:
-      sampler:
-        percentage: 0.1
+          pr-compute-close-output-channel:
+            destination: fc_compute_close
+            content-type: application/json
+            group: ${spring.application.name}
+            consumer:
+              partitioned: false
+          pr-compute-unclose-output-channel:
+            destination: fc_compute_unclose
+            content-type: application/json
+            group: ${spring.application.name}
+            consumer:
+              partitioned: false
+          workflow-channel:
+            destination: common_taskservice_fc_tax_main_task_audit
+            content-type: application/json
+            group: ${spring.application.name}
+            consumer:
+              partitioned: false
+#          sleuth:
+#            destination: sleuth-itdev
+#    data:
+#      mongodb:
+#        uri: mongodb://ciicit:ciicit!%23%25@172.16.9.15:27017/payroll_db
+#    zipkin:
+#      base-url: http://172.16.9.24:9623 #ZipkinService地址
+#      enabled: true
+#    sleuth:
+#      sampler:
+#        percentage: 0.1
 seaweed:
   masterHost: "172.16.9.19:9333"
+
+mongo:
+  host: 172.16.9.16  # 172.16.9.52 java -Xms384m -Xmx512m -jar app.jar --spring.profiles.active=qa --server.port=8060
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%
