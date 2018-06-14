@@ -121,6 +121,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                     .collect(Collectors.toList());
             itemService.addList(itemList);
             result = prPayrollGroupMapper.insert(paramItem);
+            prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
             return result;
         }
 

@@ -88,7 +88,7 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Override
     public List<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, boolean draftFlg) {
-        return this.getListByGroupTemplateCode(groupTemplateCode, 0, 0, false).getList();
+        return this.getListByGroupTemplateCode(groupTemplateCode, 0, 0, draftFlg).getList();
     }
 
     @Override
