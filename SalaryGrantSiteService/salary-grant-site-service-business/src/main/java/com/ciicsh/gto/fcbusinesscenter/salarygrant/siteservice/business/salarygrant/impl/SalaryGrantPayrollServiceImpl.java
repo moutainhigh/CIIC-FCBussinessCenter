@@ -43,7 +43,6 @@ public class SalaryGrantPayrollServiceImpl implements SalaryGrantPayrollService 
      */
     @Override
     public SalaryGrantFinanceBO createFinanceDetail(String taskCode) {
-        //SalaryGrantFinanceBO finance = salaryGrantEmployeeMapper.selectFinanceData(taskCode);
         SalaryGrantFinanceBO financeBo = BeanUtils.instantiate(SalaryGrantFinanceBO.class);
         FinanceTaskBO task = salaryGrantSubTaskMapper.selectTaskForFinance(taskCode);
         List<FinanceEmployeeBO> empList  = salaryGrantEmployeeMapper.selectEmpForFinance(taskCode);
