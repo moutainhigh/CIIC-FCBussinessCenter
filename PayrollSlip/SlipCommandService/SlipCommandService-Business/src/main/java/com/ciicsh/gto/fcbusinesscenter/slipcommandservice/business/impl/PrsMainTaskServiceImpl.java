@@ -92,9 +92,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
         List<Document> emps = new ArrayList<Document>();
 
         MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
-        BasicDBObject filter = new BasicDBObject();
-        filter.put("task_id", params.get("mainTaskId"));
-        MongoCursor<Document> cursor = coll.find(filter).iterator();
+        MongoCursor<Document> cursor = coll.find(new BasicDBObject(params)).iterator();
 
         try {
             while (cursor.hasNext()) {
