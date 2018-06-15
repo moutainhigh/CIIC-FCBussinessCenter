@@ -19,3 +19,5 @@ mongo:
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
+seaweed:
+  masterHost: "172.16.9.15:9333"
