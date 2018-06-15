@@ -444,12 +444,12 @@
 				payroll_group_code = #{payrollGroupCode}
 			</when>
 		    <when test="prGroupTemplateCode != null ">
-				prGroupTemplateCode = #{prGroupTemplateCode}
+				payroll_group_template_code = #{prGroupTemplateCode}
 				AND
 				(
-					payrollGroupCode = ''
+					payroll_group_code = ''
 					OR
-					payrollGroupCode IS NULL
+					payroll_group_code IS NULL
 				)
 			</when>
 	    </choose>

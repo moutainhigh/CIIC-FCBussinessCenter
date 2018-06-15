@@ -40,7 +40,7 @@ public class PayrollReceiver {
                 = prGroupTemplateService.getList(param);
         prPayrollGroupTemplatePOList.forEach(i -> {
             PrPayrollGroupPO paramGroup = new PrPayrollGroupPO();
-            paramGroup.setGroupName(managementId + "-" + i.getGroupTemplateName());
+            paramGroup.setGroupName(i.getGroupTemplateName());
             paramGroup.setGroupTemplateCode(i.getGroupTemplateCode());
             paramGroup.setManagementId(managementId);
             paramGroup.setCreatedBy("sys");
