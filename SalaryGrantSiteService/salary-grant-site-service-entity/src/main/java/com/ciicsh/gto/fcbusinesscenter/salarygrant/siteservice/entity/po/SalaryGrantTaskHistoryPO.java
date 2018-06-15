@@ -164,7 +164,7 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 	@TableField("approved_opinion")
 	private String approvedOpinion;
     /**
-     * 状态:2-审批通过，3-审批拒绝，4-失效，8-驳回
+     * 状态:3-审批拒绝，4-失效，8-撤回，9-驳回，13-作废
      */
 	@TableField("task_status")
 	private String taskStatus;

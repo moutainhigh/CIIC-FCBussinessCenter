@@ -143,7 +143,7 @@ public class SalaryGrantSubTaskPO extends Model<SalaryGrantSubTaskPO> implements
     @TableField("approved_opinion")
     private String approvedOpinion;
     /**
-     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待支付，6-未支付，7-已支付，8-撤回，9-驳回，10-待合并，11-已合并，12-已确认
+     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待生成，6-未支付，7-已支付，8-撤回，9-驳回，10-待合并，11-已合并，12-已确认，13-作废
      */
 	@TableField("task_status")
 	private String taskStatus;
