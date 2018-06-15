@@ -10,22 +10,19 @@ import com.ciicsh.gto.salarymanagement.entity.enums.*;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustSubBatchPO;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBatchExcelMapService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
+import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.excel.PRExcelColumnsReader;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.excel.PRItemExcelReader;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -283,8 +280,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         int rowAffected = 0;
 
         List<List<BasicDBObject>> filterRows = excelRows.stream().filter(row -> row.stream()
-                .anyMatch(col -> col.get("payItem_name") != null &&
-                        (String)col.get("payItem_name") != "")).collect(Collectors.toList());
+                .anyMatch(col -> (col.get("payItem_name") != null && !col.get("payItem_name").equals("")))).collect(Collectors.toList());
         BasicDBObject emp = null;
 
         for (List<BasicDBObject> row : filterRows) {
@@ -310,13 +306,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                         List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
 
                         payItems.forEach(item -> {
-                            Object colVal = getExcelColumnValue(row, item.get("item_name"));
-                            int dataType = item.get("data_type") == null ? 0 : (int)item.get("data_type");
-                            if(dataType == DataTypeEnum.DATE.getValue() && colVal != null && colVal != ""){
-                                item.put("item_value", TimeStamp2Date(colVal.toString()));
-                            }else {
-                                item.put("item_value", colVal);
-                            }
+                            setItemValue(item,row);
                         });
                         rowAffected += updateItems(batchCode, empCode, true, null, null, null, batchType, payItems); // update items
                     }
@@ -346,13 +336,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                         List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
                         List<BasicDBObject> clonePayItems = cloneListDBObject(payItems);
                         for (BasicDBObject item : clonePayItems) {
-                            Object colVal = getExcelColumnValue(row, item.get("item_name"));
-                            int dataType = item.get("data_type") == null ? 0 : (int)item.get("data_type");
-                            if(dataType == DataTypeEnum.DATE.getValue() && colVal != null && colVal != ""){
-                                item.put("item_value", TimeStamp2Date(colVal.toString()));
-                            }else {
-                                item.put("item_value", colVal);
-                            }
+                            setItemValue(item,row);
                         }
                         rowAffected += updateItems(batchCode, empCode, false, empGroupCode, prGroupCode, catalog, batchType, clonePayItems);
                     }
@@ -373,6 +357,24 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         }
 
         return rowAffected;
+    }
+
+    private void setItemValue(BasicDBObject item,List<BasicDBObject> row){
+        Object colVal = getExcelColumnValue(row, item.get("item_name"));
+        int dataType = item.get("data_type") == null ? 0 : (int)item.get("data_type");
+        int precision = item.get("cal_precision") == null ? 2 : (int)item.get("cal_precision");
+        if(dataType == DataTypeEnum.DATE.getValue() && colVal != null && !colVal.equals("")){
+            item.put("item_value", TimeStamp2Date(colVal.toString()));
+        }else if(dataType == DataTypeEnum.NUM.getValue()){
+            if(colVal == null || colVal.equals("")){
+                item.put("item_value", BizArith.round(0,precision));
+            }else {
+                item.put("item_value", BizArith.round(colVal,precision));
+            }
+        }
+        else {
+            item.put("item_value", colVal);
+        }
     }
 
     private Object getExcelColumnValue(List<BasicDBObject> row, Object payItemName){

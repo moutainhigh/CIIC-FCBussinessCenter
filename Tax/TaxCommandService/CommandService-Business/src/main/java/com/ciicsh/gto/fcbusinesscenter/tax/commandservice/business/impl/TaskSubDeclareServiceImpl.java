@@ -13,6 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,7 +269,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
         for (Map.Entry<String, List<TaskSubDeclareDetailPO>> entry : groupbys.entrySet()) {
 
-            if (entry.getValue().size() > 1) {
+            //税种为正常薪资才合并
+            if ((entry.getKey().endsWith(IncomeSubject.NORMALSALARY.getCode()) || entry.getKey().endsWith(IncomeSubject.FOREIGNNORMALSALARY.getCode()))
+                    && entry.getValue().size() > 1) {
 
                 TaskSubDeclareDetailPO taskSubDeclareDetailPO = new TaskSubDeclareDetailPO();
                 taskSubDeclareDetailPO.setCombined(true);//为合并明细

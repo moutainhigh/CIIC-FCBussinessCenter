@@ -196,11 +196,11 @@
                 and (t1.operator_user_id = #{userId} or t1.approve_user_id = #{userId})
             </if>
             and
-              t1.task_status = '4'
+              t1.task_status in ('4', '13')
             and
               t1.task_type = 0
             and
-              t1.is_active=1
+              t1.is_active = 1
         </where>
         order by
           t1.task_id

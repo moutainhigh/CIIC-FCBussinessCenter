@@ -1,9 +1,9 @@
-package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
+package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrCodeSequenceMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.common.PrCodeSeqService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author jiangtianning
  */
 @Service
-public class PrCodeSeqServiceImpl implements com.ciicsh.gto.salarymanagementcommandservice.service.PrCodeSeqService {
+public class PrCodeSeqServiceImpl implements PrCodeSeqService {
 
     @Autowired
     PrCodeSequenceMapper prCodeSequenceMapper;
