@@ -94,7 +94,7 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
      * @since 2018-06-08
      * @param bo
      */
-    void detailSubmit(SalaryGrantTaskBO bo);
+    void submit(SalaryGrantTaskBO bo);
 
     /**
      * 薪资发放定时任务
