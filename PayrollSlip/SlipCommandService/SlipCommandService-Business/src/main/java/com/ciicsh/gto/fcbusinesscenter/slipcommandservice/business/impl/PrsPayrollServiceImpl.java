@@ -1,8 +1,17 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,41 +40,110 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     @Autowired
     private PrsPayrollMapper prsPayrollMapper;
 
+    @Autowired
+    private MongoConfig mongoConfig;
+
     @Override
-    public List<PrsPayrollPO> listPrsPayrolls(Map<String, Object> params) {
+    public List<Document> listPrsPayrolls(Map<String, Object> params) {
 
-        List<PrsPayrollPO> records = prsPayrollMapper.list(params);
+        Map<String, Object> query = (Map)params.get("query");
+        Iterator<String> itQuery = query.keySet().iterator();
+        BasicDBList queyElements = new BasicDBList();
+        while (itQuery.hasNext()){
+            String col = itQuery.next();
+            queyElements.add(new BasicDBObject(col, query.get(col)));
+        }
+        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
 
-        return records;
+        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
+        BasicDBObject orderByCond = new BasicDBObject();
+        for (ArrayList orderBy : orderBys) {
+            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
+        }
+
+        List<Document> emps = new ArrayList<Document>();
+
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
+
+        MongoCursor<Document> cursor = coll.find(queryCond).sort(orderByCond).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                Document emp = cursor.next();
+                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
+                emps.add(emp);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return emps;
     }
 
     @Override
-    public Page<PrsPayrollPO> pagePrsPayrolls(Map<String, Object> params) {
+    public Page<Document> pagePrsPayrolls(Map<String, Object> params) {
         int limit = 20;
         int offset = 0;
 
-        int currentPage = params.get("currentPage") == null ? 1 : (int) params.get("currentPage");
+        Map<String, Object> query = (Map)params.get("query");
+        Iterator<String> itQuery = query.keySet().iterator();
+        BasicDBList queyElements = new BasicDBList();
+        while (itQuery.hasNext()){
+            String col = itQuery.next();
+            queyElements.add(new BasicDBObject(col, query.get(col)));
+        }
+        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
 
-        if (params.get("pageSize") != null) {
-            limit =  (int) params.get("pageSize");
+        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
+        BasicDBObject orderByCond = new BasicDBObject();
+        for (ArrayList orderBy : orderBys) {
+            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
         }
 
+        int currentPage = params.containsKey("currentPage") ? (int) params.get("currentPage") : 1;
+        if (params.containsKey("pageSize")) {
+            limit = (int) params.get("pageSize");
+        }
         if (currentPage > 1) {
             offset = (currentPage - 1) * limit;
         }
 
-        params.put("limit", limit);
-        params.put("offset", offset);
+        List<Document> emps = new ArrayList<Document>();
 
-        int total = prsPayrollMapper.total(params);
-        List<PrsPayrollPO> records = prsPayrollMapper.list(params);
-        Page<PrsPayrollPO> page = new Page<>();
-        page.setRecords(records);
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
+
+        long total = coll.count(queryCond);
+
+        MongoCursor<Document> cursor = coll.find(queryCond).skip(offset).limit(limit).sort(orderByCond).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                Document emp = cursor.next();
+                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
+                emps.add(emp);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        Page<Document> page = new Page<>();
+        page.setRecords(emps);
         page.setCurrent(currentPage);
-        page.setTotal(total);
+        page.setTotal((int)total);
         page.setSize(limit);
 
         return page;
+    }
+
+    @Override
+    public Boolean deletePrsPayrolls(ArrayList<String> ids) {
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
+
+        for (String id : ids) {
+            coll.deleteOne(new Document("_id", new ObjectId(id)));
+        }
+
+        return true;
     }
 
     @Override
@@ -92,18 +171,10 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
 
     @Override
     public Boolean addPrsPayrolls(ArrayList<Map<String, Object>> objs) {
-        UserInfoBO currUser = UserContext.getUser();
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
 
         for (Map<String, Object> params : objs) {
-            if (currUser != null) {
-                params.put("createdBy", currUser.getDisplayName());
-                params.put("modifiedBy", currUser.getDisplayName());
-            } else {
-                params.put("createdBy", "1");
-                params.put("modifiedBy", "1");
-            }
-
-            prsPayrollMapper.insert(params);
+            coll.insertOne(Document.parse(JSONObject.toJSONString(params)));
         }
 
         return true;

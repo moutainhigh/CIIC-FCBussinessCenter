@@ -16,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -33,42 +32,12 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
     @Override
     public ResponseForBatchDetail queryCalculationBatchDetail(RequestForProof requestForProof) {
         ResponseForBatchDetail responseForBatchDetail = new ResponseForBatchDetail();
-        EntityWrapper wrapper = new EntityWrapper();
-        wrapper.setEntity(new CalculationBatchDetailPO());
-        //判断是否包含主键ID条件
-        if (requestForProof.getId() != null && !"".equals(requestForProof.getId())) {
-            wrapper.andNew("id = {0}", requestForProof.getId());
-        }
-        //判断是否包含证件类型
-        if (requestForProof.getIdType() != null && !"".equals(requestForProof.getIdType())) {
-            wrapper.andNew("id_type = {0}", requestForProof.getIdType());
-        }
-        //判断是否包含证件号
-        if (requestForProof.getIdNo() != null && !"".equals(requestForProof.getIdNo())) {
-            wrapper.andNew("id_no = {0}", requestForProof.getIdNo());
-        }
-        //判断是否包含所得项目
-        if (requestForProof.getIncomeSubject() != null && !"".equals(requestForProof.getIncomeSubject())) {
-            wrapper.andNew("income_subject = {0}", requestForProof.getIncomeSubject());
-        }
-        //判断是否包含个税期间条件
-        if (requestForProof.getSubmitTimeStart() != null && !"".equals(requestForProof.getSubmitTimeStart())) {
-            wrapper.andNew("period >= {0}", requestForProof.getSubmitTimeStart());
-        }
-        //判断是否包含个税期间条件
-        if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {
-            wrapper.andNew("period < {0} ", requestForProof.getSubmitTimeEnd());
-        }
-        //查询已申报的
-        wrapper.andNew("is_declare = {0} ", 1);
-        wrapper.orderBy("created_time", false);
-
         //判断是否是分页查询
         if (requestForProof.getCurrentNum() != null && requestForProof.getPageSize() != 0) {
             Page<CalculationBatchDetailPO> pageInfo = new Page<>(requestForProof.getCurrentNum(), requestForProof.getPageSize());
-            List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectPage(pageInfo, wrapper);
+            List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.queryTaxBatchDetailsListByRes(pageInfo,requestForProof);
             //获取总数目
-            int total = baseMapper.selectCount(wrapper);
+            int total = calculationBatchDetailPOList.size();
             //获取证件类型中文和所得项目中文
             for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
                 po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));
@@ -79,7 +48,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             responseForBatchDetail.setTotalNum(total);
             responseForBatchDetail.setRowList(calculationBatchDetailPOList);
         } else {
-            List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.selectList(wrapper);
+            List<CalculationBatchDetailPO> calculationBatchDetailPOList = baseMapper.queryTaxBatchDetailsListByRes(requestForProof);
             //获取证件类型中文和所得项目中文
             for(CalculationBatchDetailPO po: calculationBatchDetailPOList){
                 po.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE,po.getIdType()));

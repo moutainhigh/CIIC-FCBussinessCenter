@@ -9,10 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMa
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeInfoBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeServiceBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch.*;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeServiceBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchNoStatus;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
@@ -23,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -60,6 +58,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
     @Autowired
     private CalculationBatchMapper calculationBatchMapper;
 
+    @Autowired
+    private MongodbServiceImpl mongodbService;
+
     @Transactional(rollbackFor = Exception.class)
     public void acquireBatch(ClosingMsg closingMsg){
 
@@ -83,7 +84,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         //批次号
         String batchCode = closingMsg.getBatchCode();
         //版本号
-        long versionNo = closingMsg.getVersion();
+        int versionNo = (int)closingMsg.getVersion();
 
         //批次查询条件
         EntityWrapper wrapper = new EntityWrapper();
@@ -107,33 +108,15 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             mainBO.setBatchNo(batchCode);//计算批次号
             mainBO.setManagerNo(convert(dBObject,"mgr_id",String.class));//管理方编号
             mainBO.setManagerName(convert(dBObject,"mgr_name",String.class));//管理方名称
-            String status = BatchNoStatus.close.getCode();//状态：已关账
+            mainBO.setStatus(BatchNoStatus.close.getCode());//状态：已关账
             mainBO.setIncomeYearMonth(str2Date(convert(dBObject,"income_year_month",String.class),"yyyyMM"));//薪资期间
-            int version_no = (int)versionNo;//版本号
+            mainBO.setVersionNo(versionNo);//版本号
+            mainBO.setBatchRefId(convert(dBObject,"batch_ref_id",String.class));//相关批次号
+            mainBO.setBatchType(this.getBatchType(closingMsg.getBatchType()));//批次类型
+            //新增或更新批次主信息
+            this.mongodbService.batchInfo(newCal,calculationBatchPO,mainBO);
 
             //todo  总税金、总人数、中方人数、外方人数
-
-            //如果批次不存在，新增批次；否则更新批次主信息
-            if(calculationBatchPO == null){
-                newCal.setBatchNo(mainBO.getBatchNo());
-                newCal.setManagerNo(mainBO.getManagerNo());
-                newCal.setManagerName(mainBO.getManagerName());
-                newCal.setStatus(status);
-                newCal.setBatchType(this.getBatchType(closingMsg.getBatchType()));
-                newCal.setParentBatchNo(convert(dBObject,"batch_ref_id",String.class));
-                newCal.setVersionNo(version_no);
-                this.calculationBatchService.insert(newCal);
-            }else{
-                newCal.setId(calculationBatchPO.getId());
-                newCal.setBatchNo(mainBO.getBatchNo());
-                newCal.setManagerNo(mainBO.getManagerNo());
-                newCal.setManagerName(mainBO.getManagerName());
-                newCal.setStatus(status);
-                newCal.setBatchType(this.getBatchType(closingMsg.getBatchType()));
-                newCal.setParentBatchNo(convert(dBObject,"batch_ref_id",String.class));
-                newCal.setVersionNo(version_no);
-                this.calculationBatchService.updateById(newCal);
-            }
 
             //批次明细
             list.stream().forEach(item -> {
@@ -283,7 +266,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             case "境内所得境外支付" : calResultBO.setDomesticIncomeOverseasPayment(convert(result,key,BigDecimal.class));
                             case "境外所得境内支付" : calResultBO.setOverseasIncomeDomesticPayment(convert(result,key,BigDecimal.class));
                             case "境外所得境外支付" : calResultBO.setOverseasIncomeOverseasPayment(convert(result,key,BigDecimal.class));
-                            case "其它扣款_报税用" : calResultBO.setOtherDeductions(convert(result,key,BigDecimal.class));
+                            case "其它扣除" : calResultBO.setOtherDeductions(convert(result,key,BigDecimal.class));
                             case "免税住房补贴" : calResultBO.setHousingSubsidy(convert(result,key,BigDecimal.class));
                             case "免税伙食补贴" : calResultBO.setMealAllowance(convert(result,key,BigDecimal.class));
                             case "免税洗衣费" : calResultBO.setLaundryFee(convert(result,key,BigDecimal.class));
@@ -299,11 +282,13 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             case "劳务费_允许扣除的税费" : calResultBO.setServiceDeductTakeoff(convert(result,key,BigDecimal.class));
                             case "离职金" : calResultBO.setSeparationPayment(convert(result,key,BigDecimal.class));
                             case "离职金免税额" : calResultBO.setSeparationPaymentTaxFee(convert(result,key,BigDecimal.class));
-                            case "实际工作年限数" : calResultBO.setWorkingYears(convert(result,key,Integer.class));
+//                            case "实际工作年限数" : calResultBO.setWorkingYears(convert(result,key,Integer.class));
                             case "本月行权收入" : calResultBO.setExerciseIncomeMonth(convert(result,key,BigDecimal.class));
                             case "本年度累计行权收入(不含本月)" : calResultBO.setExerciseIncomeYear(convert(result,key,BigDecimal.class));
 //                            case "规定月份数" : calResultBO.setNumberOfMonths(convert(result,key,Integer.class));
                             case "本年累计已纳税额" : calResultBO.setExerciseTaxAmount(convert(result,key,BigDecimal.class));
+                            case "税前合计" : calResultBO.setPreTaxAggregate(convert(result,key,BigDecimal.class));
+                            case "免税津贴" : calResultBO.setDutyFreeAllowance(convert(result,key,BigDecimal.class));
                         }
                     }
 
@@ -335,10 +320,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountSalary());
                         }
                     }
-                    //其他（税前扣除项目）= 年金 + 商业健康保险费 + 税延养老保险费
-                    calculationBatchDetailPO.setDeductOther(this.getValue(calculationBatchDetailPO.getAnnuity())
-                            .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
-                            .add(this.getValue(calculationBatchDetailPO.getEndowmentInsurance())));
+                    //其他（税前扣除项目）
+                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());
                     //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
                             .add(this.getValue(calculationBatchDetailPO.getDeductMedicalInsurance()))
@@ -357,6 +340,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     //应扣缴税额 = 应纳税额 - 减免税额
                     calculationBatchDetailPO.setTaxWithholdAmount(this.getValue(calculationBatchDetailPO.getTaxAmount()).subtract(this.getValue(calculationBatchDetailPO.getTaxDeduction())));
                     calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
+                    calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
+                    calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //外籍人员正常薪金税
@@ -394,10 +379,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountSalary());
                         }
                     }
-                    //其他（税前扣除项目）= 年金 + 商业健康保险费 + 税延养老保险费
-                    calculationBatchDetailPO.setDeductOther(this.getValue(calculationBatchDetailPO.getAnnuity())
-                            .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
-                            .add(this.getValue(calculationBatchDetailPO.getEndowmentInsurance())));
+                    //其他（税前扣除项目）
+                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());
                     //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
                             .add(this.getValue(calculationBatchDetailPO.getDeductMedicalInsurance()))
@@ -416,6 +399,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     //应扣缴税额 = 应纳税额 - 减免税额
                     calculationBatchDetailPO.setTaxWithholdAmount(this.getValue(calculationBatchDetailPO.getTaxAmount()).subtract(this.getValue(calculationBatchDetailPO.getTaxDeduction())));
                     calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
+                    calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
+                    calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //年奖税
@@ -504,6 +489,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 }
 
             });
+
+            //将批次置为有效
+            this.updateValid(newCal);
         }
     }
 
@@ -520,9 +508,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             CalculationBatchPO calculationBatchPO = calculationBatchService.selectOne(wrapper);
 
             //状态为已关账，则可以取消
-            if(calculationBatchPO!=null && calculationBatchPO.getVersionNo()==cancelClosingMsg.getVersion()){
-                calculationBatchPO.setStatus(BatchNoStatus.unclose.getCode());
-                calculationBatchService.updateById(calculationBatchPO);
+            if(calculationBatchPO!=null && calculationBatchPO.getVersionNo()==(int)cancelClosingMsg.getVersion()){
+                CalculationBatchPO c = new CalculationBatchPO();
+                c.setId(calculationBatchPO.getId());
+                c.setStatus(BatchNoStatus.unclose.getCode());
+                calculationBatchService.updateById(c);
                 this.cancelBatchInfos(calculationBatchPO.getId());
             }
         }
@@ -530,15 +520,15 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
     //删除批次相关信息
     private void cancelBatchInfos(Long batchId){
-        this.calculationBatchMapper.cancelDetailsByCalBatchId(batchId);//删除批次明细
         this.calculationBatchMapper.cancelInfosByCalBatchId(batchId);//删除个税信息
         this.calculationBatchMapper.cancelServicesByCalBatchId(batchId);//删除服务信息
+        this.calculationBatchMapper.cancelDetailsByCalBatchId(batchId);//删除批次明细
     }
 
     //取值
     private <T> T convert(DBObject dBObject,String key,Class<T> clazz){
 
-        try {
+//        try {
 
             //key不存在的处理
             if(!dBObject.containsField(key) || dBObject.get(key) == null){
@@ -546,6 +536,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     return clazz.cast(BigDecimal.ZERO);
                 }else{
                     return null;
+                }
+            }
+
+            if(dBObject.get(key).getClass()==String.class && ((String)dBObject.get(key)).trim().equals("")){
+                if(clazz==BigDecimal.class){
+                    return clazz.cast(BigDecimal.ZERO);
                 }
             }
 
@@ -568,11 +564,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 return clazz.cast(dBObject.get(key));
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        return null;
+//        return null;
     }
 
     /**
@@ -710,6 +706,41 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             bd = amount;
         }
         return bd;
+
+    }
+
+    //新增或更新批次主信息
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRES_NEW)
+    public void batchInfo(CalculationBatchPO newCal,CalculationBatchPO oldCal,MainBO mainBO){
+
+        newCal.setBatchNo(mainBO.getBatchNo());
+        newCal.setManagerNo(mainBO.getManagerNo());
+        newCal.setManagerName(mainBO.getManagerName());
+        newCal.setStatus(mainBO.getStatus());
+        newCal.setBatchType(mainBO.getBatchType());
+        newCal.setParentBatchNo(mainBO.getBatchRefId());
+        newCal.setVersionNo(mainBO.getVersionNo());
+        newCal.setValid(false);//初始置为无效
+
+        //如果批次不存在，新增批次；否则更新批次主信息
+        if(oldCal == null){
+            this.calculationBatchService.insert(newCal);
+        }else{
+            newCal.setId(oldCal.getId());
+            this.calculationBatchService.updateById(newCal);
+        }
+
+    }
+
+    //将主任务置为有效
+    private void updateValid(CalculationBatchPO cal){
+        CalculationBatchPO p = new CalculationBatchPO();
+        p.setId(cal.getId());
+        p.setValid(true);
+        this.calculationBatchService.updateById(p);
+    }
+
+    private class handle{
 
     }
 

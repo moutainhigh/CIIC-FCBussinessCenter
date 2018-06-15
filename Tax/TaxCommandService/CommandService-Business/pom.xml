@@ -76,6 +76,15 @@
             <groupId>com.ciicsh.gt1.commonservice</groupId>
             <artifactId>gt1.commonservice.sheetservice-api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-ci</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-spring</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

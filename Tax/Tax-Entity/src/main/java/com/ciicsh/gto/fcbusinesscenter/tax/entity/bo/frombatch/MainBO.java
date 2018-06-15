@@ -37,7 +37,56 @@ public class MainBO {
      * 薪资期间
      */
     private Date incomeYearMonth;
+    /**
+     * 批次状态
+     */
+    private String status;
+    /**
+     * 版本号
+     */
+    private int versionNo;
 
+    /**
+     * 批次类型
+     */
+    private String batchType;
+
+    /**
+     * 相关批次号
+     */
+    private String batchRefId;
+
+    public String getBatchRefId() {
+        return batchRefId;
+    }
+
+    public void setBatchRefId(String batchRefId) {
+        this.batchRefId = batchRefId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getVersionNo() {
+        return versionNo;
+    }
+
+    public void setVersionNo(int versionNo) {
+        this.versionNo = versionNo;
+    }
+
+    public String getBatchType() {
+        return batchType;
+    }
+
+    public void setBatchType(String batchType) {
+        this.batchType = batchType;
+    }
 
     public Date getIncomeYearMonth() {
         return incomeYearMonth;

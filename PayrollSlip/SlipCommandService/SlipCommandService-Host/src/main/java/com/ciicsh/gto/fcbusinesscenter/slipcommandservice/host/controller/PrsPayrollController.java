@@ -44,6 +44,11 @@ public class PrsPayrollController {
         return JsonResult.success(prsPayrollService.pagePrsPayrolls(params));
     }
 
+    @RequestMapping(value = "/deletePrsPayrolls")
+    public JsonResult deletePrsPayrolls(@RequestBody ArrayList<String> ids) {
+        return JsonResult.success(prsPayrollService.deletePrsPayrolls(ids));
+    }
+
     @RequestMapping(value = "/getPrsPayroll")
     public JsonResult get(@RequestBody Map<String, Object> params) {
         return JsonResult.success(prsPayrollService.getPrsPayroll(params));
@@ -82,22 +87,22 @@ public class PrsPayrollController {
 
         List<Object> records = new ArrayList();
 
-        HashMap<String, Object> params = new HashMap<String, Object>(){
-            {
-                put("employeeId", empId);
-            }
-        };
-
-        for (PrsPayrollPO payroll : prsPayrollService.listPrsPayrolls(params)) {
-            Map<String, Object> ele = new HashMap<String, Object>(){
-                {
-                    put("SalaryID", payroll.getId());
-                    put("SalaryMonth", payroll.getPersonnelIncomeYearMonth());
-                    put("Salary", payroll.getNetPay());
-                }
-            };
-            records.add(ele);
-        }
+//        HashMap<String, Object> params = new HashMap<String, Object>(){
+//            {
+//                put("employeeId", empId);
+//            }
+//        };
+//
+//        for (PrsPayrollPO payroll : prsPayrollService.listPrsPayrolls(params)) {
+//            Map<String, Object> ele = new HashMap<String, Object>(){
+//                {
+//                    put("SalaryID", payroll.getId());
+//                    put("SalaryMonth", payroll.getPersonnelIncomeYearMonth());
+//                    put("Salary", payroll.getNetPay());
+//                }
+//            };
+//            records.add(ele);
+//        }
 
         return new HashMap<String, Object>(){
             {
@@ -113,7 +118,6 @@ public class PrsPayrollController {
     @RequestMapping(value = "/DetailsSalaryQuery")
     public Map<String, Object> DetailsSalaryQuery(HttpServletRequest request) {
 
-
         String id = request.getParameter("SalaryID");
         if (id == null || id.equals("")) {
             return new HashMap<String, Object>(){
@@ -127,28 +131,30 @@ public class PrsPayrollController {
             };
         }
 
-        HashMap<String, Object> params = new HashMap<String, Object>(){
-            {
-                put("id", id);
-            }
-        };
-
-        PrsPayrollPO payroll = prsPayrollService.getPrsPayroll(params);
-
-        JSONArray items = JSON.parseArray(payroll.getItems());
-
         ArrayList<Map<String, Object>> records = new ArrayList();
 
-        for (Object objItemAndVal : items) {
-            JSONArray itemAndVal = (JSONArray) objItemAndVal;
-            Map<String, Object> map = new HashMap<String, Object>(){
-                {
-                    put("ItemName", itemAndVal.get(0));
-                    put("ItemValue", itemAndVal.get(1));
-                }
-            };
-            records.add(map);
-        }
+//        HashMap<String, Object> params = new HashMap<String, Object>(){
+//            {
+//                put("id", id);
+//            }
+//        };
+//
+//        PrsPayrollPO payroll = prsPayrollService.getPrsPayroll(params);
+//
+//        JSONArray items = JSON.parseArray(payroll.getItems());
+//
+
+//
+//        for (Object objItemAndVal : items) {
+//            JSONArray itemAndVal = (JSONArray) objItemAndVal;
+//            Map<String, Object> map = new HashMap<String, Object>(){
+//                {
+//                    put("ItemName", itemAndVal.get(0));
+//                    put("ItemValue", itemAndVal.get(1));
+//                }
+//            };
+//            records.add(map);
+//        }
 
         return new HashMap<String, Object>(){
             {

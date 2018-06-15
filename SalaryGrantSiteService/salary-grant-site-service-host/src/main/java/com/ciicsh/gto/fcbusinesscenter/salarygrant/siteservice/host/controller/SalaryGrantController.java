@@ -126,15 +126,17 @@ public class SalaryGrantController {
     /**
      * 薪资发放任务单提交
      * @author chenpb
-     * @date 2018-04-26
+     * @date 2018-05-23
      * @param
      * @return
      */
     @RequestMapping(value="/submit", method = RequestMethod.POST)
-    public Result submit(@RequestBody SalaryTaskHandleDTO salaryTaskHandleDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交").setContent(JSON.toJSONString(salaryTaskHandleDTO)));
+    public Result submit(@RequestBody SalaryTaskHandleDTO dto) {
         try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交").setContent("成功"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交").setContent(JSON.toJSONString(dto)));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setUserId(UserContext.getUserId());
+            salaryGrantTaskQueryService.submit(bo);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交异常").setContent(e.getMessage()));
@@ -154,6 +156,9 @@ public class SalaryGrantController {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量提交").setContent(JSON.toJSONString(list)));
         try {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量提交").setContent("成功"));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(list.get(0), SalaryGrantTaskBO.class);
+            bo.setUserId(UserContext.getUserId());
+            salaryGrantTaskQueryService.submit(bo);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量提交异常").setContent(e.getMessage()));
@@ -275,7 +280,7 @@ public class SalaryGrantController {
             SalaryGrantEmployeeBO bo = CommonTransform.convertToEntity(dto, SalaryGrantEmployeeBO.class);
             page = salaryGrantEmployeeQueryService.queryEmployeeInfoChanged(page, bo);
             if (!page.getRecords().isEmpty()) {
-                page.getRecords().stream().forEach(x -> {if(StringUtils.isNotBlank(x.getCountryCode())){x.setCountryName(commonService.getCountryName(x.getCountryCode()));}});
+                page.getRecords().parallelStream().forEach(x -> {if(StringUtils.isNotBlank(x.getCountryCode())){x.setCountryName(commonService.getCountryName(x.getCountryCode()));}});
             }
             Pagination<ChangedEmpInfoDTO> pagination = PageUtil.changeWapper( page, ChangedEmpInfoDTO.class);
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员").setContent(JSON.toJSONString(pagination)));
@@ -368,27 +373,6 @@ public class SalaryGrantController {
     }
 
     /**
-     * 提交明细
-     * @author chenpb
-     * @date 2018-05-23
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/detailSubmit", method = RequestMethod.POST)
-    public Result detailSubmit(@RequestBody SalaryTaskHandleDTO dto) {
-        try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交明细").setContent(JSON.toJSONString(dto)));
-            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-            bo.setUserId(UserContext.getUserId());
-            salaryGrantTaskQueryService.detailSubmit(bo);
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交明细异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("提交明细失败");
-        }
-    }
-
-    /**
      * 发放账户变化查询
      * @author chenpb
      * @date 2018-04-27
@@ -436,7 +420,7 @@ public class SalaryGrantController {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复").setContent(JSON.toJSONString(dto)));
         try {
             List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
-            list.stream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
+            list.parallelStream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
             salaryGrantEmployeeCommandService.updateBatchById(list);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
@@ -457,7 +441,7 @@ public class SalaryGrantController {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓").setContent(JSON.toJSONString(dto)));
         try {
             List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
-            list.stream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
+            list.parallelStream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
             salaryGrantEmployeeCommandService.updateBatchById(list);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {

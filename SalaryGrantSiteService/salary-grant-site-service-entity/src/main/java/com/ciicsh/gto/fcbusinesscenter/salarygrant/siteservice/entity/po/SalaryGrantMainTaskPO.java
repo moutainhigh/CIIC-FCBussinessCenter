@@ -148,7 +148,7 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
     @TableField("approved_opinion")
     private String approvedOpinion;
     /**
-     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待支付，6-未支付，7-已支付，8-撤回，9-驳回
+     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待生成，6-未支付，7-已支付，8-撤回，9-驳回，13-作废
      */
     @TableField("task_status")
     private String taskStatus;
@@ -181,7 +181,11 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
      * 任务流转信息
      */
     @TableField("work_flow_user_info")
-    private String workFlowUserInfo;
+    private String workFlowUserInfo;/**
+     * 计算批次版本号
+     */
+    @TableField("batch_version")
+    private Long batchVersion;
     /**
      * 是否有效:1-有效，0-无效
      */
@@ -505,6 +509,14 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
         this.balanceGrant = balanceGrant;
     }
 
+    public Long getBatchVersion() {
+        return batchVersion;
+    }
+
+    public void setBatchVersion(Long batchVersion) {
+        this.batchVersion = batchVersion;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.salaryGrantMainTaskId;
@@ -545,6 +557,7 @@ public class SalaryGrantMainTaskPO extends Model<SalaryGrantMainTaskPO> {
                 ", operatorUserId=" + operatorUserId +
                 ", approveUserId=" + approveUserId +
                 ", workFlowUserInfo=" + workFlowUserInfo +
+                ", batchVersion=" + batchVersion +
                 ", isActive=" + isActive +
                 ", createdBy=" + createdBy +
                 ", createdTime=" + createdTime +

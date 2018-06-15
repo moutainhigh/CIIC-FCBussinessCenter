@@ -16,6 +16,10 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = false)
 public class FinanceEmployeeBO {
     /**
+     * 雇员信息编号
+     */
+    private Long salaryGrantEmployeeId;
+    /**
      * 任务单编号
      */
     private String taskCode;

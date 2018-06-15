@@ -163,14 +163,6 @@
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
         </dependency>-->
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-ci</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-spring</artifactId>
-        </dependency>
 
         <dependency>
         <groupId>com.ciicsh.gt1</groupId>
