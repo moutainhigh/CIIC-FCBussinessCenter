@@ -45,6 +45,16 @@ public class PrsMainTaskController {
         return JsonResult.success(prsMainTaskService.getTaskEmps(params));
     }
 
+    @RequestMapping(value = "/listTaskEmps")
+    public JsonResult listTaskEmps(@RequestBody Map<String, Object> params) {
+        return JsonResult.success(prsMainTaskService.listTaskEmps(params));
+    }
+
+    @RequestMapping(value = "/pageTaskEmps")
+    public JsonResult pageTaskEmps(@RequestBody Map<String, Object> params) {
+        return JsonResult.success(prsMainTaskService.pageTaskEmps(params));
+    }
+
     @RequestMapping(value = "/deleteTaskEmps")
     public JsonResult deleteTaskEmps(@RequestBody Map<String, Object> query) {
         return JsonResult.success(prsMainTaskService.deleteTaskEmps(query));

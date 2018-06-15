@@ -108,19 +108,87 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
     }
 
     @Override
-    public Boolean deleteTaskEmps(Map<String, Object> query) {
+    public List<Document> listTaskEmps(Map<String, Object> params) {
+        BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
-        Iterator<String> itQuery = query.keySet().iterator();
-        BasicDBList queyElements = new BasicDBList();
-        while (itQuery.hasNext()){
-            String col = itQuery.next();
-            queyElements.add(new BasicDBObject(col, query.get(col)));
+        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
+        BasicDBObject orderByCond = new BasicDBObject();
+        for (ArrayList orderBy : orderBys) {
+            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
         }
-        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
+
+        List<Document> emps = new ArrayList<Document>();
 
         MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
 
-        coll.deleteMany(queryCond);
+        MongoCursor<Document> cursor = coll.find(queryCond).sort(orderByCond).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                Document emp = cursor.next();
+                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
+                emps.add(emp);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return emps;
+    }
+
+    @Override
+    public Page<Document> pageTaskEmps(Map<String, Object> params) {
+        int limit = 20;
+        int offset = 0;
+
+        BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
+
+        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
+        BasicDBObject orderByCond = new BasicDBObject();
+        for (ArrayList orderBy : orderBys) {
+            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
+        }
+
+        int currentPage = params.containsKey("currentPage") ? (int) params.get("currentPage") : 1;
+        if (params.containsKey("pageSize")) {
+            limit = (int) params.get("pageSize");
+        }
+        if (currentPage > 1) {
+            offset = (currentPage - 1) * limit;
+        }
+
+        List<Document> emps = new ArrayList<Document>();
+
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        long total = coll.count(queryCond);
+
+        MongoCursor<Document> cursor = coll.find(queryCond).skip(offset).limit(limit).sort(orderByCond).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                Document emp = cursor.next();
+                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
+                emps.add(emp);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        Page<Document> page = new Page<>();
+        page.setRecords(emps);
+        page.setCurrent(currentPage);
+        page.setTotal((int)total);
+        page.setSize(limit);
+
+        return page;
+    }
+
+    @Override
+    public Boolean deleteTaskEmps(Map<String, Object> query) {
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        coll.deleteMany(new BasicDBObject(query));
 
         return true;
     }
@@ -159,10 +227,12 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
-        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+        if (params.containsKey("employees")) {
+            MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
 
-        for (Object emp : (ArrayList)params.remove("employees")) {
-            coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+            for (Map<String, Object> emp : (ArrayList<Map<String, Object>>) params.remove("employees")) {
+                coll.insertOne(new Document(emp));
+            }
         }
 
         prsMainTaskMapper.insert(params);
@@ -172,7 +242,6 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
     @Override
     public Boolean updatePrsMainTask(Map<String, Object> params) {
-
         UserInfoBO currUser = UserContext.getUser();
         if (currUser != null) {
             params.put("modifiedBy", currUser.getDisplayName());
@@ -180,7 +249,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             params.put("modifiedBy", "1");
         }
 
-        if (params.get("publishDate") != null) {
+        if (params.containsKey("publishDate")) {
             if (params.get("publishDate").equals("")) {
                 params.put("publishDate", null);
             } else {
@@ -188,7 +257,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
-        if (params.get("publishExecDate") != null) {
+        if (params.containsKey("publishExecDate")) {
             if (params.get("publishExecDate").equals("")) {
                 params.put("publishExecDate", null);
             } else {
@@ -196,7 +265,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
-        if (params.get("approveTime") != null) {
+        if (params.containsKey("approveTime")) {
             if (params.get("approveTime").equals("")) {
                 params.put("approveTime", null);
             } else {
@@ -204,7 +273,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
-        if (params.get("uploadDate") != null) {
+        if (params.containsKey("uploadDate")) {
             if (params.get("uploadDate").equals("")) {
                 params.put("uploadDate", null);
             } else {
@@ -212,7 +281,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
-        if (params.get("uploadExecDate") != null) {
+        if (params.containsKey("uploadExecDate")) {
             if (params.get("uploadExecDate").equals("")) {
                 params.put("uploadExecDate", null);
             } else {
@@ -222,13 +291,18 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
         MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
 
-        if (params.get("employees") != null) {
+        if (params.containsKey("employees")) {
+            if (params.containsKey("isClearOld")) {
+                coll.deleteMany(new BasicDBObject("task_id", params.get("mainTaskId")));
+            }
             for (Map<String, Object> emp : (ArrayList<Map<String, Object>>)params.remove("employees")) {
-                coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+                emp.remove("id");
+                emp.remove("_id");
+                coll.insertOne(new Document(emp));
             }
         }
 
-        if (params.get("updConds") != null) {
+        if (params.containsKey("updConds")) {
             BasicDBObject filter = new BasicDBObject((Map)params.remove("updConds"));
             BasicDBObject fields = new BasicDBObject((Map)params.remove("updFields"));
             BasicDBObject update = new BasicDBObject("$set", fields);
@@ -236,7 +310,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             coll.updateMany(filter, update);
         }
 
-        if (params.get("delObjectIds") != null) {
+        if (params.containsKey("delObjectIds")) {
             for (String id : (ArrayList<String>)params.remove("delObjectIds")) {
                 coll.deleteOne(new Document("_id", new ObjectId(id)));
             }

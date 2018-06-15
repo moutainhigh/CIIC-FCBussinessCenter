@@ -34,19 +34,19 @@ public class PrsPayrollController {
     @Autowired
     private PrsPayrollService prsPayrollService;
 
-    @RequestMapping(value = "/listPrsPayrolls")
+    @RequestMapping(value = "/listPubEmps")
     public JsonResult list(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(prsPayrollService.listPrsPayrolls(params));
+        return JsonResult.success(prsPayrollService.listPubEmps(params));
     }
 
-    @RequestMapping(value = "/pagePrsPayrolls")
+    @RequestMapping(value = "/pagePubEmps")
     public JsonResult page(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(prsPayrollService.pagePrsPayrolls(params));
+        return JsonResult.success(prsPayrollService.pagePubEmps(params));
     }
 
-    @RequestMapping(value = "/deletePrsPayrolls")
-    public JsonResult deletePrsPayrolls(@RequestBody ArrayList<String> ids) {
-        return JsonResult.success(prsPayrollService.deletePrsPayrolls(ids));
+    @RequestMapping(value = "/deletePubEmps")
+    public JsonResult deletePubEmps(@RequestBody ArrayList<String> ids) {
+        return JsonResult.success(prsPayrollService.deletePubEmps(ids));
     }
 
     @RequestMapping(value = "/getPrsPayroll")

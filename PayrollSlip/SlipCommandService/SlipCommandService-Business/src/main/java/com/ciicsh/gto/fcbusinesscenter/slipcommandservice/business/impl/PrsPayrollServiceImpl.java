@@ -44,16 +44,8 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     private MongoConfig mongoConfig;
 
     @Override
-    public List<Document> listPrsPayrolls(Map<String, Object> params) {
-
-        Map<String, Object> query = (Map)params.get("query");
-        Iterator<String> itQuery = query.keySet().iterator();
-        BasicDBList queyElements = new BasicDBList();
-        while (itQuery.hasNext()){
-            String col = itQuery.next();
-            queyElements.add(new BasicDBObject(col, query.get(col)));
-        }
-        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
+    public List<Document> listPubEmps(Map<String, Object> params) {
+        BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
         ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
         BasicDBObject orderByCond = new BasicDBObject();
@@ -81,18 +73,11 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     }
 
     @Override
-    public Page<Document> pagePrsPayrolls(Map<String, Object> params) {
+    public Page<Document> pagePubEmps(Map<String, Object> params) {
         int limit = 20;
         int offset = 0;
 
-        Map<String, Object> query = (Map)params.get("query");
-        Iterator<String> itQuery = query.keySet().iterator();
-        BasicDBList queyElements = new BasicDBList();
-        while (itQuery.hasNext()){
-            String col = itQuery.next();
-            queyElements.add(new BasicDBObject(col, query.get(col)));
-        }
-        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
+        BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
         ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
         BasicDBObject orderByCond = new BasicDBObject();
@@ -136,7 +121,7 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     }
 
     @Override
-    public Boolean deletePrsPayrolls(ArrayList<String> ids) {
+    public Boolean deletePubEmps(ArrayList<String> ids) {
         MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
 
         for (String id : ids) {
