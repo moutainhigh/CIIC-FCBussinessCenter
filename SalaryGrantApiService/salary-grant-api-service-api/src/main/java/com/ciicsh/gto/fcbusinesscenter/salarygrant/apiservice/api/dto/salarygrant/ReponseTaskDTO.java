@@ -70,7 +70,7 @@ public class ReponseTaskDTO {
      */
     private String grantTypeName;
     /**
-     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待支付，6-未支付，7-已支付，8-撤回，9-驳回
+     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待生成，6-未支付，7-已支付，8-撤回，9-驳回，13-作废
      */
     private String taskStatus;
     /**

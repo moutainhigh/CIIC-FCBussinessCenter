@@ -84,22 +84,21 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
     @Override
     public Page<SalaryGrantTaskBO> salaryGrantList(SalaryGrantTaskBO bo) {
-        Page<SalaryGrantTaskBO> page = null;
         Page<SalaryGrantTaskBO> paging = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
         if (SalaryGrantBizConsts.TASK_REFER.equals(bo.getTaskStatusEn())) {
-            page = this.queryTaskForSubmitPage(paging, bo);
+            paging = this.queryTaskForSubmitPage(paging, bo);
         } else if (SalaryGrantBizConsts.TASK_PEND.equals(bo.getTaskStatusEn())) {
-            page = this.queryTaskForApprovePage(paging, bo);
+            paging = this.queryTaskForApprovePage(paging, bo);
         } else if (SalaryGrantBizConsts.TASK_APPROVAL.equals(bo.getTaskStatusEn())) {
-            page = this.queryTaskForHaveApprovedPage(paging, bo);
+            paging = this.queryTaskForHaveApprovedPage(paging, bo);
         } else if (SalaryGrantBizConsts.TASK_ADOPT.equals(bo.getTaskStatusEn())) {
-            page = this.queryTaskForPassPage(paging, bo);
+            paging = this.queryTaskForPassPage(paging, bo);
         } else if (SalaryGrantBizConsts.TASK_REFUSE.equals(bo.getTaskStatusEn())) {
-            page = this.queryTaskForRejectPage(paging, bo);
+            paging = this.queryTaskForRejectPage(paging, bo);
         } else if (SalaryGrantBizConsts.TASK_CANCEL.equals(bo.getTaskStatusEn())) {
-            page = this.queryTaskForInvalidPage(paging, bo);
+            paging = this.queryTaskForInvalidPage(paging, bo);
         }
-        return page;
+        return paging;
     }
 
     /**
