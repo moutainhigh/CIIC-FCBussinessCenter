@@ -23,10 +23,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollSer
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 工资单 服务实现类
@@ -44,22 +41,11 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     private MongoConfig mongoConfig;
 
     @Override
-    public List<Document> listPrsPayrolls(Map<String, Object> params) {
+    public List<Document> listPubEmps(Map<String, Object> params) {
+        BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
-        Map<String, Object> query = (Map)params.get("query");
-        Iterator<String> itQuery = query.keySet().iterator();
-        BasicDBList queyElements = new BasicDBList();
-        while (itQuery.hasNext()){
-            String col = itQuery.next();
-            queyElements.add(new BasicDBObject(col, query.get(col)));
-        }
-        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
-
-        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
-        BasicDBObject orderByCond = new BasicDBObject();
-        for (ArrayList orderBy : orderBys) {
-            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
-        }
+        Map orderBy = params.containsKey("orderBy") ? (LinkedHashMap)params.get("orderBy") : new LinkedHashMap();
+        BasicDBObject orderByCond= new BasicDBObject(orderBy);
 
         List<Document> emps = new ArrayList<Document>();
 
@@ -81,24 +67,15 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     }
 
     @Override
-    public Page<Document> pagePrsPayrolls(Map<String, Object> params) {
+    public Page<Document> pagePubEmps(Map<String, Object> params) {
         int limit = 20;
         int offset = 0;
 
-        Map<String, Object> query = (Map)params.get("query");
-        Iterator<String> itQuery = query.keySet().iterator();
-        BasicDBList queyElements = new BasicDBList();
-        while (itQuery.hasNext()){
-            String col = itQuery.next();
-            queyElements.add(new BasicDBObject(col, query.get(col)));
-        }
-        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
+        BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
-        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
-        BasicDBObject orderByCond = new BasicDBObject();
-        for (ArrayList orderBy : orderBys) {
-            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
-        }
+        Map orderBy = params.containsKey("orderBy") ? (LinkedHashMap)params.get("orderBy") : new LinkedHashMap();
+        BasicDBObject orderByCond= new BasicDBObject(orderBy);
+
 
         int currentPage = params.containsKey("currentPage") ? (int) params.get("currentPage") : 1;
         if (params.containsKey("pageSize")) {
@@ -136,7 +113,7 @@ public class PrsPayrollServiceImpl implements PrsPayrollService {
     }
 
     @Override
-    public Boolean deletePrsPayrolls(ArrayList<String> ids) {
+    public Boolean deletePubEmps(ArrayList<String> ids) {
         MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
 
         for (String id : ids) {
