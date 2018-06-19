@@ -111,7 +111,6 @@
         pr_payroll_group_template
         WHERE
         is_active = 1
-		AND approval_status = 2
         <if test="name != null and name != ''">
             AND group_template_name LIKE concat(#{name},'%')
         </if>
