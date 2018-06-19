@@ -24,7 +24,7 @@ zipkin:
   base-url: http://172.16.9.31:9623  #ZipkinService地址
   enabled: true
 sleuth:
-  percentage: 0.1
+  percentage: 1.0
 druid:
 #  configPathBasic:  /data/appdatas/gt1/gtobasicdb_dev.properties
   configPathBusiness:  /data/appdatas/gt1/gtobusinessdb_dev.properties

@@ -118,9 +118,12 @@
 				WHERE
 					t1.is_active = 1
 				AND t1.batch_code IN
-					<foreach item="batchCodeList" index="index" collection="list"
-							 open="(" separator="," close=")"> #{batchCodeList}
+					<foreach item="item" index="index" collection="batchCodeList"
+							 open="(" separator="," close=")"> #{item}
 					</foreach>
+				<if test="taskCode != null and taskCode != ''">
+					and t1.salary_grant_main_task_code = #{taskCode}
+				</if>
 				UNION
 					SELECT
 						t1.task_id,
@@ -142,12 +145,15 @@
 						sg_salary_grant_task_history t1
 					WHERE
 						t1.is_active = 1
-					AND t1.task_status = '4'
+					AND t1.task_status = '13'
 					AND t1.task_type = 0
 					AND t1.batch_code IN
-						<foreach item="batchCodeList" index="index" collection="list"
-								 open="(" separator="," close=")"> #{batchCodeList}
+						<foreach item="item" index="index" collection="batchCodeList"
+								 open="(" separator="," close=")"> #{item}
 						</foreach>
+					<if test="taskCode != null and taskCode != ''">
+						and t1.task_code = #{taskCode}
+					</if>
 			) t
 		ORDER BY
 			t.task_code
