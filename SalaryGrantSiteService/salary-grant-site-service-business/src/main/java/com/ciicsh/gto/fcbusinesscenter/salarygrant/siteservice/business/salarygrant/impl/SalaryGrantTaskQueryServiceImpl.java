@@ -245,7 +245,9 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
     @Override
     public void approvalPass(SalaryGrantTaskBO bo) {
-        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+
+        } else {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
         }
     }
@@ -258,7 +260,9 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
     @Override
     public void approvalReject(SalaryGrantTaskBO bo) {
-        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+
+        } else {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
         }
     }
@@ -270,8 +274,10 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      * @param bo
      */
     @Override
-    public void detailSubmit(SalaryGrantTaskBO bo) {
-        if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+    public void submit(SalaryGrantTaskBO bo) {
+        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+
+        } else {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
         }
     }

@@ -3,45 +3,69 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchDetailMapper">
 
 	<!-- 通用查询映射结果 -->
-	<!--<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO">-->
-		<!--<id column="id" property="id" />-->
-		<!--<result column="calculation_batch_id" property="calculationBatchId" />-->
-		<!--<result column="version_no" property="versionNo" />-->
-		<!--<result column="is_defer" property="isDefer" />-->
-		<!--<result column="employee_no" property="employeeNo" />-->
-		<!--<result column="employee_name" property="employeeName" />-->
-		<!--<result column="id_type" property="idType" />-->
-		<!--<result column="id_no" property="idNo" />-->
-		<!--<result column="declare_account" property="declareAccount" />-->
-		<!--<result column="pay_account" property="payAccount" />-->
-		<!--<result column="period" property="period" />-->
-		<!--<result column="income_subject" property="incomeSubject" />-->
-		<!--<result column="income_total" property="incomeTotal" />-->
-		<!--<result column="income_dutyfree" property="incomeDutyfree" />-->
-		<!--<result column="deduct_retirement_insurance" property="deductRetirementInsurance" />-->
-		<!--<result column="deduct_medical_insurance" property="deductMedicalInsurance" />-->
-		<!--<result column="deduct_dleness_insurance" property="deductDlenessInsurance" />-->
-		<!--<result column="deduct_property" property="deductProperty" />-->
-		<!--<result column="deduct_house_fund" property="deductHouseFund" />-->
-		<!--<result column="deduct_takeoff" property="deductTakeoff" />-->
-		<!--<result column="deduct_other" property="deductOther" />-->
-		<!--<result column="deduct_total" property="deductTotal" />-->
-		<!--<result column="deduction" property="deduction" />-->
-		<!--<result column="donation" property="donation" />-->
-		<!--<result column="income_for_tax" property="incomeForTax" />-->
-		<!--<result column="tax_rate" property="taxRate" />-->
-		<!--<result column="quick_cal_deduct" property="quickCalDeduct" />-->
-		<!--<result column="tax_amount" property="taxAmount" />-->
-		<!--<result column="tax_deduction" property="taxDeduction" />-->
-		<!--<result column="tax_withhold_amount" property="taxWithholdAmount" />-->
-		<!--<result column="tax_withholded_amount" property="taxWithholdedAmount" />-->
-		<!--<result column="tax_remedy_or_return" property="taxRemedyOrReturn" />-->
-		<!--<result column="is_declare" property="isDeclare" />-->
-		<!--<result column="is_tranfer" property="isTranfer" />-->
-		<!--<result column="is_pay" property="isPay" />-->
-		<!--<result column="created_time" property="createdTime" />-->
-		<!--<result column="modified_time" property="modifiedTime" />-->
-	<!--</resultMap>-->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO">
+		<id column="id" property="id" />
+		<result column="calculation_batch_id" property="calculationBatchId" />
+		<result column="version_no" property="versionNo" />
+		<result column="is_defer" property="isDefer" />
+		<result column="employee_no" property="employeeNo" />
+		<result column="employee_name" property="employeeName" />
+		<result column="id_type" property="idType" />
+		<result column="id_no" property="idNo" />
+		<result column="declare_account" property="declareAccount" />
+		<result column="pay_account" property="payAccount" />
+		<result column="period" property="period" />
+		<result column="income_subject" property="incomeSubject" />
+		<result column="income_total" property="incomeTotal" />
+		<result column="income_dutyfree" property="incomeDutyfree" />
+		<result column="deduct_retirement_insurance" property="deductRetirementInsurance" />
+		<result column="deduct_medical_insurance" property="deductMedicalInsurance" />
+		<result column="deduct_dleness_insurance" property="deductDlenessInsurance" />
+		<result column="deduct_property" property="deductProperty" />
+		<result column="deduct_house_fund" property="deductHouseFund" />
+		<result column="deduct_takeoff" property="deductTakeoff" />
+		<result column="deduct_other" property="deductOther" />
+		<result column="deduct_total" property="deductTotal" />
+		<result column="deduction" property="deduction" />
+		<result column="donation" property="donation" />
+		<result column="income_for_tax" property="incomeForTax" />
+		<result column="tax_rate" property="taxRate" />
+		<result column="quick_cal_deduct" property="quickCalDeduct" />
+		<result column="tax_amount" property="taxAmount" />
+		<result column="tax_deduction" property="taxDeduction" />
+		<result column="tax_withhold_amount" property="taxWithholdAmount" />
+		<result column="tax_withholded_amount" property="taxWithholdedAmount" />
+		<result column="tax_remedy_or_return" property="taxRemedyOrReturn" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="batch_no" property="batchNo" />
+		<result column="tax_real" property="taxReal" />
+		<result column="annuity" property="annuity" />
+		<result column="working_years" property="workingYears" />
+		<result column="business_health_insurance" property="businessHealthInsurance" />
+		<result column="endowment_insurance" property="endowmentInsurance" />
+		<result column="domestic_days" property="domesticDays" />
+		<result column="overseas_days" property="overseasDays" />
+		<result column="domestic_income_domestic_payment" property="domesticIncomeDomesticPayment" />
+		<result column="domestic_income_overseas_payment" property="domesticIncomeOverseasPayment" />
+		<result column="overseas_income_domestic_payment" property="overseasIncomeDomesticPayment" />
+		<result column="overseas_income_overseas_payment" property="overseasIncomeOverseasPayment" />
+		<result column="housing_subsidy" property="housingSubsidy" />
+		<result column="meal_allowance" property="mealAllowance" />
+		<result column="laundry_fee" property="laundryFee" />
+		<result column="removing_indemnity_fee" property="removingIndemnityFee" />
+		<result column="missionallowance" property="missionallowance" />
+		<result column="visiting_relatives_fee" property="visitingRelativesFee" />
+		<result column="language_training_fee" property="languageTrainingFee" />
+		<result column="education_funds" property="educationFunds" />
+		<result column="exercise_income_month" property="exerciseIncomeMonth" />
+		<result column="exercise_income_year" property="exerciseIncomeYear" />
+		<result column="number_of_months" property="numberOfMonths" />
+		<result column="exercise_tax_amount" property="exerciseTaxAmount" />
+		<result column="is_active" property="isActive" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
 
 	<resultMap id="BaseResultMapBO" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO">
 		<id column="id" property="id" />
@@ -92,6 +116,29 @@
 		<result column="is_declare_supported" property="declareSupported" />
 		<result column="is_transfer_supported" property="transferSupported" />
 	</resultMap>
+
+	<!--条件查询已申报的计算批次明细-->
+	<select id="queryTaxBatchDetailsListByRes" resultMap="BaseResultMap" parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof">
+		select cbd.*
+		from tax_fc_calculation_batch_detail cbd,tax_fc_employee_service_batch esb
+		where cbd.id = esb.cal_batch_detail_id  and cbd.is_active = true and esb.is_active = true and esb.is_declared = false
+		<if test = "idType != null and idType != ''">
+			and cbd.id_type = #{idType, jdbcType=VARCHAR}
+		</if>
+		<if test = "idNo != null and idNo != ''">
+			and cbd.id_no = #{idNo, jdbcType=VARCHAR}
+		</if>
+		<if test = "incomeSubject != null and incomeSubject != ''">
+			and cbd.income_subject = #{incomeSubject, jdbcType=VARCHAR}
+		</if>
+		<if test = "submitTimeStart != null and submitTimeStart != ''">
+			and cbd.period &gt;= #{submitTimeStart, jdbcType=VARCHAR}
+		</if>
+		<if test = "submitTimeEnd != null and submitTimeEnd != ''">
+			and cbd.period &lt; #{submitTimeEnd, jdbcType=VARCHAR}
+		</if>
+		order by cbd.modified_time desc
+	</select>
 
 	<select id="queryTaxBatchDetailByRes" resultMap="BaseResultMapBO">
 		SELECT

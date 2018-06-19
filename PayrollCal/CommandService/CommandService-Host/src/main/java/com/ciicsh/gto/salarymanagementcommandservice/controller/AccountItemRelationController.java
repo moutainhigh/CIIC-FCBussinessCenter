@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PayrollAccountItemRelationExtDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrPayrollAccountItemRelationDTO;
@@ -41,7 +42,7 @@ public class AccountItemRelationController {
     @PostMapping("/editAccountItemRelation")
     @ResponseBody
     public JsonResult editAccountItemRelation(@RequestBody PrPayrollAccountItemRelationDTO relationDTO){
-        relationDTO.setModifiedBy("bill");
+        relationDTO.setModifiedBy(UserContext.getUserId());
         relationDTO.setModifiedTime(new Date());
 
         PrPayrollAccountItemRelationPO relationPO = PayrollAccountSetTranslator.toPrPayrollAccountItemRelationPO(relationDTO);
