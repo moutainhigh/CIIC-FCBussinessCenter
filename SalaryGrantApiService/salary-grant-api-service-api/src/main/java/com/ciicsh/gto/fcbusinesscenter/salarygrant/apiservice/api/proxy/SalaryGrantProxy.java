@@ -51,4 +51,14 @@ public interface SalaryGrantProxy {
      */
     @PostMapping("/toRejectTask")
     Result<Boolean> toRejectTask(@RequestBody SalaryGrantTaskDTO dto);
+
+    /**
+     *  修改雇员发放状态
+     * @author chenpb
+     * @date 2018-06-19
+     * @param dto
+     * @return Result<ReprieveEmployeeDTO>
+     */
+    @PostMapping("/updateGrantStatus")
+    Result<ReprieveEmployeeDTO> updateForReprieveEmployee(@RequestBody ReprieveEmployeeDTO dto);
 }

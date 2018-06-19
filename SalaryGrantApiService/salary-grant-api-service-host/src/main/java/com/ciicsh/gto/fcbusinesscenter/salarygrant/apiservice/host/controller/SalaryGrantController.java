@@ -6,7 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.ResultGen
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeRefundBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.ReprieveEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.transform.CommonTransform;
@@ -16,7 +16,6 @@ import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -72,6 +71,27 @@ public class SalaryGrantController implements SalaryGrantProxy {
             return ResultGenerator.genSuccessResult(list);
         } catch (Exception e) {
             logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务单子表查询异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("处理失败");
+        }
+    }
+
+    /**
+     *  修改雇员发放状态
+     * @author chenpb
+     * @date 2018-06-19
+     * @param dto
+     * @return Result<ReprieveEmployeeDTO>
+     */
+    @Override
+    public Result<ReprieveEmployeeDTO> updateForReprieveEmployee(@RequestBody ReprieveEmployeeDTO dto) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("修改雇员发放状态").setContent(JSON.toJSONString(dto)));
+        try {
+            ReprieveEmployeeBO bo = CommonTransform.convertToEntity(dto, ReprieveEmployeeBO.class);
+            bo = salaryGrantService.updateForReprieveEmployee(bo);
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("修改雇员发放状态结果").setContent(JSON.toJSONString(bo)));
+            return ResultGenerator.genSuccessResult(bo);
+        } catch (Exception e) {
+            logService.error(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("修改雇员发放状态异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("处理失败");
         }
     }
