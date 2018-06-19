@@ -28,6 +28,8 @@ public interface PrsMainTaskService {
 
     Boolean deleteTaskEmps(Map<String, Object> query);
 
+    Boolean updateTaskEmp(Map<String, Object> params);
+
     Boolean addPrsMainTask(Map<String, Object> params);
 
     Boolean updatePrsMainTask(Map<String, Object> params);

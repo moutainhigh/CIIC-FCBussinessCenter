@@ -194,6 +194,19 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
     }
 
     @Override
+    public Boolean updateTaskEmp(Map<String, Object> params) {
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        BasicDBObject filter = new BasicDBObject((Map)params.remove("updConds"));
+        BasicDBObject fields = new BasicDBObject((Map)params.remove("updFields"));
+        BasicDBObject update = new BasicDBObject("$set", fields);
+
+        coll.updateMany(filter, update);
+
+        return true;
+    }
+
+    @Override
     public Boolean addPrsMainTask(Map<String, Object> params) {
 
         UserInfoBO currUser = UserContext.getUser();

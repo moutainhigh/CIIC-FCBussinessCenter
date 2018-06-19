@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -58,6 +60,30 @@ public class PrsMainTaskController {
     @RequestMapping(value = "/deleteTaskEmps")
     public JsonResult deleteTaskEmps(@RequestBody Map<String, Object> query) {
         return JsonResult.success(prsMainTaskService.deleteTaskEmps(query));
+    }
+
+    @RequestMapping(value = "/sent")
+    public JsonResult sent(@RequestParam("task_id") String taskId, @RequestParam("emp_id") String empId) {
+        Map<String, Object> updConds = new HashMap<String, Object>(){
+            {
+                put("task_id", taskId);
+                put("emp_id", empId);
+            }
+        };
+
+        Map<String, Object> updFields = new HashMap<String, Object>(){
+            {
+                put("publish_state", 3);
+            }
+        };
+
+        Map<String, Object> params = new HashMap<String, Object>(){
+            {
+                put("updConds", updConds);
+                put("updFields", updFields);
+            }
+        };
+        return JsonResult.success(prsMainTaskService.updateTaskEmp(params));
     }
 
     @RequestMapping(value = "/addPrsMainTask")
