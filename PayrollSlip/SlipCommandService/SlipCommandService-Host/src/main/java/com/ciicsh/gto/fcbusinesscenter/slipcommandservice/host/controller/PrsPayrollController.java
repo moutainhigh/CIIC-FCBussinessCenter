@@ -4,10 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gt1.FileHandler;
+import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollService;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,10 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -33,6 +36,9 @@ public class PrsPayrollController {
 
     @Autowired
     private PrsPayrollService prsPayrollService;
+
+    @Autowired
+    private MongoConfig mongoConfig;
 
     @RequestMapping(value = "/listPubEmps")
     public JsonResult list(@RequestBody Map<String, Object> params) {
@@ -87,22 +93,25 @@ public class PrsPayrollController {
 
         List<Object> records = new ArrayList();
 
-//        HashMap<String, Object> params = new HashMap<String, Object>(){
-//            {
-//                put("employeeId", empId);
-//            }
-//        };
-//
-//        for (PrsPayrollPO payroll : prsPayrollService.listPrsPayrolls(params)) {
-//            Map<String, Object> ele = new HashMap<String, Object>(){
-//                {
-//                    put("SalaryID", payroll.getId());
-//                    put("SalaryMonth", payroll.getPersonnelIncomeYearMonth());
-//                    put("Salary", payroll.getNetPay());
-//                }
-//            };
-//            records.add(ele);
-//        }
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
+
+        MongoCursor<Document> cursor = coll.find(new BasicDBObject("emp_id", empId)).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                Document emp = cursor.next();
+                Map<String, Object> ele = new HashMap<String, Object>(){
+                    {
+                        put("SalaryID", ((ObjectId)emp.get("_id")).toHexString());
+                        put("SalaryMonth", emp.get("income_year_month"));
+                        put("Salary", emp.get("net_pay"));
+                    }
+                };
+                records.add(ele);
+            }
+        } finally {
+            cursor.close();
+        }
 
         return new HashMap<String, Object>(){
             {
@@ -133,28 +142,24 @@ public class PrsPayrollController {
 
         ArrayList<Map<String, Object>> records = new ArrayList();
 
-//        HashMap<String, Object> params = new HashMap<String, Object>(){
-//            {
-//                put("id", id);
-//            }
-//        };
-//
-//        PrsPayrollPO payroll = prsPayrollService.getPrsPayroll(params);
-//
-//        JSONArray items = JSON.parseArray(payroll.getItems());
-//
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("pub_emps");
+        Document emp = coll.find(new Document("_id", new ObjectId(id))).first();
 
-//
-//        for (Object objItemAndVal : items) {
-//            JSONArray itemAndVal = (JSONArray) objItemAndVal;
-//            Map<String, Object> map = new HashMap<String, Object>(){
-//                {
-//                    put("ItemName", itemAndVal.get(0));
-//                    put("ItemValue", itemAndVal.get(1));
-//                }
-//            };
-//            records.add(map);
-//        }
+        if (emp != null) {
+            Map<String, Object> items = (Map<String, Object>)emp.get("items");
+            Iterator<String> keys = items.keySet().iterator();
+
+            while (keys.hasNext()){
+                String key = keys.next();
+                Map<String, Object> map = new HashMap<String, Object>(){
+                    {
+                        put("ItemName", key);
+                        put("ItemValue", items.get(key));
+                    }
+                };
+                records.add(map);
+            }
+        }
 
         return new HashMap<String, Object>(){
             {

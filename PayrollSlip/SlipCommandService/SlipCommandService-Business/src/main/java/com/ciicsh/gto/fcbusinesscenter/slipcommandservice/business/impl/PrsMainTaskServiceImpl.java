@@ -25,10 +25,7 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsMainTaskSe
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 工资单任务单主表 服务实现类
@@ -111,11 +108,9 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
     public List<Document> listTaskEmps(Map<String, Object> params) {
         BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
-        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
-        BasicDBObject orderByCond = new BasicDBObject();
-        for (ArrayList orderBy : orderBys) {
-            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
-        }
+        Map orderBy = params.containsKey("orderBy") ? (LinkedHashMap)params.get("orderBy") : new LinkedHashMap();
+        BasicDBObject orderByCond= new BasicDBObject(orderBy);
+
 
         List<Document> emps = new ArrayList<Document>();
 
@@ -143,11 +138,8 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
         BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
-        ArrayList<ArrayList> orderBys = (ArrayList)params.get("orderBys");
-        BasicDBObject orderByCond = new BasicDBObject();
-        for (ArrayList orderBy : orderBys) {
-            orderByCond.put((String)orderBy.get(0), orderBy.get(1));
-        }
+        Map orderBy = params.containsKey("orderBy") ? (LinkedHashMap)params.get("orderBy") : new LinkedHashMap();
+        BasicDBObject orderByCond= new BasicDBObject(orderBy);
 
         int currentPage = params.containsKey("currentPage") ? (int) params.get("currentPage") : 1;
         if (params.containsKey("pageSize")) {
