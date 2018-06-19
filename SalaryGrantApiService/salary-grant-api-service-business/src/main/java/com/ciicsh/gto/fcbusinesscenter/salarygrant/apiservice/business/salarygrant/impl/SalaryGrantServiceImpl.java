@@ -43,7 +43,7 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
     public List<SalaryGrantTaskBO> getTask(SalaryGrantTaskBO bo) {
         String batchCodeStr = bo.getBatchCode();
         List<String> batchCodeList = Arrays.asList(batchCodeStr.split(","));
-        List<SalaryGrantTaskBO> taskList = salaryGrantTaskMapper.listTask(batchCodeList);
+        List<SalaryGrantTaskBO> taskList = salaryGrantTaskMapper.listTask(batchCodeList, bo.getTaskCode());
         taskList.forEach(salaryGrantTaskBO ->{
             salaryGrantTaskBO.setGrantTypeName(commonService.getNameByValue("sgmGrantType",String.valueOf(salaryGrantTaskBO.getGrantType())));
             salaryGrantTaskBO.setTaskStatusName(commonService.getNameByValue("sgmTaskStatus",String.valueOf(salaryGrantTaskBO.getTaskStatus())));

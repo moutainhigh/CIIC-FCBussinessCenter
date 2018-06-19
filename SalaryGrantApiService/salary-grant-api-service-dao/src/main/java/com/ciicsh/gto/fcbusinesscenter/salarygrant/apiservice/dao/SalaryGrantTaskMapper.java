@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public interface SalaryGrantTaskMapper extends BaseMapper<SalaryGrantTaskPO> {
      * @param batchCodeList
      * @return List<SalaryGrantTaskBO>
      */
-    List<SalaryGrantTaskBO> listTask(List<String> batchCodeList);
+    List<SalaryGrantTaskBO> listTask(@Param("batchCodeList") List<String> batchCodeList, @Param("taskCode")String taskCode);
     /**
      *  根据主表任务单编号查询薪资发放任务单子表
      * @param taskCode
