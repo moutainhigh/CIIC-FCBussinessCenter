@@ -77,9 +77,11 @@
         UPDATE
             sg_salary_grant_employee t
         SET
-            t.grant_status = #{grantStatus},
-            t.modified_by = #{modifiedBy},
-            t.modified_time = now()
+            <if test="modifiedBy != null and modifiedBy != ''">
+                t.modified_by = #{modifiedBy},
+            </if>
+            t.modified_time = now(),
+            t.grant_status = #{grantStatus}
         WHERE
             t.batch_code = #{batchCode}
         AND
