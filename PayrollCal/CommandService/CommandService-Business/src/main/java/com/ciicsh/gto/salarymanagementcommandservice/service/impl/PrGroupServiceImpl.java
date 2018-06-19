@@ -9,9 +9,9 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.util.CodeGenerator;
+import com.ciicsh.gto.salarymanagementcommandservice.service.common.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -85,9 +85,6 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int updateItemByCode(PrPayrollGroupPO paramItem) {
-        if (paramItem.getApprovalStatus() == null) {
-            paramItem.setApprovalStatus(0);
-        }
         return prPayrollGroupMapper.updateItemByCode(paramItem);
     }
 
@@ -124,6 +121,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                     .collect(Collectors.toList());
             itemService.addList(itemList);
             result = prPayrollGroupMapper.insert(paramItem);
+            prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
             return result;
         }
 
@@ -142,6 +140,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                 .collect(Collectors.toList());
         itemService.addList(itemList);
         result = prPayrollGroupMapper.insert(paramItem);
+        prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
         return result;
     }
 
@@ -262,6 +261,7 @@ public class PrGroupServiceImpl implements PrGroupService {
         approvalHistoryPO.setCreatedName(UserContext.getName());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 更新审批薪资组
+        prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
         int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
         return result;

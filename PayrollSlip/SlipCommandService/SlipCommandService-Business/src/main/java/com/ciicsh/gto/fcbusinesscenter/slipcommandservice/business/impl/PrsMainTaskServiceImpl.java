@@ -1,8 +1,19 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +25,8 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsMainTaskSe
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +41,9 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
 
     @Autowired
     private PrsMainTaskMapper prsMainTaskMapper;
+
+    @Autowired
+    private MongoConfig mongoConfig;
 
     @Override
     public List<PrsMainTaskPO> listPrsMainTasks(Map<String, Object> params) {
@@ -72,6 +88,44 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
     }
 
     @Override
+    public List<Document> getTaskEmps(Map<String, Object> params) {
+        List<Document> emps = new ArrayList<Document>();
+
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+        MongoCursor<Document> cursor = coll.find(new BasicDBObject(params)).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                Document emp = cursor.next();
+                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
+                emps.add(emp);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return emps;
+    }
+
+    @Override
+    public Boolean deleteTaskEmps(Map<String, Object> query) {
+
+        Iterator<String> itQuery = query.keySet().iterator();
+        BasicDBList queyElements = new BasicDBList();
+        while (itQuery.hasNext()){
+            String col = itQuery.next();
+            queyElements.add(new BasicDBObject(col, query.get(col)));
+        }
+        BasicDBObject queryCond= new BasicDBObject("$and", queyElements);
+
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        coll.deleteMany(queryCond);
+
+        return true;
+    }
+
+    @Override
     public Boolean addPrsMainTask(Map<String, Object> params) {
 
         UserInfoBO currUser = UserContext.getUser();
@@ -105,6 +159,11 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        for (Object emp : (ArrayList)params.remove("employees")) {
+            coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+        }
 
         prsMainTaskMapper.insert(params);
 
@@ -161,6 +220,27 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             }
         }
 
+        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
+
+        if (params.get("employees") != null) {
+            for (Map<String, Object> emp : (ArrayList<Map<String, Object>>)params.remove("employees")) {
+                coll.insertOne(Document.parse(JSONObject.toJSONString(emp)));
+            }
+        }
+
+        if (params.get("updConds") != null) {
+            BasicDBObject filter = new BasicDBObject((Map)params.remove("updConds"));
+            BasicDBObject fields = new BasicDBObject((Map)params.remove("updFields"));
+            BasicDBObject update = new BasicDBObject("$set", fields);
+
+            coll.updateMany(filter, update);
+        }
+
+        if (params.get("delObjectIds") != null) {
+            for (String id : (ArrayList<String>)params.remove("delObjectIds")) {
+                coll.deleteOne(new Document("_id", new ObjectId(id)));
+            }
+        }
 
         prsMainTaskMapper.update(params);
 

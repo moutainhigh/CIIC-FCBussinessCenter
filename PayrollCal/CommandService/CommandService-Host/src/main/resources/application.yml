@@ -53,7 +53,7 @@ spring:
             partitionCount: 2
 
         pr_compute-output-channel:
-           destination: fc_payroll_compute_result_11 # topic name
+           destination: fc_payroll_compute_result # topic name
            content-type: application/json
            producer:
              partitionCount: 1

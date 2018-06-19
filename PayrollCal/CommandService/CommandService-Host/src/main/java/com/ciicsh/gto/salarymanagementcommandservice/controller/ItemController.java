@@ -10,7 +10,7 @@ import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
-import com.ciicsh.gto.salarymanagementcommandservice.service.PrItemService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.ItemTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.util.constants.MessageConst;
 import com.github.pagehelper.PageInfo;
@@ -59,10 +59,10 @@ public class ItemController extends BaseController{
         PageInfo<PrPayrollItemPO> pageInfo;
         if (GROUP_TEMPLATE == parentType) {
             // 获取薪资组模板的薪资项
-            pageInfo = itemService.getListByGroupTemplateCode(groupCode, pageNum, pageSize);
+            pageInfo = itemService.getListByGroupTemplateCode(groupCode, pageNum, pageSize, true);
         } else if (GROUP == parentType) {
             // 获取薪资组的薪资项
-            pageInfo = itemService.getListByGroupCode(groupCode, pageNum, pageSize);
+            pageInfo = itemService.getListByGroupCode(groupCode, pageNum, pageSize, true);
         } else {
             return JsonResult.faultMessage("非法的参数parentType: " + parentType);
         }
@@ -129,8 +129,7 @@ public class ItemController extends BaseController{
         BeanUtils.copyProperties(paramItem, newParam);
 //        newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
         if (!StringUtils.isEmpty(newParam.getPayrollGroupTemplateCode())){
-            List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(
-                    paramItem.getPayrollGroupTemplateCode(),0,0).getList();
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(paramItem.getPayrollGroupTemplateCode(), true);
             if (itemList != null) {
                 if (itemList.stream()
                         .anyMatch(i -> i.getItemName().equals(newParam.getItemName()))) {
@@ -139,8 +138,7 @@ public class ItemController extends BaseController{
             }
         }
         if (!StringUtils.isEmpty(newParam.getPayrollGroupCode())){
-            List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(
-                    newParam.getPayrollGroupCode(),0,0).getList();
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(newParam.getPayrollGroupCode(), true);
             if (itemList != null) {
                 if (itemList.stream()
                         .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {

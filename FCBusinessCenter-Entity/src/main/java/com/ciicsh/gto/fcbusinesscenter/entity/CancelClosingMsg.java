@@ -11,6 +11,8 @@ public class CancelClosingMsg {
     private String optID;
     private String optName;
 
+    private long version;
+
     public String getBatchCode() {
         return batchCode;
     }
@@ -41,5 +43,13 @@ public class CancelClosingMsg {
 
     public void setOptName(String optName) {
         this.optName = optName;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }

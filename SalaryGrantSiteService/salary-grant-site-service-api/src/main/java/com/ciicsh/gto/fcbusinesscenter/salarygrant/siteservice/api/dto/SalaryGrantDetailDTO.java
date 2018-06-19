@@ -71,6 +71,10 @@ public class SalaryGrantDetailDTO {
      */
     private BigDecimal paymentTotalSum;
     /**
+     * 审批意见
+     */
+    private String approvedOpinion;
+    /**
      * 发薪人数
      */
     private Integer totalPersonCount;

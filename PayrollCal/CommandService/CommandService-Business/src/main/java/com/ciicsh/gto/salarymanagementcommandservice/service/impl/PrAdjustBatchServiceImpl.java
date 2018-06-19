@@ -106,9 +106,9 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String result) {
+    public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String advancePeriod, String result) {
         if (status == BatchStatusEnum.COMPUTING.getValue()) {
-            return adjustBatchMapper.auditBatch(batchCode, comments, status, modifiedBy, result);
+            return adjustBatchMapper.auditBatch(batchCode, comments, status, modifiedBy,advancePeriod, result);
         }
         ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
         int approvalResult = 0;
@@ -127,7 +127,7 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
         historyPO.setComments(comments);
         approvalHistoryService.addApprovalHistory(historyPO);
 
-        return adjustBatchMapper.auditBatch(batchCode, comments, status, modifiedBy, result);
+        return adjustBatchMapper.auditBatch(batchCode, comments, status, modifiedBy,advancePeriod,result);
     }
 
     @Override

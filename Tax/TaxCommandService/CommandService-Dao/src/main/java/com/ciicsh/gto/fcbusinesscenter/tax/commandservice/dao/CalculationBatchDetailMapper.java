@@ -3,8 +3,8 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 
 import java.util.List;
 
@@ -17,6 +17,21 @@ import java.util.List;
  * @since 2017-12-19
  */
 public interface CalculationBatchDetailMapper extends BaseMapper<CalculationBatchDetailPO> {
+
+    /**
+     * 条件查询已申报的计算批次明细
+     * @param requestForProof
+     * @return
+     */
+    List<CalculationBatchDetailPO> queryTaxBatchDetailsListByRes(RequestForProof requestForProof);
+
+    /**
+     * 条件查询已申报的计算批次明细
+     * @param page
+     * @param requestForProof
+     * @return
+     */
+    List<CalculationBatchDetailPO> queryTaxBatchDetailsListByRes(Pagination page, RequestForProof requestForProof);
 
     /**
      * 条件查询计算批次明细(分页)

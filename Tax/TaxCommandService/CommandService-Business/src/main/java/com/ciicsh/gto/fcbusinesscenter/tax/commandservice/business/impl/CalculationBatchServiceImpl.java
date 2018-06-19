@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
@@ -15,7 +16,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmploye
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatch;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.collector.CollectorsUtil;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -76,7 +77,10 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
     private TaskMainMapper taskMainMapper;
 
     @Autowired
-    public TaskNoService taskNoService;
+    private TaskNoService taskNoService;
+
+    @Autowired
+    private WorkflowService workflowService;
 
     @Override
     public ResponseForCalBatch queryCalculationBatchs(RequestForCalBatch requestForCalBatch) {
@@ -100,8 +104,6 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         calculationBatchPOList = baseMapper.selectPage(page,wrapper);//baseMapper.selectPage(page, wrapper);
 
         for(CalculationBatchPO p: calculationBatchPOList){
-            //状态中文转化
-            p.setStatusName(EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,p.getStatus()));
             //查询由当前批次创建的任务
             List<TaskMainPO> tps = baseMapper.queryTaskMainsByCalBatch(p.getId());
             //组合任务编号
@@ -115,6 +117,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
         return responseForCalBatch;
     }
+
+
 
     /**
      * 查询批次明细
@@ -335,7 +339,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = declareTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, CollectorsUtil.summingBigDecimal(TaskSubDeclareDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, CollectorsUtil.summingBigDecimal(TaskSubDeclareDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = declareTaskDetail.stream()
@@ -365,7 +369,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = moneyTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, CollectorsUtil.summingBigDecimal(TaskSubMoneyDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, CollectorsUtil.summingBigDecimal(TaskSubMoneyDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = moneyTaskDetail.stream()
@@ -393,7 +397,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = paymentTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, CollectorsUtil.summingBigDecimal(TaskSubPaymentDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, CollectorsUtil.summingBigDecimal(TaskSubPaymentDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = paymentTaskDetail.stream()
@@ -421,7 +425,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                 //子任务个税总金额
                 Map<Long, BigDecimal> mapTaxAmount = supportTaskDetail.stream()
-                        .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, CollectorsUtil.summingBigDecimal(TaskSubSupplierDetailPO::getTaxAmount)));
+                        .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, CollectorsUtil.summingBigDecimal(TaskSubSupplierDetailPO::getTaxReal)));
 
                 //总人数
                 Map<Long, Long> mapheadcount = supportTaskDetail.stream()
@@ -443,6 +447,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     taskSubSupplierService.updateById(taskSubSupplierPO);
                 }
             }
+
+            //启动工作流
+//            this.workflowService.startProcess(p.getId().toString(),WorkflowService.Process.fc_tax_main_task_audit,null);
     }
 
 
@@ -463,10 +470,13 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         int i = 0;
         for(String batchId : batchIds){
 
+            CalculationBatchPO calculationBatchPO = baseMapper.selectById(new Long(batchId));
+
             CalculationBatchTaskMainPO calculationBatchTaskMainPO = new CalculationBatchTaskMainPO();
             calculationBatchTaskMainPO.setTaskMainId(p.getId());//主任务id
             calculationBatchTaskMainPO.setCalBatchId(new Long(batchId));//计算批次id
             calculationBatchTaskMainPO.setBatchNo(batchNos[i]);//计算批次号
+            calculationBatchTaskMainPO.setVersionNo(calculationBatchPO.getVersionNo());//批次版本号
             //新增批次和主任务的关联记录
             calculationBatchTaskMainService.insert(calculationBatchTaskMainPO);
             i++;
@@ -508,7 +518,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
         for(Map.Entry<String, List<TaskMainDetailPO>> entry : groupbys.entrySet()){
 
-            if(entry.getValue().size()>1){
+            //税种为正常薪资才合并
+            if((entry.getKey().endsWith(IncomeSubject.NORMALSALARY.getCode()) || entry.getKey().endsWith(IncomeSubject.FOREIGNNORMALSALARY.getCode()))
+                    && entry.getValue().size()>1){
 
                 TaskMainDetailPO taskMainDetailPO = new TaskMainDetailPO();
                 taskMainDetailPO.setCombined(true);//为合并明细
@@ -522,6 +534,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 taskMainDetailPO.setPayAccount(entry.getValue().get(0).getPayAccount());//缴纳账号
                 taskMainDetailPO.setPeriod(entry.getValue().get(0).getPeriod());//个税期间
                 taskMainDetailPO.setIncomeSubject(entry.getValue().get(0).getIncomeSubject());//所得项目
+                taskMainDetailPO.setDeduction(entry.getValue().get(0).getDeduction());//免税额
                 //新建合并后的明细
                 this.taskMainDetailService.insert(taskMainDetailPO);
 
@@ -535,13 +548,19 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 String declareAccount = "";//申报账号
                 String payAccount = "";//缴纳账号
                 String incomeSubject = "";//所得项目
-                BigDecimal incomeTotal=new BigDecimal(0);//收入额
+                BigDecimal donation = new BigDecimal(0);//准予扣除的捐赠额
+                BigDecimal deductTakeoff = new BigDecimal(0);//允许扣除的税费
+                BigDecimal otherDeductions = new BigDecimal(0);//其它扣除
+                BigDecimal businessHealthInsurance = new BigDecimal(0);//商业保险
                 BigDecimal deductRetirementInsurance=new BigDecimal(0);//基本养老保险费（税前扣除项目）
                 BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
                 BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
                 BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
-//                BigDecimal deduction=new BigDecimal(0);//减除费用(3500;4800)
-                BigDecimal taxAmount=new BigDecimal(0);//应纳税额
+                BigDecimal dutyFreeAllowance = new BigDecimal(0);//免税津贴
+                BigDecimal annuity = new BigDecimal(0);//企业年金个人部分
+                BigDecimal incomeDutyfree = new BigDecimal(0);//免税所得
+                BigDecimal taxReal=new BigDecimal(0);//税金
+                BigDecimal incomeTotal=new BigDecimal(0);//收入额
 
                 List<TaskMainDetailPO> tps = entry.getValue();
                 //计算合并后的各项值
@@ -549,22 +568,35 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
                     taskMainDetailIds.add(tp.getId());
 
-                    incomeTotal = incomeTotal.add(tp.getIncomeTotal());
-                    deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance());
-                    deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance());
-                    deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
-                    deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
-//                    deduction = deduction.add(tp.getDeduction());
-                    taxAmount = taxAmount.add(tp.getTaxAmount());
+                    //参与倒推计算的各项合计
+                    donation = donation.add(tp.getDonation()==null?BigDecimal.ZERO:tp.getDonation());//准予扣除的捐赠额合计
+                    deductTakeoff = deductTakeoff.add(tp.getDeductTakeoff()==null?BigDecimal.ZERO:tp.getDeductTakeoff());//允许扣除的税费合计
+                    otherDeductions = otherDeductions.add(tp.getDeductOther()==null?BigDecimal.ZERO:tp.getDeductOther());//其它扣除合计
+                    businessHealthInsurance = businessHealthInsurance.add(tp.getBusinessHealthInsurance()==null?BigDecimal.ZERO:tp.getBusinessHealthInsurance());//商业保险合计
+                    deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance()==null?BigDecimal.ZERO:tp.getDeductRetirementInsurance());//基本养老保险费（税前扣除项目）合计
+                    deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance()==null?BigDecimal.ZERO:tp.getDeductMedicalInsurance());//基本医疗保险费（税前扣除项目）合计
+                    deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance()==null?BigDecimal.ZERO:tp.getDeductDlenessInsurance());//失业保险费（税前扣除项目）合计
+                    deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund()==null?BigDecimal.ZERO:tp.getDeductHouseFund());//住房公积金（税前扣除项目）合计
+                    dutyFreeAllowance = dutyFreeAllowance.add(tp.getDutyFreeAllowance()==null?BigDecimal.ZERO:tp.getDutyFreeAllowance());//免税津贴合计
+                    annuity = annuity.add(tp.getAnnuity()==null?BigDecimal.ZERO:tp.getAnnuity());//企业年金个人部分合计
+                    incomeDutyfree = incomeDutyfree.add(tp.getIncomeDutyfree()==null?BigDecimal.ZERO:tp.getIncomeDutyfree());//免税所得合计
+                    taxReal = taxReal.add(tp.getTaxReal()==null?BigDecimal.ZERO:tp.getTaxReal());//税金合计
+                    incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());
                 }
 
                 taskMainDetailPO.setIncomeTotal(incomeTotal);
+                taskMainDetailPO.setDonation(donation);
+                taskMainDetailPO.setDeductTakeoff(deductTakeoff);
+                taskMainDetailPO.setDeductOther(otherDeductions);
+                taskMainDetailPO.setBusinessHealthInsurance(businessHealthInsurance);
                 taskMainDetailPO.setDeductRetirementInsurance(deductRetirementInsurance);
                 taskMainDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
                 taskMainDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
                 taskMainDetailPO.setDeductHouseFund(deductHouseFund);
-                taskMainDetailPO.setDeduction(new BigDecimal(3500));
-                taskMainDetailPO.setTaxAmount(taxAmount);
+                taskMainDetailPO.setDutyFreeAllowance(dutyFreeAllowance);
+                taskMainDetailPO.setAnnuity(annuity);
+                taskMainDetailPO.setIncomeDutyfree(incomeDutyfree);
+                taskMainDetailPO.setTaxReal(taxReal);
                 //更新合并后数据值
                 this.taskMainDetailService.updateById(taskMainDetailPO);
 

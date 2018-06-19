@@ -73,6 +73,30 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
     void cancelClosing(CancelClosingMsg msg);
 
     /**
+     * 审批通过
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    void approvalPass(SalaryGrantTaskBO bo);
+
+    /**
+     * 审批退回
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    void approvalReject(SalaryGrantTaskBO bo);
+
+    /**
+     * 详情提交
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    void submit(SalaryGrantTaskBO bo);
+
+    /**
      * 薪资发放定时任务
      *
      * @return

@@ -58,6 +58,13 @@ mybatis-plus:
   mapper-locations: mapper/*Mapper.xml
   plugins:
     - catMybatisInterceptor
+druid:
+#  configPathBasic:  ${druid.configPathBasic}
+  configPathBusiness:  ${druid.configPathBusiness}
+#  configPathPayroll:  ${druid.configPathPayroll}
+#  configPathProduct:  ${druid.configPathProduct}
+#  configPathSm:  ${druid.configPathSm}
+#  configPathSupplier:  ${druid.configPathSupplier}
 spring:
   application:
     name: fcbusiness-center-salarygrant-site-service
@@ -77,11 +84,11 @@ spring:
       FAIL_ON_UNKNOWN_PROPERTIES: false
 #    time-zone: GMT+8
 #    date-format: yyyy-MM-dd HH:mm:ss
-  datasource:
-    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=true&tinyInt1isBit=false
-    username: ${database.username}
-    password: ${database.password}
-    driver-class-name: com.mysql.jdbc.Driver
+#  datasource:
+#    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=true&tinyInt1isBit=false
+#    username: ${database.username}
+#    password: ${database.password}
+#    driver-class-name: com.mysql.jdbc.Driver
   zipkin:
     base-url: ${zipkin.base-url}  #ZipkinService地址
     enabled: ${zipkin.enabled}
@@ -98,18 +105,18 @@ spring:
       bindings:
         sleuth:
           destination: sleuth-itdev # topic name
-        sg_compute-close-output-channel:
-          destination: fc_compute_close # 关帐
-          content-type: application/json
-          group: ${spring.application.name}
-          consumer:
-            partitioned: true
-        sg_compute-unclose-output-channel:
-          destination: fc_compute_unclose # 取消关帐
-          content-type: application/json
-          group: ${spring.application.name}
-          consumer:
-            partitioned: true
+#        sg_compute-close-output-channel:
+#          destination: fc_compute_close # 关帐
+#          content-type: application/json
+#          group: ${spring.application.name}
+#          consumer:
+#            partitioned: true
+#        sg_compute-unclose-output-channel:
+#          destination: fc_compute_unclose # 取消关帐
+#          content-type: application/json
+#          group: ${spring.application.name}
+#          consumer:
+#            partitioned: true
         pay-apply-pay-status-stream-input-channel:
           destination: pay-apply-pay-status-stream # 结算中心支付结果
           content-type: application/json

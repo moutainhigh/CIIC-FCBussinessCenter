@@ -184,10 +184,10 @@ public class TaskSubMoneyController extends BaseController {
             payApplyProxyDTO.setReceiveAccountId(12);
             //收款账号
             payApplyProxyDTO.setReceiveAccount(taskSubMoneyPO.getPaymentAccount());
-            //总经理
-            //分管领导
-            //部门经理
-            //审核人
+            //总经理president
+            //分管领导leader
+            //部门经理departmentManager
+            //审核人reviewer
             //payApplyProxyDTO.setReviewer("admin");
             //根据任务ID查询所有雇员
             List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(id);

@@ -40,6 +40,7 @@
             t1.offer_document_id = t2.offer_document_id
             and t1.task_code     = t3.salary_grant_sub_task_code
             and t3.salary_grant_sub_task_code=#{taskCode}
+            and t3.is_active = 1
         order by
            t1.offer_document_id
     </select>

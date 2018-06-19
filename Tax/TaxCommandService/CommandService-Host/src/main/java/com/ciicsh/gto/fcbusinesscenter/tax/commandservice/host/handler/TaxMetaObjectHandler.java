@@ -25,10 +25,17 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
         try {
             //登录信息
             UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
-            //创建人
-            setFieldValByName("createdBy", userInfoResponseDTO.getLoginName(), metaObject);
-            //修改人
-            setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
+            if(userInfoResponseDTO!=null){
+                //创建人
+                setFieldValByName("createdBy", userInfoResponseDTO.getLoginName(), metaObject);
+                //修改人
+                setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
+            }else{
+                //创建人
+                setFieldValByName("createdBy", "", metaObject);
+                //修改人
+                setFieldValByName("modifiedBy", "", metaObject);
+            }
         } catch (Exception e) {
             logger.error("",e);
             setFieldValByName("createdBy", "", metaObject);
@@ -53,8 +60,14 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
         try {
             //登录信息
             UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
-            //修改人
-            setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
+            if(userInfoResponseDTO!=null){
+                //修改人
+                setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
+            }else{
+                //修改人
+                setFieldValByName("modifiedBy", "", metaObject);
+            }
+
         } catch (Exception e) {
             logger.error("",e);
             setFieldValByName("modifiedBy", "", metaObject);

@@ -1,9 +1,9 @@
-database:
-  host: 172.16.9.15
-  port: 3306
-  databasename: gtobusinessdb
-  username: root
-  password: a111111
+#database:
+#  host: 172.16.9.15
+#  port: 3306
+#  databasename: gtobusinessdb
+#  username: root
+#  password: a111111
 eureka:
   client:
     serviceUrl:
@@ -23,6 +23,13 @@ zipkin:
   enabled: true
 sleuth:
   percentage: 0.1
+druid:
+#  configPathBasic:  /data/appdatas/gt1/gtobasicdb_test.properties
+  configPathBusiness:  /data/appdatas/gt1/gtobusinessdb_test.properties
+#  configPathPayroll:  /data/appdatas/gt1/gtopayrolldb_test.properties
+#  configPathProduct:  /data/appdatas/gt1/gtoproductdb_sit.properties
+#  configPathSmdb:  /data/appdatas/gt1/gtosmdb_sit.properties
+#  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_sit.properties
 
 mongo:
   host: 172.16.9.16 #172.16.9.52 172.16.9.15 172.16.9.16 sit

@@ -1,18 +1,18 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 
-import com.ciicsh.gt1.BathUpdateOptions;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.CloseAccountMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -48,10 +48,16 @@ public class CommonServiceImpl {
     private PrPayrollItemMapper prPayrollItemMapper;
 
     @Autowired
+    private PrItemService itemService;
+
+    @Autowired
     private PrPayrollAccountItemRelationMapper accountItemRelationMapper;
 
     @Autowired
     private PrNormalBatchMapper normalBatchMapper;
+
+    @Autowired
+    private CloseAccountMongoOpt closeAccountMongoOpt;
 
     /**
      * 批量更新或者插入数据
@@ -133,22 +139,19 @@ public class CommonServiceImpl {
         List<PrPayrollItemPO> prList = null;
         List<BasicDBObject> list = new ArrayList<>();
 
-        PayrollGroupExtPO payrollGroupExtPO = new PayrollGroupExtPO();
-        payrollGroupExtPO.setManagementId(batchPO.getManagementId());
-        if(batchPO.isTemplate()) {
-            payrollGroupExtPO.setPayrollGroupCode("");
-            payrollGroupExtPO.setPayrollGroupTemplateCode(batchPO.getPrGroupCode());
-        }else {
-            payrollGroupExtPO.setPayrollGroupCode(batchPO.getPrGroupCode());
-            payrollGroupExtPO.setPayrollGroupTemplateCode("");
-
-        }
         //获取薪资组或薪资组模版下的薪资项列表
-        prList = prPayrollItemMapper.getPayrollItems(payrollGroupExtPO);
+        if(batchPO.isTemplate()) {
+            prList =  itemService.getListByGroupTemplateCode(batchPO.getPrGroupCode());
+            //payrollGroupExtPO.setPayrollGroupCode("");
+            //payrollGroupExtPO.setPayrollGroupTemplateCode(batchPO.getPrGroupCode());
+        }else {
+            //payrollGroupExtPO.setPayrollGroupCode(batchPO.getPrGroupCode());
+            //payrollGroupExtPO.setPayrollGroupTemplateCode("");
+            prList =  itemService.getListByGroupCode(batchPO.getPrGroupCode());
+        }
 
         //获取薪资帐套下的薪资项列表
         List<PayrollAccountItemRelationExtPO> itemRelationExtsList = accountItemRelationMapper.getAccountItemRelationExts(batchPO.getAccountSetCode());
-
 
         prList = prList.stream()
                 .filter(p-> itemRelationExtsList.stream().anyMatch(f -> f.getPayrollItemCode().equals(p.getItemCode()) && f.getIsActive()))
@@ -326,5 +329,23 @@ public class CommonServiceImpl {
                 dbObject.put("item_value", defaultValue);
             }
         }
+    }
+
+    public long getBatchVersion(String batchCode){
+        long version = 0;
+        Criteria criteria = Criteria.where("batch_id").is(batchCode);
+        Query query = Query.query(criteria);
+        query.fields().include("version");
+
+        List<DBObject> list =  closeAccountMongoOpt.getMongoTemplate().find(query,DBObject.class,CloseAccountMongoOpt.PR_PAYROLL_CAL_RESULT);
+        if(list == null || list.size() == 0){
+            return version;
+        }
+
+        Optional<DBObject> versionObj = list.stream().findFirst();
+        if(versionObj.isPresent()){
+            version = versionObj.get().get("version") == null ? 0 : (long)versionObj.get().get("version");
+        }
+        return version;
     }
 }

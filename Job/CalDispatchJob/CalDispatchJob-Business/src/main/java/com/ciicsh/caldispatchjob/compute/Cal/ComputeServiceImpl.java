@@ -131,21 +131,20 @@ public class ComputeServiceImpl {
         List<DBObject> finalBatchList = batchList;
 
         try {
-            runCompute(batchList.get(0),batchCode,batchType);
-            //List<DBObject> others = pool.submit(()-> finalBatchList.parallelStream().map(dbObject -> runCompute(dbObject,batchCode,batchType)).collect(Collectors.toList())).get();
-            //logger.info("get total: " + String.valueOf(others.size()));
+            List<DBObject> others = pool.submit(()-> finalBatchList.parallelStream().map(dbObject -> runCompute(dbObject,batchCode,batchType)).collect(Collectors.toList())).get();
+            logger.info("get total: " + String.valueOf(others.size()));
         } catch (Exception e) {
             logger.info(e.getMessage());
         }
 
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
+            rowAffected = normalBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system","", null);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system",null);
+            rowAffected = adjustBatchMapper.auditBatch(batchCode, "", BatchStatusEnum.COMPUTED.getValue(), "system","",null);
 
         }else {
-            rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system",null);
+            rowAffected = backTrackingBatchMapper.auditBatch(batchCode,"", BatchStatusEnum.COMPUTED.getValue(), "system","", null);
         }
         if(rowAffected > 0) { // 数据库更新成功后发送消息
             ComputeMsg computeMsg = new ComputeMsg();
@@ -181,7 +180,7 @@ public class ComputeServiceImpl {
             String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
             List<DBObject> items = ((List<DBObject>) catalog.get("pay_items"));
 
-        /*获取计算期间，并传递给drools context*/
+            /*获取计算期间，并传递给drools context*/
             DBObject batch = (DBObject) catalog.get("batch_info");
             String period = batch.get("actual_period") == null ? "" : (String) batch.get("actual_period");
             BatchContext batchContext = new BatchContext();
@@ -357,7 +356,7 @@ public class ComputeServiceImpl {
                 }
                 funcEntity.setParameters(parameters);
             }else { // 分析函数无参数
-                funcName = func;
+                funcName = StringUtils.removeEnd(func,",");
             }
 
             if(!context.existFunction(funcName)) {

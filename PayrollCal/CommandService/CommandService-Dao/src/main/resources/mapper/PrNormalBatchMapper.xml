@@ -350,8 +350,15 @@
 		UPDATE
 		pr_normal_batch
 		SET
-		status = #{status},
-		comments = #{comments},
+		<if test="status !=0 and status != null">
+			status = #{status},
+		</if>
+		<if test="comments != '' and comments != null">
+			comments = #{comments},
+		</if>
+		<if test="advancePeriod != '' and advancePeriod != null">
+			advance_period = #{advancePeriod},
+		</if>
 		<if test="result != '' and result != null">
 			result_data = #{result},
 		</if>
@@ -443,6 +450,7 @@
 	</update>
 
 	<select id="selectAllBatchCodesByManagementId" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
+		SELECT * FROM (
 		SELECT
 			code,
 			actual_period,
@@ -516,6 +524,8 @@
             <if test="batchCode != '' and batchCode != null">
                 AND btb.back_tracking_batch_code LIKE concat('%', #{batchCode})
             </if>
+		) union_result
+		ORDER BY code
 	</select>
 
 	<select id="selectBatchPayrollSchema" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">
@@ -631,7 +641,7 @@
 		FROM
 		pr_normal_batch
 
-		WHERE management_id IN
+		WHERE status IN (5,7,8,9) AND management_id IN
 		<foreach item="item" index="index" collection="mgrIds"
 				 open="(" separator="," close=")">
 			#{item}

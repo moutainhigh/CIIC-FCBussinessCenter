@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDetailDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubsDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ConstraintService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
@@ -32,7 +33,7 @@ public class TaskMainController extends BaseController {
 
 
     @Autowired
-    public TaskMainService taskMainService;
+    private TaskMainService taskMainService;
 
     @Autowired
     private TaskSubDeclareServiceImpl taskSubDeclareService;
@@ -47,7 +48,10 @@ public class TaskMainController extends BaseController {
     private TaskSubSupplierServiceImpl taskSubSupplierService;
 
     @Autowired
-    public TaskMainDetailServiceImpl taskMainDetailService;
+    private TaskMainDetailServiceImpl taskMainDetailService;
+
+    @Autowired
+    private ConstraintService constraintService;
 
     /**
      * 查询主任务列表
@@ -152,6 +156,17 @@ public class TaskMainController extends BaseController {
     public JsonResult<Boolean> submitMainTask(@RequestBody TaskMainDTO taskMainDTO) {
 
         JsonResult<Boolean> jr = new JsonResult<>();
+
+        //检查约束
+        int i = this.constraintService.checkTask(taskMainDTO.getTaskMainIds(),ConstraintService.TASK_MAIN);
+        if(i > 0){
+            if(i == ConstraintService.C2){
+                jr.fill(JsonResult.ReturnCode.CONSTRAINTS_2);
+            }else if(i == ConstraintService.C3){
+                jr.fill(JsonResult.ReturnCode.CONSTRAINTS_3);
+            }
+            return jr;
+        }
 
         //子任务与主任务的状态是否一致
         boolean flag = this.taskMainService.isStatusSame(taskMainDTO.getTaskMainIds(),taskMainDTO.getStatus());

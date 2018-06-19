@@ -302,6 +302,69 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 	@TableLogic
 	private Boolean isActive;
 
+	/**
+	 * 创建人
+	 */
+	@TableField(value="created_by",fill = FieldFill.INSERT)
+	private String createdBy;
+	/**
+	 * 修改人
+	 */
+	@TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedBy;
+
+	/**
+	 * 批次号
+	 */
+	@TableField("batch_no")
+	private String batchNo;
+
+	//税前合计
+	private BigDecimal preTaxAggregate;
+
+	//免税津贴
+	private BigDecimal dutyFreeAllowance;
+
+	public BigDecimal getPreTaxAggregate() {
+		return preTaxAggregate;
+	}
+
+	public void setPreTaxAggregate(BigDecimal preTaxAggregate) {
+		this.preTaxAggregate = preTaxAggregate;
+	}
+
+	public BigDecimal getDutyFreeAllowance() {
+		return dutyFreeAllowance;
+	}
+
+	public void setDutyFreeAllowance(BigDecimal dutyFreeAllowance) {
+		this.dutyFreeAllowance = dutyFreeAllowance;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public String getBatchNo() {
+		return batchNo;
+	}
+
+	public void setBatchNo(String batchNo) {
+		this.batchNo = batchNo;
+	}
+
 	public BigDecimal getTaxReal() {
 		return taxReal;
 	}

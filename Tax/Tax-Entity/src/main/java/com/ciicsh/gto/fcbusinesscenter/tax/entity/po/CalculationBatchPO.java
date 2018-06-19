@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -113,6 +114,65 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	@TableField(exist = false)
 	private String taskNos;
 
+	private String batchType;
+
+	private String parentBatchNo;
+
+	@TableField(exist = false)
+	private String batchTypeName;
+
+	private Integer versionNo;
+
+	/**
+	 * 是否有效
+	 */
+	private Boolean isValid;
+
+	public Boolean getValid() {
+		return isValid;
+	}
+
+	public void setValid(Boolean valid) {
+		isValid = valid;
+	}
+
+	public Integer getVersionNo() {
+		return versionNo;
+	}
+
+	public void setVersionNo(Integer versionNo) {
+		this.versionNo = versionNo;
+	}
+
+	public String getBatchTypeName() {
+		return batchTypeName;
+	}
+
+	public void setBatchTypeName(String batchTypeName) {
+		this.batchTypeName = batchTypeName;
+	}
+
+	public String getBatchType() {
+		return batchType;
+	}
+
+	public void setBatchType(String batchType) {
+		this.batchType = batchType;
+
+		if(batchType!=null){
+
+			this.batchTypeName  = EnumUtil.getMessage(EnumUtil.BATCH_TYPE,batchType);
+		}
+	}
+
+	public String getParentBatchNo() {
+		return parentBatchNo;
+	}
+
+	public void setParentBatchNo(String parentBatchNo) {
+		this.parentBatchNo = parentBatchNo;
+	}
+
 	public String getTaskNos() {
 		return taskNos;
 	}
@@ -199,6 +259,12 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 
 	public void setStatus(String status) {
 		this.status = status;
+
+		if(status!=null){
+
+			this.statusName  = EnumUtil.getMessage(EnumUtil.BATCH_NO_STATUS,status);
+		}
+
 	}
 
 	public Boolean getActive() {
