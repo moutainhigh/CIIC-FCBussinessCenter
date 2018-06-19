@@ -3,8 +3,7 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantEmployeeMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap"
-               type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO">
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO">
         <id column="salary_grant_employee_id" property="salaryGrantEmployeeId"/>
         <result column="employee_id" property="employeeId"/>
         <result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode"/>

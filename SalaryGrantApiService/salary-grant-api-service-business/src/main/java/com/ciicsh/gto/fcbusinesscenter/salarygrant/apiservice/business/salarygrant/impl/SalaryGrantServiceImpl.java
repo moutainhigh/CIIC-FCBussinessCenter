@@ -29,13 +29,10 @@ import java.util.List;
  */
 @Service
 public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, SalaryGrantTaskPO> implements SalaryGrantService {
-    /**
-     *  任务单
-     */
-    @Autowired
-    SalaryGrantTaskMapper salaryGrantTaskMapper;
     @Autowired
     CommonService commonService;
+    @Autowired
+    SalaryGrantTaskMapper salaryGrantTaskMapper;
     @Autowired
     SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
