@@ -3,14 +3,20 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygr
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.ReprieveEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeRefundBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,13 +30,12 @@ import java.util.List;
  */
 @Service
 public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, SalaryGrantTaskPO> implements SalaryGrantService {
-    /**
-     *  任务单
-     */
+    @Autowired
+    CommonService commonService;
     @Autowired
     SalaryGrantTaskMapper salaryGrantTaskMapper;
     @Autowired
-    CommonService commonService;
+    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
      /**
      * 根据批次号查相关任务单
@@ -59,6 +64,34 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
             salaryGrantSubTaskBO.setTaskStatusName(commonService.getNameByValue("sgsTaskStatus",String.valueOf(salaryGrantSubTaskBO.getTaskStatus())));
         });
         return taskList;
+    }
+
+    /**
+     * 修改雇员发放状态
+     * @author chenpb
+     * @date 2018-06-19
+     * @param bo
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ReprieveEmployeeBO updateForReprieveEmployee(ReprieveEmployeeBO bo) {
+        List<String> ids = new ArrayList<>();
+        if(!bo.getEmployeeIds().isEmpty()) {
+            SalaryGrantEmployeePO po = BeanUtils.instantiate(SalaryGrantEmployeePO.class);
+            po.setBatchCode(bo.getBatchCode());
+            po.setSalaryGrantMainTaskCode(bo.getTaskCode());
+            po.setGrantStatus(bo.getGrantStatus());
+            bo.getEmployeeIds().forEach(x -> {
+                po.setEmployeeId(x);
+                Integer num = salaryGrantEmployeeMapper.updateForReprieveEmployee(po);
+                if (num < 1) {
+                    ids.add(x);
+                }
+            });
+            bo.setEmployeeIds(ids);
+        }
+        return bo;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
         }
         //获取证件类型中文和所得项目中文名
         for (TaskSubProofDetailPO p : taskSubProofDetailPOList) {
-            p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_TYPE, p.getIdType()));
+            p.setIdTypeName(EnumUtil.getMessage(EnumUtil.IT_CERT_TYPE, p.getIdType()));
             p.setIncomeSubjectName(EnumUtil.getMessage(EnumUtil.INCOME_SUBJECT, p.getIncomeSubject()));
         }
         responseForSubDetail.setRowList(taskSubProofDetailPOList);

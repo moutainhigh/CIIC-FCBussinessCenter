@@ -106,65 +106,102 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO) {
-        //任务单主表操作
-        //查询薪资发放任务单主表记录
+    public Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO) throws Exception {
+        //（1）根据传入参数taskCode查询任务单主表信息SalaryGrantMainTaskPO，
+        //     查询条件：salary_grant_main_task_code = SalaryGrantTaskBO.taskCode and is_active=1 and sg_salary_grant_main_task.grant_type in (1、2、3) and sg_salary_grant_main_task.task_status in (0、1、2)。
+        //     判断状态SalaryGrantMainTaskPO.task_status，如果task_status=2（审批通过），则进行（2）操作，否则进行（3）操作。
         EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
-        mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and grant_type in (1, 2, 3) and task_status in (0, 1, 2) and is_active = 1", salaryGrantTaskBO.getTaskCode());
-        List<SalaryGrantMainTaskPO> salaryGrantMainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
+        mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1 and grant_type in (1, 2, 3) and task_status in (0, 1, 2)", salaryGrantTaskBO.getTaskCode());
+        List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
+        if (!CollectionUtils.isEmpty(mainTaskPOList)) {
+            for (SalaryGrantMainTaskPO mainTaskPO : mainTaskPOList) {
+                //状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待支付，6-未支付，7-已支付，8-撤回，9-驳回
+                String taskStatus = mainTaskPO.getTaskStatus();
 
-        //任务单子表操作
-        //查询薪资发放任务单子表
-        EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
-        subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", salaryGrantTaskBO.getTaskCode());
-        List<SalaryGrantSubTaskPO> salaryGrantSubTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
+                Long task_his_id = null;
+                if (SalaryGrantBizConsts.TASK_STATUS_PASS.equals(taskStatus)) {
+                    //（2）查询雇员信息sg_salary_grant_employee，
+                    //     查询条件：雇员表.salary_grant_main_task_code = 任务单主表.salary_grant_main_task_code and雇员表.grant_status in (1,2),
+                    //     如果查询结果为空，
+                    //         则跳转到（3）；
+                    //     否则查询结果有记录，
+                    //         需要调用暂缓池的删除接口（接口参数为SalaryGrantMainTaskPO.batchCode、SalaryGrantMainTaskPO.salaryGrantMainTaskCode），对查询的雇员信息在发放暂缓池进行删除操作。--待顾伟发布好调用
+                    EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+                    employeePOEntityWrapper.where("salary_grant_main_task_code = {0} and grant_status in (1, 2)", mainTaskPO.getSalaryGrantMainTaskCode());
+                    List<SalaryGrantEmployeePO> employeePOList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
+                    if (CollectionUtils.isEmpty(employeePOList)) {
+                        //（3）对任务单主表SalaryGrantMainTaskPO进行处理
+                        //     任务单状态修改为task_status=5（待生成），batchVersion=salaryGrantTaskBO.batchVersion；
+                        //     将任务单主表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history.task_status=4（失效），sg_salary_grant_task_history.invalid_reason = salaryGrantTaskBO. invalidReason；
+                        SalaryGrantMainTaskPO updateMainTaskPO = new SalaryGrantMainTaskPO();
+                        updateMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
+                        updateMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_WAIT); //状态:5-待生成
+                        updateMainTaskPO.setBatchVersion(salaryGrantTaskBO.getBatchVersion()); //计算批次版本号
+                        salaryGrantMainTaskMapper.updateById(updateMainTaskPO);
 
-        //更新薪资发放任务单主表
-        SalaryGrantMainTaskPO salaryGrantMainTaskPO = new SalaryGrantMainTaskPO();
-        salaryGrantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_CANCEL); //任务单状态：4-失效
-        salaryGrantMainTaskPO.setInvalidReason(salaryGrantTaskBO.getInvalidReason()); //失效原因
-        salaryGrantMainTaskPO.setActive(false); //是否有效:1-有效，0-无效
-        salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
+                        //将任务单主表记录新增入历史表
+                        SalaryGrantTaskHistoryPO mainTaskHistoryPO = mainTaskPO2HistoryPO(mainTaskPO);
+                        mainTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_CANCEL); //状态:4-失效
+                        mainTaskHistoryPO.setInvalidReason(salaryGrantTaskBO.getInvalidReason()); //失效原因
+                        salaryGrantTaskHistoryMapper.insert(mainTaskHistoryPO);
 
-        //更新薪资发放任务单子表
-        SalaryGrantSubTaskPO salaryGrantSubTaskPO = new SalaryGrantSubTaskPO();
-        salaryGrantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_CANCEL); //任务单状态：4-失效
-        salaryGrantSubTaskPO.setActive(false); //是否有效:1-有效，0-无效
-        salaryGrantSubTaskMapper.update(salaryGrantSubTaskPO, subTaskPOEntityWrapper);
+                        task_his_id = mainTaskHistoryPO.getSalaryGrantTaskHistoryId();
+                    } else {
+                        //调用暂缓池的删除接口
+                        boolean deleteResult = commonService.delDeferredEmp(mainTaskPO);
+                        if (false == deleteResult) {
+                            throw new Exception("调用暂缓池删除接口失败！");
+                        }
+                    }
+                } else {
+                    //（3）对任务单主表SalaryGrantMainTaskPO进行处理
+                    //     任务单状态修改为task_status=5（待生成），batchVersion=salaryGrantTaskBO.batchVersion；
+                    //     将任务单主表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history.task_status=4（失效），sg_salary_grant_task_history.invalid_reason = salaryGrantTaskBO. invalidReason；
+                    SalaryGrantMainTaskPO updateMainTaskPO = new SalaryGrantMainTaskPO();
+                    updateMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
+                    updateMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_WAIT); //状态:5-待生成
+                    updateMainTaskPO.setBatchVersion(salaryGrantTaskBO.getBatchVersion()); //计算批次版本号
+                    salaryGrantMainTaskMapper.updateById(updateMainTaskPO);
 
-        //新增薪资发放任务单主表历史记录
-        if (!CollectionUtils.isEmpty(salaryGrantMainTaskPOList)) {
-            salaryGrantMainTaskPOList.stream().forEach(grantMainTaskPO -> {
-                //新增任务单主表历史记录
-                SalaryGrantTaskHistoryPO salaryGrantTaskHistoryPO = mainTaskPO2HistoryPO(grantMainTaskPO);
-                salaryGrantTaskHistoryMapper.insert(salaryGrantTaskHistoryPO);
+                    //将任务单主表记录新增入历史表
+                    SalaryGrantTaskHistoryPO mainTaskHistoryPO = mainTaskPO2HistoryPO(mainTaskPO);
+                    mainTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_CANCEL); //状态:4-失效
+                    mainTaskHistoryPO.setInvalidReason(salaryGrantTaskBO.getInvalidReason()); //失效原因
+                    salaryGrantTaskHistoryMapper.insert(mainTaskHistoryPO);
 
-                //保存雇员信息到mongodb 表sg_emp_his_table
-                salaryGrantEmployeeCommandService.saveToHistory(salaryGrantTaskHistoryPO.getSalaryGrantTaskHistoryId(), grantMainTaskPO.getSalaryGrantMainTaskCode(), grantMainTaskPO.getTaskType());
-            });
+                    task_his_id = mainTaskHistoryPO.getSalaryGrantTaskHistoryId();
+                }
+
+                //（4）根据任务单主表查询雇员信息，将任务单主表雇员信息存入历史表，
+                //     调用方法：SalaryGrantEmployeeCommandService.saveToHistory(long task_his_id(主表记录历史记录主键), String task_code(主表task_code), int task_type(主表task_type))
+                salaryGrantEmployeeCommandService.saveToHistory(task_his_id, mainTaskPO.getSalaryGrantMainTaskCode(), mainTaskPO.getTaskType());
+
+                //（5）根据任务单主表查询子表信息，如果存在子表信息，对任务单子表进行处理
+                //     将任务单子表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history.task_status=4（失效）；
+                EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
+                subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskPO.getSalaryGrantMainTaskCode());
+                List<SalaryGrantSubTaskPO> subTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
+                if (!CollectionUtils.isEmpty(subTaskPOList)) {
+                    subTaskPOList.stream().forEach(subTaskPO -> {
+                        //将任务单子表记录新增入历史表
+                        SalaryGrantTaskHistoryPO subTaskHistoryPO = subTaskPO2HistoryPO(subTaskPO);
+                        subTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_CANCEL); //状态:4-失效
+                        salaryGrantTaskHistoryMapper.insert(subTaskHistoryPO);
+
+                        //（6）根据任务单子表查询雇员信息，将任务单子表雇员信息存入历史表,
+                        //     调用方法：SalaryGrantEmployeeCommandService.saveToHistory(long task_his_id(子表记录历史记录主键), String task_code(子表task_code), int task_type(子表task_type))
+                        salaryGrantEmployeeCommandService.saveToHistory(subTaskHistoryPO.getSalaryGrantTaskHistoryId(), subTaskPO.getSalaryGrantSubTaskCode(), subTaskPO.getTaskType());
+
+                        //（7）任务单子表进行物理删除，调用delete方法。
+                        salaryGrantSubTaskMapper.deleteById(subTaskPO.getSalaryGrantSubTaskId());
+                    });
+                }
+
+                //（8）根据任务单主表查询雇员信息，进行物理删除，调用delete方法。
+                salaryGrantMainTaskMapper.deleteById(mainTaskPO.getSalaryGrantMainTaskId());
+
+            }
         }
-
-        //新增薪资发放任务单子表历史记录
-        if (!CollectionUtils.isEmpty(salaryGrantSubTaskPOList)) {
-            salaryGrantSubTaskPOList.stream().forEach(grantSubTaskPO -> {
-                //新增任务单子表历史记录
-                SalaryGrantTaskHistoryPO salaryGrantTaskHistoryPO = subTaskPO2HistoryPO(grantSubTaskPO);
-                salaryGrantTaskHistoryMapper.insert(salaryGrantTaskHistoryPO);
-
-                //保存雇员信息到mongodb 表sg_emp_his_table
-                salaryGrantEmployeeCommandService.saveToHistory(salaryGrantTaskHistoryPO.getSalaryGrantTaskHistoryId(), grantSubTaskPO.getSalaryGrantSubTaskCode(), grantSubTaskPO.getTaskType());
-            });
-        }
-
-        //逻辑删除雇员信息
-        //更新字段
-        SalaryGrantEmployeePO salaryGrantEmployeePO = new SalaryGrantEmployeePO();
-        salaryGrantEmployeePO.setActive(false); //是否有效:1-有效，0-无效
-
-        //更新条件
-        EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
-        employeePOEntityWrapper.where("salary_grant_main_task_code = {0}", salaryGrantTaskBO.getTaskCode());
-        salaryGrantEmployeeMapper.update(salaryGrantEmployeePO, employeePOEntityWrapper);
 
         return true;
     }
@@ -362,7 +399,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 Integer grantType = mainTaskPO.getGrantType();
 
                 //3、如果SalaryGrantMainTaskPO. grantType in (1,2,3)，则继续执行第4步；否则直接跳转到第5步。
-                if (1 == grantType || 2 == grantType || 3 == grantType) {
+                if (SalaryGrantBizConsts.GRANT_TYPE_NORMAL == grantType || SalaryGrantBizConsts.GRANT_TYPE_ADJUST == grantType || SalaryGrantBizConsts.GRANT_TYPE_BACK_TRACE == grantType) {
                     //4、查询计算批次信息，调用接口 BatchProxy.getBatchInfo，查询条件batchCode=batchCode，batchType= grantType，查询返回结果PrBatchDTO。
                     //   根据PrBatchDTO. hasMoney和PrBatchDTO. hasAdvance进行条件分支判断：
                     PrBatchDTO prBatchDTO = commonService.getBatchInfo(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
@@ -399,7 +436,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     //5、修改任务单主表状态为SalaryGrantMainTaskPO. taskStatus=1
                     SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                     grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                    grantMainTaskPO.setTaskStatus("1"); //状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待支付，6-未支付，7-已支付，8-撤回，9-驳回
+                    grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL); //状态:1-审批中
                     salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
                 }
 
@@ -432,14 +469,14 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 //1、（1）更新主表字段: task_status=0 ，approved_opinion = salaryGrantTaskBO. approvedOpinion， is_active = 0
                 SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                 grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                grantMainTaskPO.setTaskStatus("0"); //状态:0-草稿
+                grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT); //状态:0-草稿
                 grantMainTaskPO.setApprovedOpinion(salaryGrantTaskBO.getApprovedOpinion()); //审批意见
                 grantMainTaskPO.setActive(false); //是否有效:1-有效，0-无效
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
                 //1、（2）将任务单主表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history. task_status=3
                 SalaryGrantTaskHistoryPO mainTaskHistoryPO = mainTaskPO2HistoryPO(mainTaskPO);
-                mainTaskHistoryPO.setTaskStatus("3"); //状态:3-审批拒绝
+                mainTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_REFUSE); //状态:3-审批拒绝
                 salaryGrantTaskHistoryMapper.insert(mainTaskHistoryPO);
 
                 //1、（3）将任务单主表雇员信息存入历史表，
@@ -455,7 +492,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     subTaskPOList.stream().forEach(subTaskPO -> {
                         //2、（1）将任务单子表记录新增入历史表sg_salary_grant_task_history  添加sg_salary_grant_task_history. task_status=3
                         SalaryGrantTaskHistoryPO subGrantTaskHistoryPO = subTaskPO2HistoryPO(subTaskPO);
-                        subGrantTaskHistoryPO.setTaskStatus("3"); //状态:3-审批拒绝
+                        subGrantTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_REFUSE); //状态:3-审批拒绝
                         salaryGrantTaskHistoryMapper.insert(subGrantTaskHistoryPO);
 
                         //2、（2）根据任务单子表salary_grant_sub_task_code在雇员表sg_salary_grant_employee中查询雇员信息，
@@ -515,7 +552,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 //  （1）更新主表字段: task_status=2 ，approved_opinion = salaryGrantTaskBO. approvedOpinion
                 SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                 grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                grantMainTaskPO.setTaskStatus("2"); //状态:2-审批通过
+                grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS); //状态:2-审批通过
                 grantMainTaskPO.setApprovedOpinion(salaryGrantTaskBO.getApprovedOpinion()); //审批意见
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
@@ -533,10 +570,10 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         grantSubTaskPO.setSalaryGrantSubTaskId(subTaskPO.getSalaryGrantSubTaskId());
 
                         if (1 == subTaskPO.getTaskType()) {
-                            grantSubTaskPO.setTaskStatus("2"); //状态:2-审批通过
+                            grantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS); //状态:2-审批通过
                         }
                         if (2 == subTaskPO.getTaskType()) {
-                            grantSubTaskPO.setTaskStatus("10"); //状态:10-待合并
+                            grantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_COMBINE_WAIT); //状态:10-待合并
                         }
 
                         salaryGrantSubTaskMapper.updateById(grantSubTaskPO);
@@ -584,13 +621,13 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 //（1）更新主表字段: task_status=0 ，approved_opinion = salaryGrantTaskBO. approvedOpinion
                 SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                 grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                grantMainTaskPO.setTaskStatus("0"); //状态:0-草稿
+                grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT); //状态:0-草稿
                 grantMainTaskPO.setApprovedOpinion(salaryGrantTaskBO.getApprovedOpinion()); //审批意见
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
                 //（2）将任务单主表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history. task_status=8
                 SalaryGrantTaskHistoryPO mainTaskHistoryPO = mainTaskPO2HistoryPO(mainTaskPO);
-                mainTaskHistoryPO.setTaskStatus("8"); //状态:8-驳回
+                mainTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_RETREAT); //状态:8-驳回
                 salaryGrantTaskHistoryMapper.insert(mainTaskHistoryPO);
 
                 //（3）根据任务单主表salary_grant_main_task_code在雇员表sg_salary_grant_employee中查询雇员信息，
@@ -612,7 +649,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     for (SalaryGrantSubTaskPO subTaskPO : subTaskPOList) {
                         //（1）将任务单子表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history. task_status=8
                         SalaryGrantTaskHistoryPO subTaskHistoryPO = subTaskPO2HistoryPO(subTaskPO);
-                        subTaskHistoryPO.setTaskStatus("8"); //状态:8-驳回
+                        subTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_RETREAT); //状态:8-驳回
                         salaryGrantTaskHistoryMapper.insert(subTaskHistoryPO);
 
                         //（2）根据任务单子表salary_grant_sub_task_code在雇员表sg_salary_grant_employee中查询雇员信息，
@@ -673,13 +710,13 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 //（1）更新主表字段: task_status=0 ，approved_opinion = salaryGrantTaskBO. approvedOpinion
                 SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                 grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                grantMainTaskPO.setTaskStatus("0"); //状态:0-草稿
+                grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT); //状态:0-草稿
                 grantMainTaskPO.setApprovedOpinion(salaryGrantTaskBO.getApprovedOpinion()); //审批意见
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
                 //（2）将任务单主表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history. task_status = 9
                 SalaryGrantTaskHistoryPO mainTaskHistoryPO = mainTaskPO2HistoryPO(mainTaskPO);
-                mainTaskHistoryPO.setTaskStatus("9");
+                mainTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_REJECT); //任务单状态：9-驳回
                 salaryGrantTaskHistoryMapper.insert(mainTaskHistoryPO);
 
                 //（3）根据任务单主表salary_grant_main_task_code在雇员表sg_salary_grant_employee中查询雇员信息，
@@ -701,7 +738,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     for (SalaryGrantSubTaskPO subTaskPO : subTaskPOList) {
                         //（1）将任务单子表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history. task_status=9
                         SalaryGrantTaskHistoryPO subTaskHistoryPO = subTaskPO2HistoryPO(subTaskPO);
-                        subTaskHistoryPO.setTaskStatus("9");
+                        subTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_REJECT); //任务单状态：9-驳回
                         salaryGrantTaskHistoryMapper.insert(subTaskHistoryPO);
 
                         //（2）根据任务单子表salary_grant_sub_task_code在雇员表sg_salary_grant_employee中查询雇员信息，
@@ -740,6 +777,98 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         }
 
         //7、返回结果true
+        return true;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Boolean doInvalidTask(SalaryGrantTaskBO salaryGrantTaskBO) throws Exception {
+        //（1）根据传入参数taskCode查询任务单主表信息SalaryGrantMainTaskPO，
+        //     查询条件 salary_grant_main_task_code = SalaryGrantTaskBO.taskCode and sg_salary_grant_main_task.grant_type in (1、2、3) and sg_salary_grant_main_task.task_status in (0、1、2) and is_active=1。
+        //     判断状态SalaryGrantMainTaskPO.task_status，如果task_status=2（审批通过），则进行（2）操作，否则进行（3）操作。
+        EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
+        mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and grant_type in (1, 2, 3) and task_status in (0, 1, 2) and is_active=1", salaryGrantTaskBO.getTaskCode());
+        List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
+        if (!CollectionUtils.isEmpty(mainTaskPOList)) {
+            for (SalaryGrantMainTaskPO mainTaskPO : mainTaskPOList) {
+                //状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待生成，6-未支付，7-已支付，8-撤回，9-驳回，13-作废
+                String taskStatus = mainTaskPO.getTaskStatus();
+
+                Long task_his_id = null;
+
+                if (SalaryGrantBizConsts.TASK_STATUS_PASS.equals(taskStatus)) {
+                    //（2）查询雇员信息sg_salary_grant_employee，
+                    //     查询条件：雇员表.salary_grant_main_task_code = 任务单主表.salary_grant_main_task_code and雇员表.grant_status in (1,2),
+                    //     如果查询结果为空，则跳转到（3）；
+                    //     否则查询结果有记录，需要调用暂缓池的删除接口（接口参数为SalaryGrantMainTaskPO.batchCode、SalaryGrantMainTaskPO.salaryGrantMainTaskCode），对查询的雇员信息在发放暂缓池进行删除操作。--待顾伟发布好调用
+                    EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+                    employeePOEntityWrapper.where("salary_grant_main_task_code = {0} and grant_status in (1, 2)", mainTaskPO.getSalaryGrantMainTaskCode());
+                    List<SalaryGrantEmployeePO> employeePOList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
+                    if (CollectionUtils.isEmpty(employeePOList)) {
+                        //（3）对任务单主表SalaryGrantMainTaskPO进行处理
+                        //     将任务单主表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history.task_status= 13（作废），sg_salary_grant_task_history.invalid_reason = salaryGrantTaskBO.invalidReason；
+                        SalaryGrantTaskHistoryPO mainTaskHistoryPO = mainTaskPO2HistoryPO(mainTaskPO);
+                        mainTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_NULLIFY); //状态:13-作废
+                        mainTaskHistoryPO.setInvalidReason(salaryGrantTaskBO.getInvalidReason()); //失效原因
+                        salaryGrantTaskHistoryMapper.insert(mainTaskHistoryPO);
+
+                        task_his_id = mainTaskHistoryPO.getSalaryGrantTaskHistoryId();
+                    } else {
+                        //调用暂缓池的删除接口
+                        boolean deleteResult = commonService.delDeferredEmp(mainTaskPO);
+                        if (false == deleteResult) {
+                            throw new Exception("调用暂缓池删除接口失败！");
+                        }
+                    }
+                } else {
+                    //（3）对任务单主表SalaryGrantMainTaskPO进行处理
+                    //     将任务单主表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history.task_status= 13（作废），sg_salary_grant_task_history.invalid_reason = salaryGrantTaskBO.invalidReason；
+                    SalaryGrantTaskHistoryPO mainTaskHistoryPO = mainTaskPO2HistoryPO(mainTaskPO);
+                    mainTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_NULLIFY); //状态:13-作废
+                    mainTaskHistoryPO.setInvalidReason(salaryGrantTaskBO.getInvalidReason()); //失效原因
+                    salaryGrantTaskHistoryMapper.insert(mainTaskHistoryPO);
+
+                    task_his_id = mainTaskHistoryPO.getSalaryGrantTaskHistoryId();
+                }
+
+                //（4）根据任务单主表查询雇员信息，将任务单主表雇员信息存入历史表，
+                //     调用方法：SalaryGrantEmployeeCommandService.saveToHistory(long task_his_id(主表记录历史记录主键), String task_code(主表task_code), int task_type(主表task_type))
+                salaryGrantEmployeeCommandService.saveToHistory(task_his_id, mainTaskPO.getSalaryGrantMainTaskCode(), mainTaskPO.getTaskType());
+
+                //（5）根据任务单主表查询子表信息，
+                //     查询条件：子表.salary_grant_main_task_code = 主表.salary_grant_main_task_code and is_active = 1
+                //     如果存在子表信息，对任务单子表进行处理
+                //     将任务单子表记录新增入历史表sg_salary_grant_task_history，sg_salary_grant_task_history.task_status= 13（作废）；
+                EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
+                subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskPO.getSalaryGrantMainTaskCode());
+                List<SalaryGrantSubTaskPO> subTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
+                if (!CollectionUtils.isEmpty(subTaskPOList)) {
+                    subTaskPOList.stream().forEach(subTaskPO -> {
+                        //将任务单子表记录新增入历史表
+                        SalaryGrantTaskHistoryPO subTaskHistoryPO = subTaskPO2HistoryPO(subTaskPO);
+                        subTaskHistoryPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_NULLIFY); //状态:13-作废
+                        salaryGrantTaskHistoryMapper.insert(subTaskHistoryPO);
+
+                        //（6）根据任务单子表查询雇员信息，将任务单子表雇员信息存入历史表,
+                        //     调用方法：SalaryGrantEmployeeCommandService.saveToHistory(long task_his_id(子表记录历史记录主键), String task_code(子表task_code), int task_type(子表task_type))
+                        salaryGrantEmployeeCommandService.saveToHistory(subTaskHistoryPO.getSalaryGrantTaskHistoryId(), subTaskPO.getSalaryGrantSubTaskCode(), subTaskPO.getTaskType());
+
+                        //（7）任务单子表进行物理删除，调用delete方法。
+                        salaryGrantSubTaskMapper.deleteById(subTaskPO.getSalaryGrantSubTaskId());
+                    });
+                }
+
+                //（8）根据任务单主表查询雇员信息，进行物理删除，调用delete方法。
+                EntityWrapper<SalaryGrantEmployeePO> deleteEmployeePOEntityWrapper = new EntityWrapper<>();
+                deleteEmployeePOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskPO.getSalaryGrantMainTaskCode());
+                salaryGrantEmployeeMapper.delete(deleteEmployeePOEntityWrapper);
+
+                //（9）任务单主表进行物理删除，调用delete方法。
+                salaryGrantMainTaskMapper.deleteById(mainTaskPO.getSalaryGrantMainTaskId());
+            }
+        }
+
+        //（10）返回结果true
         return true;
     }
 }

@@ -1,6 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+
 import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.SMUserInfoProxy;
 import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.dto.auth.SMUserInfoDTO;
 import com.ciicsh.gto.basicdataservice.api.CityServiceProxy;
@@ -15,6 +15,7 @@ import com.ciicsh.gto.billcenter.fcmodule.api.ISalaryEmployeeProxy;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryEmployeeProxyDTO;
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.DeferredPoolProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.PaymentDeferredDelDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.PaymentDeferredRequestDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
@@ -44,9 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -463,32 +462,69 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public List<PrNormalBatchDTO> getBatchListByManagementId(String managementId) {
-        Pagination<PrNormalBatchDTO> prNormalBatchDTOPagination = batchProxy.getBatchListByManagementId(managementId, null, 1, Integer.MAX_VALUE);
-        return prNormalBatchDTOPagination.getList();
+        try {
+            Pagination<PrNormalBatchDTO> prNormalBatchDTOPagination = batchProxy.getBatchListByManagementId(managementId, null, 1, Integer.MAX_VALUE);
+            return prNormalBatchDTOPagination.getList();
+        } catch (Exception e) {
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("根据管理方ID获取批次列表").setTitle("根据管理方ID获取批次列表").setContent("调用接口异常"));
+        }
+
+        return null;
     }
 
     @Override
     public PrBatchDTO getBatchInfo(String batchCode, int batchType) {
-        return batchProxy.getBatchInfo(batchCode, batchType);
+        try {
+            return batchProxy.getBatchInfo(batchCode, batchType);
+        } catch (Exception e) {
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("获取一个批次计算结果").setTitle("获取一个批次计算结果").setContent("调用接口异常"));
+        }
+
+        return null;
     }
 
     @Override
     public int updateBatchStatus(SalaryGrantMainTaskPO salaryGrantMainTaskPO, PrNormalBatchDTO prNormalBatchDTO) {
-        BatchAuditDTO batchAuditDTO = new BatchAuditDTO();
-        //薪资发放日期
-        String grantDate = salaryGrantMainTaskPO.getGrantDate();
-        //增加天数
-        int advanceDay = prNormalBatchDTO.getAdvanceDay();
+        int result = 0;
 
-        if (!StringUtils.isEmpty(grantDate)){
-            grantDate = grantDate.replace("-", "");
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-            LocalDate grantDateDate = LocalDate.parse(grantDate, dateTimeFormatter);
-            grantDateDate = grantDateDate.plusDays(advanceDay);
-            batchAuditDTO.setAdvancePeriod(grantDateDate.format(dateTimeFormatter));
-            return batchProxy.updateBatchStatus(batchAuditDTO);
+        try {
+            BatchAuditDTO batchAuditDTO = new BatchAuditDTO();
+            //薪资发放日期
+            String grantDate = salaryGrantMainTaskPO.getGrantDate();
+            //增加天数
+            int advanceDay = prNormalBatchDTO.getAdvanceDay();
+
+            if (!StringUtils.isEmpty(grantDate)){
+                grantDate = grantDate.replace("-", "");
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                LocalDate grantDateDate = LocalDate.parse(grantDate, dateTimeFormatter);
+                grantDateDate = grantDateDate.plusDays(advanceDay);
+                batchAuditDTO.setAdvancePeriod(grantDateDate.format(dateTimeFormatter));
+                result = batchProxy.updateBatchStatus(batchAuditDTO);
+            }
+        } catch (Exception e) {
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("更新批次状态").setTitle("更新批次状态").setContent("调用接口异常"));
         }
 
-        return 0;
+        return result;
+    }
+
+    @Override
+    public boolean delDeferredEmp(SalaryGrantMainTaskPO mainTaskPO) {
+        boolean result = false;
+
+        try {
+            PaymentDeferredDelDTO paymentDeferredDelDTO = new PaymentDeferredDelDTO();
+            paymentDeferredDelDTO.setBatchCode(mainTaskPO.getBatchCode());
+            paymentDeferredDelDTO.setTaskCode(mainTaskPO.getSalaryGrantMainTaskCode());
+            com.ciicsh.common.entity.JsonResult jsonResult = deferredPoolProxy.delDeferredEmp(paymentDeferredDelDTO);
+            if (!ObjectUtils.isEmpty(jsonResult)) {
+                result = jsonResult.isSuccess();
+            }
+        } catch (Exception e) {
+            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("暂缓池删除接口").setTitle("调用暂缓池删除接口").setContent("调用接口异常"));
+        }
+
+        return result;
     }
 }

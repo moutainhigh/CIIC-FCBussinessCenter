@@ -22,7 +22,13 @@ public interface PrsMainTaskService {
 
     List<Document> getTaskEmps(Map<String, Object> params);
 
+    List<Document> listTaskEmps(Map<String, Object> params);
+
+    Page<Document> pageTaskEmps(Map<String, Object> params);
+
     Boolean deleteTaskEmps(Map<String, Object> query);
+
+    Boolean updateTaskEmp(Map<String, Object> params);
 
     Boolean addPrsMainTask(Map<String, Object> params);
 

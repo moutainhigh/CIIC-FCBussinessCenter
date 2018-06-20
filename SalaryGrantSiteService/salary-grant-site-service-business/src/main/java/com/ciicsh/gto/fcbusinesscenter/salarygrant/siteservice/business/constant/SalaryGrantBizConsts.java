@@ -122,7 +122,8 @@ public class SalaryGrantBizConsts {
     public static final String TASK_STATUS_COMBINE= "11";
     /** 任务单状态：12-已确认*/
     public static final String TASK_STATUS_CONFIRM= "12";
-
+    /** 任务单状态：13-作废*/
+    public static final String TASK_STATUS_NULLIFY= "13";
 
     /** 任务单状态常量*/
     public static final String TASK_REFER= "refer";
