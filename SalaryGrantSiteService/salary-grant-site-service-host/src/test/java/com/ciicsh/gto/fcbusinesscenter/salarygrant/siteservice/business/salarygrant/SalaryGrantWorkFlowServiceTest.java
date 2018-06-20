@@ -22,7 +22,7 @@ public class SalaryGrantWorkFlowServiceTest {
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
 
     @Test
-    public void doCancelTask() {
+    public void doCancelTask() throws Exception {
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
         salaryGrantTaskBO.setTaskCode("SGT2018032800000001");
         salaryGrantTaskBO.setInvalidReason("失效原因");

@@ -69,8 +69,9 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
      * @author chenpb
      * @since 2018-06-07
      * @param msg
+     * @throws Exception
      */
-    void cancelClosing(CancelClosingMsg msg);
+    void cancelClosing(CancelClosingMsg msg) throws Exception;
 
     /**
      * 审批通过

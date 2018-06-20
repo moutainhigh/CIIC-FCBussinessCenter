@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
@@ -61,6 +62,18 @@ public class CommonServiceTest {
     public void getBatchListByManagementId() {
         List<PrNormalBatchDTO> batchDTOList =  commonService.getBatchListByManagementId("GL170001");
         System.out.println("batchDTOList: \n" + JSONObject.toJSONString(batchDTOList));
+    }
+
+    /**
+     * 暂缓池删除接口
+     */
+    @Test
+    public void delDeferredEmp() {
+        SalaryGrantMainTaskPO mainTaskPO = new SalaryGrantMainTaskPO();
+        mainTaskPO.setBatchCode("123");
+        mainTaskPO.setSalaryGrantMainTaskCode("123");
+        boolean result = commonService.delDeferredEmp(mainTaskPO);
+        System.out.println("暂缓池删除 result: " + result);
     }
 
 }

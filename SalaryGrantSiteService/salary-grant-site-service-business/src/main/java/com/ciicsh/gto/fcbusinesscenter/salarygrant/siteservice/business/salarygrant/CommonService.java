@@ -131,4 +131,12 @@ public interface CommonService {
      * @return
      */
     int updateBatchStatus(SalaryGrantMainTaskPO salaryGrantMainTaskPO, PrNormalBatchDTO prNormalBatchDTO);
+
+    /**
+     * 暂缓池删除接口
+     *
+     * @param mainTaskPO
+     * @return
+     */
+    boolean delDeferredEmp(SalaryGrantMainTaskPO mainTaskPO);
 }

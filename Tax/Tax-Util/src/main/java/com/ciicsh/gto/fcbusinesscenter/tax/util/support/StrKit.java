@@ -1387,4 +1387,21 @@ public class StrKit {
 		return value;
 
 	}
+
+	/**
+	 * 字符串转int
+	 * @param str
+	 * @return
+	 */
+	public static Integer strToInt(String str) {
+		Integer i = 0;
+		if (str != null) {
+			try {
+				i = Integer.valueOf(str);
+			} catch (NumberFormatException e) {
+				i = 0;
+			}
+		}
+		return i;
+	}
 }

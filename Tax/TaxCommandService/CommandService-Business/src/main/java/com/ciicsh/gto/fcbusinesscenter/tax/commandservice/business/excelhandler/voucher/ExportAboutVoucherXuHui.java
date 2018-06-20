@@ -117,7 +117,7 @@ public class ExportAboutVoucherXuHui extends BaseService {
             if (null == cellA) {
                 cellA = row.createCell(0);
             }
-            cellA.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, taskSubProofDetailPO.getIdType()));
+            cellA.setCellValue(EnumUtil.getMessage(EnumUtil.IT_CERT_TYPE, taskSubProofDetailPO.getIdType()));
 
             //B列-证件号
             HSSFCell cellB = row.getCell(1);
