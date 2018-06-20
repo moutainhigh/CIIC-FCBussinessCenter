@@ -39,6 +39,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
     public static final String PR_PAYROLL_CAL_RESULT = "fc_payroll_calc_result_table";
 
+    public static final String DEDUCTION_CHINESE = "3500";//中方免税额
+
+    public static final String DEDUCTION_FOREIGNER = "4800";//外籍免税额
+
     public MongodbServiceImpl() {
         super(PR_PAYROLL_CAL_RESULT);
     }
@@ -600,7 +604,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         boolean flag = false;
 
         if(calResultBO.getDeduction()!=null
-                && calResultBO.getDeduction().abs().compareTo(new BigDecimal(3500))==0
+                && calResultBO.getDeduction().abs().compareTo(new BigDecimal(DEDUCTION_CHINESE))==0
                 && taxInfoBO.getEmployee()!=null &&  taxInfoBO.getEmployee()
                 && calResultBO.getIncomeTotal()!=null
                 && (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==1 || (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==0
@@ -619,7 +623,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         boolean flag = false;
 
         if(calResultBO.getDeduction()!=null
-                && calResultBO.getDeduction().abs().compareTo(new BigDecimal(4800))==0
+                && calResultBO.getDeduction().abs().compareTo(new BigDecimal(DEDUCTION_FOREIGNER))==0
                 && taxInfoBO.getEmployee()!=null &&  taxInfoBO.getEmployee()
                 && calResultBO.getIncomeTotal()!=null
                 && (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==1 || (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==0
