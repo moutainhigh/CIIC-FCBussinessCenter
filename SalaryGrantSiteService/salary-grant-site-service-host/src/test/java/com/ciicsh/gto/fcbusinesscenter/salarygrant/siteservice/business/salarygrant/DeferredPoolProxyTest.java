@@ -3,10 +3,12 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.companycenter.webcommandservice.api.DeferredPoolProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.PaymentDeferredDelDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.PaymentDeferredRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,5 +89,20 @@ public class DeferredPoolProxyTest {
 
         JsonResult jsonResult = deferredPoolProxy.addDeferredPool(paymentDeferredRequestDTO);
         System.out.println("jsonResult: " + jsonResult);
+    }
+
+    @Test
+    public void delDeferredEmp() {
+        SalaryGrantMainTaskPO mainTaskPO = new SalaryGrantMainTaskPO();
+        mainTaskPO.setBatchCode("123");
+        mainTaskPO.setSalaryGrantMainTaskCode("456");
+
+        PaymentDeferredDelDTO paymentDeferredDelDTO = new PaymentDeferredDelDTO();
+        paymentDeferredDelDTO.setBatchCode(mainTaskPO.getBatchCode());
+        paymentDeferredDelDTO.setTaskCode(mainTaskPO.getSalaryGrantMainTaskCode());
+        com.ciicsh.common.entity.JsonResult jsonResult = deferredPoolProxy.delDeferredEmp(paymentDeferredDelDTO);
+        if (!ObjectUtils.isEmpty(jsonResult)) {
+            System.out.println("isSuccess: " + jsonResult.isSuccess());
+        }
     }
 }
