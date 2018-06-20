@@ -309,7 +309,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDeductHouseFund(calResultBO.getDeductHouseFund());//住房公积金合计（报税用）
                     calculationBatchDetailPO.setDeductTakeoff(calResultBO.getDeductTakeoff());//允许扣除的税费
                     calculationBatchDetailPO.setAnnuity(calResultBO.getAnnuity());//企业年金个人部分
-                    calculationBatchDetailPO.setBusinessHealthInsurance(calResultBO.getAnnuity());//商业保险
+                    calculationBatchDetailPO.setBusinessHealthInsurance(calResultBO.getBusinessHealthInsurance());//商业保险
                     calculationBatchDetailPO.setEndowmentInsurance(calResultBO.getEndowmentInsurance());//税延养老保险费
                     calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额
