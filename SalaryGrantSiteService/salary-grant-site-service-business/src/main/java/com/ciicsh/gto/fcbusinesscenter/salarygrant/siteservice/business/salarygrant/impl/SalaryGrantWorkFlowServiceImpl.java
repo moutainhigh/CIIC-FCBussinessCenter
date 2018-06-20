@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskMissionRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
@@ -106,7 +105,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO) {
+    public Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO) throws Exception {
         //（1）根据传入参数taskCode查询任务单主表信息SalaryGrantMainTaskPO，
         //     查询条件：salary_grant_main_task_code = SalaryGrantTaskBO.taskCode and is_active=1 and sg_salary_grant_main_task.grant_type in (1、2、3) and sg_salary_grant_main_task.task_status in (0、1、2)。
         //     判断状态SalaryGrantMainTaskPO.task_status，如果task_status=2（审批通过），则进行（2）操作，否则进行（3）操作。
@@ -114,7 +113,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1 and grant_type in (1, 2, 3) and task_status in (0, 1, 2)", salaryGrantTaskBO.getTaskCode());
         List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
         if (!CollectionUtils.isEmpty(mainTaskPOList)) {
-            mainTaskPOList.stream().forEach(mainTaskPO -> {
+            for (SalaryGrantMainTaskPO mainTaskPO : mainTaskPOList) {
                 //状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待支付，6-未支付，7-已支付，8-撤回，9-驳回
                 String taskStatus = mainTaskPO.getTaskStatus();
 
@@ -148,6 +147,10 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         task_his_id = mainTaskHistoryPO.getSalaryGrantTaskHistoryId();
                     } else {
                         //调用暂缓池的删除接口
+                        boolean deleteResult = commonService.delDeferredEmp(mainTaskPO);
+                        if (false == deleteResult) {
+                            throw new Exception("调用暂缓池删除接口失败！");
+                        }
                     }
                 } else {
                     //（3）对任务单主表SalaryGrantMainTaskPO进行处理
@@ -195,7 +198,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
                 //（8）根据任务单主表查询雇员信息，进行物理删除，调用delete方法。
                 salaryGrantMainTaskMapper.deleteById(mainTaskPO.getSalaryGrantMainTaskId());
-            });
+
+            }
         }
 
         return true;
@@ -777,7 +781,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean doInvalidTask(SalaryGrantTaskBO salaryGrantTaskBO) {
+    public Boolean doInvalidTask(SalaryGrantTaskBO salaryGrantTaskBO) throws Exception {
         //（1）根据传入参数taskCode查询任务单主表信息SalaryGrantMainTaskPO，
         //     查询条件 salary_grant_main_task_code = SalaryGrantTaskBO.taskCode and sg_salary_grant_main_task.grant_type in (1、2、3) and sg_salary_grant_main_task.task_status in (0、1、2) and is_active=1。
         //     判断状态SalaryGrantMainTaskPO.task_status，如果task_status=2（审批通过），则进行（2）操作，否则进行（3）操作。
@@ -810,7 +814,10 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         task_his_id = mainTaskHistoryPO.getSalaryGrantTaskHistoryId();
                     } else {
                         //调用暂缓池的删除接口
-
+                        boolean deleteResult = commonService.delDeferredEmp(mainTaskPO);
+                        if (false == deleteResult) {
+                            throw new Exception("调用暂缓池删除接口失败！");
+                        }
                     }
                 } else {
                     //（3）对任务单主表SalaryGrantMainTaskPO进行处理

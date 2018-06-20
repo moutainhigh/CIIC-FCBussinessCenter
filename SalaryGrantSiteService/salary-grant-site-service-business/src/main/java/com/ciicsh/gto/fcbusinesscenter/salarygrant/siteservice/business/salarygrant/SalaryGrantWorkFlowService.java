@@ -73,7 +73,7 @@ public interface SalaryGrantWorkFlowService {
      * @param salaryGrantTaskBO
      * @return
      */
-    Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO);
+    Boolean doCancelTask(SalaryGrantTaskBO salaryGrantTaskBO) throws Exception;
 
     /**
      * 流程节点处理：2.提交 - 修改薪资发放日和薪资发放时段信息
@@ -137,5 +137,5 @@ public interface SalaryGrantWorkFlowService {
      * @param salaryGrantTaskBO
      * @return
      */
-    Boolean doInvalidTask (SalaryGrantTaskBO salaryGrantTaskBO);
+    Boolean doInvalidTask (SalaryGrantTaskBO salaryGrantTaskBO) throws Exception;
 }
