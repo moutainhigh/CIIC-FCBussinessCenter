@@ -85,26 +85,6 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
     }
 
     @Override
-    public List<Document> getTaskEmps(Map<String, Object> params) {
-        List<Document> emps = new ArrayList<Document>();
-
-        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
-        MongoCursor<Document> cursor = coll.find(new BasicDBObject(params)).iterator();
-
-        try {
-            while (cursor.hasNext()) {
-                Document emp = cursor.next();
-                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
-                emps.add(emp);
-            }
-        } finally {
-            cursor.close();
-        }
-
-        return emps;
-    }
-
-    @Override
     public List<Document> listTaskEmps(Map<String, Object> params) {
         BasicDBObject queryCond= new BasicDBObject((Map)params.get("query"));
 
