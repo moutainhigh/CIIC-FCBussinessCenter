@@ -3,8 +3,7 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantEmployeeMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap"
-               type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO">
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO">
         <id column="salary_grant_employee_id" property="salaryGrantEmployeeId"/>
         <result column="employee_id" property="employeeId"/>
         <result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode"/>
@@ -77,9 +76,11 @@
         UPDATE
             sg_salary_grant_employee t
         SET
-            t.grant_status = #{grantStatus},
-            t.modified_by = #{modifiedBy},
-            t.modified_time = now()
+            <if test="modifiedBy != null and modifiedBy != ''">
+                t.modified_by = #{modifiedBy},
+            </if>
+            t.modified_time = now(),
+            t.grant_status = #{grantStatus}
         WHERE
             t.batch_code = #{batchCode}
         AND
