@@ -25,6 +25,8 @@ public class DataInterceptor extends HandlerInterceptorAdapter {
 
         try {
             BasicData.getInstance().setCertType(commonService.getDicItemByDicValue("certType"));
+            //获取报税证件类型
+            BasicData.getInstance().setTaxCertType(commonService.getDicItemByDicValue("taxCertType"));
         } catch (Exception e) {
             LogTaskFactory.getLogger().error(e, "DataInterceptor.preHandle", null, LogType.APP,null);
         }

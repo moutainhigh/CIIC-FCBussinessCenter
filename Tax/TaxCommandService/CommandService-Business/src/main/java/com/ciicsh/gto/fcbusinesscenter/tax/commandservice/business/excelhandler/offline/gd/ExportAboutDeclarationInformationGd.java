@@ -5,7 +5,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseServ
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -137,18 +139,18 @@ public class ExportAboutDeclarationInformationGd extends BaseService{
             //*收入所属期起-J列(正常薪金：个税期间起始日（如20160701）,年度奖金：年终奖年度起始日,离职补偿金：入职日期,个人股票期权行权收入：个税期间结束日倒推规定月份数（如20160101）)
             String incomeStartStr = "";
             String incomeEndStr = "";
-            if("01".equals(taskSubDeclareDetailPO.getIncomeSubject()) || "02".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            if(IncomeSubject.NORMALSALARY.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject()) || IncomeSubject.FOREIGNNORMALSALARY.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 incomeStartStr = periodStartStr;
                 incomeEndStr = DateTimeKit.getLastDayFromStr(incomeStartStr);
-            }else if("03".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            }else if(IncomeSubject.BONUSINCOMEYEAR.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 incomeStartStr = DateTimeKit.getFirstDayForYear(periodStartStr);
                 incomeEndStr = DateTimeKit.getLastDayForYear(periodStartStr);
-            }else if("07".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            }else if(IncomeSubject.LABORCONTRACT.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 incomeStartStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(employeeInfoBatchPO.getEntryDate());
                 incomeEndStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(employeeInfoBatchPO.getLeaveDate());
-            }else if("08".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            }else if(IncomeSubject.STOCKOPTIONINCOME.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 //个人股票期权行权收入：个税期间结束日倒推规定月份数，如2018-06-30 倒推2个月就是2018-05-01
-                incomeStartStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(taskSubDeclareDetailPO.getPeriod().plusMonths(taskSubDeclareDetailPO.getNumberOfMonths() - 1));
+                incomeStartStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(taskSubDeclareDetailPO.getPeriod().plusMonths(StrKit.strToInt(taskSubDeclareDetailPO.getNumberOfMonths()) - 1));
                 incomeEndStr = DateTimeKit.getLastDayForMonth(periodStartStr);
             }
             HSSFCell cellJ = row.getCell(9);
@@ -369,18 +371,18 @@ public class ExportAboutDeclarationInformationGd extends BaseService{
             //*收入所属期起-S列(正常薪金：个税期间起始日（如20160701）,年度奖金：年终奖年度起始日,离职补偿金：入职日期,个人股票期权行权收入：个税期间结束日倒推规定月份数（如20160101）)
             String incomeStartStr = "";
             String incomeEndStr = "";
-            if("01".equals(taskSubDeclareDetailPO.getIncomeSubject()) || "02".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            if(IncomeSubject.NORMALSALARY.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject()) || IncomeSubject.FOREIGNNORMALSALARY.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 incomeStartStr = periodStartStr;
                 incomeEndStr = DateTimeKit.getLastDayFromStr(incomeStartStr);
-            }else if("03".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            }else if(IncomeSubject.BONUSINCOMEYEAR.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 incomeStartStr = DateTimeKit.getFirstDayForYear(periodStartStr);
                 incomeEndStr = DateTimeKit.getLastDayForYear(periodStartStr);
-            }else if("07".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            }else if(IncomeSubject.LABORCONTRACT.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 incomeStartStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(employeeInfoBatchPO.getEntryDate());
                 incomeEndStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(employeeInfoBatchPO.getLeaveDate());
-            }else if("08".equals(taskSubDeclareDetailPO.getIncomeSubject())){
+            }else if(IncomeSubject.STOCKOPTIONINCOME.getCode().equals(taskSubDeclareDetailPO.getIncomeSubject())){
                 //个人股票期权行权收入：个税期间结束日倒推规定月份数，如2018-06-30 倒推2个月就是2018-05-01
-                incomeStartStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(taskSubDeclareDetailPO.getPeriod().plusMonths(taskSubDeclareDetailPO.getNumberOfMonths() - 1));
+                incomeStartStr = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(taskSubDeclareDetailPO.getPeriod().plusMonths(StrKit.strToInt(taskSubDeclareDetailPO.getNumberOfMonths()) - 1));
                 incomeEndStr = DateTimeKit.getLastDayForMonth(periodStartStr);
             }
             HSSFCell cellS = row.getCell(18);
