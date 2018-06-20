@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao.SalaryGrantEmployeeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO">
+        <id column="salary_grant_employee_id" property="salaryGrantEmployeeId"/>
+        <result column="employee_id" property="employeeId"/>
+        <result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode"/>
+        <result column="salary_grant_sub_task_code" property="salaryGrantSubTaskCode"/>
+        <result column="employee_name" property="employeeName"/>
+        <result column="template_type" property="templateType"/>
+        <result column="company_id" property="companyId"/>
+        <result column="company_name" property="companyName"/>
+        <result column="employee_service_agreement_id" property="employeeServiceAgreementId"/>
+        <result column="grant_cycle" property="grantCycle"/>
+        <result column="tax_cycle" property="taxCycle"/>
+        <result column="batch_code" property="batchCode"/>
+        <result column="grant_account_code" property="grantAccountCode"/>
+        <result column="grant_account_name" property="grantAccountName"/>
+        <result column="payment_account_code" property="paymentAccountCode"/>
+        <result column="payment_account_name" property="paymentAccountName"/>
+        <result column="payment_account_bank_name" property="paymentAccountBankName" />
+        <result column="grant_mode" property="grantMode"/>
+        <result column="salary_grant_rule_id" property="salaryGrantRuleId"/>
+        <result column="rule_type" property="ruleType"/>
+        <result column="rule_amount" property="ruleAmount"/>
+        <result column="rule_ratio" property="ruleRatio"/>
+        <result column="bankcard_id" property="bankcardId"/>
+        <result column="card_num" property="cardNum"/>
+        <result column="account_name" property="accountName"/>
+        <result column="bank_code" property="bankCode"/>
+        <result column="deposit_bank" property="depositBank"/>
+        <result column="swift_code" property="swiftCode"/>
+        <result column="iban" property="iban"/>
+        <result column="bankcard_type" property="bankcardType"/>
+        <result column="bankcard_province_code" property="bankcardProvinceCode"/>
+        <result column="bankcard_city_code" property="bankcardCityCode"/>
+        <result column="is_default_card" property="isDefaultCard"/>
+        <result column="wage_payable" property="wagePayable"/>
+        <result column="personal_social_security" property="personalSocialSecurity"/>
+        <result column="individual_provident_fund" property="individualProvidentFund"/>
+        <result column="personal_income_tax" property="personalIncomeTax"/>
+        <result column="year_end_bonus" property="yearEndBonus"/>
+        <result column="payment_amount_rmb" property="paymentAmountRMB"/>
+        <result column="payment_amount" property="paymentAmount"/>
+        <result column="currency_code" property="currencyCode"/>
+        <result column="cycle_rule_id" property="cycleRuleId"/>
+        <result column="exchange" property="exchange"/>
+        <result column="country_code" property="countryCode"/>
+        <result column="grant_date" property="grantDate"/>
+        <result column="grant_time" property="grantTime"/>
+        <result column="grant_service_type" property="grantServiceType"/>
+        <result column="contract_type" property="contractType"/>
+        <result column="contract_id" property="contractId"/>
+        <result column="contract_first_party" property="contractFirstParty"/>
+        <result column="is_welfare_included" property="isWelfareIncluded"/>
+        <result column="service_fee_amount" property="serviceFeeAmount"/>
+        <result column="declaration_account" property="declarationAccount"/>
+        <result column="declaration_account_category" property="declarationAccountCategory"/>
+        <result column="contribution_account" property="contributionAccount"/>
+        <result column="contribution_account_category" property="contributionAccountCategory"/>
+        <result column="remark" property="remark"/>
+        <result column="change_log" property="changeLog"/>
+        <result column="adjust_compare_info" property="adjustCompareInfo"/>
+        <result column="grant_status" property="grantStatus"/>
+        <result column="reprieve_type" property="reprieveType"/>
+        <result column="is_active" property="isActive"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_by" property="modifiedBy"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+
+    <update id="updateForReprieveEmployee" parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO">
+        UPDATE
+            sg_salary_grant_employee t
+        SET
+            <if test="modifiedBy != null and modifiedBy != ''">
+                t.modified_by = #{modifiedBy},
+            </if>
+            t.modified_time = now(),
+            t.grant_status = #{grantStatus}
+        WHERE
+            t.batch_code = #{batchCode}
+        AND
+            t.salary_grant_main_task_code = #{salaryGrantMainTaskCode}
+        AND
+            t.employee_id = #{employeeId}
+        AND
+            t.is_active = 1
+    </update>
+
+</mapper>
