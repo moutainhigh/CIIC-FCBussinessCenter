@@ -1,9 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.aop;
 
-import com.ciicsh.common.entity.JsonResult;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.security.auth.message.AuthException;
 
 /**
@@ -17,15 +17,15 @@ public class GlobalExceptionHandler {
     private final String TOKEN_ERROR = "TOKEN_ERROR";
 
     //controller异常
-    private final String CL_ERROR = "CL_ERROR";
+//    private final String CL_ERROR = "CL_ERROR";
 
     /**
      * token异常处理
      */
     @ExceptionHandler(AuthException.class)
     @ResponseBody
-    public JsonResult<Object> tokenExceptionHandler() {
-        JsonResult<Object> jr = new JsonResult<>();
+    public com.ciicsh.common.entity.JsonResult<Object> tokenExceptionHandler() {
+        com.ciicsh.common.entity.JsonResult<Object> jr = new com.ciicsh.common.entity.JsonResult<>();
 //        jr.fill(JsonResult.ReturnCode.TOKEN_ERROR);
         jr.setErrCode(TOKEN_ERROR);
         return jr;
@@ -36,9 +36,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ControllerException.class)
     @ResponseBody
-    public JsonResult<Object> controllerExceptionHandler() {
-        JsonResult<Object> jr = new JsonResult<>();
-        jr.setErrCode(CL_ERROR);
+    public com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult<Object> controllerExceptionHandler() {
+        com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult<Object> jr = new com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult<>();
+        jr.error();
         return jr;
     }
 }

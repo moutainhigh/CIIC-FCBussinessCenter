@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.StockIncomeType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -173,7 +174,7 @@ public class ExportAboutRestrictiveStockSz extends BaseService {
             if (null == cellP) {
                 cellP = row.createCell(15);
             }
-            cellP.setCellValue(po.getNumberOfMonths() == null ? "" : po.getNumberOfMonths().toString() +"个月");
+            cellP.setCellValue(po.getNumberOfMonths() == null ? "" : StrKit.strToInt(po.getNumberOfMonths()) > 12 ? "12个月以上" : StrKit.strToInt(po.getNumberOfMonths())  +"个月");
             //免税所得-Q列
             //通讯费-R列
             //商业健康保险费-S列

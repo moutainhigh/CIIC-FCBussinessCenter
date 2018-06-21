@@ -14,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGr
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +74,7 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ReprieveEmployeeBO updateForReprieveEmployee(ReprieveEmployeeBO bo) {
         List<String> ids = new ArrayList<>();
         if(!bo.getEmployeeIds().isEmpty()) {
@@ -87,8 +89,8 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
                     ids.add(x);
                 }
             });
+            bo.setEmployeeIds(ids);
         }
-        bo.setEmployeeIds(ids);
         return bo;
     }
 
