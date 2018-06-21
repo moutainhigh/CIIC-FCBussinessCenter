@@ -30,16 +30,26 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
                 setFieldValByName("createdBy", userInfoResponseDTO.getLoginName(), metaObject);
                 //修改人
                 setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
+                //创建人displayname
+                setFieldValByName("createdByDisplayName", userInfoResponseDTO.getDisplayName(), metaObject);
+                //修改人displayname
+                setFieldValByName("modifiedByDisplayName", userInfoResponseDTO.getDisplayName(), metaObject);
             }else{
                 //创建人
                 setFieldValByName("createdBy", "", metaObject);
                 //修改人
                 setFieldValByName("modifiedBy", "", metaObject);
+                //创建人displayname
+                setFieldValByName("createdByDisplayName", "", metaObject);
+                //修改人displayname
+                setFieldValByName("modifiedByDisplayName", "", metaObject);
             }
         } catch (Exception e) {
             logger.error("",e);
             setFieldValByName("createdBy", "", metaObject);
             setFieldValByName("modifiedBy", "", metaObject);
+            setFieldValByName("createdByDisplayName", "", metaObject);
+            setFieldValByName("modifiedByDisplayName", "", metaObject);
         }finally {
             //创建时间
             setFieldValByName("createdTime",llt , metaObject);
@@ -63,14 +73,19 @@ public class TaxMetaObjectHandler extends MetaObjectHandler {
             if(userInfoResponseDTO!=null){
                 //修改人
                 setFieldValByName("modifiedBy", userInfoResponseDTO.getLoginName(), metaObject);
+                //修改人displayname
+                setFieldValByName("modifiedByDisplayName", userInfoResponseDTO.getDisplayName(), metaObject);
             }else{
                 //修改人
                 setFieldValByName("modifiedBy", "", metaObject);
+                //修改人displayname
+                setFieldValByName("modifiedByDisplayName", "", metaObject);
             }
 
         } catch (Exception e) {
             logger.error("",e);
             setFieldValByName("modifiedBy", "", metaObject);
+            setFieldValByName("modifiedByDisplayName", "", metaObject);
         }finally {
             //修改时间
             setFieldValByName("modifiedTime", llt, metaObject);
