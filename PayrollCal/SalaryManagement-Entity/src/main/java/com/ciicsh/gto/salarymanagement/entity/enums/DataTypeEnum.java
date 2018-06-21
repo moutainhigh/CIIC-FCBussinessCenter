@@ -18,12 +18,7 @@ public enum DataTypeEnum implements ValuedEnum {
     /**
      * 日期
      */
-    DATE(3, "日期"),
-
-    /**
-     * 布尔
-     */
-    BOOLEAN(4, "布尔");
+    DATE(3, "日期");
 
     private int value;
 
