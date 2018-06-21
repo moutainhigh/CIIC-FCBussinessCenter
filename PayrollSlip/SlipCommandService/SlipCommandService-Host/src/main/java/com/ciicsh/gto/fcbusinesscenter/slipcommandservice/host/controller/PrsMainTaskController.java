@@ -42,11 +42,6 @@ public class PrsMainTaskController {
         return JsonResult.success(prsMainTaskService.getPrsMainTask(params));
     }
 
-    @RequestMapping(value = "/getTaskEmps")
-    public JsonResult getTaskEmps(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(prsMainTaskService.getTaskEmps(params));
-    }
-
     @RequestMapping(value = "/listTaskEmps")
     public JsonResult listTaskEmps(@RequestBody Map<String, Object> params) {
         return JsonResult.success(prsMainTaskService.listTaskEmps(params));
