@@ -260,8 +260,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             case "免抵额" : calResultBO.setDeduction(convert(result,key,BigDecimal.class));
                             case "准予扣除的捐赠额" : calResultBO.setDonation(convert(result,key,BigDecimal.class));
                             case "减免税额" : calResultBO.setTaxDeduction(convert(result,key,BigDecimal.class));
-//                            case "境内天数" : calResultBO.setDomesticDays(convert(result,key,Integer.class));
-//                            case "境外天数" : calResultBO.setOverseasDays(convert(result,key,Integer.class));
+                            case "境内天数" : calResultBO.setDomesticDays(convert(result,key,String.class));
+                            case "境外天数" : calResultBO.setOverseasDays(convert(result,key,String.class));
                             case "境内所得境内支付" : calResultBO.setDomesticIncomeDomesticPayment(convert(result,key,BigDecimal.class));
                             case "境内所得境外支付" : calResultBO.setDomesticIncomeOverseasPayment(convert(result,key,BigDecimal.class));
                             case "境外所得境内支付" : calResultBO.setOverseasIncomeDomesticPayment(convert(result,key,BigDecimal.class));
@@ -282,10 +282,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             case "劳务费_允许扣除的税费" : calResultBO.setServiceDeductTakeoff(convert(result,key,BigDecimal.class));
                             case "离职金" : calResultBO.setSeparationPayment(convert(result,key,BigDecimal.class));
                             case "离职金免税额" : calResultBO.setSeparationPaymentTaxFee(convert(result,key,BigDecimal.class));
-//                            case "实际工作年限数" : calResultBO.setWorkingYears(convert(result,key,Integer.class));
+                            case "实际工作年限数" : calResultBO.setWorkingYears(convert(result,key,String.class));
                             case "本月行权收入" : calResultBO.setExerciseIncomeMonth(convert(result,key,BigDecimal.class));
                             case "本年度累计行权收入(不含本月)" : calResultBO.setExerciseIncomeYear(convert(result,key,BigDecimal.class));
-//                            case "规定月份数" : calResultBO.setNumberOfMonths(convert(result,key,Integer.class));
+                            case "规定月份数" : calResultBO.setNumberOfMonths(convert(result,key,String.class));
                             case "本年累计已纳税额" : calResultBO.setExerciseTaxAmount(convert(result,key,BigDecimal.class));
                             case "税前合计" : calResultBO.setPreTaxAggregate(convert(result,key,BigDecimal.class));
                             case "免税津贴" : calResultBO.setDutyFreeAllowance(convert(result,key,BigDecimal.class));
@@ -309,7 +309,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDeductHouseFund(calResultBO.getDeductHouseFund());//住房公积金合计（报税用）
                     calculationBatchDetailPO.setDeductTakeoff(calResultBO.getDeductTakeoff());//允许扣除的税费
                     calculationBatchDetailPO.setAnnuity(calResultBO.getAnnuity());//企业年金个人部分
-                    calculationBatchDetailPO.setBusinessHealthInsurance(calResultBO.getAnnuity());//商业保险
+                    calculationBatchDetailPO.setBusinessHealthInsurance(calResultBO.getBusinessHealthInsurance());//商业保险
                     calculationBatchDetailPO.setEndowmentInsurance(calResultBO.getEndowmentInsurance());//税延养老保险费
                     calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额

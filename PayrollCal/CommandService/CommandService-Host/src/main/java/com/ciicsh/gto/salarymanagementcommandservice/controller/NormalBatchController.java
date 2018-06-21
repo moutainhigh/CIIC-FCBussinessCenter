@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
@@ -495,6 +496,7 @@ public class NormalBatchController {
 
         ExportParams exportParams = new ExportParams();
         exportParams.setSheetName("计算结果");
+        exportParams.setType(ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, excelExportEntities, list);
 
         if (workbook != null);{
