@@ -20,8 +20,6 @@ public interface PrsMainTaskService {
 
     PrsMainTaskPO getPrsMainTask(Map<String, Object> params);
 
-    List<Document> getTaskEmps(Map<String, Object> params);
-
     List<Document> listTaskEmps(Map<String, Object> params);
 
     Page<Document> pageTaskEmps(Map<String, Object> params);

@@ -11,6 +11,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -82,26 +83,6 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
     @Override
     public PrsMainTaskPO getPrsMainTask(Map<String, Object> params) {
         return prsMainTaskMapper.get(params);
-    }
-
-    @Override
-    public List<Document> getTaskEmps(Map<String, Object> params) {
-        List<Document> emps = new ArrayList<Document>();
-
-        MongoCollection<Document> coll = mongoConfig.mongoClient().getDatabase("payroll_db").getCollection("task_emps");
-        MongoCursor<Document> cursor = coll.find(new BasicDBObject(params)).iterator();
-
-        try {
-            while (cursor.hasNext()) {
-                Document emp = cursor.next();
-                emp.put("id", ((ObjectId)emp.get("_id")).toHexString());
-                emps.add(emp);
-            }
-        } finally {
-            cursor.close();
-        }
-
-        return emps;
     }
 
     @Override
@@ -319,6 +300,18 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             for (String id : (ArrayList<String>)params.remove("delObjectIds")) {
                 coll.deleteOne(new Document("_id", new ObjectId(id)));
             }
+        }
+
+        if (params.containsKey("ignoreTaskEmpObjIds")) {
+            ArrayList<ObjectId> objIds = new ArrayList<>();
+            for (String id : (ArrayList<String>)params.remove("ignoreTaskEmpObjIds")) {
+                objIds.add(new ObjectId(id));
+            }
+            Bson filter = Filters.in("_id", objIds);
+            BasicDBObject fields = new BasicDBObject((Map)params.remove("ignoreFields"));
+            BasicDBObject update = new BasicDBObject("$set", fields);
+
+            coll.updateMany(filter, update);
         }
 
         prsMainTaskMapper.update(params);
