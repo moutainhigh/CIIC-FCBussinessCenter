@@ -90,15 +90,9 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
         this.batchType = batchType;
     }
 
-    private String[] excelCols = null;
-
     @Override
     public List<BasicDBObject> mapRow(RowSet rs) throws Exception {
-
-        if(excelCols == null) {
-            excelCols = rs.getMetaData().getColumnNames();
-        }
-
+        String[] excelCols = rs.getMetaData().getColumnNames();
         String empCode = null;
         List<BasicDBObject> excelContents = new ArrayList<>();
         for (String col: Arrays.asList(excelCols)) {
