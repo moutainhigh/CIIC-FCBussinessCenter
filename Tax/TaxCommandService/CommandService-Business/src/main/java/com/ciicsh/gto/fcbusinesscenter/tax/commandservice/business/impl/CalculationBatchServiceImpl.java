@@ -355,9 +355,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
                     taskSubDeclarePO.setId(taskSubDeclareId);
                     taskSubDeclarePO.setTaxAmount(mapTaxAmount.get(taskSubDeclareId));//个税总金额
-                    taskSubDeclarePO.setHeadcount(mapheadcount.get(taskSubDeclareId).intValue());//总人数
-                    taskSubDeclarePO.setChineseNum(mapChineseNum.get(taskSubDeclareId).intValue());//中方总人数
-                    taskSubDeclarePO.setForeignerNum(mapheadcount.get(taskSubDeclareId).intValue() - mapChineseNum.get(taskSubDeclareId).intValue());//外方总人数
+                    taskSubDeclarePO.setHeadcount(mapheadcount.get(taskSubDeclareId)!=null?mapheadcount.get(taskSubDeclareId).intValue():0);//总人数
+                    taskSubDeclarePO.setChineseNum(mapChineseNum.get(taskSubDeclareId)!=null?mapChineseNum.get(taskSubDeclareId).intValue():0);//中方总人数
+                    taskSubDeclarePO.setForeignerNum(taskSubDeclarePO.getHeadcount() - taskSubDeclarePO.getChineseNum());//外方总人数
                     taskSubDeclareService.updateById(taskSubDeclarePO);
                 }
 
@@ -385,9 +385,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
                     taskSubMoneyPO.setId(taskSubMoneyId);
                     taskSubMoneyPO.setTaxAmount(mapTaxAmount.get(taskSubMoneyId));//个税总金额
-                    taskSubMoneyPO.setHeadcount(mapheadcount.get(taskSubMoneyId).intValue());//总人数
-                    taskSubMoneyPO.setChineseNum(mapChineseNum.get(taskSubMoneyId).intValue());//中方总人数
-                    taskSubMoneyPO.setForeignerNum(mapheadcount.get(taskSubMoneyId).intValue() - mapChineseNum.get(taskSubMoneyId).intValue());//外方总人数
+                    taskSubMoneyPO.setHeadcount(mapheadcount.get(taskSubMoneyId)!=null?mapheadcount.get(taskSubMoneyId).intValue():0);//总人数
+                    taskSubMoneyPO.setChineseNum(mapChineseNum.get(taskSubMoneyId)!=null?mapChineseNum.get(taskSubMoneyId).intValue():0);//中方总人数
+                    taskSubMoneyPO.setForeignerNum(taskSubMoneyPO.getHeadcount() - taskSubMoneyPO.getChineseNum());//外方总人数
                     taskSubMoneyService.updateById(taskSubMoneyPO);
                 }
             }
@@ -413,9 +413,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
                     taskSubPaymentPO.setId(taskSubPaymentId);
                     taskSubPaymentPO.setTaxAmount(mapTaxAmount.get(taskSubPaymentId));//个税总金额
-                    taskSubPaymentPO.setHeadcount(mapheadcount.get(taskSubPaymentId).intValue());//总人数
-                    taskSubPaymentPO.setChineseNum(mapChineseNum.get(taskSubPaymentId).intValue());//中方总人数
-                    taskSubPaymentPO.setForeignerNum(mapheadcount.get(taskSubPaymentId).intValue() - mapChineseNum.get(taskSubPaymentId).intValue());//外方总人数
+                    taskSubPaymentPO.setHeadcount(mapheadcount.get(taskSubPaymentId)!=null?mapheadcount.get(taskSubPaymentId).intValue():0);//总人数
+                    taskSubPaymentPO.setChineseNum(mapChineseNum.get(taskSubPaymentId)!=null?mapChineseNum.get(taskSubPaymentId).intValue():0);//中方总人数
+                    taskSubPaymentPO.setForeignerNum(taskSubPaymentPO.getHeadcount() - taskSubPaymentPO.getChineseNum());//外方总人数
                     taskSubPaymentService.updateById(taskSubPaymentPO);
                 }
             }
@@ -441,9 +441,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
                     taskSubSupplierPO.setId(taskSubSupplierId);
                     taskSubSupplierPO.setTaxAmount(mapTaxAmount.get(taskSubSupplierId));//个税总金额
-                    taskSubSupplierPO.setHeadcount(mapheadcount.get(taskSubSupplierId).intValue());//总人数
-                    taskSubSupplierPO.setChineseNum(mapChineseNum.get(taskSubSupplierId).intValue());//中方总人数
-                    taskSubSupplierPO.setForeignerNum(mapheadcount.get(taskSubSupplierId).intValue() - mapChineseNum.get(taskSubSupplierId).intValue());//外方总人数
+                    taskSubSupplierPO.setHeadcount(mapheadcount.get(taskSubSupplierId)!=null?mapheadcount.get(taskSubSupplierId).intValue():0);//总人数
+                    taskSubSupplierPO.setChineseNum(mapChineseNum.get(taskSubSupplierId)!=null?mapChineseNum.get(taskSubSupplierId).intValue():0);//中方总人数
+                    taskSubSupplierPO.setForeignerNum(taskSubSupplierPO.getHeadcount() - taskSubSupplierPO.getChineseNum());//外方总人数
                     taskSubSupplierService.updateById(taskSubSupplierPO);
                 }
             }
