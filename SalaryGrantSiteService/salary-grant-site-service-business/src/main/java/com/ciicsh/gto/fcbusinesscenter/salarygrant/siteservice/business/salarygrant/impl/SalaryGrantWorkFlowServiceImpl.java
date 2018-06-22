@@ -21,6 +21,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.Result;
+import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -871,4 +872,53 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         //（10）返回结果true
         return true;
     }
+
+
+    /**
+     * 记录操作信息
+     * @author chenpb
+     * @since 2018-06-21
+     * @param taskCreateMsgDTO
+     */
+    @Override
+    public void createTask (TaskCreateMsgDTO taskCreateMsgDTO) {
+
+    }
+
+    /**
+     * 修改操作信息
+     * @author chenpb
+     * @since 2018-06-21
+     * @param missionId
+     * @param processDefinitionKey
+     */
+    @Override
+    public void completeTask(String missionId, String processDefinitionKey) {
+
+    }
+
+    /**
+     * 开始工作流
+     * @author chenpb
+     * @since 2018-06-21
+     * @param missionId
+     * @param processDefinitionKey
+     */
+    @Override
+    public void  startProcess (String missionId, String processDefinitionKey) {
+
+    }
+
+    /**
+     * 结束工作流
+     * @author chenpb
+     * @since 2018-06-21
+     * @param missionId
+     * @param action
+     */
+    @Override
+    public void  completeProcess(String missionId, String action) {
+
+    }
+
 }

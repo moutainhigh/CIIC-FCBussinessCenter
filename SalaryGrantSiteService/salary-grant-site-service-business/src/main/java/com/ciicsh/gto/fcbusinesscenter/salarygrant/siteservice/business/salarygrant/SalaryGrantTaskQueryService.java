@@ -74,31 +74,52 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
     void cancelClosing(CancelClosingMsg msg) throws Exception;
 
     /**
-     * 审批通过
+     * 提交
      * @author chenpb
      * @since 2018-06-08
+     * @param flag
      * @param bo
      * @throws Exception
      */
-    void approvalPass(SalaryGrantTaskBO bo) throws Exception;
+    void submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
+
+    /**
+     * 审批通过
+     * @author chenpb
+     * @since 2018-06-08
+     * @param flag
+     * @param bo
+     * @throws Exception
+     */
+    void approvalPass(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
 
     /**
      * 审批退回
      * @author chenpb
      * @since 2018-06-08
+     * @param flag
      * @param bo
      * @throws Exception
      */
-    void approvalReject(SalaryGrantTaskBO bo) throws Exception;
+    void approvalReject(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
 
     /**
-     * 详情提交
+     * 抢占资源锁
      * @author chenpb
-     * @since 2018-06-08
+     * @since 2018-06-22
      * @param bo
-     * @throws Exception
+     * @return
      */
-    void submit(SalaryGrantTaskBO bo) throws Exception ;
+    Integer lockMainTask(SalaryGrantTaskBO bo);
+
+    /**
+     * 抢占资源锁
+     * @author chenpb
+     * @since 2018-06-22
+     * @param bo
+     * @return
+     */
+    Integer lockSubTask(SalaryGrantTaskBO bo);
 
     /**
      * 薪资发放定时任务

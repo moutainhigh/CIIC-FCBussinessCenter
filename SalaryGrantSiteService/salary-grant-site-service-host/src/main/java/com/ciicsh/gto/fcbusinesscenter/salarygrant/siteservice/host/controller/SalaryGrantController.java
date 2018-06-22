@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Paginati
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.ReprieveEmpImportExcelDTO;
@@ -21,6 +22,7 @@ import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,9 +50,6 @@ public class SalaryGrantController {
 
     @Autowired
     CommonService commonService;
-
-    @Autowired
-    private SalaryGrantTaskProcessService salaryGrantTaskProcessService;
 
     @Autowired
     private SalaryGrantTaskQueryService salaryGrantTaskQueryService;
@@ -136,11 +135,17 @@ public class SalaryGrantController {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交").setContent(JSON.toJSONString(dto)));
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
-            salaryGrantTaskQueryService.submit(bo);
+            if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockMainTask(bo) > 0) {
+                salaryGrantTaskQueryService.submit(true, bo);
+            } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockSubTask(bo) > 0) {
+                salaryGrantTaskQueryService.submit(false, bo);
+            } else {
+                return ResultGenerator.genServerFailResult("已提交");
+            }
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("提交失败");
+            return ResultGenerator.genServerFailResult("系统异常");
         }
     }
 
@@ -160,10 +165,17 @@ public class SalaryGrantController {
                 SalaryGrantTaskBO bo = CommonTransform.convertToEntity(x, SalaryGrantTaskBO.class);
                 bo.setUserId(UserContext.getUserId());
                 try {
-                    salaryGrantTaskQueryService.submit(bo);
+                    if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockMainTask(bo) > 0) {
+                        salaryGrantTaskQueryService.submit(true, bo);
+                    } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockSubTask(bo) > 0) {
+                        salaryGrantTaskQueryService.submit(false, bo);
+                    } else {
+                        failList.add(x);
+                        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("已提交").setContent(JSON.toJSONString(x)));
+                    }
                 } catch (Exception e) {
                     failList.add(x);
-                    logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交失败").setContent(JSON.toJSONString(x)));
+                    logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("系统异常").setContent(JSON.toJSONString(x)));
                 }
             });
         }
@@ -184,11 +196,17 @@ public class SalaryGrantController {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批通过").setContent(JSON.toJSONString(dto)));
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
-            salaryGrantTaskQueryService.approvalPass(bo);
+            if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockMainTask(bo) > 0) {
+                salaryGrantTaskQueryService.approvalPass(true, bo);
+            } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockSubTask(bo) > 0) {
+                salaryGrantTaskQueryService.approvalPass(false, bo);
+            } else {
+                return ResultGenerator.genServerFailResult("已通过审批");
+            }
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("通过异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("审批通过失败");
+            return ResultGenerator.genServerFailResult("系统异常");
         }
     }
 
@@ -205,11 +223,17 @@ public class SalaryGrantController {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回").setContent(JSON.toJSONString(dto)));
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
-            salaryGrantTaskQueryService.approvalReject(bo);
+            if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockMainTask(bo) > 0) {
+                salaryGrantTaskQueryService.approvalReject(true, bo);
+            } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockSubTask(bo) > 0) {
+                salaryGrantTaskQueryService.approvalReject(false, bo);
+            } else {
+                return ResultGenerator.genServerFailResult("已退回");
+            }
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("退回失败");
+            return ResultGenerator.genServerFailResult("系统异常");
         }
     }
 
@@ -490,7 +514,7 @@ public class SalaryGrantController {
     public Result<EmpCalcResultBO> itemsData(@RequestBody SalaryTaskHandleDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资").setContent(JSON.toJSONString(dto)));
         try {
-            List<CalcResultItemBO> paramList = CommonTransform.convertToEntities(dto.getItemInfo(), CalcResultItemBO.class);
+            List<CalcResultItemBO> paramList = CommonTransform.convertToEntities(new ArrayList<T>(), CalcResultItemBO.class);
             SalaryGrantTaskBO paramBo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             List<EmpCalcResultBO> bo = salaryGrantEmployeeQueryService.getEmployeeForBizList(paramList, paramBo);
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资").setContent(JSON.toJSONString(bo)));

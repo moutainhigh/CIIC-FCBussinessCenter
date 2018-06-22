@@ -241,14 +241,40 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     }
 
     /**
+     * 抢占资源锁
+     * @author chenpb
+     * @since 2018-06-22
+     * @param bo
+     * @return
+     */
+    @Override
+    public Integer lockMainTask(SalaryGrantTaskBO bo) {
+        return salaryGrantMainTaskMapper.lockTask(bo);
+    }
+
+    /**
+     * 抢占资源锁
+     * @author chenpb
+     * @since 2018-06-22
+     * @param bo
+     * @return
+     */
+    @Override
+    public Integer lockSubTask(SalaryGrantTaskBO bo) {
+        return salaryGrantSubTaskMapper.lockTask(bo);
+    }
+
+    /**
      * 提交
      * @author chenpb
      * @since 2018-06-08
+     * @param flag
      * @param bo
+     * @throws Exception
      */
     @Override
-    public void submit(SalaryGrantTaskBO bo) throws Exception {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+    public void submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        if (flag) {
             salaryGrantWorkFlowService.doSubmitTask(bo);
         } else {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
@@ -261,11 +287,13 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      * 审批通过
      * @author chenpb
      * @since 2018-06-08
+     * @param flag
      * @param bo
+     * @throws Exception
      */
     @Override
-    public void approvalPass(SalaryGrantTaskBO bo) throws Exception {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+    public void approvalPass(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        if (flag) {
             salaryGrantWorkFlowService.doApproveTask(bo);
         } else {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
@@ -276,11 +304,13 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      * 审批退回
      * @author chenpb
      * @since 2018-06-08
+     * @param flag
      * @param bo
+     * @throws Exception
      */
     @Override
-    public void approvalReject(SalaryGrantTaskBO bo) throws Exception {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+    public void approvalReject(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        if (flag) {
             salaryGrantWorkFlowService.doReturnTask(bo);
         } else {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
