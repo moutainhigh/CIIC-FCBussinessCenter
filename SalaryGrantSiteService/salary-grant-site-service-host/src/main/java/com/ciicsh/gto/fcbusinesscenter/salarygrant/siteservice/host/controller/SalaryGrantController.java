@@ -140,12 +140,12 @@ public class SalaryGrantController {
             } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockSubTask(bo) > 0) {
                 salaryGrantTaskQueryService.submit(false, bo);
             } else {
-                return ResultGenerator.genServerFailResult("已提交");
+                return ResultGenerator.genServerFailResult("已被提交！");
             }
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("系统异常");
+            return ResultGenerator.genServerFailResult("系统异常！");
         }
     }
 
@@ -196,17 +196,18 @@ public class SalaryGrantController {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批通过").setContent(JSON.toJSONString(dto)));
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
+            salaryGrantTaskQueryService.lockMainTask(bo);
             if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockMainTask(bo) > 0) {
                 salaryGrantTaskQueryService.approvalPass(true, bo);
             } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockSubTask(bo) > 0) {
                 salaryGrantTaskQueryService.approvalPass(false, bo);
             } else {
-                return ResultGenerator.genServerFailResult("已通过审批");
+                return ResultGenerator.genServerFailResult("已被通过审批！");
             }
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("通过异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("系统异常");
+            return ResultGenerator.genServerFailResult("系统异常！");
         }
     }
 
@@ -228,12 +229,12 @@ public class SalaryGrantController {
             } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType()) && salaryGrantTaskQueryService.lockSubTask(bo) > 0) {
                 salaryGrantTaskQueryService.approvalReject(false, bo);
             } else {
-                return ResultGenerator.genServerFailResult("已退回");
+                return ResultGenerator.genServerFailResult("已被退回！");
             }
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("系统异常");
+            return ResultGenerator.genServerFailResult("系统异常！");
         }
     }
 
