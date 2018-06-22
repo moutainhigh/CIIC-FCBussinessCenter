@@ -50,6 +50,7 @@
         <fcbusinesscenterentity.version>1.0.0-SNAPSHOT</fcbusinesscenterentity.version>
         <mongoclient.version>1.1.0-SNAPSHOT</mongoclient.version>
         <sheetserviceapi.version>1.0.0-SNAPSHOT</sheetserviceapi.version>
+        <fcbusinesscenter.salarymanagement.version>1.0.0-SNAPSHOT</fcbusinesscenter.salarymanagement.version>
     </properties>
 
     <distributionManagement>
@@ -273,6 +274,11 @@
                 <version>${ant.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+                <artifactId>salarymanagement-commandservice-api</artifactId>
+                <version>${fcbusinesscenter.salarymanagement.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

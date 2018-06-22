@@ -179,6 +179,10 @@
             <artifactId>mongo-client</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salarymanagement-commandservice-api</artifactId>
+        </dependency>
     </dependencies>
 
 
