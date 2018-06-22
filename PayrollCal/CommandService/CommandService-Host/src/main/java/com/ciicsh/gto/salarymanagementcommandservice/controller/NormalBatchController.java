@@ -242,7 +242,7 @@ public class NormalBatchController {
                 //send message to kafka
             PayrollMsg msg = new PayrollMsg();
             msg.setBatchCode(batchCodes);
-            msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
+            msg.setBatchType(BatchTypeEnum.NORMAL.getValue());git
             msg.setOperateType(OperateTypeEnum.DELETE.getValue());
             sender.Send(msg);
 
