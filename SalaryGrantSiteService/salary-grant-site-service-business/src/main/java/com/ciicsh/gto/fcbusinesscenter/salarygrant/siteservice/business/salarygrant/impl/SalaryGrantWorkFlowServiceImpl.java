@@ -876,9 +876,9 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
 
     /**
-     * 记录操作信息
+     * 业务处理
      * @author chenpb
-     * @since 2018-06-21
+     * @since 2018-06-22
      * @param taskCreateMsgDTO
      */
     @Override
@@ -889,7 +889,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     }
 
     /**
-     * 修改操作信息
+     * 完成任务
      * @author chenpb
      * @since 2018-06-22
      * @param dto
@@ -912,9 +912,9 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     }
 
     /**
-     * 结束工作流
+     * 结束流程
      * @author chenpb
-     * @since 2018-06-21
+     * @since 2018-06-22
      * @param missionId
      * @param action
      */

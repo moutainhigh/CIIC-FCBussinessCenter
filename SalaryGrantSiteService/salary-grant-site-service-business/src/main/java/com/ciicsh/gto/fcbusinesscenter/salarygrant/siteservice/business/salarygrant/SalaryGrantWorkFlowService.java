@@ -143,7 +143,7 @@ public interface SalaryGrantWorkFlowService {
     Boolean doInvalidTask (SalaryGrantTaskBO salaryGrantTaskBO) throws Exception;
 
     /**
-     * 记录操作信息
+     * 业务处理
      * @author chenpb
      * @since 2018-06-21
      * @param taskCreateMsgDTO
@@ -151,9 +151,9 @@ public interface SalaryGrantWorkFlowService {
     void createTask (TaskCreateMsgDTO taskCreateMsgDTO);
 
     /**
-     * 修改操作信息
+     * 完成任务
      * @author chenpb
-     * @since 2018-06-22
+     * @since 2018-06-21
      * @param dto
      * @throws Exception
      */
@@ -162,13 +162,13 @@ public interface SalaryGrantWorkFlowService {
     /**
      * 启动流程
      * @author chenpb
-     * @since 2018-06-22
+     * @since 2018-06-21
      * @param dto
      */
     void startProcess (MissionRequestDTO dto) throws Exception;
 
     /**
-     * 结束工作流
+     * 结束流程
      * @author chenpb
      * @since 2018-06-21
      * @param missionId
