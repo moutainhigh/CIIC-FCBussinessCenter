@@ -125,7 +125,7 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   private String publishManualRemark;
 
   /**
-   * 邮件发送状态 0: 无关 1: 待发送 2: 发送中 3: 发送成功 4: 发送失败
+   * 邮件发送状态 0: 未发送 1: 待发送 2: 发送中 3: 发送成功 4: 发送失败 5: 已忽略 6: 无关
    */
   @TableField("publish_state")
   private Integer publishState;
@@ -137,7 +137,7 @@ public class PrsMainTaskPO extends Model<PrsMainTaskPO> {
   private String publishFailLog;
 
   /**
-   * 上传状态 0: 无关 1: 待上传 2: 已上传
+   * 上传状态 0: 未上传 1: 待上传 2: 上传中 3: 上传成功 4: 上传失败 5: 已忽略 6: 无关
    */
   @TableField("upload_state")
   private Integer uploadState;

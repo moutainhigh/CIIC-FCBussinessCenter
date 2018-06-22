@@ -315,6 +315,45 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 	//免税津贴
 	private BigDecimal dutyFreeAllowance;
 
+	/**
+	 * 创建人displayname
+	 */
+	@TableField(value="created_by_display_name",fill = FieldFill.INSERT)
+	private String createdByDisplayName;
+	/**
+	 * 修改人displayname
+	 */
+	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedByDisplayName;
+
+	public String getDomesticDays() {
+		return domesticDays;
+	}
+
+	public String getOverseasDays() {
+		return overseasDays;
+	}
+
+	public String getNumberOfMonths() {
+		return numberOfMonths;
+	}
+
+	public String getCreatedByDisplayName() {
+		return createdByDisplayName;
+	}
+
+	public void setCreatedByDisplayName(String createdByDisplayName) {
+		this.createdByDisplayName = createdByDisplayName;
+	}
+
+	public String getModifiedByDisplayName() {
+		return modifiedByDisplayName;
+	}
+
+	public void setModifiedByDisplayName(String modifiedByDisplayName) {
+		this.modifiedByDisplayName = modifiedByDisplayName;
+	}
+
 	public BigDecimal getPreTaxAggregate() {
 		return preTaxAggregate;
 	}
