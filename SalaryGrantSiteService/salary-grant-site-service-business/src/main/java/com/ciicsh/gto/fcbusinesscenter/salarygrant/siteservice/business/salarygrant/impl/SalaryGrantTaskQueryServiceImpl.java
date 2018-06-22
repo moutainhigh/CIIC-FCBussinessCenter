@@ -28,6 +28,7 @@ import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
+import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -281,8 +282,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
         }
-        MissionRequestDTO missionRequestDTO = BeanUtils.instantiate(MissionRequestDTO.class);
-        sheetServiceProxy.startProcess(missionRequestDTO);
+        sheetServiceProxy.startProcess(createStartParams("",""));
     }
 
     /**
@@ -300,6 +300,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
         }
+        sheetServiceProxy.completeTask(createCompleteParams(""));
     }
 
     /**
@@ -317,9 +318,10 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
         }
+        sheetServiceProxy.completeTask(createCompleteParams(""));
     }
 
-    private MissionRequestDTO createDefinitiitionParams(String missionId, String processDefinitionKey) {
+    private MissionRequestDTO createStartParams(String missionId, String processDefinitionKey) {
         MissionRequestDTO missionRequestDTO = BeanUtils.instantiate(MissionRequestDTO.class);
         Map variables = new HashMap<>();
         variables.put("taskCode", "");
@@ -327,6 +329,15 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         missionRequestDTO.setProcessDefinitionKey(processDefinitionKey);
         missionRequestDTO.setVariables(variables);
         return missionRequestDTO;
+    }
+
+    private TaskRequestDTO createCompleteParams(String taskId) {
+        TaskRequestDTO taskRequestDTO = BeanUtils.instantiate(TaskRequestDTO.class);
+        Map variables = new HashMap<>();
+        variables.put("taskCode", "");
+        taskRequestDTO.setTaskId(taskId);
+        taskRequestDTO.setVariables(variables);
+        return taskRequestDTO;
     }
 
     /**
