@@ -70,7 +70,7 @@ public class KafkaReceiver {
 
     }
 
-    @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_WORK_FLOW)
+    @StreamListener(MsgConstants.FC.PAYROLL_MAIN)
     public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message){
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
@@ -78,7 +78,7 @@ public class KafkaReceiver {
        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
     }
 
-    @StreamListener(TaskSink.SALARY_GRANT_SUB_TASK_LTB_CREATE_WORK_FLOW)
+    @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
     public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message){
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
@@ -86,7 +86,7 @@ public class KafkaReceiver {
         // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
     }
 
-    @StreamListener(TaskSink.SALARY_GRANT_SUB_TASK_LTW_CREATE_WORK_FLOW)
+    @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_FOREIGN_CURRENCY)
     public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message){
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
@@ -94,7 +94,7 @@ public class KafkaReceiver {
         // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
     }
 
-    @StreamListener(TaskSink.SALARY_GRANT_SUB_TASK_ST_CREATE_WORK_FLOW)
+    @StreamListener(MsgConstants.FC.PAYROLL_NONLOCAL)
     public void salaryGrantSubTaskSTCreateWorkFlow(Message<TaskCreateMsgDTO> message){
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
@@ -102,7 +102,7 @@ public class KafkaReceiver {
         // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
     }
 
-    @StreamListener(TaskSink.SALARY_GRANT_SUPPLIER_PAYMENT_TASK_CREATE_WORK_FLOW)
+    @StreamListener(MsgConstants.FC.SUPPLIER_PAYMENT)
     public void salaryGrantSupplierPaymentTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message){
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
