@@ -78,24 +78,27 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
      * @author chenpb
      * @since 2018-06-08
      * @param bo
+     * @throws Exception
      */
-    void approvalPass(SalaryGrantTaskBO bo);
+    void approvalPass(SalaryGrantTaskBO bo) throws Exception;
 
     /**
      * 审批退回
      * @author chenpb
      * @since 2018-06-08
      * @param bo
+     * @throws Exception
      */
-    void approvalReject(SalaryGrantTaskBO bo);
+    void approvalReject(SalaryGrantTaskBO bo) throws Exception;
 
     /**
      * 详情提交
      * @author chenpb
      * @since 2018-06-08
      * @param bo
+     * @throws Exception
      */
-    void submit(SalaryGrantTaskBO bo);
+    void submit(SalaryGrantTaskBO bo) throws Exception ;
 
     /**
      * 薪资发放定时任务

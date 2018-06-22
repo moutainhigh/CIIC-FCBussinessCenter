@@ -152,17 +152,64 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/batchSubmit", method = RequestMethod.POST)
-    public Result batchSubmit(@RequestBody List<SalaryTaskHandleDTO> list) {
+    public Result<List<SalaryTaskHandleDTO>> batchSubmit(@RequestBody List<SalaryTaskHandleDTO> list) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量提交").setContent(JSON.toJSONString(list)));
+        List<SalaryTaskHandleDTO> failList = new ArrayList<>();
+        if (!list.isEmpty()) {
+            list.stream().forEach(x -> {
+                SalaryGrantTaskBO bo = CommonTransform.convertToEntity(x, SalaryGrantTaskBO.class);
+                bo.setUserId(UserContext.getUserId());
+                try {
+                    salaryGrantTaskQueryService.submit(bo);
+                } catch (Exception e) {
+                    failList.add(x);
+                    logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("提交失败").setContent(JSON.toJSONString(x)));
+                }
+            });
+        }
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量提交结果").setContent(JSON.toJSONString(failList)));
+        return ResultGenerator.genSuccessResult(failList);
+    }
+
+    /**
+     * 审批通过
+     * @author chenpb
+     * @date 2018-05-14
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/pass", method = RequestMethod.POST)
+    public Result pass(@RequestBody SalaryTaskHandleDTO dto) {
         try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量提交").setContent("成功"));
-            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(list.get(0), SalaryGrantTaskBO.class);
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批通过").setContent(JSON.toJSONString(dto)));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
-            salaryGrantTaskQueryService.submit(bo);
+            salaryGrantTaskQueryService.approvalPass(bo);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("批量提交异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("批量提交失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("通过异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("审批通过失败");
+        }
+    }
+
+    /**
+     * 审批退回
+     * @author chenpb
+     * @date 2018-05-14
+     * @param
+     * @return
+     */
+    @RequestMapping(value="/reject", method = RequestMethod.POST)
+    public Result reject(@RequestBody SalaryTaskHandleDTO dto) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回").setContent(JSON.toJSONString(dto)));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setUserId(UserContext.getUserId());
+            salaryGrantTaskQueryService.approvalReject(bo);
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("退回失败");
         }
     }
 
@@ -220,48 +267,6 @@ public class SalaryGrantController {
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("子任务单撤回处理失败");
-        }
-    }
-
-    /**
-     * 审批通过
-     * @author chenpb
-     * @date 2018-05-14
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/pass", method = RequestMethod.POST)
-    public Result pass(@RequestBody SalaryTaskHandleDTO dto) {
-        try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("审批通过").setContent(JSON.toJSONString(dto)));
-            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-            bo.setUserId(UserContext.getUserId());
-            salaryGrantTaskQueryService.approvalPass(bo);
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("通过异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("审批通过失败");
-        }
-    }
-
-    /**
-     * 审批退回
-     * @author chenpb
-     * @date 2018-05-14
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/reject", method = RequestMethod.POST)
-    public Result reject(@RequestBody SalaryTaskHandleDTO dto) {
-        try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回").setContent(JSON.toJSONString(dto)));
-            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-            bo.setUserId(UserContext.getUserId());
-            salaryGrantTaskQueryService.approvalReject(bo);
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退回异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("退回失败");
         }
     }
 

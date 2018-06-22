@@ -5,6 +5,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskMissionRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
 
 import java.util.Map;
 
@@ -138,4 +139,39 @@ public interface SalaryGrantWorkFlowService {
      * @return
      */
     Boolean doInvalidTask (SalaryGrantTaskBO salaryGrantTaskBO) throws Exception;
+
+    /**
+     * 记录操作信息
+     * @author chenpb
+     * @since 2018-06-21
+     * @param taskCreateMsgDTO
+     */
+    void createTask (TaskCreateMsgDTO taskCreateMsgDTO);
+
+    /**
+     * 修改操作信息
+     * @author chenpb
+     * @since 2018-06-21
+     * @param missionId
+     * @param processDefinitionKey
+     */
+    void completeTask(String missionId, String processDefinitionKey);
+
+    /**
+     * 开始工作流
+     * @author chenpb
+     * @since 2018-06-21
+     * @param missionId
+     * @param processDefinitionKey
+     */
+    void startProcess (String missionId, String processDefinitionKey);
+
+    /**
+     * 结束工作流
+     * @author chenpb
+     * @since 2018-06-21
+     * @param missionId
+     * @param action
+     */
+    void completeProcess(String missionId, String action);
 }

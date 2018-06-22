@@ -26,6 +26,8 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
+import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
+import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,10 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Autowired
     LogClientService logClientService;
     @Autowired
+    private BatchProxy batchProxy;
+    @Autowired
+    private SheetServiceProxy sheetServiceProxy;
+    @Autowired
     private CommonService commonService;
     @Autowired
     private SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
@@ -67,11 +73,9 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Autowired
     private WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
     @Autowired
-    private BatchProxy batchProxy;
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
     @Autowired
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
-    @Autowired
-    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
     @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
 
@@ -237,15 +241,32 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     }
 
     /**
+     * 提交
+     * @author chenpb
+     * @since 2018-06-08
+     * @param bo
+     */
+    @Override
+    public void submit(SalaryGrantTaskBO bo) throws Exception {
+        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+            salaryGrantWorkFlowService.doSubmitTask(bo);
+        } else {
+            salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
+        }
+        MissionRequestDTO missionRequestDTO = BeanUtils.instantiate(MissionRequestDTO.class);
+        sheetServiceProxy.startProcess(missionRequestDTO);
+    }
+
+    /**
      * 审批通过
      * @author chenpb
      * @since 2018-06-08
      * @param bo
      */
     @Override
-    public void approvalPass(SalaryGrantTaskBO bo) {
+    public void approvalPass(SalaryGrantTaskBO bo) throws Exception {
         if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
-
+            salaryGrantWorkFlowService.doApproveTask(bo);
         } else {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
         }
@@ -258,26 +279,11 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      * @param bo
      */
     @Override
-    public void approvalReject(SalaryGrantTaskBO bo) {
+    public void approvalReject(SalaryGrantTaskBO bo) throws Exception {
         if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
-
+            salaryGrantWorkFlowService.doReturnTask(bo);
         } else {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
-        }
-    }
-
-    /**
-     * 详情提交
-     * @author chenpb
-     * @since 2018-06-08
-     * @param bo
-     */
-    @Override
-    public void submit(SalaryGrantTaskBO bo) {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
-
-        } else {
-            salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
         }
     }
 
