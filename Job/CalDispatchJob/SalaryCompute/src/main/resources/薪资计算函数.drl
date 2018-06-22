@@ -5,6 +5,13 @@ import com.ciicsh.caldispatchjob.entity.EmpPayItem;
 import com.ciicsh.caldispatchjob.entity.FuncEntity;
 import java.math.BigDecimal;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import org.apache.commons.lang3.StringUtils;
+import java.time.Period;
+import java.util.Calendar;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 
 rule "最低工资标准" // {最低工资标准([城市])}
     when
@@ -12,30 +19,30 @@ rule "最低工资标准" // {最低工资标准([城市])}
     then
         FuncEntity func = $context.getFuncEntity("最低工资标准");
         String para1 = func.getParameters().get(0);
-        String city = (String)$context.getItemValByCode(para1);
+        String city = String.valueOf($context.getItemValByCode(para1));
 
-        if(city.equals("扬州")){
-            func.setResult(BigDecimal.valueOf(1089.00));
-        }else if(city.equals("天津")){
-            func.setResult(BigDecimal.valueOf(2050.00));
-        }else if(city.equals("武汉")){
-            func.setResult(BigDecimal.valueOf(1750.00));
-        }else if(city.equals("北京")){
-            func.setResult(BigDecimal.valueOf(2000.00));
-        }else if(city.equals("沈阳")){
-            func.setResult(BigDecimal.valueOf(1530.00));
-        }else if(city.equals("西安")){
-            func.setResult(BigDecimal.valueOf(1680.00));
-        }else if(city.equals("成都")){
-            func.setResult(BigDecimal.valueOf(1500.00));
-        }else if(city.equals("广州")){
-            func.setResult(BigDecimal.valueOf(1895.00));
-        }else if(city.equals("济南")){
-            func.setResult(BigDecimal.valueOf(1810.00));
-        }else if(city.equals("上海")){
-            func.setResult(BigDecimal.valueOf(2300.00));
+        if("扬州".equals(city)){
+            func.setResult(new BigDecimal("1890.00"));
+        }else if("天津".equals(city)){
+            func.setResult(new BigDecimal("2050.00"));
+        }else if("武汉".equals(city)){
+            func.setResult(new BigDecimal("1750.00"));
+        }else if("北京".equals(city)){
+            func.setResult(new BigDecimal("2000.00"));
+        }else if("沈阳".equals(city)){
+            func.setResult(new BigDecimal("1530.00"));
+        }else if("西安".equals(city)){
+            func.setResult(new BigDecimal("1680.00"));
+        }else if("成都".equals(city)){
+            func.setResult(new BigDecimal("1500.00"));
+        }else if("广州".equals(city)){
+            func.setResult(new BigDecimal("1895.00"));
+        }else if("济南".equals(city)){
+            func.setResult(new BigDecimal("1810.00"));
+        }else if("上海".equals(city)){
+            func.setResult(new BigDecimal("2300.00"));
         }else{
-            func.setResult(BigDecimal.valueOf(0.00));
+            func.setResult(BigDecimal.ZERO);
         }
 end
 
@@ -46,12 +53,28 @@ rule "连续工龄" // {连续工龄([首次参加工作日期],[离职日期])}
         FuncEntity func = $context.getFuncEntity("连续工龄");
         String para1 = func.getParameters().get(0);
         String para2 = func.getParameters().get(1);
+        // 首次参加工作日期
+        String firstWorkingDate = String.valueOf($context.getItemValByCode(para1));
+        // 离职日期
+        String leaveDate = String.valueOf($context.getItemValByCode(para2));
 
-        String firstWorkingDate = (String)$context.getItemValByCode(para1); // 首次参加工作日期
-        String leaveDate = (String)$context.getItemValByCode(para2); // 离职日期
+        LocalDate beginDate = LocalDate.parse(firstWorkingDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate endDate = LocalDate.parse(leaveDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        func.setResult(BigDecimal.valueOf(1.2)); // TODO
-
+        // 得到工龄
+        int years = 0;
+        // 得到年差
+        years = endDate.getYear() - beginDate.getYear();
+        // 若离职月数小于首次开始参加工作时间的月数，年差-1
+        if (endDate.getMonthValue() < beginDate.getMonthValue()) {
+            years = years - 1;
+        } else if (endDate.getMonthValue() == beginDate.getMonthValue()) {
+            // 当月数相等时，判断日数，若离职月的日数小于首次开始参加工作时间的日数，年差-1
+            if (endDate.getDayOfMonth() < beginDate.getDayOfMonth()) {
+                years = years - 1;
+            }
+        }
+        func.setResult(new BigDecimal(String.valueOf(years)));
 end
 
 rule "工龄" // {工龄([入职日期],[离职日期])}
@@ -61,64 +84,28 @@ rule "工龄" // {工龄([入职日期],[离职日期])}
         FuncEntity func = $context.getFuncEntity("工龄");
         String para1 = func.getParameters().get(0);
         String para2 = func.getParameters().get(1);
+        // 入职日期
+        String onboardDate = String.valueOf($context.getItemValByCode(para1));
+        // 离职日期
+        String leaveDate = String.valueOf($context.getItemValByCode(para2));
 
-        String onboardDate = (String)$context.getItemValByCode(para1); // 入职日期
-        String leaveDate = (String)$context.getItemValByCode(para2); // 离职日期
-
-        func.setResult(BigDecimal.valueOf(1.2)); // TODO
-
-end
-
-rule "免抵额" // {免抵额([国籍])}
-    when
-        $context:DroolsContext()
-    then
-        FuncEntity func = $context.getFuncEntity("免抵额");
-        String para1 = func.getParameters().get(0);
-        String nation = (String)$context.getItemValByCode(para1);
-        nation = nation.trim(); // 去除前后空格
-
-        if(nation.equals("中华人民共和国")){
-            func.setResult(BigDecimal.valueOf(3500.00));
-        }else{
-            func.setResult(BigDecimal.valueOf(4800.00));
+        LocalDate beginDate = LocalDate.parse(onboardDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate endDate = LocalDate.parse(leaveDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+         // 得到工龄
+        int years = 0;
+        // 得到年差
+        years = endDate.getYear() - beginDate.getYear();
+        // 若离职月数少于入职月数，年差-1
+        if (endDate.getMonthValue() < beginDate.getMonthValue()) {
+            years = years - 1;
+        } else if (endDate.getMonthValue() == beginDate.getMonthValue()) {
+            // 当月数相等时，判断日数，若离职月的日数小于入职月的日数，年差-1
+            if (endDate.getDayOfMonth() < beginDate.getDayOfMonth()) {
+                years = years - 1;
+            }
         }
-end
+        func.setResult(new BigDecimal(String.valueOf(years)));
 
-rule "年终奖税" // {年终奖税([年终奖应纳税所得额])}
-    when
-        $context:DroolsContext()
-    then
-        FuncEntity func = $context.getFuncEntity("年终奖税");
-        String para1 = func.getParameters().get(0);
-        double annualPay = (double)$context.getItemValByCode(para1); //年终奖应纳税所得额
-
-        func.setResult(BigDecimal.valueOf(14800.00)); // TODO
-end
-
-rule "股票期权税" // {股票期权税([当年应纳股票期权税],[当年已纳股票期权税])}
-    when
-        $context:DroolsContext()
-    then
-        FuncEntity func = $context.getFuncEntity("股票期权税");
-        String para1 = func.getParameters().get(0);
-        String para2 = func.getParameters().get(1);
-        double shouldStockTax = (double)$context.getItemValByCode(para1); //当年应纳股票期权税
-        double alreadyStockTax = (double)$context.getItemValByCode(para2); //当年已纳股票期权税
-
-
-        func.setResult(BigDecimal.valueOf(14800.00)); // TODO
-end
-
-rule "偶然所得税" // {偶然所得税([偶然所得])}
-    when
-        $context:DroolsContext()
-    then
-        FuncEntity func = $context.getFuncEntity("偶然所得税");
-        String para1 = func.getParameters().get(0);
-        double accidentalIncome = (double)$context.getItemValByCode(para1); //偶然所得
-
-        func.setResult(BigDecimal.valueOf(800.00)); // TODO
 end
 
 rule "劳务税" // {劳务税([劳务费])}
@@ -127,9 +114,9 @@ rule "劳务税" // {劳务税([劳务费])}
     then
         FuncEntity func = $context.getFuncEntity("劳务税");
         String para1 = func.getParameters().get(0);
-        double laborCosts = (double)$context.getItemValByCode(para1); //劳务费
+        Double laborCosts = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); //劳务费
 
-        func.setResult(BigDecimal.valueOf(800.00)); // TODO
+        func.setResult(new BigDecimal("800.00")); // TODO
 end
 
 rule "病假扣除比例" // {病假扣除比例([城市],[工龄],[连续工龄],[病假天数],[当年度累计病假天数],[病假基数],[最低工资标准])}
@@ -145,42 +132,42 @@ rule "病假扣除比例" // {病假扣除比例([城市],[工龄],[连续工龄
         String para6 = func.getParameters().get(5);
         String para7 = func.getParameters().get(6);
 
-        String city = (String)$context.getItemValByCode(para1); // 城市
-        double workingAge = (double)$context.getItemValByCode(para2); // 工龄
-        double continueAge = (double)$context.getItemValByCode(para3); // 连续工龄
-        double sickDays = (double)$context.getItemValByCode(para4); //病假天数
-        double AnnualSickDays = (double)$context.getItemValByCode(para5); //当年度累计病假天数
-        double sickBase = (double)$context.getItemValByCode(para6); //病假基数
-        double minStandard = (double)$context.getItemValByCode(para7); //最低工资标准
+        String city = String.valueOf($context.getItemValByCode(para1)); // 城市
+        Double workingAge = Double.parseDouble(String.valueOf($context.getItemValByCode(para2))); // 工龄
+        Double continueAge = Double.parseDouble(String.valueOf($context.getItemValByCode(para3))); // 连续工龄
+        Double sickDays = Double.parseDouble(String.valueOf($context.getItemValByCode(para4))); // 病假天数
+        Double AnnualSickDays = Double.parseDouble(String.valueOf($context.getItemValByCode(para5))); // 当年度累计病假天数
+        Double sickBase = Double.parseDouble(String.valueOf($context.getItemValByCode(para6))); // 病假基数
+        Double minStandard = Double.parseDouble(String.valueOf($context.getItemValByCode(para7))); // 最低工资标准
 
-        if((city.equals("扬州") || city.equals("上海")) && workingAge < 2){
-            func.setResult(BigDecimal.valueOf(0.4));
-        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >=2 && workingAge < 4){
-            func.setResult(BigDecimal.valueOf(0.3));
-        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >=4 && workingAge < 6){
-            func.setResult(BigDecimal.valueOf(0.2));
-        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >=6 && workingAge < 8){
-            func.setResult(BigDecimal.valueOf(0.1));
-        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >=8){
-            func.setResult(BigDecimal.valueOf(0.0));
-        }else if((city.equals("成都")) && continueAge < 10){
-            func.setResult(BigDecimal.valueOf(0.3));
-        }else if((city.equals("成都")) && continueAge >= 10 && continueAge < 20){
-            func.setResult(BigDecimal.valueOf(0.2));
-        }else if((city.equals("成都")) && continueAge >= 20 && continueAge < 30){
-            func.setResult(BigDecimal.valueOf(0.1));
-        }else if((city.equals("成都")) && continueAge >= 30){
-             func.setResult(BigDecimal.valueOf(0.05));
-        }else if(city.equals("北京") || city.equals("天津") || city.equals("沈阳") || city.equals("广州") || city.equals("武汉")){
-             func.setResult(BigDecimal.valueOf(0.2));
-        }else if((city.equals("北京") || city.equals("天津") || city.equals("沈阳") || city.equals("广州") || city.equals("武汉"))
+        if(("扬州".equals(city) || "上海".equals(city)) && workingAge < 2){
+            func.setResult(new BigDecimal("0.4"));
+        }else if(("扬州".equals(city) || "上海".equals(city)) && workingAge >= 2 && workingAge < 4){
+            func.setResult(new BigDecimal("0.3"));
+        }else if(("扬州".equals(city) || "上海".equals(city)) && workingAge >= 4 && workingAge < 6){
+            func.setResult(new BigDecimal("0.2"));
+        }else if(("扬州".equals(city) || "上海".equals(city)) && workingAge >= 6 && workingAge < 8){
+            func.setResult(new BigDecimal("0.1"));
+        }else if(("扬州".equals(city) || "上海".equals(city)) && workingAge >= 8){
+            func.setResult(BigDecimal.ZERO);
+        }else if(("成都".equals(city)) && continueAge < 10){
+            func.setResult(new BigDecimal("0.3"));
+        }else if(("成都".equals(city)) && continueAge >= 10 && continueAge < 20){
+            func.setResult(new BigDecimal("0.2"));
+        }else if(("成都".equals(city)) && continueAge >= 20 && continueAge < 30){
+            func.setResult(new BigDecimal("0.1"));
+        }else if(("成都".equals(city)) && continueAge >= 30){
+             func.setResult(new BigDecimal("0.05"));
+        }else if("北京".equals(city) || "天津".equals(city) || "沈阳".equals(city) || "广州".equals(city) || "武汉".equals(city)){
+             func.setResult(new BigDecimal("0.2"));
+        }else if(("北京".equals(city) || "天津".equals(city) || "沈阳".equals(city) || "广州".equals(city) || "武汉".equals(city))
                     && AnnualSickDays<=30 && (sickBase/21.75*sickDays*0.7 > minStandard/21.75*sickDays*0.8)){
-              func.setResult(BigDecimal.valueOf(0.3));
-        }else if(city.equals("西安") || city.equals("济南")){
-              func.setResult(BigDecimal.valueOf(0.3));
+              func.setResult(new BigDecimal("0.3"));
+        }else if("西安".equals(city) || "济南".equals(city)){
+              func.setResult(new BigDecimal("0.3"));
          }
         else{
-            func.setResult(BigDecimal.valueOf(0.00));
+            func.setResult(BigDecimal.ZERO);
         }
 end
 
@@ -194,51 +181,291 @@ rule "长病假扣除比例" // {长病假扣除比例([城市],[工龄],[连续
         String para3 = func.getParameters().get(2);
 
         String city = (String)$context.getItemValByCode(para1); // 城市
-        double workingAge = (double)$context.getItemValByCode(para2); // 工龄
-        double continueAge = (double)$context.getItemValByCode(para3); // 连续工龄
+        Double workingAge = Double.parseDouble(String.valueOf($context.getItemValByCode(para2))); // 工龄
+        Double continueAge = Double.parseDouble(String.valueOf($context.getItemValByCode(para3))); // 连续工龄
 
         if((city.equals("扬州") || city.equals("上海")) && workingAge < 1){
-            func.setResult(BigDecimal.valueOf(0.6));
-        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >=1 && workingAge < 3){
-            func.setResult(BigDecimal.valueOf(0.5));
-        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >=3){
-            func.setResult(BigDecimal.valueOf(0.4));
+            func.setResult(new BigDecimal("0.6"));
+        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >= 1 && workingAge < 3){
+            func.setResult(new BigDecimal("0.5"));
+        }else if((city.equals("扬州") || city.equals("上海")) && workingAge >= 3){
+            func.setResult(new BigDecimal("0.4"));
         }else if((city.equals("成都")) && continueAge < 10){
-             func.setResult(BigDecimal.valueOf(0.4));
+             func.setResult(new BigDecimal("0.4"));
         }else if((city.equals("成都")) && continueAge >= 10 && continueAge < 20){
-             func.setResult(BigDecimal.valueOf(0.35));
+             func.setResult(new BigDecimal("0.35"));
         }else if((city.equals("成都")) && continueAge >= 30){
-              func.setResult(BigDecimal.valueOf(0.3));
+              func.setResult(new BigDecimal("0.3"));
         }else if(city.equals("北京") || city.equals("天津") || city.equals("沈阳") || city.equals("广州") || city.equals("武汉")){
-              func.setResult(BigDecimal.valueOf(0.2));
+              func.setResult(new BigDecimal("0.2"));
         }else if(city.equals("济南")){
-               func.setResult(BigDecimal.valueOf(0.4));
+               func.setResult(new BigDecimal("0.4"));
         }else if(city.equals("西安")){
-               func.setResult(BigDecimal.valueOf(0.2));
+               func.setResult(new BigDecimal("0.2"));
         }
         else{
-            func.setResult(BigDecimal.valueOf(0.00));
+            func.setResult(BigDecimal.ZERO);
         }
 end
 
-rule "速扣数" // 速扣数([应纳税所得额])
+/**
+ * 标准薪资组,薪资项17
+ *
+*/
+rule "实际工龄" // {实际工龄([入职日期],[离职日期])}
     when
        $context:DroolsContext()
     then
-        FuncEntity func = $context.getFuncEntity("速扣数");
+        FuncEntity func = $context.getFuncEntity("实际工龄");
         String para1 = func.getParameters().get(0);
-        double taxIncome = (double)$context.getItemValByCode(para1); // 应纳税所得额
+        String para2 = func.getParameters().get(1);
+        String dateOnBoard = String.valueOf($context.getItemValByCode(para1)); // 入职日期
+        String leaveDate = String.valueOf($context.getItemValByCode(para2)); // 离职日期
 
-        func.setResult(BigDecimal.valueOf(taxIncome)); // TODO
+        LocalDate localDateBegin = LocalDate.parse(dateOnBoard);
+        LocalDate localDateEnd = LocalDate.now();
+        // 离职日期不为空，天数差=离职-入职
+        if (StringUtils.isNotBlank(leaveDate)) {
+            localDateEnd = LocalDate.parse(leaveDate);
+        } else {
+            // 离职日期为空，天数差=计薪月最后一天-入职
+            String period = $context.getBatchContext().getPeriod();
+            StringBuilder builder = new StringBuilder();
+            period = builder.append(period.substring(0, 4)).append("-").append(period.substring(4)).append("-01").toString();
+            // 计薪月第一天,格式为yyyy-MM-01
+            LocalDate periodBegin = LocalDate.parse(period);
+            // 计薪月最后一天,格式为yyyy-MM-dd
+            localDateEnd = periodBegin.with(TemporalAdjusters.lastDayOfMonth());
+        }
+        // 得到入职和离职(或者是计薪月最后一天)的天数差
+        long days = ChronoUnit.DAYS.between(localDateBegin, localDateEnd);
+        // 工作年限
+        BigDecimal workYears = new BigDecimal(days).divide(new BigDecimal(365), 6, BigDecimal.ROUND_HALF_UP);
+
+        func.setResult(workYears);
 end
 
-rule "税率" // 税率([应纳税所得额])
+/**
+** 标准薪资组,薪资项18
+*/
+rule "工龄折算率" // {工龄折算率([工作年限_连续工龄])}
+    when
+       $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("工龄折算率");
+        String para1 = func.getParameters().get(0);
+        Double successiveService = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 工作年限_连续工龄
+        if (successiveService > 0 && successiveService < 2) {
+            func.setResult(new BigDecimal("0.4"));
+        } else if (successiveService >= 2 && successiveService < 4) {
+            func.setResult(new BigDecimal("0.3"));
+        } else if (successiveService >= 4 && successiveService < 6) {
+            func.setResult(new BigDecimal("0.2"));
+        } else if (successiveService >= 6 && successiveService < 8) {
+            func.setResult(new BigDecimal("0.1"));
+        } else {
+            func.setResult(BigDecimal.ZERO);
+        }
+end
+
+/**
+** 标准薪资组,薪资项19
+*/
+rule "长病假工龄折算率" // {长病假工龄折算率([工作年限_连续工龄])}
+    when
+       $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("长病假工龄折算率");
+        String para1 = func.getParameters().get(0);
+        Double successiveService = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 工作年限_连续工龄
+        if (successiveService > 0 && successiveService < 2) {
+            func.setResult(new BigDecimal("0.4"));
+        } else if (successiveService >= 2 && successiveService < 4) {
+            func.setResult(new BigDecimal("0.3"));
+        } else if (successiveService >= 4 && successiveService < 6) {
+            func.setResult(new BigDecimal("0.2"));
+        } else if (successiveService >= 6 && successiveService < 8) {
+            func.setResult(new BigDecimal("0.1"));
+        } else {
+            func.setResult(BigDecimal.ZERO);
+        }
+end
+
+/**
+ ** 标准薪资组
+*/
+rule "免抵额" // {免抵额([国籍])}
+              // 3500或者4800
+    when
+        $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("免抵额");
+        String para1 = func.getParameters().get(0);
+        // 去除前后空格
+        String nation = String.valueOf($context.getItemValByCode(para1)).trim();
+
+        if(nation.equals("中华人民共和国")) {
+            func.setResult(new BigDecimal("3500.00"));
+        } else {
+            func.setResult(new BigDecimal("4800.00"));
+        }
+end
+
+/**
+** 标准薪资组
+*/
+rule "一般个人所得税" // {一般个人所得税([应纳税所得额])}
+    when
+       $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("一般个人所得税");
+        String para1 = func.getParameters().get(0);
+        Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+
+        func.setResult(BigDecimal.ZERO); // TODO
+end
+
+/**
+ * 标准薪资组
+ * >0&&<=0.5 0.5
+ * >0.5&&<=1 1.0
+ * >1&&<=1.5 1.5
+ * >11.5&&<=12 12.0
+ * >12&&<=12.5 12.5
+ */
+rule "实际工作年限数" // 离职日期－入职日期 是0.5档 （离职日期为空，按工作日历）
+    when
+       $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("实际工作年限数");
+        String para1 = func.getParameters().get(0);
+        String para2 = func.getParameters().get(1);
+        String dateOnBoard = String.valueOf($context.getItemValByCode(para1)); // 入职日期
+        String leaveDate = String.valueOf($context.getItemValByCode(para2)); // 离职日期
+        LocalDate localDateBegin = LocalDate.parse(dateOnBoard);
+        LocalDate localDateEnd = LocalDate.now();
+        // 离职日期不为空，天数差=离职-入职
+        if (StringUtils.isNotBlank(leaveDate)) {
+            localDateEnd = LocalDate.parse(leaveDate);
+        } else {
+            // 离职日期为空，天数差=计薪月最后一天-入职
+             String period = $context.getBatchContext().getPeriod();
+            StringBuilder builder = new StringBuilder();
+            period = builder.append(period.substring(0, 4)).append("-").append(period.substring(4)).append("-01").toString();
+            // 计薪月第一天,格式为yyyy-MM-01
+            LocalDate periodBegin = LocalDate.parse(period);
+            // 计薪月最后一天,格式为yyyy-MM-dd
+            localDateEnd = periodBegin.with(TemporalAdjusters.lastDayOfMonth());
+        }
+        // 得到入职和离职(或者是计薪月最后一天)的天数差
+        long days = ChronoUnit.DAYS.between(localDateBegin, localDateEnd);
+        BigDecimal workYears = new BigDecimal(days).divide(new BigDecimal(365), 1, BigDecimal.ROUND_HALF_UP);
+
+        String yearLimit = String.valueOf(workYears);
+        int yearFirst = Integer.valueOf(yearLimit.substring(0, yearLimit.indexOf(".")));
+        int yearLast = Integer.valueOf(yearLimit.substring(yearLimit.length() - 1));
+        switch (yearLast) {
+            case 0:
+            case 5:
+                yearFirst = yearFirst;
+                yearLast = yearLast;
+                break;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                yearFirst = yearFirst;
+                yearLast = 5;
+                break;
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                yearFirst = yearFirst + 1;
+                yearLast = 0;
+                break;
+            default:
+                break;
+        }
+        yearLimit = String.valueOf(yearFirst) + "." + String.valueOf(yearLast);
+        func.setResult(new BigDecimal(yearLimit));
+end
+
+/**
+** 标准薪资组
+*/
+rule "本月日历天数" // {本月日历天数()}
+    when
+       $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("本月日历天数");
+        // period格式为yyyy-MM
+        String period = $context.getBatchContext().getPeriod();
+        StringBuilder builder = new StringBuilder();
+        period = builder.append(period.substring(0, 4)).append("-").append(period.substring(4)).append("-01").toString();
+        LocalDate localDate = LocalDate.parse(period);
+
+        func.setResult(new BigDecimal(localDate.lengthOfMonth()));
+end
+
+/**
+** 标准薪资组
+** 不考虑节假日
+*/
+rule "本月计薪天数" // {本月计薪天数()}
+    when
+       $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("本月计薪天数");
+        // period格式为yyyy-MM
+        String period = $context.getBatchContext().getPeriod();
+
+        int workDays = 0;
+        Calendar cal = Calendar.getInstance();
+        int year = Integer.valueOf(period.substring(0, 4));
+        int month = Integer.valueOf(period.substring(4));
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1); // 0表示1月
+        cal.set(Calendar.DATE, 1); // 从每月1号开始
+
+        while (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) < month) {
+            int day = cal.get(Calendar.DAY_OF_WEEK);
+
+            if (!(day == Calendar.SUNDAY || day == Calendar.SATURDAY)) {
+                workDays++;
+            }
+            cal.add(Calendar.DATE, 1);
+        }
+
+        func.setResult(new BigDecimal(workDays));
+end
+
+/**
+** 标准薪资组,薪资项52
+*/
+rule "税率" // {税率([应纳税所得额])}
     when
        $context:DroolsContext()
     then
         FuncEntity func = $context.getFuncEntity("税率");
         String para1 = func.getParameters().get(0);
-        double taxIncome = (double)$context.getItemValByCode(para1); // 应纳税所得额
 
-        func.setResult(BigDecimal.valueOf(taxIncome)); // TODO
+        Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+
+        func.setResult(BigDecimal.ZERO); // TODO
+end
+
+/**
+** 标准薪资组,薪资项53
+*/
+rule "速扣数" // {速扣数([应纳税所得额])}
+    when
+       $context:DroolsContext()
+    then
+        FuncEntity func = $context.getFuncEntity("速扣数");
+        String para1 = func.getParameters().get(0);
+
+        Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+
+        func.setResult(BigDecimal.ZERO); // TODO
 end

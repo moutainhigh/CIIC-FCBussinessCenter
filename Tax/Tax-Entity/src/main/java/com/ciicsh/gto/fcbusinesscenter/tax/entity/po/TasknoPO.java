@@ -61,6 +61,47 @@ public class TasknoPO extends Model<TasknoPO> {
 	@TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedBy;
 
+	/**
+	 * 创建人displayname
+	 */
+	@TableField(value="created_by_display_name",fill = FieldFill.INSERT)
+	private String createdByDisplayName;
+	/**
+	 * 修改人displayname
+	 */
+	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedByDisplayName;
+
+	/**
+	 * 是否可用
+	 */
+	@TableField("is_active")
+	private Boolean isActive;
+
+	public Boolean getActive() {
+		return isActive;
+	}
+
+	public void setActive(Boolean active) {
+		isActive = active;
+	}
+
+	public String getCreatedByDisplayName() {
+		return createdByDisplayName;
+	}
+
+	public void setCreatedByDisplayName(String createdByDisplayName) {
+		this.createdByDisplayName = createdByDisplayName;
+	}
+
+	public String getModifiedByDisplayName() {
+		return modifiedByDisplayName;
+	}
+
+	public void setModifiedByDisplayName(String modifiedByDisplayName) {
+		this.modifiedByDisplayName = modifiedByDisplayName;
+	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}
