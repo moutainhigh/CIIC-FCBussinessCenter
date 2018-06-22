@@ -41,7 +41,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -315,6 +317,16 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
         }
+    }
+
+    private MissionRequestDTO createDefinitiitionParams(String missionId, String processDefinitionKey) {
+        MissionRequestDTO missionRequestDTO = BeanUtils.instantiate(MissionRequestDTO.class);
+        Map variables = new HashMap<>();
+        variables.put("taskCode", "");
+        missionRequestDTO.setMissionId(missionId);
+        missionRequestDTO.setProcessDefinitionKey(processDefinitionKey);
+        missionRequestDTO.setVariables(variables);
+        return missionRequestDTO;
     }
 
     /**
