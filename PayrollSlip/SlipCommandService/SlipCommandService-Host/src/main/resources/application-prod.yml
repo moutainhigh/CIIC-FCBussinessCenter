@@ -32,3 +32,5 @@ spring:
   boot:
     admin:
       url: http://172.16.100.103:9625
+druid:
+  configPath:  /data/appdatas/gt1/gtobusinessdb_prd.properties
