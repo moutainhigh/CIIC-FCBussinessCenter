@@ -109,7 +109,7 @@ public class AccountSetController extends BaseController {
         }
         else{
 
-            accountSetDTO.setModifiedBy("bill");
+            accountSetDTO.setModifiedBy(UserContext.getUser().getUserId());
             accountSetDTO.setModifiedTime(new Date());
             PrPayrollAccountSetPO payrollAccountSetPO  = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
             boolean result = prAccountSetService.editAccountSet(payrollAccountSetPO);
@@ -134,7 +134,7 @@ public class AccountSetController extends BaseController {
 
     @PostMapping("/editIsActive")
     public JsonResult editIsActive(@RequestBody PrPayrollAccountSetDTO accountSetDTO) {
-        accountSetDTO.setModifiedBy("bill");
+        accountSetDTO.setModifiedBy(UserContext.getUser().getUserId());
         accountSetDTO.setModifiedTime(new Date());
         PrPayrollAccountSetPO accountSetPO = PayrollAccountSetTranslator.toPrPayrollAccountSetPO(accountSetDTO);
         Integer val = prAccountSetService.editIsActive(accountSetPO);

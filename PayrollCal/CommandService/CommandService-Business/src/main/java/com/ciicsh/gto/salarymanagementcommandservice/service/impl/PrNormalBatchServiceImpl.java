@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -463,8 +464,8 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         historyPO.setApprovalResult(approvalResult);
         historyPO.setBizCode(batchCode);
         historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
-        historyPO.setCreatedBy("bill");
-        historyPO.setCreatedName("bill");
+        historyPO.setCreatedBy(UserContext.getUser().getUserId());
+        historyPO.setCreatedName(UserContext.getUser().getUserId());
         historyPO.setComments(comments);
         approvalHistoryService.addApprovalHistory(historyPO);
         return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
