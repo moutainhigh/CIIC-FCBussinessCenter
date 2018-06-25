@@ -21,3 +21,7 @@ mongo:
   pwd: ciicit!#%
 seaweed:
   masterHost: "172.16.9.19:9333"
+spring:
+  boot:
+    admin:
+      url: http://172.16.9.24:9625

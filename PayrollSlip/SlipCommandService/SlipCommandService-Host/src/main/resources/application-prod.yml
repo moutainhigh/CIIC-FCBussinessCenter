@@ -27,3 +27,8 @@ mongo:
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
+
+spring:
+  boot:
+    admin:
+      url: http://172.16.100.103:9625
