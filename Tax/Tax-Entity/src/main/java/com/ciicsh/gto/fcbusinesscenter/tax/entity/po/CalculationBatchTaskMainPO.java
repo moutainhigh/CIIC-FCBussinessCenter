@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.entity.po;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
@@ -58,6 +59,74 @@ public class CalculationBatchTaskMainPO extends Model<CalculationBatchTaskMainPO
 	private TaskMainPO taskMainPOs;
 
 	private int versionNo;
+
+	/**
+	 * 创建人displayname
+	 */
+	@TableField(value="created_by_display_name",fill = FieldFill.INSERT)
+	private String createdByDisplayName;
+	/**
+	 * 修改人displayname
+	 */
+	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedByDisplayName;
+
+	/**
+	 * 是否可用
+	 */
+	@TableLogic
+	private Boolean isActive;
+
+	/**
+	 * 创建人
+	 */
+	@TableField(value="created_by",fill = FieldFill.INSERT)
+	private String createdBy;
+	/**
+	 * 修改人
+	 */
+	@TableField(value="modified_by",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedBy;
+
+	public Boolean getActive() {
+		return isActive;
+	}
+
+	public void setActive(Boolean active) {
+		isActive = active;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public String getCreatedByDisplayName() {
+		return createdByDisplayName;
+	}
+
+	public void setCreatedByDisplayName(String createdByDisplayName) {
+		this.createdByDisplayName = createdByDisplayName;
+	}
+
+	public String getModifiedByDisplayName() {
+		return modifiedByDisplayName;
+	}
+
+	public void setModifiedByDisplayName(String modifiedByDisplayName) {
+		this.modifiedByDisplayName = modifiedByDisplayName;
+	}
 
 	public int getVersionNo() {
 		return versionNo;

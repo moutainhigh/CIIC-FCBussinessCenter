@@ -52,7 +52,7 @@ under the License.
      | Default: ${user.home}/.m2/repository
     <localRepository>/path/to/local/repo</localRepository>
     -->
-    <localRepository>/Users/bill/.m2/repository/</localRepository>
+    <localRepository>/Users/hubing/.m2/repository/</localRepository>
 
 
     <!-- interactiveMode
