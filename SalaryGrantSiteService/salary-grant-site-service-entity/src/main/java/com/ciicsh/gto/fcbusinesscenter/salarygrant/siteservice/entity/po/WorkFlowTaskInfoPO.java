@@ -33,10 +33,35 @@ public class WorkFlowTaskInfoPO extends Model<WorkFlowTaskInfoPO> {
     @TableField("work_flow_process_id")
     private String workFlowProcessId;
     /**
+     * 流程定义key
+     */
+    @TableField("process_definition_key")
+    private String processDefinitionKey;
+    /**
+     * 任务单编号
+     */
+    @TableField("task_code")
+    private String taskCode;
+    /**
      * 任务编号
      */
     @TableField("work_flow_task_id")
     private String workFlowTaskId;
+    /**
+     * 任务类型
+     */
+    @TableField("work_flow_task_type")
+    private String workFlowTaskType;
+    /**
+     * 角色id,多个角色以逗号分隔
+     */
+    @TableField("role_id")
+    private String roleId;
+    /**
+     * 任务审核状态:1-已处理，0-未处理
+     */
+    @TableField("work_flow_task_status")
+    private Boolean workFlowTaskStatus;
     /**
      * 处理人编号
      */
@@ -105,12 +130,52 @@ public class WorkFlowTaskInfoPO extends Model<WorkFlowTaskInfoPO> {
         this.workFlowProcessId = workFlowProcessId;
     }
 
+    public String getProcessDefinitionKey() {
+        return processDefinitionKey;
+    }
+
+    public void setProcessDefinitionKey(String processDefinitionKey) {
+        this.processDefinitionKey = processDefinitionKey;
+    }
+
+    public String getTaskCode() {
+        return taskCode;
+    }
+
+    public void setTaskCode(String taskCode) {
+        this.taskCode = taskCode;
+    }
+
     public String getWorkFlowTaskId() {
         return workFlowTaskId;
     }
 
     public void setWorkFlowTaskId(String workFlowTaskId) {
         this.workFlowTaskId = workFlowTaskId;
+    }
+
+    public String getWorkFlowTaskType() {
+        return workFlowTaskType;
+    }
+
+    public void setWorkFlowTaskType(String workFlowTaskType) {
+        this.workFlowTaskType = workFlowTaskType;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
+    }
+
+    public Boolean getWorkFlowTaskStatus() {
+        return workFlowTaskStatus;
+    }
+
+    public void setWorkFlowTaskStatus(Boolean workFlowTaskStatus) {
+        this.workFlowTaskStatus = workFlowTaskStatus;
     }
 
     public String getTaskDealUserId() {
@@ -203,7 +268,12 @@ public class WorkFlowTaskInfoPO extends Model<WorkFlowTaskInfoPO> {
         return "WorkFlowTaskInfoPO{" +
                 ", workFlowTaskInfoId=" + workFlowTaskInfoId +
                 ", workFlowProcessId=" + workFlowProcessId +
+                ", processDefinitionKey=" + processDefinitionKey +
+                ", taskCode=" + taskCode +
                 ", workFlowTaskId=" + workFlowTaskId +
+                ", workFlowTaskType=" + workFlowTaskType +
+                ", roleId=" + roleId +
+                ", workFlowTaskStatus=" + workFlowTaskStatus +
                 ", taskDealUserId=" + taskDealUserId +
                 ", taskDealUserName=" + taskDealUserName +
                 ", taskDealTime=" + taskDealTime +
