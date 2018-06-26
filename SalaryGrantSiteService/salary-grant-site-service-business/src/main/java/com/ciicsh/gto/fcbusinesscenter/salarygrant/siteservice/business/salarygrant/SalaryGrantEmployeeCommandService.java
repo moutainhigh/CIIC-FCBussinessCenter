@@ -60,4 +60,11 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      * @return
      */
     boolean processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 保存雇员薪资调整信息
+     *
+     * @return
+     */
+    boolean saveSalaryAdjustmentInfoForEmployee();
 }

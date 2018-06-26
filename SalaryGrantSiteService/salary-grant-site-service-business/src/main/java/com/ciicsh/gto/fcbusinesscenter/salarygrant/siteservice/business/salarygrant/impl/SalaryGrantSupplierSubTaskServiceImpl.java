@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
@@ -8,9 +9,14 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEm
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
+import java.util.List;
 
 /**
  * <p>
@@ -27,13 +33,38 @@ public class SalaryGrantSupplierSubTaskServiceImpl extends ServiceImpl<SalaryGra
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
     SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
-
-//    @Autowired
-//    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
+    @Autowired
+    SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
 
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForSubmitPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         return page.setRecords(salaryGrantSubTaskMapper.querySupplierSubTaskForSubmitPage(page, salaryGrantTaskBO));
+    }
+
+    @Override
+    public Page<SalaryGrantTaskBO> querySupplierSubTaskForSubmitPageUpdateEmployee(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        Page<SalaryGrantTaskBO> retTaskBOPage = querySupplierSubTaskForSubmitPage(page, salaryGrantTaskBO);
+        if (!ObjectUtils.isEmpty(retTaskBOPage)) {
+            List<SalaryGrantTaskBO> salaryGrantTaskBOList = retTaskBOPage.getRecords();
+            if (!CollectionUtils.isEmpty(salaryGrantTaskBOList)) {
+                for (SalaryGrantTaskBO subTaskBO : salaryGrantTaskBOList) {
+                    //根据子任务表task_code查询雇员列表
+                    EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+                    employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", subTaskBO.getTaskCode());
+                    List<SalaryGrantEmployeePO> employeePOList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
+                    if (!CollectionUtils.isEmpty(employeePOList)) {
+                        for (SalaryGrantEmployeePO employeePO : employeePOList) {
+                            //调用接口获取最新雇员信息
+
+                            //比较雇员信息
+
+                        }
+                    }
+                }
+            }
+        }
+
+        return retTaskBOPage;
     }
 
     @Override
@@ -54,5 +85,9 @@ public class SalaryGrantSupplierSubTaskServiceImpl extends ServiceImpl<SalaryGra
     @Override
     public Page<SalaryGrantTaskBO> querySupplierSubTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
         return page.setRecords(salaryGrantTaskHistoryMapper.querySupplierSubTaskForRejectPage(page, salaryGrantTaskBO));
+    }
+
+    public Page<SalaryGrantTaskBO> compareEmployeeInfo(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
+        return null;
     }
 }

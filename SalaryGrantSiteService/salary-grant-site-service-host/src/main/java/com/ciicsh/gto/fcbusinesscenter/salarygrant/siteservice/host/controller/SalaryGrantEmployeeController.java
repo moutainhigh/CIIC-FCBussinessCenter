@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -256,6 +257,31 @@ public class SalaryGrantEmployeeController {
      */
     void toExportEmployee(String salaryGrantMainTaskCode){
         
+    }
+
+    /**
+     * 查询雇员调整信息
+     *
+     * @param salaryGrantEmployeeId
+     * @return
+     */
+    @RequestMapping("/supplierDefer/selectAdjustCompareInfo/{salaryGrantEmployeeId}")
+    public List<SalaryGrantEmployeeDTO> selectAdjustCompareInfo(@PathVariable Long salaryGrantEmployeeId) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("查询雇员调整信息").setContent("雇员表ID: " + salaryGrantEmployeeId));
+
+        List<SalaryGrantEmployeeDTO> retEmployeePOList = null;
+
+        SalaryGrantEmployeePO employeePO = employeeQueryService.selectById(salaryGrantEmployeeId);
+        String adjustCompareInfo = employeePO.getAdjustCompareInfo();
+        if (!StringUtils.isEmpty(adjustCompareInfo)) {
+            retEmployeePOList = JSONObject.parseArray(adjustCompareInfo, SalaryGrantEmployeeDTO.class);
+        }
+
+        if (CollectionUtils.isEmpty(retEmployeePOList)) {
+            retEmployeePOList = new ArrayList<>();
+        }
+
+        return retEmployeePOList;
     }
 
 }

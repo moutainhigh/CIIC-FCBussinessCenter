@@ -7,11 +7,6 @@ mybatis-plus:
 spring:
   application:
     name: fcbusinesscenter-payrollslip-slipcommandservice
-  datasource:
-      url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=false&tinyInt1isBit=false
-      username: ${database.username}
-      password: ${database.password}
-      driver-class-name: com.mysql.jdbc.Driver
   profiles:
     active: dev
   http:

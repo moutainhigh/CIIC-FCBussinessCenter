@@ -337,8 +337,6 @@
 	<delete id="deleteBatchByCodes">
 		DELETE FROM pr_normal_batch
 		WHERE
-		status = 1
-		AND
 		code IN
 		<foreach item="item" index="index" collection="codes"
 				 open="(" separator="," close=")">
