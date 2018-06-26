@@ -293,6 +293,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             case "本年累计已纳税额" : calResultBO.setExerciseTaxAmount(convert(result,key,BigDecimal.class));break;
                             case "税前合计" : calResultBO.setPreTaxAggregate(convert(result,key,BigDecimal.class));break;
                             case "免税津贴" : calResultBO.setDutyFreeAllowance(convert(result,key,BigDecimal.class));break;
+                            case "税率" : calResultBO.setTaxRate(convert(result,key,BigDecimal.class));break;
+                            case "速扣数" : calResultBO.setQuickCalDeduct(convert(result,key,BigDecimal.class));break;
                         }
                     }
 
@@ -311,6 +313,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDeductMedicalInsurance(calResultBO.getDeductMedicalInsurance());//医疗保险费合计_报税用
                     calculationBatchDetailPO.setDeductDlenessInsurance(calResultBO.getDeductDlenessInsurance());//失业保险费合计_报税用
                     calculationBatchDetailPO.setDeductHouseFund(calResultBO.getDeductHouseFund());//住房公积金合计（报税用）
+                    calculationBatchDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
                     calculationBatchDetailPO.setDeductTakeoff(calResultBO.getDeductTakeoff());//允许扣除的税费
                     calculationBatchDetailPO.setAnnuity(calResultBO.getAnnuity());//企业年金个人部分
                     calculationBatchDetailPO.setBusinessHealthInsurance(calResultBO.getBusinessHealthInsurance());//商业保险
@@ -346,6 +349,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
                     calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
                     calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
+                    //已扣缴税额（空）
+                    calculationBatchDetailPO.setTaxWithholdAmount(BigDecimal.ZERO);
+                    //应补退税额 = 应扣缴税额-已扣缴税额
+                    calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdAmount()));
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //外籍人员正常薪金税
@@ -364,6 +371,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDeductMedicalInsurance(calResultBO.getDeductMedicalInsurance());//医疗保险费合计_报税用
                     calculationBatchDetailPO.setDeductDlenessInsurance(calResultBO.getDeductDlenessInsurance());//失业保险费合计_报税用
                     calculationBatchDetailPO.setDeductHouseFund(calResultBO.getDeductHouseFund());//住房公积金合计（报税用）
+                    calculationBatchDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
                     calculationBatchDetailPO.setDeductTakeoff(calResultBO.getDeductTakeoff());//允许扣除的税费
                     calculationBatchDetailPO.setAnnuity(calResultBO.getAnnuity());//企业年金个人部分
                     calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());//其它扣款_报税用
@@ -405,6 +413,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
                     calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
                     calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
+                    calculationBatchDetailPO.setIncomeTotal(calculationBatchDetailPO.getPreTaxAggregate());//收入额=税前合计
+                    calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
+                    //已扣缴税额（空）
+                    calculationBatchDetailPO.setTaxWithholdAmount(BigDecimal.ZERO);
+                    //应补退税额 = 应扣缴税额-已扣缴税额
+                    calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdAmount()));
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //年奖税
