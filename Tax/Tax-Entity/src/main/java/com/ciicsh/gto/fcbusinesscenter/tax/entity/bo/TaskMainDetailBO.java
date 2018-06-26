@@ -239,6 +239,50 @@ public class TaskMainDetailBO {
 
     private BigDecimal taxReal;
 
+    //税前合计
+    private BigDecimal preTaxAggregate;
+
+    //免税津贴
+    private BigDecimal dutyFreeAllowance;
+
+    //商业健康保险费
+    private BigDecimal businessHealthInsurance;
+
+    //年金
+    private BigDecimal annuity;
+
+    public BigDecimal getPreTaxAggregate() {
+        return preTaxAggregate;
+    }
+
+    public void setPreTaxAggregate(BigDecimal preTaxAggregate) {
+        this.preTaxAggregate = preTaxAggregate;
+    }
+
+    public BigDecimal getDutyFreeAllowance() {
+        return dutyFreeAllowance;
+    }
+
+    public void setDutyFreeAllowance(BigDecimal dutyFreeAllowance) {
+        this.dutyFreeAllowance = dutyFreeAllowance;
+    }
+
+    public BigDecimal getBusinessHealthInsurance() {
+        return businessHealthInsurance;
+    }
+
+    public void setBusinessHealthInsurance(BigDecimal businessHealthInsurance) {
+        this.businessHealthInsurance = businessHealthInsurance;
+    }
+
+    public BigDecimal getAnnuity() {
+        return annuity;
+    }
+
+    public void setAnnuity(BigDecimal annuity) {
+        this.annuity = annuity;
+    }
+
     public BigDecimal getTaxReal() {
         return taxReal;
     }
