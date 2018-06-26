@@ -23,3 +23,5 @@ zipkin:
   enabled: true
 sleuth:
   percentage: 0.1
+spring:
+  admin: http://172.16.9.56:9625
