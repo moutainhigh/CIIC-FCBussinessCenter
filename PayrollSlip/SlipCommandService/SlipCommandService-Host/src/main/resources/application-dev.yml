@@ -27,3 +27,5 @@ spring:
       url: http://172.16.9.31:9625
       client:
         prefer-ip: true
+druid:
+  configPath:  /data/appdatas/gt1/gtobusinessdb_dev.properties
