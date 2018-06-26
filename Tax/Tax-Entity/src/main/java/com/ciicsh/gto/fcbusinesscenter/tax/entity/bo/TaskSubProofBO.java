@@ -116,6 +116,15 @@ public class TaskSubProofBO {
      * 管理方名称(管理方切换)
      */
     private String[] managerNames;
+    /**
+     * 创建人displayname
+     */
+    private String createdByDisplayName;
+
+    /**
+     * 修改人displayname
+     */
+    private String modifiedByDisplayName;
 
     public Long getId() {
         return id;
@@ -293,6 +302,22 @@ public class TaskSubProofBO {
         this.managerNames = managerNames;
     }
 
+    public String getCreatedByDisplayName() {
+        return createdByDisplayName;
+    }
+
+    public void setCreatedByDisplayName(String createdByDisplayName) {
+        this.createdByDisplayName = createdByDisplayName;
+    }
+
+    public String getModifiedByDisplayName() {
+        return modifiedByDisplayName;
+    }
+
+    public void setModifiedByDisplayName(String modifiedByDisplayName) {
+        this.modifiedByDisplayName = modifiedByDisplayName;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -318,6 +343,8 @@ public class TaskSubProofBO {
                 ", taskType='" + taskType + '\'' +
                 ", isCombined=" + isCombined +
                 ", managerNames=" + Arrays.toString(managerNames) +
+                ", createdByDisplayName='" + createdByDisplayName + '\'' +
+                ", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
                 '}';
     }
 }

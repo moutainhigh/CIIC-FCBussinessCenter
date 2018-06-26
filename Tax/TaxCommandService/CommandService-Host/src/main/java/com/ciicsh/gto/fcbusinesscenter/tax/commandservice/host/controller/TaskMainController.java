@@ -11,18 +11,19 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ConstraintSer
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
+import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +53,12 @@ public class TaskMainController extends BaseController {
 
     @Autowired
     private ConstraintService constraintService;
+
+    @Autowired
+    private CalculationBatchServiceImpl calculationBatchService;
+
+    @Autowired
+    private BatchProxy batchProxy;
 
     /**
      * 查询主任务列表
@@ -156,7 +163,6 @@ public class TaskMainController extends BaseController {
     public JsonResult<Boolean> submitMainTask(@RequestBody TaskMainDTO taskMainDTO) {
 
         JsonResult<Boolean> jr = new JsonResult<>();
-
         //检查约束
         int i = this.constraintService.checkTask(taskMainDTO.getTaskMainIds(),ConstraintService.TASK_MAIN);
         if(i > 0){
@@ -177,7 +183,6 @@ public class TaskMainController extends BaseController {
             wrapper.in("task_main_id",taskMainDTO.getTaskMainIds());
             int count = taskMainDetailService.selectCount(wrapper);
             if(count>0){
-
                 jr.fill(JsonResult.ReturnCode.TM_ER01);
             }else{
                 RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
@@ -364,5 +369,52 @@ public class TaskMainController extends BaseController {
         return jr;
     }
 
+    /**
+     * 根据批次号数组查询未来款的批次号数组
+     * @param taskMainDTO
+     * @return
+     */
+    @PostMapping(value = "/queryNotReceived")
+    public JsonResult<String> queryNotReceived(@RequestBody TaskMainDTO taskMainDTO) {
+        JsonResult jr = new JsonResult();
+        //根据主任务ID数组获取主任务信息
+        EntityWrapper wrapperCal = new EntityWrapper();
+        wrapperCal.setEntity(new CalculationBatchPO());
+        wrapperCal.and("is_active = {0} ", true);
+        wrapperCal.in("batch_no",taskMainDTO.getBatchNos());
+        List<CalculationBatchPO> calculationBatchPOS = calculationBatchService.selectList(wrapperCal);
+        //判断是否来款
+        List<String> listBatchNos = new ArrayList<>();
+        for(CalculationBatchPO po : calculationBatchPOS){
+            PrBatchDTO prBatchDTO = batchProxy.getBatchInfo(po.getBatchNo(), getBatchTypeOfInt(po.getBatchType()));
+            if(!prBatchDTO.isHasMoney() && prBatchDTO.getHasAdvance() == 0){
+                listBatchNos.add(po.getBatchNo());
+            }
+        }
+        if(listBatchNos.size() > 0){
+            String batchNosStr = listBatchNos.stream().collect(Collectors.joining(", "));
+            jr.fill(batchNosStr);
+        }else{
+            jr.fill("");
+        }
+        return jr;
+    }
+
+    /**
+     * 根据批次类型字符型获取批次类型int型
+     * @param batchTypeStr
+     * @return
+     */
+    public int getBatchTypeOfInt(String batchTypeStr){
+        if(BatchType.normal.getCode().equals(batchTypeStr)){
+            return 1;
+        }else if(BatchType.ajust.getCode().equals(batchTypeStr)){
+            return 2;
+        }else if(BatchType.backdate.getCode().equals(batchTypeStr)){
+            return 3;
+        }else{
+            return 1;
+        }
+    }
 
 }
