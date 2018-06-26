@@ -162,12 +162,12 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 	 * 税率
 	 */
 	@TableField("tax_rate")
-	private String taxRate;
+	private BigDecimal taxRate;
 	/**
 	 * 速算扣除数
 	 */
 	@TableField("quick_cal_deduct")
-	private Integer quickCalDeduct;
+	private BigDecimal quickCalDeduct;
 	/**
 	 * 应纳税额
 	 */
@@ -807,19 +807,19 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 		this.incomeForTax = incomeForTax;
 	}
 
-	public String getTaxRate() {
+	public BigDecimal getTaxRate() {
 		return taxRate;
 	}
 
-	public void setTaxRate(String taxRate) {
+	public void setTaxRate(BigDecimal taxRate) {
 		this.taxRate = taxRate;
 	}
 
-	public Integer getQuickCalDeduct() {
+	public BigDecimal getQuickCalDeduct() {
 		return quickCalDeduct;
 	}
 
-	public void setQuickCalDeduct(Integer quickCalDeduct) {
+	public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
 		this.quickCalDeduct = quickCalDeduct;
 	}
 

@@ -198,6 +198,28 @@ public class CalResultBO {
     //免税津贴
     private BigDecimal dutyFreeAllowance;
 
+    //税率
+    private BigDecimal taxRate;
+
+    //速扣数
+    private BigDecimal quickCalDeduct;
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
+    }
+
+    public BigDecimal getQuickCalDeduct() {
+        return quickCalDeduct;
+    }
+
+    public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
+        this.quickCalDeduct = quickCalDeduct;
+    }
+
     public BigDecimal getPreTaxAggregate() {
         return preTaxAggregate;
     }
