@@ -40,13 +40,11 @@
         select
           <include refid="logInfoField"></include>
         from
-          sg_work_flow_task_info t, sg_task_work_flow_relation t1
+          sg_work_flow_task_info t
         where
-          t.work_flow_process_id = t1.work_flow_process_id
+          t.task_code = #{taskCode}
         and
-          t1.task_code = #{taskCode}
-        and
-          t1.is_active = 1
+          t.is_active = 1
         order by
           t.work_flow_task_info_id
     </select>
