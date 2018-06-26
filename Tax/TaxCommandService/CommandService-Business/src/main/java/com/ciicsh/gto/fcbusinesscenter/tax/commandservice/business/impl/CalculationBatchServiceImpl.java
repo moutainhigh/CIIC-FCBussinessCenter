@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.DroolsService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
@@ -81,6 +82,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
     @Autowired
     private WorkflowService workflowService;
+
+    @Autowired
+    private DroolsService droolsService;
 
     @Override
     public ResponseForCalBatch queryCalculationBatchs(RequestForCalBatch requestForCalBatch) {
@@ -561,6 +565,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 BigDecimal incomeDutyfree = new BigDecimal(0);//免税所得
                 BigDecimal taxReal=new BigDecimal(0);//税金
                 BigDecimal incomeTotal=new BigDecimal(0);//收入额
+                BigDecimal preTaxAggregate=new BigDecimal(0);//税前合计
 
                 List<TaskMainDetailPO> tps = entry.getValue();
                 //计算合并后的各项值
@@ -581,8 +586,27 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     annuity = annuity.add(tp.getAnnuity()==null?BigDecimal.ZERO:tp.getAnnuity());//企业年金个人部分合计
                     incomeDutyfree = incomeDutyfree.add(tp.getIncomeDutyfree()==null?BigDecimal.ZERO:tp.getIncomeDutyfree());//免税所得合计
                     taxReal = taxReal.add(tp.getTaxReal()==null?BigDecimal.ZERO:tp.getTaxReal());//税金合计
-                    incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());
+                    incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());//收入额合计
+                    preTaxAggregate = preTaxAggregate.add(tp.getPreTaxAggregate()==null?BigDecimal.ZERO:tp.getPreTaxAggregate());//税前合计
                 }
+
+                //计算收入额
+                HashMap<String,BigDecimal> m = new HashMap<>();
+                m.put("taxReal",taxReal);//税金
+                m.put("preTaxAggregate",preTaxAggregate);//税前合计
+                m.put("deduction",taskMainDetailPO.getDeduction());//免抵税额
+                m.put("donation",donation);//准予扣除的捐赠额
+                m.put("deductTakeoff",deductTakeoff);//允许扣除的税费
+                m.put("otherDeductions",otherDeductions);//其它扣除
+                m.put("businessHealthInsurance",businessHealthInsurance);//商业保险
+                m.put("deductHouseFund",deductHouseFund);//住房公积金
+                m.put("deductDlenessInsurance",deductDlenessInsurance);//失业保险费
+                m.put("deductMedicalInsurance",deductMedicalInsurance);//基本医疗保险费
+                m.put("deductRetirementInsurance",deductRetirementInsurance);//基本养老保险费
+                m.put("dutyFreeAllowance",dutyFreeAllowance);//免税津贴
+                m.put("annuity",annuity);//企业年金个人部分
+                m.put("incomeDutyfree",incomeDutyfree);//免税所得
+                incomeTotal = droolsService.incomeTotal(m);//收入额
 
                 taskMainDetailPO.setIncomeTotal(incomeTotal);
                 taskMainDetailPO.setDonation(donation);
@@ -597,6 +621,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 taskMainDetailPO.setAnnuity(annuity);
                 taskMainDetailPO.setIncomeDutyfree(incomeDutyfree);
                 taskMainDetailPO.setTaxReal(taxReal);
+                taskMainDetailPO.setPreTaxAggregate(preTaxAggregate);
                 //更新合并后数据值
                 this.taskMainDetailService.updateById(taskMainDetailPO);
 

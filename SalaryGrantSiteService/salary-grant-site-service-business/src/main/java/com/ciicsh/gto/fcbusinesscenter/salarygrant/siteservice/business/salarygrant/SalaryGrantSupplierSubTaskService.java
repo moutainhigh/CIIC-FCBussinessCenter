@@ -26,6 +26,15 @@ public interface SalaryGrantSupplierSubTaskService extends IService<SalaryGrantS
 
     /**
      * 查询供应商任务单列表
+     * 待提交：0-草稿 角色=操作员
+     * @param page
+     * @param salaryGrantTaskBO
+     * @return Page<SalaryGrantTaskBO>
+     */
+    Page<SalaryGrantTaskBO> querySupplierSubTaskForSubmitPageUpdateEmployee(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
+     * 查询供应商任务单列表
      * 待审批:1-审批中 角色=审核员
      * @param page
      * @param salaryGrantTaskBO
@@ -59,4 +68,5 @@ public interface SalaryGrantSupplierSubTaskService extends IService<SalaryGrantS
      * @return Page<SalaryGrantTaskBO>
      */
     Page<SalaryGrantTaskBO> querySupplierSubTaskForRejectPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO);
+
 }

@@ -754,8 +754,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             if (null == cellC) {
                 cellC = row.createCell(2);
             }
-            cellC.setCellValue("11111");
-            System.out.println("222222222222222222111111111");
+            cellC.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, po.getIdType()));
             //*证照号码-D列
             HSSFCell cellD = row.getCell(3);
             if (null == cellD) {

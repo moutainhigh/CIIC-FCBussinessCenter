@@ -7,15 +7,19 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSupplierSubTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>Description: 供应商暂缓处理 Controller</p>
@@ -55,6 +59,40 @@ public class SupplierDeferController {
         // BO PAGE 转换为 DTO PAGE
         String boJSONStr = JSONObject.toJSONString(page);
         Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+
+        return taskDTOPage;
+    }
+
+    /**
+     * 比较雇员最新信息之后
+     * 查询供应商任务单列表
+     * 待提交：0-草稿 角色=操作员
+     *
+     * @param salaryGrantTaskDTO
+     * @return Page<SalaryGrantTaskDTO>
+     */
+    @RequestMapping("/supplierDefer/submitUpdateEmployee")
+    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForSubmitPageUpdateEmployee(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 待提交").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+
+        Page<SalaryGrantTaskBO> page = new Page<>();
+        page.setCurrent(salaryGrantTaskDTO.getCurrent());
+        page.setSize(salaryGrantTaskDTO.getSize());
+        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
+        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
+        //设置管理方信息
+        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+        page = supplierSubTaskService.querySupplierSubTaskForSubmitPageUpdateEmployee(page, salaryGrantTaskBO);
+
+        // BO PAGE 转换为 DTO PAGE
+        String boJSONStr = JSONObject.toJSONString(page);
+        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         return taskDTOPage;
     }
@@ -186,4 +224,5 @@ public class SupplierDeferController {
     public Result rejectSupplierSubTask() {
         return new Result();
     }
+
 }

@@ -378,12 +378,12 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO) {
+    public int doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         //1、根据taskCode、taskType，如果taskType=0 则查询任务单主表信息SalaryGrantMainTaskPO，
         //   查询条件：salary_grant_main_task_code = SalaryGrantTaskBO.taskCode and is_active=1；
         //   如果taskType!=0，直接返回结果false,不执行下面处理逻辑。
         if (0 != salaryGrantTaskBO.getTaskType()) {
-            return false;
+            return 0; //0-子表任务，不进行处理
         }
 
         EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
@@ -405,7 +405,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     PrBatchDTO prBatchDTO = commonService.getBatchInfo(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
                     //4、（1）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance=0 直接返回结果false,不执行下面处理逻辑。
                     if (false == prBatchDTO.isHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
-                        return false;
+                        return 1; //1-未来款，无垫付流程
                     }
 
                     //4、（2）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance in (1,2,3,4)，调用接口内部方法 isOverdue(SalaryGrantTaskBO salaryGrantTaskBO)，
@@ -415,7 +415,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         Boolean isOverdueResult = isOverdue(salaryGrantTaskBO);
 
                         if (true == isOverdueResult) {
-                            return false;
+                            return 2; //2-未来款，已逾期
                         } else {
                             SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                             grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
@@ -447,8 +447,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
             }
         }
 
-        //10、返回结果true
-        return true;
+        return 3; //3-已来款或已垫付
     }
 
     @Transactional(rollbackFor = Exception.class)

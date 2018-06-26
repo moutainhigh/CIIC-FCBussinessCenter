@@ -10,13 +10,6 @@ management:
 seaweed:
   masterHost: "172.16.22.110:9333"
 
-database:
-  host: 172.16.22.108
-  port: 3306
-  databasename: gtobusinessdb
-  username: root
-  password: a111111
-
 kafka:
   brokers: 172.16.100.101:9092
   zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.109:2181
@@ -27,3 +20,10 @@ mongo:
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
+
+spring:
+  boot:
+    admin:
+      url: http://172.16.100.103:9625
+druid:
+  configPath:  /data/appdatas/gt1/gtobusinessdb_prd.properties

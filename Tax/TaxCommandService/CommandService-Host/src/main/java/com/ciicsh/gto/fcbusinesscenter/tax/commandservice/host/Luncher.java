@@ -13,7 +13,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"com.ciicsh.gto.logservice.api","com.ciicsh.gto.settlementcenter"
                                     ,"com.ciicsh.gto.identityservice.api","com.ciicsh.gto.basicdataservice.api"
-                                    ,"com.ciicsh.gto.sheetservice.api"})
+                                    ,"com.ciicsh.gto.sheetservice.api","com.ciicsh.gto.salarymanagementcommandservice.api"})
 public class Luncher extends SpringBootServletInitializer {
 
     @Override
