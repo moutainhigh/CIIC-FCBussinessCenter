@@ -103,6 +103,8 @@ public class ComputeServiceImpl {
                 .include("catalog.pay_items.item_name")
                 .include("catalog.pay_items.item_code")
                 .include("catalog.pay_items.item_value")
+                .include("catalog.pay_items.canLock")
+                .include("catalog.pay_items.isLocked")
                 .include("catalog.pay_items.decimal_process_type")
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
@@ -126,7 +128,6 @@ public class ComputeServiceImpl {
             batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
         logger.info("查询mogodb时间 : " + String.valueOf((System.currentTimeMillis() - start1)));
-
 
         List<DBObject> finalBatchList = batchList;
 
@@ -178,7 +179,7 @@ public class ComputeServiceImpl {
             }
             DBObject catalog = (DBObject) dbObject.get("catalog");
             String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
-            List<DBObject> items = ((List<DBObject>) catalog.get("pay_items"));
+            List<DBObject> items = (List<DBObject>)catalog.get("pay_items");
 
             /*获取计算期间，并传递给drools context*/
             DBObject batch = (DBObject) catalog.get("batch_info");
@@ -204,6 +205,14 @@ public class ComputeServiceImpl {
             for (DBObject item : items) {
 
                 try {
+
+                    //计算之前过滤掉 锁住的薪资项
+                    boolean canLock = item.get("canLock") == null ? false : Boolean.valueOf(item.get("canLock").toString());
+                    boolean isLocked = item.get("isLocked") == null ? false : Boolean.valueOf(item.get("isLocked").toString());
+
+                    if(canLock && isLocked){
+                        continue;
+                    }
 
                     int dataType = item.get("data_type") == null ? 1 : (int) item.get("data_type"); // 数据格式: 1-文本,2-数字,3-日期,4-布尔
 
