@@ -353,6 +353,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setTaxWithholdAmount(BigDecimal.ZERO);
                     //应补退税额 = 应扣缴税额-已扣缴税额
                     calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdAmount()));
+                    calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
+                    calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //外籍人员正常薪金税
@@ -361,6 +363,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setTaxReal(calResultBO.getAmountSalary());//税金
                     calculationBatchDetailPO.setPeriod(this.UDateToLocalDate(agreementBO.getPeriod()));//所得期间
                     calculationBatchDetailPO.setIncomeSubject(IncomeSubject.FOREIGNNORMALSALARY.getCode());//所得项目
+                    calculationBatchDetailPO.setIncomeTotal(calResultBO.getIncomeTotal());//收入额
                     calculationBatchDetailPO.setDomesticDays(calResultBO.getDomesticDays());//境内天数
                     calculationBatchDetailPO.setOverseasDays(calResultBO.getOverseasDays());//境外天数
                     calculationBatchDetailPO.setDomesticIncomeDomesticPayment(calResultBO.getDomesticIncomeDomesticPayment());//境内所得境内支付
@@ -413,12 +416,13 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
                     calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
                     calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
-                    calculationBatchDetailPO.setIncomeTotal(calculationBatchDetailPO.getPreTaxAggregate());//收入额=税前合计
                     calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
                     //已扣缴税额（空）
                     calculationBatchDetailPO.setTaxWithholdAmount(BigDecimal.ZERO);
                     //应补退税额 = 应扣缴税额-已扣缴税额
                     calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdAmount()));
+                    calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
+                    calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //年奖税
