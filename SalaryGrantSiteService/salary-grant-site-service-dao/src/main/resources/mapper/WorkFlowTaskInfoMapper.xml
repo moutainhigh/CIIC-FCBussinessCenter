@@ -25,6 +25,10 @@
 	</resultMap>
 
     <resultMap id="operationMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO">
+        <result column="work_flow_process_id" property="workFlowProcessId" />
+        <result column="process_definition_key" property="processDefinitionKey" />
+        <result column="task_code" property="taskCode" />
+        <result column="work_flow_task_id" property="workFlowTaskId" />
         <result column="task_deal_user_id" property="operateUserId" />
         <result column="task_deal_user_name" property="operateUserName" />
         <result column="task_deal_time" property="operateTime" />
@@ -33,6 +37,7 @@
     </resultMap>
 
     <sql id="operationField">
+        t.work_flow_process_id, t.process_definition_key, t.task_code, t.work_flow_task_id,
         t.task_deal_user_id, t.task_deal_user_name, t.task_deal_time, t.task_deal_operation, t.approved_opinion
     </sql>
 

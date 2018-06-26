@@ -15,6 +15,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
@@ -25,10 +26,12 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDT
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
+import com.ciicsh.gto.sheetservice.api.dto.Result;
+import com.ciicsh.gto.sheetservice.api.dto.ResultCode;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
+import com.ciicsh.gto.sheetservice.api.dto.response.StartProcessResponseDTO;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.type.JdbcType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -279,14 +282,25 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult());
         if (flag) {
             //salaryGrantWorkFlowService.doSubmitTask(bo);
-            workFlowResultBO.setResult(0);
+            //workFlowResultBO.setResult(0);
         } else {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
         }
         if (SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult().equals(workFlowResultBO.getResult())) {
             List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
-            MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
-            sheetServiceProxy.startProcess(missionRequestDTO);
+            if (list.isEmpty()) {
+                MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
+                Result<StartProcessResponseDTO> dto =  sheetServiceProxy.startProcess(missionRequestDTO);
+                if (ResultCode.SUCCESS.equals(dto.getCode())) {
+                    WorkFlowTaskInfoPO po = createTaskInfo(bo);
+                    po.setWorkFlowProcessId(dto.getObject().getProcessId());
+                    workFlowTaskInfoMapper.insert(po);
+                } else {
+                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.ERROR.getResult());
+                }
+            } else {
+                sheetServiceProxy.completeTask(createTaskRequestDTO(bo.getUserId(), list.get(0)));
+            }
         }
         return workFlowResultBO;
     }
@@ -306,7 +320,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
         }
-        sheetServiceProxy.completeTask(createCompleteParams(""));
+        List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
+        sheetServiceProxy.completeTask(createTaskRequestDTO(bo.getUserId(), list.get(0)));
     }
 
     /**
@@ -324,7 +339,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
         }
-        sheetServiceProxy.completeTask(createCompleteParams(""));
+        List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
+        sheetServiceProxy.completeTask(createTaskRequestDTO(bo.getUserId(), list.get(0)));
     }
 
     private MissionRequestDTO createMissionDto(String action, SalaryGrantTaskBO bo) {
@@ -338,13 +354,24 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         return missionRequestDTO;
     }
 
-    private TaskRequestDTO createCompleteParams(String taskId) {
+    private TaskRequestDTO createTaskRequestDTO(String userId, WorkFlowTaskInfoBO bo) {
         TaskRequestDTO taskRequestDTO = BeanUtils.instantiate(TaskRequestDTO.class);
         Map variables = new HashMap<>();
-        variables.put("taskCode", "");
-        taskRequestDTO.setTaskId(taskId);
+        variables.put("WorkFlowTaskInfoBO", bo);
+        taskRequestDTO.setTaskId(bo.getWorkFlowTaskId());
+        taskRequestDTO.setAssignee(userId);
         taskRequestDTO.setVariables(variables);
         return taskRequestDTO;
+    }
+
+    private WorkFlowTaskInfoPO createTaskInfo(SalaryGrantTaskBO bo) {
+        WorkFlowTaskInfoPO workFlowTaskInfoPO = BeanUtils.instantiate(WorkFlowTaskInfoPO.class);
+        workFlowTaskInfoPO.setTaskCode(bo.getTaskCode());
+        workFlowTaskInfoPO.setWorkFlowTaskType(SalaryGrantWorkFlowEnums.Role.OPERATOR.getName());
+        workFlowTaskInfoPO.setTaskDealOperation(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction());
+        workFlowTaskInfoPO.setCreatedBy(bo.getUserId());
+        workFlowTaskInfoPO.setCreatedTime(new Date());
+        return workFlowTaskInfoPO;
     }
 
     private String getDefinitionKey(String type) {

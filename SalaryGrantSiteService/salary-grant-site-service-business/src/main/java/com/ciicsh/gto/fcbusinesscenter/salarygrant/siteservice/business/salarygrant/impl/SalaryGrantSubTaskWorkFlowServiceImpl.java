@@ -47,6 +47,7 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
+            subPo.setOperatorUserId(bo.getUserId());
             subPo.setModifiedTime(new Date());
             subPo.setModifiedBy(bo.getUserId());
             subPo.setGrantDate(bo.getGrantDate());
@@ -69,6 +70,7 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
+            subPo.setApproveUserId(bo.getUserId());
             subPo.setModifiedTime(new Date());
             subPo.setModifiedBy(bo.getUserId());
             subPo.setApprovedOpinion(bo.getApprovedOpinion());
@@ -112,6 +114,7 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
+            subPo.setOperatorUserId(bo.getUserId());
             subPo.setModifiedTime(new Date());
             subPo.setModifiedBy(bo.getUserId());
             subPo.setApprovedOpinion(bo.getApprovedOpinion());

@@ -131,9 +131,9 @@
                 <if test="taskStatus != null and taskStatus != ''">
                     and t1.task_status = #{taskStatus}
                 </if>
-                <if test="userId != null and userId != ''">
-                    and t1.operator_user_id = #{userId}
-                </if>
+                <!--<if test="userId != null and userId != ''">-->
+                    <!--and t1.operator_user_id = #{userId}-->
+                <!--</if>-->
                 and
                   t1.is_active=1
             </where>
@@ -163,9 +163,9 @@
                 <if test="taskStatus != null and taskStatus != ''">
                     and t2.task_status = #{taskStatus}
                 </if>
-                <if test="userId != null and userId != ''">
-                    and t2.operator_user_id = #{userId}
-                </if>
+                <!--<if test="userId != null and userId != ''">-->
+                    <!--and t2.operator_user_id = #{userId}-->
+                <!--</if>-->
                 and
                   t2.task_type=1
                 and
@@ -275,9 +275,9 @@
             <if test="taskStatus != null and taskStatus != ''">
                 and t1.task_status = #{taskStatus}
             </if>
-            <if test="userId != null and userId != ''">
-                and t1.operator_user_id = #{userId}
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and t1.operator_user_id = #{userId}-->
+            <!--</if>-->
             and
               t1.is_active=1
         </where>
@@ -307,9 +307,9 @@
             <if test="taskStatus != null and taskStatus != ''">
                 and t2.task_status = #{taskStatus}
             </if>
-            <if test="userId != null and userId != ''">
-                and t2.operator_user_id = #{userId}
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and t2.operator_user_id = #{userId}-->
+            <!--</if>-->
             and
               t2.is_active=1
             and
@@ -344,9 +344,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and (t1.approve_user_id = #{userId} or t1.operator_user_id = #{userId})
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and (t1.approve_user_id = #{userId} or t1.operator_user_id = #{userId})-->
+            <!--</if>-->
             and
               t1.task_status in ('2','6','7')
             and
@@ -375,9 +375,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t2.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and (t2.approve_user_id = #{userId} or t2.operator_user_id = #{userId})
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and (t2.approve_user_id = #{userId} or t2.operator_user_id = #{userId})-->
+            <!--</if>-->
             and
               t2.task_status in ('2','6','7')
             and

@@ -71,7 +71,8 @@ public interface SalaryGrantWorkFlowEnums {
         SUB_TASK(0, "子表任务，不进行处理"),
         ADVANCED (1, "未来款，无垫付流程。前端代码获取该信息，需要显示提示框是否走代垫流程，如果确认走代垫流程，需要调用客服中心代垫流程页面链接。"),
         OVERDUE(2, "未来款，垫付流程已逾期。提示业务操作人员，垫付已逾期，不能提交审批 --> 未来款，垫付已逾期"),
-        HANDLE(3, "已来款或已垫付（可以提交审批）");
+        HANDLE(3, "已来款或已垫付（可以提交审批）"),
+        ERROR(99, "错误");
 
         private Integer result;
         private String extension;
@@ -87,6 +88,30 @@ public interface SalaryGrantWorkFlowEnums {
 
         public String getExtension() {
             return extension;
+        }
+    }
+
+    /**
+     * 角色枚举
+     */
+    enum Role {
+        OPERATOR("XTJ0171", "payroll_operator"),
+        AUDIT ("XTJ0170", "payroll_audit");
+
+        private String id;
+        private String name;
+
+        Role(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
