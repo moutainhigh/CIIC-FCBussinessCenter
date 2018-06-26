@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
@@ -79,9 +80,10 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
      * @since 2018-06-08
      * @param flag
      * @param bo
+     * @return
      * @throws Exception
      */
-    void submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
+    WorkFlowResultBO submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
 
     /**
      * 审批通过

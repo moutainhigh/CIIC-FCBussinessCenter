@@ -23,37 +23,72 @@ public interface SalaryGrantWorkFlowEnums {
             this.name = name;
         }
 
-        public String getName() {
-            return name;
+        public String getAction() {
+            return action;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public String getName() {
+            return name;
         }
     }
 
     /**
      * 流程定义
+     * SGT : payroll_main (薪资发放任务单SGT)
+     * LTB : payroll_local_domestic_currency (薪资发放本地本币任务单LTB)
+     * LTW : payroll_local_foreign_currency (薪资发放本地外币任务单LTW)
+     * STA : payroll_nonlocal (薪资发放外地任务单STA)
+     * SPT : supplier_payment (供应商支付任务单SPT)
      */
     enum ProcessDefinitionKey {
-        MAIN_TASK("payroll_main", "主任务单"),
-        SUB_TASK("payroll_sub", "子任务单");
+        SGT("SGT", "payroll_main"),
+        LTB("LTB", "payroll_local_domestic_currency"),
+        LTW("LTW", "payroll_local_foreign_currency"),
+        STA("STA", "payroll_nonlocal"),
+        SPT("SPT", "supplier_payment");
 
+        private String type;
         private String key;
-        private String name;
 
-        ProcessDefinitionKey(String key, String name) {
+        ProcessDefinitionKey(String type, String key) {
+            this.type = type;
             this.key = key;
-            this.name = name;
+        }
+
+        public String getType() {
+            return type;
         }
 
         public String getKey() {
             return key;
         }
+    }
 
-        public String getName() {
-            return name;
+    /**
+     * 任务单业务处理结果
+     */
+    enum TaskResult {
+        SUB_TASK(0, "子表任务，不进行处理"),
+        ADVANCED (1, "未来款，无垫付流程。前端代码获取该信息，需要显示提示框是否走代垫流程，如果确认走代垫流程，需要调用客服中心代垫流程页面链接。"),
+        OVERDUE(2, "未来款，垫付流程已逾期。提示业务操作人员，垫付已逾期，不能提交审批 --> 未来款，垫付已逾期"),
+        HANDLE(3, "已来款或已垫付（可以提交审批）");
+
+        private Integer result;
+        private String extension;
+
+        TaskResult(Integer result, String extension) {
+            this.result = result;
+            this.extension = extension;
+        }
+
+        public Integer getResult() {
+            return result;
+        }
+
+        public String getExtension() {
+            return extension;
         }
     }
+
 }
 

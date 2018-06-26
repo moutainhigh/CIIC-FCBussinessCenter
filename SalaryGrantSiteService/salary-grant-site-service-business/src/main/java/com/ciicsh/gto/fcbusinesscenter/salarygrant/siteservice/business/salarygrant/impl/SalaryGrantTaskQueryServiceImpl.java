@@ -6,15 +6,13 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantWorkFlowEnums;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
@@ -30,6 +28,7 @@ import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.type.JdbcType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,10 +40,7 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -276,13 +272,23 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      * @throws Exception
      */
     @Override
-    public void submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+    public WorkFlowResultBO submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
+        workFlowResultBO.setTaskCode(bo.getTaskCode());
+        workFlowResultBO.setTaskType(bo.getTaskType());
+        workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult());
         if (flag) {
-            salaryGrantWorkFlowService.doSubmitTask(bo);
+            //salaryGrantWorkFlowService.doSubmitTask(bo);
+            workFlowResultBO.setResult(0);
         } else {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
         }
-        sheetServiceProxy.startProcess(createStartParams("",""));
+        if (SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult().equals(workFlowResultBO.getResult())) {
+            List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
+            MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
+            sheetServiceProxy.startProcess(missionRequestDTO);
+        }
+        return workFlowResultBO;
     }
 
     /**
@@ -321,12 +327,13 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         sheetServiceProxy.completeTask(createCompleteParams(""));
     }
 
-    private MissionRequestDTO createStartParams(String missionId, String processDefinitionKey) {
+    private MissionRequestDTO createMissionDto(String action, SalaryGrantTaskBO bo) {
         MissionRequestDTO missionRequestDTO = BeanUtils.instantiate(MissionRequestDTO.class);
         Map variables = new HashMap<>();
-        variables.put("taskCode", "");
-        missionRequestDTO.setMissionId(missionId);
-        missionRequestDTO.setProcessDefinitionKey(processDefinitionKey);
+        variables.put("taskDealOperation", action);
+        variables.put("approvedOpinion", bo.getApprovedOpinion());
+        missionRequestDTO.setMissionId(bo.getTaskCode());
+        missionRequestDTO.setProcessDefinitionKey(getDefinitionKey(bo.getTaskCode().substring(0, 2)));
         missionRequestDTO.setVariables(variables);
         return missionRequestDTO;
     }
@@ -338,6 +345,21 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         taskRequestDTO.setTaskId(taskId);
         taskRequestDTO.setVariables(variables);
         return taskRequestDTO;
+    }
+
+    private String getDefinitionKey(String type) {
+        switch (type) {
+            case "LTB":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTB.getKey();
+            case "LTW":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTW.getKey();
+            case "STA":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.STA.getKey();
+            case "SPT":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SPT.getKey();
+            default:
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getKey();
+        }
     }
 
     /**

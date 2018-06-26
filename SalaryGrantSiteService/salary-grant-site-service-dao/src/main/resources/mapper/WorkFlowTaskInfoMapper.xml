@@ -24,7 +24,7 @@
         <result column="modified_time" property="modifiedTime" />
 	</resultMap>
 
-    <resultMap id="LogInfoResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO">
+    <resultMap id="operationMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO">
         <result column="task_deal_user_id" property="operateUserId" />
         <result column="task_deal_user_name" property="operateUserName" />
         <result column="task_deal_time" property="operateTime" />
@@ -32,13 +32,13 @@
         <result column="approved_opinion" property="opinion" />
     </resultMap>
 
-    <sql id="logInfoField">
+    <sql id="operationField">
         t.task_deal_user_id, t.task_deal_user_name, t.task_deal_time, t.task_deal_operation, t.approved_opinion
     </sql>
 
-    <select id="operation" resultMap="LogInfoResultMap">
+    <select id="operation" resultMap="operationMap">
         select
-          <include refid="logInfoField"></include>
+          <include refid="operationField"></include>
         from
           sg_work_flow_task_info t
         where
@@ -46,7 +46,7 @@
         and
           t.is_active = 1
         order by
-          t.work_flow_task_info_id
+          t.work_flow_task_info_id desc
     </select>
 
 </mapper>
