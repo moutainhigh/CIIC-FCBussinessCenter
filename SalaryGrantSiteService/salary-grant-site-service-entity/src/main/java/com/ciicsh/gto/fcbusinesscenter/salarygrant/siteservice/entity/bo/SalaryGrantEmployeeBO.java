@@ -92,5 +92,9 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 任务单ID
      */
     private Long taskId;
+    /**
+     * 调整信息
+     */
+    private String adjustInfo;
 
 }

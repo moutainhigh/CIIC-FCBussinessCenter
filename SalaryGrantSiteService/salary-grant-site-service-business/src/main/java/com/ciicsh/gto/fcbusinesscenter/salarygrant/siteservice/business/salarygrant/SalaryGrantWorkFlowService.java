@@ -97,7 +97,7 @@ public interface SalaryGrantWorkFlowService {
      * @param salaryGrantTaskBO
      * @return
      */
-    Boolean doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO);
+    int doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
      * 流程节点处理：3.退回
