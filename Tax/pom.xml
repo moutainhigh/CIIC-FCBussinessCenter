@@ -286,11 +286,11 @@
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>#{sba.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+            <!-- druid -->
             <dependency>
                 <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>1.1.10</version>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>1.1.6</version>
             </dependency>
 
             <!-- Cat服务 -->
