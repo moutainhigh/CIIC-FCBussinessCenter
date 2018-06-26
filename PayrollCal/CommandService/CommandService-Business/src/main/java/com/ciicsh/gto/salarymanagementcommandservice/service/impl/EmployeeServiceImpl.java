@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.PayrollEmpGroup;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmpGroupEmpRelationPO;
@@ -117,9 +118,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         empGroupEmpRelationPO.setEmployeeId(empId);
         empGroupEmpRelationPO.setActive(true);
         empGroupEmpRelationPO.setCreatedTime(new Date());
-        empGroupEmpRelationPO.setCreatedBy("macor");
+        empGroupEmpRelationPO.setCreatedBy(UserContext.getUser().getUserId());
         empGroupEmpRelationPO.setModifiedTime(new Date());
-        empGroupEmpRelationPO.setModifiedBy("macor");
+        empGroupEmpRelationPO.setModifiedBy(UserContext.getUser().getUserId());
         return empGroupEmpRelationPO;
     }
 

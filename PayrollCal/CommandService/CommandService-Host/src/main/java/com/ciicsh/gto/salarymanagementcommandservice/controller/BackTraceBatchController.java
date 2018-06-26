@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -100,8 +101,8 @@ public class BackTraceBatchController {
 
 
         backTrackingBatchPO.setStatus(BatchStatusEnum.NEW.getValue());
-        backTrackingBatchPO.setCreatedBy("bill");
-        backTrackingBatchPO.setModifiedBy("bill");
+        backTrackingBatchPO.setCreatedBy(UserContext.getUser().getUserId());
+        backTrackingBatchPO.setModifiedBy(UserContext.getUser().getUserId());
         backTrackingBatchService.insert(backTrackingBatchPO);
 
         return JsonResult.success(code);

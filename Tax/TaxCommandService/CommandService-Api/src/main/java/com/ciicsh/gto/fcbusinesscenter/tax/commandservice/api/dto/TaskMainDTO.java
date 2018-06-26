@@ -1,6 +1,8 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto;
 
 
+import java.util.Arrays;
+
 /**
  * @author wuhua
  */
@@ -22,6 +24,10 @@ public class TaskMainDTO {
     private String idType;
     private String idNo;
     private String[] status;
+    /**
+     * 批次号数组
+     */
+    private String[] batchNos;
 
     public String[] getStatus() {
         return status;
@@ -151,13 +157,42 @@ public class TaskMainDTO {
         this.pageSize = pageSize;
     }
 
+    public String[] getBatchNos() {
+        return batchNos;
+    }
+
+    public void setBatchNos(String[] batchNos) {
+        this.batchNos = batchNos;
+    }
+
+    public boolean isCombined() {
+        return isCombined;
+    }
+
+    public void setCombined(boolean combined) {
+        isCombined = combined;
+    }
+
     @Override
     public String toString() {
-        return "CalculationBatchDTO{" +
+        return "TaskMainDTO{" +
                 "managerName='" + managerName + '\'' +
                 ", batchNo='" + batchNo + '\'' +
+                ", taskMainIds=" + Arrays.toString(taskMainIds) +
+                ", taskMainId=" + taskMainId +
+                ", taskNo='" + taskNo + '\'' +
+                ", tabsName='" + tabsName + '\'' +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
+                ", isCombined=" + isCombined +
+                ", taskMainDetailId=" + taskMainDetailId +
+                ", taskMainDetailIds=" + Arrays.toString(taskMainDetailIds) +
+                ", employeeNo='" + employeeNo + '\'' +
+                ", employeeName='" + employeeName + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idNo='" + idNo + '\'' +
+                ", status=" + Arrays.toString(status) +
+                ", batchNos=" + Arrays.toString(batchNos) +
                 '}';
     }
 }

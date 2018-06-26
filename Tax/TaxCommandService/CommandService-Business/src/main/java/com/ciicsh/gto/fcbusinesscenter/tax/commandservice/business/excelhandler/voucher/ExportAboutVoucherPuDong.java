@@ -183,7 +183,7 @@ public class ExportAboutVoucherPuDong extends BaseService {
                 if (null == cellE) {
                     cellE = row.createCell(4);
                 }
-                cellE.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, taskSubProofDetailPO.getIdType()));
+                cellE.setCellValue(EnumUtil.getMessage(EnumUtil.IT_CERT_TYPE, taskSubProofDetailPO.getIdType()));
 
                 //所属期-F列
                 HSSFCell cellF = row.getCell(5);

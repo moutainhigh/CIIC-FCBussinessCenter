@@ -79,7 +79,7 @@ spring:
         max-idle: 8
         min-idle: 8
         password: a111111
-        url: jdbc:mysql://172.16.9.15:3306/gtobusinessdb?characterEncoding=utf8&useSSL=false
+        url: jdbc:mysql://172.16.9.15:3306/gtobusinessdb?characterEncoding=utf8&useSSL=false&allowMultiQueries=true
         username: root
     jpa:
         database: MYSQL
@@ -119,6 +119,9 @@ spring:
             group: ${spring.application.name}
             consumer:
               partitioned: false
+    boot:
+      admin:
+        url: http://172.16.9.24:9625
 #          sleuth:
 #            destination: sleuth-itdev
 #    data:
@@ -139,3 +142,5 @@ mongo:
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
+druid:
+    configPath:  /data/appdatas/gt1/gtobusinessdb_test.properties

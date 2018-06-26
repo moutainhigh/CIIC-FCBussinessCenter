@@ -228,7 +228,7 @@ public class ComputeServiceImpl {
 
                         String condition = item.get("item_condition") == null ? "" : (String) item.get("item_condition");//计算条件
                         String formulaContent = item.get("formula_content") == null ? "" : (String) item.get("formula_content"); //计算公式
-                        if (StringUtils.isEmpty(formulaContent)) return dbObject;
+                        if (StringUtils.isEmpty(formulaContent)) continue;
 
                         condition = Special2Normal(condition); //特殊字符转化
                         formulaContent = Special2Normal(formulaContent); //特殊字符转化

@@ -121,12 +121,9 @@
 	<select id="queryTaxBatchDetailsListByRes" resultMap="BaseResultMap" parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof">
 		select cbd.*
 		from tax_fc_calculation_batch_detail cbd,tax_fc_employee_service_batch esb
-		where cbd.id = esb.cal_batch_detail_id  and cbd.is_active = true and esb.is_active = true and esb.is_declared = false
-		<if test = "idType != null and idType != ''">
-			and cbd.id_type = #{idType, jdbcType=VARCHAR}
-		</if>
-		<if test = "idNo != null and idNo != ''">
-			and cbd.id_no = #{idNo, jdbcType=VARCHAR}
+		where cbd.id = esb.cal_batch_detail_id  and cbd.is_active = true and esb.is_active = true and esb.is_declared = true
+		<if test = "employeeNo != null and employeeNo != ''">
+			and cbd.employee_no = #{employeeNo, jdbcType=VARCHAR}
 		</if>
 		<if test = "incomeSubject != null and incomeSubject != ''">
 			and cbd.income_subject = #{incomeSubject, jdbcType=VARCHAR}

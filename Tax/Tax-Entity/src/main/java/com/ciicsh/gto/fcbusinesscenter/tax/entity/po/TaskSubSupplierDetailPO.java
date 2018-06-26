@@ -227,7 +227,7 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 	/**
 	 * 实际工作年限数
 	 */
-	private Integer workingYears;
+	private String workingYears;
 	/**
 	 * 商业健康保险费
 	 */
@@ -239,11 +239,11 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 	/**
 	 * 境内天数
 	 */
-	private Integer domesticDays;
+	private String domesticDays;
 	/**
 	 * 境外天数
 	 */
-	private Integer overseasDays;
+	private String overseasDays;
 	/**
 	 * 境内所得境内支付
 	 */
@@ -303,7 +303,7 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 	/**
 	 * 规定月份数
 	 */
-	private Integer numberOfMonths;
+	private String numberOfMonths;
 	/**
 	 * 本年累计已纳税额
 	 */
@@ -314,6 +314,45 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	//免税津贴
 	private BigDecimal dutyFreeAllowance;
+
+	/**
+	 * 创建人displayname
+	 */
+	@TableField(value="created_by_display_name",fill = FieldFill.INSERT)
+	private String createdByDisplayName;
+	/**
+	 * 修改人displayname
+	 */
+	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
+	private String modifiedByDisplayName;
+
+	public String getDomesticDays() {
+		return domesticDays;
+	}
+
+	public String getOverseasDays() {
+		return overseasDays;
+	}
+
+	public String getNumberOfMonths() {
+		return numberOfMonths;
+	}
+
+	public String getCreatedByDisplayName() {
+		return createdByDisplayName;
+	}
+
+	public void setCreatedByDisplayName(String createdByDisplayName) {
+		this.createdByDisplayName = createdByDisplayName;
+	}
+
+	public String getModifiedByDisplayName() {
+		return modifiedByDisplayName;
+	}
+
+	public void setModifiedByDisplayName(String modifiedByDisplayName) {
+		this.modifiedByDisplayName = modifiedByDisplayName;
+	}
 
 	public BigDecimal getPreTaxAggregate() {
 		return preTaxAggregate;
@@ -723,12 +762,24 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 		this.annuity = annuity;
 	}
 
-	public Integer getWorkingYears() {
+	public String getWorkingYears() {
 		return workingYears;
 	}
 
-	public void setWorkingYears(Integer workingYears) {
+	public void setWorkingYears(String workingYears) {
 		this.workingYears = workingYears;
+	}
+
+	public void setDomesticDays(String domesticDays) {
+		this.domesticDays = domesticDays;
+	}
+
+	public void setOverseasDays(String overseasDays) {
+		this.overseasDays = overseasDays;
+	}
+
+	public void setNumberOfMonths(String numberOfMonths) {
+		this.numberOfMonths = numberOfMonths;
 	}
 
 	public BigDecimal getBusinessHealthInsurance() {
@@ -745,22 +796,6 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setEndowmentInsurance(BigDecimal endowmentInsurance) {
 		this.endowmentInsurance = endowmentInsurance;
-	}
-
-	public Integer getDomesticDays() {
-		return domesticDays;
-	}
-
-	public void setDomesticDays(Integer domesticDays) {
-		this.domesticDays = domesticDays;
-	}
-
-	public Integer getOverseasDays() {
-		return overseasDays;
-	}
-
-	public void setOverseasDays(Integer overseasDays) {
-		this.overseasDays = overseasDays;
 	}
 
 	public BigDecimal getDomesticIncomeDomesticPayment() {
@@ -873,14 +908,6 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 
 	public void setExerciseIncomeYear(BigDecimal exerciseIncomeYear) {
 		this.exerciseIncomeYear = exerciseIncomeYear;
-	}
-
-	public Integer getNumberOfMonths() {
-		return numberOfMonths;
-	}
-
-	public void setNumberOfMonths(Integer numberOfMonths) {
-		this.numberOfMonths = numberOfMonths;
 	}
 
 	public BigDecimal getExerciseTaxAmount() {

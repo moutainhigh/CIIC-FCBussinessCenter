@@ -33,4 +33,9 @@ mongo:
   userName: ciicit
   pwd: ciicit!#%
 
-
+spring:
+  boot:
+    admin:
+      url: http://172.16.9.56:9625
+druid:
+  configPath:  /data/appdatas/gt1/gtobusinessdb_uat.properties

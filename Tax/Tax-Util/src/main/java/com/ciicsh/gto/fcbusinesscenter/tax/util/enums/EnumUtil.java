@@ -21,9 +21,15 @@ public class EnumUtil {
      */
     public static final String BATCH_NO_STATUS = "BNS";
     /**
-     * 证件类型
+     * 报税证件类型
      */
     public static final String IT_TYPE = "IT";
+
+    /**
+     * 证件类型
+     */
+    public static final String IT_CERT_TYPE ="ITCT";
+
     /**
      * 个税所得项目
      */
@@ -167,12 +173,19 @@ public class EnumUtil {
                 return null;
             } else if (type.equals(EnumUtil.IT_TYPE)) {
                 String value = "";
+                Map<String,String> map = BasicData.getInstance().getTaxCertType();
+                if(map.containsKey(key)){
+                    value = map.get(key);
+                }
+                return value;
+            } else if (type.equals(EnumUtil.IT_CERT_TYPE)) {
+                String value = "";
                 Map<String,String> map = BasicData.getInstance().getCertType();
                 if(map.containsKey(key)){
                     value = map.get(key);
                 }
                 return value;
-            } else if (type.equals(EnumUtil.INCOME_SUBJECT)) {
+            }else if (type.equals(EnumUtil.INCOME_SUBJECT)) {
                 for (IncomeSubject is : IncomeSubject.values()) {
                     if (is.getCode().equals(key)) {
                         return is.getDesc();

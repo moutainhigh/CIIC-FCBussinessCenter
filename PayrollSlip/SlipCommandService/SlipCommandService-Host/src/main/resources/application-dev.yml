@@ -14,10 +14,18 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 mongo:
-  host: 172.16.9.16 #172.16.9.52 172.16.9.15 172.16.9.16 sit
+  host: 172.16.9.15 #172.16.9.52 172.16.9.15 172.16.9.16 sit
   port: 27017
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
 seaweed:
   masterHost: "172.16.9.15:9333"
+spring:
+  boot:
+    admin:
+      url: http://172.16.9.31:9625
+      client:
+        prefer-ip: true
+druid:
+  configPath:  /data/appdatas/gt1/gtobusinessdb_dev.properties

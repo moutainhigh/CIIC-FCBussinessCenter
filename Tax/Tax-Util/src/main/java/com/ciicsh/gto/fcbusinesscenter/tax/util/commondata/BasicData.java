@@ -11,6 +11,12 @@ public class BasicData {
 
     private Map<String, String> certType = new HashMap<String, String>();
 
+    /**
+     * 报税证件类型
+     */
+
+    private Map<String, String> taxCertType = new HashMap<String, String>();
+
     private BasicData() {
     }
 
@@ -33,5 +39,13 @@ public class BasicData {
 
     public void setCertType(Map<String, String> certType) {
         this.certType = certType;
+    }
+
+    public Map<String, String> getTaxCertType() {
+        return taxCertType;
+    }
+
+    public void setTaxCertType(Map<String, String> taxCertType) {
+        this.taxCertType = taxCertType;
     }
 }
