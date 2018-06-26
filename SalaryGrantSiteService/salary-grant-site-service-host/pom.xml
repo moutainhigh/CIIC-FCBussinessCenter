@@ -83,6 +83,12 @@
             <artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+
         <!--easypoi依赖-->
         <dependency>
             <groupId>cn.afterturn</groupId>

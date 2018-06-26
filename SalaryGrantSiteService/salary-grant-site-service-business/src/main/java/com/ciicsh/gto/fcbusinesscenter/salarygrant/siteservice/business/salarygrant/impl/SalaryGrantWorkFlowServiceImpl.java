@@ -8,21 +8,21 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.WorkFlowTaskInfoService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.Result;
+import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +59,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private WorkFlowTaskInfoService workFlowTaskInfoService;
 
     @Override
     public Map startSalaryGrantTaskProcess(SalaryGrantTaskMissionRequestDTO salaryGrantTaskMissionRequestDTO) {
@@ -870,4 +872,54 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         //（10）返回结果true
         return true;
     }
+
+
+    /**
+     * 业务处理
+     * @author chenpb
+     * @since 2018-06-22
+     * @param taskCreateMsgDTO
+     */
+    @Override
+    public void createTask (TaskCreateMsgDTO taskCreateMsgDTO) {
+        WorkFlowTaskInfoPO po = BeanUtils.instantiate(WorkFlowTaskInfoPO.class);
+        po.setWorkFlowProcessId(taskCreateMsgDTO.getProcessId());
+        workFlowTaskInfoService.insert(po);
+    }
+
+    /**
+     * 完成任务
+     * @author chenpb
+     * @since 2018-06-22
+     * @param dto
+     * @throws Exception
+     */
+    @Override
+    public void completeTask(TaskRequestDTO dto) throws Exception {
+        sheetServiceProxy.completeTask(dto);
+    }
+
+    /**
+     * 启动流程
+     * @author chenpb
+     * @since 2018-06-22
+     * @param dto
+     */
+    @Override
+    public void startProcess (MissionRequestDTO dto) throws Exception {
+        sheetServiceProxy.startProcess(dto);
+    }
+
+    /**
+     * 结束流程
+     * @author chenpb
+     * @since 2018-06-22
+     * @param missionId
+     * @param action
+     */
+    @Override
+    public void  completeProcess(String missionId, String action) {
+
+    }
+
 }

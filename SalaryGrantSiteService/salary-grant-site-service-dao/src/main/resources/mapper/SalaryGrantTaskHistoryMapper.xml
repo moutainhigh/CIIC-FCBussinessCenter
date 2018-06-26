@@ -154,9 +154,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and (t1.operator_user_id = #{userId} or t1.approve_user_id = #{userId})
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and (t1.operator_user_id = #{userId} or t1.approve_user_id = #{userId})-->
+            <!--</if>-->
             and
               t1.task_status in('3','8','9')
             and
@@ -192,9 +192,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and (t1.operator_user_id = #{userId} or t1.approve_user_id = #{userId})
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and (t1.operator_user_id = #{userId} or t1.approve_user_id = #{userId})-->
+            <!--</if>-->
             and
               t1.task_status in ('4', '13')
             and

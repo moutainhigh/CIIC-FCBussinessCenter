@@ -327,6 +327,7 @@
         <result column="task_status_name" property="taskStatusName" />
         <result column="task_type" property="taskType" />
         <result column="created_time" property="createdTime" />
+        <result column="modified_time" property="modifiedTime" />
     </resultMap>
 
     <resultMap id="FinanceResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceTaskBO">
@@ -346,7 +347,7 @@
 
     <sql id="sgDetailField">
         t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code,  t.batch_code, t.management_id, t.management_name, t.grant_type, t.grant_cycle, t.grant_date, t.grant_time, t.created_time, t.task_type,t.task_status,
-        t.approved_opinion, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count, 0 as local_grant_count, 0 as supplier_grant_count
+        t.approved_opinion, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count, 0 as local_grant_count, 0 as supplier_grant_count, t.modified_time
     </sql>
 
     <sql id="sgPaymentField">
@@ -428,6 +429,20 @@
             s.task_type = 1
         and
             s.is_active = 1
+    </update>
+
+    <update id="lockTask">
+        update
+            sg_salary_grant_sub_task t
+        set
+            t.modified_by = #{userId},
+            t.modified_time = now()
+        where
+            t.salary_grant_sub_task_id = #{taskId}
+        and
+            t.modified_time = #{modifiedTime}
+        and
+            t.is_active = 1
     </update>
 
 </mapper>

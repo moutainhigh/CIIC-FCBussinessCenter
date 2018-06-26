@@ -77,6 +77,9 @@ spring:
       FAIL_ON_UNKNOWN_PROPERTIES: false
 #    time-zone: GMT+8
 #    date-format: yyyy-MM-dd HH:mm:ss
+  boot:
+    admin:
+      url: ${spring.admin}
   datasource:
     url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=true&tinyInt1isBit=false
     username: ${database.username}

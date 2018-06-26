@@ -99,5 +99,9 @@ public class SalaryGrantDetailDTO {
      */
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date createdTime;
+    /**
+     * 修改时间
+     */
+    private Date modifiedTime;
 
 }

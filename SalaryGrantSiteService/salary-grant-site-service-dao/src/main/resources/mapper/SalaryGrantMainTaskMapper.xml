@@ -76,26 +76,27 @@
         <result column="operator_user_id" property="operatorUserId" />
         <result column="approve_user_id" property="approveUserId" />
         <result column="batch_version" property="batchVersion" />
+        <result column="modified_time" property="modifiedTime" />
     </resultMap>
 
     <sql id="sgDetailField">
         t1.salary_grant_main_task_id task_id, t1.salary_grant_main_task_code task_code, t1.batch_code, t1.management_id, t1.management_name, t1.grant_type, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type, t1.task_status,
-		t1.approved_opinion, t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count, t1.operator_user_id, t1.approve_user_id
+		t1.approved_opinion, t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count, t1.operator_user_id, t1.approve_user_id, t1.modified_time
     </sql>
 
     <sql id="sgListField">
         t.task_id, t.task_code, t.management_id, t.management_name, t.batch_code, t.grant_cycle,  t.approved_opinion,
-        t.payment_total_sum, t.total_person_count, t.chinese_count, t.foreigner_count, t.grant_date, t.grant_type,  t.grant_mode, t.grant_type_name, t.task_type, t.task_status, t.remark
+        t.payment_total_sum, t.total_person_count, t.chinese_count, t.foreigner_count, t.grant_date, t.grant_type,  t.grant_mode, t.grant_type_name, t.task_type, t.task_status, t.remark, t.modified_time
     </sql>
 
     <sql id="mainListField">
         t1.salary_grant_main_task_id task_id, t1.salary_grant_main_task_code task_code,t1.management_name,t1.management_id,t1.batch_code, t1.grant_cycle, t1.approved_opinion,
-        t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.grant_date,t1.grant_type, t1.task_type, t1.grant_mode, t1.task_status, '' as grant_type_name, t1.remark
+        t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.grant_date,t1.grant_type, t1.task_type, t1.grant_mode, t1.task_status, '' as grant_type_name, t1.remark, t1.modified_time
     </sql>
 
     <sql id="subListField">
         t2.salary_grant_sub_task_id task_id, t2.salary_grant_sub_task_code task_code,t2.management_name,t2.management_id,t2.batch_code, t2.grant_cycle, t2.approved_opinion,
-        t2.payment_total_sum,t2.total_person_count,t2.chinese_count,t2.foreigner_count,t2.grant_date,t2.grant_type, t2.task_type, t2.grant_mode, t2.task_status, '' as grant_type_name,t2.remark
+        t2.payment_total_sum,t2.total_person_count,t2.chinese_count,t2.foreigner_count,t2.grant_date,t2.grant_type, t2.task_type, t2.grant_mode, t2.task_status, '' as grant_type_name, t2.remark, t2.modified_time
     </sql>
 
     <sql id="cancelCloseField">
@@ -130,9 +131,9 @@
                 <if test="taskStatus != null and taskStatus != ''">
                     and t1.task_status = #{taskStatus}
                 </if>
-                <if test="userId != null and userId != ''">
-                    and t1.operator_user_id = #{userId}
-                </if>
+                <!--<if test="userId != null and userId != ''">-->
+                    <!--and t1.operator_user_id = #{userId}-->
+                <!--</if>-->
                 and
                   t1.is_active=1
             </where>
@@ -162,9 +163,9 @@
                 <if test="taskStatus != null and taskStatus != ''">
                     and t2.task_status = #{taskStatus}
                 </if>
-                <if test="userId != null and userId != ''">
-                    and t2.operator_user_id = #{userId}
-                </if>
+                <!--<if test="userId != null and userId != ''">-->
+                    <!--and t2.operator_user_id = #{userId}-->
+                <!--</if>-->
                 and
                   t2.task_type=1
                 and
@@ -274,9 +275,9 @@
             <if test="taskStatus != null and taskStatus != ''">
                 and t1.task_status = #{taskStatus}
             </if>
-            <if test="userId != null and userId != ''">
-                and t1.operator_user_id = #{userId}
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and t1.operator_user_id = #{userId}-->
+            <!--</if>-->
             and
               t1.is_active=1
         </where>
@@ -306,9 +307,9 @@
             <if test="taskStatus != null and taskStatus != ''">
                 and t2.task_status = #{taskStatus}
             </if>
-            <if test="userId != null and userId != ''">
-                and t2.operator_user_id = #{userId}
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and t2.operator_user_id = #{userId}-->
+            <!--</if>-->
             and
               t2.is_active=1
             and
@@ -343,9 +344,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and (t1.approve_user_id = #{userId} or t1.operator_user_id = #{userId})
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and (t1.approve_user_id = #{userId} or t1.operator_user_id = #{userId})-->
+            <!--</if>-->
             and
               t1.task_status in ('2','6','7')
             and
@@ -374,9 +375,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t2.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and (t2.approve_user_id = #{userId} or t2.operator_user_id = #{userId})
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and (t2.approve_user_id = #{userId} or t2.operator_user_id = #{userId})-->
+            <!--</if>-->
             and
               t2.task_status in ('2','6','7')
             and
@@ -423,5 +424,19 @@
         and
             m.is_active = 1
     </select>
+
+    <update id="lockTask">
+        update
+            sg_salary_grant_main_task m
+        set
+            m.modified_by = #{userId},
+            m.modified_time = now()
+        where
+            m.salary_grant_main_task_id = #{taskId}
+        and
+            m.modified_time = #{modifiedTime}
+        and
+            m.is_active = 1
+    </update>
 
 </mapper>
