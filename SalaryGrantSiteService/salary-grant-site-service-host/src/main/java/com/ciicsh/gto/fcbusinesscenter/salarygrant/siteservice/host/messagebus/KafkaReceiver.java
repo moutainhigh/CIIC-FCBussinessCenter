@@ -71,7 +71,7 @@ public class KafkaReceiver {
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_MAIN)
-    public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+    public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
         //todo 把消息返回的任务信息插入到任务日志表中
@@ -79,7 +79,7 @@ public class KafkaReceiver {
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
-    public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+    public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
         //todo 把消息返回的任务信息插入到任务日志表中
@@ -87,7 +87,7 @@ public class KafkaReceiver {
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_FOREIGN_CURRENCY)
-    public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+    public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
         //todo 把消息返回的任务信息插入到任务日志表中
@@ -95,7 +95,7 @@ public class KafkaReceiver {
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_NONLOCAL)
-    public void salaryGrantSubTaskSTCreateWorkFlow(Message<TaskCreateMsgDTO> message){
+    public void salaryGrantSubTaskSTACreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         TaskCreateMsgDTO taskMsgDTO = message.getPayload();
         String returnInfo = taskMsgDTO.toString();
         //todo 把消息返回的任务信息插入到任务日志表中
