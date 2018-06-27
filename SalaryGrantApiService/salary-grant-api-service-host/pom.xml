@@ -75,6 +75,12 @@
       <artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-starter-client</artifactId>
+      <version>1.5.7</version>
+    </dependency>
+
     <!-- 内部模块依赖 -->
     <dependency>
         <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>

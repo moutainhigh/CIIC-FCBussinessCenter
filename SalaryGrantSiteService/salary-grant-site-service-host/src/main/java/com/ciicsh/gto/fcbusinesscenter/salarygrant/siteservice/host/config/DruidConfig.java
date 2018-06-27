@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.config;
 
 
 import com.alibaba.druid.filter.Filter;
+import com.alibaba.druid.filter.config.ConfigFilter;
 import com.alibaba.druid.filter.stat.StatFilter;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
@@ -44,7 +45,6 @@ public class DruidConfig {
         datasource.setUsername(prop.getProperty("username"));
         datasource.setPassword(prop.getProperty("password"));
         datasource.setDriverClassName(prop.getProperty("driverClassName"));
-        datasource.setFilters(prop.getProperty("filters"));
         datasource.setConnectionProperties(prop.getProperty("connect-properties"));
         datasource.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
         datasource.setMinIdle(Integer.parseInt(prop.getProperty("minIdle")));
@@ -52,9 +52,16 @@ public class DruidConfig {
         List<Filter> filters = new ArrayList<>();
         filters.add(statFilter());
         filters.add(wallFilter());
+        filters.add(configFilter());
         datasource.setProxyFilters(filters);
 
         return datasource;
+    }
+
+    @Bean
+    public ConfigFilter configFilter() {
+        ConfigFilter configFilter = new ConfigFilter();
+        return configFilter;
     }
 
     @Bean

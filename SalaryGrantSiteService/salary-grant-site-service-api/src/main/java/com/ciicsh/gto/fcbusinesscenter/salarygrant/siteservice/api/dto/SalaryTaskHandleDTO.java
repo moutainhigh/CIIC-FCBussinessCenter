@@ -4,6 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.common.Paging
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,7 +67,7 @@ public class SalaryTaskHandleDTO extends PagingDTO {
      */
     private String remark;
     /**
-     * 薪资项
+     * 修改时间
      */
-    private List<SalaryTaskItemDTO> itemInfo;
+    private Date modifiedTime;
 }

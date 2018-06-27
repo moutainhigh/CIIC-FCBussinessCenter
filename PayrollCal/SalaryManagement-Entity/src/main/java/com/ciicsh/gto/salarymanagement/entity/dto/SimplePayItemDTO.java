@@ -19,6 +19,26 @@ public class SimplePayItemDTO {
 
     private int display;
 
+    private boolean canLock;
+
+    private boolean locked;
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean isCanLock() {
+        return canLock;
+    }
+
+    public void setCanLock(boolean canLock) {
+        this.canLock = canLock;
+    }
+
     public String getName() {
         return name;
     }

@@ -1,4 +1,4 @@
-package com.ciicsh.gto.afcompanycenter.commandservice.config;
+package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.configuration;
 
 
 import com.alibaba.druid.filter.Filter;
@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -45,7 +44,6 @@ public class DruidConfig {
         datasource.setUsername(prop.getProperty("username"));
         datasource.setPassword(prop.getProperty("password"));
         datasource.setDriverClassName(prop.getProperty("driverClassName"));
-        //datasource.setFilters(prop.getProperty("filters"));
         datasource.setConnectionProperties(prop.getProperty("connect-properties"));
         datasource.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
         datasource.setMinIdle(Integer.parseInt(prop.getProperty("minIdle")));

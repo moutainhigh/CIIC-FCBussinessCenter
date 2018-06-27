@@ -189,40 +189,61 @@ public class AdjustBatchController {
 
     @PostMapping("/updateBatchValue")
     public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String empCode,
-                                       @RequestParam String payItemName, @RequestParam String payItemVal){
+                                       @RequestParam String payItemName, @RequestParam Object payItemVal){
 
         int rowAffected = 0;
+
+        String key = "catalog.pay_items.$.item_value";
+
+        try{
+            payItemVal = Double.parseDouble(payItemVal.toString());
+        }catch (Exception ex){
+            try {
+                payItemVal = Boolean.parseBoolean(payItemVal.toString());
+            }catch (Exception e2){
+                payItemVal = String.valueOf(payItemVal);
+            }
+        }
+        if(payItemVal instanceof Boolean){
+            key = "catalog.pay_items.$.isLocked";
+        }
+
         if(batchType == BatchTypeEnum.NORMAL.getValue()){
             rowAffected = normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                             .andOperator(
                                     Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                                     Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                            ),"catalog.pay_items.$.item_value",payItemVal);
+                            ),key,payItemVal);
+
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
 
-            updateMongoAdjust(batchType,batchCode,empCode,payItemName,payItemVal);
+            if(payItemVal instanceof Number) {
+                updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
+            }
 
             rowAffected = adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                             Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),"catalog.pay_items.$.item_value",payItemVal);
+                    ),key,payItemVal);
 
         }else {
 
-            updateMongoAdjust(batchType,batchCode,empCode,payItemName,payItemVal);
+            if(payItemVal instanceof Number) {
+                updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
+            }
 
             rowAffected = backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                             Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),"catalog.pay_items.$.item_value",payItemVal);
+                    ),key,payItemVal);
 
         }
         return JsonResult.success(rowAffected);
     }
 
-    private int updateMongoAdjust(int batchType, String batchCode, String empCode, String name, String val){
+    private int updateMongoAdjust(int batchType, String batchCode, String empCode, String name, Object val){
         int affected = 0;
         /**
          * adjust_items like [ { name: '', origin:'', new:''}, { name: '', origin:'', new:''},... ]

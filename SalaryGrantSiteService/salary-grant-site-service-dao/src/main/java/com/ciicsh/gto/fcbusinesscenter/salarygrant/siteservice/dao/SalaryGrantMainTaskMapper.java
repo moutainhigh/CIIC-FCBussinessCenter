@@ -84,4 +84,13 @@ public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTas
      * @return
      */
     SalaryGrantTaskBO selectByTBatchInfo(@Param("batchCode") String batchCode, @Param("grantType") Integer grantType);
+
+    /**
+     * 添加资源锁
+     * @author chenpb
+     * @since 2018-06-22
+     * @param bo
+     * @return
+     */
+    Integer lockTask(SalaryGrantTaskBO bo);
 }

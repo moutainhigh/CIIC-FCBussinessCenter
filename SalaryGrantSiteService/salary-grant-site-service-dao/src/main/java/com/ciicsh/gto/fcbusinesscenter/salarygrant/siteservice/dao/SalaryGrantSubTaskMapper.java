@@ -119,4 +119,13 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      */
     Integer syncTaskInfo(@Param("taskCodes") String taskCodes, @Param("taskStatus") String taskStatus);
 
+    /**
+     * 查询子任务单
+     * @author chenpb
+     * @since 2018-06-22
+     * @param bo
+     * @return
+     */
+    Integer lockTask(SalaryGrantTaskBO bo);
+
 }
