@@ -282,8 +282,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         workFlowResultBO.setTaskType(bo.getTaskType());
         workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult());
         if (flag) {
-            //salaryGrantWorkFlowService.doSubmitTask(bo);
-            //workFlowResultBO.setResult(0);
+            Integer result =  salaryGrantWorkFlowService.doSubmitTask(bo);
+            workFlowResultBO.setResult(result);
         } else {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
         }
