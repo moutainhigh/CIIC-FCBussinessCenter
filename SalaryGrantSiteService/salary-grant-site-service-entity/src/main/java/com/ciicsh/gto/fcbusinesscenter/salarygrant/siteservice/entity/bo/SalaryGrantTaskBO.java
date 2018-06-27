@@ -165,6 +165,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private String userId;
     /**
+     * 系统用户名
+     */
+    private String userName;
+    /**
      * 创建时间字符串
      */
     private String createdTimeStr;

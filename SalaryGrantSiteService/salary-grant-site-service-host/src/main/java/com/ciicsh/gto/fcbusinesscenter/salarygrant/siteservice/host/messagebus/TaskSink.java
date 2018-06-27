@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TaskSink {
     @Input(MsgConstants.COMMON_TASKSERVICE_TASK_COMPLETE)
-    MessageChannel commonTaskserviceTaskComplete();
+    MessageChannel commonTaskServiceTaskComplete();
 
     @Input(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
-    MessageChannel commonTaskserviceProcessComplete();
+    MessageChannel commonTaskServiceProcessComplete();
 
     /**
      * 创建薪资发放任务单SGT工作流TOPIC
