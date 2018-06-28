@@ -104,6 +104,16 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateItemByCode(PrPayrollGroupTemplatePO param) {
+        // 编辑时校验薪资组模板是否有同名
+        EntityWrapper<PrPayrollGroupTemplatePO> wrapper = new EntityWrapper<>();
+        wrapper.eq("group_template_name", param.getGroupTemplateName());
+        List<PrPayrollGroupTemplatePO> templateList = prPayrollGroupTemplateMapper.selectList(wrapper);
+        if (templateList != null) {
+            templateList.removeIf(template -> template.getGroupTemplateCode().equals(param.getGroupTemplateCode()));
+            if (templateList.size() > 0 ) {
+                throw new BusinessException("重复的薪资组模板名称");
+            }
+        }
         return prPayrollGroupTemplateMapper.updateItemByCode(param);
     }
 
