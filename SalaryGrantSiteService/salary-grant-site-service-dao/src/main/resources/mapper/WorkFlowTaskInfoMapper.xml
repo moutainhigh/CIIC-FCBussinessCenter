@@ -53,7 +53,7 @@
         and
           t.is_active = 1
         order by
-          t.work_flow_task_info_id,  t.work_flow_task_id desc
+          t.work_flow_task_info_id desc, t.work_flow_task_id desc
     </select>
 
     <update id="updateByTaskId">

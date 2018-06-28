@@ -411,35 +411,53 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void syncPayStatus(List<PayapplySalaryDTO> list) {
-        String subTaskStr = getSubTaskCodes(list);
-        List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
-        if (!pos.isEmpty()) {
+        if (!list.isEmpty()) {
             List<BatchAuditDTO> auditList = new ArrayList<>();
-            getSyncParams(pos, auditList);
+            String subTaskStr = getSubTaskCodes(list);
             salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-            salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-            batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+            List<String> batchCodes = getBatchCodes(list);
+            batchCodes.forEach(x-> {
+                SalaryGrantTaskBO bo = BeanUtils.instantiate(SalaryGrantTaskBO.class);
+                bo.setBatchCode(x);
+                List<SalaryGrantSubTaskPO> subTasks = salaryGrantSubTaskMapper.getSubListByBatchCode(bo);
+                List<SalaryGrantSubTaskPO> payLists = subTasks.parallelStream().filter(y -> SalaryGrantBizConsts.TASK_STATUS_PAYMENT.equals(y.getTaskStatus())).collect(Collectors.toList());
+                if (payLists.size() == subTasks.size()) {
+                    salaryGrantMainTaskMapper.syncTaskInfo(payLists.get(0).getSalaryGrantMainTaskCode(), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+                    getUpdateMongoParams(payLists.get(0), auditList);
+                }
+            });
+            if (!auditList.isEmpty()) {
+                batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+            }
         }
     }
 
     /**
      * 同步参数
      * @author chenpb
-     * @since 2018-06-06
-     * @param poList
+     * @since 2018-06-28
+     * @param po
      * @param auditList
      */
-    private static void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList) {
-        if (!poList.isEmpty()) {
-            poList.parallelStream().forEach(y -> {
-                BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
-                dto.setBatchCode(y.getBatchCode());
-                dto.setBatchType(y.getGrantType());
-                dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
-                dto.setStatus(8);
-                auditList.add(dto);
-            });
-        }
+    private static void getUpdateMongoParams(SalaryGrantSubTaskPO po, List<BatchAuditDTO> auditList) {
+        BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
+        dto.setBatchCode(po.getBatchCode());
+        dto.setBatchType(po.getGrantType());
+        dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
+        dto.setStatus(8);
+        auditList.add(dto);
+    }
+
+    /**
+     * 获取BatchCode列表
+     * @author chenpb
+     * @since 2018-06-28
+     * @param list
+     * @return
+     */
+    private static List<String> getBatchCodes(List<PayapplySalaryDTO> list) {
+        List<String> batchCodes = list.parallelStream().map(x -> x.getBatchCode()).distinct().collect(Collectors.toList());
+        return batchCodes;
     }
 
     /**
@@ -464,12 +482,9 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      * @param list
      * @return
      */
-    private static String getMainTaskCodes(List<SalaryGrantSubTaskPO> list) {
-        if (list.isEmpty()) {
-            return "";
-        }
-        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSalaryGrantMainTaskCode() + "'").collect(Collectors.toList());
-        return String.join(",", taskCodes);
+    private static List<String> getMainTaskCodes(List<SalaryGrantSubTaskPO> list) {
+        List<String> taskCodes = list.parallelStream().map(x -> x.getSalaryGrantMainTaskCode()).distinct().collect(Collectors.toList());
+        return taskCodes;
     }
 
     /**

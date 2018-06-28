@@ -69,11 +69,11 @@ public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTas
      * 同步结算中心薪资发放信息
      * @author chenpb
      * @since 2018-06-05
-     * @param taskCodes
+     * @param taskCode
      * @param taskStatus
      * @return
      */
-    Integer syncTaskInfo(@Param("taskCodes") String taskCodes, @Param("taskStatus") String taskStatus);
+    Integer syncTaskInfo(@Param("taskCode") String taskCode, @Param("taskStatus") String taskStatus);
 
     /**
      * 根据batchCode和grantType查询任务单
