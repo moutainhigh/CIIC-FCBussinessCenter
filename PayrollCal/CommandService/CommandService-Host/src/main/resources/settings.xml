@@ -134,8 +134,8 @@ under the License.
         -->
         <server>
             <id>drools-workbench</id>
-            <username>admin</username>
-            <password>admin</password>
+            <username>ciicit</username>
+            <password>ciicit</password>
             <configuration>
                 <httpConfiguration>
                     <put>
