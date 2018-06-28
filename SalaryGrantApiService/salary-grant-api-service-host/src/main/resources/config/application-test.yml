@@ -23,5 +23,12 @@ seaweed:
 #  enabled: true
 sleuth:
   percentage: 1.0
+druid:
+#  configPathBasic:  /data/appdatas/gt1/gtobasicdb_test.properties
+  configPathBusiness:  /data/appdatas/gt1/gtobusinessdb_test.properties
+#  configPathPayroll:  /data/appdatas/gt1/gtopayrolldb_test.properties
+#  configPathProduct:  /data/appdatas/gt1/gtoproductdb_sit.properties
+#  configPathSmdb:  /data/appdatas/gt1/gtosmdb_sit.properties
+#  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_sit.properties
 spring:
   admin: http://172.16.9.24:9625
