@@ -37,4 +37,10 @@ public interface CalculationBatchDetailService {
      * @param ids
      */
     void queryCalculationBatchDetail(String[] ids);
+
+    /**
+     * 批量暂缓计算批次明细
+     * @param ids
+     */
+    void batchPostponeCalBatchDetail(String[] ids);
 }

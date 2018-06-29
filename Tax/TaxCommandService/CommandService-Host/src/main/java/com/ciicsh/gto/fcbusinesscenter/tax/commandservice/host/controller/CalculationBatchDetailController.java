@@ -70,6 +70,21 @@ public class CalculationBatchDetailController extends BaseController implements 
         return jr;
     }
 
+
+    /**
+     *
+     * @param calculationBatchDetailDTO
+     * @return
+     */
+    @PostMapping(value = "batchPostponeCalBatchDetail")
+    public JsonResult<Boolean> batchPostponeCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
+            calculationBatchDetailService.batchPostponeCalBatchDetail(calculationBatchDetailDTO.getIds());
+        }
+        return jr;
+    }
+
     /**
      * 批量恢复计算批次明细
      *
