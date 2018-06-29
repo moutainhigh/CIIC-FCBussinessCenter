@@ -88,8 +88,13 @@ public class GroupTemplateController extends BaseController {
         TranslatorUtils.copyNotNullProperties(param, updateParam);
         updateParam.setGroupTemplateCode(code);
         updateParam.setModifiedBy(UserContext.getUserId());
-        Integer result = prGroupTemplateService.updateItemByCode(updateParam);
-        return JsonResult.success(result);
+        Integer result;
+        try {
+            result = prGroupTemplateService.updateItemByCode(updateParam);
+        } catch (BusinessException ex) {
+            return  JsonResult.faultMessage(ex.getMessage());
+        }
+        return result > 0 ? JsonResult.success(result) : JsonResult.faultMessage("更新薪资组模板失败");
     }
 
     @PostMapping(value = "/prGroupTemplate")
