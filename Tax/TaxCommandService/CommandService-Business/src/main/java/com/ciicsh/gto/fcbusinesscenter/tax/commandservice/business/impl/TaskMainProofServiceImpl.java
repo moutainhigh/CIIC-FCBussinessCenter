@@ -56,6 +56,10 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {
             wrapper.and("created_time <= {0} ", requestForProof.getSubmitTimeEnd() + " 23:59:59");
         }
+        //判断是否包含任务状态
+        if(requestForProof.getStatus() != null && !"".equals(requestForProof.getStatus())){
+            wrapper.and("status = {0}", requestForProof.getStatus());
+        }
         wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);
         //判断是否是分页查询

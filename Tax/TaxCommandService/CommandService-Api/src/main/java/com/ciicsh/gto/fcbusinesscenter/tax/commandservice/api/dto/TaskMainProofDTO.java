@@ -61,6 +61,11 @@ public class TaskMainProofDTO{
      */
     private Integer pageSize;
 
+    /**
+     * 任务状态
+     */
+    private String status;
+
     public Long getId() {
         return id;
     }
@@ -165,6 +170,14 @@ public class TaskMainProofDTO{
         this.pageSize = pageSize;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "TaskMainProofDTO{" +
@@ -181,6 +194,7 @@ public class TaskMainProofDTO{
                 ", createdTime=" + createdTime +
                 ", currentNum=" + currentNum +
                 ", pageSize=" + pageSize +
+                ", status='" + status + '\'' +
                 '}';
     }
 }
