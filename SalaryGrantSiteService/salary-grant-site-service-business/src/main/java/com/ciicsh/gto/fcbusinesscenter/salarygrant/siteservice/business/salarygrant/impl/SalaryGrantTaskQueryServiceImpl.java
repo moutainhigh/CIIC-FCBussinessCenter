@@ -471,7 +471,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         if (list.isEmpty()) {
             return "";
         }
-        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").collect(Collectors.toList());
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").distinct().collect(Collectors.toList());
         return String.join(",", taskCodes);
     }
 
