@@ -61,8 +61,8 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             wrapper.like("payment_account", requestForSubMoney.getPaymentAccount());
         }
         //管理方名称
-        Optional.ofNullable(requestForSubMoney.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForSubMoney.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //期间类型currentPan,currentBeforePan,currentAfterPan
         if (StrKit.notBlank(requestForSubMoney.getPeriodType())) {

@@ -40,7 +40,7 @@ public class TaskSubPaymentController extends BaseController {
         BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
             //设置request请求管理方名称数组
-            requestForSubPayment.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            requestForSubPayment.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForSubPayment responseForSubPayment = taskSubPaymentService.querySubPayment(requestForSubPayment);
         jr.fill(responseForSubPayment);

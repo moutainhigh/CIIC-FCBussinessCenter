@@ -59,8 +59,8 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             wrapper.like("payment_account", requestForSubPayment.getPaymentAccount());
         }
         //管理方名称
-        Optional.ofNullable(requestForSubPayment.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForSubPayment.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //期间类型currentPan：当期,currentBeforePan：当期前,currentAfterPan：当期后
         if (StrKit.notBlank(requestForSubPayment.getPeriodType())) {

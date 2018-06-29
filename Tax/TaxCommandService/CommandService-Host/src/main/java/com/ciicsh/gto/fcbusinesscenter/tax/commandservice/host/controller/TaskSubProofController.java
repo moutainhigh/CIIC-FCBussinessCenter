@@ -111,7 +111,7 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
         BeanUtils.copyProperties(taskProofDTO, requestForProof);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
             //设置request请求管理方名称数组
-            requestForProof.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            requestForProof.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForSubProof responseForSubProof = taskSubProofService.querySubProofInfoByTaskType(requestForProof);
         jr.fill(responseForSubProof);

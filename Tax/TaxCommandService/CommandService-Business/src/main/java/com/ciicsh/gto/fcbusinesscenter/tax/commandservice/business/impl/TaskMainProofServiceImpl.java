@@ -45,8 +45,8 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             wrapper.and("id = {0}", requestForProof.getId());
         }
         //管理方名称
-        Optional.ofNullable(requestForProof.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForProof.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //判断是否包含起始时间条件
         if (requestForProof.getSubmitTimeStart() != null && !"".equals(requestForProof.getSubmitTimeStart())) {
