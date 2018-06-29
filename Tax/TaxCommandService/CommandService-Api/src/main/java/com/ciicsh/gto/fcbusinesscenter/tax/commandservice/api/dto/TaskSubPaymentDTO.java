@@ -80,6 +80,15 @@ public class TaskSubPaymentDTO {
      */
     private String areaType;
 
+    /**
+     * 滞纳金
+     */
+    private BigDecimal overdue;
+    /**
+     * 罚金
+     */
+    private BigDecimal fine;
+
     public Long getId() {
         return id;
     }
@@ -224,6 +233,22 @@ public class TaskSubPaymentDTO {
         this.mainIds = mainIds;
     }
 
+    public BigDecimal getOverdue() {
+        return overdue;
+    }
+
+    public void setOverdue(BigDecimal overdue) {
+        this.overdue = overdue;
+    }
+
+    public BigDecimal getFine() {
+        return fine;
+    }
+
+    public void setFine(BigDecimal fine) {
+        this.fine = fine;
+    }
+
     @Override
     public String toString() {
         return "TaskSubPaymentDTO{" +
@@ -245,6 +270,8 @@ public class TaskSubPaymentDTO {
                 ", chineseNum=" + chineseNum +
                 ", foreignerNum=" + foreignerNum +
                 ", areaType='" + areaType + '\'' +
+                ", overdue=" + overdue +
+                ", fine=" + fine +
                 '}';
     }
 }

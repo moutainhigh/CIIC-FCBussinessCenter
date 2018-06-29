@@ -5,6 +5,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
 
+import java.math.BigDecimal;
+
 /**
  * @author yuantongqing
  * on create 2018/1/8
@@ -42,5 +44,13 @@ public interface TaskSubMoneyService {
      * @param taskSubMoneyBO
      */
     void updateTaskSubMoneyById(TaskSubMoneyBO taskSubMoneyBO);
+
+    /**
+     * 更新划款滞纳金和罚金
+     * @param subMoneyId
+     * @param overdue
+     * @param fine
+     */
+    void updateTaskSubMoneyOverdueAndFine(Long subMoneyId, BigDecimal overdue,BigDecimal fine);
 
 }

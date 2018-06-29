@@ -93,11 +93,11 @@
         <!--<if test="managerName != null and managerName != ''">-->
             <!--and tmp.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')-->
         <!--</if>-->
-        <if test="managerNames != null and managerNames.length != 0">
-            and (tsp.manager_name in
-            <foreach collection="managerNames" item="managerName"
+        <if test="managerNos != null and managerNos.length != 0">
+            and (tsp.manager_no in
+            <foreach collection="managerNos" item="managerNo"
                      index="index" open="(" close=")" separator=",">
-                #{managerName}
+                #{managerNo}
             </foreach>
             or tsp.is_combined = 1)
         </if>

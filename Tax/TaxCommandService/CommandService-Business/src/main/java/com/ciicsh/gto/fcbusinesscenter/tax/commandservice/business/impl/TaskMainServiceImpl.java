@@ -60,8 +60,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
         EntityWrapper wrapper = new EntityWrapper();
         //管理方名称
-        Optional.ofNullable(requestForTaskMain.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForTaskMain.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){
@@ -89,8 +89,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
         EntityWrapper wrapper = new EntityWrapper();
         //管理方名称
-        Optional.ofNullable(requestForTaskMain.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForTaskMain.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){
@@ -116,8 +116,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 //            wrapper.like("manager_name",requestForTaskMain.getManagerName());
 //        }
         //管理方名称
-        Optional.ofNullable(requestForTaskMain.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForTaskMain.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){

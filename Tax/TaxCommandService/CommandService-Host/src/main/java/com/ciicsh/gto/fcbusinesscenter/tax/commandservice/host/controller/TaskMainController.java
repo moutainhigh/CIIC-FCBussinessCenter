@@ -75,8 +75,8 @@ public class TaskMainController extends BaseController {
         RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
         BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
-            //设置request请求管理方名称数组
-            requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            //设置request请求管理方数组
+            requestForTaskMain.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMains(requestForTaskMain);
         jr.fill(responseForTaskMain);
@@ -98,8 +98,8 @@ public class TaskMainController extends BaseController {
         RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
         BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
-            //设置request请求管理方名称数组
-            requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            //设置request请求管理方数组
+            requestForTaskMain.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMainsForDraft(requestForTaskMain);
         jr.fill(responseForTaskMain);
@@ -121,8 +121,8 @@ public class TaskMainController extends BaseController {
         RequestForTaskMain requestForTaskMain = new RequestForTaskMain();
         BeanUtils.copyProperties(taskMainDTO, requestForTaskMain);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
-            //设置request请求管理方名称数组
-            requestForTaskMain.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            //设置request请求管理方数组
+            requestForTaskMain.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForTaskMain responseForTaskMain = taskMainService.queryTaskMainsForCheck(requestForTaskMain);
         jr.fill(responseForTaskMain);

@@ -45,8 +45,8 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
             wrapper.and("id = {0}", requestForProof.getId());
         }
         //管理方名称
-        Optional.ofNullable(requestForProof.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForProof.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //判断是否包含起始时间条件
         if (requestForProof.getSubmitTimeStart() != null && !"".equals(requestForProof.getSubmitTimeStart())) {
@@ -55,6 +55,10 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         //判断是否包含结束时间条件
         if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {
             wrapper.and("created_time <= {0} ", requestForProof.getSubmitTimeEnd() + " 23:59:59");
+        }
+        //判断是否包含任务状态
+        if(requestForProof.getStatus() != null && !"".equals(requestForProof.getStatus())){
+            wrapper.and("status = {0}", requestForProof.getStatus());
         }
         wrapper.and("is_active = {0} ", true);
         wrapper.orderBy("modified_time", false);

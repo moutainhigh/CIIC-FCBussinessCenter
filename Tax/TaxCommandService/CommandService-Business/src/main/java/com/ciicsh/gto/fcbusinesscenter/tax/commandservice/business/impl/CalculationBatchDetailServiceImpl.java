@@ -179,4 +179,23 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             baseMapper.update(calculationBatchDetailPO, wrapper);
         }
     }
+
+    /**
+     * 批量暂缓计算批次明细
+     * @param ids
+     */
+    @Override
+    public void batchPostponeCalBatchDetail(String[] ids) {
+        if (ids != null && !"".equals(ids)) {
+            CalculationBatchDetailPO calculationBatchDetailPO = new CalculationBatchDetailPO();
+            //是否暂缓
+            calculationBatchDetailPO.setDefer(true);
+            EntityWrapper wrapper= new EntityWrapper();
+            wrapper.setEntity(new CalculationBatchDetailPO());
+            wrapper.in("id", ids);
+            //恢复计算批次明细
+            baseMapper.update(calculationBatchDetailPO, wrapper);
+        }
+    }
+
 }

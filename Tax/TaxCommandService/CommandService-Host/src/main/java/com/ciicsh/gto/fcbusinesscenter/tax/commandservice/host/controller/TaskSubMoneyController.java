@@ -76,8 +76,8 @@ public class TaskSubMoneyController extends BaseController {
         RequestForSubMoney requestForSubMoney = new RequestForSubMoney();
         BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
-            //设置request请求管理方名称数组
-            requestForSubMoney.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            //设置request请求管理方数组
+            requestForSubMoney.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForSubMoney responseForSubMoney = taskSubMoneyService.querySubMoney(requestForSubMoney);
         jr.fill(responseForSubMoney);
@@ -336,5 +336,18 @@ public class TaskSubMoneyController extends BaseController {
             super.downloadFile(response, "划款凭证.xlsx", bs);
         }
 
+    }
+
+    /**
+     * 更新滞纳金、罚金
+     *
+     * @param taskSubMoneyDTO
+     * @return
+     */
+    @PostMapping(value = "/updateTaskSubMoney")
+    public JsonResult<Boolean> updateTaskSubMoney(@RequestBody TaskSubMoneyDTO taskSubMoneyDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        taskSubMoneyService.updateTaskSubMoneyOverdueAndFine(taskSubMoneyDTO.getId(),taskSubMoneyDTO.getOverdue(),taskSubMoneyDTO.getFine());
+        return jr;
     }
 }
