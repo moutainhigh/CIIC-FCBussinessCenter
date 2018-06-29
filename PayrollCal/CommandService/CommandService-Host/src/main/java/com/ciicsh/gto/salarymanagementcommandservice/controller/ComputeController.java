@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
@@ -38,6 +39,7 @@ public class ComputeController { //websocket long connection
     public void getComputeStatus(wsComputeMsg computeMsg) throws Exception {
         String batchCode = computeMsg.getBatchCode();
         int batchType = computeMsg.getBatchType();
+        String userId = computeMsg.getUserId();
         //String dest = "/compute/status/" + computeMsg.getBatchCode();
 
         int rowAffected = 0;
@@ -54,8 +56,9 @@ public class ComputeController { //websocket long connection
             ComputeMsg msg = new ComputeMsg();
             msg.setBatchCode(batchCode);
             msg.setBatchType(batchType);
+            msg.setOptID(userId);
             sender.SendComputeAction(msg); // send message to kafka
-            logger.info(" 发送薪资计算消息到kafka : " + batchCode + "－－批次类型号：" + String.valueOf(batchType));
+            logger.info(" 发送薪资计算消息到kafka : " + batchCode + "－－批次类型号：" + String.valueOf(batchType)+" －－用户ID：" + userId);
         }
 
         /*for(int i=0; i<1000; i++ ) {
