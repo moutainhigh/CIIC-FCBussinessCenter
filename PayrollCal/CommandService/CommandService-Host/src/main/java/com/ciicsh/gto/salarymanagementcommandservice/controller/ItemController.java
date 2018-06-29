@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -89,14 +90,18 @@ public class ItemController extends BaseController{
 
     /**
      * 更新薪资项
+     *
      * @param code
      * @param paramItem
      * @return
      */
     @PutMapping(value = "/prItem/{code}")
-    public JsonResult updatePrItem(@PathVariable("code") String code,
-                                            @RequestBody PrPayrollItemPO paramItem) {
+    public JsonResult updatePrItem(@PathVariable("code") String code, @RequestBody PrPayrollItemPO paramItem) {
         paramItem.setItemCode(code);
+        // 校验同名薪资项
+        JsonResult checkJsonResult = checkSameNamePrItem(paramItem);
+        if (checkJsonResult != null) return checkJsonResult;
+
         try {
             int result = itemService.updateItem(paramItem);
             return JsonResult.success(result);
@@ -105,6 +110,53 @@ public class ItemController extends BaseController{
         } catch (Exception e) {
             return JsonResult.faultMessage(MessageConst.PAYROLL_ITEM_UPDATE_FAIL);
         }
+    }
+
+    /**
+     * 新增和编辑时校验薪资项是否有重名
+     *
+     * @param paramItem
+     * @return
+     */
+    private JsonResult checkSameNamePrItem(PrPayrollItemPO paramItem) {
+        // 获取当前编辑的薪资项name和code
+        String editPrItemCode = paramItem.getItemCode();
+        if (!StringUtils.isEmpty(paramItem.getPayrollGroupTemplateCode())) {
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(paramItem.getPayrollGroupTemplateCode(), true);
+            if (itemList != null) {
+                itemList = checkItemList(editPrItemCode, itemList);
+                if (itemList.stream()
+                        .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
+                    return JsonResult.faultMessage("薪资组模板中已存在同名薪资项");
+                }
+            }
+        }
+        if (!StringUtils.isEmpty(paramItem.getPayrollGroupCode())) {
+            List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(paramItem.getPayrollGroupCode(), true);
+            if (itemList != null) {
+                itemList = checkItemList(editPrItemCode, itemList);
+                if (itemList.stream()
+                        .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
+                    return JsonResult.faultMessage("薪资组中已存在同名薪资项");
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * editPrItemCode不为空，则为编辑，编辑时忽略当前编辑项与数据库中自身的薪资项name同名校验
+     * editPrItemCode为空，则为新增，无需做checkItemList的步骤
+     *
+     * @param editPrItemCode 当前编辑的薪资项code
+     * @param itemList       数据库中查出来的薪资项列表
+     * @return 参与校验的薪资项列表
+     */
+    private List<PrPayrollItemPO> checkItemList(String editPrItemCode, List<PrPayrollItemPO> itemList) {
+        if (StringUtils.isNotBlank(editPrItemCode)) {
+            itemList.removeIf(item -> item.getItemCode().equals(editPrItemCode));
+        }
+        return itemList;
     }
 
     /**
@@ -128,24 +180,9 @@ public class ItemController extends BaseController{
         PrPayrollItemPO newParam = new PrPayrollItemPO();
         BeanUtils.copyProperties(paramItem, newParam);
 //        newParam.setItemCode(codeGenerator.genPrItemCode(paramItem.getManagementId()));
-        if (!StringUtils.isEmpty(newParam.getPayrollGroupTemplateCode())){
-            List<PrPayrollItemPO> itemList = itemService.getListByGroupTemplateCode(paramItem.getPayrollGroupTemplateCode(), true);
-            if (itemList != null) {
-                if (itemList.stream()
-                        .anyMatch(i -> i.getItemName().equals(newParam.getItemName()))) {
-                    return JsonResult.faultMessage("薪资组模板中已存在同名薪资项");
-                }
-            }
-        }
-        if (!StringUtils.isEmpty(newParam.getPayrollGroupCode())){
-            List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(newParam.getPayrollGroupCode(), true);
-            if (itemList != null) {
-                if (itemList.stream()
-                        .anyMatch(i -> i.getItemName().equals(paramItem.getItemName()))) {
-                    return JsonResult.faultMessage("薪资组中已存在同名薪资项");
-                }
-            }
-        }
+        // 校验同名薪资项
+        JsonResult checkJsonResult = checkSameNamePrItem(newParam);
+        if (checkJsonResult != null) return checkJsonResult;
         //临时参数
         newParam.setCreatedBy(UserContext.getUserId());
         newParam.setModifiedBy(UserContext.getUserId());

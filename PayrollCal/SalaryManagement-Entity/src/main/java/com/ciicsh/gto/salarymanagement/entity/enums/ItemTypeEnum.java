@@ -6,14 +6,14 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
 public enum ItemTypeEnum implements ValuedEnum {
 
     /**
-     * 输入项
-     */
-    INPUT(1, "输入项"),
-
-    /**
      * 固定项
      */
-    FIX(2, "固定项"),
+    FIX(1, "固定项"),
+
+    /**
+     * 输入项
+     */
+    INPUT(2, "输入项"),
 
     /**
      * 计算项
