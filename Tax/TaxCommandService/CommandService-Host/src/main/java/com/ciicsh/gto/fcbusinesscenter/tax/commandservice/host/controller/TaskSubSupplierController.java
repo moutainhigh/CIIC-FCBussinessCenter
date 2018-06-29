@@ -187,4 +187,17 @@ public class TaskSubSupplierController extends BaseController {
 
         return jr;
     }
+
+    /**
+     * 更新滞纳金、罚金
+     *
+     * @param taskSubSupplierDTO
+     * @return
+     */
+    @PostMapping(value = "/updateTaskSubSupplier")
+    public JsonResult<Boolean> updateTaskSubSupplier(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        taskSubSupplierService.updateTaskSubSupplierOverdueAndFine(taskSubSupplierDTO.getId(),taskSubSupplierDTO.getOverdue(),taskSubSupplierDTO.getFine());
+        return jr;
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -161,5 +162,19 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         TaskSubPaymentPO taskSubPaymentPO = baseMapper.selectById(subPaymentId);
         taskSubPaymentPO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubPaymentPO.getStatus()));
         return taskSubPaymentPO;
+    }
+
+    /**
+     * 更新划款滞纳金和罚金
+     * @param subPayId
+     * @param overdue
+     * @param fine
+     */
+    @Override
+    public void updateTaskSubPayOverdueAndFine(Long subPayId, BigDecimal overdue, BigDecimal fine) {
+        TaskSubPaymentPO taskSubPaymentPO = baseMapper.selectById(subPayId);
+        taskSubPaymentPO.setOverdue(overdue);
+        taskSubPaymentPO.setFine(fine);
+        baseMapper.updateById(taskSubPaymentPO);
     }
 }

@@ -107,4 +107,17 @@ public class TaskSubPaymentController extends BaseController {
 
         return jr;
     }
+
+    /**
+     * 更新滞纳金、罚金
+     *
+     * @param taskSubPaymentDTO
+     * @return
+     */
+    @PostMapping(value = "/updateTaskSubPay")
+    public JsonResult<Boolean> updateTaskSubPay(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        taskSubPaymentService.updateTaskSubPayOverdueAndFine(taskSubPaymentDTO.getId(),taskSubPaymentDTO.getOverdue(),taskSubPaymentDTO.getFine());
+        return jr;
+    }
 }

@@ -499,4 +499,18 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             taskMainService.updateTaskMainStatus(requestForTaskSubSupplier.getMainIds());
         }
     }
+
+    /**
+     * 更新划款滞纳金和罚金
+     * @param subSupplierId
+     * @param overdue
+     * @param fine
+     */
+    @Override
+    public void updateTaskSubSupplierOverdueAndFine(Long subSupplierId, BigDecimal overdue, BigDecimal fine) {
+        TaskSubSupplierPO taskSubSupplierPO = baseMapper.selectById(subSupplierId);
+        taskSubSupplierPO.setOverdue(overdue);
+        taskSubSupplierPO.setFine(fine);
+        baseMapper.updateById(taskSubSupplierPO);
+    }
 }
