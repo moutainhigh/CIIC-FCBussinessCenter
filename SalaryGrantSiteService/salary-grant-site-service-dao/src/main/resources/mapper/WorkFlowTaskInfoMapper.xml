@@ -27,6 +27,8 @@
     <resultMap id="operationMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO">
         <result column="work_flow_process_id" property="workFlowProcessId" />
         <result column="process_definition_key" property="processDefinitionKey" />
+        <result column="work_flow_task_id" property="workFlowTaskId" />
+        <result column="work_flow_task_type" property="workFlowTaskType" />
         <result column="task_code" property="taskCode" />
         <result column="work_flow_task_id" property="workFlowTaskId" />
         <result column="task_deal_user_id" property="operateUserId" />
@@ -37,7 +39,7 @@
     </resultMap>
 
     <sql id="operationField">
-        t.work_flow_process_id, t.process_definition_key, t.task_code, t.work_flow_task_id,
+        t.work_flow_process_id, t.process_definition_key, t.task_code, t.work_flow_task_id, t.work_flow_task_type,
         t.task_deal_user_id, t.task_deal_user_name, t.task_deal_time, t.task_deal_operation, t.approved_opinion
     </sql>
 
@@ -51,7 +53,25 @@
         and
           t.is_active = 1
         order by
-          t.work_flow_task_info_id desc
+          t.work_flow_task_info_id,  t.work_flow_task_id desc
     </select>
+
+    <update id="updateByTaskId">
+        update
+            sg_work_flow_task_info t
+        set
+            t.task_deal_user_id = #{taskDealUserId},
+            t.task_deal_user_name = #{taskDealUserName},
+            t.task_deal_time = now(),
+            <if test="taskDealOperation != null and taskDealOperation != ''">
+                t.task_deal_operation = #{taskDealOperation},
+            </if>
+            t.modified_by = #{taskDealUserId},
+            t.modified_time = now()
+        where
+            t.work_flow_task_id = #{workFlowTaskId}
+        and
+            t.is_active = 1
+    </update>
 
 </mapper>

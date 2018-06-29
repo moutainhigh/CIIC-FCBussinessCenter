@@ -1,13 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 
-
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskMissionRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
-import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
-import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
 
 import java.util.Map;
 
@@ -141,38 +137,4 @@ public interface SalaryGrantWorkFlowService {
      * @return
      */
     Boolean doInvalidTask (SalaryGrantTaskBO salaryGrantTaskBO) throws Exception;
-
-    /**
-     * 业务处理
-     * @author chenpb
-     * @since 2018-06-21
-     * @param taskCreateMsgDTO
-     */
-    void createTask (TaskCreateMsgDTO taskCreateMsgDTO);
-
-    /**
-     * 完成任务
-     * @author chenpb
-     * @since 2018-06-21
-     * @param dto
-     * @throws Exception
-     */
-    void completeTask(TaskRequestDTO dto) throws Exception;
-
-    /**
-     * 启动流程
-     * @author chenpb
-     * @since 2018-06-21
-     * @param dto
-     */
-    void startProcess (MissionRequestDTO dto) throws Exception;
-
-    /**
-     * 结束流程
-     * @author chenpb
-     * @since 2018-06-21
-     * @param missionId
-     * @param action
-     */
-    void completeProcess(String missionId, String action);
 }
