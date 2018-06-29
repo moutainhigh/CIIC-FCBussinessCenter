@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TaskSink {
     @Input(MsgConstants.COMMON_TASKSERVICE_TASK_COMPLETE)
-    MessageChannel commonTaskserviceTaskComplete();
+    MessageChannel commonTaskServiceTaskComplete();
 
     @Input(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
-    MessageChannel commonTaskserviceProcessComplete();
+    MessageChannel commonTaskServiceProcessComplete();
 
     /**
      * 创建薪资发放任务单SGT工作流TOPIC
@@ -43,7 +43,7 @@ public interface TaskSink {
      * 创建薪资发放外地任务单ST工作流TOPIC
      */
     @Input(MsgConstants.FC.PAYROLL_NONLOCAL)
-    MessageChannel salaryGrantSubTaskSTCreateWorkFlow();
+    MessageChannel salaryGrantSubTaskSTACreateWorkFlow();
 
     /**
      * 创建供应商支付任务单SPT工作流TOPIC

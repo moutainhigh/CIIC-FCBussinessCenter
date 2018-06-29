@@ -72,7 +72,9 @@ public interface SalaryGrantWorkFlowEnums {
         ADVANCED (1, "未来款，无垫付流程。前端代码获取该信息，需要显示提示框是否走代垫流程，如果确认走代垫流程，需要调用客服中心代垫流程页面链接。"),
         OVERDUE(2, "未来款，垫付流程已逾期。提示业务操作人员，垫付已逾期，不能提交审批 --> 未来款，垫付已逾期"),
         HANDLE(3, "已来款或已垫付（可以提交审批）"),
-        ERROR(99, "错误");
+        LOCK(97, "任务单已经被处理！"),
+        ACTIVITY_ERROR(98, "工作流引擎异常！"),
+        EXCEPTION(99, "系统异常！");
 
         private Integer result;
         private String extension;
