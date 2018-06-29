@@ -22,7 +22,7 @@ import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;

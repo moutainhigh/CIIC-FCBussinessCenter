@@ -10,7 +10,7 @@ import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.MoneyBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
@@ -23,11 +23,8 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchServic
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.github.pagehelper.PageInfo;
-import com.google.gson.Gson;
-import com.mongodb.DBObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
