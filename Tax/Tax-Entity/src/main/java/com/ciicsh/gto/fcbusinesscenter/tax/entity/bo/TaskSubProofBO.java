@@ -113,9 +113,9 @@ public class TaskSubProofBO {
     private Boolean isCombined;
 
     /**
-     * 管理方名称(管理方切换)
+     * 管理方编号(管理方切换)
      */
-    private String[] managerNames;
+    private String[] managerNos;
     /**
      * 创建人displayname
      */
@@ -294,12 +294,12 @@ public class TaskSubProofBO {
         this.taxOrganization = taxOrganization;
     }
 
-    public String[] getManagerNames() {
-        return managerNames;
+    public String[] getManagerNos() {
+        return managerNos;
     }
 
-    public void setManagerNames(String[] managerNames) {
-        this.managerNames = managerNames;
+    public void setManagerNos(String[] managerNos) {
+        this.managerNos = managerNos;
     }
 
     public String getCreatedByDisplayName() {
@@ -342,7 +342,7 @@ public class TaskSubProofBO {
                 ", period=" + period +
                 ", taskType='" + taskType + '\'' +
                 ", isCombined=" + isCombined +
-                ", managerNames=" + Arrays.toString(managerNames) +
+                ", managerNames=" + Arrays.toString(managerNos) +
                 ", createdByDisplayName='" + createdByDisplayName + '\'' +
                 ", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
                 '}';

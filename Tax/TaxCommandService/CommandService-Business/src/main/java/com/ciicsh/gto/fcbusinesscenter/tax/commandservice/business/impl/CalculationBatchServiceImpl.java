@@ -96,8 +96,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         //查询条件
         EntityWrapper wrapper = new EntityWrapper();
         //管理方名称
-        Optional.ofNullable(requestForCalBatch.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForCalBatch.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForCalBatch.getBatchNo())){

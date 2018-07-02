@@ -144,13 +144,18 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             if (taskSubProofDetailPOList.size() > 0) {
                 this.insertOrUpdateBatch(taskSubProofDetailPOList);
             }
+            //子任务ID集合
+            List<Long> subProofIds = new ArrayList<>();
             //统计子任务人数
             for (String key : subMap.keySet()) {
                 Long subId = subMap.get(key);
+                subProofIds.add(subId);
                 taskSubProofMapper.updateSubHeadcountById(subId, requestForSubDetail.getModifiedBy(), LocalDateTime.now());
             }
             //统计总任务人数
             taskMainProofMapper.updateMainHeadcountById(requestForSubDetail.getTaskId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
+            //修改总人数为0的子任务状态为不可用
+            updateTaskSubProofActive(subProofIds);
         } else if (subType.equals(requestForSubDetail.getDetailType())) {
             //修改申报明细为不可用状态
             updateTaskSubProofDetailActive(requestForSubDetail);
@@ -174,11 +179,16 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                 }
 
             }
+            //子任务ID集合
+            List<Long> subProofIds = new ArrayList<>();
+            subProofIds.add(requestForSubDetail.getTaskId());
             //统计子任务总人数
             taskSubProofMapper.updateSubHeadcountById(requestForSubDetail.getTaskId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
             //统计总任务人数
             TaskSubProofPO taskSubProofPOInfo = taskSubProofMapper.selectById(requestForSubDetail.getTaskId());
             taskMainProofMapper.updateMainHeadcountById(taskSubProofPOInfo.getTaskMainProofId(), requestForSubDetail.getModifiedBy(), LocalDateTime.now());
+            //修改总人数为0的子任务状态为不可用
+            updateTaskSubProofActive(subProofIds);
         }
     }
 
@@ -201,5 +211,22 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
             wrapper.in("id", requestForSubDetail.getOldDeleteIds());
             baseMapper.update(taskSubProofDetailPO, wrapper);
         }
+    }
+
+    /**
+     * 修改总人数为0的子任务为不可用
+     * @param subProofIds
+     */
+    private void updateTaskSubProofActive(List<Long> subProofIds){
+        TaskSubProofPO taskSubProofPO = new TaskSubProofPO();
+        taskSubProofPO.setActive(false);
+        EntityWrapper wrapper = new EntityWrapper();
+        //设置任务为不可用状态
+        wrapper.setEntity(new TaskSubProofPO());
+        //任务为可用状态
+        wrapper.and("is_active = {0} ", true);
+        wrapper.and("headcount = {0}",0);
+        wrapper.in("id", subProofIds);
+        taskSubProofMapper.update(taskSubProofPO,wrapper);
     }
 }

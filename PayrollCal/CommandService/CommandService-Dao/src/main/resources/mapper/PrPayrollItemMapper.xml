@@ -455,4 +455,99 @@
 	    </choose>
 	</insert>
 
+	<delete id="deleteApprovedItemByGroupTemplateCode">
+		DELETE
+		FROM
+		<choose>
+			<when test="approvalStatus == 2 ">
+				pr_approved_payroll_item
+			</when>
+			<when test="approvalStatus == 3 ">
+				pr_payroll_item
+			</when>
+		</choose>
+		WHERE payroll_group_template_code = #{prGroupTemplateCode}
+	</delete>
+
+	<insert id="insertApprovedItemByGroupTemplateCode">
+		INSERT INTO
+		<choose>
+			<when test="approvalStatus == 2 ">
+				pr_approved_payroll_item
+			</when>
+			<when test="approvalStatus == 3 ">
+				pr_payroll_item
+			</when>
+		</choose>
+			(
+			  item_code,
+			  parent_item_code,
+			  management_id,
+			  payroll_group_code,
+			  payroll_group_template_code,
+			  item_name,
+			  item_type,
+			  base_item_code,
+			  data_type,
+			  default_value_style,
+			  default_value,
+			  decimal_process_type,
+			  cal_precision,
+			  full_formula,
+			  origin_formula,
+			  formula_content,
+			  origin_condition,
+			  item_condition,
+			  cal_priority,
+			  display_priority,
+			  can_lock,
+			  remark,
+			  item_value,
+			  is_active,
+			  created_time,
+			  modified_time,
+			  created_by,
+			  modified_by
+			)
+			SELECT
+			  item_code,
+			  parent_item_code,
+			  management_id,
+			  payroll_group_code,
+			  payroll_group_template_code,
+			  item_name,
+			  item_type,
+			  base_item_code,
+			  data_type,
+			  default_value_style,
+			  default_value,
+			  decimal_process_type,
+			  cal_precision,
+			  full_formula,
+			  origin_formula,
+			  formula_content,
+			  origin_condition,
+			  item_condition,
+			  cal_priority,
+			  display_priority,
+			  can_lock,
+			  remark,
+			  item_value,
+			  is_active,
+			  SYSDATE(),
+			  SYSDATE(),
+			  created_by,
+			  modified_by
+			FROM
+		<choose>
+			<when test="approvalStatus == 2 ">
+				pr_payroll_item
+			</when>
+			<when test="approvalStatus == 3 ">
+				pr_approved_payroll_item
+			</when>
+		</choose>
+		WHERE payroll_group_template_code = #{prGroupTemplateCode}
+	</insert>
+
 </mapper>

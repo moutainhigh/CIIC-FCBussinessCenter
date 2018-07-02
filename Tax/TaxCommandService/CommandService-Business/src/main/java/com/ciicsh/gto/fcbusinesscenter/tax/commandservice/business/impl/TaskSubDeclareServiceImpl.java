@@ -72,8 +72,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             wrapper.andNew().like("declare_account", requestForTaskSubDeclare.getDeclareAccount());
         }
         //管理方名称
-        Optional.ofNullable(requestForTaskSubDeclare.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.andNew().in("manager_name",managerNames).or("is_combined",true);
+        Optional.ofNullable(requestForTaskSubDeclare.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.andNew().in("manager_no",managerNos).or("is_combined",true);
         });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubDeclare.getPeriod())) {

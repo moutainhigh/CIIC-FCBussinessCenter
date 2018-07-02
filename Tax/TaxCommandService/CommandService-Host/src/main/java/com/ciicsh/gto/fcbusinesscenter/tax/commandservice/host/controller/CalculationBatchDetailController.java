@@ -62,11 +62,26 @@ public class CalculationBatchDetailController extends BaseController implements 
         BeanUtils.copyProperties(calculationBatchDetailDTO, requestForCalBatchDetail);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
             //设置request请求管理方名称数组
-            requestForCalBatchDetail.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            requestForCalBatchDetail.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForCalBatchDetail responseForCalBatchDetail = calculationBatchDetailService.queryTaxBatchDetailByRes(requestForCalBatchDetail);
         jr.fill(responseForCalBatchDetail);
 
+        return jr;
+    }
+
+
+    /**
+     *
+     * @param calculationBatchDetailDTO
+     * @return
+     */
+    @PostMapping(value = "batchPostponeCalBatchDetail")
+    public JsonResult<Boolean> batchPostponeCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
+            calculationBatchDetailService.batchPostponeCalBatchDetail(calculationBatchDetailDTO.getIds());
+        }
         return jr;
     }
 
