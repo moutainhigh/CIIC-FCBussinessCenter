@@ -92,7 +92,6 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
-        // todo
         // 定义薪资发放code，在Confluence上EntityID编号规则中进行定义
         String idCode = (String) entityParam.get("idCode");
         // 获取公共服务生成返回的entity_id

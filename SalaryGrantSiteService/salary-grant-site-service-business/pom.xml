@@ -87,5 +87,15 @@
           <artifactId>fcbusinesscenter-entity</artifactId>
           <version>1.0.0-SNAPSHOT</version>
       </dependency>
+      <dependency>
+          <groupId>com.ciicsh.gt1.settlementcenter</groupId>
+          <artifactId>gt1.settlementcenter.gatheringqueryservice-api</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>com.ciicsh.gt1</groupId>
+          <artifactId>exchangerate</artifactId>
+          <version>1.0-SNAPSHOT</version>
+      </dependency>
   </dependencies>
 </project>

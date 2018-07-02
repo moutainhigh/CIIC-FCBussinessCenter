@@ -124,7 +124,7 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 	@TableField("grant_type")
 	private Integer grantType;
     /**
-     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
+     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-客户自行、4-中智代发（客户账户）
      */
 	@TableField("grant_mode")
 	private String grantMode;
@@ -169,7 +169,7 @@ public class SalaryGrantTaskHistoryPO extends Model<SalaryGrantTaskHistoryPO> {
 	@TableField("task_status")
 	private String taskStatus;
     /**
-     * 任务单类型:0-主表、1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
+     * 任务单类型:0-主表、1-中智上海账户、2-中智代发（委托机构）、3-客户自行、4-中智代发（客户账户）
      */
 	@TableField("task_type")
 	private Integer taskType;

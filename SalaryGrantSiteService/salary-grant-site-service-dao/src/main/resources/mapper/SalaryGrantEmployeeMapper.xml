@@ -314,4 +314,31 @@
             e.company_id, e.template_type, e.employee_id
     </select>
 
+    <select id="selectEmpInfoByGrantMode"
+            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO"
+            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO">
+        select
+        t.salary_grant_employee_id   salaryGrantEmployeeId,
+        t.employee_id                employeeId           ,
+        t.grant_account_code         grantAccountCode     ,
+        t.payment_amount             paymentAmount        ,
+        t.exchange,
+        t.country_code               countryCode          ,
+        t.payment_amount*t.exchange  as paymentAmountForRMB      ,
+        t.remark
+        from
+        sg_salary_grant_employee t
+        where
+        1 = 1
+        <if test="salaryGrantMainTaskCode != null">
+            and t.salary_grant_main_task_code=#{salaryGrantMainTaskCode}
+        </if>
+        <if test="grantMode != null">
+            and t.grant_mode=#{grantMode}
+        </if>
+        and t.is_active=1
+        order by
+        t.employee_id
+    </select>
+
 </mapper>
