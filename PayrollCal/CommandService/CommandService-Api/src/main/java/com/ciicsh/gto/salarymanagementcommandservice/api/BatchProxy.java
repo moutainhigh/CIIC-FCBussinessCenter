@@ -2,7 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.api;
 
 import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.MoneyBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
@@ -26,6 +26,14 @@ public interface BatchProxy {
      */
     @PostMapping("/updateAdvanceBatch")
     int updateAdvanceBatch(@RequestBody AdvanceBatchDTO advanceBatchDTO);
+
+    /**
+     * 更新批次状态
+     * @param batchAuditDTO
+     * @return
+     */
+    @PostMapping("/updateBatchStatus")
+    int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO);
 
 
     /**
@@ -56,13 +64,6 @@ public interface BatchProxy {
     @GetMapping("/getBatchInfo")
     PrBatchDTO getBatchInfo(@RequestParam("batchCode") String batchCode, @RequestParam("batchType") int batchType);
 
-    /**
-     * 更新批次状态
-     * @param batchAuditDTO
-     * @return
-     */
-    @PostMapping("/updateBatchStatus")
-    int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO);
 
     /**
      * 批量更新批次状态

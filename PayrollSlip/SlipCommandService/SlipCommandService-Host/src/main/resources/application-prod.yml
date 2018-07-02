@@ -24,6 +24,10 @@ mongo:
 spring:
   boot:
     admin:
+      api-path: instances
       url: http://172.16.100.103:9625
 druid:
   configPath:  /data/appdatas/gt1/gtobusinessdb_prd.properties
+kafka:
+  brokers: 172.16.100.101:9092
+  zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.109:2181

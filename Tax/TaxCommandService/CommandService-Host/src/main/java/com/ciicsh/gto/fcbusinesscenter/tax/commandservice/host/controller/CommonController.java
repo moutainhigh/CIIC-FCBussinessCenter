@@ -52,8 +52,12 @@ public class CommonController extends BaseController{
         m.put("annuity",commonDTO.getAnnuity());//企业年金个人部分
         m.put("incomeDutyfree",commonDTO.getIncomeDutyfree());//免税所得
 
-        BigDecimal incomeTotal = droolsService.incomeTotal(m);//收入额
-        commonDTO.setIncomeTotal(incomeTotal);
+        Map<String,BigDecimal> tm = droolsService.incomeTotal(m);
+
+        if(tm!=null){
+            commonDTO.setIncomeTotal(tm.get("incomeTotal"));//收入额
+        }
+
         jr.fill(commonDTO);
 
         return jr;
