@@ -22,11 +22,12 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration addInterceptor = registry.addInterceptor(getAuthenticateInterceptor());
 
-        // 排除配置
-//        addInterceptor.excludePathPatterns("/error");
-//        addInterceptor.excludePathPatterns("/login**");
-
         // 拦截配置
         addInterceptor.addPathPatterns("/**");
+
+        // 排除配置
+        //addInterceptor.excludePathPatterns("/error");
+        addInterceptor.excludePathPatterns("/api/sg/exportEmpInfo**");
+        addInterceptor.excludePathPatterns("/api/sg/exportFailList**");
     }
 }

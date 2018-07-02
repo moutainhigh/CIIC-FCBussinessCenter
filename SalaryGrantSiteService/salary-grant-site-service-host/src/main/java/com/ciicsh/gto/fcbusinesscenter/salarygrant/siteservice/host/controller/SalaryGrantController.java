@@ -414,7 +414,25 @@ public class SalaryGrantController {
             return ResultGenerator.genSuccessResult(salaryTaskDetailDTO);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询明细异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("查询明细失败");
+            return ResultGenerator.genServerFailResult("查询明细失败！");
+        }
+    }
+
+    /**
+     * 薪资调整信息
+     * @author chenpb
+     * @date 2018-07-02
+     * @param dto
+     * @return
+     */
+    @RequestMapping(value="/adjustSgInfo", method = RequestMethod.POST)
+    public Result adjustSgInfo(@RequestBody SalaryTaskHandleDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息").setContent(JSON.toJSONString(dto)));
+        try {
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询雇员薪资调整信息失败！");
         }
     }
 
