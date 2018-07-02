@@ -335,6 +335,17 @@ public class CalculationBatchDetailPO extends Model<CalculationBatchDetailPO> {
 	//免税津贴
 	private BigDecimal dutyFreeAllowance;
 
+	//其他扣除
+	private BigDecimal others;
+
+	public BigDecimal getOthers() {
+		return others;
+	}
+
+	public void setOthers(BigDecimal others) {
+		this.others = others;
+	}
+
 	public String getNumberOfMonths() {
 		return numberOfMonths;
 	}

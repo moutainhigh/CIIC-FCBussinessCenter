@@ -281,7 +281,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             case "境内所得境外支付" : calResultBO.setDomesticIncomeOverseasPayment(convert(result,key,BigDecimal.class));break;
                             case "境外所得境内支付" : calResultBO.setOverseasIncomeDomesticPayment(convert(result,key,BigDecimal.class));break;
                             case "境外所得境外支付" : calResultBO.setOverseasIncomeOverseasPayment(convert(result,key,BigDecimal.class));break;
-                            case "其它扣除" : calResultBO.setOtherDeductions(convert(result,key,BigDecimal.class));break;
+                            case "其它扣款_报税用" : calResultBO.setOthers(convert(result,key,BigDecimal.class));break;
                             case "免税住房补贴" : calResultBO.setHousingSubsidy(convert(result,key,BigDecimal.class));break;
                             case "免税伙食补贴" : calResultBO.setMealAllowance(convert(result,key,BigDecimal.class));break;
                             case "免税洗衣费" : calResultBO.setLaundryFee(convert(result,key,BigDecimal.class));break;
@@ -331,6 +331,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setEndowmentInsurance(calResultBO.getEndowmentInsurance());//税延养老保险费
                     calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额
+                    calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getTaxDeduction()!=null){//减免税额（薪金个税,减免税额相比取小）
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==1){
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction());
@@ -338,15 +339,19 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountSalary());
                         }
                     }
-                    //其他（税前扣除项目）
-                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());
-                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
+                    //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
+                    calculationBatchDetailPO.setDeductOther(this.getValue(calResultBO.getOthers())
+                            .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
+                            .add(this.getValue(calResultBO.getDutyFreeAllowance()))
+                            .add(this.getValue(calculationBatchDetailPO.getAnnuity())));
+                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
                             .add(this.getValue(calculationBatchDetailPO.getDeductMedicalInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductDlenessInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductHouseFund()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductProperty()))
-                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff())));
+                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff()))
+                            .add(this.getValue(calculationBatchDetailPO.getDeductOther())));
                     //应纳税所得额= 收入额 - 免税所得 - 合计 - 减除费用 - 准予扣除的捐赠额
                     calculationBatchDetailPO.setIncomeForTax(this.getValue(calculationBatchDetailPO.getIncomeTotal())
                             .subtract(this.getValue(calculationBatchDetailPO.getIncomeDutyfree()))
@@ -388,7 +393,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
                     calculationBatchDetailPO.setDeductTakeoff(calResultBO.getDeductTakeoff());//允许扣除的税费
                     calculationBatchDetailPO.setAnnuity(calResultBO.getAnnuity());//企业年金个人部分
-                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());//其它扣款_报税用
+                    calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
                     calculationBatchDetailPO.setHousingSubsidy(calResultBO.getHousingSubsidy());//免税住房补贴
                     calculationBatchDetailPO.setMealAllowance(calResultBO.getMealAllowance());//免税伙食补贴
                     calculationBatchDetailPO.setLaundryFee(calResultBO.getLaundryFee());//免税洗衣费
@@ -398,6 +403,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setLanguageTrainingFee(calResultBO.getLanguageTrainingFee());//免税语言培训费
                     calculationBatchDetailPO.setEducationFunds(calResultBO.getEducationFunds());//子女教育经费
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额
+                    calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getTaxDeduction()!=null){//减免税额（薪金个税,减免税额相比取小）
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==1){
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction());
@@ -405,15 +411,19 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountSalary());
                         }
                     }
-                    //其他（税前扣除项目）
-                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());
-                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
+                    //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
+                    calculationBatchDetailPO.setDeductOther(this.getValue(calculationBatchDetailPO.getOthers())
+                            .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
+                            .add(this.getValue(calResultBO.getDutyFreeAllowance()))
+                            .add(this.getValue(calculationBatchDetailPO.getAnnuity())));
+                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
                             .add(this.getValue(calculationBatchDetailPO.getDeductMedicalInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductDlenessInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductHouseFund()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductProperty()))
-                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff())));
+                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff()))
+                            .add(this.getValue(calculationBatchDetailPO.getDeductOther())));
                     //应纳税所得额= 收入额 - 免税所得 - 合计 - 减除费用 - 准予扣除的捐赠额
                     calculationBatchDetailPO.setIncomeForTax(this.getValue(calculationBatchDetailPO.getIncomeTotal())
                             .subtract(this.getValue(calculationBatchDetailPO.getIncomeDutyfree()))
