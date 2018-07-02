@@ -92,9 +92,9 @@ spring:
   boot:
     admin:
       url: ${spring.admin}
-  zipkin:
-    base-url: ${zipkin.base-url}  #ZipkinService地址
-    enabled: ${zipkin.enabled}
+#  zipkin:
+#    base-url: ${zipkin.base-url}  #ZipkinService地址
+#    enabled: ${zipkin.enabled}
   sleuth:
     sampler:
       percentage: ${sleuth.percentage}
@@ -106,8 +106,8 @@ spring:
           zk-nodes: ${kafka.zk-nodes}
           autoAddPartitions: true
       bindings:
-        sleuth:
-          destination: sleuth-itdev # topic name
+#        sleuth:
+#          destination: sleuth-itdev # topic name
 #        sg_compute-close-output-channel:
 #          destination: fc_compute_close # 关帐
 #          content-type: application/json

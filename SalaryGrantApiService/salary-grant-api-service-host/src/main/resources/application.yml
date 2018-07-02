@@ -58,6 +58,13 @@ mybatis-plus:
   mapper-locations: mapper/*Mapper.xml
   plugins:
     - catMybatisInterceptor
+druid:
+#  configPathBasic:  ${druid.configPathBasic}
+  configPathBusiness:  ${druid.configPathBusiness}
+#  configPathPayroll:  ${druid.configPathPayroll}
+#  configPathProduct:  ${druid.configPathProduct}
+#  configPathSm:  ${druid.configPathSm}
+#  configPathSupplier:  ${druid.configPathSupplier}
 spring:
   application:
     name: fcbusiness-center-salarygrant-api-service
@@ -80,14 +87,14 @@ spring:
   boot:
     admin:
       url: ${spring.admin}
-  datasource:
-    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=true&tinyInt1isBit=false
-    username: ${database.username}
-    password: ${database.password}
-    driver-class-name: com.mysql.jdbc.Driver
-  zipkin:
-    base-url: ${zipkin.base-url}  #ZipkinService地址
-    enabled: ${zipkin.enabled}
+#  datasource:
+#    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=true&tinyInt1isBit=false
+#    username: ${database.username}
+#    password: ${database.password}
+#    driver-class-name: com.mysql.jdbc.Driver
+#  zipkin:
+#    base-url: ${zipkin.base-url}  #ZipkinService地址
+#    enabled: ${zipkin.enabled}
   sleuth:
     sampler:
       percentage: ${sleuth.percentage}
@@ -99,7 +106,7 @@ spring:
           zk-nodes: ${kafka.zk-nodes}
           autoAddPartitions: true
       bindings:
-        sleuth:
-          destination: sleuth-itdev # topic name
+#        sleuth:
+#          destination: sleuth-itdev # topic name
 seaweed:
   masterHost: ${seaweed.masterHost}

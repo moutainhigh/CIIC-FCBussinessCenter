@@ -18,9 +18,9 @@ kafka:
   zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.109:2181
 seaweed:
   masterHost: "172.16.22.110:9333"
-zipkin:
-  base-url: http://172.16.100.103:9623  #ZipkinService地址
-  enabled: true
+#zipkin:
+#  base-url: http://172.16.100.103:9623  #ZipkinService地址
+#  enabled: true
 sleuth:
   percentage: 0.1
 druid:
