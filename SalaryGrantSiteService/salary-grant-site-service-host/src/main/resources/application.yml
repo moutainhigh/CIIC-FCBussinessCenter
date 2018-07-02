@@ -82,6 +82,12 @@ spring:
     default-property-inclusion: non_null
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false
+  boot:
+    admin:
+      url: ${admin.url}
+      client:
+        prefer-ip: true
+      api-path: instances
 #    time-zone: GMT+8
 #    date-format: yyyy-MM-dd HH:mm:ss
 #  datasource:
@@ -89,9 +95,6 @@ spring:
 #    username: ${database.username}
 #    password: ${database.password}
 #    driver-class-name: com.mysql.jdbc.Driver
-  boot:
-    admin:
-      url: ${spring.admin}
 #  zipkin:
 #    base-url: ${zipkin.base-url}  #ZipkinService地址
 #    enabled: ${zipkin.enabled}
