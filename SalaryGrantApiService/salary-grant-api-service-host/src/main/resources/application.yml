@@ -82,11 +82,14 @@ spring:
     default-property-inclusion: non_null
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false
-#    time-zone: GMT+8
-#    date-format: yyyy-MM-dd HH:mm:ss
   boot:
     admin:
-      url: ${spring.admin}
+      url: ${admin.url}
+      client:
+        prefer-ip: true
+      api-path: instances
+#    time-zone: GMT+8
+#    date-format: yyyy-MM-dd HH:mm:ss
 #  datasource:
 #    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=true&tinyInt1isBit=false
 #    username: ${database.username}

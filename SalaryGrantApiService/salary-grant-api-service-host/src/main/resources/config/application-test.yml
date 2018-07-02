@@ -30,5 +30,4 @@ druid:
 #  configPathProduct:  /data/appdatas/gt1/gtoproductdb_sit.properties
 #  configPathSmdb:  /data/appdatas/gt1/gtosmdb_sit.properties
 #  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_sit.properties
-spring:
-  admin: http://172.16.9.24:9625
+admin.url: http://172.16.9.24:9625

@@ -30,8 +30,7 @@ druid:
 #  configPathProduct:  /data/appdatas/gt1/gtoproductdb_prd.properties
 #  configPathSm:  /data/appdatas/gt1/gtosmdb_prd.properties
 #  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_prd.properties
-spring:
-  admin: http://172.16.100.103:9625
+admin.url: http://172.16.100.103:9625
 mongo:
   host: 172.16.22.113
   port: 27017
