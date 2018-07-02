@@ -52,6 +52,8 @@ public class DroolsServiceImpl implements DroolsService {
 
         Map<String,BigDecimal> rm = new HashMap<>();
 
+        //应纳税所得额
+        BigDecimal incomeForTax = null;
         //收入额
         BigDecimal incomeTotal=new BigDecimal(0);
         //税率
@@ -86,8 +88,8 @@ public class DroolsServiceImpl implements DroolsService {
         }
         //其它扣除
         BigDecimal otherDeductions=new BigDecimal(0);
-        if(item.containsKey("otherDeductions")){
-            otherDeductions = item.get("otherDeductions");
+        if(item.containsKey("others")){
+            otherDeductions = item.get("others");
         }
         //商业保险
         BigDecimal businessHealthInsurance=new BigDecimal(0);
@@ -148,7 +150,7 @@ public class DroolsServiceImpl implements DroolsService {
             Map<String,BigDecimal> m = this.preTaxRevenue(taxReal);
 
             //应纳税所得额
-            BigDecimal incomeForTax = m.get("incomeForTax");
+            incomeForTax = m.get("incomeForTax");
 
             //收入额
             incomeTotal=incomeForTax.add(donation).add(deductTakeoff).add(otherDeductions).add(businessHealthInsurance).add(deductHouseFund).add(deductDlenessInsurance)
@@ -161,9 +163,11 @@ public class DroolsServiceImpl implements DroolsService {
 
         }
 
+        rm.put("incomeForTax",incomeForTax);
         rm.put("incomeTotal",incomeTotal);
         rm.put("taxRate",taxRate);
         rm.put("quickCalDeduct",quickCalDeduct);
+
 
         return rm;
     }

@@ -204,6 +204,17 @@ public class CalResultBO {
     //速扣数
     private BigDecimal quickCalDeduct;
 
+    //其他扣除
+    private BigDecimal others;
+
+    public BigDecimal getOthers() {
+        return others;
+    }
+
+    public void setOthers(BigDecimal others) {
+        this.others = others;
+    }
+
     public BigDecimal getTaxRate() {
         return taxRate;
     }
