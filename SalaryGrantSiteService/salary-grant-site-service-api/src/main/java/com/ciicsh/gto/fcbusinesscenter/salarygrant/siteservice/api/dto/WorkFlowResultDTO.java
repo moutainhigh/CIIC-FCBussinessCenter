@@ -1,19 +1,19 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 工作流结果
+ * 流程结果
  * </p>
  *
  * @author chenpb
- * @since 2018-06-26
+ * @since 2018-06-27
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class WorkFlowResultBO {
+public class WorkFlowResultDTO {
     /**
      * 任务单
      */

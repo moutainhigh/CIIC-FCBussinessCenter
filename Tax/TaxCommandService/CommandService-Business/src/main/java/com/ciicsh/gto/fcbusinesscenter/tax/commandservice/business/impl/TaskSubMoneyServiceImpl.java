@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -60,8 +61,8 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             wrapper.like("payment_account", requestForSubMoney.getPaymentAccount());
         }
         //管理方名称
-        Optional.ofNullable(requestForSubMoney.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.in("manager_name",managerNames);
+        Optional.ofNullable(requestForSubMoney.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.in("manager_no",managerNos);
         });
         //期间类型currentPan,currentBeforePan,currentAfterPan
         if (StrKit.notBlank(requestForSubMoney.getPeriodType())) {
@@ -173,6 +174,20 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
     public void updateTaskSubMoneyById(TaskSubMoneyBO taskSubMoneyBO) {
         TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
         BeanUtils.copyProperties(taskSubMoneyBO, taskSubMoneyPO);
+        baseMapper.updateById(taskSubMoneyPO);
+    }
+
+    /**
+     * 更新划款滞纳金和罚金
+     * @param subMoneyId
+     * @param overdue
+     * @param fine
+     */
+    @Override
+    public void updateTaskSubMoneyOverdueAndFine(Long subMoneyId, BigDecimal overdue, BigDecimal fine) {
+        TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(subMoneyId);
+        taskSubMoneyPO.setOverdue(overdue);
+        taskSubMoneyPO.setFine(fine);
         baseMapper.updateById(taskSubMoneyPO);
     }
 }

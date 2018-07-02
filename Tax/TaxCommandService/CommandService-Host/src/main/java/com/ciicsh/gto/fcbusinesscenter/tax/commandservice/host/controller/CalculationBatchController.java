@@ -53,7 +53,7 @@ public class CalculationBatchController extends BaseController {
         BeanUtils.copyProperties(calculationBatchDTO, requestForCalBatch);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
             //设置request请求管理方名称数组
-            requestForCalBatch.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            requestForCalBatch.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForCalBatch responseForCalBatch = calculationBatchService.queryCalculationBatchs(requestForCalBatch);
         jr.fill(responseForCalBatch);

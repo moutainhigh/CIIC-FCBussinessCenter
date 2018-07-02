@@ -134,6 +134,15 @@ public class TaskSubPaymentPO implements Serializable {
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	/**
+	 * 滞纳金
+	 */
+	private BigDecimal overdue;
+	/**
+	 * 罚金
+	 */
+	private BigDecimal fine;
+
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
 	}
@@ -315,6 +324,22 @@ public class TaskSubPaymentPO implements Serializable {
 		this.statusName = statusName;
 	}
 
+	public BigDecimal getOverdue() {
+		return overdue;
+	}
+
+	public void setOverdue(BigDecimal overdue) {
+		this.overdue = overdue;
+	}
+
+	public BigDecimal getFine() {
+		return fine;
+	}
+
+	public void setFine(BigDecimal fine) {
+		this.fine = fine;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubPaymentPO{" +
@@ -337,6 +362,11 @@ public class TaskSubPaymentPO implements Serializable {
 				", modifiedBy='" + modifiedBy + '\'' +
 				", managerNo='" + managerNo + '\'' +
 				", managerName='" + managerName + '\'' +
+				", areaType='" + areaType + '\'' +
+				", createdByDisplayName='" + createdByDisplayName + '\'' +
+				", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
+				", overdue=" + overdue +
+				", fine=" + fine +
 				'}';
 	}
 }

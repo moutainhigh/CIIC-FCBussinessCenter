@@ -128,4 +128,13 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      */
     Integer lockTask(SalaryGrantTaskBO bo);
 
+    /**
+     * 根据批次号和发放方式查询子表任务单
+     * @author chenpb
+     * @since 2018-06-27
+     * @param bo
+     * @return
+     */
+    List<SalaryGrantSubTaskPO> getSubListByBatchCode (SalaryGrantTaskBO bo);
+
 }

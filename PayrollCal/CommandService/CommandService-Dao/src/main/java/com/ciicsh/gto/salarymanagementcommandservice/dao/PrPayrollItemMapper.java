@@ -101,4 +101,23 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
     Integer insertBatchApprovedItemsByGroup(@Param("payrollGroupCode") String prGroupCode,
                                             @Param("prGroupTemplateCode") String prGroupTemplateCode);
 
+
+    /**
+     * 审批通过时，先根据薪资组模板编码删除正式表的薪资项，在同步草稿表的薪资项到正式表
+     * 审批拒绝时，先根据薪资组模板编码删除草稿表的薪资项，在同步正式表的薪资项到草稿表
+     *
+     * @param approvalStatus      审批状态
+     * @param prGroupTemplateCode 薪资组模板编码
+     */
+    void deleteApprovedItemByGroupTemplateCode(@Param("approvalStatus") int approvalStatus, @Param("prGroupTemplateCode") String prGroupTemplateCode);
+
+    /**
+     * 审批通过时，先根据薪资组模板编码删除正式表的薪资项，在同步草稿表的薪资项到正式表
+     * 审批拒绝时，先根据薪资组模板编码删除草稿表的薪资项，在同步正式表的薪资项到草稿表
+     *
+     * @param approvalStatus      审批状态
+     * @param prGroupTemplateCode 薪资组模板编码
+     */
+    void insertApprovedItemByGroupTemplateCode(@Param("approvalStatus") int approvalStatus, @Param("prGroupTemplateCode") String prGroupTemplateCode);
+
 }

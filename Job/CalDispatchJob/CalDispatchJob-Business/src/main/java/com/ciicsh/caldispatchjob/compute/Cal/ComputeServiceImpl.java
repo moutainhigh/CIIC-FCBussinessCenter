@@ -3,6 +3,7 @@ package com.ciicsh.caldispatchjob.compute.Cal;
 import com.ciicsh.caldispatchjob.compute.util.CustomAgendaFilter;
 import com.ciicsh.caldispatchjob.compute.util.JavaScriptEngine;
 import com.ciicsh.caldispatchjob.entity.*;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
@@ -86,7 +87,7 @@ public class ComputeServiceImpl {
     @Autowired
     private ComputeSender sender;
 
-    public void processCompute(String batchCode,int batchType){
+    public void processCompute(String batchCode,int batchType, String userId){
 
         long start = System.currentTimeMillis(); //begin
 
@@ -151,6 +152,7 @@ public class ComputeServiceImpl {
             ComputeMsg computeMsg = new ComputeMsg();
             computeMsg.setBatchCode(batchCode);
             computeMsg.setBatchType(batchType);
+            computeMsg.setOptID(userId);
             computeMsg.setComputeStatus(BatchStatusEnum.COMPUTED.getValue()); // send kafka compute's complete status
             sender.SendComputeStatus(computeMsg);
         }

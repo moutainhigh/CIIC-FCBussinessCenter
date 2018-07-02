@@ -155,6 +155,15 @@ public class TaskSubMoneyPO{
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	/**
+	 * 滞纳金
+	 */
+	private BigDecimal overdue;
+	/**
+	 * 罚金
+	 */
+	private BigDecimal fine;
+
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
 	}
@@ -372,6 +381,22 @@ public class TaskSubMoneyPO{
 		this.payApplyCode = payApplyCode;
 	}
 
+	public BigDecimal getOverdue() {
+		return overdue;
+	}
+
+	public void setOverdue(BigDecimal overdue) {
+		this.overdue = overdue;
+	}
+
+	public BigDecimal getFine() {
+		return fine;
+	}
+
+	public void setFine(BigDecimal fine) {
+		this.fine = fine;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubMoneyPO{" +
@@ -398,6 +423,11 @@ public class TaskSubMoneyPO{
 				", payStatusName='" + payStatusName + '\'' +
 				", payApplyId=" + payApplyId +
 				", payApplyCode='" + payApplyCode + '\'' +
+				", areaType='" + areaType + '\'' +
+				", createdByDisplayName='" + createdByDisplayName + '\'' +
+				", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
+				", overdue=" + overdue +
+				", fine=" + fine +
 				'}';
 	}
 }

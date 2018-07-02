@@ -18,9 +18,9 @@ kafka:
   zk-nodes: 172.16.9.55:2181,172.16.9.56:2181,172.16.9.57:2181
 seaweed:
   masterHost: "172.16.9.58:9333"
-zipkin:
-  base-url: http://172.16.9.56:9623  #ZipkinService地址
-  enabled: true
+#zipkin:
+#  base-url: http://172.16.9.56:9623  #ZipkinService地址
+#  enabled: true
 sleuth:
   percentage: 0.1
 druid:
@@ -30,8 +30,7 @@ druid:
 #  configPathProduct:  /data/appdatas/gt1/gtoproductdb_uat.properties
 #  configPathSm:  /data/appdatas/gt1/gtosmdb_uat.properties
 #  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_uat.properties
-spring:
-  admin: http://172.16.9.56:9625
+admin.url: http://172.16.9.56:9625
 mongo:
   host: 172.16.9.52 #172.16.9.52 172.16.9.15 172.16.9.16 sit
   port: 27017

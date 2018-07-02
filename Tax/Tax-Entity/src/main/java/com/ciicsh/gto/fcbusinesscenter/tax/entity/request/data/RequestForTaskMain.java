@@ -46,9 +46,9 @@ public class RequestForTaskMain extends PageInfo {
 
     private String[] status;
     /**
-     * 管理方名称(管理方切换)
+     * 管理方编号(管理方切换)
      */
-    private String[] managerNames;
+    private String[] managerNos;
 
     public String[] getStatus() {
         return status;
@@ -178,11 +178,19 @@ public class RequestForTaskMain extends PageInfo {
         this.batchIds = batchIds;
     }
 
-    public String[] getManagerNames() {
-        return managerNames;
+    public boolean isCombined() {
+        return isCombined;
     }
 
-    public void setManagerNames(String[] managerNames) {
-        this.managerNames = managerNames;
+    public void setCombined(boolean combined) {
+        isCombined = combined;
+    }
+
+    public String[] getManagerNos() {
+        return managerNos;
+    }
+
+    public void setManagerNos(String[] managerNos) {
+        this.managerNos = managerNos;
     }
 }

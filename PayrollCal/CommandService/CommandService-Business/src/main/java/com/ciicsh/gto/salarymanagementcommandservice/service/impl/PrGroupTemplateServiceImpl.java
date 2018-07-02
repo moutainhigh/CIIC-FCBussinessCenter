@@ -104,6 +104,16 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateItemByCode(PrPayrollGroupTemplatePO param) {
+        // 编辑时校验薪资组模板是否有同名
+        EntityWrapper<PrPayrollGroupTemplatePO> wrapper = new EntityWrapper<>();
+        wrapper.eq("group_template_name", param.getGroupTemplateName());
+        List<PrPayrollGroupTemplatePO> templateList = prPayrollGroupTemplateMapper.selectList(wrapper);
+        if (templateList != null) {
+            templateList.removeIf(template -> template.getGroupTemplateCode().equals(param.getGroupTemplateCode()));
+            if (templateList.size() > 0 ) {
+                throw new BusinessException("重复的薪资组模板名称");
+            }
+        }
         return prPayrollGroupTemplateMapper.updateItemByCode(param);
     }
 
@@ -187,8 +197,9 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         approvalHistoryPO.setCreatedName(UserContext.getName());
         approvalHistoryPO.setCreatedBy(UserContext.getUserId());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
-        // 更新审批薪资组模板
-        prPayrollItemMapper.insertBatchApprovedItemsByGroup(null, paramItem.getGroupTemplateCode());
+        // 处理审批通过和审批拒绝的草稿版薪资项和正式版薪资项,approvalStatus：2,通过; 3,拒绝;
+        prPayrollItemMapper.deleteApprovedItemByGroupTemplateCode(paramItem.getApprovalStatus(), paramItem.getGroupTemplateCode());
+        prPayrollItemMapper.insertApprovedItemByGroupTemplateCode(paramItem.getApprovalStatus(), paramItem.getGroupTemplateCode());
         int updateResult = prPayrollGroupTemplateMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
         return result;
