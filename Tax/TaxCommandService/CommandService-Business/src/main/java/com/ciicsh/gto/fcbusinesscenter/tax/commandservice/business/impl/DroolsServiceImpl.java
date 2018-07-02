@@ -21,7 +21,7 @@ public class DroolsServiceImpl implements DroolsService {
     private KieSession kSession;
 
     @Override
-    public Object preTaxRevenue(BigDecimal tax) {
+    public Map<String,BigDecimal> preTaxRevenue(BigDecimal tax) {
 
         FactType factType = kSession.getKieBase().getFactType("com.ciicsh.gt1.fcbusinesscenter.tax.fcbusinesscenter_tax_commandservice_drools", "CalculationContext");
         Object cc = null;
@@ -36,15 +36,28 @@ public class DroolsServiceImpl implements DroolsService {
         factType.set(cc, "other", BigDecimal.ZERO);
         kSession.insert(cc);
         kSession.fireAllRules();
-        Object o = factType.get(cc,"incomeForTax");
-        return o;
+        Object o1 = factType.get(cc,"incomeForTax");
+        Object o2 = factType.get(cc,"taxRate");
+        Object o3 = factType.get(cc,"quickCalDeduct");
+
+        Map<String,BigDecimal> rm = new HashMap<>();
+        rm.put("incomeForTax",(BigDecimal)o1);
+        rm.put("taxRate",(BigDecimal)o2);
+        rm.put("quickCalDeduct",(BigDecimal)o3);
+        return rm;
     }
 
     @Override
-    public BigDecimal incomeTotal(Map<String, BigDecimal> item) {
+    public Map<String,BigDecimal> incomeTotal(Map<String, BigDecimal> item) {
+
+        Map<String,BigDecimal> rm = new HashMap<>();
 
         //收入额
         BigDecimal incomeTotal=new BigDecimal(0);
+        //税率
+        BigDecimal taxRate=null;
+        //速算扣除数
+        BigDecimal quickCalDeduct=null;
 
         //税金
         BigDecimal taxReal=new BigDecimal(0);
@@ -131,12 +144,27 @@ public class DroolsServiceImpl implements DroolsService {
         //税金大于0
         }else if(taxReal.compareTo(BigDecimal.ZERO)==1){
 
-            //倒推应纳税所得额
-            BigDecimal incomeForTax = BigDecimal.valueOf((Double)this.preTaxRevenue(taxReal));
+            //倒推应纳税所得额、税率、速算扣除数
+            Map<String,BigDecimal> m = this.preTaxRevenue(taxReal);
+
+            //应纳税所得额
+            BigDecimal incomeForTax = m.get("incomeForTax");
+
+            //收入额
             incomeTotal=incomeForTax.add(donation).add(deductTakeoff).add(otherDeductions).add(businessHealthInsurance).add(deductHouseFund).add(deductDlenessInsurance)
                     .add(deductMedicalInsurance).add(deductRetirementInsurance).add(dutyFreeAllowance).add(annuity).add(incomeDutyfree);
+
+            //税率
+            taxRate=m.get("taxRate");
+            //速算扣除数
+            quickCalDeduct=m.get("quickCalDeduct");
+
         }
 
-        return incomeTotal;
+        rm.put("incomeTotal",incomeTotal);
+        rm.put("taxRate",taxRate);
+        rm.put("quickCalDeduct",quickCalDeduct);
+
+        return rm;
     }
 }

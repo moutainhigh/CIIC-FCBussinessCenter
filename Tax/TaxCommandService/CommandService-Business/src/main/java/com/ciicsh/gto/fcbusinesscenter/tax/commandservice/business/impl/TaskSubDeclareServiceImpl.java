@@ -309,6 +309,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 BigDecimal taxReal=new BigDecimal(0);//税金
                 BigDecimal incomeTotal=new BigDecimal(0);//收入额
                 BigDecimal preTaxAggregate=new BigDecimal(0);//税前合计
+                BigDecimal taxDeduction=new BigDecimal(0);//减免税额
+                BigDecimal taxRate=null;//税率
+                BigDecimal quickCalDeduct=null;//速算扣除数
 
                 List<TaskSubDeclareDetailPO> tps = entry.getValue();
                 //计算合并后的各项值
@@ -331,6 +334,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                     taxReal = taxReal.add(tp.getTaxReal()==null?BigDecimal.ZERO:tp.getTaxReal());//税金合计
                     incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());//收入额合计
                     preTaxAggregate = preTaxAggregate.add(tp.getPreTaxAggregate()==null?BigDecimal.ZERO:tp.getPreTaxAggregate());//税前合计
+                    taxDeduction = taxDeduction.add(tp.getTaxDeduction()==null?BigDecimal.ZERO:tp.getTaxDeduction());//减免税额合计
                 }
 
                 //计算收入额
@@ -349,7 +353,11 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 m.put("dutyFreeAllowance",dutyFreeAllowance);//免税津贴
                 m.put("annuity",annuity);//企业年金个人部分
                 m.put("incomeDutyfree",incomeDutyfree);//免税所得
-                incomeTotal = droolsService.incomeTotal(m);//收入额
+
+                Map<String,BigDecimal> tm = droolsService.incomeTotal(m);//收入额
+                incomeTotal = tm.get("incomeTotal");//收入额
+                taxRate = tm.get("taxRate");//税率
+                quickCalDeduct = tm.get("quickCalDeduct");//速算扣除数
 
                 taskSubDeclareDetailPO.setIncomeTotal(incomeTotal);
                 taskSubDeclareDetailPO.setDonation(donation);
@@ -365,6 +373,31 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 taskSubDeclareDetailPO.setIncomeDutyfree(incomeDutyfree);
                 taskSubDeclareDetailPO.setTaxReal(taxReal);
                 taskSubDeclareDetailPO.setPreTaxAggregate(preTaxAggregate);
+                taskSubDeclareDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
+                taskSubDeclareDetailPO.setTaxDeduction(taxDeduction);
+                taskSubDeclareDetailPO.setTaxRate(taxRate);
+                taskSubDeclareDetailPO.setQuickCalDeduct(quickCalDeduct);
+                //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
+                taskSubDeclareDetailPO.setDeductTotal(taskSubDeclareDetailPO.getDeductRetirementInsurance()
+                        .add(taskSubDeclareDetailPO.getDeductMedicalInsurance())
+                        .add(taskSubDeclareDetailPO.getDeductDlenessInsurance())
+                        .add(taskSubDeclareDetailPO.getDeductHouseFund())
+                        .add(taskSubDeclareDetailPO.getDeductProperty())
+                        .add(taskSubDeclareDetailPO.getDeductTakeoff()));
+                //应纳税所得额= 收入额 - 免税所得 - 合计 - 减除费用 - 准予扣除的捐赠额
+                taskSubDeclareDetailPO.setIncomeForTax(taskSubDeclareDetailPO.getIncomeTotal()
+                        .subtract(taskSubDeclareDetailPO.getIncomeDutyfree())
+                        .subtract(taskSubDeclareDetailPO.getDeductTotal())
+                        .subtract(taskSubDeclareDetailPO.getDeduction())
+                        .subtract(taskSubDeclareDetailPO.getDonation()));
+                //应纳税额 = 税金
+                taskSubDeclareDetailPO.setTaxAmount(taskSubDeclareDetailPO.getTaxReal());
+                //应扣缴税额 = 应纳税额 - 减免税额
+                taskSubDeclareDetailPO.setTaxWithholdAmount(taskSubDeclareDetailPO.getTaxAmount().subtract(taskSubDeclareDetailPO.getTaxDeduction()));
+                //已扣缴税额（空）
+                taskSubDeclareDetailPO.setTaxWithholdedAmount(BigDecimal.ZERO);
+                //应补退税额 = 应扣缴税额-已扣缴税额
+                taskSubDeclareDetailPO.setTaxRemedyOrReturn(taskSubDeclareDetailPO.getTaxWithholdAmount().subtract(taskSubDeclareDetailPO.getTaxWithholdedAmount()));
                 //更新合并后数据值
                 this.taskSubDeclareDetailService.updateById(taskSubDeclareDetailPO);
 
