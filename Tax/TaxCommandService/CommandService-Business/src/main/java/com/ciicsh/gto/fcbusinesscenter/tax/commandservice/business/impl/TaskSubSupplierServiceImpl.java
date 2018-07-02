@@ -309,7 +309,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
 
                 BigDecimal donation = new BigDecimal(0);//准予扣除的捐赠额
                 BigDecimal deductTakeoff = new BigDecimal(0);//允许扣除的税费
-                BigDecimal otherDeductions = new BigDecimal(0);//其它扣除
+                BigDecimal otherDeductions = new BigDecimal(0);//其它（税前扣除项目）
                 BigDecimal businessHealthInsurance = new BigDecimal(0);//商业保险
                 BigDecimal deductRetirementInsurance=new BigDecimal(0);//基本养老保险费（税前扣除项目）
                 BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
@@ -324,6 +324,8 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                 BigDecimal taxDeduction=new BigDecimal(0);//减免税额
                 BigDecimal taxRate=null;//税率
                 BigDecimal quickCalDeduct=null;//速算扣除数
+                BigDecimal others = new BigDecimal(0);//其它扣除
+                BigDecimal incomeForTax = null;//应纳税所得额
 
                 List<TaskSubSupplierDetailPO> tps = entry.getValue();
                 //计算合并后的各项值
@@ -334,7 +336,6 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                     //参与倒推计算的各项合计
                     donation = donation.add(tp.getDonation()==null?BigDecimal.ZERO:tp.getDonation());//准予扣除的捐赠额合计
                     deductTakeoff = deductTakeoff.add(tp.getDeductTakeoff()==null?BigDecimal.ZERO:tp.getDeductTakeoff());//允许扣除的税费合计
-                    otherDeductions = otherDeductions.add(tp.getDeductOther()==null?BigDecimal.ZERO:tp.getDeductOther());//其它扣除合计
                     businessHealthInsurance = businessHealthInsurance.add(tp.getBusinessHealthInsurance()==null?BigDecimal.ZERO:tp.getBusinessHealthInsurance());//商业保险合计
                     deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance()==null?BigDecimal.ZERO:tp.getDeductRetirementInsurance());//基本养老保险费（税前扣除项目）合计
                     deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance()==null?BigDecimal.ZERO:tp.getDeductMedicalInsurance());//基本医疗保险费（税前扣除项目）合计
@@ -347,6 +348,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                     incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());//收入额合计
                     preTaxAggregate = preTaxAggregate.add(tp.getPreTaxAggregate()==null?BigDecimal.ZERO:tp.getPreTaxAggregate());//税前合计
                     taxDeduction = taxDeduction.add(tp.getTaxDeduction()==null?BigDecimal.ZERO:tp.getTaxDeduction());//减免税额合计
+                    others = others.add(tp.getOthers()==null?BigDecimal.ZERO:tp.getOthers());//其他扣除合计
                 }
 
                 //计算收入额
@@ -356,7 +358,7 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                 m.put("deduction",taskSubSupplierDetailPO.getDeduction());//免抵税额
                 m.put("donation",donation);//准予扣除的捐赠额
                 m.put("deductTakeoff",deductTakeoff);//允许扣除的税费
-                m.put("otherDeductions",otherDeductions);//其它扣除
+                m.put("others",others);//其它扣除
                 m.put("businessHealthInsurance",businessHealthInsurance);//商业保险
                 m.put("deductHouseFund",deductHouseFund);//住房公积金
                 m.put("deductDlenessInsurance",deductDlenessInsurance);//失业保险费
@@ -370,11 +372,12 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                 incomeTotal = tm.get("incomeTotal");//收入额
                 taxRate = tm.get("taxRate");//税率
                 quickCalDeduct = tm.get("quickCalDeduct");//速算扣除数
+                incomeForTax = tm.get("incomeForTax");//应纳税所得额
 
                 taskSubSupplierDetailPO.setIncomeTotal(incomeTotal);
                 taskSubSupplierDetailPO.setDonation(donation);
                 taskSubSupplierDetailPO.setDeductTakeoff(deductTakeoff);
-                taskSubSupplierDetailPO.setDeductOther(otherDeductions);
+                taskSubSupplierDetailPO.setOthers(others);
                 taskSubSupplierDetailPO.setBusinessHealthInsurance(businessHealthInsurance);
                 taskSubSupplierDetailPO.setDeductRetirementInsurance(deductRetirementInsurance);
                 taskSubSupplierDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
@@ -385,24 +388,26 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                 taskSubSupplierDetailPO.setIncomeDutyfree(incomeDutyfree);
                 taskSubSupplierDetailPO.setTaxReal(taxReal);
                 taskSubSupplierDetailPO.setPreTaxAggregate(preTaxAggregate);
-
                 taskSubSupplierDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
                 taskSubSupplierDetailPO.setTaxDeduction(taxDeduction);
                 taskSubSupplierDetailPO.setTaxRate(taxRate);
                 taskSubSupplierDetailPO.setQuickCalDeduct(quickCalDeduct);
-                //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
+
+                //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
+                taskSubSupplierDetailPO.setDeductOther(taskSubSupplierDetailPO.getOthers()
+                        .add(taskSubSupplierDetailPO.getBusinessHealthInsurance())
+                        .add(taskSubSupplierDetailPO.getDutyFreeAllowance())
+                        .add(taskSubSupplierDetailPO.getAnnuity()));
+                //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
                 taskSubSupplierDetailPO.setDeductTotal(taskSubSupplierDetailPO.getDeductRetirementInsurance()
                         .add(taskSubSupplierDetailPO.getDeductMedicalInsurance())
                         .add(taskSubSupplierDetailPO.getDeductDlenessInsurance())
                         .add(taskSubSupplierDetailPO.getDeductHouseFund())
                         .add(taskSubSupplierDetailPO.getDeductProperty())
-                        .add(taskSubSupplierDetailPO.getDeductTakeoff()));
-                //应纳税所得额= 收入额 - 免税所得 - 合计 - 减除费用 - 准予扣除的捐赠额
-                taskSubSupplierDetailPO.setIncomeForTax(taskSubSupplierDetailPO.getIncomeTotal()
-                        .subtract(taskSubSupplierDetailPO.getIncomeDutyfree())
-                        .subtract(taskSubSupplierDetailPO.getDeductTotal())
-                        .subtract(taskSubSupplierDetailPO.getDeduction())
-                        .subtract(taskSubSupplierDetailPO.getDonation()));
+                        .add(taskSubSupplierDetailPO.getDeductTakeoff())
+                        .add(taskSubSupplierDetailPO.getDeductOther()));
+                //应纳税所得额
+                taskSubSupplierDetailPO.setIncomeForTax(incomeForTax);
                 //应纳税额 = 税金
                 taskSubSupplierDetailPO.setTaxAmount(taskSubSupplierDetailPO.getTaxReal());
                 //应扣缴税额 = 应纳税额 - 减免税额
