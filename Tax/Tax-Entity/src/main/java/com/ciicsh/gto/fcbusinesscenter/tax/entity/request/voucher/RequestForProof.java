@@ -96,9 +96,9 @@ public class RequestForProof extends PageInfo {
     private String taskType;
 
     /**
-     * 管理方名称(管理方切换)
+     * 管理方编号(管理方切换)
      */
-    private String[] managerNames;
+    private String[] managerNos;
 
     public Long getId() {
         return id;
@@ -244,11 +244,11 @@ public class RequestForProof extends PageInfo {
         this.taskType = taskType;
     }
 
-    public String[] getManagerNames() {
-        return managerNames;
+    public String[] getManagerNos() {
+        return managerNos;
     }
 
-    public void setManagerNames(String[] managerNames) {
-        this.managerNames = managerNames;
+    public void setManagerNos(String[] managerNos) {
+        this.managerNos = managerNos;
     }
 }

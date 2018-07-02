@@ -73,9 +73,9 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             wrapper.andNew().like("declare_account", requestForTaskSubSupplier.getDeclareAccount());
         }
         //管理方名称
-        Optional.ofNullable(requestForTaskSubSupplier.getManagerNames()).ifPresent(managerNames -> {
+        Optional.ofNullable(requestForTaskSubSupplier.getManagerNos()).ifPresent(managerNos -> {
 //            wrapper.in("manager_name",managerNames);
-            wrapper.andNew().in("manager_name",managerNames).or("is_combined",true);
+            wrapper.andNew().in("manager_no",managerNos).or("is_combined",true);
         });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubSupplier.getPeriod())) {
@@ -498,5 +498,19 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             baseMapper.update(taskSubSupplierPO, wrapper);
             taskMainService.updateTaskMainStatus(requestForTaskSubSupplier.getMainIds());
         }
+    }
+
+    /**
+     * 更新划款滞纳金和罚金
+     * @param subSupplierId
+     * @param overdue
+     * @param fine
+     */
+    @Override
+    public void updateTaskSubSupplierOverdueAndFine(Long subSupplierId, BigDecimal overdue, BigDecimal fine) {
+        TaskSubSupplierPO taskSubSupplierPO = baseMapper.selectById(subSupplierId);
+        taskSubSupplierPO.setOverdue(overdue);
+        taskSubSupplierPO.setFine(fine);
+        baseMapper.updateById(taskSubSupplierPO);
     }
 }

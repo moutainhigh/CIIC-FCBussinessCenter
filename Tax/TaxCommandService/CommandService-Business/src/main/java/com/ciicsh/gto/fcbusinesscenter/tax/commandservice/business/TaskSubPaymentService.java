@@ -6,6 +6,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.payment.RequestForSubP
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.payment.ResponseForSubPayment;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 /**
  * @author yuantongqing on 2018/01/02
  */
@@ -42,4 +44,12 @@ public interface TaskSubPaymentService {
      * @return
      */
     TaskSubPaymentPO querySubPaymentById(long subPaymentId);
+
+    /**
+     * 更新划款滞纳金和罚金
+     * @param subPayId
+     * @param overdue
+     * @param fine
+     */
+    void updateTaskSubPayOverdueAndFine(Long subPayId, BigDecimal overdue, BigDecimal fine);
 }
