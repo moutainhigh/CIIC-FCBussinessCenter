@@ -566,6 +566,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 BigDecimal taxReal=new BigDecimal(0);//税金
                 BigDecimal incomeTotal=new BigDecimal(0);//收入额
                 BigDecimal preTaxAggregate=new BigDecimal(0);//税前合计
+                BigDecimal taxDeduction=new BigDecimal(0);//减免税额
+                BigDecimal taxRate=null;//税率
+                BigDecimal quickCalDeduct=null;//速算扣除数
 
                 List<TaskMainDetailPO> tps = entry.getValue();
                 //计算合并后的各项值
@@ -588,6 +591,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     taxReal = taxReal.add(tp.getTaxReal()==null?BigDecimal.ZERO:tp.getTaxReal());//税金合计
                     incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());//收入额合计
                     preTaxAggregate = preTaxAggregate.add(tp.getPreTaxAggregate()==null?BigDecimal.ZERO:tp.getPreTaxAggregate());//税前合计
+                    taxDeduction = taxDeduction.add(tp.getTaxDeduction()==null?BigDecimal.ZERO:tp.getTaxDeduction());//减免税额合计
                 }
 
                 //计算收入额
@@ -606,7 +610,11 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 m.put("dutyFreeAllowance",dutyFreeAllowance);//免税津贴
                 m.put("annuity",annuity);//企业年金个人部分
                 m.put("incomeDutyfree",incomeDutyfree);//免税所得
-                incomeTotal = droolsService.incomeTotal(m);//收入额
+
+                Map<String,BigDecimal> tm = droolsService.incomeTotal(m);//收入额
+                incomeTotal = tm.get("incomeTotal");//收入额
+                taxRate = tm.get("taxRate");//税率
+                quickCalDeduct = tm.get("quickCalDeduct");//速算扣除数
 
                 taskMainDetailPO.setIncomeTotal(incomeTotal);
                 taskMainDetailPO.setDonation(donation);
@@ -622,6 +630,32 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 taskMainDetailPO.setIncomeDutyfree(incomeDutyfree);
                 taskMainDetailPO.setTaxReal(taxReal);
                 taskMainDetailPO.setPreTaxAggregate(preTaxAggregate);
+                taskMainDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
+                taskMainDetailPO.setTaxDeduction(taxDeduction);
+                taskMainDetailPO.setTaxRate(taxRate);
+                taskMainDetailPO.setQuickCalDeduct(quickCalDeduct);
+                //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
+                taskMainDetailPO.setDeductTotal(taskMainDetailPO.getDeductRetirementInsurance()
+                        .add(taskMainDetailPO.getDeductMedicalInsurance())
+                        .add(taskMainDetailPO.getDeductDlenessInsurance())
+                        .add(taskMainDetailPO.getDeductHouseFund())
+                        .add(taskMainDetailPO.getDeductProperty())
+                        .add(taskMainDetailPO.getDeductTakeoff()));
+                //应纳税所得额= 收入额 - 免税所得 - 合计 - 减除费用 - 准予扣除的捐赠额
+                taskMainDetailPO.setIncomeForTax(taskMainDetailPO.getIncomeTotal()
+                        .subtract(taskMainDetailPO.getIncomeDutyfree())
+                        .subtract(taskMainDetailPO.getDeductTotal())
+                        .subtract(taskMainDetailPO.getDeduction())
+                        .subtract(taskMainDetailPO.getDonation()));
+                //应纳税额 = 税金
+                taskMainDetailPO.setTaxAmount(taskMainDetailPO.getTaxReal());
+                //应扣缴税额 = 应纳税额 - 减免税额
+                taskMainDetailPO.setTaxWithholdAmount(taskMainDetailPO.getTaxAmount().subtract(taskMainDetailPO.getTaxDeduction()));
+                //已扣缴税额（空）
+                taskMainDetailPO.setTaxWithholdedAmount(BigDecimal.ZERO);
+                //应补退税额 = 应扣缴税额-已扣缴税额
+                taskMainDetailPO.setTaxRemedyOrReturn(taskMainDetailPO.getTaxWithholdAmount().subtract(taskMainDetailPO.getTaxWithholdedAmount()));
+
                 //更新合并后数据值
                 this.taskMainDetailService.updateById(taskMainDetailPO);
 
