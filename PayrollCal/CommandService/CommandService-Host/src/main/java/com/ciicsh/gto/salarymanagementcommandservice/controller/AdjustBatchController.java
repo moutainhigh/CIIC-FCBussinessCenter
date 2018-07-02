@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.dto.AdjustItem;
 import com.ciicsh.gto.salarymanagement.entity.dto.ComparedAdjustBatchDTO;
@@ -31,6 +32,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -188,21 +190,22 @@ public class AdjustBatchController {
     }
 
     @PostMapping("/updateBatchValue")
-    public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String empCode,
+    public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String empCode, @RequestParam int dataType,
                                        @RequestParam String payItemName, @RequestParam Object payItemVal){
 
         int rowAffected = 0;
 
         String key = "catalog.pay_items.$.item_value";
 
-        try{
+        if(dataType == DataTypeEnum.NUM.getValue()){
             payItemVal = Double.parseDouble(payItemVal.toString());
-        }catch (Exception ex){
-            try {
-                payItemVal = Boolean.parseBoolean(payItemVal.toString());
-            }catch (Exception e2){
-                payItemVal = String.valueOf(payItemVal);
-            }
+        }else if(dataType == DataTypeEnum.DATE.getValue()){
+            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
+            payItemVal = sdfDate.format(payItemVal);
+        }else if(dataType == DataTypeEnum.TEXT.getValue()){
+            payItemVal = String.valueOf(payItemVal);
+        }else {
+            payItemVal = Boolean.parseBoolean(payItemVal.toString());
         }
         if(payItemVal instanceof Boolean){
             key = "catalog.pay_items.$.isLocked";
@@ -217,7 +220,7 @@ public class AdjustBatchController {
 
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
 
-            if(payItemVal instanceof Number) {
+            if(dataType == DataTypeEnum.NUM.getValue()){
                 updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
             }
 
@@ -229,7 +232,7 @@ public class AdjustBatchController {
 
         }else {
 
-            if(payItemVal instanceof Number) {
+            if(dataType == DataTypeEnum.NUM.getValue()){
                 updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
             }
 

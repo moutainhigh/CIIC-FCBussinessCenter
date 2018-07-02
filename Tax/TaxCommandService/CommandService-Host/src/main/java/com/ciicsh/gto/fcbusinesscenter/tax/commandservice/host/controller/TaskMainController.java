@@ -387,7 +387,7 @@ public class TaskMainController extends BaseController {
         List<String> listBatchNos = new ArrayList<>();
         for(CalculationBatchPO po : calculationBatchPOS){
             PrBatchDTO prBatchDTO = batchProxy.getBatchInfo(po.getBatchNo(), getBatchTypeOfInt(po.getBatchType()));
-            if(!prBatchDTO.isHasMoney() && prBatchDTO.getHasAdvance() == 0){
+            if(!prBatchDTO.getHasMoney() && prBatchDTO.getHasAdvance() == 0){
                 listBatchNos.add(po.getBatchNo());
             }
         }
