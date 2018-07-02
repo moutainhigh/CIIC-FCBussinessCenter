@@ -94,11 +94,19 @@ public class CalculationBatchDetailController extends BaseController implements 
     @PostMapping(value = "recoveryCalBatchDetail")
     public JsonResult<Boolean> recoveryCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
-
+        //验证批次任务0:允许恢复;1:是"取消关账-01"状态;2:已经创建任务
+        int i = calculationBatchDetailService.checkTaskByDetailIds(calculationBatchDetailDTO.getIds());
+        if(i == 1){
+            jr.fill(JsonResult.ReturnCode.RECOVERY_1);
+            return jr;
+        }
+        if(i == 2){
+            jr.fill(JsonResult.ReturnCode.RECOVERY_2);
+            return jr;
+        }
         if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
             calculationBatchDetailService.queryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
         }
-
         return jr;
     }
 
