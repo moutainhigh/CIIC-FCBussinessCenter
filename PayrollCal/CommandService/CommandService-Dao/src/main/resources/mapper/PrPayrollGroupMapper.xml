@@ -131,7 +131,7 @@
 			is_active = 1
 		AND approval_status = 2
 		<if test="name != null and name != ''">
-			AND group_name LIKE concat(#{name},'%')
+			AND group_name LIKE concat('%', #{name}, '%')
 		</if>
 		<if test="managementId != null and managementId != ''">
 			AND management_id = #{managementId}
@@ -142,6 +142,18 @@
 	<select id="selectCountGroupByNameAndManagement" resultType="int">
 		SELECT
 			COUNT(*)
+		FROM
+			pr_payroll_group
+		WHERE
+			group_name = #{name}
+		AND
+			management_id = #{managementId}
+	</select>
+
+	<select id="queryGroupListByNameAndManagementId" resultMap="BaseResultMap">
+		SELECT
+			group_code,
+			group_name
 		FROM
 			pr_payroll_group
 		WHERE
