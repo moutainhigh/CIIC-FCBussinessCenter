@@ -1,10 +1,9 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.money.ExportAboutTaxList;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.offline.gd.ExportAboutDeclarationInformationGd;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.offline.sh.ExportAboutWithholdingReportSh;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.offline.sz.ExportAboutDeclarationInformationSz;
@@ -20,10 +19,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.voucher.ExportAboutVoucherXuHui;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TemplateFileBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -162,6 +158,15 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
 
     @Autowired
     private ExportAboutVoucherPuDong exportAboutVoucherPuDong;
+
+    @Autowired
+    private TaskSubMoneyService taskSubMoneyService;
+
+    @Autowired
+    private TaskSubMoneyDetailService taskSubMoneyDetailService;
+
+    @Autowired
+    private ExportAboutTaxList exportAboutTaxList;
 
     /**
      * 所得项目_正常工资薪金收入
@@ -958,6 +963,54 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         }
         map.put("zipName", zipName);
         map.put("byte", buffer);
+        return map;
+    }
+
+    /**
+     * 根据任务ID，获取个税清单wb和文件名
+     * @param subMoneyId
+     * @return
+     */
+    @Override
+    public Map<String, Object> exportTaxList(Long subMoneyId) {
+        Map<String, Object> map = new HashMap<>();
+        HSSFWorkbook wb = null;
+        try {
+            //根据划款子任务ID查询划款信息
+            TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(subMoneyId);
+            //根据划款子任务ID查询划款明细
+            List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(subMoneyId);
+            //划款明细计算批次明细ID
+            List<Long> taskSubMoneyDetailIdList = taskSubMoneyDetailPOList.stream().map(TaskSubMoneyDetailPO::getCalculationBatchDetailId).collect(Collectors.toList());
+            //获取雇员个税信息
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new EmployeeInfoBatchPO());
+            wrapper.in("cal_batch_detail_id", taskSubMoneyDetailIdList);
+            List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchImpl.selectList(wrapper);
+            //文件名称
+            String fileName = "";
+            //00-本地,01-异地
+            if ("00".equals(taskSubMoneyPO.getAreaType())) {
+                fileName = "工资清单.xls";
+                wb = exportAboutTaxList.getTaxListReportWB(taskSubMoneyPO, taskSubMoneyDetailPOList, employeeInfoBatchPOList, fileName, "voucher");
+            } else {
+                fileName = "工资清单.xls";
+                wb = exportAboutTaxList.getTaxListReportWB(taskSubMoneyPO, taskSubMoneyDetailPOList, employeeInfoBatchPOList, fileName, "voucher");
+            }
+            map.put("fileName", fileName);
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    Map<String, String> tags = new HashMap<>(16);
+                    //日志工具类返回
+                    LogTaskFactory.getLogger().error(ee, "exportTaxList fs close error", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.OTHER, tags);
+                }
+            }
+            throw e;
+        }
+        map.put("wb", wb);
         return map;
     }
 
