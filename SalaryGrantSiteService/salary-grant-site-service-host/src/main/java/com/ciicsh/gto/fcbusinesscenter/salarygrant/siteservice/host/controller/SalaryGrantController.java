@@ -70,6 +70,9 @@ public class SalaryGrantController {
     private SalaryGrantPayrollService salaryGrantPayrollService;
 
     @Autowired
+    private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
+
+    @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
 
     /**
@@ -283,12 +286,16 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/retract", method = RequestMethod.POST)
     public Result retract(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("撤回").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("主任务单撤回").setContent(JSON.toJSONString(dto)));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setApprovedOpinion(dto.getRemark());
+            bo.setUserId(UserContext.getUserId());
+            salaryGrantWorkFlowService.doRetreatTask(bo);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("撤回异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("撤回处理失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("主任务单撤回异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("主任务单撤回失败！");
         }
     }
 
@@ -309,7 +316,7 @@ public class SalaryGrantController {
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("子任务单撤回处理失败");
+            return ResultGenerator.genServerFailResult("子任务单撤回失败！");
         }
     }
 
