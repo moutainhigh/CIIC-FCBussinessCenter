@@ -6,6 +6,7 @@ import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.EmployeeInfoBatchService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
@@ -24,6 +25,7 @@ import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyProxyDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyCompanyProxyDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyEmployeeProxyDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +64,9 @@ public class TaskSubMoneyController extends BaseController {
 
     @Autowired
     private EmployeeInfoBatchService employeeInfoBatchService;
+
+    @Autowired
+    private ExportFileService exportFileService;
 
     /**
      * 条件查询划款子任务
@@ -349,5 +354,17 @@ public class TaskSubMoneyController extends BaseController {
         JsonResult<Boolean> jr = new JsonResult<>();
         taskSubMoneyService.updateTaskSubMoneyOverdueAndFine(taskSubMoneyDTO.getId(),taskSubMoneyDTO.getOverdue(),taskSubMoneyDTO.getFine());
         return jr;
+    }
+
+    /**
+     * 根据任务ID,导出个税清单文件
+     *
+     * @param subMoneyId
+     */
+    @GetMapping(value = "/exportTaxList/{subMoneyId}")
+    public void exportTaxList(@PathVariable(value = "subMoneyId") Long subMoneyId, HttpServletResponse response) {
+        Map<String,Object> map = this.exportFileService.exportTaxList(subMoneyId);
+        //导出excel
+        exportExcel(response, (HSSFWorkbook)map.get("wb"), map.get("fileName").toString());
     }
 }
