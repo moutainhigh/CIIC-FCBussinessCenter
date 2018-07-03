@@ -53,7 +53,7 @@ public class EmployeeBankcardDTO extends PagingDTO implements Serializable {
      */
     private Integer bankcardType;
     /**
-     * 银行卡用途：1:工资卡 2:报销卡 3:工资报销卡
+     * 银行卡用途：1:工资卡 (AF - 2:报销卡 3:工资报销卡)
      */
     private Integer usage;
     /**

@@ -19,6 +19,7 @@ import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
+import com.github.pagehelper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -62,16 +63,25 @@ public class KafkaReceiver {
      */
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_TASK)
     public void salaryGrantMainTaskCreateTask(Message<ClosingMsg> message){
-        // 1、接收消息返回的计算批次号
-        String batchCode = message.getPayload().getBatchCode();
-        // 接收消息返回的批次类型
-        Integer batchType = message.getPayload().getBatchType();
-        Map batchParam = new HashMap();
-        batchParam.put("batchCode",batchCode);
-        batchParam.put("batchType",batchType);
-        // 2、根据计算批次号查询批次业务表的批次数据信息，包括计算结果数据及雇员服务协议信息。发起薪资发放任务单。
-        salaryGrantTaskProcessService.createSalaryGrantMainTask(batchParam);
-
+        ClosingMsg closingMsg = message.getPayload();
+        try{
+            if(!ObjectUtils.isEmpty(closingMsg)){
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> start").setContent(JSON.toJSONString(closingMsg)));
+                String batchCode = closingMsg.getBatchCode();
+                Integer batchType = closingMsg.getBatchType();
+                Long version = closingMsg.getVersion();
+                if(StringUtil.isEmpty(batchCode) || batchType == null || version == null){
+                    logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账").setContent("关账传入参数缺失，生成薪资发放任务单失败！"));
+                }else{
+                    salaryGrantTaskProcessService.toClosing(closingMsg);
+                }
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> end"));
+            }
+        }catch (Exception e){
+            Map map = new HashMap();
+            map.put("ClosingMsg", JSON.toJSONString(closingMsg));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> exception").setContent(e.getMessage()).setTags(map));
+        }
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_MAIN)
