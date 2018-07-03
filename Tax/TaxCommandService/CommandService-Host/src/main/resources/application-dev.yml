@@ -137,4 +137,4 @@ mongo:
   userName: ciicit
   pwd: ciicit!#%
 druid:
-    configPath: /Users/hubing/ws/program/java/GT1.FCBusinessCenter/Tax/TaxCommandService/CommandService-Host/src/main/resources/gtobusinessdb_dev.properties
+    configPath: /data/appdatas/gt1/gtobusinessdb_dev.properties
