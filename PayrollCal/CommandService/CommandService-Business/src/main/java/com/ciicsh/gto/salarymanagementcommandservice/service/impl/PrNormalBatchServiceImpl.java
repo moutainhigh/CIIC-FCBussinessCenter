@@ -114,10 +114,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     public PrNormalBatchPO getBatchByCode(String code) {
-        PrNormalBatchPO param = new PrNormalBatchPO();
-        param.setCode(code);
-        PrNormalBatchPO result = normalBatchMapper.selectOne(param);
-        return result;
+        return normalBatchMapper.getNormalBatchByCode(code);
     }
 
     @Override

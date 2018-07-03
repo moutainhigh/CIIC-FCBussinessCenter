@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,8 +96,8 @@ public class AdjustBatchController {
 
         PrNormalBatchPO batchPO = batchService.getBatchByCode(rootCode);
         if(batchPO == null){
-            adjustBatchPO.setAdjustBatchCode(batchCode);
-            PrAdjustBatchPO find = adjustBatchService.getAdjustBatchPO(adjustBatchPO);
+            //adjustBatchPO.setAdjustBatchCode(batchCode);
+            PrAdjustBatchPO find = adjustBatchService.getAdjustBatchPO(batchCode);
             rootCode = find.getRootBatchCode();
             batchPO = batchService.getBatchByCode(rootCode);
         }
@@ -199,10 +200,7 @@ public class AdjustBatchController {
 
         if(dataType == DataTypeEnum.NUM.getValue()){
             payItemVal = Double.parseDouble(payItemVal.toString());
-        }else if(dataType == DataTypeEnum.DATE.getValue()){
-            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
-            payItemVal = sdfDate.format(payItemVal);
-        }else if(dataType == DataTypeEnum.TEXT.getValue()){
+        }else if(dataType == DataTypeEnum.TEXT.getValue() || dataType == DataTypeEnum.DATE.getValue()){
             payItemVal = String.valueOf(payItemVal);
         }else {
             payItemVal = Boolean.parseBoolean(payItemVal.toString());
