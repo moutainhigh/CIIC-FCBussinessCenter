@@ -96,8 +96,8 @@ public class AdjustBatchController {
 
         PrNormalBatchPO batchPO = batchService.getBatchByCode(rootCode);
         if(batchPO == null){
-            adjustBatchPO.setAdjustBatchCode(batchCode);
-            PrAdjustBatchPO find = adjustBatchService.getAdjustBatchPO(adjustBatchPO);
+            //adjustBatchPO.setAdjustBatchCode(batchCode);
+            PrAdjustBatchPO find = adjustBatchService.getAdjustBatchPO(batchCode);
             rootCode = find.getRootBatchCode();
             batchPO = batchService.getBatchByCode(rootCode);
         }
