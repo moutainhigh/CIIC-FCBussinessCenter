@@ -14,7 +14,7 @@ import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;

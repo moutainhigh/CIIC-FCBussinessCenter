@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `prs_main_task`;
 
 CREATE TABLE `prs_main_task` (
-  `main_task_id` varchar(20) NOT NULL COMMENT '任务单编号',
+  `main_task_id` varchar(50) NOT NULL COMMENT '任务单编号',
   `title` varchar(50) DEFAULT NULL COMMENT '任务单名称',
   `management_id` varchar(15) NOT NULL COMMENT '管理方编号',
   `management_name` varchar(30) DEFAULT NULL COMMENT '管理方名称',

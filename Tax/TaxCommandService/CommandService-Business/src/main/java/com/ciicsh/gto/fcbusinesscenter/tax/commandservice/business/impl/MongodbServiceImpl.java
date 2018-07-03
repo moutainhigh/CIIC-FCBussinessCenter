@@ -9,7 +9,10 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMa
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeInfoBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeServiceBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch.*;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeServiceBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchNoStatus;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
@@ -23,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -32,7 +37,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MongodbServiceImpl extends BaseOpt implements MongodbService{
@@ -127,6 +134,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 //雇员基本信息
                 DBObject empInfo = (DBObject)item.get("emp_info");
 
+                this.setObjectFieldsEmpty(empInfoBO);
                 empInfoBO.setEmployeeNo(convert(empInfo,"雇员编号",String.class));//雇员编号
                 empInfoBO.setEmployeeName(convert(empInfo,"雇员名称",String.class));//雇员名称
                 empInfoBO.setGender(convert(empInfo,"性别",String.class));//性别
@@ -138,6 +146,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
                 //个税信息
                 DBObject taxInfo = (DBObject)empInfo.get("tax_info");
+                this.setObjectFieldsEmpty(taxInfoBO);
                 taxInfoBO.setCertType(convert(taxInfo,"reportTaxCertId",Integer.class)==null? null :convert(taxInfo,"reportTaxCertId",Integer.class).toString());//报税证件类型
                 taxInfoBO.setCertNo(convert(taxInfo,"reportTaxCertNo",String.class));//报税证件号
                 taxInfoBO.setNationality(convert(taxInfo,"reportTaxCountryId",String.class));//国籍
@@ -185,6 +194,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccount");
                 DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccount");
 
+                this.setObjectFieldsEmpty(agreementBO);
                 agreementBO.setDeclareAccount(convert(decAccount,"accountname",String.class));//申报账户
                 agreementBO.setPayAccount(convert(conAccount,"accountname",String.class));//缴纳账户
 
@@ -231,6 +241,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 //计算结果
                 List<DBObject> results = (List<DBObject>)item.get("salary_calc_result_items");
 
+                this.setObjectFieldsEmpty(calResultBO);
                 results.stream().forEach(result -> {
 
                     //薪资项(item_name,item_code,item_value,item_value_str)
@@ -270,7 +281,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             case "境内所得境外支付" : calResultBO.setDomesticIncomeOverseasPayment(convert(result,key,BigDecimal.class));break;
                             case "境外所得境内支付" : calResultBO.setOverseasIncomeDomesticPayment(convert(result,key,BigDecimal.class));break;
                             case "境外所得境外支付" : calResultBO.setOverseasIncomeOverseasPayment(convert(result,key,BigDecimal.class));break;
-                            case "其它扣除" : calResultBO.setOtherDeductions(convert(result,key,BigDecimal.class));break;
+                            case "其它扣款_报税用" : calResultBO.setOthers(convert(result,key,BigDecimal.class));break;
                             case "免税住房补贴" : calResultBO.setHousingSubsidy(convert(result,key,BigDecimal.class));break;
                             case "免税伙食补贴" : calResultBO.setMealAllowance(convert(result,key,BigDecimal.class));break;
                             case "免税洗衣费" : calResultBO.setLaundryFee(convert(result,key,BigDecimal.class));break;
@@ -320,6 +331,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setEndowmentInsurance(calResultBO.getEndowmentInsurance());//税延养老保险费
                     calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额
+                    calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getTaxDeduction()!=null){//减免税额（薪金个税,减免税额相比取小）
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==1){
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction());
@@ -327,15 +339,19 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountSalary());
                         }
                     }
-                    //其他（税前扣除项目）
-                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());
-                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
+                    //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
+                    calculationBatchDetailPO.setDeductOther(this.getValue(calResultBO.getOthers())
+                            .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
+                            .add(this.getValue(calResultBO.getDutyFreeAllowance()))
+                            .add(this.getValue(calculationBatchDetailPO.getAnnuity())));
+                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
                             .add(this.getValue(calculationBatchDetailPO.getDeductMedicalInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductDlenessInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductHouseFund()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductProperty()))
-                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff())));
+                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff()))
+                            .add(this.getValue(calculationBatchDetailPO.getDeductOther())));
                     //应纳税所得额= 收入额 - 免税所得 - 合计 - 减除费用 - 准予扣除的捐赠额
                     calculationBatchDetailPO.setIncomeForTax(this.getValue(calculationBatchDetailPO.getIncomeTotal())
                             .subtract(this.getValue(calculationBatchDetailPO.getIncomeDutyfree()))
@@ -350,9 +366,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
                     calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
                     //已扣缴税额（空）
-                    calculationBatchDetailPO.setTaxWithholdAmount(BigDecimal.ZERO);
+                    calculationBatchDetailPO.setTaxWithholdedAmount(BigDecimal.ZERO);
                     //应补退税额 = 应扣缴税额-已扣缴税额
-                    calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdAmount()));
+                    calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdedAmount()));
                     calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
                     calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
@@ -377,7 +393,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
                     calculationBatchDetailPO.setDeductTakeoff(calResultBO.getDeductTakeoff());//允许扣除的税费
                     calculationBatchDetailPO.setAnnuity(calResultBO.getAnnuity());//企业年金个人部分
-                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());//其它扣款_报税用
+                    calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
                     calculationBatchDetailPO.setHousingSubsidy(calResultBO.getHousingSubsidy());//免税住房补贴
                     calculationBatchDetailPO.setMealAllowance(calResultBO.getMealAllowance());//免税伙食补贴
                     calculationBatchDetailPO.setLaundryFee(calResultBO.getLaundryFee());//免税洗衣费
@@ -387,6 +403,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setLanguageTrainingFee(calResultBO.getLanguageTrainingFee());//免税语言培训费
                     calculationBatchDetailPO.setEducationFunds(calResultBO.getEducationFunds());//子女教育经费
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额
+                    calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getTaxDeduction()!=null){//减免税额（薪金个税,减免税额相比取小）
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==1){
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction());
@@ -394,15 +411,19 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountSalary());
                         }
                     }
-                    //其他（税前扣除项目）
-                    calculationBatchDetailPO.setDeductOther(calResultBO.getOtherDeductions());
-                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费
+                    //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
+                    calculationBatchDetailPO.setDeductOther(this.getValue(calculationBatchDetailPO.getOthers())
+                            .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
+                            .add(this.getValue(calResultBO.getDutyFreeAllowance()))
+                            .add(this.getValue(calculationBatchDetailPO.getAnnuity())));
+                    //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
                             .add(this.getValue(calculationBatchDetailPO.getDeductMedicalInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductDlenessInsurance()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductHouseFund()))
                             .add(this.getValue(calculationBatchDetailPO.getDeductProperty()))
-                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff())));
+                            .add(this.getValue(calculationBatchDetailPO.getDeductTakeoff()))
+                            .add(this.getValue(calculationBatchDetailPO.getDeductOther())));
                     //应纳税所得额= 收入额 - 免税所得 - 合计 - 减除费用 - 准予扣除的捐赠额
                     calculationBatchDetailPO.setIncomeForTax(this.getValue(calculationBatchDetailPO.getIncomeTotal())
                             .subtract(this.getValue(calculationBatchDetailPO.getIncomeDutyfree()))
@@ -418,9 +439,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
                     calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
                     //已扣缴税额（空）
-                    calculationBatchDetailPO.setTaxWithholdAmount(BigDecimal.ZERO);
+                    calculationBatchDetailPO.setTaxWithholdedAmount(BigDecimal.ZERO);
                     //应补退税额 = 应扣缴税额-已扣缴税额
-                    calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdAmount()));
+                    calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdedAmount()));
                     calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
                     calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
@@ -762,8 +783,40 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         this.calculationBatchService.updateById(p);
     }
 
-    private class handle{
+    //清空对象属性值
+    private void setObjectFieldsEmpty(Object obj) {
+        // 对obj反射
+        Class objClass = obj.getClass();
+        Method[] objmethods = objClass.getDeclaredMethods();
+        Map objMeMap = new HashMap();
+        for (int i = 0; i < objmethods.length; i++) {
+            Method method = objmethods[i];
+            objMeMap.put(method.getName(), method);
+        }
+        for (int i = 0; i < objmethods.length; i++) {
+            {
+                String methodName = objmethods[i].getName();
+                if (methodName != null && methodName.startsWith("get")) {
+                    try {
+                        Object returnObj = objmethods[i].invoke(obj,
+                                new Object[0]);
+                        Method setmethod = (Method) objMeMap.get("set"
+                                + methodName.split("get")[1]);
+                        if (returnObj != null) {
+                            returnObj = null;
+                        }
+                        setmethod.invoke(obj, returnObj);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
+        }
     }
 
 }

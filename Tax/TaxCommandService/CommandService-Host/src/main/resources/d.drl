@@ -3,25 +3,47 @@ import java.math.BigDecimal
 import java.util.ArrayList
 import java.util.List
 import java.util.stream.Stream
+import java.util.Optional
 
 declare CalculationContext
     taxAmount : BigDecimal//税金
-    incomeForTax : BigDecimal//应纳税所得额
+    incomeForTax : BigDecimal//应纳税收入
+    taxRate : BigDecimal//税率
+    quickCalDeduct : BigDecimal//速算扣除数
 end
 
-rule "test"
+rule "根据税金倒推应纳税所得额"
     when
         $context : CalculationContext()
     then
-        List<Double> dlist = new ArrayList<Double>();
-        dlist.add($context.getTaxAmount().divide(new BigDecimal(0.03),2,BigDecimal.ROUND_HALF_UP).doubleValue());
-        dlist.add($context.getTaxAmount().add(new BigDecimal(105)).divide(new BigDecimal(0.1),2,BigDecimal.ROUND_HALF_UP).doubleValue());
-        dlist.add($context.getTaxAmount().add(new BigDecimal(555)).divide(new BigDecimal(0.2),2,BigDecimal.ROUND_HALF_UP).doubleValue());
-        dlist.add($context.getTaxAmount().add(new BigDecimal(1005)).divide(new BigDecimal(0.25),2,BigDecimal.ROUND_HALF_UP).doubleValue());
-        dlist.add($context.getTaxAmount().add(new BigDecimal(2755)).divide(new BigDecimal(0.3),2,BigDecimal.ROUND_HALF_UP).doubleValue());
-        dlist.add($context.getTaxAmount().add(new BigDecimal(5505)).divide(new BigDecimal(0.35),2,BigDecimal.ROUND_HALF_UP).doubleValue());
-        dlist.add($context.getTaxAmount().add(new BigDecimal(13505)).divide(new BigDecimal(0.45),2,BigDecimal.ROUND_HALF_UP).doubleValue());
+        List<CalculationContext> dlist = new ArrayList<>();
 
-        Double minValue = dlist.stream().reduce(Double.MAX_VALUE,Double::min);
-        $context.setIncomeForTax(new BigDecimal(minValue));
+        CalculationContext cc = new CalculationContext();
+        cc.setTaxAmount($context.getTaxAmount());cc.setTaxRate(new BigDecimal("0.03"));cc.setQuickCalDeduct(new BigDecimal("0"));
+        cc.setIncomeForTax(cc.getTaxAmount().divide(cc.getTaxRate(),2, BigDecimal.ROUND_HALF_UP));dlist.add(cc);
+
+        cc = new CalculationContext();cc.setTaxAmount($context.getTaxAmount());cc.setTaxRate(new BigDecimal("0.1"));cc.setQuickCalDeduct(new BigDecimal("105"));
+        cc.setIncomeForTax(cc.getTaxAmount().add(cc.getQuickCalDeduct()).divide(cc.getTaxRate(),2, BigDecimal.ROUND_HALF_UP));dlist.add(cc);
+
+        cc = new CalculationContext();cc.setTaxAmount($context.getTaxAmount());cc.setTaxRate(new BigDecimal("0.2"));cc.setQuickCalDeduct(new BigDecimal("555"));
+        cc.setIncomeForTax(cc.getTaxAmount().add(cc.getQuickCalDeduct()).divide(cc.getTaxRate(),2, BigDecimal.ROUND_HALF_UP));dlist.add(cc);
+
+        cc = new CalculationContext();cc.setTaxAmount($context.getTaxAmount());cc.setTaxRate(new BigDecimal("0.25"));cc.setQuickCalDeduct(new BigDecimal("1005"));
+        cc.setIncomeForTax(cc.getTaxAmount().add(cc.getQuickCalDeduct()).divide(cc.getTaxRate(),2, BigDecimal.ROUND_HALF_UP));dlist.add(cc);
+
+        cc = new CalculationContext();cc.setTaxAmount($context.getTaxAmount());cc.setTaxRate(new BigDecimal("0.3"));cc.setQuickCalDeduct(new BigDecimal("2755"));
+        cc.setIncomeForTax(cc.getTaxAmount().add(cc.getQuickCalDeduct()).divide(cc.getTaxRate(),2, BigDecimal.ROUND_HALF_UP));dlist.add(cc);
+
+        cc = new CalculationContext();cc.setTaxAmount($context.getTaxAmount());cc.setTaxRate(new BigDecimal("0.35"));cc.setQuickCalDeduct(new BigDecimal("5505"));
+        cc.setIncomeForTax(cc.getTaxAmount().add(cc.getQuickCalDeduct()).divide(cc.getTaxRate(),2, BigDecimal.ROUND_HALF_UP));dlist.add(cc);
+
+        cc = new CalculationContext();cc.setTaxAmount($context.getTaxAmount());cc.setTaxRate(new BigDecimal("0.45"));cc.setQuickCalDeduct(new BigDecimal("13505"));
+        cc.setIncomeForTax(cc.getTaxAmount().add(cc.getQuickCalDeduct()).divide(cc.getTaxRate(),2, BigDecimal.ROUND_HALF_UP));dlist.add(cc);
+
+        Optional<CalculationContext> o = dlist.stream().reduce((s1, s2) -> s1.getIncomeForTax().compareTo(s2.getIncomeForTax())==-1 ? s1 : s2);
+        CalculationContext min = o.get();
+
+        $context.setIncomeForTax(min.getIncomeForTax());
+        $context.setTaxRate(min.getTaxRate());
+        $context.setQuickCalDeduct(min.getQuickCalDeduct());
 end

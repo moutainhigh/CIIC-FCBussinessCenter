@@ -36,7 +36,12 @@ public class JsonResult<T> {
 
         CONSTRAINTS_2("相关批次已取消关账，不能提交"),
 
-        CONSTRAINTS_3("当前任务相关批次数据非最新，不能提交");
+        CONSTRAINTS_3("当前任务相关批次数据非最新，不能提交"),
+
+        RECOVERY_1("雇员所在任务已经变更为取消关账状态，不能恢复"),
+
+        RECOVERY_2("雇员所在任务已经创建，不能恢复");
+
 
         private String  message;
 

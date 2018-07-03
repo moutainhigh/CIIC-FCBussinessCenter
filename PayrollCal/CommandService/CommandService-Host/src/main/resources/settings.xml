@@ -234,7 +234,7 @@ under the License.
                 <repository>
                     <id>drools-workbench</id>
                     <name>Guvnor M2 Repo</name>
-                    <url>http://172.16.100.103:8080/kie-drools-wb/maven2/</url>
+                    <url>http://172.16.100.104:8080/kie-drools-wb/maven2/</url>
                     <layout>default</layout>
                     <releases>
                         <enabled>true</enabled>

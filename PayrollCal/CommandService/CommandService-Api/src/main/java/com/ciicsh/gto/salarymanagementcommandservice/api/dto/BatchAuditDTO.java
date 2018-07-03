@@ -1,4 +1,4 @@
-package com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom;
+package com.ciicsh.gto.salarymanagementcommandservice.api.dto;
 
 /**
  * Created by bill on 18/1/19.

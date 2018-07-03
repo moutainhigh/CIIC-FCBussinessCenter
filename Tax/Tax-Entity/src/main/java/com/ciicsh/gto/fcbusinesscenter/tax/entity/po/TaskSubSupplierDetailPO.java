@@ -326,6 +326,17 @@ public class TaskSubSupplierDetailPO extends Model<TaskSubSupplierDetailPO> {
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	//其他扣除
+	private BigDecimal others;
+
+	public BigDecimal getOthers() {
+		return others;
+	}
+
+	public void setOthers(BigDecimal others) {
+		this.others = others;
+	}
+
 	public String getDomesticDays() {
 		return domesticDays;
 	}
