@@ -457,9 +457,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getAmountBonus()!=null && calResultBO.getTaxDeduction()!=null){
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==-1){
                             if(calResultBO.getAmountBonus().compareTo(calResultBO.getTaxDeduction().subtract(calResultBO.getAmountSalary()))==-1){
-                                calResultBO.setTaxDeduction(calResultBO.getAmountBonus());
+                                calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountBonus());
                             }else{
-                                calResultBO.setTaxDeduction(calResultBO.getTaxDeduction().subtract(calResultBO.getAmountSalary()));
+                                calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction().subtract(calResultBO.getAmountSalary()));
                             }
                         }
                     }
