@@ -13,30 +13,44 @@ public class SalaryGrantBizConsts {
     public static final Integer GRANT_MODE_LOCAL = 1;
     /** 发放方式:2-中智代发（委托机构）*/
     public static final Integer GRANT_MODE_SUPPLIER = 2;
-    /** 发放方式:3-中智代发（客户账户）*/
-    public static final Integer GRANT_MODE_INDEPENDENCE = 3;
-    /** 发放方式:4-客户自行*/
-    public static final Integer GRANT_MODE_CUSTOMER = 4;
+    /** 发放方式:3-客户自行*/
+    public static final Integer GRANT_MODE_CUSTOMER = 3;
+    /** 发放方式:4-中智代发（客户账户）*/
+    public static final Integer GRANT_MODE_INDEPENDENCE = 4;
+    /** 发放方式名称:1-中智上海账户*/
+    public static final String GRANT_ACCOUNT_NAME_LOCAL = "中智上海账户";
+    /** 发放方式名称:2-中智代发（委托机构）*/
+    public static final String GRANT_ACCOUNT_NAME_SUPPLIER = "中智代发（委托机构）";
+    /** 发放方式名称:3-客户自行*/
+    public static final String GRANT_ACCOUNT_NAME_CUSTOMER = "客户自行";
+    /** 发放方式名称:4-中智代发（客户账户）*/
+    public static final String GRANT_ACCOUNT_NAME_INDEPENDENCE = "中智代发（客户账户）";
     /** 规则类型:0-固定金额*/
     public static final Integer SALARY_GRANT_RULE_TYPE_AMOUNT = 0;
     /** 规则类型:1-固定比例*/
     public static final Integer SALARY_GRANT_RULE_TYPE_RATIO = 1;
     /** 币种：CNY-人民币*/
     public static final String CURRENCY_CNY = "CNY";
+    /** 币种：USD-美元*/
+    public static final String CURRENCY_USD = "USD";
+    /** 币种：EUR-欧元*/
+    public static final String CURRENCY_EUR = "EUR";
     /** 汇率计算方式：0 - 固定*/
-    public static final Integer EXCHANGE_CALC_MODE_FIX = 0;
+    public static final Integer EXCHANGE_CALC_MODE_FIXED_RATE = 0;
     /** 汇率计算方式：1 - 实时*/
-    public static final Integer EXCHANGE_CALC_MODE_REAL_TIME = 1;
+    public static final Integer EXCHANGE_CALC_MODE_CURRENT_EXCHANGE_RATE = 1;
+    /** 汇率计算方式：2 - 记账*/
+    public static final Integer EXCHANGE_CALC_MODE_RECORDING_RATE = 2;
     /** 任务单类型:0 - 主表*/
     public static final Integer SALARY_GRANT_TASK_TYPE_MAIN_TASK = 0;
     /** 任务单类型:1-中智上海账户*/
     public static final Integer SALARY_GRANT_TASK_TYPE_LOCAL = 1;
     /** 任务单类型:2-中智代发（委托机构）*/
     public static final Integer SALARY_GRANT_TASK_TYPE_SUPPLIER = 2;
-    /** 任务单类型:3-中智代发（客户账户）*/
-    public static final Integer SALARY_GRANT_TASK_TYPE_INDEPENDENCE = 3;
-    /** 任务单类型:4-客户自行*/
-    public static final Integer SALARY_GRANT_TASK_TYPE_CUSTOMER = 4;
+    /** 任务单类型:3-客户自行*/
+    public static final Integer SALARY_GRANT_TASK_TYPE_CUSTOMER = 3;
+    /** 任务单类型:4-中智代发（客户账户）*/
+    public static final Integer SALARY_GRANT_TASK_TYPE_INDEPENDENCE = 4;
     /** 雇员变更类型:1 - 国籍*/
     public static final String EMPLOYEE_ALTER_TYPE_COUNTRY = "country";
     /** 雇员变更类型:2 - 发放方式*/
@@ -91,10 +105,18 @@ public class SalaryGrantBizConsts {
     public static final String CONTRACT_FIRST_PARTY_STM_3 = "3";
     /** 拆分条件:发放账户*/
     public static final String SPLIT_CONDITION = "grantAccountCode";
-    /** 上海本地发放任务单编号前缀标识：人民币发放-LTB*/
-    public static final String GRANT_MODE_LOCAL_LTB = "LTB";
-    /** 上海本地发放任务单编号前缀标识：外币发放-LTW*/
-    public static final String GRANT_MODE_LOCAL_LTW = "LTW";
+    /** 薪资发放主任务单编号前缀标识：SGT*/
+    public static final String SALARY_GRANT_MAIN_TASK_ENTITY_PREFIX = "SGT";
+    /** 薪资发放子任务单编号前缀标识：LTB - 中智上海发放（人民币）*/
+    public static final String SALARY_GRANT_SUB_TASK_LOCAL_RMB_ENTITY_PREFIX = "LTB";
+    /** 薪资发放子任务单编号前缀标识：LTW - 中智上海发放（外币）*/
+    public static final String SALARY_GRANT_SUB_TASK_LOCAL_FOREIGN_CURRENCY_ENTITY_PREFIX = "LTW";
+    /** 薪资发放子任务单编号前缀标识：STA - 中智代发（委托机构）*/
+    public static final String SALARY_GRANT_SUB_TASK_NONLOCAL_ENTITY_PREFIX = "STA";
+    /** 薪资发放子任务单编号前缀标识：LCT - 客户自行发放*/
+    public static final String SALARY_GRANT_SUB_TASK_CUSTOMER_ENTITY_PREFIX = "LCT";
+    /** 薪资发放子任务单编号前缀标识：LAT - 中智代发（客户账户）*/
+    public static final String SALARY_GRANT_SUB_TASK_INDEPENDENCE_ENTITY_PREFIX = "LAT";
 
     /** 任务单状态：0-草稿*/
     public static final String TASK_STATUS_DRAFT = "0";
@@ -106,7 +128,7 @@ public class SalaryGrantBizConsts {
     public static final String TASK_STATUS_REFUSE = "3";
     /** 任务单状态：4-失效*/
     public static final String TASK_STATUS_CANCEL= "4";
-    /** 任务单状态：5-待支付*/
+    /** 任务单状态：5-待生成*/
     public static final String TASK_STATUS_WAIT = "5";
     /** 任务单状态：6-未支付*/
     public static final String TASK_STATUS_UNPAID = "6";
