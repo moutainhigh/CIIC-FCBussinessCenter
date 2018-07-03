@@ -118,8 +118,7 @@ public class BatchProviderController implements BatchProxy {
             batchDTO.setHasMoney(normalBatchPO.getHasMoney());
             batchDTO.setHasAdvance(normalBatchPO.getHasAdvance());
             batchDTO.setStatus(normalBatchPO.getStatus());
-            batchDTO.setActualPeriod(normalBatchPO.getPeriod());
-
+            batchDTO.setActualPeriod(normalBatchPO.getActualPeriod());
 
         } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
 
