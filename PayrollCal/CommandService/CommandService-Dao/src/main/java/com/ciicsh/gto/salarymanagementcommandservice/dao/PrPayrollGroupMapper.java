@@ -63,4 +63,12 @@ public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
      * @return
      */
     Integer selectCountGroupByNameAndManagement(@Param("name") String name, @Param("managementId") String managementId);
+
+    /**
+     * 编辑时校验同一管理方下是否有重名薪资组
+     * @param name 目标薪资组名称
+     * @param managementId 管理方ID
+     * @return 目标薪资组同名列表
+     */
+    List<PrPayrollGroupPO> queryGroupListByNameAndManagementId(@Param("name") String name, @Param("managementId") String managementId);
 }
