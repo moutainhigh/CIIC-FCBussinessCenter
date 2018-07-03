@@ -5,9 +5,9 @@ import java.util.Map;
 
 public interface DroolsService {
 
-    //根据税金倒推应纳税所得额
-    Object preTaxRevenue(BigDecimal tax);
+    //根据税金倒推应纳税所得额、税金、速算扣除数
+    Map<String,BigDecimal> preTaxRevenue(BigDecimal tax);
 
     //计算收入额
-    BigDecimal incomeTotal(Map<String,BigDecimal> item);
+    Map<String,BigDecimal> incomeTotal(Map<String,BigDecimal> item);
 }

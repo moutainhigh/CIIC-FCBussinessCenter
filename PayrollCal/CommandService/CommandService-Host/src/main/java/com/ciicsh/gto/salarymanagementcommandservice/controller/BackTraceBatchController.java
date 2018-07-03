@@ -85,8 +85,7 @@ public class BackTraceBatchController {
 
         PrNormalBatchPO batchPO = batchService.getBatchByCode(rootCode);
         if(batchPO == null){
-            backTrackingBatchPO.setBackTrackingBatchCode(batchCode);
-            PrBackTrackingBatchPO find = backTrackingBatchService.getPrBackTrackingBatchPO(backTrackingBatchPO);
+            PrBackTrackingBatchPO find = backTrackingBatchService.getPrBackTrackingBatchPO(batchCode);
             rootCode = find.getRootBatchCode();
             batchPO = batchService.getBatchByCode(rootCode);
         }

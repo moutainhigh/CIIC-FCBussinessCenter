@@ -129,6 +129,7 @@
 			pr_payroll_group
 		WHERE
 			is_active = 1
+		AND approval_status = 2
 		<if test="name != null and name != ''">
 			AND group_name LIKE concat(#{name},'%')
 		</if>

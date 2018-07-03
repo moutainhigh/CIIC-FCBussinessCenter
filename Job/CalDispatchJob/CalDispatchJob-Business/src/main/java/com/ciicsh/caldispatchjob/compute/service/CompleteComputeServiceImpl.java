@@ -141,7 +141,11 @@ public class CompleteComputeServiceImpl {
                         int precision = pItem.get("cal_precision") == null ? 2 : (int) pItem.get("cal_precision");
                         Object itemVal =  pItem.get("item_value");
                         if (dataType == DataTypeEnum.NUM.getValue()) {
-                            tranItem.put("item_value_str", BizArith.roundStr(itemVal, precision));
+                            try {
+                                tranItem.put("item_value_str", BizArith.roundStr(itemVal, precision));
+                            }catch (Exception e){
+                                logger.info(e.getMessage());
+                            }
                         }
                         tranItem.put("item_name",pItem.get("item_name"));
                         tranItem.put("item_value",pItem.get("item_value"));

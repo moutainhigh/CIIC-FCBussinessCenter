@@ -37,4 +37,6 @@ public interface PrAdjustBatchMapper extends BaseMapper<PrAdjustBatchPO> {
 
     int checkAdjustBatch(@Param("originBatchCode") String originBatchCode);
 
+    PrAdjustBatchPO getAdjustBatchPO(@Param("code") String batchCode);
+
 }

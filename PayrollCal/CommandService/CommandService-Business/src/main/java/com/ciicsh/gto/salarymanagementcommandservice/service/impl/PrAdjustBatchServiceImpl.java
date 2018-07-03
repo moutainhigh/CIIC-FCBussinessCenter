@@ -88,16 +88,10 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
         return rowAffected;
     }
 
-    @Override
-    public PrAdjustBatchPO getAdjustBatchPO(PrAdjustBatchPO adjustBatchPO) {
-        return adjustBatchMapper.selectOne(adjustBatchPO);
-    }
 
     @Override
     public PrAdjustBatchPO getAdjustBatchPO(String batchCode) {
-        PrAdjustBatchPO adjustBatchPO = new PrAdjustBatchPO();
-        adjustBatchPO.setAdjustBatchCode(batchCode);
-        return adjustBatchMapper.selectOne(adjustBatchPO);
+        return adjustBatchMapper.getAdjustBatchPO(batchCode);
     }
 
     @Override
