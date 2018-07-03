@@ -117,6 +117,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         condition.setBatchCode(batchCode);
         condition.setGrantType(batchType);
         condition.setTaskType(SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK);
+        condition.setActive(true);
         salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(condition);
         if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO)){
             if (Long.valueOf(version).compareTo(salaryGrantMainTaskPO.getBatchVersion()) > 0){
@@ -136,6 +137,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         condition.setBatchCode((String)batchParam.get("batchCode"));
         condition.setGrantType((Integer)batchParam.get("batchType"));
         condition.setTaskType(SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK);
+        condition.setActive(true);
         salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(condition);
         if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO)){
             // 任务单主表已存在，当其他模块对批次数据要求重算，需要对任务单进行退回至草稿状态，对已存在的任务单需要根据最新批次信息进行修改。
@@ -565,6 +567,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
                       雇员的银行卡信息、雇员服务协议、服务周期规则、薪资发放规则、汇率表
                     */
                         salaryGrantEmployeePO.setGrantStatus(SalaryGrantBizConsts.GRANT_STATUS_NORMAL);
+                        salaryGrantEmployeePO.setActive(true);
                         salaryGrantEmployeePO.setCreatedBy("system");
                         salaryGrantEmployeePO.setCreatedTime(new Date());
                         salaryGrantEmployeePOSplitList = this.toDealSingleEmployeeInfo(salaryGrantEmployeePO, employeeServiceAgreementDTO);
@@ -1098,13 +1101,23 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
     @Override
     public SalaryGrantMainTaskPO getSalaryGrantMainTaskPO(SalaryGrantMainTaskPO queryCondition){
-        SalaryGrantMainTaskPO salaryGrantMainTaskPO = salaryGrantMainTaskMapper.selectOne(queryCondition);
+        SalaryGrantMainTaskPO salaryGrantMainTaskPO = null;
+        try{
+            salaryGrantMainTaskPO = salaryGrantMainTaskMapper.selectOne(queryCondition);
+        }catch (Exception e){
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询任务单主表信息失败！").setContent(e.getMessage()));
+        }
         return salaryGrantMainTaskPO;
     }
 
     @Override
     public SalaryGrantSubTaskPO getSalaryGrantSubTaskPO(SalaryGrantSubTaskPO queryCondition){
-        SalaryGrantSubTaskPO salaryGrantSubTaskPO = salaryGrantSubTaskMapper.selectOne(queryCondition);
+        SalaryGrantSubTaskPO salaryGrantSubTaskPO = null;
+        try{
+            salaryGrantSubTaskPO = salaryGrantSubTaskMapper.selectOne(queryCondition);
+        } catch(Exception e){
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询任务单子表信息失败！").setContent(e.getMessage()));
+        }
         return salaryGrantSubTaskPO;
     }
 

@@ -1,11 +1,13 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
@@ -17,12 +19,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +45,8 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
     SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
     @Autowired
     SalaryGrantEmployeeService salaryGrantEmployeeService;
+    @Autowired
+    private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
     /*
     * 分两级拆分：
@@ -56,7 +58,7 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
     @Override
     public Boolean toSubmitMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO){
         SalaryGrantSubTaskPO salaryGrantSubTaskPO = this.getCommonInfoFromMainTask(salaryGrantMainTaskPO);
-        Map paraMap = new HashMap(2);
+        Map paraMap = new HashMap(4);
 
         paraMap.put("salaryGrantMainTaskCode", salaryGrantMainTaskPO.getSalaryGrantMainTaskCode());
         // 是否拆分，通过标志开关进行走不同分支。
@@ -65,7 +67,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         paraMap.put("splitCondition", SalaryGrantBizConsts.SPLIT_CONDITION);
         // 发放方式 3-客户自行
         paraMap.put("grantMode", SalaryGrantBizConsts.GRANT_MODE_CUSTOMER);
-        //  todo 发放方式是客户自行时，发放账户为空，在拆分子任务单时需要特殊处理这个字段。
         this.toDealWithSubTask(paraMap, salaryGrantSubTaskPO);
 
         // 发放方式 4-中智代发（客户账户）
@@ -88,16 +89,15 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         paraMap.put("isSplit", true);
         // 拆分条件
         paraMap.put("splitCondition", SalaryGrantBizConsts.SPLIT_CONDITION);
-        // 发放方式 2-中智代发（委托机构）
-        paraMap.put("grantMode", SalaryGrantBizConsts.GRANT_MODE_SUPPLIER);
-        this.toDealWithSubTask(paraMap, salaryGrantSubTaskPO);
-
         // 发放方式 1-中智上海账户
         paraMap.put("grantMode", SalaryGrantBizConsts.GRANT_MODE_LOCAL);
         // 是否有外币发放
         paraMap.put("isIncludeForeignCurrency", salaryGrantMainTaskPO.getIncludeForeignCurrency());
         this.toDealWithSubTask(paraMap, salaryGrantSubTaskPO);
 
+        // 发放方式 2-中智代发（委托机构）
+        paraMap.put("grantMode", SalaryGrantBizConsts.GRANT_MODE_SUPPLIER);
+        this.toDealWithSubTask(paraMap, salaryGrantSubTaskPO);
         return true;
     }
 
@@ -117,11 +117,15 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         salaryGrantSubTaskPO.setGrantDate(salaryGrantMainTaskPO.getGrantDate());
         salaryGrantSubTaskPO.setGrantTime(salaryGrantMainTaskPO.getGrantTime());
         salaryGrantSubTaskPO.setGrantType(salaryGrantMainTaskPO.getGrantType());
-        //salaryGrantSubTaskPO.setAdversion(salaryGrantMainTaskPO.getAdversion());
-        //salaryGrantSubTaskPO.setAdversionType(salaryGrantMainTaskPO.getAdversionType());
+        salaryGrantSubTaskPO.setAdversion(salaryGrantMainTaskPO.getAdversion());
+        salaryGrantSubTaskPO.setAdversionType(salaryGrantMainTaskPO.getAdversionType());
         salaryGrantSubTaskPO.setAdvance(salaryGrantMainTaskPO.getAdvance());
         salaryGrantSubTaskPO.setAdvanceType(salaryGrantMainTaskPO.getAdvanceType());
+        salaryGrantSubTaskPO.setProcess(false);
         salaryGrantSubTaskPO.setBalanceGrant(salaryGrantMainTaskPO.getBalanceGrant());
+        salaryGrantSubTaskPO.setActive(true);
+        salaryGrantSubTaskPO.setCreatedBy("system");
+        salaryGrantSubTaskPO.setCreatedTime(new Date());
         return salaryGrantSubTaskPO;
     }
 
@@ -131,12 +135,31 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      * @return
      */
     private void toDealWithSubTask(Map paraMap, SalaryGrantSubTaskPO salaryGrantSubTaskPO){
-        List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList = this.listSalaryGrantEmployeeBOForSubTask(paraMap);
-        Map subTaskForCustomerMap = this.getGatherInfoForSubTask(salaryGrantSubTaskPO, salaryGrantEmployeeBOList, paraMap);
-        Map<String,SalaryGrantSubTaskPO> splitSubTaskMap = (HashMap)subTaskForCustomerMap.get("splitSubTaskMap");
-        Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap = (HashMap)subTaskForCustomerMap.get("batchUpdateMap");
-        Map<String, List<SalaryGrantEmployeeBO>> batchUpdateLastMap = this.toCreateSubTask(paraMap, splitSubTaskMap, batchUpdateMap);
-        this.toBatchUpdateSalaryGrantEmployee(batchUpdateLastMap);
+        if(!isExistSubTask(paraMap, salaryGrantSubTaskPO)){
+            List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList = this.listSalaryGrantEmployeeBOForSubTask(paraMap);
+            if(salaryGrantEmployeeBOList != null && salaryGrantEmployeeBOList.size() > 0){
+                Map subTaskForCustomerMap = this.getGatherInfoForSubTask(salaryGrantSubTaskPO, salaryGrantEmployeeBOList, paraMap);
+                Map<String,SalaryGrantSubTaskPO> splitSubTaskMap = (HashMap)subTaskForCustomerMap.get("splitSubTaskMap");
+                Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap = (HashMap)subTaskForCustomerMap.get("batchUpdateMap");
+                this.toCreateSubTask(paraMap, splitSubTaskMap, batchUpdateMap);
+            }
+        }
+    }
+
+    /**
+     * 查询任务主表对应的发放类型任务子表是否已创建，如已存在子表信息避免重复创建。
+     * @param salaryGrantSubTaskPO
+     * @param paraMap
+     * @return Boolean
+     */
+    private Boolean isExistSubTask(Map paraMap, SalaryGrantSubTaskPO salaryGrantSubTaskPO){
+        EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
+        subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and grant_type = {1} and grant_mode = {2} and is_active = 1", salaryGrantSubTaskPO.getSalaryGrantMainTaskCode(), salaryGrantSubTaskPO.getGrantType(), paraMap.get("grantMode"));
+        List<SalaryGrantSubTaskPO> existSubTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
+        if(existSubTaskPOList != null && existSubTaskPOList.size() > 0){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -148,6 +171,7 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         SalaryGrantEmployeeBO conditions = new SalaryGrantEmployeeBO();
         conditions.setSalaryGrantMainTaskCode((String)paraMap.get("salaryGrantMainTaskCode"));
         conditions.setGrantMode((Integer)paraMap.get("grantMode"));
+        conditions.setActive(true);
         List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList = salaryGrantEmployeeMapper.selectEmpInfoByGrantMode(conditions);
         return salaryGrantEmployeeBOList;
     }
@@ -185,7 +209,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         }else{
             // 预留未来需求变更
         }
-
         return returnMap;
     }
 
@@ -195,14 +218,15 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      * @param paraMap
      * @param splitSubTaskMap
      * @param batchUpdateMap
-     * @return Map<String,String[]>
+     * @return
      */
-    private Map<String, List<SalaryGrantEmployeeBO>> toCreateSubTask(Map paraMap, Map<String,SalaryGrantSubTaskPO> splitSubTaskMap, Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap){
+    private void toCreateSubTask(Map paraMap, Map<String,SalaryGrantSubTaskPO> splitSubTaskMap, Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap){
         // 遍历splitSubTaskMap，调用公共API方法生成entity_id。建立子表信息包括：任务单编号entity_id -> salaryGrantSubTaskCode、状态taskStatus、任务单类型taskType
         List<SalaryGrantSubTaskPO> salaryGrantSubTaskPOList = new ArrayList<>();
         Map<String, List<SalaryGrantEmployeeBO>> batchUpdateLastMap = new HashMap<>();
         // 发放方式
         Integer grantMode = (Integer)paraMap.get("grantMode");
+        String salaryGrantMainTaskCode = (String)paraMap.get("salaryGrantMainTaskCode");
         // 生成薪资发放任务单子表的entity_id
         Map entityParam = new HashMap(2);
         splitSubTaskMap.forEach((grantAccountCode,salaryGrantSubTaskPO) -> {
@@ -228,33 +252,33 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
                 idCode = SalaryGrantBizConsts.SALARY_GRANT_SUB_TASK_CUSTOMER_ENTITY_PREFIX;
                 salaryGrantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_CONFIRM);
             }
-            entityParam.put("idCode",SalaryGrantBizConsts.SALARY_GRANT_MAIN_TASK_ENTITY_PREFIX);
+            entityParam.put("idCode",idCode);
             String entityId = commonService.getEntityIdForSalaryGrantTask(entityParam);
             if(!StringUtils.isEmpty(entityId)){
                 salaryGrantSubTaskPO.setSalaryGrantSubTaskCode(entityId);
             }else{
-                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，计算批次号为："+salaryGrantSubTaskPO.getBatchCode()).setContent("调用公共服务生成entity_id失败！"));
+                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，计算批次号为：" + salaryGrantSubTaskPO.getBatchCode()).setContent("调用公共服务生成entity_id失败！"));
             }
             salaryGrantSubTaskPOList.add(salaryGrantSubTaskPO);
-            // 遍历batchUpdateMap，把新建的SubTask的任务单编号，回填至对应的薪资发放雇员信息中。
-            batchUpdateMap.forEach((account, salaryGrantEmployeeBOList) -> {
-                if(account.equals(grantAccountCode)){
-                    batchUpdateLastMap.put(entityId, salaryGrantEmployeeBOList);
-                    batchUpdateMap.remove(account);
-                }
-            });
+            // 把新建的SubTask的任务单编号，回填至batchUpdateMap对应的薪资发放雇员信息中。
+            batchUpdateLastMap.put(entityId, batchUpdateMap.get(grantAccountCode));
         });
         // 调用薪资发放任务子表mapper的批量插入语句
-        salaryGrantSubTaskWorkFlowService.insertBatch(salaryGrantSubTaskPOList);
-        return batchUpdateLastMap;
+        Boolean isCreated = salaryGrantSubTaskWorkFlowService.insertBatch(salaryGrantSubTaskPOList);
+        if(isCreated){
+            this.toBatchUpdateSalaryGrantEmployee(batchUpdateLastMap, salaryGrantMainTaskCode);
+        }else{
+            logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，任务单主表编号为：" + salaryGrantMainTaskCode).setContent("新增薪资发放任务单子表信息失败！"));
+        }
     }
 
     /**
      * 回填薪资发放雇员信息表中的子表编号，批量修改。
      * @param batchUpdateMap
+     * @param salaryGrantMainTaskCode
      * @return
      */
-    private void toBatchUpdateSalaryGrantEmployee(Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap){
+    private void toBatchUpdateSalaryGrantEmployee(Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap, String salaryGrantMainTaskCode){
         batchUpdateMap.forEach((salaryGrantSubTaskCode,salaryGrantEmployeeBOList)-> {
             List<SalaryGrantEmployeePO> updateList = new ArrayList();
             salaryGrantEmployeeBOList.forEach(SalaryGrantEmployeeBO -> {
@@ -264,8 +288,10 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
                 updateList.add(salaryGrantEmployeePO);
             });
             // 调用薪资发放雇员信息表的批量修改方法
-            salaryGrantEmployeeService.updateAllColumnBatchById(updateList);
-            //batchInsert(Arrays.stream(employeeIdArray).collect(Collectors.toList()), salaryGrantSubTaskCode);
+            Boolean isModified = salaryGrantEmployeeService.updateBatchById(updateList);
+            if(!isModified){
+                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，任务单主表编号为：" + salaryGrantMainTaskCode).setContent("修改雇员信息的薪资发放任务单子表编号失败！"));
+            }
         }) ;
     }
 
@@ -352,22 +378,20 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
                 BigDecimal totalMoney = accountList.stream().map(SalaryGrantEmployeeBO::getPaymentAmountForRMB).reduce(BigDecimal.ZERO, BigDecimal::add);
                 salaryGrantSubTaskPOTemp.setPaymentTotalSum(totalMoney);
                 // 对相同发放账户的雇员信息遍历list，对相同employeeid进行去重，统计总人数
-                Long totalCount = accountList.stream().map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count();
-                salaryGrantSubTaskPOTemp.setTotalPersonCount(Integer.valueOf(totalCount.toString()));
+                Long totalCount = accountList.stream().map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count() ;
+                salaryGrantSubTaskPOTemp.setTotalPersonCount(ObjectUtils.isEmpty(totalCount) ? 0 : Integer.valueOf(totalCount.toString()));
                 // 针对发放账户统计中、外方人数，根据country_code
                 Long chineseCount = accountList.stream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
                         .map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count();
-                salaryGrantSubTaskPOTemp.setChineseCount(Integer.valueOf(chineseCount.toString()));
+                salaryGrantSubTaskPOTemp.setChineseCount(ObjectUtils.isEmpty(chineseCount) ? 0 : Integer.valueOf(chineseCount.toString()));
                 Long foreignerCount = accountList.stream().filter(SalaryGrantEmployeeBO -> !SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
                         .map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count();
-                salaryGrantSubTaskPOTemp.setChineseCount(Integer.valueOf(foreignerCount.toString()));
+                salaryGrantSubTaskPOTemp.setForeignerCount(ObjectUtils.isEmpty(foreignerCount) ? 0 : Integer.valueOf(foreignerCount.toString()));
                 Long remarkCount = accountList.stream().filter(SalaryGrantEmployeeBO -> !"".equals(SalaryGrantEmployeeBO.getRemark()) && SalaryGrantEmployeeBO.getRemark() != null).map(SalaryGrantEmployeeBO::getEmployeeId).count();
                 if(remarkCount > 0L){
                     salaryGrantSubTaskPOTemp.setRemark(SalaryGrantBizConsts.TASK_REMARK);
                 }
                 splitSubTaskMap.put(account, salaryGrantSubTaskPOTemp);
-                // todo 待后期测试，看是否可以把list对象中的employeeId去重返回employeeId属性数组
-                //String[] employeeIdArray = accountList.stream().map(SalaryGrantEmployeeBO::getEmployeeId).distinct().toArray(String[]::new);
                 batchUpdateMap.put(account,accountList);
             } catch (CloneNotSupportedException e) {
                 logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("克隆任务单子表异常 --> exception").setContent(e.getMessage()));
