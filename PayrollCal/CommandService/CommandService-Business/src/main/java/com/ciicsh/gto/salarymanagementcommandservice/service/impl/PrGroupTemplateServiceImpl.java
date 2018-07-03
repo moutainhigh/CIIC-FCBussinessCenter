@@ -174,7 +174,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         boolean result;
         if (paramItem.getApprovalStatus() == 2) {
             // 获取该薪资组模板中的薪资项数据
-            List<PrPayrollItemPO> items = prItemService.getListByGroupTemplateCode(paramItem.getGroupTemplateCode());
+            List<PrPayrollItemPO> items = prItemService.getListByGroupTemplateCode(paramItem.getGroupTemplateCode(), true);
             String itemsJsonStr = JSON.toJSONString(items);
             // 获取更新前的薪资组模板数据
             PrPayrollGroupTemplatePO prGroupTemplate = this.getItemByCode(paramItem.getGroupTemplateCode());

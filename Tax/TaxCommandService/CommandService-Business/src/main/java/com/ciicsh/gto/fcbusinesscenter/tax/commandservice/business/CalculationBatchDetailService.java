@@ -43,4 +43,11 @@ public interface CalculationBatchDetailService {
      * @param ids
      */
     void batchPostponeCalBatchDetail(String[] ids);
+
+    /**
+     * 判断所选详情是否有取消关账状态的数据是否已经创建任务
+     * @param ids
+     * @return
+     */
+    int checkTaskByDetailIds(String[] ids);
 }
