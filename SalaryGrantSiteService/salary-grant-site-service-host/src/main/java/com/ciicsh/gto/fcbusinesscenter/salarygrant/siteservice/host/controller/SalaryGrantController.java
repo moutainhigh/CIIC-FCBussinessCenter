@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Pagination;
@@ -26,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -426,10 +428,15 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/adjustSgInfo", method = RequestMethod.POST)
-    public Result adjustSgInfo(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result<List<SalaryGrantEmployeeDTO>> adjustSgInfo(@RequestBody EmployeeHandleDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息").setContent(JSON.toJSONString(dto)));
         try {
-            return ResultGenerator.genSuccessResult();
+            List<SalaryGrantEmployeeDTO> dtoList =new ArrayList<>();
+            SalaryGrantEmployeePO employeePO = salaryGrantEmployeeQueryService.selectById(dto.getSalaryGrantEmployeeId());
+            if (!ObjectUtils.isEmpty(employeePO) && !StringUtils.isEmpty(employeePO.getAdjustCompareInfo())) {
+                dtoList = JSONObject.parseArray(employeePO.getAdjustCompareInfo(), SalaryGrantEmployeeDTO.class);
+            }
+            return ResultGenerator.genSuccessResult(dtoList);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("查询雇员薪资调整信息失败！");

@@ -104,6 +104,14 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else if (SalaryGrantBizConsts.TASK_CANCEL.equals(bo.getTaskStatusEn())) {
             paging = this.queryTaskForInvalidPage(paging, bo);
         }
+        if (!ObjectUtils.isEmpty(paging.getRecords())) {
+            paging.getRecords().parallelStream().forEach(x -> {
+                if (StringUtils.isNotBlank(x.getGrantDate())) {
+                    String date = x.getGrantDate();
+                    x.setGrantDate(date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8));
+                }
+            });
+        }
         return paging;
     }
 
@@ -123,6 +131,10 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             bo = salaryGrantMainTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
         } else {
             bo = salaryGrantSubTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        }
+        if (!ObjectUtils.isEmpty(bo) && StringUtils.isNotBlank(bo.getGrantDate())) {
+            String date = bo.getGrantDate();
+            bo.setGrantDate(date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8));
         }
         return bo;
     }
