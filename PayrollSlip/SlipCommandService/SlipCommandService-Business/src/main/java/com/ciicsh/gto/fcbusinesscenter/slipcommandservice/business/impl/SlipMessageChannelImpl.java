@@ -16,6 +16,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -181,6 +182,12 @@ public class SlipMessageChannelImpl {
         task.put("hasPaper", hasPaper);
         task.put("publishState", publishState);
         task.put("uploadState", uploadState);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MONTH, 1);
+        task.put("publishDate", cal.getTime());
+        task.put("uploadDate", cal.getTime());
 
         prsMainTaskMapper.insert(task);
 
