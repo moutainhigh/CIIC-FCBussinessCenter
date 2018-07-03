@@ -109,4 +109,20 @@ public class JsonParseConsts {
     /** 雇员变更日志:变更操作*/
     public static final String EMLOYEE_CHANGE_LOG_FIELD19 = "operation";
 
+    public static final String EMPLOYEE_CODE_CN = "雇员编号";
+
+    public static final String EMPLOYEE_NAME_CN = "雇员名称";
+
+    public static final String EMPLOYEE_COUNTRY_CODE_CN = "国家代码";
+
+    public static final String EMPLOYEE_SERVICE_AGREE = "雇员服务协议";
+
+    public static final String ACTUAL_PAY = "应发工资";
+
+    public static final String EMPLOYEE_NET_PAY = "实发工资";
+
+    public static final String TAX_TOTAL = "个税合计";
+
+
+
 }

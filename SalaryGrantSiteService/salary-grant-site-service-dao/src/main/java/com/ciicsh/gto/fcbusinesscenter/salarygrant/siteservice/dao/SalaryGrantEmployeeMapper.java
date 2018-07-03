@@ -65,4 +65,12 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      * @return
      */
     SalaryGrantFinanceBO selectFinanceData(@Param("taskCode") String taskCode);
+
+    /**
+     * 查询主表的雇员信息
+     * 根据主表任务单编号及发放方式查询
+     * @param salaryGrantEmployeeBO
+     * @return List<SalaryGrantEmployeeBO>
+     */
+    List<SalaryGrantEmployeeBO> selectEmpInfoByGrantMode(SalaryGrantEmployeeBO salaryGrantEmployeeBO);
 }

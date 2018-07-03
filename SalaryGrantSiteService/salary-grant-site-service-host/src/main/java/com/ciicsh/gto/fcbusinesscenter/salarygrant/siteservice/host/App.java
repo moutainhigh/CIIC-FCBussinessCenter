@@ -28,7 +28,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.ciicsh.gto.settlementcenter.payment.cmdapi",
         "com.ciicsh.gto.billcenter.fcmodule.api",
         "com.ciicsh.gto.afsystemmanagecenter.apiservice.api",
-        "com.ciicsh.gto.companycenter.webcommandservice.api"
+        "com.ciicsh.gto.companycenter.webcommandservice.api",
+        "com.ciicsh.gto.settlementcenter.gathering.queryapi",
+        "com.ciicsh.gt1.exchangerate"
 })
 @SpringBootApplication(scanBasePackages = {
         "com.ciicsh.gt1",

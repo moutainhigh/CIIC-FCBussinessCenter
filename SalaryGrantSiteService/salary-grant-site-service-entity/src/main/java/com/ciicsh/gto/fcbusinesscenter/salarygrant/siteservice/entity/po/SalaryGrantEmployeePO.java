@@ -109,7 +109,7 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 	@TableField("payment_account_bank_name")
 	private String paymentAccountBankName;
     /**
-     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
+     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-客户自行、4-中智代发（客户账户）
      */
 	@TableField("grant_mode")
 	private Integer grantMode;
