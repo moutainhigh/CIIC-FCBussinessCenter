@@ -22,17 +22,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration addInterceptor = registry.addInterceptor(getAuthenticateInterceptor());
+        registry.addInterceptor(getAuthenticateInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/api/prBatch/**","/api/prAccountSet/**");
 
-        // 拦截配置
-        addInterceptor.addPathPatterns("/**");
-
-        // 排除配置
-//        addInterceptor.excludePathPatterns("/error");
-          addInterceptor.excludePathPatterns("/api/prBatch/**");
-          addInterceptor.excludePathPatterns("/api/prAccountSet/**");
-
-
+         super.addInterceptors(registry);
 
     }
 }

@@ -179,6 +179,7 @@ public class CommonServiceImpl {
             setPayItemValue(dataType,item.getDefaultValue(),dbObject);
             dbObject.put("item_condition",item.getItemCondition());
             dbObject.put("formula_content",item.getFormulaContent());
+            dbObject.put("canLock",item.getCanLock());
             //dbObject.put("origin_formula",item.getOriginFormula());
             dbObject.put("cal_precision",item.getCalPrecision());
             dbObject.put("cal_priority",item.getCalPriority());
@@ -284,6 +285,9 @@ public class CommonServiceImpl {
                 simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
                 simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
                 simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
+                simplePayItemDTO.setCanLock(dbItem.get("canLock") == null ? false : true);
+                simplePayItemDTO.setLocked(dbItem.get("isLocked") == null ? false : true);
+
                 if(dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)){ //雇员姓名
                     itemPO.setEmpName(String.valueOf(dbItem.get("item_value")));
                 }

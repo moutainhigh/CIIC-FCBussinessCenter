@@ -6,26 +6,31 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantWorkFlowEnums;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskPaymentBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
+import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
+import com.ciicsh.gto.sheetservice.api.dto.Result;
+import com.ciicsh.gto.sheetservice.api.dto.ResultCode;
+import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
+import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
+import com.ciicsh.gto.sheetservice.api.dto.response.StartProcessResponseDTO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +43,7 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +59,10 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Autowired
     LogClientService logClientService;
     @Autowired
+    private BatchProxy batchProxy;
+    @Autowired
+    private SheetServiceProxy sheetServiceProxy;
+    @Autowired
     private CommonService commonService;
     @Autowired
     private SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
@@ -67,11 +75,9 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Autowired
     private WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
     @Autowired
-    private BatchProxy batchProxy;
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
     @Autowired
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
-    @Autowired
-    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
     @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
 
@@ -237,47 +243,162 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     }
 
     /**
+     * 抢占资源锁
+     * @author chenpb
+     * @since 2018-06-22
+     * @param bo
+     * @return
+     */
+    @Override
+    public Integer lockMainTask(SalaryGrantTaskBO bo) {
+        return salaryGrantMainTaskMapper.lockTask(bo);
+    }
+
+    /**
+     * 抢占资源锁
+     * @author chenpb
+     * @since 2018-06-22
+     * @param bo
+     * @return
+     */
+    @Override
+    public Integer lockSubTask(SalaryGrantTaskBO bo) {
+        return salaryGrantSubTaskMapper.lockTask(bo);
+    }
+
+    /**
+     * 提交
+     * @author chenpb
+     * @since 2018-06-08
+     * @param flag
+     * @param bo
+     * @throws Exception
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public WorkFlowResultBO submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
+        workFlowResultBO.setTaskCode(bo.getTaskCode());
+        workFlowResultBO.setTaskType(bo.getTaskType());
+        workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult());
+        if (flag) {
+            Integer result =  salaryGrantWorkFlowService.doSubmitTask(bo);
+            workFlowResultBO.setResult(result);
+        } else {
+            salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
+        }
+        if (SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult().equals(workFlowResultBO.getResult())) {
+            List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
+            if (list.isEmpty()) {
+                MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
+                Result<StartProcessResponseDTO> dto =  sheetServiceProxy.startProcess(missionRequestDTO);
+                if (ResultCode.SUCCESS.equals(dto.getCode())) {
+                    WorkFlowTaskInfoPO po = createTaskInfo(bo);
+                    po.setWorkFlowProcessId(dto.getObject().getProcessId());
+                    workFlowTaskInfoMapper.insert(po);
+                } else {
+                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.ACTIVITY_ERROR.getResult());
+                    workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.ACTIVITY_ERROR.getExtension());
+                }
+            } else {
+                sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo, list.get(0)));
+            }
+        }
+        return workFlowResultBO;
+    }
+
+    /**
      * 审批通过
      * @author chenpb
      * @since 2018-06-08
+     * @param flag
      * @param bo
+     * @throws Exception
      */
     @Override
-    public void approvalPass(SalaryGrantTaskBO bo) {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
-
+    @Transactional(rollbackFor = Exception.class)
+    public void approvalPass(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        if (flag) {
+            salaryGrantWorkFlowService.doApproveTask(bo);
         } else {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
         }
+        List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
+        sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_APPROVAL.getAction(), bo, list.get(0)));
     }
 
     /**
      * 审批退回
      * @author chenpb
      * @since 2018-06-08
+     * @param flag
      * @param bo
+     * @throws Exception
      */
     @Override
-    public void approvalReject(SalaryGrantTaskBO bo) {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
-
+    @Transactional(rollbackFor = Exception.class)
+    public void approvalReject(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        if (flag) {
+            salaryGrantWorkFlowService.doReturnTask(bo);
         } else {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
         }
+        List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
+        sheetServiceProxy.completeTask( createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_REJECT.getAction(), bo, list.get(0)));
     }
 
-    /**
-     * 详情提交
-     * @author chenpb
-     * @since 2018-06-08
-     * @param bo
-     */
-    @Override
-    public void submit(SalaryGrantTaskBO bo) {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
+    private MissionRequestDTO createMissionDto(String action, SalaryGrantTaskBO bo) {
+        MissionRequestDTO missionRequestDTO = BeanUtils.instantiate(MissionRequestDTO.class);
+        Map variables = new HashMap<>();
+        variables.put("action", action);
+        variables.put("taskDealOperation", action);
+        variables.put("taskDealUserId", bo.getUserId());
+        variables.put("taskDealUserName", bo.getUserName());
+        missionRequestDTO.setVariables(variables);
+        missionRequestDTO.setMissionId(bo.getTaskCode());
+        missionRequestDTO.setProcessDefinitionKey(getDefinitionKey(bo.getTaskCode().substring(0, 2)));
+        return missionRequestDTO;
+    }
 
-        } else {
-            salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
+    private TaskRequestDTO createTaskRequestDTO(String action, SalaryGrantTaskBO task, WorkFlowTaskInfoBO bo) {
+        TaskRequestDTO taskRequestDTO = BeanUtils.instantiate(TaskRequestDTO.class);
+        Map variables = new HashMap<>();
+        variables.put("action", action);
+        variables.put("taskDealTime", new Date());
+        variables.put("taskDealUserId", task.getUserId());
+        variables.put("taskDealUserName", task.getUserName());
+        variables.put("approvedOpinion", task.getApprovedOpinion());
+        taskRequestDTO.setVariables(variables);
+        taskRequestDTO.setAssignee(task.getUserId());
+        taskRequestDTO.setTaskId(bo.getWorkFlowTaskId());
+        return taskRequestDTO;
+    }
+
+    private WorkFlowTaskInfoPO createTaskInfo(SalaryGrantTaskBO bo) {
+        WorkFlowTaskInfoPO workFlowTaskInfoPO = BeanUtils.instantiate(WorkFlowTaskInfoPO.class);
+        workFlowTaskInfoPO.setTaskCode(bo.getTaskCode());
+        workFlowTaskInfoPO.setWorkFlowTaskType(SalaryGrantWorkFlowEnums.Role.OPERATOR.getName());
+        workFlowTaskInfoPO.setTaskDealUserId(bo.getUserId());
+        workFlowTaskInfoPO.setTaskDealUserName(bo.getUserName());
+        workFlowTaskInfoPO.setTaskDealTime(new Date());
+        workFlowTaskInfoPO.setTaskDealOperation(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction());
+        workFlowTaskInfoPO.setCreatedBy(bo.getUserId());
+        workFlowTaskInfoPO.setCreatedTime(new Date());
+        return workFlowTaskInfoPO;
+    }
+
+    private String getDefinitionKey(String type) {
+        switch (type) {
+            case "LTB":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTB.getKey();
+            case "LTW":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTW.getKey();
+            case "STA":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.STA.getKey();
+            case "SPT":
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SPT.getKey();
+            default:
+                return SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getKey();
         }
     }
 
@@ -290,35 +411,53 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void syncPayStatus(List<PayapplySalaryDTO> list) {
-        String subTaskStr = getSubTaskCodes(list);
-        List<SalaryGrantSubTaskPO> pos = salaryGrantSubTaskMapper.selectListByTaskCodes(subTaskStr);
-        if (!pos.isEmpty()) {
+        if (!list.isEmpty()) {
             List<BatchAuditDTO> auditList = new ArrayList<>();
-            getSyncParams(pos, auditList);
+            String subTaskStr = getSubTaskCodes(list);
             salaryGrantSubTaskMapper.syncTaskInfo(subTaskStr, SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-            salaryGrantMainTaskMapper.syncTaskInfo(getMainTaskCodes(pos), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
-            batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+            List<String> batchCodes = getBatchCodes(list);
+            batchCodes.forEach(x-> {
+                SalaryGrantTaskBO bo = BeanUtils.instantiate(SalaryGrantTaskBO.class);
+                bo.setBatchCode(x);
+                List<SalaryGrantSubTaskPO> subTasks = salaryGrantSubTaskMapper.getSubListByBatchCode(bo);
+                List<SalaryGrantSubTaskPO> payLists = subTasks.parallelStream().filter(y -> SalaryGrantBizConsts.TASK_STATUS_PAYMENT.equals(y.getTaskStatus())).collect(Collectors.toList());
+                if (payLists.size() == subTasks.size()) {
+                    salaryGrantMainTaskMapper.syncTaskInfo(payLists.get(0).getSalaryGrantMainTaskCode(), SalaryGrantBizConsts.TASK_STATUS_PAYMENT);
+                    getUpdateMongoParams(payLists.get(0), auditList);
+                }
+            });
+            if (!auditList.isEmpty()) {
+                batchProxy.updateBatchListStatus(auditList.parallelStream().distinct().collect(Collectors.toList()));
+            }
         }
     }
 
     /**
      * 同步参数
      * @author chenpb
-     * @since 2018-06-06
-     * @param poList
+     * @since 2018-06-28
+     * @param po
      * @param auditList
      */
-    private static void getSyncParams(List<SalaryGrantSubTaskPO> poList, List<BatchAuditDTO> auditList) {
-        if (!poList.isEmpty()) {
-            poList.parallelStream().forEach(y -> {
-                BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
-                dto.setBatchCode(y.getBatchCode());
-                dto.setBatchType(y.getGrantType());
-                dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
-                dto.setStatus(8);
-                auditList.add(dto);
-            });
-        }
+    private static void getUpdateMongoParams(SalaryGrantSubTaskPO po, List<BatchAuditDTO> auditList) {
+        BatchAuditDTO dto = BeanUtils.instantiate(BatchAuditDTO.class);
+        dto.setBatchCode(po.getBatchCode());
+        dto.setBatchType(po.getGrantType());
+        dto.setModifyBy(SalaryGrantBizConsts.SYSTEM_EN);
+        dto.setStatus(8);
+        auditList.add(dto);
+    }
+
+    /**
+     * 获取BatchCode列表
+     * @author chenpb
+     * @since 2018-06-28
+     * @param list
+     * @return
+     */
+    private static List<String> getBatchCodes(List<PayapplySalaryDTO> list) {
+        List<String> batchCodes = list.parallelStream().map(x -> x.getBatchCode()).distinct().collect(Collectors.toList());
+        return batchCodes;
     }
 
     /**
@@ -332,7 +471,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         if (list.isEmpty()) {
             return "";
         }
-        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").collect(Collectors.toList());
+        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSequenceNo() + "'").distinct().collect(Collectors.toList());
         return String.join(",", taskCodes);
     }
 
@@ -343,12 +482,9 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      * @param list
      * @return
      */
-    private static String getMainTaskCodes(List<SalaryGrantSubTaskPO> list) {
-        if (list.isEmpty()) {
-            return "";
-        }
-        List<String> taskCodes = list.parallelStream().map(x -> "'" + x.getSalaryGrantMainTaskCode() + "'").collect(Collectors.toList());
-        return String.join(",", taskCodes);
+    private static List<String> getMainTaskCodes(List<SalaryGrantSubTaskPO> list) {
+        List<String> taskCodes = list.parallelStream().map(x -> x.getSalaryGrantMainTaskCode()).distinct().collect(Collectors.toList());
+        return taskCodes;
     }
 
     /**

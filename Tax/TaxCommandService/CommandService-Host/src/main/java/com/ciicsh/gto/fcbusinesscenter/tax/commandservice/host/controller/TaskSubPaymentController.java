@@ -40,7 +40,7 @@ public class TaskSubPaymentController extends BaseController {
         BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
             //设置request请求管理方名称数组
-            requestForSubPayment.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            requestForSubPayment.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForSubPayment responseForSubPayment = taskSubPaymentService.querySubPayment(requestForSubPayment);
         jr.fill(responseForSubPayment);
@@ -105,6 +105,19 @@ public class TaskSubPaymentController extends BaseController {
         taskSubPaymentDTO.setPeriod(taskSubPaymentPO.getPeriod().format(formatter));
         jr.fill(taskSubPaymentDTO);
 
+        return jr;
+    }
+
+    /**
+     * 更新滞纳金、罚金
+     *
+     * @param taskSubPaymentDTO
+     * @return
+     */
+    @PostMapping(value = "/updateTaskSubPay")
+    public JsonResult<Boolean> updateTaskSubPay(@RequestBody TaskSubPaymentDTO taskSubPaymentDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        taskSubPaymentService.updateTaskSubPayOverdueAndFine(taskSubPaymentDTO.getId(),taskSubPaymentDTO.getOverdue(),taskSubPaymentDTO.getFine());
         return jr;
     }
 }

@@ -142,11 +142,11 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
     /**
      * 税率
      */
-	private String taxRate;
+	private BigDecimal taxRate;
     /**
      * 速算扣除数
      */
-	private Integer quickCalDeduct;
+	private BigDecimal quickCalDeduct;
     /**
      * 应纳税额
      */
@@ -315,6 +315,17 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
 	 */
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
+
+	//其他扣除
+	private BigDecimal others;
+
+	public BigDecimal getOthers() {
+		return others;
+	}
+
+	public void setOthers(BigDecimal others) {
+		this.others = others;
+	}
 
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
@@ -782,19 +793,19 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
 		this.incomeForTax = incomeForTax;
 	}
 
-	public String getTaxRate() {
+	public BigDecimal getTaxRate() {
 		return taxRate;
 	}
 
-	public void setTaxRate(String taxRate) {
+	public void setTaxRate(BigDecimal taxRate) {
 		this.taxRate = taxRate;
 	}
 
-	public Integer getQuickCalDeduct() {
+	public BigDecimal getQuickCalDeduct() {
 		return quickCalDeduct;
 	}
 
-	public void setQuickCalDeduct(Integer quickCalDeduct) {
+	public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
 		this.quickCalDeduct = quickCalDeduct;
 	}
 

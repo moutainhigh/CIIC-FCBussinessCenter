@@ -159,12 +159,12 @@ public class TaskSubMoneyDetailPO{
      * 税率
      */
 	@TableField("tax_rate")
-	private String taxRate;
+	private BigDecimal taxRate;
     /**
      * 速算扣除数
      */
 	@TableField("quick_cal_deduct")
-	private Integer quickCalDeduct;
+	private BigDecimal quickCalDeduct;
     /**
      * 个税总金额
      */
@@ -334,6 +334,17 @@ public class TaskSubMoneyDetailPO{
 	 */
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
+
+	//其他扣除
+	private BigDecimal others;
+
+	public BigDecimal getOthers() {
+		return others;
+	}
+
+	public void setOthers(BigDecimal others) {
+		this.others = others;
+	}
 
 	public String getDomesticDays() {
 		return domesticDays;
@@ -588,19 +599,19 @@ public class TaskSubMoneyDetailPO{
 		this.incomeForTax = incomeForTax;
 	}
 
-	public String getTaxRate() {
+	public BigDecimal getTaxRate() {
 		return taxRate;
 	}
 
-	public void setTaxRate(String taxRate) {
+	public void setTaxRate(BigDecimal taxRate) {
 		this.taxRate = taxRate;
 	}
 
-	public Integer getQuickCalDeduct() {
+	public BigDecimal getQuickCalDeduct() {
 		return quickCalDeduct;
 	}
 
-	public void setQuickCalDeduct(Integer quickCalDeduct) {
+	public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
 		this.quickCalDeduct = quickCalDeduct;
 	}
 

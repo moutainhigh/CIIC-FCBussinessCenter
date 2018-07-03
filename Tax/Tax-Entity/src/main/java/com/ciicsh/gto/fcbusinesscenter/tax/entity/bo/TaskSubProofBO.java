@@ -113,9 +113,18 @@ public class TaskSubProofBO {
     private Boolean isCombined;
 
     /**
-     * 管理方名称(管理方切换)
+     * 管理方编号(管理方切换)
      */
-    private String[] managerNames;
+    private String[] managerNos;
+    /**
+     * 创建人displayname
+     */
+    private String createdByDisplayName;
+
+    /**
+     * 修改人displayname
+     */
+    private String modifiedByDisplayName;
 
     public Long getId() {
         return id;
@@ -285,12 +294,28 @@ public class TaskSubProofBO {
         this.taxOrganization = taxOrganization;
     }
 
-    public String[] getManagerNames() {
-        return managerNames;
+    public String[] getManagerNos() {
+        return managerNos;
     }
 
-    public void setManagerNames(String[] managerNames) {
-        this.managerNames = managerNames;
+    public void setManagerNos(String[] managerNos) {
+        this.managerNos = managerNos;
+    }
+
+    public String getCreatedByDisplayName() {
+        return createdByDisplayName;
+    }
+
+    public void setCreatedByDisplayName(String createdByDisplayName) {
+        this.createdByDisplayName = createdByDisplayName;
+    }
+
+    public String getModifiedByDisplayName() {
+        return modifiedByDisplayName;
+    }
+
+    public void setModifiedByDisplayName(String modifiedByDisplayName) {
+        this.modifiedByDisplayName = modifiedByDisplayName;
     }
 
     @Override
@@ -317,7 +342,9 @@ public class TaskSubProofBO {
                 ", period=" + period +
                 ", taskType='" + taskType + '\'' +
                 ", isCombined=" + isCombined +
-                ", managerNames=" + Arrays.toString(managerNames) +
+                ", managerNames=" + Arrays.toString(managerNos) +
+                ", createdByDisplayName='" + createdByDisplayName + '\'' +
+                ", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
                 '}';
     }
 }

@@ -314,6 +314,17 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             coll.updateMany(filter, update);
         }
 
+        if (params.containsKey("multiUpdEmps")) {
+            for (Map<String, Object> updEmp : (ArrayList<Map<String, Object>>)params.remove("multiUpdEmps")) {
+                BasicDBObject filter = new BasicDBObject((Map)updEmp.get("updConds"));
+                BasicDBObject fields = new BasicDBObject((Map)updEmp.get("updFields"));
+                BasicDBObject update = new BasicDBObject("$set", fields);
+                coll.updateOne(filter, update);
+            }
+        }
+
+
+
         prsMainTaskMapper.update(params);
 
         return true;

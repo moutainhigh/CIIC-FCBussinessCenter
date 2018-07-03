@@ -102,11 +102,11 @@ public class CalculationBatchDetailBO {
     /**
      * 税率
      */
-    private String taxRate;
+    private BigDecimal taxRate;
     /**
      * 速算扣除数
      */
-    private Integer quickCalDeduct;
+    private BigDecimal quickCalDeduct;
     /**
      * 应纳税额
      */
@@ -220,9 +220,9 @@ public class CalculationBatchDetailBO {
     private Boolean isProofed;
 
     /**
-     * 管理方名称(管理方切换)
+     * 管理方编号(管理方切换)
      */
-    private String[] managerNames;
+    private String[] managerNos;
 
     /**
      * 税金
@@ -799,19 +799,19 @@ public class CalculationBatchDetailBO {
         this.incomeForTax = incomeForTax;
     }
 
-    public String getTaxRate() {
+    public BigDecimal getTaxRate() {
         return taxRate;
     }
 
-    public void setTaxRate(String taxRate) {
+    public void setTaxRate(BigDecimal taxRate) {
         this.taxRate = taxRate;
     }
 
-    public Integer getQuickCalDeduct() {
+    public BigDecimal getQuickCalDeduct() {
         return quickCalDeduct;
     }
 
-    public void setQuickCalDeduct(Integer quickCalDeduct) {
+    public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
         this.quickCalDeduct = quickCalDeduct;
     }
 
@@ -919,12 +919,12 @@ public class CalculationBatchDetailBO {
         this.batchNo = batchNo;
     }
 
-    public String[] getManagerNames() {
-        return managerNames;
+    public String[] getManagerNos() {
+        return managerNos;
     }
 
-    public void setManagerNames(String[] managerNames) {
-        this.managerNames = managerNames;
+    public void setManagerNos(String[] managerNos) {
+        this.managerNos = managerNos;
     }
 
     @Override
@@ -981,7 +981,7 @@ public class CalculationBatchDetailBO {
                 ", isPaySupported=" + isPaySupported +
                 ", isProof=" + isProof +
                 ", isProofed=" + isProofed +
-                ", managerNames=" + Arrays.toString(managerNames) +
+                ", managerNos=" + Arrays.toString(managerNos) +
                 '}';
     }
 }

@@ -14,7 +14,7 @@ import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
@@ -295,6 +295,8 @@ public class NormalBatchController {
                 include(PayItemName.EMPLOYEE_CODE_CN).
                 include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
                 include("catalog.pay_items.data_type").
+                include("catalog.pay_items.canLock").
+                include("catalog.pay_items.isLocked").
                 include("catalog.pay_items.item_type").
                 include("catalog.pay_items.item_name").
                 include("catalog.pay_items.item_value").

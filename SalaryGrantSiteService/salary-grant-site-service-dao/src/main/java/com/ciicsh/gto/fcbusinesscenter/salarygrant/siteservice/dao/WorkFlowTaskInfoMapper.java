@@ -28,4 +28,22 @@ public interface WorkFlowTaskInfoMapper extends BaseMapper<WorkFlowTaskInfoPO> {
      * @return
      */
     List<WorkFlowTaskInfoBO> operation(Pagination page, SalaryGrantTaskBO bo);
+
+    /**
+     * 操作日志
+     * @author chenpb
+     * @since 2018-06-26
+     * @param bo
+     * @return
+     */
+    List<WorkFlowTaskInfoBO> operation(SalaryGrantTaskBO bo);
+
+    /**
+     * 更新日志
+     * @author chenpb
+     * @since 2018-06-27
+     * @param po
+     * @return
+     */
+    Integer updateByTaskId(WorkFlowTaskInfoPO po);
 }

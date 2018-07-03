@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.DroolsService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
@@ -58,6 +59,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
     @Autowired
     public TaskNoService taskNoService;
 
+    @Autowired
+    private DroolsService droolsService;
+
     @Override
     public ResponseForTaskSubDeclare queryTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
         ResponseForTaskSubDeclare responseForTaskSubDeclare = new ResponseForTaskSubDeclare();
@@ -68,8 +72,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             wrapper.andNew().like("declare_account", requestForTaskSubDeclare.getDeclareAccount());
         }
         //管理方名称
-        Optional.ofNullable(requestForTaskSubDeclare.getManagerNames()).ifPresent(managerNames -> {
-            wrapper.andNew().in("manager_name",managerNames).or("is_combined",true);
+        Optional.ofNullable(requestForTaskSubDeclare.getManagerNos()).ifPresent(managerNos -> {
+            wrapper.andNew().in("manager_no",managerNos).or("is_combined",true);
         });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubDeclare.getPeriod())) {
@@ -285,18 +289,31 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 taskSubDeclareDetailPO.setPayAccount(entry.getValue().get(0).getPayAccount());//缴纳账号
                 taskSubDeclareDetailPO.setPeriod(entry.getValue().get(0).getPeriod());//个税期间
                 taskSubDeclareDetailPO.setIncomeSubject(entry.getValue().get(0).getIncomeSubject());//所得项目
+                taskSubDeclareDetailPO.setDeduction(entry.getValue().get(0).getDeduction());//免税额
                 //新建合并后的明细
                 this.taskSubDeclareDetailService.insert(taskSubDeclareDetailPO);
 
                 List<Long> taskSubDeclareDetailIds = new ArrayList<>();
 
-                BigDecimal incomeTotal = new BigDecimal(0);//收入额
-                BigDecimal deductRetirementInsurance = new BigDecimal(0);//基本养老保险费（税前扣除项目）
-                BigDecimal deductMedicalInsurance = new BigDecimal(0);//基本医疗保险费（税前扣除项目）
-                BigDecimal deductDlenessInsurance = new BigDecimal(0);//失业保险费（税前扣除项目）
-                BigDecimal deductHouseFund = new BigDecimal(0);//住房公积金（税前扣除项目）
-//                BigDecimal deduction = new BigDecimal(0);//减除费用(3500;4800)
-                BigDecimal taxAmount = new BigDecimal(0);//应纳税额
+                BigDecimal donation = new BigDecimal(0);//准予扣除的捐赠额
+                BigDecimal deductTakeoff = new BigDecimal(0);//允许扣除的税费
+                BigDecimal otherDeductions = new BigDecimal(0);//其它（税前扣除项目）
+                BigDecimal businessHealthInsurance = new BigDecimal(0);//商业保险
+                BigDecimal deductRetirementInsurance=new BigDecimal(0);//基本养老保险费（税前扣除项目）
+                BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
+                BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
+                BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
+                BigDecimal dutyFreeAllowance = new BigDecimal(0);//免税津贴
+                BigDecimal annuity = new BigDecimal(0);//企业年金个人部分
+                BigDecimal incomeDutyfree = new BigDecimal(0);//免税所得
+                BigDecimal taxReal=new BigDecimal(0);//税金
+                BigDecimal incomeTotal=new BigDecimal(0);//收入额
+                BigDecimal preTaxAggregate=new BigDecimal(0);//税前合计
+                BigDecimal taxDeduction=new BigDecimal(0);//减免税额
+                BigDecimal taxRate=null;//税率
+                BigDecimal quickCalDeduct=null;//速算扣除数
+                BigDecimal others = new BigDecimal(0);//其它扣除
+                BigDecimal incomeForTax = null;//应纳税所得额
 
                 List<TaskSubDeclareDetailPO> tps = entry.getValue();
                 //计算合并后的各项值
@@ -304,22 +321,89 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
                     taskSubDeclareDetailIds.add(tp.getId());
 
-                    incomeTotal = incomeTotal.add(tp.getIncomeTotal());
-                    deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance());
-                    deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance());
-                    deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance());
-                    deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund());
-//                    deduction = deduction.add(tp.getDeduction());
-                    taxAmount = taxAmount.add(tp.getTaxAmount());
+                    //参与倒推计算的各项合计
+                    donation = donation.add(tp.getDonation()==null?BigDecimal.ZERO:tp.getDonation());//准予扣除的捐赠额合计
+                    deductTakeoff = deductTakeoff.add(tp.getDeductTakeoff()==null?BigDecimal.ZERO:tp.getDeductTakeoff());//允许扣除的税费合计
+                    businessHealthInsurance = businessHealthInsurance.add(tp.getBusinessHealthInsurance()==null?BigDecimal.ZERO:tp.getBusinessHealthInsurance());//商业保险合计
+                    deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance()==null?BigDecimal.ZERO:tp.getDeductRetirementInsurance());//基本养老保险费（税前扣除项目）合计
+                    deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance()==null?BigDecimal.ZERO:tp.getDeductMedicalInsurance());//基本医疗保险费（税前扣除项目）合计
+                    deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance()==null?BigDecimal.ZERO:tp.getDeductDlenessInsurance());//失业保险费（税前扣除项目）合计
+                    deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund()==null?BigDecimal.ZERO:tp.getDeductHouseFund());//住房公积金（税前扣除项目）合计
+                    dutyFreeAllowance = dutyFreeAllowance.add(tp.getDutyFreeAllowance()==null?BigDecimal.ZERO:tp.getDutyFreeAllowance());//免税津贴合计
+                    annuity = annuity.add(tp.getAnnuity()==null?BigDecimal.ZERO:tp.getAnnuity());//企业年金个人部分合计
+                    incomeDutyfree = incomeDutyfree.add(tp.getIncomeDutyfree()==null?BigDecimal.ZERO:tp.getIncomeDutyfree());//免税所得合计
+                    taxReal = taxReal.add(tp.getTaxReal()==null?BigDecimal.ZERO:tp.getTaxReal());//税金合计
+                    incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());//收入额合计
+                    preTaxAggregate = preTaxAggregate.add(tp.getPreTaxAggregate()==null?BigDecimal.ZERO:tp.getPreTaxAggregate());//税前合计
+                    taxDeduction = taxDeduction.add(tp.getTaxDeduction()==null?BigDecimal.ZERO:tp.getTaxDeduction());//减免税额合计
+                    others = others.add(tp.getOthers()==null?BigDecimal.ZERO:tp.getOthers());//其他扣除合计
                 }
 
+                //计算收入额
+                HashMap<String,BigDecimal> m = new HashMap<>();
+                m.put("taxReal",taxReal);//税金
+                m.put("preTaxAggregate",preTaxAggregate);//税前合计
+                m.put("deduction",taskSubDeclareDetailPO.getDeduction());//免抵税额
+                m.put("donation",donation);//准予扣除的捐赠额
+                m.put("deductTakeoff",deductTakeoff);//允许扣除的税费
+                m.put("others",others);//其它扣除
+                m.put("businessHealthInsurance",businessHealthInsurance);//商业保险
+                m.put("deductHouseFund",deductHouseFund);//住房公积金
+                m.put("deductDlenessInsurance",deductDlenessInsurance);//失业保险费
+                m.put("deductMedicalInsurance",deductMedicalInsurance);//基本医疗保险费
+                m.put("deductRetirementInsurance",deductRetirementInsurance);//基本养老保险费
+                m.put("dutyFreeAllowance",dutyFreeAllowance);//免税津贴
+                m.put("annuity",annuity);//企业年金个人部分
+                m.put("incomeDutyfree",incomeDutyfree);//免税所得
+
+                Map<String,BigDecimal> tm = droolsService.incomeTotal(m);//收入额
+                incomeTotal = tm.get("incomeTotal");//收入额
+                taxRate = tm.get("taxRate");//税率
+                quickCalDeduct = tm.get("quickCalDeduct");//速算扣除数
+                incomeForTax = tm.get("incomeForTax");//应纳税所得额
+
                 taskSubDeclareDetailPO.setIncomeTotal(incomeTotal);
+                taskSubDeclareDetailPO.setDonation(donation);
+                taskSubDeclareDetailPO.setDeductTakeoff(deductTakeoff);
+                taskSubDeclareDetailPO.setOthers(others);
+                taskSubDeclareDetailPO.setBusinessHealthInsurance(businessHealthInsurance);
                 taskSubDeclareDetailPO.setDeductRetirementInsurance(deductRetirementInsurance);
                 taskSubDeclareDetailPO.setDeductMedicalInsurance(deductMedicalInsurance);
                 taskSubDeclareDetailPO.setDeductDlenessInsurance(deductDlenessInsurance);
                 taskSubDeclareDetailPO.setDeductHouseFund(deductHouseFund);
-                taskSubDeclareDetailPO.setDeduction(new BigDecimal(3500));
-                taskSubDeclareDetailPO.setTaxAmount(taxAmount);
+                taskSubDeclareDetailPO.setDutyFreeAllowance(dutyFreeAllowance);
+                taskSubDeclareDetailPO.setAnnuity(annuity);
+                taskSubDeclareDetailPO.setIncomeDutyfree(incomeDutyfree);
+                taskSubDeclareDetailPO.setTaxReal(taxReal);
+                taskSubDeclareDetailPO.setPreTaxAggregate(preTaxAggregate);
+                taskSubDeclareDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
+                taskSubDeclareDetailPO.setTaxDeduction(taxDeduction);
+                taskSubDeclareDetailPO.setTaxRate(taxRate);
+                taskSubDeclareDetailPO.setQuickCalDeduct(quickCalDeduct);
+
+                //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
+                taskSubDeclareDetailPO.setDeductOther(taskSubDeclareDetailPO.getOthers()
+                        .add(taskSubDeclareDetailPO.getBusinessHealthInsurance())
+                        .add(taskSubDeclareDetailPO.getDutyFreeAllowance())
+                        .add(taskSubDeclareDetailPO.getAnnuity()));
+                //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
+                taskSubDeclareDetailPO.setDeductTotal(taskSubDeclareDetailPO.getDeductRetirementInsurance()
+                        .add(taskSubDeclareDetailPO.getDeductMedicalInsurance())
+                        .add(taskSubDeclareDetailPO.getDeductDlenessInsurance())
+                        .add(taskSubDeclareDetailPO.getDeductHouseFund())
+                        .add(taskSubDeclareDetailPO.getDeductProperty())
+                        .add(taskSubDeclareDetailPO.getDeductTakeoff())
+                        .add(taskSubDeclareDetailPO.getDeductOther()));
+                //应纳税所得额
+                taskSubDeclareDetailPO.setIncomeForTax(incomeForTax);
+                //应纳税额 = 税金
+                taskSubDeclareDetailPO.setTaxAmount(taskSubDeclareDetailPO.getTaxReal());
+                //应扣缴税额 = 应纳税额 - 减免税额
+                taskSubDeclareDetailPO.setTaxWithholdAmount(taskSubDeclareDetailPO.getTaxAmount().subtract(taskSubDeclareDetailPO.getTaxDeduction()));
+                //已扣缴税额（空）
+                taskSubDeclareDetailPO.setTaxWithholdedAmount(BigDecimal.ZERO);
+                //应补退税额 = 应扣缴税额-已扣缴税额
+                taskSubDeclareDetailPO.setTaxRemedyOrReturn(taskSubDeclareDetailPO.getTaxWithholdAmount().subtract(taskSubDeclareDetailPO.getTaxWithholdedAmount()));
                 //更新合并后数据值
                 this.taskSubDeclareDetailService.updateById(taskSubDeclareDetailPO);
 

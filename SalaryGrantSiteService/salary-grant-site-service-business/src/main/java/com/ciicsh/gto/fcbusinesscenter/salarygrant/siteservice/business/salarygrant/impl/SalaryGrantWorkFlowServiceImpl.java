@@ -378,12 +378,12 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO) {
+    public int doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO) {
         //1、根据taskCode、taskType，如果taskType=0 则查询任务单主表信息SalaryGrantMainTaskPO，
         //   查询条件：salary_grant_main_task_code = SalaryGrantTaskBO.taskCode and is_active=1；
         //   如果taskType!=0，直接返回结果false,不执行下面处理逻辑。
         if (0 != salaryGrantTaskBO.getTaskType()) {
-            return false;
+            return 0; //0-子表任务，不进行处理
         }
 
         EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
@@ -404,18 +404,18 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     //   根据PrBatchDTO. hasMoney和PrBatchDTO. hasAdvance进行条件分支判断：
                     PrBatchDTO prBatchDTO = commonService.getBatchInfo(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
                     //4、（1）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance=0 直接返回结果false,不执行下面处理逻辑。
-                    if (false == prBatchDTO.isHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
-                        return false;
+                    if (false == prBatchDTO.getHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
+                        return 1; //1-未来款，无垫付流程
                     }
 
                     //4、（2）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance in (1,2,3,4)，调用接口内部方法 isOverdue(SalaryGrantTaskBO salaryGrantTaskBO)，
                     //     如果isOverdue方法返回true，直接返回结果false,不执行下面处理逻辑；
                     //     如果isOverdue方法返回false，修改SalaryGrantMainTaskPO. balanceGrant=1。
-                    if (false == prBatchDTO.isHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
+                    if (false == prBatchDTO.getHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
                         Boolean isOverdueResult = isOverdue(salaryGrantTaskBO);
 
                         if (true == isOverdueResult) {
-                            return false;
+                            return 2; //2-未来款，已逾期
                         } else {
                             SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                             grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
@@ -425,7 +425,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     }
 
                     //4、（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
-                    if (true == prBatchDTO.isHasMoney()) {
+                    if (true == prBatchDTO.getHasMoney()) {
                         //（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
                         SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                         grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
@@ -447,8 +447,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
             }
         }
 
-        //10、返回结果true
-        return true;
+        return 3; //3-已来款或已垫付
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -871,4 +870,5 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         //（10）返回结果true
         return true;
     }
+
 }

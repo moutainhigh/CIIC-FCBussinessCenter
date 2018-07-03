@@ -26,7 +26,7 @@ public class CommonController extends BaseController{
     private DroolsService droolsService;
 
     /**
-     * 倒推应纳税所得额
+     * 计算收入额
      *
      * @param commonDTO
      * @return
@@ -35,8 +35,29 @@ public class CommonController extends BaseController{
     public JsonResult<CommonDTO> cal(@RequestBody CommonDTO commonDTO) {
         JsonResult<CommonDTO> jr = new JsonResult<>();
 
-        Object o = droolsService.preTaxRevenue(commonDTO.getTax());//税金
-        commonDTO.setIncomeTotal(BigDecimal.valueOf((Double)o));
+        HashMap<String,BigDecimal> m = new HashMap<>();
+
+        m.put("taxReal",commonDTO.getTaxReal());//税金
+        m.put("preTaxAggregate",commonDTO.getPreTaxAggregate());//税前合计
+        m.put("deduction",commonDTO.getDeduction());//免抵税额
+        m.put("donation",commonDTO.getDonation());//准予扣除的捐赠额
+        m.put("deductTakeoff",commonDTO.getDeductTakeoff());//允许扣除的税费
+        m.put("otherDeductions",commonDTO.getOtherDeductions());//其它扣除
+        m.put("businessHealthInsurance",commonDTO.getBusinessHealthInsurance());//商业保险
+        m.put("deductHouseFund",commonDTO.getDeductHouseFund());//住房公积金
+        m.put("deductDlenessInsurance",commonDTO.getDeductDlenessInsurance());//失业保险费
+        m.put("deductMedicalInsurance",commonDTO.getDeductMedicalInsurance());//基本医疗保险费
+        m.put("deductRetirementInsurance",commonDTO.getDeductRetirementInsurance());//基本养老保险费
+        m.put("dutyFreeAllowance",commonDTO.getDutyFreeAllowance());//免税津贴
+        m.put("annuity",commonDTO.getAnnuity());//企业年金个人部分
+        m.put("incomeDutyfree",commonDTO.getIncomeDutyfree());//免税所得
+
+        Map<String,BigDecimal> tm = droolsService.incomeTotal(m);
+
+        if(tm!=null){
+            commonDTO.setIncomeTotal(tm.get("incomeTotal"));//收入额
+        }
+
         jr.fill(commonDTO);
 
         return jr;

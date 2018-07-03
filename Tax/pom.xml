@@ -50,6 +50,8 @@
         <fcbusinesscenterentity.version>1.0.0-SNAPSHOT</fcbusinesscenterentity.version>
         <mongoclient.version>1.1.0-SNAPSHOT</mongoclient.version>
         <sheetserviceapi.version>1.0.0-SNAPSHOT</sheetserviceapi.version>
+        <fcbusinesscenter.salarymanagement.version>1.0.0-SNAPSHOT</fcbusinesscenter.salarymanagement.version>
+        <sba.version>1.5.7</sba.version>
     </properties>
 
     <distributionManagement>
@@ -273,6 +275,35 @@
                 <version>${ant.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+                <artifactId>salarymanagement-commandservice-api</artifactId>
+                <version>${fcbusinesscenter.salarymanagement.version}</version>
+            </dependency>
+            <!--Spring Boot Admin-->
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>#{sba.version}</version>
+            </dependency>
+            <!-- druid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>1.1.6</version>
+            </dependency>
+
+            <!-- Cat服务 -->
+            <dependency>
+                <groupId>com.dianping.cat</groupId>
+                <artifactId>cat-core</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dianping.cat</groupId>
+                <artifactId>cat-client</artifactId>
+                <version>2.0.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

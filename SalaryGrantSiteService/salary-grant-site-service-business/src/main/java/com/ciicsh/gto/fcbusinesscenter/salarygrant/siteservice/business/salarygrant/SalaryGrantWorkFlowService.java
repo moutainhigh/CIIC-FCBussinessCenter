@@ -1,7 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 
-
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskMissionRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -97,7 +96,7 @@ public interface SalaryGrantWorkFlowService {
      * @param salaryGrantTaskBO
      * @return
      */
-    Boolean doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO);
+    int doSubmitTask(SalaryGrantTaskBO salaryGrantTaskBO);
 
     /**
      * 流程节点处理：3.退回

@@ -230,7 +230,7 @@
         <if test="hasPaper != null">
             and has_paper = #{hasPaper}
         </if>
-        ORDER BY main_task_id DESC
+        ORDER BY created_time DESC
         <if test="limit != null and limit != ''">
             LIMIT #{limit}
         </if>

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
@@ -109,5 +110,9 @@ public class SalaryTaskDTO extends PagingDTO {
      * 备注
      */
     private String remark;
+    /**
+     * 修改时间
+     */
+    private Date modifiedTime;
 
 }

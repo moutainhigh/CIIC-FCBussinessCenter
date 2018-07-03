@@ -121,7 +121,7 @@
 	<select id="queryTaxBatchDetailsListByRes" resultMap="BaseResultMap" parameterType="com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof">
 		select cbd.*
 		from tax_fc_calculation_batch_detail cbd,tax_fc_employee_service_batch esb
-		where cbd.id = esb.cal_batch_detail_id  and cbd.is_active = true and esb.is_active = true and esb.is_declared = false
+		where cbd.id = esb.cal_batch_detail_id  and cbd.is_active = true and esb.is_active = true and esb.is_declared = true
 		<if test = "employeeNo != null and employeeNo != ''">
 			and cbd.employee_no = #{employeeNo, jdbcType=VARCHAR}
 		</if>
@@ -156,11 +156,11 @@
 		<!--<if test = "managerName != null and managerName != ''">-->
 			<!--and t1.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')-->
 		<!--</if>-->
-		<if test="managerNames != null and managerNames.length != 0">
-			and t1.manager_name in
-			<foreach collection="managerNames" item="managerName"
+		<if test="managerNos != null and managerNos.length != 0">
+			and t1.manager_no in
+			<foreach collection="managerNos" item="managerNo"
 					 index="index" open="(" close=")" separator=",">
-				#{managerName}
+				#{managerNo}
 			</foreach>
 		</if>
 		<if test = "batchNo != null and batchNo != ''">

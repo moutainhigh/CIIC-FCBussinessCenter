@@ -153,6 +153,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      */
     private Date createdTime;
     /**
+     * 修改时间
+     */
+    private Date modifiedTime;
+    /**
      * 当前登录用户ID
      */
     private String currentUserId;
@@ -160,6 +164,10 @@ public class SalaryGrantTaskBO extends PagingBO implements Serializable {
      * 系统用户ID
      */
     private String userId;
+    /**
+     * 系统用户名
+     */
+    private String userName;
     /**
      * 创建时间字符串
      */

@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.dto.AdjustItem;
 import com.ciicsh.gto.salarymanagement.entity.dto.ComparedAdjustBatchDTO;
@@ -31,6 +32,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -188,41 +190,63 @@ public class AdjustBatchController {
     }
 
     @PostMapping("/updateBatchValue")
-    public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String empCode,
-                                       @RequestParam String payItemName, @RequestParam String payItemVal){
+    public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String empCode, @RequestParam int dataType,
+                                       @RequestParam String payItemName, @RequestParam Object payItemVal){
 
         int rowAffected = 0;
+
+        String key = "catalog.pay_items.$.item_value";
+
+        if(dataType == DataTypeEnum.NUM.getValue()){
+            payItemVal = Double.parseDouble(payItemVal.toString());
+        }else if(dataType == DataTypeEnum.DATE.getValue()){
+            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
+            payItemVal = sdfDate.format(payItemVal);
+        }else if(dataType == DataTypeEnum.TEXT.getValue()){
+            payItemVal = String.valueOf(payItemVal);
+        }else {
+            payItemVal = Boolean.parseBoolean(payItemVal.toString());
+        }
+        if(payItemVal instanceof Boolean){
+            key = "catalog.pay_items.$.isLocked";
+        }
+
         if(batchType == BatchTypeEnum.NORMAL.getValue()){
             rowAffected = normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                             .andOperator(
                                     Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                                     Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                            ),"catalog.pay_items.$.item_value",payItemVal);
+                            ),key,payItemVal);
+
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
 
-            updateMongoAdjust(batchType,batchCode,empCode,payItemName,payItemVal);
+            if(dataType == DataTypeEnum.NUM.getValue()){
+                updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
+            }
 
             rowAffected = adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                             Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),"catalog.pay_items.$.item_value",payItemVal);
+                    ),key,payItemVal);
 
         }else {
 
-            updateMongoAdjust(batchType,batchCode,empCode,payItemName,payItemVal);
+            if(dataType == DataTypeEnum.NUM.getValue()){
+                updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
+            }
 
             rowAffected = backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
                             Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),"catalog.pay_items.$.item_value",payItemVal);
+                    ),key,payItemVal);
 
         }
         return JsonResult.success(rowAffected);
     }
 
-    private int updateMongoAdjust(int batchType, String batchCode, String empCode, String name, String val){
+    private int updateMongoAdjust(int batchType, String batchCode, String empCode, String name, Object val){
         int affected = 0;
         /**
          * adjust_items like [ { name: '', origin:'', new:''}, { name: '', origin:'', new:''},... ]

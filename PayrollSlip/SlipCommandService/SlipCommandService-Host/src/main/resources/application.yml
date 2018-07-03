@@ -7,18 +7,25 @@ mybatis-plus:
 spring:
   application:
     name: fcbusinesscenter-payrollslip-slipcommandservice
-  datasource:
-      url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?useUnicode=true&characterEncoding=utf8&useSSL=false&tinyInt1isBit=false
-      username: ${database.username}
-      password: ${database.password}
-      driver-class-name: com.mysql.jdbc.Driver
   profiles:
     active: dev
   http:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${kafka.brokers}
+          zk-nodes: ${kafka.zk-nodes}
+          autoAddPartitions: true
+      bindings:
+        pr_compute-close-output-channel:
+          destination: fc_compute_close # 关帐
+          content-type: application/json
+          producer:
+            partitionCount: 1
 server:
   port: 7015
 
