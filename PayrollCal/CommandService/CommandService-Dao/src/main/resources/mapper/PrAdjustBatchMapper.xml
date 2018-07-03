@@ -69,4 +69,22 @@
 		WHERE origin_batch_code = #{originBatchCode}
 	</select>
 
+	<select id="getAdjustBatchPO" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrAdjustBatchPO">
+		SELECT
+			root_batch_code,
+			origin_batch_code,
+			adjust_batch_code,
+            has_money,
+			advance_day,
+			has_advance,
+			advance_period,
+			status,
+            created_time,
+            modified_time
+		FROM
+			pr_adjust_batch
+		WHERE
+			adjust_batch_code = #{code}
+	</select>
+
 </mapper>

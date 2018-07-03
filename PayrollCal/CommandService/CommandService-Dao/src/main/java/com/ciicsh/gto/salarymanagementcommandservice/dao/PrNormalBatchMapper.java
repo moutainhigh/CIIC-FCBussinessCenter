@@ -30,6 +30,8 @@ public interface PrNormalBatchMapper extends BaseMapper<PrNormalBatchPO> {
 
     List<PrCustSubBatchPO> selectSubBatchList(@Param("code") String code);
 
+    PrNormalBatchPO getNormalBatchByCode(@Param("code") String code);
+
     /**
      * delete batch by code
      *
