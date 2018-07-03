@@ -330,8 +330,13 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setBusinessHealthInsurance(calResultBO.getBusinessHealthInsurance());//商业保险
                     calculationBatchDetailPO.setEndowmentInsurance(calResultBO.getEndowmentInsurance());//税延养老保险费
                     calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
+                    calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
+                    calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额
                     calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
+                    calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
+                    calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
+                    calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getTaxDeduction()!=null){//减免税额（薪金个税,减免税额相比取小）
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==1){
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction());
@@ -340,9 +345,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                         }
                     }
                     //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
-                    calculationBatchDetailPO.setDeductOther(this.getValue(calResultBO.getOthers())
+                    calculationBatchDetailPO.setDeductOther(this.getValue(calculationBatchDetailPO.getOthers())
                             .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
-                            .add(this.getValue(calResultBO.getDutyFreeAllowance()))
+                            .add(this.getValue(calculationBatchDetailPO.getDutyFreeAllowance()))
                             .add(this.getValue(calculationBatchDetailPO.getAnnuity())));
                     //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
@@ -362,15 +367,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setTaxAmount(calculationBatchDetailPO.getTaxReal());
                     //应扣缴税额 = 应纳税额 - 减免税额
                     calculationBatchDetailPO.setTaxWithholdAmount(this.getValue(calculationBatchDetailPO.getTaxAmount()).subtract(this.getValue(calculationBatchDetailPO.getTaxDeduction())));
-                    calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
-                    calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
-                    calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
                     //已扣缴税额（空）
                     calculationBatchDetailPO.setTaxWithholdedAmount(BigDecimal.ZERO);
                     //应补退税额 = 应扣缴税额-已扣缴税额
                     calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdedAmount()));
-                    calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
-                    calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //外籍人员正常薪金税
@@ -393,6 +393,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setDeductProperty(BigDecimal.ZERO);//财产原值（空）
                     calculationBatchDetailPO.setDeductTakeoff(calResultBO.getDeductTakeoff());//允许扣除的税费
                     calculationBatchDetailPO.setAnnuity(calResultBO.getAnnuity());//企业年金个人部分
+                    calculationBatchDetailPO.setBusinessHealthInsurance(calResultBO.getBusinessHealthInsurance());//商业保险
                     calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
                     calculationBatchDetailPO.setHousingSubsidy(calResultBO.getHousingSubsidy());//免税住房补贴
                     calculationBatchDetailPO.setMealAllowance(calResultBO.getMealAllowance());//免税伙食补贴
@@ -404,6 +405,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setEducationFunds(calResultBO.getEducationFunds());//子女教育经费
                     calculationBatchDetailPO.setDonation(calResultBO.getDonation());//准予扣除的捐赠额
                     calculationBatchDetailPO.setOthers(calResultBO.getOthers());//其它扣除
+                    calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
+                    calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
+                    calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
+                    calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
+                    calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
+                    calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getTaxDeduction()!=null){//减免税额（薪金个税,减免税额相比取小）
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==1){
                             calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction());
@@ -414,7 +421,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     //其他（税前扣除项目）=其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分
                     calculationBatchDetailPO.setDeductOther(this.getValue(calculationBatchDetailPO.getOthers())
                             .add(this.getValue(calculationBatchDetailPO.getBusinessHealthInsurance()))
-                            .add(this.getValue(calResultBO.getDutyFreeAllowance()))
+                            .add(this.getValue(calculationBatchDetailPO.getDutyFreeAllowance()))
                             .add(this.getValue(calculationBatchDetailPO.getAnnuity())));
                     //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值 + 允许扣除的税费 + 其他（税前扣除项目）
                     calculationBatchDetailPO.setDeductTotal(this.getValue(calculationBatchDetailPO.getDeductRetirementInsurance())
@@ -434,16 +441,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setTaxAmount(calculationBatchDetailPO.getTaxReal());
                     //应扣缴税额 = 应纳税额 - 减免税额
                     calculationBatchDetailPO.setTaxWithholdAmount(this.getValue(calculationBatchDetailPO.getTaxAmount()).subtract(this.getValue(calculationBatchDetailPO.getTaxDeduction())));
-                    calculationBatchDetailPO.setBatchNo(newCal.getBatchNo());//批次号
-                    calculationBatchDetailPO.setPreTaxAggregate(calResultBO.getPreTaxAggregate());//税前合计
-                    calculationBatchDetailPO.setDutyFreeAllowance(calResultBO.getDutyFreeAllowance());//免税津贴
-                    calculationBatchDetailPO.setDeduction(calResultBO.getDeduction().abs());//免抵额
                     //已扣缴税额（空）
                     calculationBatchDetailPO.setTaxWithholdedAmount(BigDecimal.ZERO);
                     //应补退税额 = 应扣缴税额-已扣缴税额
                     calculationBatchDetailPO.setTaxRemedyOrReturn(calculationBatchDetailPO.getTaxWithholdAmount().subtract(calculationBatchDetailPO.getTaxWithholdedAmount()));
-                    calculationBatchDetailPO.setTaxRate(calResultBO.getTaxRate());//税率
-                    calculationBatchDetailPO.setQuickCalDeduct(calResultBO.getQuickCalDeduct());//速扣数
                     this.addDetailPO( calculationBatchDetailPO, taxInfoBO, empInfoBO, agreementBO);
                 }
                 //年奖税
@@ -457,9 +458,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     if(calResultBO.getAmountSalary()!=null && calResultBO.getAmountBonus()!=null && calResultBO.getTaxDeduction()!=null){
                         if(calResultBO.getAmountSalary().compareTo(calResultBO.getTaxDeduction())==-1){
                             if(calResultBO.getAmountBonus().compareTo(calResultBO.getTaxDeduction().subtract(calResultBO.getAmountSalary()))==-1){
-                                calResultBO.setTaxDeduction(calResultBO.getAmountBonus());
+                                calculationBatchDetailPO.setTaxDeduction(calResultBO.getAmountBonus());
                             }else{
-                                calResultBO.setTaxDeduction(calResultBO.getTaxDeduction().subtract(calResultBO.getAmountSalary()));
+                                calculationBatchDetailPO.setTaxDeduction(calResultBO.getTaxDeduction().subtract(calResultBO.getAmountSalary()));
                             }
                         }
                     }
@@ -573,6 +574,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
 //        try {
 
+            if(dBObject == null) return null;
+
             //key不存在的处理
             if(!dBObject.containsField(key) || dBObject.get(key) == null){
                 if(clazz==BigDecimal.class){
@@ -647,9 +650,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 && taxInfoBO.getEmployee()!=null &&  taxInfoBO.getEmployee()
                 && calResultBO.getIncomeTotal()!=null
                 && (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==1 || (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==0
-                        && calResultBO.getAmountService()==null && calResultBO.getAmountLeave()==null
-                        && calResultBO.getAmountStock()==null && calResultBO.getAmountAcc()==null
-                        && calResultBO.getAmountOption()==null))){
+                        && (calResultBO.getAmountService()==null || calResultBO.getAmountService().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountLeave()==null || calResultBO.getAmountLeave().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountStock()==null || calResultBO.getAmountStock().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountAcc()==null || calResultBO.getAmountAcc().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountOption()==null || calResultBO.getAmountOption().compareTo(BigDecimal.ZERO)==0)))
+        ){
             flag = true;
         }
 
@@ -666,9 +672,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 && taxInfoBO.getEmployee()!=null &&  taxInfoBO.getEmployee()
                 && calResultBO.getIncomeTotal()!=null
                 && (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==1 || (calResultBO.getIncomeTotal().compareTo(BigDecimal.ZERO)==0
-                        && calResultBO.getAmountService()==null && calResultBO.getAmountLeave()==null
-                        && calResultBO.getAmountStock()==null && calResultBO.getAmountAcc()==null
-                        && calResultBO.getAmountOption()==null))){
+                        && (calResultBO.getAmountService()==null || calResultBO.getAmountService().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountLeave()==null || calResultBO.getAmountLeave().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountStock()==null || calResultBO.getAmountStock().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountAcc()==null || calResultBO.getAmountAcc().compareTo(BigDecimal.ZERO)==0)
+                        && (calResultBO.getAmountOption()==null || calResultBO.getAmountOption().compareTo(BigDecimal.ZERO)==0)))
+        ){
             flag = true;
         }
 
