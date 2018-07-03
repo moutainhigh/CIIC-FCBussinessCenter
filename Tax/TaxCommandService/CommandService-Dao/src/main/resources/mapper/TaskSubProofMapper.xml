@@ -87,12 +87,7 @@
         tsp.task_type,
         tsp.is_combined
         from tax_fc_task_sub_proof tsp
---         left join tax_fc_task_main_proof tmp
---         on tsp.task_main_proof_id = tmp.id
         where tsp.is_active = 1 <![CDATA[ and tsp.`status` <> '00' and tsp.`status` <> '02' ]]> and tsp.task_sub_proof_id is null
-        <!--<if test="managerName != null and managerName != ''">-->
-            <!--and tmp.manager_name LIKE concat('%', #{managerName, jdbcType=VARCHAR},'%')-->
-        <!--</if>-->
         <if test="managerNos != null and managerNos.length != 0">
             and (tsp.manager_no in
             <foreach collection="managerNos" item="managerNo"
