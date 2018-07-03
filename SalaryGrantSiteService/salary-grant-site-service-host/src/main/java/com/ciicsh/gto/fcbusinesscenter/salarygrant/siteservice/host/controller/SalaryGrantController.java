@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Pagination;
@@ -26,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,6 +68,9 @@ public class SalaryGrantController {
 
     @Autowired
     private SalaryGrantPayrollService salaryGrantPayrollService;
+
+    @Autowired
+    private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
 
     @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
@@ -281,12 +286,16 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/retract", method = RequestMethod.POST)
     public Result retract(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("撤回").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("主任务单撤回").setContent(JSON.toJSONString(dto)));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setApprovedOpinion(dto.getRemark());
+            bo.setUserId(UserContext.getUserId());
+            salaryGrantWorkFlowService.doRetreatTask(bo);
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("撤回异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("撤回处理失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("主任务单撤回异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("主任务单撤回失败！");
         }
     }
 
@@ -307,7 +316,7 @@ public class SalaryGrantController {
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("子任务单撤回处理失败");
+            return ResultGenerator.genServerFailResult("子任务单撤回失败！");
         }
     }
 
@@ -414,7 +423,30 @@ public class SalaryGrantController {
             return ResultGenerator.genSuccessResult(salaryTaskDetailDTO);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询明细异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("查询明细失败");
+            return ResultGenerator.genServerFailResult("查询明细失败！");
+        }
+    }
+
+    /**
+     * 薪资调整信息
+     * @author chenpb
+     * @date 2018-07-02
+     * @param dto
+     * @return
+     */
+    @RequestMapping(value="/adjustSgInfo", method = RequestMethod.POST)
+    public Result<List<SalaryGrantEmployeeDTO>> adjustSgInfo(@RequestBody EmployeeHandleDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息").setContent(JSON.toJSONString(dto)));
+        try {
+            List<SalaryGrantEmployeeDTO> dtoList =new ArrayList<>();
+            SalaryGrantEmployeePO employeePO = salaryGrantEmployeeQueryService.selectById(dto.getSalaryGrantEmployeeId());
+            if (!ObjectUtils.isEmpty(employeePO) && !StringUtils.isEmpty(employeePO.getAdjustCompareInfo())) {
+                dtoList = JSONObject.parseArray(employeePO.getAdjustCompareInfo(), SalaryGrantEmployeeDTO.class);
+            }
+            return ResultGenerator.genSuccessResult(dtoList);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询雇员薪资调整信息失败！");
         }
     }
 
