@@ -3,6 +3,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.CalResultMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl.SalaryGrantEmployeeQueryServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.CalcResultItemBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.EmpCalcResultBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
@@ -37,6 +38,8 @@ public class SalaryGrantEmployeeQueryServiceTest {
     private SalaryGrantEmployeeQueryService queryService;
     @Autowired
     private CalResultMongoOpt calResultMongoOpt;
+    @Autowired
+    private SalaryGrantEmployeeQueryServiceImpl queryServiceImpl;
 
     /**
      * 查询批次雇员薪资项
@@ -133,5 +136,12 @@ public class SalaryGrantEmployeeQueryServiceTest {
         Integer pageSize = 20;
         Page<SalaryGrantEmployeeBO> employeeBOPage = queryService.queryEmpHisInfo(task_his_id, pageNum, pageSize);
         System.out.println("-----------");
+    }
+
+    @Test
+    public void restoreChangeLog() {
+        SalaryGrantEmployeePO salaryGrantEmployeePO = queryService.selectById(215);
+        List<SalaryGrantEmployeeBO> employeeBOList = queryServiceImpl.restoreChangeLog(salaryGrantEmployeePO);
+        System.out.println("恢复变更信息: " + JSONObject.toJSONString(employeeBOList));
     }
 }
