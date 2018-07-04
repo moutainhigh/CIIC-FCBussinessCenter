@@ -197,10 +197,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 DBObject taxInfo_agreement = (DBObject)empAgreement.get("taxInfo");
 
                 //申报账户
-                DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccountDetail");
+                //DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccountDetail");
+                DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccount");
                 this.setObjectFieldsEmpty(declarationAccountBO);
-                declarationAccountBO.setAccountName(convert(decAccount,"accountName",String.class));
-                declarationAccountBO.setAccountNumber(convert(decAccount,"accountNumber",String.class));
+                declarationAccountBO.setAccountName(convert(decAccount,"accountname",String.class));
+                /*declarationAccountBO.setAccountNumber(convert(decAccount,"accountNumber",String.class));
                 declarationAccountBO.setCommissionContractSerialNumber(convert(decAccount,"commissionContractSerialNumber",String.class));
                 declarationAccountBO.setProvinceCode(convert(decAccount,"provinceCode",String.class));
                 declarationAccountBO.setCityCode(convert(decAccount,"cityCode",String.class));
@@ -211,13 +212,14 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 declarationAccountBO.setTaxpayerName(convert(decAccount,"taxpayerName",String.class));
                 declarationAccountBO.setStation(convert(decAccount,"station",String.class));
                 declarationAccountBO.setSource(convert(decAccount,"source",String.class));
-                this.saveOrUpdateAccount(accounts,declarationAccountBO);
+                this.saveOrUpdateAccount(accounts,declarationAccountBO);*/
 
                 //缴纳账户
-                DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccountDetail");
+                //DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccountDetail");
+                DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccount");
                 this.setObjectFieldsEmpty(contributionAccountBO);
-                contributionAccountBO.setAccountName(convert(conAccount,"accountName",String.class));
-                contributionAccountBO.setAccountNumber(convert(conAccount,"accountNumber",String.class));
+                contributionAccountBO.setAccountName(convert(conAccount,"accountname",String.class));
+                /*contributionAccountBO.setAccountNumber(convert(conAccount,"accountNumber",String.class));
                 contributionAccountBO.setCommissionContractSerialNumber(convert(conAccount,"commissionContractSerialNumber",String.class));
                 contributionAccountBO.setProvinceCode(convert(conAccount,"provinceCode",String.class));
                 contributionAccountBO.setCityCode(convert(conAccount,"cityCode",String.class));
@@ -228,11 +230,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 contributionAccountBO.setTaxpayerName(convert(conAccount,"taxpayerName",String.class));
                 contributionAccountBO.setStation(convert(conAccount,"station",String.class));
                 contributionAccountBO.setSource(convert(conAccount,"source",String.class));
-                this.saveOrUpdateAccount(accounts,contributionAccountBO);
+                this.saveOrUpdateAccount(accounts,contributionAccountBO);*/
 
                 this.setObjectFieldsEmpty(agreementBO);
-                agreementBO.setDeclareAccount(declarationAccountBO.getAccountNumber());//申报账户
-                agreementBO.setPayAccount(contributionAccountBO.getAccountNumber());//缴纳账户
+                agreementBO.setDeclareAccount(declarationAccountBO.getAccountName());//申报账户
+                agreementBO.setPayAccount(contributionAccountBO.getAccountName());//缴纳账户
 
                 Integer taxPeriod = convert(taxInfo_agreement,"taxPeriod",Integer.class);//个税期间（0、1、2）
                 if(taxPeriod != null && mainBO.getIncomeYearMonth()!=null){
@@ -399,6 +401,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             .subtract(this.getValue(calculationBatchDetailPO.getDeductTotal()))
                             .subtract(this.getValue(calculationBatchDetailPO.getDeduction()))
                             .subtract(this.getValue(calculationBatchDetailPO.getDonation())));
+                    if(calculationBatchDetailPO.getIncomeForTax()!=null && calculationBatchDetailPO.getIncomeForTax().compareTo(BigDecimal.ZERO)==-1){
+                        calculationBatchDetailPO.setIncomeForTax(BigDecimal.ZERO);
+                    }
                     //应纳税额 = 税金
                     calculationBatchDetailPO.setTaxAmount(calculationBatchDetailPO.getTaxReal());
                     //应扣缴税额 = 应纳税额 - 减免税额
@@ -473,6 +478,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                             .subtract(this.getValue(calculationBatchDetailPO.getDeductTotal()))
                             .subtract(this.getValue(calculationBatchDetailPO.getDeduction()))
                             .subtract(this.getValue(calculationBatchDetailPO.getDonation())));
+                    if(calculationBatchDetailPO.getIncomeForTax()!=null && calculationBatchDetailPO.getIncomeForTax().compareTo(BigDecimal.ZERO)==-1){
+                        calculationBatchDetailPO.setIncomeForTax(BigDecimal.ZERO);
+                    }
                     //应纳税额 = 税金
                     calculationBatchDetailPO.setTaxAmount(calculationBatchDetailPO.getTaxReal());
                     //应扣缴税额 = 应纳税额 - 减免税额

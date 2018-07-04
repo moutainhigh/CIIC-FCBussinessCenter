@@ -101,6 +101,9 @@
 		<result column="exercise_income_year" property="exerciseIncomeYear" />
 		<result column="number_of_months" property="numberOfMonths" />
 		<result column="exercise_tax_amount" property="exerciseTaxAmount" />
+		<result column="pre_tax_aggregate" property="preTaxAggregate" />
+		<result column="duty_free_allowance" property="dutyFreeAllowance" />
+		<result column="others" property="others" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
@@ -164,7 +167,10 @@
 		t2.exercise_income_month,
 		t2.exercise_income_year,
 		t2.number_of_months,
-		t2.exercise_tax_amount
+		t2.exercise_tax_amount,
+		t2.pre_tax_aggregate,
+		t2.duty_free_allowance,
+		t2.others
 		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
 		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
 		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return
