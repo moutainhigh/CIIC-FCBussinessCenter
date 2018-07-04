@@ -25,7 +25,7 @@ public class ComputeReceiver {
     public void receive(ComputeMsg computeMsg){
         logger.info("获取页面计算运行消息： " + computeMsg);
         if(computeMsg.getBatchType() > 0) {
-            processPayrollCompute(computeMsg.getBatchCode(), computeMsg.getBatchType());
+            processPayrollCompute(computeMsg.getBatchCode(), computeMsg.getBatchType(), computeMsg.getOptID());
         }
     }
 
@@ -33,9 +33,9 @@ public class ComputeReceiver {
      * 接收薪资计算消息
      * @param batchCode
      */
-    private void processPayrollCompute(String batchCode,int batchType){
+    private void processPayrollCompute(String batchCode,int batchType, String userId){
         try {
-            computeService.processCompute(batchCode, batchType);
+            computeService.processCompute(batchCode, batchType, userId);
         }catch (Exception ex){
             logger.info(ex.getMessage());
         }

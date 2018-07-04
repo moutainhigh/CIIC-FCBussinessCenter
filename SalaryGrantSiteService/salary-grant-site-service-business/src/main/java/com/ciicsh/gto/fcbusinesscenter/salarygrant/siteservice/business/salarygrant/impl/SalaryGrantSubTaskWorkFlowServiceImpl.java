@@ -9,6 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTa
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,8 +51,10 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
             subPo.setOperatorUserId(bo.getUserId());
             subPo.setModifiedTime(new Date());
             subPo.setModifiedBy(bo.getUserId());
-            subPo.setGrantDate(bo.getGrantDate());
-            subPo.setGrantTime(bo.getGrantTime());
+            if (StringUtils.isNotBlank(bo.getGrantDate())) {
+                subPo.setGrantDate(bo.getGrantDate());
+                subPo.setGrantTime(bo.getGrantTime());
+            }
             subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL);
             salaryGrantSubTaskMapper.updateById(subPo);
         }

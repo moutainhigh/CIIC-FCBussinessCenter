@@ -647,4 +647,25 @@
 
 	</select>
 
+	<select id="getNormalBatchByCode" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO">
+		SELECT
+			code,
+			start_date,
+			end_date,
+			account_set_code,
+			actual_period,
+            management_id,
+            management_name,
+            has_money,
+			advance_day,
+			has_advance,
+			advance_period,
+			status,
+            created_time
+		FROM
+			pr_normal_batch
+		WHERE
+			code = #{code}
+	</select>
+
 </mapper>

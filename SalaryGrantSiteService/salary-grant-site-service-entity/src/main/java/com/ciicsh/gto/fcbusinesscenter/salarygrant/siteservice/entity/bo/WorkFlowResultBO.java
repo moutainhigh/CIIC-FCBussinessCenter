@@ -26,4 +26,8 @@ public class WorkFlowResultBO {
      * 处理结果
      */
     private Integer result;
+    /**
+     * 消息
+     */
+    private String message;
 }

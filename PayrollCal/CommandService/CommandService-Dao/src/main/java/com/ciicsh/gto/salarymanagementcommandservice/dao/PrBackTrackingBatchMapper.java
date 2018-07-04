@@ -36,4 +36,6 @@ public interface PrBackTrackingBatchMapper extends BaseMapper<PrBackTrackingBatc
                    @Param("result") String result);
 
     int checkBackTraceBatch(@Param("originBatchCode") String originBatchCode);
+
+    PrBackTrackingBatchPO getPrBackTrackingBatchPO(@Param("code") String batchCode);
 }

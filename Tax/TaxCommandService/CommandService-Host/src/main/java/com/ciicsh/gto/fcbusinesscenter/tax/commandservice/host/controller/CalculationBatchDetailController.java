@@ -62,11 +62,26 @@ public class CalculationBatchDetailController extends BaseController implements 
         BeanUtils.copyProperties(calculationBatchDetailDTO, requestForCalBatchDetail);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
             //设置request请求管理方名称数组
-            requestForCalBatchDetail.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            requestForCalBatchDetail.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForCalBatchDetail responseForCalBatchDetail = calculationBatchDetailService.queryTaxBatchDetailByRes(requestForCalBatchDetail);
         jr.fill(responseForCalBatchDetail);
 
+        return jr;
+    }
+
+
+    /**
+     *
+     * @param calculationBatchDetailDTO
+     * @return
+     */
+    @PostMapping(value = "batchPostponeCalBatchDetail")
+    public JsonResult<Boolean> batchPostponeCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
+            calculationBatchDetailService.batchPostponeCalBatchDetail(calculationBatchDetailDTO.getIds());
+        }
         return jr;
     }
 
@@ -79,11 +94,19 @@ public class CalculationBatchDetailController extends BaseController implements 
     @PostMapping(value = "recoveryCalBatchDetail")
     public JsonResult<Boolean> recoveryCalBatchDetail(@RequestBody CalculationBatchDetailDTO calculationBatchDetailDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
-
+        //验证批次任务0:允许恢复;1:是"取消关账-01"状态;2:已经创建任务
+        int i = calculationBatchDetailService.checkTaskByDetailIds(calculationBatchDetailDTO.getIds());
+        if(i == 1){
+            jr.fill(JsonResult.ReturnCode.RECOVERY_1);
+            return jr;
+        }
+        if(i == 2){
+            jr.fill(JsonResult.ReturnCode.RECOVERY_2);
+            return jr;
+        }
         if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
             calculationBatchDetailService.queryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
         }
-
         return jr;
     }
 

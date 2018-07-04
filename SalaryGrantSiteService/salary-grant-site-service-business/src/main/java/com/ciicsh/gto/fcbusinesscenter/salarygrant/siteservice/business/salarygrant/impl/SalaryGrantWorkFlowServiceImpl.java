@@ -8,21 +8,21 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.WorkFlowTaskInfoService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.Result;
-import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
 import com.ciicsh.gto.sheetservice.api.dto.request.TaskRequestDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,8 +59,6 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
     @Autowired
     private CommonService commonService;
-    @Autowired
-    private WorkFlowTaskInfoService workFlowTaskInfoService;
 
     @Override
     public Map startSalaryGrantTaskProcess(SalaryGrantTaskMissionRequestDTO salaryGrantTaskMissionRequestDTO) {
@@ -406,14 +404,14 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     //   根据PrBatchDTO. hasMoney和PrBatchDTO. hasAdvance进行条件分支判断：
                     PrBatchDTO prBatchDTO = commonService.getBatchInfo(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
                     //4、（1）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance=0 直接返回结果false,不执行下面处理逻辑。
-                    if (false == prBatchDTO.isHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
+                    if (false == prBatchDTO.getHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
                         return 1; //1-未来款，无垫付流程
                     }
 
                     //4、（2）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance in (1,2,3,4)，调用接口内部方法 isOverdue(SalaryGrantTaskBO salaryGrantTaskBO)，
                     //     如果isOverdue方法返回true，直接返回结果false,不执行下面处理逻辑；
                     //     如果isOverdue方法返回false，修改SalaryGrantMainTaskPO. balanceGrant=1。
-                    if (false == prBatchDTO.isHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
+                    if (false == prBatchDTO.getHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
                         Boolean isOverdueResult = isOverdue(salaryGrantTaskBO);
 
                         if (true == isOverdueResult) {
@@ -427,7 +425,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     }
 
                     //4、（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
-                    if (true == prBatchDTO.isHasMoney()) {
+                    if (true == prBatchDTO.getHasMoney()) {
                         //（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
                         SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                         grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
@@ -871,55 +869,6 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
         //（10）返回结果true
         return true;
-    }
-
-
-    /**
-     * 业务处理
-     * @author chenpb
-     * @since 2018-06-22
-     * @param taskCreateMsgDTO
-     */
-    @Override
-    public void createTask (TaskCreateMsgDTO taskCreateMsgDTO) {
-        WorkFlowTaskInfoPO po = BeanUtils.instantiate(WorkFlowTaskInfoPO.class);
-        po.setWorkFlowProcessId(taskCreateMsgDTO.getProcessId());
-        workFlowTaskInfoService.insert(po);
-    }
-
-    /**
-     * 完成任务
-     * @author chenpb
-     * @since 2018-06-22
-     * @param dto
-     * @throws Exception
-     */
-    @Override
-    public void completeTask(TaskRequestDTO dto) throws Exception {
-        sheetServiceProxy.completeTask(dto);
-    }
-
-    /**
-     * 启动流程
-     * @author chenpb
-     * @since 2018-06-22
-     * @param dto
-     */
-    @Override
-    public void startProcess (MissionRequestDTO dto) throws Exception {
-        sheetServiceProxy.startProcess(dto);
-    }
-
-    /**
-     * 结束流程
-     * @author chenpb
-     * @since 2018-06-22
-     * @param missionId
-     * @param action
-     */
-    @Override
-    public void  completeProcess(String missionId, String action) {
-
     }
 
 }

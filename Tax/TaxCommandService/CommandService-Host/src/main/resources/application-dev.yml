@@ -137,4 +137,4 @@ mongo:
   userName: ciicit
   pwd: ciicit!#%
 druid:
-    configPath:  /data/appdatas/gt1/gtobusinessdb_dev.properties
+    configPath: /data/appdatas/gt1/gtobusinessdb_dev.properties

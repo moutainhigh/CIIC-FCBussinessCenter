@@ -4,6 +4,7 @@ import com.ciicsh.caldispatchjob.compute.util.JavaScriptEngine;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 import javax.script.ScriptEngine;
 
@@ -20,6 +21,7 @@ import javax.script.ScriptEngine;
         "com.ciicsh.gt1.fcbusinesscenter.compute"}
 )
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
+@EnableDiscoveryClient
 public class App {
     public static void main(String[] args){
         initScriptEngine(); //初始化javascript 引擎

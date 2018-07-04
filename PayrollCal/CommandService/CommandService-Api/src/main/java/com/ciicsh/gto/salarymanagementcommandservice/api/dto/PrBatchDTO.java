@@ -82,7 +82,7 @@ public class PrBatchDTO {
 
 	private String endData;
 
-	private boolean hasMoney;
+	private Boolean hasMoney;
 
 	private int hasAdvance;
 

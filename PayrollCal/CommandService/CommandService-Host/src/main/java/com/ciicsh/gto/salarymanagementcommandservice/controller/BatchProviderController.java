@@ -10,7 +10,7 @@ import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.MoneyBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
@@ -23,11 +23,8 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchServic
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.github.pagehelper.PageInfo;
-import com.google.gson.Gson;
-import com.mongodb.DBObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -121,13 +118,11 @@ public class BatchProviderController implements BatchProxy {
             batchDTO.setHasMoney(normalBatchPO.getHasMoney());
             batchDTO.setHasAdvance(normalBatchPO.getHasAdvance());
             batchDTO.setStatus(normalBatchPO.getStatus());
-            batchDTO.setActualPeriod(normalBatchPO.getPeriod());
-
+            batchDTO.setActualPeriod(normalBatchPO.getActualPeriod());
 
         } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
-            PrAdjustBatchPO adjustBatchPO = new PrAdjustBatchPO();
-            adjustBatchPO.setAdjustBatchCode(batchCode);
-            adjustBatchPO = adjustBatchService.getAdjustBatchPO(adjustBatchPO);
+
+            PrAdjustBatchPO adjustBatchPO = adjustBatchService.getAdjustBatchPO(batchCode);
             batchDTO.setHasMoney(adjustBatchPO.getHasMoney());
             batchDTO.setHasAdvance(adjustBatchPO.getHasAdvance());
             batchDTO.setStatus(adjustBatchPO.getStatus());
@@ -135,9 +130,8 @@ public class BatchProviderController implements BatchProxy {
 
             normalBatchPO = normalBatchService.getBatchByCode(adjustBatchPO.getRootBatchCode());
         } else {
-            PrBackTrackingBatchPO backTrackingBatchPO = new PrBackTrackingBatchPO();
-            backTrackingBatchPO.setBackTrackingBatchCode(batchCode);
-            backTrackingBatchPO = backTrackingBatchService.getPrBackTrackingBatchPO(backTrackingBatchPO);
+
+            PrBackTrackingBatchPO backTrackingBatchPO = backTrackingBatchService.getPrBackTrackingBatchPO(batchCode);
             batchDTO.setHasMoney(backTrackingBatchPO.getHasMoney());
             batchDTO.setHasAdvance(backTrackingBatchPO.getHasAdvance());
             batchDTO.setStatus(backTrackingBatchPO.getStatus());

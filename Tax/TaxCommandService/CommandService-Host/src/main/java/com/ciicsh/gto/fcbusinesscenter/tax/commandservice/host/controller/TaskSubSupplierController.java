@@ -45,8 +45,8 @@ public class TaskSubSupplierController extends BaseController {
         RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
         BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
         Optional.ofNullable(UserContext.getManagementInfoLists()).ifPresent(managementInfo -> {
-            //设置request请求管理方名称数组
-            requestForTaskSubSupplier.setManagerNames(managementInfo.stream().map(ManagementInfo::getManagementName).collect(Collectors.toList()).stream().toArray(String[]::new));
+            //设置request请求管理方数组
+            requestForTaskSubSupplier.setManagerNos(managementInfo.stream().map(ManagementInfo::getManagementId).collect(Collectors.toList()).stream().toArray(String[]::new));
         });
         ResponseForTaskSubSupplier responseForTaskSubSupplier = taskSubSupplierService.queryTaskSubSupplier(requestForTaskSubSupplier);
         jr.fill(responseForTaskSubSupplier);
@@ -185,6 +185,19 @@ public class TaskSubSupplierController extends BaseController {
         requestForTaskSubSupplier.setStatus("03");
         taskSubSupplierService.rejectTaskSuppliers(requestForTaskSubSupplier);
 
+        return jr;
+    }
+
+    /**
+     * 更新滞纳金、罚金
+     *
+     * @param taskSubSupplierDTO
+     * @return
+     */
+    @PostMapping(value = "/updateTaskSubSupplier")
+    public JsonResult<Boolean> updateTaskSubSupplier(@RequestBody TaskSubSupplierDTO taskSubSupplierDTO) {
+        JsonResult<Boolean> jr = new JsonResult<>();
+        taskSubSupplierService.updateTaskSubSupplierOverdueAndFine(taskSubSupplierDTO.getId(),taskSubSupplierDTO.getOverdue(),taskSubSupplierDTO.getFine());
         return jr;
     }
 }

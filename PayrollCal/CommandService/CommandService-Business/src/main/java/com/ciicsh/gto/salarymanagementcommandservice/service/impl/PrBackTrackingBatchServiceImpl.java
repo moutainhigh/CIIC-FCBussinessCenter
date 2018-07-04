@@ -1,5 +1,6 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.enums.*;
 import com.ciicsh.gto.salarymanagement.entity.po.ApprovalHistoryPO;
@@ -106,25 +107,34 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
 
     @Override
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String advancePeriod, String result) {
+        if(!StringUtils.isNotEmpty(modifiedBy)){
+            modifiedBy = "system";
+        }
+
         if(status == BatchStatusEnum.COMPUTING.getValue()){
             return backTrackingBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
         }
-        ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
-        int approvalResult = 0;
-        if(status == BatchStatusEnum.NEW.getValue()){
-            approvalResult = ApprovalStatusEnum.DRAFT.getValue();
-        }else if(status == BatchStatusEnum.PENDING.getValue()){
-            approvalResult = ApprovalStatusEnum.AUDITING.getValue();
-        }else if(status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.CLOSED.getValue()){
-            approvalResult = ApprovalStatusEnum.APPROVE.getValue();
-        }else if(status == BatchStatusEnum.REJECT.getValue()){
-            approvalResult = ApprovalStatusEnum.DENIED.getValue();
+        if(UserContext.getUser() != null) {
+
+            ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
+            int approvalResult = 0;
+            if (status == BatchStatusEnum.NEW.getValue()) {
+                approvalResult = ApprovalStatusEnum.DRAFT.getValue();
+            } else if (status == BatchStatusEnum.PENDING.getValue()) {
+                approvalResult = ApprovalStatusEnum.AUDITING.getValue();
+            } else if (status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.CLOSED.getValue()) {
+                approvalResult = ApprovalStatusEnum.APPROVE.getValue();
+            } else if (status == BatchStatusEnum.REJECT.getValue()) {
+                approvalResult = ApprovalStatusEnum.DENIED.getValue();
+            }
+            historyPO.setApprovalResult(approvalResult);
+            historyPO.setBizCode(batchCode);
+            historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
+            historyPO.setComments(comments);
+            historyPO.setCreatedBy(UserContext.getUser().getUserId());
+            historyPO.setCreatedName(UserContext.getUser().getDisplayName());
+            approvalHistoryService.addApprovalHistory(historyPO);
         }
-        historyPO.setApprovalResult(approvalResult);
-        historyPO.setBizCode(batchCode);
-        historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
-        historyPO.setComments(comments);
-        approvalHistoryService.addApprovalHistory(historyPO);
 
         return backTrackingBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
     }
@@ -140,15 +150,8 @@ public class PrBackTrackingBatchServiceImpl implements PrBackTrackingBatchServic
     }
 
     @Override
-    public PrBackTrackingBatchPO getPrBackTrackingBatchPO(PrBackTrackingBatchPO prBackTrackingBatchPO){
-        return backTrackingBatchMapper.selectOne(prBackTrackingBatchPO);
-    }
-
-    @Override
     public PrBackTrackingBatchPO getPrBackTrackingBatchPO(String batchCode) {
-        PrBackTrackingBatchPO backTrackingBatchPO = new PrBackTrackingBatchPO();
-        backTrackingBatchPO.setBackTrackingBatchCode(batchCode);
-        return backTrackingBatchMapper.selectOne(backTrackingBatchPO);
+        return backTrackingBatchMapper.getPrBackTrackingBatchPO(batchCode);
     }
 
 }

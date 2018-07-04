@@ -114,10 +114,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     @Override
     public PrNormalBatchPO getBatchByCode(String code) {
-        PrNormalBatchPO param = new PrNormalBatchPO();
-        param.setCode(code);
-        PrNormalBatchPO result = normalBatchMapper.selectOne(param);
-        return result;
+        return normalBatchMapper.getNormalBatchByCode(code);
     }
 
     @Override
@@ -447,27 +444,35 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int auditBatch(String batchCode, String comments, int status, String modifiedBy, String advancePeriod, String result) {
+
+        if(!StringUtils.isNotEmpty(modifiedBy)){
+            modifiedBy = "system";
+        }
+
         if(status == BatchStatusEnum.COMPUTING.getValue()){
             return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
         }
-        ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
-        int approvalResult = 0;
-        if(status == BatchStatusEnum.NEW.getValue()){
-            approvalResult = ApprovalStatusEnum.DRAFT.getValue();
-        }else if(status == BatchStatusEnum.PENDING.getValue()){
-            approvalResult = ApprovalStatusEnum.AUDITING.getValue();
-        }else if(status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.CLOSED.getValue()){
-            approvalResult = ApprovalStatusEnum.APPROVE.getValue();
-        }else if(status == BatchStatusEnum.REJECT.getValue()){
-            approvalResult = ApprovalStatusEnum.DENIED.getValue();
+        if(UserContext.getUser() != null) {
+            ApprovalHistoryPO historyPO = new ApprovalHistoryPO();
+            int approvalResult = 0;
+            if (status == BatchStatusEnum.NEW.getValue()) {
+                approvalResult = ApprovalStatusEnum.DRAFT.getValue();
+            } else if (status == BatchStatusEnum.PENDING.getValue()) {
+                approvalResult = ApprovalStatusEnum.AUDITING.getValue();
+            } else if (status == BatchStatusEnum.APPROVAL.getValue() || status == BatchStatusEnum.CLOSED.getValue()) {
+                approvalResult = ApprovalStatusEnum.APPROVE.getValue();
+            } else if (status == BatchStatusEnum.REJECT.getValue()) {
+                approvalResult = ApprovalStatusEnum.DENIED.getValue();
+            }
+            historyPO.setApprovalResult(approvalResult);
+            historyPO.setBizCode(batchCode);
+            historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
+            historyPO.setCreatedBy(UserContext.getUser().getUserId());
+            historyPO.setCreatedName(UserContext.getUser().getDisplayName());
+            historyPO.setComments(comments);
+            approvalHistoryService.addApprovalHistory(historyPO);
         }
-        historyPO.setApprovalResult(approvalResult);
-        historyPO.setBizCode(batchCode);
-        historyPO.setBizType(BizTypeEnum.NORMAL_BATCH.getValue());
-        historyPO.setCreatedBy(UserContext.getUser().getUserId());
-        historyPO.setCreatedName(UserContext.getUser().getUserId());
-        historyPO.setComments(comments);
-        approvalHistoryService.addApprovalHistory(historyPO);
+
         return normalBatchMapper.auditBatch(batchCode,comments,status,modifiedBy,advancePeriod,result);
     }
 

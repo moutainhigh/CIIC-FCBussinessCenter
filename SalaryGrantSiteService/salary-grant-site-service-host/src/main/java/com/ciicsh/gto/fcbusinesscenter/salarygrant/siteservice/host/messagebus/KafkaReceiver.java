@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantWorkFlowEnums;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.WorkFlowTaskInfoService;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
@@ -17,6 +19,7 @@ import com.ciicsh.gto.sheetservice.api.MsgConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
+import com.github.pagehelper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -51,6 +54,8 @@ public class KafkaReceiver {
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
     @Autowired
     private SalaryGrantTaskQueryService salaryGrantTaskQueryService;
+    @Autowired
+    private WorkFlowTaskInfoService workFlowTaskInfoService;
 
     /**
      * 接收计算引擎关账消息，获取计算批次号
@@ -58,56 +63,50 @@ public class KafkaReceiver {
      */
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_TASK)
     public void salaryGrantMainTaskCreateTask(Message<ClosingMsg> message){
-        // 1、接收消息返回的计算批次号
-        String batchCode = message.getPayload().getBatchCode();
-        // 接收消息返回的批次类型
-        Integer batchType = message.getPayload().getBatchType();
-        Map batchParam = new HashMap();
-        batchParam.put("batchCode",batchCode);
-        batchParam.put("batchType",batchType);
-        // 2、根据计算批次号查询批次业务表的批次数据信息，包括计算结果数据及雇员服务协议信息。发起薪资发放任务单。
-        salaryGrantTaskProcessService.createSalaryGrantMainTask(batchParam);
-
+        ClosingMsg closingMsg = message.getPayload();
+        try{
+            if(!ObjectUtils.isEmpty(closingMsg)){
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> start").setContent(JSON.toJSONString(closingMsg)));
+                String batchCode = closingMsg.getBatchCode();
+                Integer batchType = closingMsg.getBatchType();
+                Long version = closingMsg.getVersion();
+                if(StringUtil.isEmpty(batchCode) || batchType == null || version == null){
+                    logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账").setContent("关账传入参数缺失，生成薪资发放任务单失败！"));
+                }else{
+                    salaryGrantTaskProcessService.toClosing(closingMsg);
+                }
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> end"));
+            }
+        }catch (Exception e){
+            Map map = new HashMap();
+            map.put("ClosingMsg", JSON.toJSONString(closingMsg));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> exception").setContent(e.getMessage()).setTags(map));
+        }
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_MAIN)
-    public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message){
-        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
-        String returnInfo = taskMsgDTO.toString();
-        //todo 把消息返回的任务信息插入到任务日志表中
-       // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getType(), message);
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
-    public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message){
-        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
-        String returnInfo = taskMsgDTO.toString();
-        //todo 把消息返回的任务信息插入到任务日志表中
-        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTB.getType(), message);
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_FOREIGN_CURRENCY)
-    public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message){
-        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
-        String returnInfo = taskMsgDTO.toString();
-        //todo 把消息返回的任务信息插入到任务日志表中
-        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTW.getType(), message);
     }
 
     @StreamListener(MsgConstants.FC.PAYROLL_NONLOCAL)
-    public void salaryGrantSubTaskSTCreateWorkFlow(Message<TaskCreateMsgDTO> message){
-        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
-        String returnInfo = taskMsgDTO.toString();
-        //todo 把消息返回的任务信息插入到任务日志表中
-        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    public void salaryGrantSubTaskSTACreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.STA.getType(), message);
     }
 
     @StreamListener(MsgConstants.FC.SUPPLIER_PAYMENT)
-    public void salaryGrantSupplierPaymentTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message){
-        TaskCreateMsgDTO taskMsgDTO = message.getPayload();
-        String returnInfo = taskMsgDTO.toString();
-        //todo 把消息返回的任务信息插入到任务日志表中
-        // logger.info("收到消息from BASE_ADJUST_YEARLY_NONLOCAL-useWork: " + returnInfo);
+    public void salaryGrantSupplierPaymentTaskCreateWorkFlow(String action, Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SPT.getType(), message);
     }
 
     /**
@@ -115,16 +114,14 @@ public class KafkaReceiver {
      * @param message
      */
     @StreamListener(MsgConstants.COMMON_TASKSERVICE_TASK_COMPLETE)
-    public void commonTaskserviceTaskComplete(Message<TaskCompleteMsgDTO> message){
-        TaskCompleteMsgDTO taskCompleteMsgDTO = message.getPayload();
-        String returnInfo = "taskId="+taskCompleteMsgDTO.getTaskId()+
-                ",taskType="+taskCompleteMsgDTO.getTaskType()+
-                ",missionId="+taskCompleteMsgDTO.getMissionId()+
-                ",processId="+taskCompleteMsgDTO.getProcessId()+
-                ",processDefinitionKey="+taskCompleteMsgDTO.getProcessDefinitionKey()+
-                ",Variables="+taskCompleteMsgDTO.getVariables();
-        //todo 把消息返回的任务信息插入到任务日志表中
-       // logger.info("收到任务完成消息: " + returnInfo);
+    public void commonTaskServiceTaskComplete(Message<TaskCompleteMsgDTO> message) {
+        try {
+            TaskCompleteMsgDTO  taskCompleteMsgDTO = message.getPayload();
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 ").setContent(JSON.toJSONString(taskCompleteMsgDTO)));
+            workFlowTaskInfoService.taskComplete(taskCompleteMsgDTO);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 --> exception").setContent(e.getMessage()));
+        }
     }
 
     /**
@@ -132,7 +129,7 @@ public class KafkaReceiver {
      * @param message
      */
     @StreamListener(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
-    public void commonTaskserviceProcessComplete(Message<ProcessCompleteMsgDTO> message){
+    public void commonTaskServiceProcessComplete(Message<ProcessCompleteMsgDTO> message) {
         ProcessCompleteMsgDTO processCompleteMsgDTO = message.getPayload();
         //todo 把消息返回的任务信息插入到任务日志表中
         String returnInfo = "processId="+processCompleteMsgDTO.getProcessId()+
@@ -198,4 +195,18 @@ public class KafkaReceiver {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> exception").setContent(e.getMessage()).setTags(map));
         }
     }
+
+    private void handleMessage(String action, Message<TaskCreateMsgDTO> message) {
+        try {
+            TaskCreateMsgDTO taskMsgDTO = message.getPayload();
+            if (workFlowTaskInfoService.selectWfTaskInfoByTaskId(taskMsgDTO.getTaskId()) == 0) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle(action + " --> start").setContent(JSON.toJSONString(taskMsgDTO)));
+                workFlowTaskInfoService.createMessage(taskMsgDTO);
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle(action + " --> end"));
+            }
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle(action + " --> exception").setContent(e.getMessage()));
+        }
+    }
+
 }

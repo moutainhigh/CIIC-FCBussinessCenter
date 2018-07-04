@@ -336,7 +336,11 @@
 
 
     <sql id="subTaskListField">
-        t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code,t.grant_mode,'' as grant_mode_name, t.grant_account_code, t.grant_account_name, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,'' as task_status_name, t.approved_opinion
+        t.salary_grant_sub_task_id task_id, t.salary_grant_sub_task_code task_code, t.grant_mode,'' as grant_mode_name, t.grant_account_code, t.grant_account_name, t.payment_total_sum,t.total_person_count,t.chinese_count,t.foreigner_count,t.task_status,t.task_type,'' as task_status_name, t.approved_opinion
+    </sql>
+
+    <sql id="settlementTaskListField">
+        t.salary_grant_sub_task_id, t.batch_code, t.salary_grant_main_task_code, t.salary_grant_sub_task_code, t.grant_mode, t.grant_type, t.task_status
     </sql>
 
     <sql id="sgDetailField">
@@ -364,6 +368,19 @@
             and t.is_active=1
         </where>
         order by t.grant_mode,t.salary_grant_sub_task_id
+    </select>
+
+    <select id="getSubListByBatchCode" resultMap="BaseResultMap">
+        select
+            <include refid="settlementTaskListField"></include>
+        from
+            sg_salary_grant_sub_task t
+        where
+            t.batch_code = #{batchCode}
+        and
+            t.grant_mode=1
+        and
+            t.is_active=1
     </select>
 
     <select id="selectTaskByTaskCode" resultMap="PageResultMap">
@@ -433,8 +450,12 @@
             t.modified_time = now()
         where
             t.salary_grant_sub_task_id = #{taskId}
-        and
-            t.modified_time = #{modifiedTime}
+        <if test="modifiedTime == null">
+            and t.modified_time is null
+        </if>
+        <if test="modifiedTime != null">
+            and t.modified_time = #{modifiedTime}
+        </if>
         and
             t.is_active = 1
     </update>

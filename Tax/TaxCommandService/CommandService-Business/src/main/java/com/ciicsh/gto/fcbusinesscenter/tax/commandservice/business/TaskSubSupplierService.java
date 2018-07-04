@@ -5,6 +5,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForTaskSubSupplier;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.support.ResponseForTaskSubSupplier;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -64,6 +65,14 @@ public interface TaskSubSupplierService {
      * @param requestForTaskSubSupplier
      */
     void rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier);
+
+    /**
+     * 更新划款滞纳金和罚金
+     * @param subSupplierId
+     * @param overdue
+     * @param fine
+     */
+    void updateTaskSubSupplierOverdueAndFine(Long subSupplierId, BigDecimal overdue, BigDecimal fine);
 
 }
 
