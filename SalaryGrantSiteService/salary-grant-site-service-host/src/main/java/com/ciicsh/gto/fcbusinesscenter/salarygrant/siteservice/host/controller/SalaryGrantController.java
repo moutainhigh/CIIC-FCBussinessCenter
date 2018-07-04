@@ -306,7 +306,6 @@ public class SalaryGrantController {
         try {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("主任务单撤回").setContent(JSON.toJSONString(dto)));
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-            bo.setApprovedOpinion(dto.getRemark());
             bo.setUserId(UserContext.getUserId());
             salaryGrantWorkFlowService.doRetreatTask(bo);
             return ResultGenerator.genSuccessResult();
