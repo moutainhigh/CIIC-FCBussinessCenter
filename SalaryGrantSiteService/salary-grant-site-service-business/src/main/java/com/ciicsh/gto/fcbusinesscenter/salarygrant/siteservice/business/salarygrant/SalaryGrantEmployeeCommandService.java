@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 
 import java.util.List;
@@ -66,5 +67,5 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      *
      * @return
      */
-    boolean saveSalaryAdjustmentInfoForEmployee();
+    boolean saveSalaryAdjustmentInfoForEmployee(SalaryGrantMainTaskPO salaryGrantMainTaskPO);
 }

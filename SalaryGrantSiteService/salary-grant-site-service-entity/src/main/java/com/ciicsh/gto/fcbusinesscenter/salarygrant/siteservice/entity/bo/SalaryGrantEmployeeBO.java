@@ -96,5 +96,8 @@ public class SalaryGrantEmployeeBO extends SalaryGrantEmployeePO implements Seri
      * 调整信息
      */
     private String adjustInfo;
-
+    /**
+     * 信息调整日期字符串
+     */
+    private String adjustInfoDateStr;
 }

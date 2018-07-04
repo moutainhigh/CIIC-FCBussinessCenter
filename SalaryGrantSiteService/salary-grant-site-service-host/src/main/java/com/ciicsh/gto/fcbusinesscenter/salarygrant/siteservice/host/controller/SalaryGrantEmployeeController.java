@@ -265,7 +265,7 @@ public class SalaryGrantEmployeeController {
      * @param salaryGrantEmployeeId
      * @return
      */
-    @RequestMapping("/supplierDefer/selectAdjustCompareInfo/{salaryGrantEmployeeId}")
+    @RequestMapping("/SalaryGrantEmployee/selectAdjustCompareInfo/{salaryGrantEmployeeId}")
     public List<SalaryGrantEmployeeDTO> selectAdjustCompareInfo(@PathVariable Long salaryGrantEmployeeId) {
         logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("查询雇员调整信息").setContent("雇员表ID: " + salaryGrantEmployeeId));
 
@@ -282,6 +282,25 @@ public class SalaryGrantEmployeeController {
         }
 
         return retEmployeePOList;
+    }
+
+    /**
+     * 查询雇员变更信息
+     *
+     * @param salaryGrantEmployeeId
+     * @return
+     */
+    @RequestMapping("/SalaryGrantEmployee/selectChangeLog/{salaryGrantEmployeeId}")
+    public List<SalaryGrantEmployeeDTO> selectChangeLog(@PathVariable Long salaryGrantEmployeeId) {
+        List<SalaryGrantEmployeeBO> employeeBOList = employeeQueryService.selectChangeLog(salaryGrantEmployeeId);
+        if (!CollectionUtils.isEmpty(employeeBOList)) {
+            String employeeBOListJsonStr = JSONObject.toJSONString(employeeBOList);
+
+            List<SalaryGrantEmployeeDTO> employeeDTOList = JSONObject.parseArray(employeeBOListJsonStr, SalaryGrantEmployeeDTO.class);
+            return employeeDTOList;
+        }
+
+        return new ArrayList<>();
     }
 
 }
