@@ -5,14 +5,12 @@ import com.ciicsh.gt1.BaseOpt;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.MongodbService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchAccountMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeInfoBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeServiceBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch.*;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeServiceBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchNoStatus;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
@@ -36,10 +34,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MongodbServiceImpl extends BaseOpt implements MongodbService{
@@ -70,6 +65,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
     private CalculationBatchMapper calculationBatchMapper;
 
     @Autowired
+    private CalculationBatchAccountMapper calculationBatchAccountMapper;
+
+    @Autowired
     private MongodbServiceImpl mongodbService;
 
     @Transactional(rollbackFor = Exception.class)
@@ -84,6 +82,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
          CalResultBO calResultBO = new CalResultBO();//计算结果（薪资项）（mongodb）
 
          EmpInfoBO empInfoBO = new EmpInfoBO();//雇员基础信息（mongodb）
+
+         AccountBO declarationAccountBO = new AccountBO();//申报账户（mongodb）
+
+         AccountBO contributionAccountBO = new AccountBO();//缴纳账户（mongodb）
+
+         Set<String> accounts = new HashSet<>();//批次已处理账户集合
 
          CalculationBatchPO newCal = new CalculationBatchPO();//批次主信息
 
@@ -191,12 +195,44 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 //服务协议
                 DBObject empAgreement = (DBObject)empInfo.get("雇员服务协议");
                 DBObject taxInfo_agreement = (DBObject)empAgreement.get("taxInfo");
-                DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccount");
-                DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccount");
+
+                //申报账户
+                DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccountDetail");
+                this.setObjectFieldsEmpty(declarationAccountBO);
+                declarationAccountBO.setAccountName(convert(decAccount,"accountName",String.class));
+                declarationAccountBO.setAccountNumber(convert(decAccount,"accountNumber",String.class));
+                declarationAccountBO.setCommissionContractSerialNumber(convert(decAccount,"commissionContractSerialNumber",String.class));
+                declarationAccountBO.setProvinceCode(convert(decAccount,"provinceCode",String.class));
+                declarationAccountBO.setCityCode(convert(decAccount,"cityCode",String.class));
+                declarationAccountBO.setSubstation(convert(decAccount,"substation",String.class));
+                declarationAccountBO.setTaxpayerAccountName(convert(decAccount,"taxpayerAccountName",String.class));
+                declarationAccountBO.setAccount(convert(decAccount,"account",String.class));
+                declarationAccountBO.setTaxAccountOpeningBank(convert(decAccount,"taxAccountOpeningBank",String.class));
+                declarationAccountBO.setTaxpayerName(convert(decAccount,"taxpayerName",String.class));
+                declarationAccountBO.setStation(convert(decAccount,"station",String.class));
+                declarationAccountBO.setSource(convert(decAccount,"source",String.class));
+                this.saveOrUpdateAccount(accounts,declarationAccountBO);
+
+                //缴纳账户
+                DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccountDetail");
+                this.setObjectFieldsEmpty(contributionAccountBO);
+                contributionAccountBO.setAccountName(convert(conAccount,"accountName",String.class));
+                contributionAccountBO.setAccountNumber(convert(conAccount,"accountNumber",String.class));
+                contributionAccountBO.setCommissionContractSerialNumber(convert(conAccount,"commissionContractSerialNumber",String.class));
+                contributionAccountBO.setProvinceCode(convert(conAccount,"provinceCode",String.class));
+                contributionAccountBO.setCityCode(convert(conAccount,"cityCode",String.class));
+                contributionAccountBO.setSubstation(convert(conAccount,"substation",String.class));
+                contributionAccountBO.setTaxpayerAccountName(convert(conAccount,"taxpayerAccountName",String.class));
+                contributionAccountBO.setAccount(convert(conAccount,"account",String.class));
+                contributionAccountBO.setTaxAccountOpeningBank(convert(conAccount,"taxAccountOpeningBank",String.class));
+                contributionAccountBO.setTaxpayerName(convert(conAccount,"taxpayerName",String.class));
+                contributionAccountBO.setStation(convert(conAccount,"station",String.class));
+                contributionAccountBO.setSource(convert(conAccount,"source",String.class));
+                this.saveOrUpdateAccount(accounts,contributionAccountBO);
 
                 this.setObjectFieldsEmpty(agreementBO);
-                agreementBO.setDeclareAccount(convert(decAccount,"accountname",String.class));//申报账户
-                agreementBO.setPayAccount(convert(conAccount,"accountname",String.class));//缴纳账户
+                agreementBO.setDeclareAccount(declarationAccountBO.getAccountNumber());//申报账户
+                agreementBO.setPayAccount(contributionAccountBO.getAccountNumber());//缴纳账户
 
                 Integer taxPeriod = convert(taxInfo_agreement,"taxPeriod",Integer.class);//个税期间（0、1、2）
                 if(taxPeriod != null && mainBO.getIncomeYearMonth()!=null){
@@ -722,6 +758,28 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         employeeServiceBatchPO.setCalBatchDetailId(calculationBatchDetailPO.getId());
         employeeInfoBatchMapper.insert(employeeInfoBatchPO);//新增个税信息
         employeeServiceBatchMapper.insert(employeeServiceBatchPO);//新增服务协议
+    }
+
+    //新增或更新账户
+    private void saveOrUpdateAccount(Set<String> accountNumber, AccountBO accountBO){
+        if( StrKit.isNotEmpty(accountBO.getAccountNumber())
+            && !accountNumber.contains(accountBO.getAccountNumber())){
+            CalculationBatchAccountPO calculationBatchAccountPO = new CalculationBatchAccountPO();
+            BeanUtils.copyProperties(accountBO, calculationBatchAccountPO);
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.eq("account_number",accountBO.getAccountNumber());
+            wrapper.eq("is_active",true);
+            List<CalculationBatchAccountPO> cs = calculationBatchAccountMapper.selectList(wrapper);
+
+            if(cs!=null && cs.size()>0){
+                calculationBatchAccountPO.setId(cs.get(0).getId());
+                calculationBatchAccountMapper.updateById(calculationBatchAccountPO);
+            }else{
+                calculationBatchAccountMapper.insert(calculationBatchAccountPO);
+            }
+            accountNumber.add(accountBO.getAccountNumber());
+        }
     }
 
     private String getBatchType(int type){

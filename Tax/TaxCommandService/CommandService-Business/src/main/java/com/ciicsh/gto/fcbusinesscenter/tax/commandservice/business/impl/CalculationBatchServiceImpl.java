@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBa
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.DroolsService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchAccountMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
@@ -85,6 +86,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
     @Autowired
     private DroolsService droolsService;
+
+    @Autowired
+    private CalculationBatchAccountMapper calculationBatchAccountMapper;
 
     @Override
     public ResponseForCalBatch queryCalculationBatchs(RequestForCalBatch requestForCalBatch) {
@@ -221,8 +225,8 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubDeclarePO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubDeclarePO.setManagerName(p.getManagerName());//管理方名称
                         taskSubDeclarePO.setStatus("00");//草稿
-                        taskSubDeclarePO.setAccountType(cbd.getAccountType());//账户类型
-                        taskSubDeclarePO.setAreaType(cbd.getAreaType());//区域类型
+                        taskSubDeclarePO.setAccountType(this.accountType(taskSubDeclarePO.getDeclareAccount()).get("accountType"));//账户类型
+                        taskSubDeclarePO.setAreaType(this.accountType(taskSubDeclarePO.getDeclareAccount()).get("areaType"));//区域类型
                         //新增申报子任务
                         taskSubDeclareService.insert(taskSubDeclarePO);
                         //记录申报子任务
@@ -256,7 +260,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubMoneyPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubMoneyPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubMoneyPO.setStatus("00");//草稿
-                        taskSubMoneyPO.setAreaType(cbd.getAreaType());//区域类型
+                        taskSubMoneyPO.setAreaType(this.accountType(taskSubMoneyPO.getPaymentAccount()).get("areaType"));//区域类型
                         //新增划款子任务
                         taskSubMoneyService.insert(taskSubMoneyPO);
                         //记录划款子任务
@@ -288,7 +292,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubPaymentPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubPaymentPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubPaymentPO.setStatus("00");//草稿
-                        taskSubPaymentPO.setAreaType(cbd.getAreaType());//区域类型
+                        taskSubPaymentPO.setAreaType(this.accountType(taskSubPaymentPO.getPaymentAccount()).get("areaType"));//区域类型
                         //新增划款子任务
                         taskSubPaymentService.insert(taskSubPaymentPO);
                         //记录缴纳子任务已创建
@@ -324,7 +328,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         taskSubSupplierPO.setManagerNo(p.getManagerNo());//管理方编号
                         taskSubSupplierPO.setManagerName(p.getManagerName());//管理方名称
                         taskSubSupplierPO.setStatus("00");//草稿
-                        taskSubSupplierPO.setAccountType(cbd.getAccountType());//账户类型
+                        taskSubSupplierPO.setAccountType(this.accountType(taskSubSupplierPO.getDeclareAccount()).get("accountType"));//账户类型
                         //新增供应商处理子任务
                         taskSubSupplierService.insert(taskSubSupplierPO);
                         //记录供应商处理子任务已创建
@@ -679,5 +683,40 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
             }
         }
+    }
+
+    /**
+     * 返回账户账户类型、区域类型
+     * @param accountNumber
+     */
+    public Map<String,String> accountType(String accountNumber) {
+        String accountType=null;//账户类型
+        String areaType=null;//区域类型
+        Map<String,String> m = new HashMap<>();
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.eq("account_number",accountNumber);
+        wrapper.eq("is_active",true);
+        List<CalculationBatchAccountPO> cs = calculationBatchAccountMapper.selectList(wrapper);
+        if(cs!=null && cs.size()>0){
+            CalculationBatchAccountPO calculationBatchAccountPO = cs.get(0);
+            if(StrKit.isNotEmpty(calculationBatchAccountPO.getProvinceCode())){
+                //上海(provinceCode:310000)为本地
+                if(calculationBatchAccountPO.getProvinceCode().trim().equals("310000")){
+                    accountType = "00";
+                }else{
+                    accountType = "01";
+                }
+            }
+            if(StrKit.isNotEmpty(calculationBatchAccountPO.getSource())){
+                if(calculationBatchAccountPO.getSource().trim().equals("0")){
+                    areaType = "01";
+                }else{
+                    areaType = "00";
+                }
+            }
+        }
+        m.put("accountType",accountType);
+        m.put("areaType",areaType);
+        return m;
     }
 }
