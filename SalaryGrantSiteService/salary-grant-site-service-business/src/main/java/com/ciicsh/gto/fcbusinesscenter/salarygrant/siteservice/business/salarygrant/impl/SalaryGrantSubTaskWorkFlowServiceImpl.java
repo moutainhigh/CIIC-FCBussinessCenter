@@ -117,16 +117,16 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
         subPo = salaryGrantSubTaskMapper.selectById(subPo);
         if (!ObjectUtils.isEmpty(subPo)) {
+            BeanUtils.copyProperties(subPo, historyPO);
+            assignValue(subPo, historyPO, status);
+            salaryGrantTaskHistoryMapper.insert(historyPO);
+            salaryGrantEmployeeCommandService.saveToHistory(historyPO.getSalaryGrantTaskHistoryId(), historyPO.getTaskCode(), historyPO.getTaskType());
             subPo.setOperatorUserId(bo.getUserId());
             subPo.setModifiedTime(new Date());
             subPo.setModifiedBy(bo.getUserId());
             subPo.setApprovedOpinion(bo.getApprovedOpinion());
             subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
             salaryGrantSubTaskMapper.updateById(subPo);
-            BeanUtils.copyProperties(subPo, historyPO);
-            assignValue(subPo,historyPO, status);
-            salaryGrantTaskHistoryMapper.insert(historyPO);
-            salaryGrantEmployeeCommandService.saveToHistory(historyPO.getSalaryGrantTaskHistoryId(), historyPO.getTaskCode(), historyPO.getTaskType());
         }
     }
 

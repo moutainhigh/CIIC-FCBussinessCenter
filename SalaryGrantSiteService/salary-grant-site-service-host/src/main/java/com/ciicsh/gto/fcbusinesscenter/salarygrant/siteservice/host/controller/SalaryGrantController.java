@@ -76,6 +76,23 @@ public class SalaryGrantController {
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
 
     /**
+     * 刷新数据
+     * @author chenpb
+     * @date 2018-07-04
+     * @return
+     */
+    @RequestMapping(value="/refresh", method = RequestMethod.GET)
+    public Result refresh() {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("刷新数据"));
+            return ResultGenerator.genSuccessResult();
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("刷新数据异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("刷新数据失败！");
+        }
+    }
+
+    /**
      * 薪资发放任务单一览
      * @author chenpb
      * @date 2018-04-20
@@ -451,38 +468,20 @@ public class SalaryGrantController {
     }
 
     /**
-     * 发放账户变化查询
+     * 雇员变化信息
      * @author chenpb
-     * @date 2018-04-27
+     * @date 2018-07-04
      * @param
      * @return
      */
-    @RequestMapping(value="/selectPayrollAccount", method = RequestMethod.POST)
-    public Result selectPayrollAccount(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化发放账户").setContent(JSON.toJSONString(dto)));
+    @RequestMapping(value="/empInfo", method = RequestMethod.POST)
+    public Result empInfo(@RequestBody EmployeeHandleDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员变化信息").setContent(JSON.toJSONString(dto)));
         try {
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化发放账户异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("查询变化发放账户失败");
-        }
-    }
-
-    /**
-     * 收款账户变化查询
-     * @author chenpb
-     * @date 2018-04-27
-     * @param
-     * @return
-     */
-    @RequestMapping(value="/selectPayeeAccount", method = RequestMethod.POST)
-    public Result selectPayeeAccount(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化收款账户").setContent(JSON.toJSONString(dto)));
-        try {
-            return ResultGenerator.genSuccessResult();
-        } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询变化收款账户异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("查询变化收款账户失败");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员变化信息异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("查询雇员变化信息失败！");
         }
     }
 
