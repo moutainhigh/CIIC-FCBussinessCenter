@@ -144,7 +144,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 empInfoBO.setGender(convert(empInfo,"性别",String.class));//性别
                 empInfoBO.setBirthday(str2Date(convert(empInfo,"出生日期",String.class),"yyyy-MM-dd"));//出生日期
                 empInfoBO.setMobile(convert(empInfo,"联系电话",String.class));//联系电话
-                empInfoBO.setCompanyNo(convert(empInfo,"公司编号",String.class));//公司编号
+//                empInfoBO.setCompanyNo(convert(empInfo,"公司编号",String.class));//公司编号
                 empInfoBO.setEntryDate(str2Date(convert(empInfo,"入职日期",String.class),"yyyy-MM-dd"));//入职日期
                 empInfoBO.setLeaveDate(str2Date(convert(empInfo,"离职日期",String.class),"yyyy-MM-dd"));//离职日期
 
@@ -194,8 +194,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
                 //服务协议
                 DBObject empAgreement = (DBObject)empInfo.get("雇员服务协议");
-                DBObject taxInfo_agreement = (DBObject)empAgreement.get("taxInfo");
 
+                taxInfoBO.setCompanyNo(convert(empAgreement,"companyCode",String.class));//公司编号
+                taxInfoBO.setCompanyName(convert(empAgreement,"companyName",String.class));//公司名称
+
+                //个税部分
+                DBObject taxInfo_agreement = (DBObject)empAgreement.get("taxInfo");
                 //申报账户
                 //DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccountDetail");
                 DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccount");
