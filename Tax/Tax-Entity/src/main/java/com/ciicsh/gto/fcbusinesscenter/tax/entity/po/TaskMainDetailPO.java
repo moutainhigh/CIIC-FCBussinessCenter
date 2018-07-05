@@ -319,6 +319,33 @@ public class TaskMainDetailPO extends Model<TaskMainDetailPO> {
 	//其他扣除
 	private BigDecimal others;
 
+	/**
+	 * 申报账户名称
+	 */
+	@TableField("declare_account_name")
+	private String declareAccountName;
+	/**
+	 * 缴纳账户名称
+	 */
+	@TableField("pay_account_name")
+	private String payAccountName;
+
+	public String getDeclareAccountName() {
+		return declareAccountName;
+	}
+
+	public void setDeclareAccountName(String declareAccountName) {
+		this.declareAccountName = declareAccountName;
+	}
+
+	public String getPayAccountName() {
+		return payAccountName;
+	}
+
+	public void setPayAccountName(String payAccountName) {
+		this.payAccountName = payAccountName;
+	}
+
 	public BigDecimal getOthers() {
 		return others;
 	}

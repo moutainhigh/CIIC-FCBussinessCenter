@@ -201,11 +201,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 //个税部分
                 DBObject taxInfo_agreement = (DBObject)empAgreement.get("taxInfo");
                 //申报账户
-                //DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccountDetail");
-                DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccount");
+                DBObject decAccount = (DBObject)taxInfo_agreement.get("declarationAccountDetail");
                 this.setObjectFieldsEmpty(declarationAccountBO);
-                declarationAccountBO.setAccountName(convert(decAccount,"accountname",String.class));
-                /*declarationAccountBO.setAccountNumber(convert(decAccount,"accountNumber",String.class));
+                declarationAccountBO.setAccountName(convert(decAccount,"accountName",String.class));
+                declarationAccountBO.setAccountNumber(convert(decAccount,"accountNumber",String.class));
                 declarationAccountBO.setCommissionContractSerialNumber(convert(decAccount,"commissionContractSerialNumber",String.class));
                 declarationAccountBO.setProvinceCode(convert(decAccount,"provinceCode",String.class));
                 declarationAccountBO.setCityCode(convert(decAccount,"cityCode",String.class));
@@ -215,15 +214,14 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 declarationAccountBO.setTaxAccountOpeningBank(convert(decAccount,"taxAccountOpeningBank",String.class));
                 declarationAccountBO.setTaxpayerName(convert(decAccount,"taxpayerName",String.class));
                 declarationAccountBO.setStation(convert(decAccount,"station",String.class));
-                declarationAccountBO.setSource(convert(decAccount,"source",String.class));
-                this.saveOrUpdateAccount(accounts,declarationAccountBO);*/
+                declarationAccountBO.setSource(convert(decAccount,"source",Integer.class)==null?null:convert(decAccount,"source",Integer.class).toString());
+                this.saveOrUpdateAccount(accounts,declarationAccountBO);
 
                 //缴纳账户
-                //DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccountDetail");
-                DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccount");
+                DBObject conAccount = (DBObject)taxInfo_agreement.get("contributionAccountDetail");
                 this.setObjectFieldsEmpty(contributionAccountBO);
-                contributionAccountBO.setAccountName(convert(conAccount,"accountname",String.class));
-                /*contributionAccountBO.setAccountNumber(convert(conAccount,"accountNumber",String.class));
+                contributionAccountBO.setAccountName(convert(conAccount,"accountName",String.class));
+                contributionAccountBO.setAccountNumber(convert(conAccount,"accountNumber",String.class));
                 contributionAccountBO.setCommissionContractSerialNumber(convert(conAccount,"commissionContractSerialNumber",String.class));
                 contributionAccountBO.setProvinceCode(convert(conAccount,"provinceCode",String.class));
                 contributionAccountBO.setCityCode(convert(conAccount,"cityCode",String.class));
@@ -233,12 +231,14 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 contributionAccountBO.setTaxAccountOpeningBank(convert(conAccount,"taxAccountOpeningBank",String.class));
                 contributionAccountBO.setTaxpayerName(convert(conAccount,"taxpayerName",String.class));
                 contributionAccountBO.setStation(convert(conAccount,"station",String.class));
-                contributionAccountBO.setSource(convert(conAccount,"source",String.class));
-                this.saveOrUpdateAccount(accounts,contributionAccountBO);*/
+                contributionAccountBO.setSource(convert(decAccount,"source",Integer.class)==null?null:convert(decAccount,"source",Integer.class).toString());
+                this.saveOrUpdateAccount(accounts,contributionAccountBO);
 
                 this.setObjectFieldsEmpty(agreementBO);
-                agreementBO.setDeclareAccount(declarationAccountBO.getAccountName());//申报账户
-                agreementBO.setPayAccount(contributionAccountBO.getAccountName());//缴纳账户
+                agreementBO.setDeclareAccount(declarationAccountBO.getAccountNumber());//申报账户
+                agreementBO.setDeclareAccountName(declarationAccountBO.getAccountName());//申报账户名称
+                agreementBO.setPayAccount(contributionAccountBO.getAccountNumber());//缴纳账户
+                agreementBO.setPayAccountName(contributionAccountBO.getAccountName());//缴纳账户名称
 
                 Integer taxPeriod = convert(taxInfo_agreement,"taxPeriod",Integer.class);//个税期间（0、1、2）
                 if(taxPeriod != null && mainBO.getIncomeYearMonth()!=null){
@@ -740,7 +740,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         calculationBatchDetailPO.setIdType(taxInfoBO.getCertType());//报税证件类型
         calculationBatchDetailPO.setIdNo(taxInfoBO.getCertNo());//报税证件号
         calculationBatchDetailPO.setDeclareAccount(agreementBO.getDeclareAccount());//申报账户
+        calculationBatchDetailPO.setDeclareAccountName(agreementBO.getDeclareAccountName());//申报账户名称
         calculationBatchDetailPO.setPayAccount(agreementBO.getPayAccount());//缴纳账户
+        calculationBatchDetailPO.setPayAccountName(agreementBO.getPayAccountName());//缴纳账户名称
         calculationBatchDetailPO.setCalculationBatchId(newCal.getId());//批次id
         return calculationBatchDetailPO;
     }
