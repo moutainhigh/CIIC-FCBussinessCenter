@@ -593,7 +593,7 @@
 
 	<select id="getBatchIdListByManagementId" resultType="java.lang.String">
 		SELECT
-		code
+		concat('1,',code) as code
 		FROM
 		pr_normal_batch
 		WHERE
@@ -605,7 +605,7 @@
 		UNION
 
 		SELECT
-		ab.adjust_batch_code as code
+		concat('2,',ab.adjust_batch_code) as code
 		FROM
 		pr_adjust_batch ab
 		JOIN pr_normal_batch nb
@@ -619,7 +619,7 @@
 		UNION
 
 		SELECT
-		btb.back_tracking_batch_code as code
+			concat('3,',btb.back_tracking_batch_code) as code
 		FROM
 		pr_back_tracking_batch btb
 		JOIN pr_normal_batch nb
@@ -673,7 +673,6 @@
 			<when test="batchType == 1">
 				update pr_normal_batch
 				set advance_period = #{advancePeriod},
-					advance_day	= #{advanceDay},
 					has_advance	= #{hasAdvance},
 					modified_by	= #{modifyBy}
 				where code = #{code}
@@ -681,7 +680,6 @@
 			<when test="batchType == 2">
 				update pr_adjust_batch
 				set advance_period = #{advancePeriod},
-					advance_day	= #{advanceDay},
 					has_advance	= #{hasAdvance},
 					modified_by	= #{modifyBy}
 				where adjust_batch_code = #{code}
@@ -689,7 +687,6 @@
 			<otherwise>
 				update pr_back_tracking_batch
 				set advance_period = #{advancePeriod},
-					advance_day	= #{advanceDay},
 					has_advance	= #{hasAdvance},
 					modified_by	= #{modifyBy}
 				where back_tracking_batch_code = #{code}

@@ -189,7 +189,6 @@ public class BatchProviderController implements BatchProxy {
     public int updateAdvancedBatch(@RequestBody AdvanceBatchInfoDTO advanceBatchInfoDTO) {
 
         AdvanceBatchInfoPO advanceBatchInfoPO = new AdvanceBatchInfoPO();
-        advanceBatchInfoPO.setAdvanceDay(advanceBatchInfoDTO.getAdvanceDay());
         advanceBatchInfoPO.setAdvancePeriod(advanceBatchInfoDTO.getAdvancePeriod());
         advanceBatchInfoPO.setBatchType(advanceBatchInfoDTO.getBatchType());
         advanceBatchInfoPO.setCode(advanceBatchInfoDTO.getCode());

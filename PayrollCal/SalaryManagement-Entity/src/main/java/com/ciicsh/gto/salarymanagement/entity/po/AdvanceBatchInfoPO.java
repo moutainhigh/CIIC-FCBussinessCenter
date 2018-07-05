@@ -12,11 +12,8 @@ public class AdvanceBatchInfoPO {
      */
     private String advancePeriod;
 
-    /*周期垫付日*/
-    private int advanceDay;
-
     /**
-     * 是否垫付：0表示未垫付，1 表示周期垫付，2表示偶然垫付，3表示水单垫付
+     * 是否垫付：0表示未垫付，1 表示周期垫付，2表示偶然垫付，3表示水单垫付，4表示水单垫付，3表示水单垫付,4-AF垫付;5-预付款垫付
      */
     private int hasAdvance;
 
@@ -45,14 +42,6 @@ public class AdvanceBatchInfoPO {
 
     public void setAdvancePeriod(String advancePeriod) {
         this.advancePeriod = advancePeriod;
-    }
-
-    public int getAdvanceDay() {
-        return advanceDay;
-    }
-
-    public void setAdvanceDay(int advanceDay) {
-        this.advanceDay = advanceDay;
     }
 
     public int getHasAdvance() {
