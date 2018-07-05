@@ -78,12 +78,14 @@ public class GroupController implements PayrollGroupProxy{
     @GetMapping(value = "/copyPrGroup")
     public JsonResult copyPrGroup(@RequestParam String srcCode,
                                   @RequestParam String newName,
-                                  @RequestParam String managementId){
+                                  @RequestParam String managementId,
+                                  @RequestParam String remark){
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
         newEntity.setGroupName(newName);
         newEntity.setManagementId(managementId);
+        newEntity.setRemark(remark);
         boolean result;
         try {
             result = prGroupService.copyPrGroup(srcEntity, newEntity);
@@ -220,6 +222,12 @@ public class GroupController implements PayrollGroupProxy{
         return JsonResult.success(nameList);
     }
 
+    /**
+     * 审批薪资组
+     * @param code 薪资组code
+     * @param paramItem 薪资组信息
+     * @return 审批结果
+     */
     @PutMapping("/approvePayrollGroup/{code}")
     public JsonResult approvePayrollGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
