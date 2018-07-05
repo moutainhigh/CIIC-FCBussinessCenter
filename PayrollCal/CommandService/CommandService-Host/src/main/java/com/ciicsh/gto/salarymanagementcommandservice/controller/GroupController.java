@@ -21,6 +21,7 @@ import com.ciicsh.gto.salecenter.apiservice.api.dto.management.DetailResponseDTO
 import com.ciicsh.gto.salecenter.apiservice.api.dto.management.GetManagementRequestDTO;
 import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -85,7 +86,10 @@ public class GroupController implements PayrollGroupProxy{
         BeanUtils.copyProperties(srcEntity, newEntity);
         newEntity.setGroupName(newName);
         newEntity.setManagementId(managementId);
-        newEntity.setRemark(remark);
+        newEntity.setRemark(srcEntity.getRemark());
+        if (StringUtils.isNotBlank(remark)){
+            newEntity.setRemark(remark);
+        }
         boolean result;
         try {
             result = prGroupService.copyPrGroup(srcEntity, newEntity);
