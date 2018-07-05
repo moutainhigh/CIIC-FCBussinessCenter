@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGra
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
@@ -59,6 +60,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private SalaryGrantSubTaskProcessService salaryGrantSubTaskProcessService;
 
     @Override
     public Map startSalaryGrantTaskProcess(SalaryGrantTaskMissionRequestDTO salaryGrantTaskMissionRequestDTO) {
@@ -442,8 +445,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
                 //6、检查提交的雇员信息是否有变更，可以从自动暂缓改为正常，调用雇员信息变更接口。--后面补充，步骤预留
                 //7、调用接口方法进行拆分子表处理 --后面补充，步骤预留
-                //8、如果有拆分的子表，把子表任务单状态为taskStatus=12，批量修改。--后面补充，步骤预留
-                //9、调用工作流程，提交动作处理。--后面补充，步骤预留
+                salaryGrantSubTaskProcessService.toSubmitMainTask(mainTaskPO);
             }
         }
 
@@ -555,29 +557,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 grantMainTaskPO.setApprovedOpinion(salaryGrantTaskBO.getApprovedOpinion()); //审批意见
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
-                //2、查询任务单子表信息SalaryGrantSubTaskPO，
-                //   查询条件：子表.salary_grant_main_task_code = 主表.salary_grant_main_task_code and is_active = 1，如果查询结果不为空则：
-                //  （1）更新子表字段:
-                //         子表任务单类型task_type=1，则更新字段task_status = 2 ；
-                //         子表任务单类型task_type=2，则更新字段task_status = 10 ；
-                EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
-                subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskPO.getSalaryGrantMainTaskCode());
-                List<SalaryGrantSubTaskPO> subTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
-                if (!CollectionUtils.isEmpty(subTaskPOList)) {
-                    for (SalaryGrantSubTaskPO subTaskPO : subTaskPOList) {
-                        SalaryGrantSubTaskPO grantSubTaskPO = new SalaryGrantSubTaskPO();
-                        grantSubTaskPO.setSalaryGrantSubTaskId(subTaskPO.getSalaryGrantSubTaskId());
-
-                        if (1 == subTaskPO.getTaskType()) {
-                            grantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS); //状态:2-审批通过
-                        }
-                        if (2 == subTaskPO.getTaskType()) {
-                            grantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_COMBINE_WAIT); //状态:10-待合并
-                        }
-
-                        salaryGrantSubTaskMapper.updateById(grantSubTaskPO);
-                    }
-                }
+                //拆分子表
+                salaryGrantSubTaskProcessService.toApproveMainTask(mainTaskPO);
 
                 //3、暂缓人员信息进入暂缓池，调用接口SalaryGrantEmployeeCommandService. processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO)
                 salaryGrantEmployeeCommandService.processReprieveToPoll(salaryGrantTaskBO);
@@ -592,8 +573,6 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         commonService.updateBatchStatus(mainTaskPO, firstPrNormalBatchDTO);
                     }
                 }
-
-                //5、调用工作流程，提交动作处理。--后面补充，步骤预留
             }
         }
 

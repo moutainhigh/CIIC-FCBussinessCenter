@@ -153,7 +153,7 @@ public class DroolsServiceImpl implements DroolsService {
             incomeForTax = m.get("incomeForTax");
 
             //收入额
-            incomeTotal=incomeForTax.add(donation).add(deductTakeoff).add(otherDeductions).add(businessHealthInsurance).add(deductHouseFund).add(deductDlenessInsurance)
+            incomeTotal=incomeForTax.add(deduction).add(donation).add(deductTakeoff).add(otherDeductions).add(businessHealthInsurance).add(deductHouseFund).add(deductDlenessInsurance)
                     .add(deductMedicalInsurance).add(deductRetirementInsurance).add(dutyFreeAllowance).add(annuity).add(incomeDutyfree);
 
             //税率

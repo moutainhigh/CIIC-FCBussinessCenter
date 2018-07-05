@@ -164,6 +164,30 @@ public class TaxInfoBO {
      * 适用公式
      */
     private String applicableFormula;
+    /**
+     * 公司编号
+     */
+    private String companyNo;
+    /**
+     * 公司名称
+     */
+    private String companyName;
+
+    public String getCompanyNo() {
+        return companyNo;
+    }
+
+    public void setCompanyNo(String companyNo) {
+        this.companyNo = companyNo;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
 
     public String getApplicableFormula() {
         return applicableFormula;

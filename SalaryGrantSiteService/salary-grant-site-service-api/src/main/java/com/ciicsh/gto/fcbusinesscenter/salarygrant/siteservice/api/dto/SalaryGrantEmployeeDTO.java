@@ -112,4 +112,8 @@ public class SalaryGrantEmployeeDTO extends PagingDTO implements Serializable {
      * 调整信息
      */
     private String adjustInfo;
+    /**
+     * 信息调整日期字符串
+     */
+    private String adjustInfoDateStr;
 }

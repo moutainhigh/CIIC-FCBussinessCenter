@@ -317,6 +317,39 @@ public class CalculationBatchDetailBO {
      */
     private BigDecimal exerciseTaxAmount;
 
+    //税前合计
+    private BigDecimal preTaxAggregate;
+
+    //免税津贴
+    private BigDecimal dutyFreeAllowance;
+
+    //其他扣除
+    private BigDecimal others;
+
+    public BigDecimal getPreTaxAggregate() {
+        return preTaxAggregate;
+    }
+
+    public void setPreTaxAggregate(BigDecimal preTaxAggregate) {
+        this.preTaxAggregate = preTaxAggregate;
+    }
+
+    public BigDecimal getDutyFreeAllowance() {
+        return dutyFreeAllowance;
+    }
+
+    public void setDutyFreeAllowance(BigDecimal dutyFreeAllowance) {
+        this.dutyFreeAllowance = dutyFreeAllowance;
+    }
+
+    public BigDecimal getOthers() {
+        return others;
+    }
+
+    public void setOthers(BigDecimal others) {
+        this.others = others;
+    }
+
     public BigDecimal getAnnuity() {
         return annuity;
     }

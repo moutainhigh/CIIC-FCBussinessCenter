@@ -131,7 +131,12 @@ public class GroupController implements PayrollGroupProxy{
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
         updateParam.setGroupCode(code);
         updateParam.setModifiedBy(UserContext.getUserId());
-        Integer result = prGroupService.updateItemByCode(updateParam);
+        Integer result;
+        try {
+            result = prGroupService.updateItemByCode(updateParam);
+        } catch (BusinessException be) {
+            return JsonResult.faultMessage(be.getMessage());
+        }
         return JsonResult.success(result);
     }
 
