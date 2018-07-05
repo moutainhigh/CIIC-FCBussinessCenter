@@ -668,4 +668,33 @@
 			code = #{code}
 	</select>
 
+	<update id="updateAdvancedBatch" parameterType="com.ciicsh.gto.salarymanagement.entity.po.AdvanceBatchInfoPO">
+		<choose>
+			<when test="batchType == 1">
+				update pr_normal_batch
+				set advance_period = #{advancePeriod},
+					advance_day	= #{advanceDay},
+					has_advance	= #{hasAdvance},
+					modified_by	= #{modifyBy}
+				where code = #{code}
+			</when>
+			<when test="batchType == 2">
+				update pr_adjust_batch
+				set advance_period = #{advancePeriod},
+					advance_day	= #{advanceDay},
+					has_advance	= #{hasAdvance},
+					modified_by	= #{modifyBy}
+				where adjust_batch_code = #{code}
+			</when>
+			<otherwise>
+				update pr_back_tracking_batch
+				set advance_period = #{advancePeriod},
+					advance_day	= #{advanceDay},
+					has_advance	= #{hasAdvance},
+					modified_by	= #{modifyBy}
+				where back_tracking_batch_code = #{code}
+			</otherwise>
+		</choose>
+	</update>
+
 </mapper>

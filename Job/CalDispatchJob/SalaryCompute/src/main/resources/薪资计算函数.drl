@@ -3,6 +3,7 @@ package com.ciicsh.payroll.common
 import com.ciicsh.caldispatchjob.entity.DroolsContext;
 import com.ciicsh.caldispatchjob.entity.EmpPayItem;
 import com.ciicsh.caldispatchjob.entity.FuncEntity;
+import com.ciicsh.caldispatchjob.entity.TaxEntity;
 import java.math.BigDecimal;
 import java.util.List;
 import java.time.LocalDate;
@@ -11,7 +12,179 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.Period;
 import java.util.Calendar;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.TemporalAdjusters
+import java.util.ArrayList;
+
+//2011前个税
+function List<TaxEntity> getTaxList() { // 个税表
+
+    List<TaxEntity> taxList = new ArrayList<TaxEntity>();
+
+    TaxEntity tax0 = new TaxEntity();
+    tax0.setTaxDueStart(0.0000); //应纳税额起点
+    tax0.setTaxDueEnd(500.0000); //应纳终点起点
+    tax0.setTaxRate(0.0500);      // 税率
+    tax0.setDeductions(0.0000);  // 速算扣除数
+    tax0.setTaxStart(0.0000);    // 税额起点
+    tax0.setTaxEnd(25.0000);      // 税额终点
+    tax0.setAfterTaxStart(0.0000); // 税后工资起点
+    tax0.setAfterTaxEnd(475.0000); // 税后工资终点
+    taxList.add(tax0);
+
+    TaxEntity tax1 = new TaxEntity();
+    tax1.setTaxDueStart(500.0000);
+    tax1.setTaxDueEnd(2000.0000);
+    tax1.setTaxRate(0.1000);
+    tax1.setDeductions(25.0000);
+    tax1.setTaxStart(25.0000);
+    tax1.setTaxEnd(175.0000);
+    tax1.setAfterTaxStart(475.0000);
+    tax1.setAfterTaxEnd(1825.0000);
+    taxList.add(tax1);
+
+    TaxEntity tax2 = new TaxEntity();
+    tax2.setTaxDueStart(2000.0000);
+    tax2.setTaxDueEnd(5000.0000);
+    tax2.setTaxRate(0.2000);
+    tax2.setDeductions(555.0000);
+    tax2.setTaxStart(345.0000);
+    tax2.setTaxEnd(1245.0000);
+    tax2.setAfterTaxStart(4155.0000);
+    tax2.setAfterTaxEnd(7755.0000);
+    taxList.add(tax2);
+
+    TaxEntity tax3 = new TaxEntity();
+    tax3.setTaxDueStart(9000.0000);
+    tax3.setTaxDueEnd(35000.0000);
+    tax3.setTaxRate(0.2500);
+    tax3.setDeductions(1005.0000);
+    tax3.setTaxStart(1245.0000);
+    tax3.setTaxEnd(7745.0000);
+    tax3.setAfterTaxStart(7755.0000);
+    tax3.setAfterTaxEnd(27255.0000);
+    taxList.add(tax3);
+
+    TaxEntity tax4 = new TaxEntity();
+    tax4.setTaxDueStart(35000.0000);
+    tax4.setTaxDueEnd(55000.0000);
+    tax4.setTaxRate(0.3000);
+    tax4.setDeductions(2755.0000);
+    tax4.setTaxStart(7745.0000);
+    tax4.setTaxEnd(13745.0000);
+    tax4.setAfterTaxStart(27255.0000);
+    tax4.setAfterTaxEnd(41255.0000);
+    taxList.add(tax4);
+
+    TaxEntity tax5 = new TaxEntity();
+    tax5.setTaxDueStart(55000.0000);
+    tax5.setTaxDueEnd(80000.0000);
+    tax5.setTaxRate(0.3500);
+    tax5.setDeductions(5505.0000);
+    tax5.setTaxStart(13745.0000);
+    tax5.setTaxEnd(22495.0000);
+    tax5.setAfterTaxStart(41255.0000);
+    tax5.setAfterTaxEnd(57505.0000);
+    taxList.add(tax5);
+
+    TaxEntity tax6 = new TaxEntity();
+    tax6.setTaxDueStart(80000.0000);
+    tax6.setTaxDueEnd(10000000000.0000);
+    tax6.setTaxRate(0.4500);
+    tax6.setDeductions(13505.0000);
+    tax6.setTaxStart(22495.0000);
+    tax6.setTaxEnd(1000000000.0000);
+    tax6.setAfterTaxStart(57505.0000);
+    tax6.setAfterTaxEnd(1000000000.0000);
+    taxList.add(tax6);
+
+	return taxList;
+}
+
+//2011后个税
+function List<TaxEntity> getTaxList_2011() { // 个税表
+
+    List<TaxEntity> taxList = new ArrayList<TaxEntity>();
+
+    TaxEntity tax0 = new TaxEntity();
+    tax0.setTaxDueStart(0.0000); //应纳税额起点
+    tax0.setTaxDueEnd(1500.0000); //应纳终点起点
+    tax0.setTaxRate(0.0300);      // 税率
+    tax0.setDeductions(0.0000);  // 速算扣除数
+    tax0.setTaxStart(0.0000);    // 税额起点
+    tax0.setTaxEnd(45.0000);      // 税额终点
+    tax0.setAfterTaxStart(0.0000); // 税后工资起点
+    tax0.setAfterTaxEnd(1455.0000); // 税后工资终点
+    taxList.add(tax0);
+
+    TaxEntity tax1 = new TaxEntity();
+    tax1.setTaxDueStart(1500.0000);
+    tax1.setTaxDueEnd(4500.0000);
+    tax1.setTaxRate(0.1000);
+    tax1.setDeductions(105.0000);
+    tax1.setTaxStart(45.0000);
+    tax1.setTaxEnd(345.0000);
+    tax1.setAfterTaxStart(1455.0000);
+    tax1.setAfterTaxEnd(4155.0000);
+    taxList.add(tax1);
+
+    TaxEntity tax2 = new TaxEntity();
+    tax2.setTaxDueStart(4500.0000);
+    tax2.setTaxDueEnd(9000.0000);
+    tax2.setTaxRate(0.2000);
+    tax2.setDeductions(555.0000);
+    tax2.setTaxStart(345.0000);
+    tax2.setTaxEnd(1245.0000);
+    tax2.setAfterTaxStart(4155.0000);
+    tax2.setAfterTaxEnd(7755.0000);
+    taxList.add(tax2);
+
+    TaxEntity tax3 = new TaxEntity();
+    tax3.setTaxDueStart(9000.0000);
+    tax3.setTaxDueEnd(35000.0000);
+    tax3.setTaxRate(0.2500);
+    tax3.setDeductions(1005.0000);
+    tax3.setTaxStart(1245.0000);
+    tax3.setTaxEnd(7745.0000);
+    tax3.setAfterTaxStart(7755.0000);
+    tax3.setAfterTaxEnd(27255.0000);
+    taxList.add(tax3);
+
+    TaxEntity tax4 = new TaxEntity();
+    tax4.setTaxDueStart(35000.0000);
+    tax4.setTaxDueEnd(55000.0000);
+    tax4.setTaxRate(0.3000);
+    tax4.setDeductions(2755.0000);
+    tax4.setTaxStart(7745.0000);
+    tax4.setTaxEnd(13745.0000);
+    tax4.setAfterTaxStart(27255.0000);
+    tax4.setAfterTaxEnd(41255.0000);
+    taxList.add(tax4);
+
+    TaxEntity tax5 = new TaxEntity();
+    tax5.setTaxDueStart(55000.0000);
+    tax5.setTaxDueEnd(80000.0000);
+    tax5.setTaxRate(0.3500);
+    tax5.setDeductions(5505.0000);
+    tax5.setTaxStart(13745.0000);
+    tax5.setTaxEnd(22495.0000);
+    tax5.setAfterTaxStart(41255.0000);
+    tax5.setAfterTaxEnd(57505.0000);
+    taxList.add(tax5);
+
+    TaxEntity tax6 = new TaxEntity();
+    tax6.setTaxDueStart(80000.0000);
+    tax6.setTaxDueEnd(10000000000.0000);
+    tax6.setTaxRate(0.4500);
+    tax6.setDeductions(13505.0000);
+    tax6.setTaxStart(22495.0000);
+    tax6.setTaxEnd(1000000000.0000);
+    tax6.setAfterTaxStart(57505.0000);
+    tax6.setAfterTaxEnd(1000000000.0000);
+    taxList.add(tax6);
+
+	return taxList;
+}
+
 
 rule "最低工资标准" // {最低工资标准([城市])}
     when
@@ -314,15 +487,28 @@ end
 /**
 ** 标准薪资组
 */
-rule "一般个人所得税" // {一般个人所得税([应纳税所得额])}
+rule "一般个人所得税" // {一般个人所得税([flag],[应纳税所得额])}
     when
        $context:DroolsContext()
     then
         FuncEntity func = $context.getFuncEntity("一般个人所得税");
-        String para1 = func.getParameters().get(0);
+        String flag = func.getParameters().get(0);
+        String para1 = func.getParameters().get(1);
         Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
 
-        func.setResult(BigDecimal.ZERO); // TODO
+        if(par1 > 0){
+            List<TaxEntity> taxList = getTaxList();
+            taxList.stream().filter(tax -> tax.getTaxDueStart())
+
+            if(flag == "0"){
+
+            }else if(flag == "1"){
+
+            }
+
+        }else{
+            func.setResult(BigDecimal.ZERO);
+        }
 end
 
 /**

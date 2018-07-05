@@ -1,11 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.api;
 
 import com.ciicsh.common.entity.JsonResult;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.MoneyBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.page.Pagination;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -80,4 +76,12 @@ public interface BatchProxy {
      */
     @GetMapping("/getBatchIdListByManagementId")
     JsonResult<List<String>> getBatchIdListByManagementId(@RequestParam("mgrId") String mgrId);
+
+    /**
+     * 更新批次垫付信息
+     * @param advanceBatchInfoDTO
+     * @return
+     */
+    @PostMapping("/updateAdvancedBatch")
+    int updateAdvancedBatch(@RequestBody AdvanceBatchInfoDTO advanceBatchInfoDTO);
 }
