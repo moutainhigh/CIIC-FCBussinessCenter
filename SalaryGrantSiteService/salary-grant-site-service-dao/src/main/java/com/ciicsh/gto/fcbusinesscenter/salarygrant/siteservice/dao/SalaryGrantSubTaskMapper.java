@@ -137,4 +137,13 @@ public interface SalaryGrantSubTaskMapper extends BaseMapper<SalaryGrantSubTaskP
      */
     List<SalaryGrantSubTaskPO> getSubListByBatchCode (SalaryGrantTaskBO bo);
 
+    /**
+     * 根据子任务单编号查询主任单下所有子任务单
+     * @author chenpb
+     * @since 2018-07-05
+     * @param bo
+     * @return
+     */
+    List<SalaryGrantTaskBO> selectAllTaskBySubTaskCode (SalaryGrantTaskBO bo);
+
 }

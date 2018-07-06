@@ -22,6 +22,15 @@ import java.util.List;
 public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTaskPO> {
 
     /**
+     * 刷新草稿状态任务单信息
+     * @author chenpb
+     * @since 2018-07-05
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Page<SalaryGrantTaskBO> refreshDraftTask(SalaryGrantTaskBO salaryGrantTaskBO);
+
+    /**
      * 查询薪资发放任务单列表
      * @author chenpb
      * @since 2018-05-10

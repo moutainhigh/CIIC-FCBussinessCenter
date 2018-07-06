@@ -35,6 +35,7 @@ public interface SalaryGrantSubTaskWorkFlowService extends IService<SalaryGrantS
     /**
      * 任务单流程--撤回（调用工作流引擎）
      * @param bo
+     * @return
      */
-    void retreatSubTask(SalaryGrantTaskBO bo);
+    Boolean retreatSubTask(SalaryGrantTaskBO bo);
 }
