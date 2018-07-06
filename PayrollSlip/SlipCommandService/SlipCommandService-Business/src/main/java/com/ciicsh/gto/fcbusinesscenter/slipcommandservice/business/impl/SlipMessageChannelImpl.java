@@ -62,10 +62,10 @@ public class SlipMessageChannelImpl {
                     contract = (Document) (empInfo.get("雇员服务协议"));
                 }
 
-                ArrayList<Integer> payType = new ArrayList();
+                ArrayList payType = new ArrayList();
 
                 if (contract != null && contract.get("paySheetInfo") != null && ((Document)contract.get("paySheetInfo")).get("payType") != null) {
-                    payType = (ArrayList<Integer>) ((Document)contract.get("paySheetInfo")).get("payType");
+                    payType = (ArrayList) ((Document)contract.get("paySheetInfo")).get("payType");
                 } else {
                     payType.add(2);
                     payType.add(3);
