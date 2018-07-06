@@ -442,7 +442,7 @@ public class CompleteComputeServiceImpl {
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
-    private void doBizTransaction(String batchCode, int batchType,List<DBObject> list,String userID, String userName, List<String> companyIds){
+    protected void doBizTransaction(String batchCode, int batchType,List<DBObject> list,String userID, String userName, List<String> companyIds){
 
         int deletedAffected = closeAccountMongoOpt.batchDelete(Criteria.where("batch_id").is(batchCode)); // 幂等操作
         logger.info("幂等删除：" + String.valueOf(deletedAffected));
@@ -457,11 +457,11 @@ public class CompleteComputeServiceImpl {
 
         if(rowAffected > 0){
 
-            int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
+            /*int affected = updateAdvance(companyIds,batchCode,batchType); //周期垫付逻辑处理
 
             if(affected > 0){
                 logger.info("产生周期垫付");
-            }
+            }*/
 
             ClosingMsg closingMsg = new ClosingMsg();
             closingMsg.setBatchCode(batchCode);

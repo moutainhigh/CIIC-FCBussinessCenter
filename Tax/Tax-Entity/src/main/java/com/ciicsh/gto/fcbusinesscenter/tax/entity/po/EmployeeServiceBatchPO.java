@@ -157,6 +157,33 @@ public class EmployeeServiceBatchPO extends Model<EmployeeServiceBatchPO> {
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	/**
+	 * 申报账户名称
+	 */
+	@TableField("declare_account_name")
+	private String declareAccountName;
+	/**
+	 * 缴纳账户名称
+	 */
+	@TableField("pay_account_name")
+	private String payAccountName;
+
+	public String getDeclareAccountName() {
+		return declareAccountName;
+	}
+
+	public void setDeclareAccountName(String declareAccountName) {
+		this.declareAccountName = declareAccountName;
+	}
+
+	public String getPayAccountName() {
+		return payAccountName;
+	}
+
+	public void setPayAccountName(String payAccountName) {
+		this.payAccountName = payAccountName;
+	}
+
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
 	}

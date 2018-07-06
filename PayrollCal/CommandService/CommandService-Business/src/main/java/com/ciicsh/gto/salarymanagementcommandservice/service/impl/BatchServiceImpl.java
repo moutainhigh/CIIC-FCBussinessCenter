@@ -9,6 +9,9 @@ import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
 import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareItemBO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.InWitchCompareBatchEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.AdvanceBatchInfoPO;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchEmpRelationMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.BatchService;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,9 @@ public class BatchServiceImpl implements BatchService {
 
     @Autowired
     private BackTraceBatchMongoOpt backTraceBatchMongoOpt;
+
+    @Autowired
+    private PrNormalBatchMapper prNormalBatchMapper;
 
     @Override
     public List<BatchCompareEmpBO> compareBatch(String srcBatchCode, Integer srcBatchType,
@@ -164,6 +170,11 @@ public class BatchServiceImpl implements BatchService {
         //query = query.skip(pageindex*size).limit(size);
 
         return batchCompareEmpBOList;
+    }
+
+    @Override
+    public int updateAdvancedBatch(AdvanceBatchInfoPO advanceBatchInfoPO) {
+        return prNormalBatchMapper.updateAdvancedBatch(advanceBatchInfoPO);
     }
 
     private String getItemValueFromDBObject(DBObject dbObject) {

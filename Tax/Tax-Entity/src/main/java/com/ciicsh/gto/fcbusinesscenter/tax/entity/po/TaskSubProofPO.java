@@ -134,6 +134,20 @@ public class TaskSubProofPO implements Serializable {
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	/**
+	 * 申报账户名称
+	 */
+	@TableField("declare_account_name")
+	private String declareAccountName;
+
+	public String getDeclareAccountName() {
+		return declareAccountName;
+	}
+
+	public void setDeclareAccountName(String declareAccountName) {
+		this.declareAccountName = declareAccountName;
+	}
+
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
 	}

@@ -268,8 +268,12 @@ public class PrGroupServiceImpl implements PrGroupService {
         approvalHistoryPO.setComments(paramItem.getComments());
         approvalHistoryPO.setCreatedName(UserContext.getName());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
+
+        // 处理审批通过和审批拒绝的草稿版薪资项和正式版薪资项,approvalStatus：2,通过; 3,拒绝;
+        prPayrollItemMapper.deleteApprovedItemByCode(paramItem.getApprovalStatus(), null, paramItem.getGroupCode());
+        prPayrollItemMapper.insertApprovedItemByCode(paramItem.getApprovalStatus(), null, paramItem.getGroupCode());
+
         // 更新审批薪资组
-        prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
         int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
         return result;
