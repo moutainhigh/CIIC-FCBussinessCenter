@@ -6,19 +6,14 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.SlipMessageChannel;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.IntStream;
 
 @EnableBinding(value = SlipMessageChannel.class)
 @Component
