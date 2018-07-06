@@ -95,29 +95,32 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
 
     /**
      * 将草稿薪资项插入审批通过表
-     * @param items
-     * @return
+     * @param prGroupCode 薪资组编码
+     * @param prGroupTemplateCode 薪资组模板编码
+     * @return 插入条数
      */
     Integer insertBatchApprovedItemsByGroup(@Param("payrollGroupCode") String prGroupCode,
                                             @Param("prGroupTemplateCode") String prGroupTemplateCode);
 
 
     /**
-     * 审批通过时，先根据薪资组模板编码删除正式表的薪资项，在同步草稿表的薪资项到正式表
-     * 审批拒绝时，先根据薪资组模板编码删除草稿表的薪资项，在同步正式表的薪资项到草稿表
+     * 审批通过时，先根据薪资组模板编码或者薪资组编码删除正式表的薪资项，在同步草稿表的薪资项到正式表
+     * 审批拒绝时，先根据薪资组模板编码或者薪资组编码删除草稿表的薪资项，在同步正式表的薪资项到草稿表
      *
      * @param approvalStatus      审批状态
      * @param prGroupTemplateCode 薪资组模板编码
+     * @param prGroupCode 薪资组编码
      */
-    void deleteApprovedItemByGroupTemplateCode(@Param("approvalStatus") int approvalStatus, @Param("prGroupTemplateCode") String prGroupTemplateCode);
+    void deleteApprovedItemByCode(@Param("approvalStatus") int approvalStatus, @Param("prGroupTemplateCode") String prGroupTemplateCode, @Param("prGroupCode") String prGroupCode);
 
     /**
-     * 审批通过时，先根据薪资组模板编码删除正式表的薪资项，在同步草稿表的薪资项到正式表
-     * 审批拒绝时，先根据薪资组模板编码删除草稿表的薪资项，在同步正式表的薪资项到草稿表
+     * 审批通过时，先根据薪资组模板编码或者薪资组编码删除正式表的薪资项，在同步草稿表的薪资项到正式表
+     * 审批拒绝时，先根据薪资组模板编码或者薪资组编码删除草稿表的薪资项，在同步正式表的薪资项到草稿表
      *
      * @param approvalStatus      审批状态
      * @param prGroupTemplateCode 薪资组模板编码
+     * @param prGroupCode 薪资组编码
      */
-    void insertApprovedItemByGroupTemplateCode(@Param("approvalStatus") int approvalStatus, @Param("prGroupTemplateCode") String prGroupTemplateCode);
+    void insertApprovedItemByCode(@Param("approvalStatus") int approvalStatus, @Param("prGroupTemplateCode") String prGroupTemplateCode, @Param("prGroupCode") String prGroupCode);
 
 }

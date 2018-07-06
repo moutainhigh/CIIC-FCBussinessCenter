@@ -455,7 +455,7 @@
 	    </choose>
 	</insert>
 
-	<delete id="deleteApprovedItemByGroupTemplateCode">
+	<delete id="deleteApprovedItemByCode">
 		DELETE
 		FROM
 		<choose>
@@ -466,10 +466,18 @@
 				pr_payroll_item
 			</when>
 		</choose>
-		WHERE payroll_group_template_code = #{prGroupTemplateCode}
+		WHERE
+		<choose>
+			<when test="prGroupTemplateCode != null and prGroupTemplateCode != ''">
+				payroll_group_template_code = #{prGroupTemplateCode}
+			</when>
+			<when test="prGroupCode != null and prGroupCode != ''">
+				payroll_group_code = #{prGroupCode}
+			</when>
+		</choose>
 	</delete>
 
-	<insert id="insertApprovedItemByGroupTemplateCode">
+	<insert id="insertApprovedItemByCode">
 		INSERT INTO
 		<choose>
 			<when test="approvalStatus == 2 ">
@@ -547,7 +555,15 @@
 				pr_approved_payroll_item
 			</when>
 		</choose>
-		WHERE payroll_group_template_code = #{prGroupTemplateCode}
+		WHERE
+		<choose>
+			<when test="prGroupTemplateCode != null and prGroupTemplateCode != ''">
+				payroll_group_template_code = #{prGroupTemplateCode}
+			</when>
+			<when test="prGroupCode != null and prGroupCode != ''">
+				payroll_group_code = #{prGroupCode}
+			</when>
+		</choose>
 	</insert>
 
 </mapper>
