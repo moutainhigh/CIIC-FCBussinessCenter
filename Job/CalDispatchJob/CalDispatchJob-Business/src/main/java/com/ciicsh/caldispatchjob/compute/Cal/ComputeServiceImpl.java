@@ -339,20 +339,19 @@ public class ComputeServiceImpl {
      */
     private String getFormulaContent(String condition, String formulaContent, DroolsContext context){
 
-        //condition = StringUtils.removeEnd(condition,CONDITION_FOMULAR_SIPE);      //去除字符窜最后;
-        //formulaContent = StringUtils.removeEnd(formulaContent,CONDITION_FOMULAR_SIPE); //去除字符窜最后;
 
         String[] conditions = condition.split(CONDITION_FOMULAR_SIPE);
         String[] formulas = formulaContent.split(CONDITION_FOMULAR_SIPE);
 
         String condition_formula = null;
 
-        if(formulas == null || formulas.length == 0){ // 无条件
+        if(formulas.length == 0){ // 无条件
             logger.error(String.format("emp_code is %s no function", context.getEmpPayItem().getEmpCode()));
             return "";
-        } else if(conditions == null ){ // 无条件执行
-            condition_formula = formulas[0]; // 执行结果运算中如果调用了函数，则把该函数替换成Drools规则触发的值
-        }else if(conditions.length == 1  && formulas.length ==1){
+        }else if(StringUtils.isEmpty(condition) && StringUtils.isNotEmpty(formulaContent)){ // 无条件执行
+            condition_formula = formulaContent;
+        }
+        else if(conditions.length == 1  && formulas.length ==1){
             condition_formula = conditions[0] + CONDITION_FUNCTION_SPLIT + formulas[0];
         }else {
             condition_formula = condition + CONDITION_FUNCTION_SPLIT + formulaContent;
@@ -416,7 +415,7 @@ public class ComputeServiceImpl {
         else { // 多个条件执行
             StringBuilder sb = new StringBuilder();
             String[] condition_formula = formula_Content.split(CONDITION_FUNCTION_SPLIT);
-            if(condition_formula.length == 1){
+            if(condition_formula.length == 1 && StringUtils.isEmpty(condition)){
                 sb.append(condition_formula[0]); // 说明只有一个方法，没有执行条件
             }else if(condition_formula.length == 2){
                 sb.append("if (" + condition_formula[0] + ")");
@@ -530,7 +529,7 @@ public class ComputeServiceImpl {
                 .replaceAll("＊","*").replaceAll("／","/")
                 .replaceAll("，",",").replaceAll("'","'")
                 .replaceAll("“","\"");
-        inputStr = StringUtils.removeEnd(inputStr,";"); // 去除 ；号结尾
+        inputStr = StringUtils.removeEnd(inputStr,";").trim(); // 去除 ；号结尾
         return inputStr;
     }
 

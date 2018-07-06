@@ -13,7 +13,8 @@ import java.time.Period;
 import java.util.Calendar;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters
-import java.util.ArrayList;
+import java.util.ArrayList
+import java.util.Optional;
 
 //2011前个税
 function List<TaxEntity> getTaxList() { // 个税表
@@ -496,14 +497,25 @@ rule "一般个人所得税" // {一般个人所得税([flag],[应纳税所得�
         String para1 = func.getParameters().get(1);
         Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
 
+        double taxRate, deductions = 0.0;
+        List<TaxEntity> taxList = null;
+
         if(par1 > 0){
-            List<TaxEntity> taxList = getTaxList();
-            taxList.stream().filter(tax -> tax.getTaxDueStart())
 
-            if(flag == "0"){
+            if(flag.equals("0")){
+                taxList = getTaxList(); // 0 表示 2011年以前的个税表
 
-            }else if(flag == "1"){
-
+            }else if(flag.equals("1")){  // 1 表示 2011年以后的个税表
+                taxList = getTaxList_2011();
+            }
+            if(taxList != null){
+                Optional<TaxEntity> find = taxList.stream().filter(tax -> tax.getTaxDueStart() < par1 && tax.getTaxDueEnd() >= par1).findFirst();
+                if(find.isPresent()){
+                    taxRate = find.get().getTaxRate();
+                    deductions = find.get().getDeductions();
+                    BigDecimal result = new BigDecimal(par1 * taxRate - deductions);
+                    func.setResult(result);
+                }
             }
 
         }else{
