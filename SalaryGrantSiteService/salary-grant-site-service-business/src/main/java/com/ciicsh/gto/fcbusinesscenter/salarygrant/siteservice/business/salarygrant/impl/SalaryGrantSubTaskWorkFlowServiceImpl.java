@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -34,6 +37,8 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
     private SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
     @Autowired
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
+    @Autowired
+    private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
 
     /**
      * 任务单流程--提交
@@ -107,11 +112,12 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void retreatSubTask(SalaryGrantTaskBO bo) {
-        taskProcessing(bo, SalaryGrantBizConsts.TASK_STATUS_RETREAT);
+    public Boolean retreatSubTask(SalaryGrantTaskBO bo) {
+         return taskProcessing(bo, SalaryGrantBizConsts.TASK_STATUS_RETREAT);
     }
 
-    private void taskProcessing (SalaryGrantTaskBO bo, String status) {
+    private Boolean taskProcessing (SalaryGrantTaskBO bo, String status) {
+        Boolean result = false;
         SalaryGrantSubTaskPO subPo = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
         SalaryGrantTaskHistoryPO historyPO = BeanUtils.instantiate(SalaryGrantTaskHistoryPO.class);
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
@@ -128,6 +134,16 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
             subPo.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
             salaryGrantSubTaskMapper.updateById(subPo);
         }
+        /** 子任务单撤回check*/
+        if (SalaryGrantBizConsts.TASK_STATUS_RETREAT.equals(status)) {
+            List<SalaryGrantTaskBO> allTask = salaryGrantSubTaskMapper.selectAllTaskBySubTaskCode(bo);
+            List<SalaryGrantTaskBO> draftTask = allTask.parallelStream().filter(x -> SalaryGrantBizConsts.TASK_STATUS_DRAFT.equals(x.getTaskStatus())).collect(Collectors.toList());
+            if (allTask.size() == draftTask.size()) {
+                salaryGrantWorkFlowService.doRetreatTask(bo);
+                result = true;
+            }
+        }
+        return result;
     }
 
     private static void assignValue (SalaryGrantSubTaskPO subPo, SalaryGrantTaskHistoryPO hisPo, String status) {

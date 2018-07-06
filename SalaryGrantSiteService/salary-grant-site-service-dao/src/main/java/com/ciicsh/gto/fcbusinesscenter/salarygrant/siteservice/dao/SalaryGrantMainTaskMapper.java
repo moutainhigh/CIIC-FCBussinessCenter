@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.RefreshTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,15 @@ import java.util.List;
  */
 @Component
 public interface SalaryGrantMainTaskMapper extends BaseMapper<SalaryGrantMainTaskPO> {
+    /**
+     * 待提交任务单
+     * @author chenpb
+     * @since 2018-07-06
+     * @param bo
+     * @return
+     */
+    List<RefreshTaskBO> refreshList(SalaryGrantTaskBO bo);
+
     /**
      * 待提交
      * @author chenpb

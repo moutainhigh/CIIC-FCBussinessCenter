@@ -79,6 +79,39 @@
         <result column="modified_time" property="modifiedTime" />
     </resultMap>
 
+    <resultMap id="RefreshResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.RefreshTaskBO">
+        <id column="task_code" property="taskCode" />
+        <result column="task_id" property="taskId" />
+        <result column="management_id" property="managementId" />
+        <result column="batch_code" property="batchCode" />
+        <result column="grant_type" property="grantType" />
+        <result column="task_type" property="taskType" />
+        <result column="task_status" property="taskStatus" />
+        <collection property="empList" ofType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO">
+            <result column="salary_grant_employee_id" property="salaryGrantEmployeeId"/>
+            <result column="company_id" property="companyId"/>
+            <result column="employee_id" property="employeeId"/>
+            <result column="account_name" property="accountName"/>
+            <result column="card_num" property="cardNum"/>
+            <result column="bankcard_type" property="bankcardType"/>
+            <result column="bankcard_id" property="bankcardId"/>
+            <result column="is_default_card" property="defaultCard"/>
+            <result column="deposit_bank" property="depositBank"/>
+            <result column="grant_mode" property="grantMode"/>
+            <result column="grant_date" property="grantDate"/>
+            <result column="grant_time" property="grantTime"/>
+            <result column="country_code" property="countryCode"/>
+            <result column="currency_code" property="currencyCode"/>
+            <result column="exchange" property="exchange"/>
+            <result column="cycle_rule_id" property="cycleRuleId"/>
+            <result column="rule_amount" property="ruleAmount"/>
+            <result column="rule_ratio" property="ruleRatio"/>
+            <result column="rule_type" property="ruleType"/>
+            <result column="change_log" property="changeLog"/>
+            <result column="created_time" property="createdTime"/>
+        </collection>
+    </resultMap>
+
     <sql id="sgDetailField">
         t1.salary_grant_main_task_id task_id, t1.salary_grant_main_task_code task_code, t1.batch_code, t1.management_id, t1.management_name, t1.grant_type, t1.grant_cycle, t1.grant_date, t1.grant_time, t1.created_time, t1.task_type, t1.task_status,
 		t1.approved_opinion, t1.payment_total_sum,t1.total_person_count,t1.chinese_count,t1.foreigner_count,t1.local_grant_count, t1.supplier_grant_count, t1.operator_user_id, t1.approve_user_id, t1.modified_time
@@ -102,6 +135,55 @@
     <sql id="cancelCloseField">
         m.salary_grant_main_task_id task_id, m.salary_grant_main_task_code task_code, m.batch_version, '取消关账' as invalid_reason
     </sql>
+
+    <sql id="refreshField">
+        t.task_id, t.task_code, t.management_id, t.batch_code, t.grant_type, t.task_type, t.task_status,
+        t.salary_grant_employee_id, t.company_id, t.employee_id, t.account_name, t.card_num, t.bankcard_type, t.bankcard_id, t.is_default_card, t.deposit_bank, t.swift_code, t.iban, t.bank_code,
+        t.grant_mode, t.grant_date, t.grant_time, t.country_code, t.currency_code, t.exchange, t.cycle_rule_id, t.rule_amount, t.rule_ratio, t.rule_type, t.change_log, t.created_time
+    </sql>
+
+    <sql id="refreshMainField">
+        m.salary_grant_main_task_id task_id, m.salary_grant_main_task_code task_code, m.management_id, m.batch_code, m.grant_type, m.task_type, m.task_status,
+        e1.salary_grant_employee_id, e1.company_id, e1.employee_id, e1.account_name, e1.card_num, e1.bankcard_type, e1.bankcard_id, e1.is_default_card, e1.deposit_bank, e1.swift_code, e1.iban, e1.bank_code,
+        e1.grant_mode, e1.grant_date, e1.grant_time, e1.country_code, e1.currency_code, e1.exchange, e1.cycle_rule_id, e1.rule_amount, e1.rule_ratio, e1.rule_type, e1.change_log, e1.created_time
+    </sql>
+    <sql id="refreshSubField">
+        s.salary_grant_sub_task_id task_id, s.salary_grant_sub_task_code task_code, s.management_id, s.batch_code, s.grant_type, s.task_type, s.task_status,
+        e2.salary_grant_employee_id, e2.company_id, e2.employee_id, e2.account_name, e2.card_num, e2.bankcard_type, e2.bankcard_id, e2.is_default_card, e2.deposit_bank, e2.swift_code, e2.iban, e2.bank_code,
+        e2.grant_mode, e2.grant_date, e2.grant_time, e2.country_code, e2.currency_code, e2.exchange, e2.cycle_rule_id, e2.rule_amount, e2.rule_ratio, e2.rule_type, e2.change_log, e2.created_time
+    </sql>
+
+    <select id="refreshList" resultMap="RefreshResultMap">
+        select
+            <include refid="refreshField"></include>
+        from
+            (
+                select
+                    <include refid="refreshMainField"></include>
+                from
+                    sg_salary_grant_main_task m, sg_salary_grant_employee e1
+                where
+                    m.salary_grant_main_task_code = e1.salary_grant_main_task_code
+                and
+                    m.task_status = '0'
+                and
+                    m.is_active=1
+
+                union
+
+                select
+                    <include refid="refreshSubField"></include>
+                from
+                    sg_salary_grant_sub_task s, sg_salary_grant_employee e2
+                where
+                    s.salary_grant_sub_task_code = e2.salary_grant_sub_task_code
+                and
+                    s.task_status = '0'
+                and
+                    s.is_active=1
+            ) t
+
+    </select>
 
 	<select id="submitList" resultMap="PageResultMap">
         select

@@ -81,11 +81,15 @@ public class SalaryGrantController {
      * @date 2018-07-04
      * @return
      */
-    @RequestMapping(value="/refresh", method = RequestMethod.GET)
-    public Result refresh() {
+    @RequestMapping(value="/refresh", method = RequestMethod.POST)
+    public Result<Pagination<SalaryTaskDTO>> refresh(@RequestBody SalaryTaskDTO dto) {
         try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("刷新数据"));
-            return ResultGenerator.genSuccessResult();
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setManagementIds(CommonHelper.getManagementIDs());
+            bo.setUserId(UserContext.getUserId());
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("刷新数据").setContent(JSON.toJSONString(bo)));
+            Page<SalaryGrantTaskBO> page = salaryGrantTaskQueryService.refreshDraftTask(bo);
+            return ResultGenerator.genSuccessResult(page);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("刷新数据异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("刷新数据失败！");
@@ -100,18 +104,18 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/list", method = RequestMethod.POST)
-    public Result<SalaryTaskDTO> list(@RequestBody SalaryTaskDTO dto) {
-        SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-        bo.setManagementIds(CommonHelper.getManagementIDs());
-        Map<String, String> tags = new HashMap<>();
-        tags.put("taskCode", dto.getTaskCode());
-        tags.put("batchCode", dto.getBatchCode());
-        tags.put("managementIds", String.valueOf(bo.getManagementIds()));
-        tags.put("grantMode", dto.getGrantMode());
-        tags.put("grantCycle", dto.getGrantCycle());
-        tags.put("taskStatusEn", dto.getTaskStatusEn());
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setTags(tags));
+    public Result<Pagination<SalaryTaskDTO>> list(@RequestBody SalaryTaskDTO dto) {
         try {
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
+            bo.setManagementIds(CommonHelper.getManagementIDs());
+            Map<String, String> tags = new HashMap<>();
+            tags.put("taskCode", dto.getTaskCode());
+            tags.put("batchCode", dto.getBatchCode());
+            tags.put("managementIds", String.valueOf(bo.getManagementIds()));
+            tags.put("grantMode", dto.getGrantMode());
+            tags.put("grantCycle", dto.getGrantCycle());
+            tags.put("taskStatusEn", dto.getTaskStatusEn());
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("一览查询").setTags(tags));
             bo.setUserId(UserContext.getUserId());
             Page<SalaryGrantTaskBO> page = salaryGrantTaskQueryService.salaryGrantList(bo);
             Pagination<SalaryTaskDTO> pagination = PageUtil.changeWapper(page, SalaryTaskDTO.class);
@@ -132,9 +136,9 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/subList", method = RequestMethod.POST)
     public Result<SalaryTaskDTO> subList(@RequestBody SalaryTaskDTO dto) {
-        SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单查询").setContent("查询条件 -> taskCode: " + dto.getTaskCode()));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单查询").setContent("查询条件 -> taskCode: " + dto.getTaskCode()));
+            SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             List<SalaryGrantTaskBO> boList = salaryGrantTaskQueryService.querySubTask(bo);
             List<SalaryTaskDTO> list = CommonTransform.convertToDTOs(boList, SalaryTaskDTO.class);
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单一览").setContent(JSON.toJSONString(list)));
@@ -285,8 +289,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/cancel", method = RequestMethod.POST)
     public Result cancel(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("失效").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("失效").setContent(JSON.toJSONString(dto)));
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("失效异常").setContent(e.getMessage()));
@@ -323,13 +327,13 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/subRetract", method = RequestMethod.POST)
-    public Result subRetract(@RequestBody SalaryTaskHandleDTO dto) {
+    public Result<Boolean> subRetract(@RequestBody SalaryTaskHandleDTO dto) {
         try {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回").setContent(JSON.toJSONString(dto)));
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setUserId(UserContext.getUserId());
-            salaryGrantSubTaskWorkFlowService.retreatSubTask(bo);
-            return ResultGenerator.genSuccessResult();
+            Boolean result = salaryGrantSubTaskWorkFlowService.retreatSubTask(bo);
+            return ResultGenerator.genSuccessResult(result);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("子任务单撤回异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("子任务单撤回失败！");
@@ -345,8 +349,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/empInfoChange", method = RequestMethod.POST)
     public Result<ChangedEmpInfoDTO> empInfoChange(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员查询").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("信息变更雇员查询").setContent(JSON.toJSONString(dto)));
             Page<SalaryGrantEmployeeBO> page = new Page<>(dto.getCurrent(), dto.getSize());
             SalaryGrantEmployeeBO bo = CommonTransform.convertToEntity(dto, SalaryGrantEmployeeBO.class);
             page = salaryGrantEmployeeQueryService.queryEmployeeInfoChanged(page, bo);
@@ -371,8 +375,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/businessDetail", method = RequestMethod.POST)
     public Result businessDetail(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("业务明细查询").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("业务明细查询").setContent(JSON.toJSONString(dto)));
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("业务明细查询异常").setContent(e.getMessage()));
@@ -389,8 +393,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/financeDetail", method = RequestMethod.POST)
     public Result<SalaryGrantFinanceDTO> financeDetail(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("生成财务明细").setContent(JSON.toJSONString(dto)));
             SalaryGrantFinanceDTO financeDto = BeanUtils.instantiate(SalaryGrantFinanceDTO.class);
             SalaryGrantFinanceBO financeBo = salaryGrantPayrollService.createFinanceDetail(dto.getTaskCode());
             financeDto.setFinanceTask(CommonTransform.convertToDTO(financeBo.getTask(), FinanceTaskDTO.class));
@@ -412,16 +416,16 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/detail", method = RequestMethod.POST)
     public Result<SalaryTaskDetailDTO> detail(@RequestBody SalaryTaskDetailDTO dto) {
-        Map<String, String> tags = new HashMap<>();
-        tags.put("taskId", String.valueOf(dto.getTaskId()));
-        tags.put("taskCode", dto.getTaskCode());
-        tags.put("taskType", String.valueOf(dto.getTaskType()));
-        tags.put("taskStatus", dto.getTaskStatus());
-        tags.put("grantStatus", String.valueOf(dto.getGrantStatus()));
-        tags.put("employeeId", dto.getEmployeeId());
-        tags.put("employeeName", dto.getEmployeeName());
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细查询").setTags(tags));
         try {
+            Map<String, String> tags = new HashMap<>();
+            tags.put("taskId", String.valueOf(dto.getTaskId()));
+            tags.put("taskCode", dto.getTaskCode());
+            tags.put("taskType", String.valueOf(dto.getTaskType()));
+            tags.put("taskStatus", dto.getTaskStatus());
+            tags.put("grantStatus", String.valueOf(dto.getGrantStatus()));
+            tags.put("employeeId", dto.getEmployeeId());
+            tags.put("employeeName", dto.getEmployeeName());
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细查询").setTags(tags));
             SalaryTaskDetailDTO salaryTaskDetailDTO = new SalaryTaskDetailDTO();
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo = salaryGrantTaskQueryService.selectTaskByTaskCode(bo);
@@ -452,8 +456,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/adjustSgInfo", method = RequestMethod.POST)
     public Result<List<SalaryGrantEmployeeDTO>> adjustSgInfo(@RequestBody EmployeeHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员薪资调整信息").setContent(JSON.toJSONString(dto)));
             List<SalaryGrantEmployeeDTO> dtoList =new ArrayList<>();
             SalaryGrantEmployeePO employeePO = salaryGrantEmployeeQueryService.selectById(dto.getSalaryGrantEmployeeId());
             if (!ObjectUtils.isEmpty(employeePO) && !StringUtils.isEmpty(employeePO.getAdjustCompareInfo())) {
@@ -474,10 +478,12 @@ public class SalaryGrantController {
      * @return
      */
     @RequestMapping(value="/empInfo", method = RequestMethod.POST)
-    public Result empInfo(@RequestBody EmployeeHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员变化信息").setContent(JSON.toJSONString(dto)));
+    public Result<List<SalaryGrantEmployeeDTO>> empInfo(@RequestBody EmployeeHandleDTO dto) {
         try {
-            return ResultGenerator.genSuccessResult();
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员变化信息").setContent(JSON.toJSONString(dto)));
+            List<SalaryGrantEmployeeBO> boList = salaryGrantEmployeeQueryService.selectChangeLog(dto.getSalaryGrantEmployeeId());
+            List<SalaryGrantEmployeeDTO> list = CommonTransform.convertToDTOs(boList, SalaryGrantEmployeeDTO.class);
+            return ResultGenerator.genSuccessResult(list);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询雇员变化信息异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("查询雇员变化信息失败！");
@@ -493,8 +499,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/recover", method = RequestMethod.POST)
     public Result recover(@RequestBody List<EmployeeHandleDTO> dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("恢复").setContent(JSON.toJSONString(dto)));
             List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
             list.parallelStream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
             salaryGrantEmployeeCommandService.updateBatchById(list);
@@ -514,8 +520,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/defer", method = RequestMethod.POST)
     public Result defer(@RequestBody List<EmployeeHandleDTO> dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓").setContent(JSON.toJSONString(dto)));
             List<SalaryGrantEmployeePO> list = CommonTransform.convertToEntities(dto, SalaryGrantEmployeePO.class);
             list.parallelStream().forEach(x -> {x.setModifiedBy(UserContext.getUserId()); x.setModifiedTime(new Date());});
             salaryGrantEmployeeCommandService.updateBatchById(list);
@@ -535,11 +541,11 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/itemsInfo", method = RequestMethod.POST)
     public Result<SalaryTaskItemDTO> itemsInfo(@RequestBody SalaryTaskHandleDTO dto) {
-        Map map = new HashMap();
-        map.put("batchCode", dto.getBatchCode());
-        map.put("batchType", dto.getGrantType());
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资项").setContent(JSON.toJSONString(dto)));
+            Map map = new HashMap();
+            map.put("batchCode", dto.getBatchCode());
+            map.put("batchType", dto.getGrantType());
             List<CalcResultItemBO> bo = salaryGrantEmployeeQueryService.getSalaryCalcResultItemsList(map);
             List<SalaryTaskItemDTO> items = CommonTransform.convertToDTOs(bo, SalaryTaskItemDTO.class);
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("薪资项").setContent(JSON.toJSONString(items)));
@@ -559,8 +565,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/itemsData", method = RequestMethod.POST)
     public Result<EmpCalcResultBO> itemsData(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询薪资").setContent(JSON.toJSONString(dto)));
             List<CalcResultItemBO> paramList = CommonTransform.convertToEntities(new ArrayList<T>(), CalcResultItemBO.class);
             SalaryGrantTaskBO paramBo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             List<EmpCalcResultBO> bo = salaryGrantEmployeeQueryService.getEmployeeForBizList(paramList, paramBo);
@@ -581,8 +587,8 @@ public class SalaryGrantController {
      */
     @RequestMapping(value="/logInfo", method = RequestMethod.POST)
     public Result<SalaryGrantOperationDTO> logInfo(@RequestBody SalaryTaskHandleDTO dto) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询操作记录").setContent(JSON.toJSONString(dto)));
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             Page<WorkFlowTaskInfoBO> page = salaryGrantTaskQueryService.operation(bo);
             Pagination<SalaryGrantOperationDTO> pagination = PageUtil.changeWapper(page, SalaryGrantOperationDTO.class);
@@ -604,8 +610,8 @@ public class SalaryGrantController {
      */
     @GetMapping(value = "/exportEmpInfo")
     public void exportEmpInfo(SalaryTaskDetailDTO salaryTaskDetailDTO, HttpServletResponse response) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息").setContent(JSON.toJSONString(salaryTaskDetailDTO)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出雇员信息").setContent(JSON.toJSONString(salaryTaskDetailDTO)));
             SalaryGrantEmployeeBO empBO = CommonTransform.convertToEntity(salaryTaskDetailDTO, SalaryGrantEmployeeBO.class);
             Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(salaryTaskDetailDTO.getCurrent(), Page.NO_ROW_LIMIT);
             page = salaryGrantEmployeeQueryService.queryEmployeeTask(page, empBO);
@@ -630,8 +636,8 @@ public class SalaryGrantController {
      */
     @PostMapping("/importDeferList")
     public Result<List<ReprieveEmpImportExcelDTO>> importDeferList(@RequestParam("file") MultipartFile file, @RequestParam("taskCode") String taskCode, @RequestParam("taskType") Integer taskType) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓雇员"));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导入暂缓雇员"));
             List<ReprieveEmpImportExcelDTO> list = ExcelUtil.importExcel(file, 0,1, ReprieveEmpImportExcelDTO.class, true);
             if (list.isEmpty()) {
                 return ResultGenerator.genServerFailResult("无暂缓雇员");
@@ -657,8 +663,8 @@ public class SalaryGrantController {
      */
     @GetMapping(value = "/exportFailList")
     public void exportFailList(SalaryTaskHandleDTO dto, HttpServletResponse response) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出暂缓失败雇员").setContent(JSON.toJSONString(dto)));
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("导出暂缓失败雇员").setContent(JSON.toJSONString(dto)));
             SalaryGrantReprieveEmployeeImportBO bo = CommonTransform.convertToEntity(dto, SalaryGrantReprieveEmployeeImportBO.class);
             List<SalaryGrantReprieveEmployeeImportBO> bos = salaryGrantReprieveEmployeeImportService.selectDeferEmployee(bo);
             List<ReprieveEmpImportExcelDTO> list = CommonTransform.convertToDTOs(bos, ReprieveEmpImportExcelDTO.class);
