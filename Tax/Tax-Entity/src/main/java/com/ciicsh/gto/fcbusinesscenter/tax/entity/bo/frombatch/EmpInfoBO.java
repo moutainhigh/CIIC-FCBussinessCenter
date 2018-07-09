@@ -32,10 +32,6 @@ public class EmpInfoBO {
      */
     private String mobile;
     /**
-     * 公司编号
-     */
-    private String companyNo;
-    /**
      * 入职日期
      */
     private Date entryDate;
@@ -98,14 +94,6 @@ public class EmpInfoBO {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
-    }
-
-    public String getCompanyNo() {
-        return companyNo;
-    }
-
-    public void setCompanyNo(String companyNo) {
-        this.companyNo = companyNo;
     }
 
     public Date getBirthday() {
