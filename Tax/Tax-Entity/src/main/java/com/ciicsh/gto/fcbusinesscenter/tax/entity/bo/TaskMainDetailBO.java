@@ -257,6 +257,17 @@ public class TaskMainDetailBO {
     //缴纳账户名称
     private String payAccountName;
 
+    //是否雇员
+    private Boolean isOverseas;
+
+    public Boolean getOverseas() {
+        return isOverseas;
+    }
+
+    public void setOverseas(Boolean overseas) {
+        isOverseas = overseas;
+    }
+
     public String getDeclareAccountName() {
         return declareAccountName;
     }
