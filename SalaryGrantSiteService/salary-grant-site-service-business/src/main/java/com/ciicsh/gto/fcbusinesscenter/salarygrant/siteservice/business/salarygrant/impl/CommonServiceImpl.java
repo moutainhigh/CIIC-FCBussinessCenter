@@ -34,6 +34,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.logservice.client.LogClientService;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
@@ -78,8 +79,6 @@ public class CommonServiceImpl implements CommonService {
     @Autowired
     private BankFileProxy bankFileProxy;
     @Autowired
-    private LogServiceProxy logService;
-    @Autowired
     private SMUserInfoProxy smUserInfoProxy;
     @Autowired
     private ISalaryEmployeeProxy salaryEmployeeProxy;
@@ -91,6 +90,8 @@ public class CommonServiceImpl implements CommonService {
     private BatchProxy batchProxy;
     @Autowired
     private EmployeeServiceProxy employeeServiceProxy;
+    @Autowired
+    LogClientService logClientService;
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
@@ -233,7 +234,7 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
         } else {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("调用结算中心接口生成报盘文件").setContent("调用接口返回错误"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("调用结算中心接口生成报盘文件").setContent("调用接口返回错误"));
         }
 
         return documentFilePOList;
@@ -285,10 +286,10 @@ public class CommonServiceImpl implements CommonService {
                 if (proxyDTOJsonResult.getCode().intValue() == 0) {
                     return proxyDTOJsonResult.getData();
                 } else {
-                    logService.info(LogDTO.of().setLogType(LogType.APP).setSource("雇员服务").setTitle("调用账单中心接口查询雇员薪酬服务费").setContent("调用接口未成功返回数据"));
+                    logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("雇员服务").setTitle("调用账单中心接口查询雇员薪酬服务费").setContent("调用接口未成功返回数据"));
                 }
             } else {
-                logService.info(LogDTO.of().setLogType(LogType.APP).setSource("雇员服务").setTitle("调用账单中心接口查询雇员薪酬服务费").setContent("调用接口出现错误"));
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("雇员服务").setTitle("调用账单中心接口查询雇员薪酬服务费").setContent("调用接口出现错误"));
             }
         }
 
@@ -406,10 +407,10 @@ public class CommonServiceImpl implements CommonService {
             if ("0".equals(salaryBatchDTOJsonResult.getCode())) {
                 return salaryBatchDTOJsonResult.getData();
             } else {
-                logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放定时任务").setTitle("调用结算中心发放工资清单接口").setContent("接口返回结果错误"));
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放定时任务").setTitle("调用结算中心发放工资清单接口").setContent("接口返回结果错误"));
             }
         } else {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放定时任务").setTitle("调用结算中心发放工资清单接口").setContent("调用接口异常"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放定时任务").setTitle("调用结算中心发放工资清单接口").setContent("调用接口异常"));
         }
 
         return null;
@@ -455,7 +456,7 @@ public class CommonServiceImpl implements CommonService {
         if (!ObjectUtils.isEmpty(jsonResult)) {
             return jsonResult.isSuccess();
         } else {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("暂缓人员信息进入暂缓池").setTitle("调用客服中心暂缓池操作接口").setContent("调用接口异常"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("暂缓人员信息进入暂缓池").setTitle("调用客服中心暂缓池操作接口").setContent("调用接口异常"));
         }
 
         return false;
@@ -467,7 +468,7 @@ public class CommonServiceImpl implements CommonService {
             Pagination<PrNormalBatchDTO> prNormalBatchDTOPagination = batchProxy.getBatchListByManagementId(managementId, null, 1, Integer.MAX_VALUE);
             return prNormalBatchDTOPagination.getList();
         } catch (Exception e) {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("根据管理方ID获取批次列表").setTitle("根据管理方ID获取批次列表").setContent("调用接口异常"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("根据管理方ID获取批次列表").setTitle("根据管理方ID获取批次列表").setContent("调用接口异常"));
         }
 
         return null;
@@ -478,7 +479,7 @@ public class CommonServiceImpl implements CommonService {
         try {
             return batchProxy.getBatchInfo(batchCode, batchType);
         } catch (Exception e) {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("获取一个批次计算结果").setTitle("获取一个批次计算结果").setContent("调用接口异常"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("获取一个批次计算结果").setTitle("获取一个批次计算结果").setContent("调用接口异常"));
         }
 
         return null;
@@ -504,7 +505,7 @@ public class CommonServiceImpl implements CommonService {
                 result = batchProxy.updateBatchStatus(batchAuditDTO);
             }
         } catch (Exception e) {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("更新批次状态").setTitle("更新批次状态").setContent("调用接口异常"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("更新批次状态").setTitle("更新批次状态").setContent("调用接口异常"));
         }
 
         return result;
@@ -523,7 +524,7 @@ public class CommonServiceImpl implements CommonService {
                 result = jsonResult.isSuccess();
             }
         } catch (Exception e) {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("暂缓池删除接口").setTitle("调用暂缓池删除接口").setContent("调用接口异常"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("暂缓池删除接口").setTitle("调用暂缓池删除接口").setContent("调用接口异常"));
         }
 
         return result;
@@ -544,11 +545,11 @@ public class CommonServiceImpl implements CommonService {
 
                     return fcEmpInfoRequestDTO2SalaryGrantEmployeePO(retEmpInfoResponseDTO);
                 } else {
-                    logService.info(LogDTO.of().setLogType(LogType.APP).setSource("获取雇员最新信息").setTitle("获取雇员最新信息").setContent("获取雇员最新信息失败"));
+                    logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("获取雇员最新信息").setTitle("获取雇员最新信息").setContent("获取雇员最新信息失败"));
                 }
             }
         } catch (Exception e) {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("获取雇员最新信息").setTitle("获取雇员最新信息").setContent("获取雇员最新信息接口调用失败"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("获取雇员最新信息").setTitle("获取雇员最新信息").setContent("获取雇员最新信息接口调用失败"));
         }
 
         return null;

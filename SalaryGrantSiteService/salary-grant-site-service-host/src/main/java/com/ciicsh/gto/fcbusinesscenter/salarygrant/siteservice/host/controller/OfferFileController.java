@@ -17,6 +17,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.logservice.client.LogClientService;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.BankFileProxy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class OfferFileController {
     @Autowired
     private CommonService commonService;
     @Autowired
-    private LogServiceProxy logService;
+    LogClientService logClientService;
 
     /**
      * 查询薪资发放报盘任务单列表
@@ -60,7 +61,7 @@ public class OfferFileController {
      */
     @RequestMapping("/offerFile/DocumentTask")
     public Page<SalaryGrantTaskDTO> queryOfferDocumentTaskPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("查询薪资发放报盘任务单列表").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("查询薪资发放报盘任务单列表").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
 
         Page<SalaryGrantTaskBO> page = new Page<>();
         page.setCurrent(salaryGrantTaskDTO.getCurrent());
@@ -99,7 +100,7 @@ public class OfferFileController {
      */
     @RequestMapping("/offerFile/generateOfferDocument/{taskCode}")
     public List<OfferDocumentDTO> generateOfferDocument(@PathVariable String taskCode){
-        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件").setContent("taskCode: " + taskCode));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件").setContent("taskCode: " + taskCode));
 
         List<OfferDocumentBO> documentBOList = offerDocumentTaskService.generateOfferDocument(taskCode, UserContext.getUserId());
 
@@ -128,7 +129,7 @@ public class OfferFileController {
      */
     @RequestMapping("/offerFile/download/{offerDocumentFileId}")
     public void download(HttpServletResponse response, @PathVariable Long offerDocumentFileId){
-        logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("offerDocumentFileId: " + offerDocumentFileId));
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("offerDocumentFileId: " + offerDocumentFileId));
 
         OfferDocumentFilePO documentFilePO = offerDocumentFileService.selectById(offerDocumentFileId);
         try {
@@ -154,7 +155,7 @@ public class OfferFileController {
             outputStream.close();
             inputStream.close();
         } catch (IOException e) {
-            logService.info(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("异常"));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("异常"));
         }
     }
 }
