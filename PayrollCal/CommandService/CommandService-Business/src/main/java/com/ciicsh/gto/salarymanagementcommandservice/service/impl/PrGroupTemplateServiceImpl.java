@@ -198,8 +198,8 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         approvalHistoryPO.setCreatedBy(UserContext.getUserId());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
         // 处理审批通过和审批拒绝的草稿版薪资项和正式版薪资项,approvalStatus：2,通过; 3,拒绝;
-        prPayrollItemMapper.deleteApprovedItemByGroupTemplateCode(paramItem.getApprovalStatus(), paramItem.getGroupTemplateCode());
-        prPayrollItemMapper.insertApprovedItemByGroupTemplateCode(paramItem.getApprovalStatus(), paramItem.getGroupTemplateCode());
+        prPayrollItemMapper.deleteApprovedItemByCode(paramItem.getApprovalStatus(), paramItem.getGroupTemplateCode(), null);
+        prPayrollItemMapper.insertApprovedItemByCode(paramItem.getApprovalStatus(), paramItem.getGroupTemplateCode(), null);
         int updateResult = prPayrollGroupTemplateMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
         return result;

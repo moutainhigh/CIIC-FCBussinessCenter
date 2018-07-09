@@ -143,6 +143,20 @@ public class TaskSubPaymentPO implements Serializable {
 	 */
 	private BigDecimal fine;
 
+	/**
+	 * 缴纳账户名称
+	 */
+	@TableField("pay_account_name")
+	private String payAccountName;
+
+	public String getPayAccountName() {
+		return payAccountName;
+	}
+
+	public void setPayAccountName(String payAccountName) {
+		this.payAccountName = payAccountName;
+	}
+
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
 	}

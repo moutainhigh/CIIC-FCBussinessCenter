@@ -5,15 +5,11 @@ import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.bo.UserInfoBO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsPayrollExpressMapper;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollExpressPO;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollExpressService;
 
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 

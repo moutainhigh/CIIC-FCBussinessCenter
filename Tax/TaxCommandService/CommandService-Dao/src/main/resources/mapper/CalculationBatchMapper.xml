@@ -101,6 +101,11 @@
 		<result column="exercise_income_year" property="exerciseIncomeYear" />
 		<result column="number_of_months" property="numberOfMonths" />
 		<result column="exercise_tax_amount" property="exerciseTaxAmount" />
+		<result column="pre_tax_aggregate" property="preTaxAggregate" />
+		<result column="duty_free_allowance" property="dutyFreeAllowance" />
+		<result column="others" property="others" />
+		<result column="declare_account_name" property="declareAccountName" />
+		<result column="pay_account_name" property="payAccountName" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
@@ -112,11 +117,11 @@
 	<!-- 查询批次明细 -->
 	<select id="queryCalculationBatchDetails" parameterType="java.util.Map" resultMap="BaseResultMap">
 		SELECT
-		t2.id,t1.batch_no,t2.tax_real
+		t2.id,t1.batch_no,t2.tax_real,t2.declare_account,t2.pay_account,t2.declare_account_name,t2.pay_account_name
 		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
 		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
 		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return
-		,t3.declare_account,t3.pay_account,t3.receipt_account,t3.support_no,t3.support_name,t3.is_support,t3.is_supported,t3.is_pay,t3.is_payed,t3.is_declare
+		,t3.declare_account,t3.pay_account,t3.declare_account_name,t3.pay_account_name,t3.receipt_account,t3.support_no,t3.support_name,t3.is_support,t3.is_supported,t3.is_pay,t3.is_payed,t3.is_declare
 		,t3.is_declared,t3.is_transfer,t3.is_transferred,t3.is_declare_supported,t3.is_transfer_supported,t3.is_pay_supported,t3.is_proof,t3.is_proofed
 		FROM tax_fc_calculation_batch t1,tax_fc_calculation_batch_detail t2,tax_fc_employee_service_batch t3
 		where t1.is_active = true and t2.is_defer !=true and t1.id = t2.calculation_batch_id and t2.id = t3.cal_batch_detail_id
@@ -164,7 +169,10 @@
 		t2.exercise_income_month,
 		t2.exercise_income_year,
 		t2.number_of_months,
-		t2.exercise_tax_amount
+		t2.exercise_tax_amount,
+		t2.pre_tax_aggregate,
+		t2.duty_free_allowance,
+		t2.others
 		,t2.employee_no,t2.employee_name,t2.id_type,t2.id_no,t2.period,t2.income_subject,t2.income_total,t2.income_dutyfree,t2.deduct_retirement_insurance,t2.deduct_medical_insurance
 		,t2.deduct_dleness_insurance,t2.deduct_property,t2.deduct_house_fund,t2.deduct_takeoff,t2.deduct_other,t2.deduct_total,t2.deduction,t2.donation,t2.income_for_tax
 		,t2.tax_rate,t2.quick_cal_deduct,t2.tax_amount,t2.tax_deduction,t2.tax_withhold_amount,t2.tax_withholded_amount,t2.tax_remedy_or_return

@@ -9,11 +9,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.AdvanceBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.MoneyBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.page.Pagination;
 import com.ciicsh.gto.salarymanagement.entity.dto.BatchCompareRequestDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.BatchPayrollSchemaDTO;
@@ -23,6 +19,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.PrAdjustBatchServic
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrBackTrackingBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -186,6 +183,18 @@ public class BatchProviderController implements BatchProxy {
         }
 
         return result;
+    }
+
+    @Override
+    public int updateAdvancedBatch(@RequestBody AdvanceBatchInfoDTO advanceBatchInfoDTO) {
+
+        AdvanceBatchInfoPO advanceBatchInfoPO = new AdvanceBatchInfoPO();
+        advanceBatchInfoPO.setAdvancePeriod(advanceBatchInfoDTO.getAdvancePeriod());
+        advanceBatchInfoPO.setBatchType(advanceBatchInfoDTO.getBatchType());
+        advanceBatchInfoPO.setCode(advanceBatchInfoDTO.getCode());
+        advanceBatchInfoPO.setHasAdvance(advanceBatchInfoDTO.getHasAdvance());
+        advanceBatchInfoPO.setModifyBy(!StringUtils.isNotEmpty(advanceBatchInfoDTO.getModifyBy())? "system" : advanceBatchInfoDTO.getModifyBy()) ;
+        return batchService.updateAdvancedBatch(advanceBatchInfoPO);
     }
 
     @PostMapping("/compareBatch")

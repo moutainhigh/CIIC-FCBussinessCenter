@@ -73,6 +73,14 @@ public class PrBatchDTO {
      */
 	private String actualPeriod;
 
+	/**
+	 * 逾期垫付日期
+	 */
+	private String advancePeriod;
+
+	/*周期垫付日*/
+	private int advanceDay;
+
     /**
      * 薪资计算结果
      */
