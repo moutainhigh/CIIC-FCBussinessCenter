@@ -68,4 +68,13 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
      * @return
      */
     boolean saveSalaryAdjustmentInfoForEmployee(SalaryGrantMainTaskPO salaryGrantMainTaskPO);
+
+    /**
+     * 比较并更新雇员最新信息
+     *
+     * @param currentEmployeePO
+     * @param newestEmployeePO
+     * @return
+     */
+    boolean compareAndUpdateEmployeeNewestInfo(SalaryGrantEmployeePO currentEmployeePO, SalaryGrantEmployeePO newestEmployeePO);
 }

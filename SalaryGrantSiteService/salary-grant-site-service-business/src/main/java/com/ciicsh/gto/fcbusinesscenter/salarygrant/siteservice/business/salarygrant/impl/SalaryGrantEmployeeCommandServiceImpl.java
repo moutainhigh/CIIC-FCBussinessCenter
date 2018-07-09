@@ -321,4 +321,9 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
 
         return true;
     }
+
+    @Override
+    public boolean compareAndUpdateEmployeeNewestInfo(SalaryGrantEmployeePO currentEmployeePO, SalaryGrantEmployeePO newestEmployeePO) {
+        return salaryGrantSupplierSubTaskService.compareAndUpdateEmployeeNewestInfo(currentEmployeePO, newestEmployeePO);
+    }
 }
