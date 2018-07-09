@@ -20,7 +20,7 @@ public class CommonDTO {
     private BigDecimal deductTakeoff;
 
     //其它扣除
-    private BigDecimal otherDeductions;
+    private BigDecimal others;
 
     //商业保险
     private BigDecimal businessHealthInsurance;
@@ -89,12 +89,12 @@ public class CommonDTO {
         this.deductTakeoff = deductTakeoff;
     }
 
-    public BigDecimal getOtherDeductions() {
-        return otherDeductions;
+    public BigDecimal getOthers() {
+        return others;
     }
 
-    public void setOtherDeductions(BigDecimal otherDeductions) {
-        this.otherDeductions = otherDeductions;
+    public void setOthers(BigDecimal others) {
+        this.others = others;
     }
 
     public BigDecimal getBusinessHealthInsurance() {
