@@ -80,16 +80,14 @@ public class GroupController implements PayrollGroupProxy{
     public JsonResult copyPrGroup(@RequestParam String srcCode,
                                   @RequestParam String newName,
                                   @RequestParam String managementId,
-                                  @RequestParam String remark){
+                                  @RequestParam String remark,
+                                  @RequestParam boolean isCopyRemark){
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
         newEntity.setGroupName(newName);
         newEntity.setManagementId(managementId);
-        newEntity.setRemark(srcEntity.getRemark());
-        if (StringUtils.isNotBlank(remark)){
-            newEntity.setRemark(remark);
-        }
+        newEntity.setRemark(isCopyRemark ? srcEntity.getRemark() : remark);
         boolean result;
         try {
             result = prGroupService.copyPrGroup(srcEntity, newEntity);
