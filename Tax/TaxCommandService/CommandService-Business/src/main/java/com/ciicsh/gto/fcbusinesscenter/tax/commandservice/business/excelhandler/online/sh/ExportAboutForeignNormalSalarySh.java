@@ -193,7 +193,7 @@ public class ExportAboutForeignNormalSalarySh extends BaseService {
             if (null == cellT) {
                 cellT = row.createCell(19);
             }
-            cellT.setCellValue(po.getDeductOther() == null ? "" : po.getDeductOther().toString());
+            cellT.setCellValue(po.getOthers() == null ? "" : po.getOthers().toString());
             //住房补贴-U列housing_subsidy
             HSSFCell cellU = row.getCell(20);
             if (null == cellU) {

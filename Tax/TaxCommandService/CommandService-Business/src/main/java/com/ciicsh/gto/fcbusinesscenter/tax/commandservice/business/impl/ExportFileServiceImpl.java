@@ -37,10 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 
@@ -160,13 +157,16 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
     private ExportAboutVoucherPuDong exportAboutVoucherPuDong;
 
     @Autowired
-    private TaskSubMoneyService taskSubMoneyService;
+    private CalculationBatchService calculationBatchService;
 
     @Autowired
-    private TaskSubMoneyDetailService taskSubMoneyDetailService;
+    private CalculationBatchDetailService calculationBatchDetailService;
 
     @Autowired
     private ExportAboutTaxList exportAboutTaxList;
+
+    @Autowired
+    private CalculationBatchAccountService calculationBatchAccountService;
 
     /**
      * 所得项目_正常工资薪金收入
@@ -967,36 +967,58 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
     }
 
     /**
-     * 根据任务ID，获取个税清单wb和文件名
-     * @param subMoneyId
+     * 根据批次导出员工个税申报明细
+     * @param taskNo
+     * @param batchNos
      * @return
      */
     @Override
-    public Map<String, Object> exportTaxList(Long subMoneyId) {
+    public Map<String, Object> exportTaxList(String taskNo,String[] batchNos,String operator) {
         Map<String, Object> map = new HashMap<>();
         HSSFWorkbook wb = null;
         try {
-            //根据划款子任务ID查询划款信息
-            TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(subMoneyId);
-            //根据划款子任务ID查询划款明细
-            List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(subMoneyId);
-            //划款明细计算批次明细ID
-            List<Long> taskSubMoneyDetailIdList = taskSubMoneyDetailPOList.stream().map(TaskSubMoneyDetailPO::getCalculationBatchDetailId).collect(Collectors.toList());
+            //TODO 员工个税申报明细头部信息
+            //组织员工个税申报明细头部信息
+            Map<String,String> topMap = new HashMap<>();
+            //流水号
+            topMap.put("flowNum",taskNo);
+            //发放批次
+            topMap.put("batchNo", Arrays.stream(batchNos).collect(Collectors.joining(",")));
+            //服务中心
+            topMap.put("serviceCenter","");
+            //客户经理
+            topMap.put("serviceManager","");
+            //根据批次号查询出批次信息
+            List<CalculationBatchPO> calculationBatchPOS = calculationBatchService.queryCalculationBatchPOByBatchNos(batchNos);
+            List<Long> batchIds = calculationBatchPOS.stream().map(CalculationBatchPO :: getId).collect(Collectors.toList());
+            //根据批次查询批次详情
+            List<CalculationBatchDetailPO> calculationBatchDetailPOList = calculationBatchDetailService.queryCalculationBatchDetailByBatchNos(batchIds);
+            //个税期间
+            topMap.put("period",calculationBatchDetailPOList.size() > 0 ? DateTimeFormatter.ofPattern("yyyy/MM").format(calculationBatchDetailPOList.get(0).getPeriod()) : "");
+            //识别号
+            List<String> accountNums = calculationBatchDetailPOList.stream().map(CalculationBatchDetailPO::getDeclareAccount).collect(Collectors.toList());
+            //批次明细ID
+            List<Long> batchDetailsIds = calculationBatchDetailPOList.stream().map(CalculationBatchDetailPO::getId).collect(Collectors.toList());
+            //根据识别号集合查询信息
+            List<CalculationBatchAccountPO> calculationBatchAccountPOS = calculationBatchAccountService.queryCalculationBatchAccountInfoByAccountNos(accountNums);
+            //已识别号为key转成map
+            Map<String,CalculationBatchAccountPO> accountMap = calculationBatchAccountPOS.stream().collect(Collectors.toMap(CalculationBatchAccountPO::getAccountNumber, account -> account));
             //获取雇员个税信息
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new EmployeeInfoBatchPO());
-            wrapper.in("cal_batch_detail_id", taskSubMoneyDetailIdList);
+            wrapper.in("cal_batch_detail_id", batchDetailsIds);
+            wrapper.and("is_active = {0} ", true);
             List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchImpl.selectList(wrapper);
+            //公司
+            topMap.put("company",employeeInfoBatchPOList.size() > 0 ? employeeInfoBatchPOList.get(0).getCompanyNo() +" "+ employeeInfoBatchPOList.get(0).getCompanyName(): "");
+            //原公司编号
+            topMap.put("oldCompanyNo",employeeInfoBatchPOList.size() > 0 ? employeeInfoBatchPOList.get(0).getCompanyNo() : "");
             //文件名称
             String fileName = "";
-            //00-本地,01-异地
-            if ("00".equals(taskSubMoneyPO.getAreaType())) {
-                fileName = "工资清单.xls";
-                wb = exportAboutTaxList.getTaxListReportWB(taskSubMoneyPO, taskSubMoneyDetailPOList, employeeInfoBatchPOList, fileName, "voucher");
-            } else {
-                fileName = "工资清单.xls";
-                wb = exportAboutTaxList.getTaxListReportWB(taskSubMoneyPO, taskSubMoneyDetailPOList, employeeInfoBatchPOList, fileName, "voucher");
-            }
+            fileName = "个税工资清单.xls";
+            //操作员
+            topMap.put("operator",operator);
+            wb = exportAboutTaxList.getTaxListReportWB(topMap, calculationBatchDetailPOList, employeeInfoBatchPOList,accountMap, fileName, "voucher");
             map.put("fileName", fileName);
         } catch (Exception e) {
             if (wb != null) {
