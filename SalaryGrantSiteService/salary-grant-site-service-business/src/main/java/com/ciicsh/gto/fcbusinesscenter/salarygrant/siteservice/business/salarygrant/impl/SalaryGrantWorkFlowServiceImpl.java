@@ -18,6 +18,8 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
@@ -62,50 +64,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     private CommonService commonService;
     @Autowired
     private SalaryGrantSubTaskProcessService salaryGrantSubTaskProcessService;
-
-    @Override
-    public Map startSalaryGrantTaskProcess(SalaryGrantTaskMissionRequestDTO salaryGrantTaskMissionRequestDTO) {
-        Map<String, String> startProcessResponseMap = null;
-        MissionRequestDTO missionRequestDTO = new MissionRequestDTO();
-        missionRequestDTO.setMissionId(salaryGrantTaskMissionRequestDTO.getMissionId());
-        missionRequestDTO.setProcessDefinitionKey(salaryGrantTaskMissionRequestDTO.getProcessDefinitionKey());
-        missionRequestDTO.setVariables(salaryGrantTaskMissionRequestDTO.getVariables());
-        try {
-            Result restResult = sheetServiceProxy.startProcess(missionRequestDTO);
-            startProcessResponseMap = (Map<String, String>) restResult.getObject();
-            com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result returnResult = ResultGenerator.genSuccessResult(true);
-        } catch (Exception e) {
-            ResultGenerator.genServerFailResult();
-        }
-        return startProcessResponseMap;
-    }
-
-    @Override
-    public String getProcessId(Map startProcessResponseMap) {
-        String processId = null;
-        //工作流返回的流程编号
-        if (startProcessResponseMap != null) {
-            processId = (String) startProcessResponseMap.get("processId");
-        }
-        return processId;
-    }
-
-    @Override
-    public Map completeSalaryGrantTask(SalaryGrantTaskRequestDTO salaryGrantTaskRequestDTO) {
-        Map<String, String> completeTaskResponseMap = null;
-        TaskRequestDTO taskRequestDTO = new TaskRequestDTO();
-        taskRequestDTO.setTaskId(salaryGrantTaskRequestDTO.getTaskId());
-        taskRequestDTO.setAssignee(salaryGrantTaskRequestDTO.getAssignee());
-        taskRequestDTO.setVariables(salaryGrantTaskRequestDTO.getVariables());
-        try {
-            Result restResult = sheetServiceProxy.completeTask(taskRequestDTO);
-            completeTaskResponseMap = (Map<String, String>) restResult.getObject();
-            com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result returnResult = ResultGenerator.genSuccessResult(true);
-        } catch (Exception e) {
-            ResultGenerator.genServerFailResult();
-        }
-        return completeTaskResponseMap;
-    }
+    @Autowired
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -563,16 +523,16 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 //3、暂缓人员信息进入暂缓池，调用接口SalaryGrantEmployeeCommandService. processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO)
                 salaryGrantEmployeeCommandService.processReprieveToPoll(salaryGrantTaskBO);
 
-                //4、查询批次信息，调用接口BatchProxy.getBatchListByManagementId，获取第一条数据的PrNormalBatchDTO. hasAdvance。
-                //   如果PrBatchDTO. has Advance=1，则调用接口BatchProxy.updateBatchStatus，
-                //   设置BatchAuditDTO. advancePeriod=SalaryGrantMainTaskPO. grantDate + PrNormalBatchDTO. advanceDay（调用日期对象，日期+天数 获取最终日期）
-                List<PrNormalBatchDTO> prNormalBatchDTOList = commonService.getBatchListByManagementId(salaryGrantTaskBO.getManagementId());
-                if (!CollectionUtils.isEmpty(prNormalBatchDTOList)) {
-                    PrNormalBatchDTO firstPrNormalBatchDTO = prNormalBatchDTOList.get(0);
-                    if (1 == firstPrNormalBatchDTO.getHasAdvance()) {
-                        commonService.updateBatchStatus(mainTaskPO, firstPrNormalBatchDTO);
-                    }
-                }
+//                //4、查询批次信息，调用接口BatchProxy.getBatchListByManagementId，获取第一条数据的PrNormalBatchDTO. hasAdvance。
+//                //   如果PrBatchDTO. has Advance=1，则调用接口BatchProxy.updateBatchStatus，
+//                //   设置BatchAuditDTO. advancePeriod=SalaryGrantMainTaskPO. grantDate + PrNormalBatchDTO. advanceDay（调用日期对象，日期+天数 获取最终日期）
+//                List<PrNormalBatchDTO> prNormalBatchDTOList = commonService.getBatchListByManagementId(salaryGrantTaskBO.getManagementId());
+//                if (!CollectionUtils.isEmpty(prNormalBatchDTOList)) {
+//                    PrNormalBatchDTO firstPrNormalBatchDTO = prNormalBatchDTOList.get(0);
+//                    if (1 == firstPrNormalBatchDTO.getHasAdvance()) {
+//                        commonService.updateBatchStatus(mainTaskPO, firstPrNormalBatchDTO);
+//                    }
+//                }
             }
         }
 
@@ -748,6 +708,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     });
                 }
 
+                fcBizTransactionMongoOpt.commitEvent(mainTaskPO.getBatchCode(), mainTaskPO.getGrantType(), EventName.FC_GRANT_EVENT, 0);
                 //5、检查雇员信息是否有变更，调用雇员信息变更接口。--后面补充，步骤预留
                 //6、如果雇员信息有变动，则重新统计任务主表汇总信息。--后面补充，步骤预留
 
