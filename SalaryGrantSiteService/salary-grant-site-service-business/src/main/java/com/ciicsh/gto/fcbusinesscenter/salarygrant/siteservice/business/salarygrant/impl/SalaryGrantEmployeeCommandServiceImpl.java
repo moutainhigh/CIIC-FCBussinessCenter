@@ -322,6 +322,7 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
         return true;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean compareAndUpdateEmployeeNewestInfo(SalaryGrantEmployeePO currentEmployeePO, SalaryGrantEmployeePO newestEmployeePO) {
         return salaryGrantSupplierSubTaskService.compareAndUpdateEmployeeNewestInfo(currentEmployeePO, newestEmployeePO);
