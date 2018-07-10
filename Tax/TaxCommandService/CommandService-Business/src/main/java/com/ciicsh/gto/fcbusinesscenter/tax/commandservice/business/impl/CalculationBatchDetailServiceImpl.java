@@ -174,7 +174,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
      * @param ids
      */
     @Override
-    public void queryCalculationBatchDetail(String[] ids) {
+    public void recoveryCalculationBatchDetail(String[] ids) {
         if (ids != null && !"".equals(ids)) {
             CalculationBatchDetailPO calculationBatchDetailPO = new CalculationBatchDetailPO();
             //是否暂缓
@@ -243,5 +243,34 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
             }
         }
         return i;
+    }
+
+    /**
+     * 根据批次ID查询批次明细列表
+     * @param batchId
+     * @return
+     */
+    @Override
+    public List<CalculationBatchDetailPO> queryCalculationBatchDetailByBatchId(Long batchId) {
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new CalculationBatchDetailPO());
+        wrapper.and("calculation_batch_id = {0}",batchId);
+        wrapper.and("is_active = {0} ", true);
+        return baseMapper.selectList(wrapper);
+    }
+
+    /**
+     * 根据批次ID数组查询批次明细列表(不含暂缓)
+     * @param batchIds
+     * @return
+     */
+    @Override
+    public List<CalculationBatchDetailPO> queryCalculationBatchDetailByBatchNos(List<Long> batchIds) {
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new CalculationBatchDetailPO());
+        wrapper.and("is_defer = {0}",false);
+        wrapper.in("calculation_batch_id",batchIds);
+        wrapper.and("is_active = {0} ", true);
+        return baseMapper.selectList(wrapper);
     }
 }

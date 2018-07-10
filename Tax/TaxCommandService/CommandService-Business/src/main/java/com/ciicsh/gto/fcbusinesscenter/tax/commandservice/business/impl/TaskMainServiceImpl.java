@@ -344,4 +344,14 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         return flag;
     }
 
+    /**
+     * 根据主任务di查询主任务信息
+     * @param id
+     * @return
+     */
+    @Override
+    public TaskMainPO queryTaskMainById(Long id) {
+        return baseMapper.selectById(id);
+    }
+
 }

@@ -105,7 +105,7 @@ public class CalculationBatchDetailController extends BaseController implements 
             return jr;
         }
         if (calculationBatchDetailDTO.getIds() != null && calculationBatchDetailDTO.getIds().length > 0) {
-            calculationBatchDetailService.queryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
+            calculationBatchDetailService.recoveryCalculationBatchDetail(calculationBatchDetailDTO.getIds());
         }
         return jr;
     }

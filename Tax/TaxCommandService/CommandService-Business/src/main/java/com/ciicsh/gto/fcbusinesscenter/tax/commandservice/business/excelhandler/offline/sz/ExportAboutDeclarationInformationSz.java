@@ -87,7 +87,7 @@ public class ExportAboutDeclarationInformationSz extends BaseService {
             if (null == cellA) {
                 cellA = row.createCell(0);
             }
-            cellA.setCellValue(taskSubDeclareDetailPO.getEmployeeName());
+            cellA.setCellValue(employeeInfoBatchPO.getTaxName());
             //身份证照类型*-B列
             HSSFCell cellB = row.getCell(1);
             if (null == cellB) {
@@ -185,7 +185,7 @@ public class ExportAboutDeclarationInformationSz extends BaseService {
             if (null == cellS) {
                 cellS = row.createCell(18);
             }
-            cellS.setCellValue(taskSubDeclareDetailPO.getDeductOther() == null ? "" : taskSubDeclareDetailPO.getDeductOther().toString());
+            cellS.setCellValue(taskSubDeclareDetailPO.getOthers() == null ? "" : taskSubDeclareDetailPO.getOthers().toString());
             //合计-T列(不需要)
             //减除费用-U列(不需要)
             //准予扣除的捐赠额-V列donation
