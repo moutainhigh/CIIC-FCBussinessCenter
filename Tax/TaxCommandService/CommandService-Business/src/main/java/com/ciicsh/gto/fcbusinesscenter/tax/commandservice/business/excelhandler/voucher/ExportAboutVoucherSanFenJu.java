@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseService;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchAccountPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
@@ -38,7 +39,7 @@ public class ExportAboutVoucherSanFenJu extends BaseService {
      * @param type
      * @return
      */
-    public HSSFWorkbook getSanFenJuVoucherWB(List<TaskSubProofDetailPO> taskSubProofDetailPOList, String fileName, String type) {
+    public HSSFWorkbook getSanFenJuVoucherWB(List<TaskSubProofDetailPO> taskSubProofDetailPOList, CalculationBatchAccountPO calculationBatchAccountPO, String fileName, String type) {
         POIFSFileSystem fs = null;
         HSSFWorkbook wb = null;
         try {
@@ -46,18 +47,17 @@ public class ExportAboutVoucherSanFenJu extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
-            // TODO 完税凭证模板(三分局)表头信息
             //用于存放模板列表头部
             Map<String, String> map = new HashMap<>(16);
             //扣缴义务人名称
-            map.put("withholdingAgent", "上海中智");
+            map.put("withholdingAgent", calculationBatchAccountPO.getAccountName());
             //扣缴义务人代码(税务电脑编码)
-            map.put("withholdingAgentCode", "BM123456789");
-            //扣缴义务人电话
+            map.put("withholdingAgentCode", calculationBatchAccountPO.getAccountNumber());
+            // TODO 扣缴义务人电话
             map.put("withholdingAgentPhone", "18201880000");
-            //换开人姓名
+            // TODO 换开人姓名
             map.put("changePersonName", "admin");
-            //换开人身份证号码
+            // TODO 换开人身份证号码
             map.put("changePersonIdNo", "321281199001011234");
             //根据不同的业务需要处理wb
             this.handleSanFenJuVoucherWB(wb, map, taskSubProofDetailPOList);

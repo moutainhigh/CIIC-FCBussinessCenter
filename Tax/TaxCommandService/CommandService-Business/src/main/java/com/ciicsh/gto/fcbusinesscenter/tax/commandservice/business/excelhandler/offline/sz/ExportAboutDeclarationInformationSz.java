@@ -87,7 +87,7 @@ public class ExportAboutDeclarationInformationSz extends BaseService {
             if (null == cellA) {
                 cellA = row.createCell(0);
             }
-            cellA.setCellValue(taskSubDeclareDetailPO.getEmployeeName());
+            cellA.setCellValue(employeeInfoBatchPO.getTaxName());
             //身份证照类型*-B列
             HSSFCell cellB = row.getCell(1);
             if (null == cellB) {
