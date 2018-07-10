@@ -742,16 +742,16 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
             if(StrKit.isNotEmpty(calculationBatchAccountPO.getProvinceCode())){
                 //上海(provinceCode:310000)为本地
                 if(calculationBatchAccountPO.getProvinceCode().trim().equals("310000")){
-                    accountType = "00";
+                    areaType = "00";
                 }else{
-                    accountType = "01";
+                    areaType = "01";
                 }
             }
             if(StrKit.isNotEmpty(calculationBatchAccountPO.getSource())){
                 if(calculationBatchAccountPO.getSource().trim().equals("0")){
-                    areaType = "01";
+                    accountType = "01";
                 }else{
-                    areaType = "00";
+                    accountType = "00";
                 }
             }
         }
