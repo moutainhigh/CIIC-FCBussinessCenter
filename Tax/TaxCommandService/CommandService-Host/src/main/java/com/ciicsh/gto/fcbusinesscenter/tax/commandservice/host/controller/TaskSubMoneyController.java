@@ -17,8 +17,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.PayapplyServiceProxy;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.SalaryServiceProxy;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.*;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyProxyDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyCompanyProxyDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyEmployeeProxyDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,9 +49,6 @@ public class TaskSubMoneyController extends BaseController {
     private PayapplyServiceProxy payapplyServiceProxy;
 
     @Autowired
-    private SalaryServiceProxy salaryServiceProxy;
-
-    @Autowired
     private TaskSubMoneyDetailService taskSubMoneyDetailService;
 
     @Autowired
@@ -61,12 +59,6 @@ public class TaskSubMoneyController extends BaseController {
 
     @Autowired
     private CalculationBatchAccountService calculationBatchAccountService;
-
-    @Autowired
-    private CalculationBatchService calculationBatchService;
-
-    @Autowired
-    private CalculationBatchDetailService calculationBatchDetailService;
 
 
     /**
@@ -272,97 +264,6 @@ public class TaskSubMoneyController extends BaseController {
                 employeeList.add(payapplyEmployeeProxyDTO);
             }
             payApplyProxyDTO.setEmployeeList(employeeList);
-
-            List<String> disBatchNoList = batchNoListAll.stream().distinct().collect(Collectors.toList());
-            SalaryBatchDTO salaryBatchDTO = new SalaryBatchDTO();
-            salaryBatchDTO.setBatchCodeList(disBatchNoList);
-            List<String> unExistBatchNoList = new ArrayList<>();
-            //验证薪酬批次号是否存在
-            com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult batchNoExistResult = salaryServiceProxy.notExistsBatchCodeList(salaryBatchDTO);
-            if ("0".equals(batchNoExistResult.getCode())) {
-                SalaryBatchDTO salaryBatchDTO1 = (SalaryBatchDTO)batchNoExistResult.getData();
-                unExistBatchNoList = salaryBatchDTO1.getBatchCodeList();
-            }else{
-                jr.error();
-            }
-            //不存在的薪酬批次号工资清单数据(即打卡操作)
-            for (String batchNo : unExistBatchNoList){
-                //根据批次号查询计算批次信息
-                CalculationBatchPO calculationBatchPO = calculationBatchService.queryCalculationBatchPOByBatchNo(batchNo);
-                //调用薪资发放接口获取数据，再进行打卡
-                SalaryBatchDTO salaryBatchDTO1 = new SalaryBatchDTO();
-                //计算批次号
-                salaryBatchDTO1.setBatchCode(batchNo);
-                //管理方ID
-                salaryBatchDTO1.setManagementId(calculationBatchPO.getManagerNo());
-                //管理方名称
-                salaryBatchDTO1.setManagementName(calculationBatchPO.getManagerName());
-                //TODO 缴费月份（计算批次的月份）
-                //工资清单总额（计算批次的总额）
-                salaryBatchDTO1.setTotalAmount(calculationBatchPO.getTaxAmount());
-                //雇员总数（计算批次的雇员数量）
-                salaryBatchDTO1.setTotalEmployeeCount(calculationBatchPO.getHeadcount());
-
-                //TODO
-                //本批次将付金额（计算批次里正常的雇员的实发工资之和）
-                //本批次将付雇员数量（正常的雇员）
-                //申请人
-                salaryBatchDTO1.setApplyer(userInfoResponseDTO.getLoginName());
-                //申请日期
-                salaryBatchDTO1.setApplyDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now()));
-                //TODO 财务代理费
-                //TODO 状态0:待上传;2:已打卡
-                //批次中所有雇员
-                //步骤一:根据批次ID获取批次明细信息
-                List<CalculationBatchDetailPO> calculationBatchDetailPOList = calculationBatchDetailService.queryCalculationBatchDetailByBatchId(calculationBatchPO.getId());
-                List<Long> batchDetailIds = calculationBatchDetailPOList.stream().map(CalculationBatchDetailPO::getId).collect(Collectors.toList());
-                //步骤二:根据批次明细ID筛选出相关雇员
-                List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOListAboutBatch = taskSubMoneyDetailPOList.stream().filter(item -> batchDetailIds.contains(item.getCalculationBatchDetailId())).collect(Collectors.toList());
-                List<SalaryEmployeeDTO> salaryEmployeeDTOS = new ArrayList<>();
-                for(TaskSubMoneyDetailPO taskSubMoneyDetailPO:taskSubMoneyDetailPOListAboutBatch){
-                    EmployeeInfoBatchPO employeeInfoBatchPO = employeeInfoBatchPOList.stream().filter(item -> item.getCalBatchDetailId().equals(taskSubMoneyDetailPO.getCalculationBatchDetailId())).findFirst().orElse(null);
-                    CalculationBatchAccountPO calculationBatchAccountPO1 = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubMoneyDetailPO.getPayAccount());
-                    //
-                    SalaryEmployeeDTO salaryEmployeeDTO = new SalaryEmployeeDTO();
-                    //公司ID
-                    salaryEmployeeDTO.setCompanyId(employeeInfoBatchPO.getCompanyNo());
-                    //公司名称
-                    salaryEmployeeDTO.setCompanyName(employeeInfoBatchPO.getCompanyName());
-                    //雇员ID
-                    salaryEmployeeDTO.setEmployeeId(taskSubMoneyDetailPO.getEmployeeNo());
-                    //雇员名称
-                    salaryEmployeeDTO.setEmployeeName(taskSubMoneyDetailPO.getEmployeeName());
-                    //雇员银行卡所属银行编号
-                    //雇员银行卡所属银行名称
-                    //支行名称
-                    //雇员银行账号ID
-                    //雇员工资卡银行账号
-                    //社保金额
-                    //公积金金额
-                    //是否要付社保/公积金(1:是；0:否)
-                    //个税金额
-                    //是否要付个税(1:是；0:否)
-                    //薪资金额
-                    //是否要付工资(1:是；0:否)
-                    //应付金额
-                    //工资月份
-                    //个税月份
-                    salaryEmployeeDTO.setTaxMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyDetailPO.getPeriod()));
-                    //帐套ID(1:AF;2:FC;3:BPO)
-                    salaryEmployeeDTO.setFinanceAccountId(2);
-                    //个人薪酬服务费
-                    //雇员薪资明细状态(0:正常;1:暂缓放开;2:退票完成;3:现金完成;4:调整完成;负值标识未完成/未放开)
-                    //雇员个税状态(0:正常;1:暂缓放开;负值标识未完成/未放开)
-                    //是否垫付(0:正常;1:垫付)
-
-                    salaryEmployeeDTOS.add(salaryEmployeeDTO);
-                }
-                salaryBatchDTO1.setEmployeeList(salaryEmployeeDTOS);
-                com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult salaryResult = salaryServiceProxy.saveSalaryBatchData(salaryBatchDTO1);
-                if (!"0".equals(salaryResult.getCode())) {
-                    jr.error();
-                }
-            }
             //执行划款
             com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult paymentJr = payapplyServiceProxy.shIncomeTax(payApplyProxyDTO);
             if ("0".equals(paymentJr.getCode())) {
@@ -376,17 +277,14 @@ public class TaskSubMoneyController extends BaseController {
                     TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
                     taskSubMoneyBO.setId(id);
                     taskSubMoneyBO.setPayStatus("01");
-//                    taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
                     taskSubMoneyBO.setPayApplyId((long) payApplyId);
                     taskSubMoneyBO.setPayApplyCode(payApplyCode);
                     taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);
                 } catch (Exception e) {
-//                    Map<String, String> tags = new HashMap<>(16);
                     //日志工具类返回
                     LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, null);
                     jr.error();
                 }
-                //jr.fill(true);
             } else {
                 jr.error();
             }
