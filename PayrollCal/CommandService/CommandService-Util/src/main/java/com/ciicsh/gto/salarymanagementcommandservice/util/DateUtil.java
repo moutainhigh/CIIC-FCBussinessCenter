@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,8 @@ import java.util.List;
 public class DateUtil {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DateUtil.class);
+
+	public static final String yyyyMMdd = "yyyyMMdd";
 	
 	/**
 	 * 日期转字符串
@@ -235,8 +238,8 @@ public class DateUtil {
 	
 	/**
 	 * 判断是否在24小时内
-	 * @param date1
-	 * @param date2
+	 * @param startDate
+	 * @param endDate
 	 * @return
 	 * @throws Exception
 	 */
@@ -250,4 +253,16 @@ public class DateUtil {
         } 
 
     }
+
+	/**
+	 * 将LocalDateTime转为自定义的时间格式的字符串
+	 * @param localDateTime 目标日期
+	 * @param formatter 日期格式
+	 * @return 返回字符串类型的日期
+	 */
+    public static String getNowDate(LocalDateTime localDateTime, String formatter){
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(formatter);
+		return localDateTime.format(dateTimeFormatter);
+	}
+
 }

@@ -13,6 +13,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemS
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
+import com.ciicsh.gto.salarymanagementcommandservice.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jayway.jsonpath.internal.function.json.Append;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -123,6 +125,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setManagementId(paramItem.getManagementId());
                         item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
+                        item.setDefaultValue(i.getDataType() == 3 ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.yyyyMMdd) : i.getDefaultValue());
                         return item;
                     })
                     .collect(Collectors.toList());

@@ -257,6 +257,28 @@ public class TaskMainDetailBO {
     //缴纳账户名称
     private String payAccountName;
 
+    //是否雇员
+    private Boolean isOverseas;
+
+    //其他扣除
+    private BigDecimal others;
+
+    public BigDecimal getOthers() {
+        return others;
+    }
+
+    public void setOthers(BigDecimal others) {
+        this.others = others;
+    }
+
+    public Boolean getOverseas() {
+        return isOverseas;
+    }
+
+    public void setOverseas(Boolean overseas) {
+        isOverseas = overseas;
+    }
+
     public String getDeclareAccountName() {
         return declareAccountName;
     }

@@ -42,7 +42,7 @@ public class CommonController extends BaseController{
         m.put("deduction",commonDTO.getDeduction());//免抵税额
         m.put("donation",commonDTO.getDonation());//准予扣除的捐赠额
         m.put("deductTakeoff",commonDTO.getDeductTakeoff());//允许扣除的税费
-        m.put("otherDeductions",commonDTO.getOtherDeductions());//其它扣除
+        m.put("others",commonDTO.getOthers());//其它扣除
         m.put("businessHealthInsurance",commonDTO.getBusinessHealthInsurance());//商业保险
         m.put("deductHouseFund",commonDTO.getDeductHouseFund());//住房公积金
         m.put("deductDlenessInsurance",commonDTO.getDeductDlenessInsurance());//失业保险费
