@@ -97,6 +97,7 @@ public class ComputeServiceImpl {
 
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN)
+                .include(PayItemName.EMPLOYEE_COMPANY_ID)
                 .include("catalog.batch_info.actual_period")
                 .include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
