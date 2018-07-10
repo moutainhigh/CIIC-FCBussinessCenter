@@ -101,6 +101,12 @@ public class PrEmployeeDTO{
      */
     private String position;
 
+    /*
+    公司ID
+    * */
+
+    private String companyId;
+
     /**
      * 备注
      */
