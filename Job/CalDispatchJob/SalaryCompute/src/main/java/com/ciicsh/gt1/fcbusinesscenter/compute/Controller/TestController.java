@@ -730,4 +730,38 @@ public class TestController {
         return workYears;
     }
 
+
+    @PostMapping("/api/personalTax")
+    public String personalTax(@RequestParam Double paras) {
+        DroolsContext context = new DroolsContext();
+
+        //设置函数信息
+        FuncEntity funcEntity = new FuncEntity();
+        funcEntity.setFuncName("一般个人所得税");
+        List<String> list = new ArrayList<>();
+        list.add("0");
+        list.add("应纳税所得额");
+        funcEntity.setParameters(list);
+        context.getFuncEntityList().add(funcEntity);
+        //end
+
+        //设置雇员信息
+        EmpPayItem empPayItem = new EmpPayItem();
+        Map<String, Object> payItems = new HashMap<>();
+        payItems.put("应纳税所得额", paras); //薪资项名称 和 值
+        empPayItem.setItems(payItems);
+        context.setEmpPayItem(empPayItem);
+        //end
+
+        //设置需要触发的规则名称
+        HashSet hashSet = new HashSet();
+        hashSet.add("一般个人所得税");
+        //end
+
+        //触发规则
+        computeService.fire(hashSet, context);
+
+        return String.valueOf(funcEntity.getResult());
+    }
+
 }

@@ -13,6 +13,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmpGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus.KafkaSender;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,7 +115,7 @@ public class EmployeeGroupServiceImpl implements EmployeeGroupService {
             empGroupMapper.deleteBatchIds(ids);
             if(empGroupCodes.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
-                //payrollEmpGroup.setEmpGroupIds(empGroupCodes);
+                payrollEmpGroup.setEmpGroupIds(StringUtils.join(empGroupCodes,","));
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }

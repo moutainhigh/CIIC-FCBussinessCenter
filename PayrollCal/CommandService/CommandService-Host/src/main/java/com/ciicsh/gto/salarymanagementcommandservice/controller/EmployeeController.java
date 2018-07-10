@@ -34,8 +34,8 @@ public class EmployeeController{
 
 //    @Override
     @PostMapping("/addEmployees")
-    public JsonResult addEmployees(@RequestBody List<String> empIds, @RequestParam String empGroupCode) {
-        Boolean success = employeeService.addEmployees(empIds, empGroupCode);
+    public JsonResult addEmployees(@RequestBody List<String> empIdAndCompanyIds, @RequestParam String empGroupCode) {
+        Boolean success = employeeService.addEmployees(empIdAndCompanyIds, empGroupCode);
         return JsonResult.success(success);
     }
 

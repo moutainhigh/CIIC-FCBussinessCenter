@@ -108,6 +108,8 @@
 			management_id = #{managementId}
 		AND
 			is_active = 1
+		AND
+		 	approval_status = 2
 	</select>
 
     <delete id="deleteByCodes">

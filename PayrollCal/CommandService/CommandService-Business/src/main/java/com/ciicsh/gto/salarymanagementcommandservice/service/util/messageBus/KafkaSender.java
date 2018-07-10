@@ -34,7 +34,7 @@ public class KafkaSender {
 
     public void SendEmpGroup(PayrollEmpGroup empGroup)
     {
-        logger.info(String.format("发送雇员组消息：%s",empGroup.toString()));
+        logger.info(String.format("发送雇员组消息：%s", empGroup.toString()));
 
         payrollSource.empGroupOutput().send(MessageBuilder.withPayload(empGroup).build());
     }

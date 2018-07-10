@@ -7,6 +7,7 @@ import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.GetEmploye
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmployeeContractResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.EmpGroupMongoOpt;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.EmployeeExtensionPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrEmployeePO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrEmployeeMapper;
@@ -50,19 +51,20 @@ public class EmpGroupServiceImpl {
     /**
      * 当雇员组增加雇员时：Mongodb 表 pr_emp_group_table - 更新或者添加雇员基本信息字段，雇员服务协议字段，雇员扩展字段
      * @param empGroupCode
-     * @param empIds
+     * @param empIdAndCompanyIds
      * @return
      */
-    public int batchInsertOrUpdateGroupEmployees(String empGroupCode, List<String> empIds) {
+    public int batchInsertOrUpdateGroupEmployees(String empGroupCode, List<String> empIdAndCompanyIds) {
 
         List<PrEmployeePO> employees = employeeMapper.getEmployeesByGroupCode(empGroupCode);
-        HashMap<String,EmployeeContractResponseDTO> mapList = new HashMap<>();
-        if (empIds != null ) {
+        //HashMap<String,EmployeeContractResponseDTO> mapList = new HashMap<>();
+        if (empIdAndCompanyIds != null ) {
+
             employees = employees.stream().filter(emp -> {
-                return empIds.contains(emp.getEmployeeId());
+                return empIdAndCompanyIds.contains(emp.getEmployeeId().trim()+"," + emp.getCompanyId().trim());
             }).collect(Collectors.toList());
 
-            GetEmployeeContractsDTO contractsDTO = new GetEmployeeContractsDTO();
+            /*GetEmployeeContractsDTO contractsDTO = new GetEmployeeContractsDTO();
             contractsDTO.setEmpIds(empIds);
             JsonResult<List<EmployeeContractResponseDTO>> result = employeeContractProxy.getEmployeeContracts(contractsDTO);
             if(result.isSuccess()){
@@ -74,12 +76,8 @@ public class EmpGroupServiceImpl {
             }else {
                 logger.info(result.getMessage());
                 return 0;
-            }
+            }*/
 
-        }
-        if(mapList.size() == 0){
-            logger.info("该雇员组中没有雇员服务协议");
-            //return 0;
         }
 
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -112,12 +110,15 @@ public class EmpGroupServiceImpl {
             basicDBObject.put(PayItemName.NATIONALITY, item.getCountryName());
             basicDBObject.put(PayItemName.LEAVE_DATE, item.getOutDate() == null ? "" : formatter.format(item.getOutDate()));
 
-            String emp_json_agreement = com.alibaba.fastjson.JSON.toJSONString(mapList.get(item.getEmployeeId()));
+            /*String emp_json_agreement = com.alibaba.fastjson.JSON.toJSONString(mapList.get(item.getEmployeeId()));
             if (StringUtils.isNotEmpty(emp_json_agreement)) {
                 basicDBObject.put(PayItemName.EMPLOYEE_SERVICE_AGREE, (DBObject) JSON.parse(emp_json_agreement));
-            }
+            }*/
             Criteria criteria = Criteria.where("emp_group_code").is(empGroupCode).
-                    andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.getEmployeeId()));
+                    andOperator(
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(item.getEmployeeId()),
+                            Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(item.getCompanyId())
+                    );
             Query query = Query.query(criteria);
             Update update = Update.update("base_info",basicDBObject);
 
@@ -138,16 +139,26 @@ public class EmpGroupServiceImpl {
     /**
      * 雇员组中删除雇员：Mongodb 表 pr_emp_group_table 删除雇员
      * @param empGroupIds
-     * @param empIds
+     * @param empIdAndCompanyIds
      * @return
      */
-    public int batchDelGroupEmployees(List<String> empGroupIds, List<String> empIds){
+    public int batchDelGroupEmployees(List<String> empGroupIds, List<String> empIdAndCompanyIds){
 
         int rowAffected = 0;
-        if(empIds != null && empIds.size() > 0) {
+        if(empIdAndCompanyIds != null && empIdAndCompanyIds.size() > 0) {
             String groupId =  empGroupIds.get(0);
-            rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_code").is(groupId)
-                    .andOperator(Criteria.where(PayItemName.EMPLOYEE_CODE_CN).in(empIds)));
+
+            for (String empIdAndCompanyId: empIdAndCompanyIds) {
+                String empId = empIdAndCompanyId.split("-")[0];
+                String companyId = empIdAndCompanyId.split("-")[1];
+                rowAffected += empGroupMongoOpt.delete(Criteria.where("emp_group_code").is(groupId)
+                            .andOperator(
+                                    Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empId),
+                                    Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).in(companyId))
+                );
+            }
+
+
         }else {
             rowAffected = empGroupMongoOpt.batchDelete(Criteria.where("emp_group_code").in(empGroupIds));
         }
