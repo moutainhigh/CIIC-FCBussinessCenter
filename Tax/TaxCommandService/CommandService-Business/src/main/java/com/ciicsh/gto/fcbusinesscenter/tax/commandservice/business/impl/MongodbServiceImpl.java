@@ -151,6 +151,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 //个税信息
                 DBObject taxInfo = (DBObject)empInfo.get("tax_info");
                 this.setObjectFieldsEmpty(taxInfoBO);
+                taxInfoBO.setWorkNumber(convert(empInfo,"员工工号",String.class));//工号
+                taxInfoBO.setTaxName(convert(taxInfo,"taxReturnName",String.class));//报税名
                 taxInfoBO.setCertType(convert(taxInfo,"reportTaxCertId",Integer.class)==null? null :convert(taxInfo,"reportTaxCertId",Integer.class).toString());//报税证件类型
                 taxInfoBO.setCertNo(convert(taxInfo,"reportTaxCertNo",String.class));//报税证件号
                 taxInfoBO.setNationality(convert(taxInfo,"reportTaxCountryId",String.class));//国籍
