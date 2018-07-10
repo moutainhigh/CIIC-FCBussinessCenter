@@ -101,7 +101,7 @@ public class ExportAboutCommercialInsuranceSh extends BaseService {
             if (null == cellC) {
                 cellC = row.createCell(2);
             }
-            cellC.setCellValue(po.getEmployeeName());
+            cellC.setCellValue(employeeInfoBatchPO.getTaxName());
             //*证照类型-D列
             HSSFCell cellD = row.getCell(3);
             if (null == cellD) {

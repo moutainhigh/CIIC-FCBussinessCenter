@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
@@ -70,5 +71,12 @@ public interface TaskMainService {
      * @return
      */
     boolean isStatusSame(String[] taskMainIds,String[] status);
+
+    /**
+     * 根据主任务ID查询主任务信息
+     * @param id
+     * @return
+     */
+    TaskMainPO queryTaskMainById(Long id);
 }
 

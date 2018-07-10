@@ -94,7 +94,7 @@ public class ExportAboutForeignNormalSalarySz extends BaseService{
             if (null == cellB) {
                 cellB = row.createCell(1);
             }
-            cellB.setCellValue(po.getEmployeeName());
+            cellB.setCellValue(employeeInfoBatchPO.getTaxName());
             //*证照类型-C列
             HSSFCell cellC = row.getCell(2);
             if (null == cellC) {
@@ -191,7 +191,7 @@ public class ExportAboutForeignNormalSalarySz extends BaseService{
             if (null == cellS) {
                 cellS = row.createCell(18);
             }
-            cellS.setCellValue(po.getDeductOther() == null ? "" : po.getDeductOther().toString());
+            cellS.setCellValue(po.getOthers() == null ? "" : po.getOthers().toString());
             //住房补贴-T列	housing_subsidy
             HSSFCell cellT = row.getCell(19);
             if (null == cellT) {

@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseService;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchAccountPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -39,7 +40,7 @@ public class ExportAboutWithholdingReportSh extends BaseService {
      * @param type
      * @return
      */
-    public HSSFWorkbook getWithholdingReportWB(TaskSubDeclarePO taskSubDeclarePO, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, String fileName, String type) {
+    public HSSFWorkbook getWithholdingReportWB(TaskSubDeclarePO taskSubDeclarePO, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, CalculationBatchAccountPO calculationBatchAccountPO, String fileName, String type) {
         POIFSFileSystem fs = null;
         HSSFWorkbook wb = null;
         try {
@@ -47,15 +48,14 @@ public class ExportAboutWithholdingReportSh extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
-            // TODO 上海线下报告表头部信息
             //用于存放模板列表头部
             Map<String, String> map = new HashMap<>(16);
             //税款所属期
             map.put("taxPeriod", DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubDeclarePO.getPeriod()));
             //扣缴义务人名称
-            map.put("withholdingAgent", "张三");
+            map.put("withholdingAgent", calculationBatchAccountPO.getAccountName());
             //扣缴义务人编码
-            map.put("withholdingAgentCode", "147258369");
+            map.put("withholdingAgentCode", calculationBatchAccountPO.getAccountNumber());
             //根据不同的业务需要处理wb
             this.handleWithholdingReportWB(wb, map, taskSubDeclareDetailPOList);
         } catch (Exception e) {

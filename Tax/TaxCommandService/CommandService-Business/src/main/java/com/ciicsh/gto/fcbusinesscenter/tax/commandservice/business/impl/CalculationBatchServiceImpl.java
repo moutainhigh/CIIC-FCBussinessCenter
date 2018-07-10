@@ -500,6 +500,33 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 //            this.workflowService.startProcess(p.getId().toString(),WorkflowService.Process.fc_tax_main_task_audit,null);
     }
 
+    /**
+     * 根据批次号查询批次信息
+     * @param batchNo
+     * @return
+     */
+    @Override
+    public CalculationBatchPO queryCalculationBatchPOByBatchNo(String batchNo) {
+        CalculationBatchPO calculationBatchPO = new CalculationBatchPO();
+        calculationBatchPO.setBatchNo(batchNo);
+        calculationBatchPO.setActive(true);
+        return baseMapper.selectOne(calculationBatchPO);
+    }
+
+    /**
+     * 根据批次号查询批次信息集合
+     * @param batchNos
+     * @return
+     */
+    @Override
+    public List<CalculationBatchPO> queryCalculationBatchPOByBatchNos(String[] batchNos) {
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new CalculationBatchPO());
+        wrapper.in("batch_no",batchNos);
+        wrapper.and("is_active = {0} ", true);
+        return baseMapper.selectList(wrapper);
+    }
+
 
     /**
      * 创建主任务(主任务、明细)
