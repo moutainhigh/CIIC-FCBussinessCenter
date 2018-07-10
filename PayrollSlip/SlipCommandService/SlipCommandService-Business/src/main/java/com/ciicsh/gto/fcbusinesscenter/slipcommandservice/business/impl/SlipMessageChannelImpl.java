@@ -6,19 +6,14 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.SlipMessageChannel;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.IntStream;
 
 @EnableBinding(value = SlipMessageChannel.class)
 @Component
@@ -67,10 +62,13 @@ public class SlipMessageChannelImpl {
                     contract = (Document) (empInfo.get("雇员服务协议"));
                 }
 
-                Integer[] payType = { 2, 3 };
+                ArrayList payType = new ArrayList();
 
                 if (contract != null && contract.get("paySheetInfo") != null && ((Document)contract.get("paySheetInfo")).get("payType") != null) {
-                    payType = (Integer[]) ((Document)contract.get("paySheetInfo")).get("payType");
+                    payType = (ArrayList) ((Document)contract.get("paySheetInfo")).get("payType");
+                } else {
+                    payType.add(2);
+                    payType.add(3);
                 }
 
 
@@ -130,11 +128,11 @@ public class SlipMessageChannelImpl {
                     emp.put("payrollPassword", ((Document)contract.get("paySheetInfo")).get("payrollPassword"));
                 }
 
-                emp.put("is_paper", Arrays.asList(payType).contains(1));
-                emp.put("is_email", Arrays.asList(payType).contains(2));
-                emp.put("is_ehome", Arrays.asList(payType).contains(3));
-                emp.put("publish_state", Arrays.asList(payType).contains(2) ? 0 : 6);
-                emp.put("upload_state", Arrays.asList(payType).contains(3) ? 0 : 6);
+                emp.put("is_paper", payType.contains(1));
+                emp.put("is_email", payType.contains(2));
+                emp.put("is_ehome", payType.contains(3));
+                emp.put("publish_state", payType.contains(2) ? 0 : 6);
+                emp.put("upload_state", payType.contains(3) ? 0 : 6);
 
 
                 emps.add(emp);
@@ -146,15 +144,15 @@ public class SlipMessageChannelImpl {
                     foreignerCount += 1;
                 }
 
-                if (Arrays.asList(payType).contains(1)) {
+                if (payType.contains(1)) {
                     hasPaper = true;
                 }
 
-                if (Arrays.asList(payType).contains(2)) {
+                if (payType.contains(2)) {
                     publishState = 0;
                 }
 
-                if (Arrays.asList(payType).contains(3)) {
+                if (payType.contains(3)) {
                     uploadState = 0;
                 }
             }

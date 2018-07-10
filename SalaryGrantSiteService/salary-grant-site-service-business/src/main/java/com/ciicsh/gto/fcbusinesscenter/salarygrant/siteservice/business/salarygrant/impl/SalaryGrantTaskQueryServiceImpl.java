@@ -7,12 +7,10 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantWorkFlowEnums;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
@@ -80,6 +78,30 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
     @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
+    @Autowired
+    private SalaryGrantSupplierSubTaskService salaryGrantSupplierSubTaskService;
+
+    /**
+     * 刷新草稿状态任务单信息
+     * @author chenpb
+     * @since 2018-07-05
+     * @param bo
+     * @return
+     */
+    @Override
+    public Page<SalaryGrantTaskBO> refreshDraftTask(SalaryGrantTaskBO bo) {
+        Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(bo.getCurrent(), bo.getSize());
+        List<RefreshTaskBO> refreshList = salaryGrantMainTaskMapper.refreshList(bo);
+        if (!refreshList.isEmpty()) {
+            refreshList.parallelStream().forEach(x -> x.getEmpList().parallelStream().forEach(y -> {
+                y.getSalaryGrantEmployeeId();
+                System.out.println(y.getCompanyId() + " -><- " + y.getEmployeeId());
+                SalaryGrantEmployeePO newPo = commonService.getEmployeeNewestInfo(y);
+            }));
+        }
+        page = this.queryTaskForSubmitPage(page, bo);
+        return page;
+    }
 
     /**
      * 查询薪资发放任务单列表

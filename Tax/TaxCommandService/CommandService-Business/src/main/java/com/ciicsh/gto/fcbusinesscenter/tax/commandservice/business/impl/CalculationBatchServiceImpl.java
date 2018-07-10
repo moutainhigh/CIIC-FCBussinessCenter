@@ -358,8 +358,17 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = declareTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
-                        .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
+                Map<Long, Long> mapChineseNum = declareTaskDetail.stream().filter(
+                (x)-> {
+                   return ("1".equals(x.getIdType())//居民身份证
+                           || "2".equals(x.getIdType())//军官证
+                           || "3".equals(x.getIdType())//士兵证
+                           || "4".equals(x.getIdType())//武警警官证
+                           || ("7".equals(x.getIdType())//中国护照，且境外人员为否
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                   );
+                }
+                ).collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
                 for (Long taskSubDeclareId : mapTaxAmount.keySet()) {
@@ -388,8 +397,17 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = moneyTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
-                        .collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
+                Map<Long, Long> mapChineseNum = moneyTaskDetail.stream().filter(
+                        (x)-> {
+                            return ("1".equals(x.getIdType())//居民身份证
+                                    || "2".equals(x.getIdType())//军官证
+                                    || "3".equals(x.getIdType())//士兵证
+                                    || "4".equals(x.getIdType())//武警警官证
+                                    || ("7".equals(x.getIdType())//中国护照，且境外人员为否
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                            );
+                        }
+                ).collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
                 for (Long taskSubMoneyId : mapTaxAmount.keySet()) {
@@ -416,8 +434,17 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = paymentTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
-                        .collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
+                Map<Long, Long> mapChineseNum = paymentTaskDetail.stream().filter(
+                        (x)-> {
+                            return ("1".equals(x.getIdType())//居民身份证
+                                    || "2".equals(x.getIdType())//军官证
+                                    || "3".equals(x.getIdType())//士兵证
+                                    || "4".equals(x.getIdType())//武警警官证
+                                    || ("7".equals(x.getIdType())//中国护照，且境外人员为否
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                            );
+                        }
+                ).collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
                 for (Long taskSubPaymentId : mapTaxAmount.keySet()) {
@@ -444,8 +471,17 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                         .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
 
                 //中方总人数
-                Map<Long, Long> mapChineseNum = supportTaskDetail.stream().filter(x -> "1".equals(x.getIdType()))
-                        .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
+                Map<Long, Long> mapChineseNum = supportTaskDetail.stream().filter(
+                        (x)-> {
+                            return ("1".equals(x.getIdType())//居民身份证
+                                    || "2".equals(x.getIdType())//军官证
+                                    || "3".equals(x.getIdType())//士兵证
+                                    || "4".equals(x.getIdType())//武警警官证
+                                    || ("7".equals(x.getIdType())//中国护照，且境外人员为否
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                            );
+                        }
+                ).collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
 
                 //更新子任务：个税总金额、总人数、中方人数、外放人数
                 for (Long taskSubSupplierId : mapTaxAmount.keySet()) {
@@ -706,16 +742,16 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
             if(StrKit.isNotEmpty(calculationBatchAccountPO.getProvinceCode())){
                 //上海(provinceCode:310000)为本地
                 if(calculationBatchAccountPO.getProvinceCode().trim().equals("310000")){
-                    accountType = "00";
+                    areaType = "00";
                 }else{
-                    accountType = "01";
+                    areaType = "01";
                 }
             }
             if(StrKit.isNotEmpty(calculationBatchAccountPO.getSource())){
                 if(calculationBatchAccountPO.getSource().trim().equals("0")){
-                    areaType = "01";
+                    accountType = "01";
                 }else{
-                    areaType = "00";
+                    accountType = "00";
                 }
             }
         }

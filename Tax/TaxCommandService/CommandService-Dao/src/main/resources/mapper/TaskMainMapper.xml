@@ -63,6 +63,34 @@
 		<result column="tax_real" property="taxReal" />
 		<result column="declare_account_name" property="declareAccountName" />
 		<result column="pay_account_name" property="payAccountName" />
+		<result column="is_overseas" property="overseas" />
+
+		<result column="annuity" property="annuity" />
+		<result column="working_years" property="workingYears" />
+		<result column="business_health_insurance" property="businessHealthInsurance" />
+		<result column="endowment_insurance" property="endowmentInsurance" />
+		<result column="domestic_days" property="domesticDays" />
+		<result column="overseas_days" property="overseasDays" />
+		<result column="domestic_income_domestic_payment" property="domesticIncomeDomesticPayment" />
+		<result column="domestic_income_overseas_payment" property="domesticIncomeOverseasPayment" />
+		<result column="overseas_income_domestic_payment" property="overseasIncomeDomesticPayment" />
+		<result column="overseas_income_overseas_payment" property="overseasIncomeOverseasPayment" />
+		<result column="housing_subsidy" property="housingSubsidy" />
+		<result column="meal_allowance" property="mealAllowance" />
+		<result column="laundry_fee" property="laundryFee" />
+		<result column="removing_indemnity_fee" property="removingIndemnityFee" />
+		<result column="missionallowance" property="missionallowance" />
+		<result column="visiting_relatives_fee" property="visitingRelativesFee" />
+		<result column="language_training_fee" property="languageTrainingFee" />
+		<result column="education_funds" property="educationFunds" />
+		<result column="exercise_income_month" property="exerciseIncomeMonth" />
+		<result column="exercise_income_year" property="exerciseIncomeYear" />
+		<result column="number_of_months" property="numberOfMonths" />
+		<result column="exercise_tax_amount" property="exerciseTaxAmount" />
+		<result column="pre_tax_aggregate" property="preTaxAggregate" />
+		<result column="duty_free_allowance" property="dutyFreeAllowance" />
+		<result column="others" property="others" />
+
 	</resultMap>
 
     <!-- 通用查询结果列 -->
@@ -73,15 +101,17 @@
 	<!-- 查询主任务明细 -->
 	<select id="queryTaskMainDetails" resultMap="BaseResultMap">
 		SELECT
-		t1.id,t1.task_main_id,t1.task_main_detail_id,t1.calculation_batch_detail_id,t1.batch_no,t1.tax_real
+		t1.id,t1.task_main_id,t1.task_main_detail_id,t1.calculation_batch_detail_id,t1.batch_no,t1.tax_real,t4.is_overseas
 		,t1.employee_no,t1.employee_name,t1.id_type,t1.id_no,t1.period,t1.income_subject,t1.income_total,t1.income_dutyfree,t1.deduct_retirement_insurance,t1.deduct_medical_insurance
 		,t1.deduct_dleness_insurance,t1.deduct_property,t1.deduct_house_fund,t1.deduct_takeoff,t1.deduct_other,t1.deduct_total,t1.deduction,t1.donation,t1.income_for_tax
 		,t1.tax_rate,t1.quick_cal_deduct,t1.tax_amount,t1.tax_deduction,t1.tax_withhold_amount,t1.tax_withholded_amount,t1.tax_remedy_or_return
+		,t1.annuity,t1.working_years,t1.business_health_insurance,t1.endowment_insurance,t1.domestic_days,t1.overseas_days,t1.domestic_income_domestic_payment,t1.domestic_income_overseas_payment,t1.overseas_income_domestic_payment,t1.overseas_income_overseas_payment,t1.housing_subsidy,t1.meal_allowance,t1.laundry_fee
+		,t1.removing_indemnity_fee,t1.missionallowance,t1.visiting_relatives_fee,t1.language_training_fee,t1.education_funds,t1.exercise_income_month,t1.exercise_income_year,t1.number_of_months,t1.exercise_tax_amount,t1.pre_tax_aggregate,t1.duty_free_allowance,t1.others
 		,t2.declare_account,t2.pay_account,t2.declare_account_name,t2.pay_account_name,t2.receipt_account,t2.support_no,t2.support_name,t2.is_support,t2.is_supported,t2.is_pay,t2.is_payed,t2.is_declare
 		,t2.is_declared,t2.is_transfer,t2.is_transferred,t2.is_declare_supported,t2.is_transfer_supported,t2.is_pay_supported
 		,t2.account_type,t2.area_type,t3.manager_no,t3.manager_name
-		FROM tax_fc_task_main_detail t1,tax_fc_employee_service_batch t2,tax_fc_task_main t3
-		where t1.task_main_id = #{taskMainId} and t1.calculation_batch_detail_id = t2.cal_batch_detail_id and t1.task_main_id = t3.id
+		FROM tax_fc_task_main_detail t1,tax_fc_employee_service_batch t2,tax_fc_task_main t3,tax_fc_employee_info_batch t4
+		where t1.task_main_id = #{taskMainId} and t1.calculation_batch_detail_id = t2.cal_batch_detail_id and t1.task_main_id = t3.id and t1.calculation_batch_detail_id=t4.cal_batch_detail_id
 		and t1.task_main_detail_id is null
 	</select>
 
