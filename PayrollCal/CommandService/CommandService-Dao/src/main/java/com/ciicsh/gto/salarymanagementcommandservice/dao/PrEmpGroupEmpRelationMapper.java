@@ -25,7 +25,7 @@ public interface PrEmpGroupEmpRelationMapper extends BaseMapper<PrEmpGroupEmpRel
      * @param employeeId 雇员ID
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmpGroupEmpRelation(@Param("empGroupCode") String empGroupCode, @Param("employeeId") String employeeId);
+    Integer isExistEmpGroupEmpRelation(@Param("empGroupCode") String empGroupCode, @Param("employeeId") String employeeId, @Param("companyId") String companyId);
 
     /**
      * 根据雇员组Code删除雇员组和雇员关系表数据
@@ -34,5 +34,5 @@ public interface PrEmpGroupEmpRelationMapper extends BaseMapper<PrEmpGroupEmpRel
      */
     Integer delByEmpGroupCodes(List<String> empGroupCodes);
 
-    Integer deleteEmpGroupRelation(@Param("employeeIds") List<String> employeeIds,@Param("empGroupCode") String empGroupCode);
+    Integer deleteEmpGroupRelation(@Param("employeeId") String employeeId, @Param("companyId") String companyId, @Param("empGroupCode") String empGroupCode);
 }

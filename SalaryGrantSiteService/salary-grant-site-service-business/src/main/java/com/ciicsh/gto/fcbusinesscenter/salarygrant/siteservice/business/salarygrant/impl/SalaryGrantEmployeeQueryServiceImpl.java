@@ -29,11 +29,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import scala.Int;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -151,7 +151,7 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
                         List<CalcResultItemBO> empCalcResultItemsList = new ArrayList<>();
                         DBObject empInfo = (DBObject) (dbObject.get("emp_info"));
                         //雇员编号
-                        empCalcResultBO.setEmployeeId(StringUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_CODE_CN) ) ? null : empInfo.get(PayItemName.EMPLOYEE_CODE_CN) .toString());
+                        empCalcResultBO.setEmployeeId(StringUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_CODE_CN)) ? null : empInfo.get(PayItemName.EMPLOYEE_CODE_CN).toString());
                         //公司编号
                         empCalcResultBO.setCompanyId(StringUtils.isEmpty(empInfo.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN)) ? null : empInfo.get(PayItemName.EMPLOYEE_COUNTRY_CODE_CN).toString());
 
@@ -349,5 +349,458 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
         }
 
         return employeeBOPage;
+    }
+
+    @Override
+    public List<SalaryGrantEmployeeBO> selectChangeLog(Long salaryGrantEmployeeId) {
+        SalaryGrantEmployeePO salaryGrantEmployeePO = salaryGrantEmployeeMapper.selectById(salaryGrantEmployeeId);
+        return restoreChangeLog(salaryGrantEmployeePO);
+    }
+
+    /**
+     * 恢复雇员信息变更数据
+     *
+     * @param salaryGrantEmployeePO
+     * @return
+     */
+    public List<SalaryGrantEmployeeBO> restoreChangeLog(SalaryGrantEmployeePO salaryGrantEmployeePO) {
+        //变更日志
+        String changeLog = salaryGrantEmployeePO.getChangeLog();
+
+        if (StringUtils.isEmpty(changeLog)) {
+            return null;
+        }
+
+        Map restoreOuterMap = JSONObject.parseObject(changeLog, Map.class);
+
+        SalaryGrantEmployeeBO oldEmployeeBO = null;
+        SalaryGrantEmployeeBO newEmployeeBO = null;
+
+        //雇员基本信息表 emp_employee
+        //国籍 country_code
+        Object mapObject = restoreOuterMap.get("country_code");
+        Map infoMap;
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setCountryCode((String) infoMap.get("old_value"));
+            oldEmployeeBO.setCountryName(commonService.getCountryName((String) infoMap.get("old_value")));
+            newEmployeeBO.setCountryCode((String) infoMap.get("new_value"));
+            newEmployeeBO.setCountryName(commonService.getCountryName((String) infoMap.get("new_value")));
+        }
+
+        //雇员银行卡信息 emp_fc_bankcard
+        //银行卡种类 bankcard_type
+        mapObject = restoreOuterMap.get("bankcard_type");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setBankcardType((Integer) infoMap.get("old_value"));
+            newEmployeeBO.setBankcardType((Integer) infoMap.get("new_value"));
+        }
+
+        //收款行名称 deposit_bank
+        mapObject = restoreOuterMap.get("deposit_bank");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setDepositBank((String) infoMap.get("old_value"));
+            newEmployeeBO.setDepositBank((String) infoMap.get("new_value"));
+        }
+
+        //收款行行号 bank_code
+        mapObject = restoreOuterMap.get("bank_code");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setBankCode((String) infoMap.get("old_value"));
+            newEmployeeBO.setBankCode((String) infoMap.get("new_value"));
+        }
+
+        //收款人姓名 account_name
+        mapObject = restoreOuterMap.get("account_name");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setAccountName((String) infoMap.get("old_value"));
+            newEmployeeBO.setAccountName((String) infoMap.get("new_value"));
+        }
+
+        //收款人账号 card_num
+        mapObject = restoreOuterMap.get("card_num");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setCardNum((String) infoMap.get("old_value"));
+            newEmployeeBO.setCardNum((String) infoMap.get("new_value"));
+        }
+
+        //银行卡币种 currency_code 暂以第2个币种获取为准
+//        mapObject = restoreOuterMap.get("currency_code");
+//        if (!ObjectUtils.isEmpty(mapObject)) {
+//            //以oldEmployeePO为准
+//            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+//            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+//                oldEmployeeBO = new SalaryGrantEmployeeBO();
+//                newEmployeeBO = new SalaryGrantEmployeeBO();
+//
+//                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+//                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+//            }
+//
+//            //恢复当前字段信息对象
+//            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+//
+//            //设置新旧记录中当前字段的值
+//            oldEmployeeBO.setCurrencyCode((String) infoMap.get("old_value"));
+//            oldEmployeeBO.setCurrencyName(commonService.getNameByValue("currency", (String) infoMap.get("old_value")));
+//            newEmployeeBO.setCurrencyCode((String) infoMap.get("new_value"));
+//            newEmployeeBO.setCurrencyName(commonService.getNameByValue("currency", (String) infoMap.get("new_value")));
+//        }
+
+        //银行卡汇率 exchange
+        mapObject = restoreOuterMap.get("exchange");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setExchange((BigDecimal) infoMap.get("old_value"));
+            newEmployeeBO.setExchange((BigDecimal) infoMap.get("new_value"));
+        }
+
+        //银行国际代码 swift_code
+        mapObject = restoreOuterMap.get("swift_code");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setSwiftCode((String) infoMap.get("old_value"));
+            newEmployeeBO.setSwiftCode((String) infoMap.get("new_value"));
+        }
+
+        //国际银行账户号码 iban
+        mapObject = restoreOuterMap.get("iban");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setIban((String) infoMap.get("old_value"));
+            newEmployeeBO.setIban((String) infoMap.get("new_value"));
+        }
+
+        //是否默认卡 is_default_card
+        mapObject = restoreOuterMap.get("is_default_card");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setDefaultCard((Boolean) infoMap.get("old_value"));
+            newEmployeeBO.setDefaultCard((Boolean) infoMap.get("new_value"));
+        }
+
+        //薪资发放规则信息 cmy_fc_employee_salary_grant_rule
+        //银行卡编号 bankcard_id
+        mapObject = restoreOuterMap.get("bankcard_id");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setBankcardId(Long.parseLong(infoMap.get("old_value").toString()));
+            newEmployeeBO.setBankcardId(Long.parseLong(infoMap.get("new_value").toString()));
+        }
+
+        //发放币种 currency_code
+        mapObject = restoreOuterMap.get("currency_code2");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setCurrencyCode((String) infoMap.get("old_value"));
+            oldEmployeeBO.setCurrencyName(commonService.getNameByValue("currency", (String) infoMap.get("old_value")));
+            newEmployeeBO.setCurrencyCode((String) infoMap.get("new_value"));
+            newEmployeeBO.setCurrencyName(commonService.getNameByValue("currency", (String) infoMap.get("new_value")));
+        }
+
+        //规则金额 rule_amount
+        mapObject = restoreOuterMap.get("rule_amount");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setRuleAmount((BigDecimal) infoMap.get("old_value"));
+            newEmployeeBO.setRuleAmount((BigDecimal) infoMap.get("new_value"));
+        }
+
+        //规则比例 rule_ratio
+        mapObject = restoreOuterMap.get("rule_ratio");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setRuleRatio((BigDecimal) infoMap.get("old_value"));
+            newEmployeeBO.setRuleRatio((BigDecimal) infoMap.get("new_value"));
+        }
+
+        //规则类型 rule_type
+        mapObject = restoreOuterMap.get("rule_type");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setRuleType((Integer) infoMap.get("old_value"));
+            newEmployeeBO.setRuleType((Integer) infoMap.get("new_value"));
+        }
+
+        //雇员服务协议 cmy_fc_employee_service_agreement
+        //发放方式 grant_mode
+        mapObject = restoreOuterMap.get("grant_mode");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setGrantMode((Integer) infoMap.get("old_value"));
+            newEmployeeBO.setGrantMode((Integer) infoMap.get("new_value"));
+        }
+
+        //服务周期规则表 cmy_fc_cycle_rule
+        //薪资发放日期 grant_date
+        mapObject = restoreOuterMap.get("grant_date");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setGrantDate((String) infoMap.get("old_value"));
+            newEmployeeBO.setGrantDate((String) infoMap.get("new_value"));
+        }
+
+        //薪资发放时段 grant_time
+        mapObject = restoreOuterMap.get("grant_time");
+        if (!ObjectUtils.isEmpty(mapObject)) {
+            //以oldEmployeePO为准
+            //当前字段变更信息存在时，根据当前记录信息创建旧新两条记录
+            if (ObjectUtils.isEmpty(oldEmployeeBO)) {
+                oldEmployeeBO = new SalaryGrantEmployeeBO();
+                newEmployeeBO = new SalaryGrantEmployeeBO();
+
+                BeanUtils.copyProperties(salaryGrantEmployeePO, oldEmployeeBO);
+                BeanUtils.copyProperties(salaryGrantEmployeePO, newEmployeeBO);
+            }
+
+            //恢复当前字段信息对象
+            infoMap = JSONObject.parseObject((String) mapObject, Map.class);
+
+            //设置新旧记录中当前字段的值
+            oldEmployeeBO.setGrantTime((Integer) infoMap.get("old_value"));
+            newEmployeeBO.setGrantTime((Integer) infoMap.get("new_value"));
+        }
+
+
+        if (!ObjectUtils.isEmpty(oldEmployeeBO)) {
+            //设置信息变更日期
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            oldEmployeeBO.setAdjustInfoDateStr(sdf.format(salaryGrantEmployeePO.getCreatedTime()));
+            newEmployeeBO.setAdjustInfoDateStr(sdf.format(salaryGrantEmployeePO.getModifiedTime()));
+
+            List<SalaryGrantEmployeeBO> retEmployeeBOList = new ArrayList<>();
+            retEmployeeBOList.add(oldEmployeeBO);
+            retEmployeeBOList.add(newEmployeeBO);
+
+            return retEmployeeBOList;
+        }
+
+        return null;
     }
 }

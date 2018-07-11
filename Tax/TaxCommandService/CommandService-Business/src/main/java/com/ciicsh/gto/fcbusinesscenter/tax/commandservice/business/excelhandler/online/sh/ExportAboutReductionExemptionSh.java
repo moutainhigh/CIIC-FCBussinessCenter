@@ -75,6 +75,11 @@ public class ExportAboutReductionExemptionSh extends BaseService{
         //在相应的单元格进行赋值
         int sheetRowIndex = 1;
         for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOS) {
+            List<EmployeeInfoBatchPO> employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> po.getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList());
+            EmployeeInfoBatchPO employeeInfoBatchPO = new EmployeeInfoBatchPO();
+            if (employeeInfoBatchPOS.size() > 0) {
+                employeeInfoBatchPO = employeeInfoBatchPOS.get(0);
+            }
             HSSFRow row = sheet.getRow(sheetRowIndex);
             if (null == row) {
                 row = sheet.createRow(sheetRowIndex);
@@ -90,7 +95,7 @@ public class ExportAboutReductionExemptionSh extends BaseService{
             if (null == cellB) {
                 cellB = row.createCell(1);
             }
-            cellB.setCellValue(po.getEmployeeName());
+            cellB.setCellValue(employeeInfoBatchPO.getTaxName());
             //*证照类型-C列
             HSSFCell cellC = row.getCell(2);
             if (null == cellC) {

@@ -164,6 +164,54 @@ public class TaxInfoBO {
      * 适用公式
      */
     private String applicableFormula;
+    /**
+     * 公司编号
+     */
+    private String companyNo;
+    /**
+     * 公司名称
+     */
+    private String companyName;
+    /**
+     * 报税名
+     */
+    private String taxName;
+    /**
+     * 工号
+     */
+    private String workNumber;
+
+    public String getTaxName() {
+        return taxName;
+    }
+
+    public void setTaxName(String taxName) {
+        this.taxName = taxName;
+    }
+
+    public String getWorkNumber() {
+        return workNumber;
+    }
+
+    public void setWorkNumber(String workNumber) {
+        this.workNumber = workNumber;
+    }
+
+    public String getCompanyNo() {
+        return companyNo;
+    }
+
+    public void setCompanyNo(String companyNo) {
+        this.companyNo = companyNo;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
 
     public String getApplicableFormula() {
         return applicableFormula;

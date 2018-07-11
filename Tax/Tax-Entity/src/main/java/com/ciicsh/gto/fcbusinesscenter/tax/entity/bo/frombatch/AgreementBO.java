@@ -12,9 +12,17 @@ public class AgreementBO {
      */
     private String declareAccount;
     /**
+     * 申报账户名称
+     */
+    private String declareAccountName;
+    /**
      * 缴纳账户
      */
     private String payAccount;
+    /**
+     * 缴纳账户名称
+     */
+    private String payAccountName;
     /**
      * 供应商收款账户
      */
@@ -103,6 +111,22 @@ public class AgreementBO {
      * 区域类型(00:本地,01:异地)
      */
     private String areaType;
+
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
+    }
+
+    public String getPayAccountName() {
+        return payAccountName;
+    }
+
+    public void setPayAccountName(String payAccountName) {
+        this.payAccountName = payAccountName;
+    }
 
     public Date getPeriod() {
         return period;

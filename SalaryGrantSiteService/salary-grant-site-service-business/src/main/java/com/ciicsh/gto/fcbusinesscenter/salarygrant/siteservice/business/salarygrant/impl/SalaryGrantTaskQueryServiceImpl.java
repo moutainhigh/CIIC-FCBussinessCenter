@@ -7,12 +7,10 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantWorkFlowEnums;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskWorkFlowService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantTaskQueryService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
@@ -80,6 +78,49 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
     @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
+    @Autowired
+    private SalaryGrantSupplierSubTaskService salaryGrantSupplierSubTaskService;
+
+    /**
+     * 刷新草稿状态任务单信息
+     * @author chenpb
+     * @since 2018-07-05
+     * @param bo
+     * @return
+     */
+    @Override
+    public Page<SalaryGrantTaskBO> refreshDraftTask(SalaryGrantTaskBO bo) {
+        Page<SalaryGrantTaskBO> page = new Page<>(bo.getCurrent(), bo.getSize());
+        List<RefreshTaskBO> refreshList = salaryGrantMainTaskMapper.refreshList(bo);
+        if (!refreshList.isEmpty()) {
+            List<RefreshTaskBO> updateList = new ArrayList<>();
+            refreshList.parallelStream().forEach(x -> x.getEmpList().parallelStream().forEach(y -> {
+                System.out.println(x.getTaskCode() + " =====>   " + y.getCompanyId() + " -><- " + y.getEmployeeId());
+                SalaryGrantEmployeePO newPo = commonService.getEmployeeNewestInfo(y);
+                if (true) {
+                    updateList.add(x);
+                }
+            }));
+            if (!updateList.isEmpty()) {
+                updateList.parallelStream().distinct().forEach(x -> {
+                    if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(x.getTaskType())) {
+                        SalaryGrantMainTaskPO mainPo = BeanUtils.instantiate(SalaryGrantMainTaskPO.class);
+                        mainPo.setSalaryGrantMainTaskId(x.getTaskId());
+                        mainPo.setRemark(SalaryGrantBizConsts.TASK_REMARK);
+                        salaryGrantMainTaskMapper.updateById(mainPo);
+                    } else {
+                        SalaryGrantSubTaskPO subPo = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
+                        subPo.setSalaryGrantSubTaskId(x.getTaskId());
+                        subPo.setRemark(SalaryGrantBizConsts.TASK_REMARK);
+                        salaryGrantSubTaskMapper.updateById(subPo);
+                    }
+                });
+            }
+        }
+        page = this.queryTaskForSubmitPage(page, bo);
+        formatGrantDate(page);
+        return page;
+    }
 
     /**
      * 查询薪资发放任务单列表
@@ -104,7 +145,25 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         } else if (SalaryGrantBizConsts.TASK_CANCEL.equals(bo.getTaskStatusEn())) {
             paging = this.queryTaskForInvalidPage(paging, bo);
         }
+        formatGrantDate(paging);
         return paging;
+    }
+
+    /**
+     * 格式化信息发放日期
+     * @author chenpb
+     * @since 2018-07-10
+     * @param paging
+     */
+    private void formatGrantDate (Page<SalaryGrantTaskBO> paging) {
+        if (!ObjectUtils.isEmpty(paging.getRecords())) {
+            paging.getRecords().stream().forEach(x -> {
+                if (StringUtils.isNotBlank(x.getGrantDate())) {
+                    String date = x.getGrantDate();
+                    x.setGrantDate(date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8));
+                }
+            });
+        }
     }
 
     /**
@@ -123,6 +182,10 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             bo = salaryGrantMainTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
         } else {
             bo = salaryGrantSubTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
+        }
+        if (!ObjectUtils.isEmpty(bo) && StringUtils.isNotBlank(bo.getGrantDate())) {
+            String date = bo.getGrantDate();
+            bo.setGrantDate(date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8));
         }
         return bo;
     }
@@ -292,13 +355,13 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             if (list.isEmpty()) {
                 MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
                 Result<StartProcessResponseDTO> dto =  sheetServiceProxy.startProcess(missionRequestDTO);
-                if (ResultCode.SUCCESS.equals(dto.getCode())) {
+                if (ResultCode.SUCCESS.code == dto.getCode()) {
                     WorkFlowTaskInfoPO po = createTaskInfo(bo);
                     po.setWorkFlowProcessId(dto.getObject().getProcessId());
                     workFlowTaskInfoMapper.insert(po);
                 } else {
-                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.ACTIVITY_ERROR.getResult());
-                    workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.ACTIVITY_ERROR.getExtension());
+                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getResult());
+                    workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getExtension());
                 }
             } else {
                 sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo, list.get(0)));
@@ -356,7 +419,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         variables.put("taskDealUserName", bo.getUserName());
         missionRequestDTO.setVariables(variables);
         missionRequestDTO.setMissionId(bo.getTaskCode());
-        missionRequestDTO.setProcessDefinitionKey(getDefinitionKey(bo.getTaskCode().substring(0, 2)));
+        missionRequestDTO.setProcessDefinitionKey(getDefinitionKey(bo.getTaskCode().substring(0, 3)));
         return missionRequestDTO;
     }
 

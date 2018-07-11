@@ -191,7 +191,7 @@ public class AdjustBatchController {
     }
 
     @PostMapping("/updateBatchValue")
-    public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String empCode, @RequestParam int dataType,
+    public JsonResult updateBatchValue(@RequestParam int batchType, @RequestParam String batchCode, @RequestParam String companyId, @RequestParam String empCode, @RequestParam int dataType,
                                        @RequestParam String payItemName, @RequestParam Object payItemVal){
 
         int rowAffected = 0;
@@ -209,42 +209,36 @@ public class AdjustBatchController {
             key = "catalog.pay_items.$.isLocked";
         }
 
+        Criteria criteria = Criteria.where("batch_code").is(batchCode)
+                .andOperator(
+                        Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                        Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId),
+                        Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName)));
+
         if(batchType == BatchTypeEnum.NORMAL.getValue()){
-            rowAffected = normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                            .andOperator(
-                                    Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
-                                    Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                            ),key,payItemVal);
+            rowAffected = normalBatchMongoOpt.update(criteria,key,payItemVal);
 
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()){
 
             if(dataType == DataTypeEnum.NUM.getValue()){
-                updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
+                updateMongoAdjust(batchType, batchCode, empCode, companyId,payItemName, payItemVal);
             }
 
-            rowAffected = adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                    .andOperator(
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
-                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),key,payItemVal);
+            rowAffected = adjustBatchMongoOpt.update(criteria,key,payItemVal);
 
         }else {
 
             if(dataType == DataTypeEnum.NUM.getValue()){
-                updateMongoAdjust(batchType, batchCode, empCode, payItemName, payItemVal);
+                updateMongoAdjust(batchType, batchCode, empCode, companyId, payItemName, payItemVal);
             }
 
-            rowAffected = backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                    .andOperator(
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
-                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    ),key,payItemVal);
+            rowAffected = backTraceBatchMongoOpt.update(criteria,key,payItemVal);
 
         }
         return JsonResult.success(rowAffected);
     }
 
-    private int updateMongoAdjust(int batchType, String batchCode, String empCode, String name, Object val){
+    private int updateMongoAdjust(int batchType, String batchCode, String empCode,String companyId, String name, Object val){
         int affected = 0;
         /**
          * adjust_items like [ { name: '', origin:'', new:''}, { name: '', origin:'', new:''},... ]
@@ -254,12 +248,14 @@ public class AdjustBatchController {
             dbObject = adjustBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                            Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId),
                             Criteria.where("catalog.adjust_items").elemMatch(Criteria.where("name").is(name))
                     ));
         }else {
             dbObject = backTraceBatchMongoOpt.get(Criteria.where("batch_code").is(batchCode)
                     .andOperator(
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(empCode),
+                            Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId),
                             Criteria.where("catalog.adjust_items").elemMatch(Criteria.where("name").is(name))
                     ));
         }

@@ -61,4 +61,13 @@ public interface ExportFileService {
      */
     Map<String, Object> getCompressedFileByte(Long subDeclareId, String tempFileName, String dateStrFolder) throws Exception;
 
+    /**
+     * 根据批次导出员工个税申报明细
+     * @param taskNo
+     * @param batchNos
+     * @param operator
+     * @return
+     */
+    Map<String,Object> exportTaxList(String taskNo,String[] batchNos,String operator);
+
 }

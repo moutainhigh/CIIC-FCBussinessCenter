@@ -97,6 +97,7 @@ public class ComputeServiceImpl {
 
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN)
+                .include(PayItemName.EMPLOYEE_COMPANY_ID)
                 .include("catalog.batch_info.actual_period")
                 .include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
@@ -181,6 +182,8 @@ public class ComputeServiceImpl {
             }
             DBObject catalog = (DBObject) dbObject.get("catalog");
             String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
+            String companyId = (String) dbObject.get(PayItemName.EMPLOYEE_COMPANY_ID);
+
             List<DBObject> items = (List<DBObject>)catalog.get("pay_items");
 
             /*获取计算期间，并传递给drools context*/
@@ -197,6 +200,7 @@ public class ComputeServiceImpl {
             EmpPayItem empPayItem = new EmpPayItem();
             empPayItem.setItems(bindings);
             empPayItem.setEmpCode(empCode);
+            empPayItem.setCompanyId(companyId);
             context.setEmpPayItem(empPayItem); //用于规则引擎计算
 
             context.getFuncEntityList().clear(); // set each employee function result null
@@ -245,7 +249,6 @@ public class ComputeServiceImpl {
                         formulaContent = Special2Normal(formulaContent); //特殊字符转化
                         String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
                         try {
-
                             if (scripts.get(itemCode) == null) {
                                 compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
                                 scripts.put(itemCode, compiled);
@@ -261,24 +264,30 @@ public class ComputeServiceImpl {
                             Object compiledResult = compiled.eval(bindings); // run JS method
 
                             BigDecimal computeResult = context.getBigDecimal(compiledResult);
+                            double result = 0.0;
 
-                            double result;
-                            if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
-                                result = Arith.round(computeResult.doubleValue(), 0);
-
-                            } else { // 四舍五入
-                                result = Arith.round(computeResult.doubleValue(), 2);
-                            }
-
-                            if (StringUtils.isNotEmpty(itemName) && itemName.equals(PayItemName.EMPLOYEE_NET_PAY) && result < 0) {
-                                item.put("item_value", 0.0);
-                            } else {
+                            if(compiledResult == null){
                                 item.put("item_value", result);
+                            }
+                            else {
+                                if (processType == DecimalProcessTypeEnum.ROUND_DOWN.getValue()) { // 简单去位
+                                    result = Arith.round(computeResult.doubleValue(), 0);
+
+                                } else { // 四舍五入
+                                    result = Arith.round(computeResult.doubleValue(), 2);
+                                }
+
+                                if (StringUtils.isNotEmpty(itemName) && itemName.equals(PayItemName.EMPLOYEE_NET_PAY) && result < 0) {
+                                    item.put("item_value", 0.0);
+                                } else {
+                                    item.put("item_value", result);
+                                }
                             }
                             bindings.put(itemCode, result); // 设置计算项的值
                             context.getFuncEntityList().clear(); // 清除FIRE 过的函数
 
                         } catch (Exception se) {
+                            context.getFuncEntityList().clear(); // 清除FIRE 过的函数
                             logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
                         }
 
@@ -288,16 +297,17 @@ public class ComputeServiceImpl {
                 }
             }
 
+            int rowAffected = 0;
+            Criteria criteria = Criteria.where("batch_code").is(batchCode)
+                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId);
             if (batchType == BatchTypeEnum.NORMAL.getValue()) {
-                normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+                rowAffected = normalBatchMongoOpt.update(criteria, "catalog.pay_items", items);
             } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
-                adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+                rowAffected = adjustBatchMongoOpt.update(criteria, "catalog.pay_items", items);
             } else {
-                backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+                rowAffected = backTraceBatchMongoOpt.update(criteria, "catalog.pay_items", items);
             }
+            logger.info("row affected " + rowAffected);
             return dbObject;
         }catch (Exception ex){
             logger.info(ex.getMessage());
@@ -334,19 +344,20 @@ public class ComputeServiceImpl {
      */
     private String getFormulaContent(String condition, String formulaContent, DroolsContext context){
 
-        //condition = StringUtils.removeEnd(condition,CONDITION_FOMULAR_SIPE);      //去除字符窜最后;
-        //formulaContent = StringUtils.removeEnd(formulaContent,CONDITION_FOMULAR_SIPE); //去除字符窜最后;
 
         String[] conditions = condition.split(CONDITION_FOMULAR_SIPE);
         String[] formulas = formulaContent.split(CONDITION_FOMULAR_SIPE);
 
         String condition_formula = null;
 
-        if(formulas == null || formulas.length == 0){ // 无条件
+        if(formulas.length == 0){ // 无条件
             logger.error(String.format("emp_code is %s no function", context.getEmpPayItem().getEmpCode()));
             return "";
-        } else if((conditions == null || conditions.length == 1 ) && formulas.length ==1){ // 无条件执行
-            condition_formula = formulas[0]; // 执行结果运算中如果调用了函数，则把该函数替换成Drools规则触发的值
+        }else if(StringUtils.isEmpty(condition) && StringUtils.isNotEmpty(formulaContent)){ // 无条件执行
+            condition_formula = formulaContent;
+        }
+        else if(conditions.length == 1  && formulas.length ==1){
+            condition_formula = conditions[0] + CONDITION_FUNCTION_SPLIT + formulas[0];
         }else {
             condition_formula = condition + CONDITION_FUNCTION_SPLIT + formulaContent;
         }
@@ -409,8 +420,11 @@ public class ComputeServiceImpl {
         else { // 多个条件执行
             StringBuilder sb = new StringBuilder();
             String[] condition_formula = formula_Content.split(CONDITION_FUNCTION_SPLIT);
-            if(condition_formula.length == 1){
+            if(condition_formula.length == 1 && StringUtils.isEmpty(condition)){
                 sb.append(condition_formula[0]); // 说明只有一个方法，没有执行条件
+            }else if(condition_formula.length == 2){
+                sb.append("if (" + condition_formula[0] + ")");
+                sb.append("{ " + condition_formula[1] + " }");
             }
             else { // 多个执行条件，多个方法，一个条件一个方法
                 String[] conditions = condition_formula[0].split(CONDITION_FOMULAR_SIPE);
@@ -500,7 +514,12 @@ public class ComputeServiceImpl {
             kSession.delete(factHandle);
             logger.info(String.format("emp_code: %s, total excute rule counts: %d", context.getEmpPayItem().getEmpCode(), count));
             return count;
-        }finally {
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
+            context.getFuncEntityList().clear();
+            return 0;
+        }
+        finally {
             sl.unlockWrite(stamp);
         }
     }
@@ -520,7 +539,7 @@ public class ComputeServiceImpl {
                 .replaceAll("＊","*").replaceAll("／","/")
                 .replaceAll("，",",").replaceAll("'","'")
                 .replaceAll("“","\"");
-        inputStr = StringUtils.removeEnd(inputStr,";"); // 去除 ；号结尾
+        inputStr = StringUtils.removeEnd(inputStr,";").trim(); // 去除 ；号结尾
         return inputStr;
     }
 

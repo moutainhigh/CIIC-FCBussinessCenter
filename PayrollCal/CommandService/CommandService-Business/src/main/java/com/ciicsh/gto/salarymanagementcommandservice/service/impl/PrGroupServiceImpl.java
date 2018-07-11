@@ -13,14 +13,17 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemS
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CodeGenerator;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
+import com.ciicsh.gto.salarymanagementcommandservice.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jayway.jsonpath.internal.function.json.Append;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,6 +88,12 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int updateItemByCode(PrPayrollGroupPO paramItem) {
+        // 验证同一管理方下是否有重复薪资组模板名称，如有，不允许编辑成功
+        List<PrPayrollGroupPO> resultList = prPayrollGroupMapper.queryGroupListByNameAndManagementId(paramItem.getGroupName(), paramItem.getManagementId());
+        resultList.removeIf(group -> group.getGroupCode().equals(paramItem.getGroupCode()));
+        if (resultList != null && resultList.size() > 0 ){
+            throw new BusinessException("重复的薪资组名称");
+        }
         return prPayrollGroupMapper.updateItemByCode(paramItem);
     }
 
@@ -116,6 +125,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setManagementId(paramItem.getManagementId());
                         item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
+                        item.setDefaultValue(i.getDataType() == 3 ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.yyyyMMdd) : i.getDefaultValue());
                         return item;
                     })
                     .collect(Collectors.toList());
@@ -204,13 +214,14 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean copyPrGroup(PrPayrollGroupPO srcEntity, PrPayrollGroupPO newEntity) {
 
-        //检查是否有重复薪资组模板名称
+        // 检查是否有重复薪资组名称
         if (this.nameExistCheck(newEntity.getGroupName(), newEntity)) {
             throw new BusinessException("重复的薪资组名称");
         }
         newEntity.setGroupCode(codeGenerator.genPrGroupCode(newEntity.getManagementId()));
         newEntity.setVersion(DEFAULT_VERSION);
         newEntity.setApprovalStatus(ApprovalStatusEnum.APPROVE.getValue());
+        newEntity.setGroupName(builderStr(newEntity.getManagementId(), "-", newEntity.getGroupName()));
         int prGroupAddResult = prPayrollGroupMapper.insert(newEntity);
         if (prGroupAddResult == 0) {
             throw new BusinessException("复制薪资组失败");
@@ -260,8 +271,12 @@ public class PrGroupServiceImpl implements PrGroupService {
         approvalHistoryPO.setComments(paramItem.getComments());
         approvalHistoryPO.setCreatedName(UserContext.getName());
         approvalHistoryService.addApprovalHistory(approvalHistoryPO);
+
+        // 处理审批通过和审批拒绝的草稿版薪资项和正式版薪资项,approvalStatus：2,通过; 3,拒绝;
+        prPayrollItemMapper.deleteApprovedItemByCode(paramItem.getApprovalStatus(), null, paramItem.getGroupCode());
+        prPayrollItemMapper.insertApprovedItemByCode(paramItem.getApprovalStatus(), null, paramItem.getGroupCode());
+
         // 更新审批薪资组
-        prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
         int updateResult = prPayrollGroupMapper.updateItemByCode(paramItem);
         result = updateResult == 1;
         return result;
@@ -302,9 +317,17 @@ public class PrGroupServiceImpl implements PrGroupService {
         if (userInputName == null) {
             nameExistFlg = prPayrollGroupMapper.selectCountGroupByNameAndManagement(param.getGroupName(), param.getManagementId());
         } else {
-            String name = param.getManagementId() + "-" + userInputName;
+            String name = builderStr(param.getManagementId(), "-", userInputName);
             nameExistFlg = prPayrollGroupMapper.selectCountGroupByNameAndManagement(name, param.getManagementId());
         }
         return nameExistFlg != 0;
+    }
+
+    private String builderStr(String ...strs){
+        StringBuffer buffer = new StringBuffer();
+        for (String s : strs){
+            buffer.append(s);
+        }
+        return buffer.toString();
     }
 }

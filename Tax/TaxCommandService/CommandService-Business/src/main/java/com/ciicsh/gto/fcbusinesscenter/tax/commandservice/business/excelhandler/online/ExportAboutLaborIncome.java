@@ -95,7 +95,7 @@ public class ExportAboutLaborIncome extends BaseService {
             if (null == cellB) {
                 cellB = row.createCell(1);
             }
-            cellB.setCellValue(po.getEmployeeName());
+            cellB.setCellValue(employeeInfoBatchPO.getTaxName());
             //*证照类型-C列
             HSSFCell cellC = row.getCell(2);
             if (null == cellC) {
@@ -142,7 +142,7 @@ public class ExportAboutLaborIncome extends BaseService {
             if (null == cellS) {
                 cellS = row.createCell(18);
             }
-            cellS.setCellValue(po.getTaxDeduction() == null ? "" : po.getDeductTakeoff().toString());
+            cellS.setCellValue(po.getTaxDeduction() == null ? "" : po.getTaxDeduction().toString());
             //已扣缴税额-T列
             //备注-U列
             sheetRowIndex++;

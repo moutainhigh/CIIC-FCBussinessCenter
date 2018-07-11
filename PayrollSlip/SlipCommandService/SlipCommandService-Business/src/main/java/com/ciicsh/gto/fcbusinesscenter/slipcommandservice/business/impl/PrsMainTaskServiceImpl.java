@@ -17,15 +17,10 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.dao.PrsMainTaskMapper;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsMainTaskService;
-
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Date;
+import java.util.Date;
 import java.util.*;
 
 /**
@@ -271,7 +266,7 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
             if (params.get("uploadExecDate").equals("")) {
                 params.put("uploadExecDate", null);
             } else {
-                params.put("uploadExecDate", new Date((long) params.get("uploadExecDate")));
+                params.put("uploadExecDate", new java.util.Date((long) params.get("uploadExecDate")));
             }
         }
 

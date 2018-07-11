@@ -7,6 +7,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGra
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantSubTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantEmployeeMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
@@ -17,6 +18,8 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantTaskHistoryPO;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
@@ -59,50 +62,10 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
     private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
     @Autowired
     private CommonService commonService;
-
-    @Override
-    public Map startSalaryGrantTaskProcess(SalaryGrantTaskMissionRequestDTO salaryGrantTaskMissionRequestDTO) {
-        Map<String, String> startProcessResponseMap = null;
-        MissionRequestDTO missionRequestDTO = new MissionRequestDTO();
-        missionRequestDTO.setMissionId(salaryGrantTaskMissionRequestDTO.getMissionId());
-        missionRequestDTO.setProcessDefinitionKey(salaryGrantTaskMissionRequestDTO.getProcessDefinitionKey());
-        missionRequestDTO.setVariables(salaryGrantTaskMissionRequestDTO.getVariables());
-        try {
-            Result restResult = sheetServiceProxy.startProcess(missionRequestDTO);
-            startProcessResponseMap = (Map<String, String>) restResult.getObject();
-            com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result returnResult = ResultGenerator.genSuccessResult(true);
-        } catch (Exception e) {
-            ResultGenerator.genServerFailResult();
-        }
-        return startProcessResponseMap;
-    }
-
-    @Override
-    public String getProcessId(Map startProcessResponseMap) {
-        String processId = null;
-        //工作流返回的流程编号
-        if (startProcessResponseMap != null) {
-            processId = (String) startProcessResponseMap.get("processId");
-        }
-        return processId;
-    }
-
-    @Override
-    public Map completeSalaryGrantTask(SalaryGrantTaskRequestDTO salaryGrantTaskRequestDTO) {
-        Map<String, String> completeTaskResponseMap = null;
-        TaskRequestDTO taskRequestDTO = new TaskRequestDTO();
-        taskRequestDTO.setTaskId(salaryGrantTaskRequestDTO.getTaskId());
-        taskRequestDTO.setAssignee(salaryGrantTaskRequestDTO.getAssignee());
-        taskRequestDTO.setVariables(salaryGrantTaskRequestDTO.getVariables());
-        try {
-            Result restResult = sheetServiceProxy.completeTask(taskRequestDTO);
-            completeTaskResponseMap = (Map<String, String>) restResult.getObject();
-            com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result returnResult = ResultGenerator.genSuccessResult(true);
-        } catch (Exception e) {
-            ResultGenerator.genServerFailResult();
-        }
-        return completeTaskResponseMap;
-    }
+    @Autowired
+    private SalaryGrantSubTaskProcessService salaryGrantSubTaskProcessService;
+    @Autowired
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -432,18 +395,17 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         grantMainTaskPO.setBalanceGrant(0); //结算发放标识:0-正常，1-垫付
                         salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
                     }
-                } else {
-                    //5、修改任务单主表状态为SalaryGrantMainTaskPO. taskStatus=1
-                    SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
-                    grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                    grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL); //状态:1-审批中
-                    salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
                 }
+
+                //5、修改任务单主表状态为SalaryGrantMainTaskPO. taskStatus=1
+                SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
+                grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
+                grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL); //状态:1-审批中
+                salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
                 //6、检查提交的雇员信息是否有变更，可以从自动暂缓改为正常，调用雇员信息变更接口。--后面补充，步骤预留
                 //7、调用接口方法进行拆分子表处理 --后面补充，步骤预留
-                //8、如果有拆分的子表，把子表任务单状态为taskStatus=12，批量修改。--后面补充，步骤预留
-                //9、调用工作流程，提交动作处理。--后面补充，步骤预留
+                salaryGrantSubTaskProcessService.toSubmitMainTask(mainTaskPO);
             }
         }
 
@@ -555,45 +517,22 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 grantMainTaskPO.setApprovedOpinion(salaryGrantTaskBO.getApprovedOpinion()); //审批意见
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
-                //2、查询任务单子表信息SalaryGrantSubTaskPO，
-                //   查询条件：子表.salary_grant_main_task_code = 主表.salary_grant_main_task_code and is_active = 1，如果查询结果不为空则：
-                //  （1）更新子表字段:
-                //         子表任务单类型task_type=1，则更新字段task_status = 2 ；
-                //         子表任务单类型task_type=2，则更新字段task_status = 10 ；
-                EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
-                subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskPO.getSalaryGrantMainTaskCode());
-                List<SalaryGrantSubTaskPO> subTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
-                if (!CollectionUtils.isEmpty(subTaskPOList)) {
-                    for (SalaryGrantSubTaskPO subTaskPO : subTaskPOList) {
-                        SalaryGrantSubTaskPO grantSubTaskPO = new SalaryGrantSubTaskPO();
-                        grantSubTaskPO.setSalaryGrantSubTaskId(subTaskPO.getSalaryGrantSubTaskId());
-
-                        if (1 == subTaskPO.getTaskType()) {
-                            grantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS); //状态:2-审批通过
-                        }
-                        if (2 == subTaskPO.getTaskType()) {
-                            grantSubTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_COMBINE_WAIT); //状态:10-待合并
-                        }
-
-                        salaryGrantSubTaskMapper.updateById(grantSubTaskPO);
-                    }
-                }
+                //拆分子表
+                salaryGrantSubTaskProcessService.toApproveMainTask(mainTaskPO);
 
                 //3、暂缓人员信息进入暂缓池，调用接口SalaryGrantEmployeeCommandService. processReprieveToPoll(SalaryGrantTaskBO salaryGrantTaskBO)
                 salaryGrantEmployeeCommandService.processReprieveToPoll(salaryGrantTaskBO);
 
-                //4、查询批次信息，调用接口BatchProxy.getBatchListByManagementId，获取第一条数据的PrNormalBatchDTO. hasAdvance。
-                //   如果PrBatchDTO. has Advance=1，则调用接口BatchProxy.updateBatchStatus，
-                //   设置BatchAuditDTO. advancePeriod=SalaryGrantMainTaskPO. grantDate + PrNormalBatchDTO. advanceDay（调用日期对象，日期+天数 获取最终日期）
-                List<PrNormalBatchDTO> prNormalBatchDTOList = commonService.getBatchListByManagementId(salaryGrantTaskBO.getManagementId());
-                if (!CollectionUtils.isEmpty(prNormalBatchDTOList)) {
-                    PrNormalBatchDTO firstPrNormalBatchDTO = prNormalBatchDTOList.get(0);
-                    if (1 == firstPrNormalBatchDTO.getHasAdvance()) {
-                        commonService.updateBatchStatus(mainTaskPO, firstPrNormalBatchDTO);
-                    }
-                }
-
-                //5、调用工作流程，提交动作处理。--后面补充，步骤预留
+//                //4、查询批次信息，调用接口BatchProxy.getBatchListByManagementId，获取第一条数据的PrNormalBatchDTO. hasAdvance。
+//                //   如果PrBatchDTO. has Advance=1，则调用接口BatchProxy.updateBatchStatus，
+//                //   设置BatchAuditDTO. advancePeriod=SalaryGrantMainTaskPO. grantDate + PrNormalBatchDTO. advanceDay（调用日期对象，日期+天数 获取最终日期）
+//                List<PrNormalBatchDTO> prNormalBatchDTOList = commonService.getBatchListByManagementId(salaryGrantTaskBO.getManagementId());
+//                if (!CollectionUtils.isEmpty(prNormalBatchDTOList)) {
+//                    PrNormalBatchDTO firstPrNormalBatchDTO = prNormalBatchDTOList.get(0);
+//                    if (1 == firstPrNormalBatchDTO.getHasAdvance()) {
+//                        commonService.updateBatchStatus(mainTaskPO, firstPrNormalBatchDTO);
+//                    }
+//                }
             }
         }
 
@@ -769,6 +708,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     });
                 }
 
+                fcBizTransactionMongoOpt.commitEvent(mainTaskPO.getBatchCode(), mainTaskPO.getGrantType(), EventName.FC_GRANT_EVENT, 0);
                 //5、检查雇员信息是否有变更，调用雇员信息变更接口。--后面补充，步骤预留
                 //6、如果雇员信息有变动，则重新统计任务主表汇总信息。--后面补充，步骤预留
 

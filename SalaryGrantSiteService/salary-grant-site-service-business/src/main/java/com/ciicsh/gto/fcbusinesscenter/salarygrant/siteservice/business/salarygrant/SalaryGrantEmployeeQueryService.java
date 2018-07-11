@@ -102,4 +102,12 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
      * @return
      */
     Page<SalaryGrantEmployeeBO> queryEmpHisInfo(long task_his_id, Integer pageNum, Integer pageSize);
+
+    /**
+     * 查询雇员变更信息
+     *
+     * @param salaryGrantEmployeeId
+     * @return
+     */
+    List<SalaryGrantEmployeeBO> selectChangeLog(Long salaryGrantEmployeeId);
 }

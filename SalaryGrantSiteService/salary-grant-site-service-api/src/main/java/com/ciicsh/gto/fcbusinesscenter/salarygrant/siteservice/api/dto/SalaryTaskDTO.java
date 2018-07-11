@@ -23,6 +23,10 @@ public class SalaryTaskDTO extends PagingDTO {
      */
     private Long taskId;
     /**
+     * 主任务单编号
+     */
+    private String mainTaskCode;
+    /**
      * 任务单编号
      */
     private String taskCode;
@@ -70,6 +74,10 @@ public class SalaryTaskDTO extends PagingDTO {
      * 薪资发放日期
      */
     private String grantDate;
+    /**
+     * 薪资发放时段:1-上午，2-下午
+     */
+    private Integer grantTime;
     /**
      * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
      */

@@ -67,6 +67,11 @@ public class RequestForSubPayment extends PageInfo {
      */
     private String[] managerNos;
 
+    /**
+     * 缴纳账户名称
+     */
+    private String payAccountName;
+
     public Long getId() {
         return id;
     }
@@ -161,5 +166,13 @@ public class RequestForSubPayment extends PageInfo {
 
     public void setManagerNos(String[] managerNos) {
         this.managerNos = managerNos;
+    }
+
+    public String getPayAccountName() {
+        return payAccountName;
+    }
+
+    public void setPayAccountName(String payAccountName) {
+        this.payAccountName = payAccountName;
     }
 }

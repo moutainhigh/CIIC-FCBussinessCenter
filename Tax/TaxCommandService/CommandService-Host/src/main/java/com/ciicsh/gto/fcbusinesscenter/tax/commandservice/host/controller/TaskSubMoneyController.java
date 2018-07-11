@@ -5,9 +5,7 @@ import com.ciicsh.gt1.common.auth.ManagementInfo;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubMoneyDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.EmployeeInfoBatchService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyDetailService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskMainDetailServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
@@ -19,11 +17,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.PayapplyServiceProxy;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.SalaryServiceProxy;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyProxyDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyCompanyProxyDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyEmployeeProxyDTO;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,15 +40,13 @@ import static java.util.stream.Collectors.groupingBy;
 @RestController
 public class TaskSubMoneyController extends BaseController {
 
+    public static final String SOURCE_BIG = "0";
 
     @Autowired
     private TaskSubMoneyService taskSubMoneyService;
 
     @Autowired
     private PayapplyServiceProxy payapplyServiceProxy;
-
-    @Autowired
-    private SalaryServiceProxy salaryServiceProxy;
 
     @Autowired
     private TaskSubMoneyDetailService taskSubMoneyDetailService;
@@ -62,6 +56,10 @@ public class TaskSubMoneyController extends BaseController {
 
     @Autowired
     private EmployeeInfoBatchService employeeInfoBatchService;
+
+    @Autowired
+    private CalculationBatchAccountService calculationBatchAccountService;
+
 
     /**
      * 条件查询划款子任务
@@ -155,22 +153,28 @@ public class TaskSubMoneyController extends BaseController {
         JsonResult<Boolean> jr = new JsonResult<>();
         try {
             TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(id);
+            //根据扣缴义务人编码查询批次账户信息
+            CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubMoneyPO.getPaymentAccount());
             //调用结算中心上海个税接口
             PayApplyProxyDTO payApplyProxyDTO = new PayApplyProxyDTO();
             //部门名称
             payApplyProxyDTO.setDepartmentName("财务咨询业务中心");
-            //是否财务部
+            //是否财务部0:否:1:是
             payApplyProxyDTO.setIsFinancedept(0);
-            //业务类型
-            payApplyProxyDTO.setBusinessType(6);
+            //业务类型6:独立库个税,13:大库个税
+            if(SOURCE_BIG.equals(calculationBatchAccountPO.getSource())){
+                payApplyProxyDTO.setBusinessType(13);
+            }else{
+                payApplyProxyDTO.setBusinessType(6);
+            }
             //业务方主键ID
             payApplyProxyDTO.setBusinessPkId(id);
-            //付款方式
+            //付款方式1:现金:2:支票:3:转账:4:微信:5:支付宝;
             payApplyProxyDTO.setPayWay(3);
             //申请支付金额
             payApplyProxyDTO.setPayAmount(taskSubMoneyPO.getTaxAmount());
-            //TODO 收款方名称
-            payApplyProxyDTO.setReceiver("中智");
+            //收款方名称(纳税人名称)
+            payApplyProxyDTO.setReceiver(calculationBatchAccountPO.getTaxpayerName());
             //申请人
             UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
             payApplyProxyDTO.setApplyer(userInfoResponseDTO.getLoginName());
@@ -180,10 +184,10 @@ public class TaskSubMoneyController extends BaseController {
             payApplyProxyDTO.setPayPurpose("个税");
             //TODO 付款原因
             payApplyProxyDTO.setPayReason("个税");
-            //收款账号ID
+            //TODO 收款账号ID
             payApplyProxyDTO.setReceiveAccountId(12);
             //收款账号
-            payApplyProxyDTO.setReceiveAccount(taskSubMoneyPO.getPaymentAccount());
+            payApplyProxyDTO.setReceiveAccount(calculationBatchAccountPO.getAccount());
             //总经理president
             //分管领导leader
             //部门经理departmentManager
@@ -208,14 +212,16 @@ public class TaskSubMoneyController extends BaseController {
                 List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOS = taskSubMoneyDetailService.querySubMonetDetailsByBatchDetailIds(taskSubMoneyDetailIdsList);
                 //根据划款明细对象集合求出个税总金额
                 BigDecimal taxAmountSum = taskSubMoneyDetailPOS.stream()
-                        //将TaskSubMoneyDetailPO对象的tax_aount取出来map为Bigdecimal
+                        //将TaskSubMoneyDetailPO对象的tax_amount取出来map为Bigdecimal
                         .map(TaskSubMoneyDetailPO::getTaxAmount)
                         //使用reduce聚合函数,实现累加器
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 PayapplyCompanyProxyDTO payapplyCompanyProxyDTO = new PayapplyCompanyProxyDTO();
                 payapplyCompanyProxyDTO.setCompanyId(key);
-                // TODO 公司名称暂时没有
-                payapplyCompanyProxyDTO.setCompanyName("test");
+                //公司名称
+                if(employeeInfoBatchPOS.size() > 0 ){
+                    payapplyCompanyProxyDTO.setCompanyName(employeeInfoBatchPOS.get(0).getCompanyName());
+                }
                 payapplyCompanyProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyPO.getPeriod()));
                 payapplyCompanyProxyDTO.setPayAmount(taxAmountSum);
                 companyList.add(payapplyCompanyProxyDTO);
@@ -258,32 +264,6 @@ public class TaskSubMoneyController extends BaseController {
                 employeeList.add(payapplyEmployeeProxyDTO);
             }
             payApplyProxyDTO.setEmployeeList(employeeList);
-
-            List<String> disBatchNoList = batchNoListAll.stream().distinct().collect(Collectors.toList());
-            SalaryBatchDTO salaryBatchDTO = new SalaryBatchDTO();
-            salaryBatchDTO.setBatchCodeList(disBatchNoList);
-            List<String> unExistBatchNoList = new ArrayList<>();
-            //验证薪酬批次号是否存在
-            com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult batchNoExistResult = salaryServiceProxy.notExistsBatchCodeList(salaryBatchDTO);
-            if ("0".equals(batchNoExistResult.getCode())) {
-                SalaryBatchDTO salaryBatchDTO1 = (SalaryBatchDTO)batchNoExistResult.getData();
-                unExistBatchNoList = salaryBatchDTO1.getBatchCodeList();
-            }else{
-                jr.error();
-            }
-            //不存在的薪酬批次号工资清单数据(即打卡操作)
-            for (String batchNo : unExistBatchNoList){
-                //TODO
-                System.out.println("结算中心不存在批次号:"+batchNo);
-                //调用薪资发放接口获取数据，再进行打卡
-//                SalaryBatchDTO salaryBatchDTO1 = new SalaryBatchDTO();
-//                salaryBatchDTO1.setBatchCode(batchNo);
-//
-//                com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult salaryResult = salaryServiceProxy.saveSalaryBatchData(salaryBatchDTO1);
-//                if (!"0".equals(salaryResult.getCode())) {
-//                    jr.error();
-//                }
-            }
             //执行划款
             com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult paymentJr = payapplyServiceProxy.shIncomeTax(payApplyProxyDTO);
             if ("0".equals(paymentJr.getCode())) {
@@ -297,17 +277,14 @@ public class TaskSubMoneyController extends BaseController {
                     TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
                     taskSubMoneyBO.setId(id);
                     taskSubMoneyBO.setPayStatus("01");
-//                    taskSubMoneyBO.setModifiedTime(LocalDateTime.now());
                     taskSubMoneyBO.setPayApplyId((long) payApplyId);
                     taskSubMoneyBO.setPayApplyCode(payApplyCode);
                     taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);
                 } catch (Exception e) {
-//                    Map<String, String> tags = new HashMap<>(16);
                     //日志工具类返回
                     LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, null);
                     jr.error();
                 }
-                //jr.fill(true);
             } else {
                 jr.error();
             }

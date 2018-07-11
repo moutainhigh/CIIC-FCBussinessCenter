@@ -84,7 +84,7 @@ public class KafkaReceiver {
         }
     }
 
-    @StreamListener(MsgConstants.FC.PAYROLL_MAIN)
+    @StreamListener(TaskSink.PAYROLL_MAIN)
     public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getType(), message);
     }
@@ -105,7 +105,7 @@ public class KafkaReceiver {
     }
 
     @StreamListener(MsgConstants.FC.SUPPLIER_PAYMENT)
-    public void salaryGrantSupplierPaymentTaskCreateWorkFlow(String action, Message<TaskCreateMsgDTO> message) {
+    public void salaryGrantSupplierPaymentTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SPT.getType(), message);
     }
 

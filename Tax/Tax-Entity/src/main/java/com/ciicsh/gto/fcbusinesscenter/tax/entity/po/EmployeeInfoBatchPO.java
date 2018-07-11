@@ -215,6 +215,11 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 	private String companyNo;
 
 	/**
+	 * 公司名称
+	 */
+	private String companyName;
+
+	/**
 	 * 适用公式
 	 */
 	private String applicableFormula;
@@ -260,6 +265,25 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 	 */
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
+
+	//报税名
+	private String taxName;
+
+	public String getTaxName() {
+		return taxName;
+	}
+
+	public void setTaxName(String taxName) {
+		this.taxName = taxName;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
 
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;

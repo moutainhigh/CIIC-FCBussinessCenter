@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant;
 
 import com.ciicsh.gto.billcenter.fcmodule.api.dto.SalaryProxyDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.FcEmpInfoRequestDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeGroupInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
@@ -139,4 +140,12 @@ public interface CommonService {
      * @return
      */
     boolean delDeferredEmp(SalaryGrantMainTaskPO mainTaskPO);
+
+    /**
+     * 获取雇员最新信息
+     *
+     * @param currentEmployeePO
+     * @return
+     */
+    SalaryGrantEmployeePO getEmployeeNewestInfo(SalaryGrantEmployeePO currentEmployeePO);
 }
