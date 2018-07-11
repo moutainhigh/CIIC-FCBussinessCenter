@@ -214,6 +214,17 @@ public class TaskMainController extends BaseController {
 
         JsonResult<Boolean> jr = new JsonResult<>();
 
+        //检查约束
+        int i = this.constraintService.checkTask(taskMainDTO.getTaskMainIds(),ConstraintService.TASK_MAIN);
+        if(i > 0){
+            if(i == ConstraintService.C2){
+                jr.fill(JsonResult.ReturnCode.CONSTRAINTS_2);
+            }else if(i == ConstraintService.C3){
+                jr.fill(JsonResult.ReturnCode.CONSTRAINTS_3);
+            }
+            return jr;
+        }
+
         RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
         BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
         taskMainService.passTaskMains(requestForMainTaskMain);
