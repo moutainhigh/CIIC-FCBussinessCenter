@@ -16,8 +16,10 @@ public class JsonParseConsts {
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SALARY_GRANT_INFO = "salaryGrantInfo";
     /** 发放方式*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_TYPE = "grantType";
-    /** 发放服务标识：0-薪资发放，1-个税，2-薪资发放 + 个税*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE = "grantServiceType";
+    /** 旧值--发放服务标识：0-薪资发放，1-个税，2-薪资发放 + 个税 grantServiceType
+     *  新值--服务类别 ( 0 - 工资和税, 1 - 仅个税, 2 - 净工资, 3 - 仅计算 ) serviceCategory
+     * */
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_GRANT_SERVICE_TYPE = "serviceCategory";
     /** 薪资发放规则Id*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_EMP_SALARY_GRANT_RULE_ID = "grantRuleId";
     /** 汇率计算方式（0 - 固定， 1 - 实时，2-记账）*/
@@ -28,12 +30,24 @@ public class JsonParseConsts {
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_EXCHANGE_RATE = "exchangeRate";
     /** 是否包括社保和公积金*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_IS_WELFARE_INCLUDED = "isWelfareIncluded";
-    /** 供应商名称*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_NAME = "supplierName";
+    /** 委托合同流水号*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_COMMISSION_CONTRACT_SERIAL_NUMBER = "commissionContractSerialNumber";
+    /** 社保数据来源 ( 0 - AF, 1 - 客户 )*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SOCIAL_SECURITY_SOURCE = "socialSecuritySource";
+    /** 个人养老 ( 0 - 工资内含, 1 - 工资不含 ) */
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_PERSONAL_PENSION = "personalPension";
+    /** 个人医疗 ( 0 - 工资内含, 1 - 工资不含 ) */
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_PERSONAL_MEDICAL_TREATMENT = "personalMedicalTreatment";
+    /** 个人失业( 0 - 工资内含, 1 - 工资不含 )*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_INDIVIDUAL_UNEMPLOYEMENT = "individualUnemployment";
+    /** 个人公积金( 0 - 工资内含, 1 - 工资不含 )*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_INDIVIDUAL_PROVIDENT_FUND = "individualProvidentFund";
+    /** 供应商信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_DETAIL = "supplierDetail";
     /** 供应商收款账户*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE = "supplierAccountReceivale";
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE = "account";
     /** 供应商收款账户名称*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE_NAME = "supplierAccountReceivaleName";
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_SUPPLIER_ACCOUNT_RECEIVALE_NAME = "accountName";
     /** 付款账号*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_PAYMENT_BANK_ACCOUNT = "paymentBankAccount";
     /** 付款账户名*/
@@ -52,14 +66,14 @@ public class JsonParseConsts {
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_INFO = "taxInfo";
     /** 个税期间（0-当月 1-下月 2-下下月）*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_PERIOD = "taxPeriod";
-    /** 申报账户信息*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_DECLARATION_ACCOUNT = "declarationAccount";
-    /** 缴纳账户信息*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRIBUTION_ACCOUNT = "contributionAccount";
+    /** 申报账户详细信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_DECLARATION_ACCOUNT_DETAIL = "declarationAccountDetail";
+    /** 缴纳账户详细信息*/
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_CONTRIBUTION_ACCOUNT_DETAIL = "contributionAccountDetail";
     /** 个税账户*/
     public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT = "account";
     /** 个税账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)*/
-    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY = "accountCategory";
+    public static final String EMLOYEE_SERVICE_AGREEMENT_DATA_TAX_ACCOUNT_CATEGORY = "source";
 
     /** 扣社保小计*/
     public static final String EMLOYEE_RESULT_ITMES_SOCIAL_SECURITY = "扣社保小计";

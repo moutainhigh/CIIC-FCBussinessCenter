@@ -18,11 +18,15 @@ import com.ciicsh.gto.logservice.client.LogClientService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -220,7 +224,8 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      * @param batchUpdateMap
      * @return
      */
-    private void toCreateSubTask(Map paraMap, Map<String,SalaryGrantSubTaskPO> splitSubTaskMap, Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap){
+    @Transactional(rollbackFor = Exception.class)
+    protected void toCreateSubTask(Map paraMap, Map<String,SalaryGrantSubTaskPO> splitSubTaskMap, Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap){
         // 遍历splitSubTaskMap，调用公共API方法生成entity_id。建立子表信息包括：任务单编号entity_id -> salaryGrantSubTaskCode、状态taskStatus、任务单类型taskType
         List<SalaryGrantSubTaskPO> salaryGrantSubTaskPOList = new ArrayList<>();
         Map<String, List<SalaryGrantEmployeeBO>> batchUpdateLastMap = new HashMap<>();
@@ -278,7 +283,8 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      * @param salaryGrantMainTaskCode
      * @return
      */
-    private void toBatchUpdateSalaryGrantEmployee(Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap, String salaryGrantMainTaskCode){
+    @Transactional(rollbackFor = Exception.class)
+    protected void toBatchUpdateSalaryGrantEmployee(Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap, String salaryGrantMainTaskCode){
         batchUpdateMap.forEach((salaryGrantSubTaskCode,salaryGrantEmployeeBOList)-> {
             List<SalaryGrantEmployeePO> updateList = new ArrayList();
             salaryGrantEmployeeBOList.forEach(SalaryGrantEmployeeBO -> {
@@ -369,16 +375,18 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         Map<String, List<SalaryGrantEmployeeBO>> accountMap = salaryGrantEmployeeBOList.stream().collect(Collectors.groupingBy(SalaryGrantEmployeeBO::getGrantAccountCode));
         // 遍历每个发放账户的分组信息：1、对employee_id进行去重，计算总人数；2、按照country_code进行统计中、外方人数；3、计算总金额
         accountMap.forEach((account,accountList) -> {
-            try {
-                SalaryGrantEmployeeBO salaryGrantEmployeeBO = accountList.get(0);
-                SalaryGrantSubTaskPO salaryGrantSubTaskPOTemp = (SalaryGrantSubTaskPO) salaryGrantSubTaskPO.clone();
-                salaryGrantSubTaskPOTemp.setGrantAccountCode(account);
-                salaryGrantSubTaskPOTemp.setGrantAccountName(salaryGrantEmployeeBO.getGrantAccountName());
-                // 对list中的所有employeeid，包括重复的人，计算总金额，进行人民币折算。薪资发放总金额（RMB），payment_amount * exchange。
-                BigDecimal totalMoney = accountList.stream().map(SalaryGrantEmployeeBO::getPaymentAmountForRMB).reduce(BigDecimal.ZERO, BigDecimal::add);
-                salaryGrantSubTaskPOTemp.setPaymentTotalSum(totalMoney);
-                // 对相同发放账户的雇员信息遍历list，对相同employeeid进行去重，统计总人数
+            if(account != null){
+                try {
+                    SalaryGrantEmployeeBO salaryGrantEmployeeBO = accountList.get(0);
+                    SalaryGrantSubTaskPO salaryGrantSubTaskPOTemp = (SalaryGrantSubTaskPO) salaryGrantSubTaskPO.clone();
+                    salaryGrantSubTaskPOTemp.setGrantAccountCode(account);
+                    salaryGrantSubTaskPOTemp.setGrantAccountName(salaryGrantEmployeeBO.getGrantAccountName());
+                    // 对list中的所有employeeid，包括重复的人，计算总金额，进行人民币折算。薪资发放总金额（RMB），payment_amount * exchange。
+                    BigDecimal totalMoney = accountList.stream().map(SalaryGrantEmployeeBO::getPaymentAmountForRMB).reduce(BigDecimal.ZERO, BigDecimal::add);
+                    salaryGrantSubTaskPOTemp.setPaymentTotalSum(totalMoney);
+                /*// 对相同发放账户的雇员信息遍历list，对相同employeeid进行去重，统计总人数
                 Long totalCount = accountList.stream().map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count() ;
+                //Long totalCountNew = accountList.stream().filter(distinctByKey(o -> o.getEmployeeId())).count() ;
                 salaryGrantSubTaskPOTemp.setTotalPersonCount(ObjectUtils.isEmpty(totalCount) ? 0 : Integer.valueOf(totalCount.toString()));
                 // 针对发放账户统计中、外方人数，根据country_code
                 Long chineseCount = accountList.stream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
@@ -386,20 +394,36 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
                 salaryGrantSubTaskPOTemp.setChineseCount(ObjectUtils.isEmpty(chineseCount) ? 0 : Integer.valueOf(chineseCount.toString()));
                 Long foreignerCount = accountList.stream().filter(SalaryGrantEmployeeBO -> !SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
                         .map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count();
-                salaryGrantSubTaskPOTemp.setForeignerCount(ObjectUtils.isEmpty(foreignerCount) ? 0 : Integer.valueOf(foreignerCount.toString()));
-                Long remarkCount = accountList.stream().filter(SalaryGrantEmployeeBO -> !"".equals(SalaryGrantEmployeeBO.getRemark()) && SalaryGrantEmployeeBO.getRemark() != null).map(SalaryGrantEmployeeBO::getEmployeeId).count();
-                if(remarkCount > 0L){
-                    salaryGrantSubTaskPOTemp.setRemark(SalaryGrantBizConsts.TASK_REMARK);
+                salaryGrantSubTaskPOTemp.setForeignerCount(ObjectUtils.isEmpty(foreignerCount) ? 0 : Integer.valueOf(foreignerCount.toString()));*/
+
+                    // 对相同发放账户的雇员信息遍历list，统计总人数
+                    salaryGrantSubTaskPOTemp.setTotalPersonCount(Integer.valueOf(accountList.size()));
+                    // 针对发放账户统计中、外方人数，根据country_code。按照拆分后的雇员个数进行统计
+                    Long chineseCount = accountList.stream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
+                    salaryGrantSubTaskPOTemp.setChineseCount(ObjectUtils.isEmpty(chineseCount) ? 0 : Integer.valueOf(chineseCount.toString()));
+                    Long foreignerCount = accountList.stream().filter(SalaryGrantEmployeeBO -> !SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
+                    salaryGrantSubTaskPOTemp.setForeignerCount(ObjectUtils.isEmpty(foreignerCount) ? 0 : Integer.valueOf(foreignerCount.toString()));
+
+                    Long remarkCount = accountList.stream().filter(SalaryGrantEmployeeBO -> !"".equals(SalaryGrantEmployeeBO.getRemark()) && SalaryGrantEmployeeBO.getRemark() != null).map(SalaryGrantEmployeeBO::getEmployeeId).count();
+                    if(remarkCount > 0L){
+                        salaryGrantSubTaskPOTemp.setRemark(SalaryGrantBizConsts.TASK_REMARK);
+                    }
+                    splitSubTaskMap.put(account, salaryGrantSubTaskPOTemp);
+                    batchUpdateMap.put(account,accountList);
+                } catch (CloneNotSupportedException e) {
+                    logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("克隆任务单子表异常 --> exception").setContent(e.getMessage()));
                 }
-                splitSubTaskMap.put(account, salaryGrantSubTaskPOTemp);
-                batchUpdateMap.put(account,accountList);
-            } catch (CloneNotSupportedException e) {
-                logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("克隆任务单子表异常 --> exception").setContent(e.getMessage()));
             }
-        });
+            }
+            );
         returnMap.put("splitSubTaskMap", splitSubTaskMap);
         returnMap.put("batchUpdateMap", batchUpdateMap);
 
         return returnMap;
     }
+
+    /*public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }*/
 }

@@ -50,7 +50,8 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
      */
     private String grantAccountCode;
     /**
-     * 发放服务标识：0-薪资发放，1-个税，2-薪资发放 + 个税
+     * 旧值--发放服务标识：0-薪资发放，1-个税，2-薪资发放 + 个税
+     * 新值--服务类别 ( 0 - 工资和税, 1 - 仅个税, 2 - 净工资, 3 - 仅计算 )serviceCategory
      */
     private Integer grantServiceType;
     /**
@@ -123,6 +124,7 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
     private String declarationAccount;
     /**
      * 申报账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)
+     * declarationAccountDetail--source
      */
     private Integer declarationAccountCategory;
     /**
@@ -131,8 +133,34 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
     private String contributionAccount;
     /**
      * 缴纳账户类别 (1-大库（FC目前服务协议只配置FC大库），2-独立库)
+     * contributionAccountDetail--source
      */
     private Integer contributionAccountCategory;
+    /**
+     * 委托合同流水号
+     */
+    private Long commissionContractSerialNumber;
+    /**
+     * 社保数据来源 ( 0 - AF, 1 - 客户 )
+     */
+    private Integer socialSecuritySource;
+    /**
+     * 个人养老 ( 0 - 工资内含, 1 - 工资不含 )
+     */
+    private Integer personalPension;
+    /**
+     * 个人医疗 ( 0 - 工资内含, 1 - 工资不含 )
+     */
+    private Integer personalMedicalTreatment;
+    /**
+     * 个人失业( 0 - 工资内含, 1 - 工资不含 )
+     */
+    private Integer individualUnemployment;
+    /**
+     * 个人公积金( 0 - 工资内含, 1 - 工资不含 )
+     */
+    private Integer individualProvidentFund;
+
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -368,5 +396,53 @@ public class EmployeeServiceAgreementDTO extends PagingDTO implements Serializab
 
     public void setContributionAccountCategory(Integer contributionAccountCategory) {
         this.contributionAccountCategory = contributionAccountCategory;
+    }
+
+    public Long getCommissionContractSerialNumber() {
+        return commissionContractSerialNumber;
+    }
+
+    public void setCommissionContractSerialNumber(Long commissionContractSerialNumber) {
+        this.commissionContractSerialNumber = commissionContractSerialNumber;
+    }
+
+    public Integer getSocialSecuritySource() {
+        return socialSecuritySource;
+    }
+
+    public void setSocialSecuritySource(Integer socialSecuritySource) {
+        this.socialSecuritySource = socialSecuritySource;
+    }
+
+    public Integer getPersonalPension() {
+        return personalPension;
+    }
+
+    public void setPersonalPension(Integer personalPension) {
+        this.personalPension = personalPension;
+    }
+
+    public Integer getPersonalMedicalTreatment() {
+        return personalMedicalTreatment;
+    }
+
+    public void setPersonalMedicalTreatment(Integer personalMedicalTreatment) {
+        this.personalMedicalTreatment = personalMedicalTreatment;
+    }
+
+    public Integer getIndividualUnemployment() {
+        return individualUnemployment;
+    }
+
+    public void setIndividualUnemployment(Integer individualUnemployment) {
+        this.individualUnemployment = individualUnemployment;
+    }
+
+    public Integer getIndividualProvidentFund() {
+        return individualProvidentFund;
+    }
+
+    public void setIndividualProvidentFund(Integer individualProvidentFund) {
+        this.individualProvidentFund = individualProvidentFund;
     }
 }
