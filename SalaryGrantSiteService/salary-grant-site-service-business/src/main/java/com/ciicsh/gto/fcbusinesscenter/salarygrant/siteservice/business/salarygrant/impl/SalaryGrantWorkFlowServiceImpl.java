@@ -395,13 +395,13 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         grantMainTaskPO.setBalanceGrant(0); //结算发放标识:0-正常，1-垫付
                         salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
                     }
-                } else {
-                    //5、修改任务单主表状态为SalaryGrantMainTaskPO. taskStatus=1
-                    SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
-                    grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                    grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL); //状态:1-审批中
-                    salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
                 }
+
+                //5、修改任务单主表状态为SalaryGrantMainTaskPO. taskStatus=1
+                SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
+                grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
+                grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL); //状态:1-审批中
+                salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
                 //6、检查提交的雇员信息是否有变更，可以从自动暂缓改为正常，调用雇员信息变更接口。--后面补充，步骤预留
                 //7、调用接口方法进行拆分子表处理 --后面补充，步骤预留
