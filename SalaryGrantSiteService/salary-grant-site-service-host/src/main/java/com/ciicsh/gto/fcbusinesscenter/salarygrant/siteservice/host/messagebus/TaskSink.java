@@ -22,9 +22,10 @@ public interface TaskSink {
     MessageChannel commonTaskServiceProcessComplete();
 
     /**
-     * 创建薪资发放任务单SGT工作流TOPIC
+     * 本地
      */
-    @Input(MsgConstants.FC.PAYROLL_MAIN)
+    String PAYROLL_MAIN = "common_taskservice_payroll_main-channel";
+    @Input(PAYROLL_MAIN)
     MessageChannel salaryGrantMainTaskCreateWorkFlow();
 
     /**
