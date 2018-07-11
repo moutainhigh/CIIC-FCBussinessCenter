@@ -364,6 +364,9 @@ public class TaskMainController extends BaseController {
         tmdp.setDeductDlenessInsurance(taskMainDetailDTO.getDeductDlenessInsurance());
         tmdp.setDeductHouseFund(taskMainDetailDTO.getDeductHouseFund());
         tmdp.setIncomeTotal(taskMainDetailDTO.getIncomeTotal());
+        tmdp.setTaxRate(taskMainDetailDTO.getTaxRate());
+        tmdp.setQuickCalDeduct(taskMainDetailDTO.getQuickCalDeduct());
+        tmdp.setDeductTotal(taskMainDetailDTO.getDeductTotal());
         this.taskMainDetailService.update(tmdp,wrapper);//更新明细
 
         return jr;

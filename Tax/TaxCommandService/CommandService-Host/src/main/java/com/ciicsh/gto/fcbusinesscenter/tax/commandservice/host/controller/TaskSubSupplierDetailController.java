@@ -153,6 +153,9 @@ public class TaskSubSupplierDetailController extends BaseController {
         tssdp.setDeductDlenessInsurance(taskSubSupplierDetailDTO.getDeductDlenessInsurance());
         tssdp.setDeductHouseFund(taskSubSupplierDetailDTO.getDeductHouseFund());
         tssdp.setIncomeTotal(taskSubSupplierDetailDTO.getIncomeTotal());
+        tssdp.setTaxRate(taskSubSupplierDetailDTO.getTaxRate());
+        tssdp.setQuickCalDeduct(taskSubSupplierDetailDTO.getQuickCalDeduct());
+        tssdp.setDeductTotal(taskSubSupplierDetailDTO.getDeductTotal());
         this.taskSubSupplierDetailService.update(tssdp,wrapper);//更新明细
 
         return jr;
