@@ -246,7 +246,6 @@ public class ComputeServiceImpl {
                         formulaContent = Special2Normal(formulaContent); //特殊字符转化
                         String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
                         try {
-
                             if (scripts.get(itemCode) == null) {
                                 compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
                                 scripts.put(itemCode, compiled);
@@ -285,6 +284,7 @@ public class ComputeServiceImpl {
                             context.getFuncEntityList().clear(); // 清除FIRE 过的函数
 
                         } catch (Exception se) {
+                            context.getFuncEntityList().clear(); // 清除FIRE 过的函数
                             logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
                         }
 
@@ -510,7 +510,12 @@ public class ComputeServiceImpl {
             kSession.delete(factHandle);
             logger.info(String.format("emp_code: %s, total excute rule counts: %d", context.getEmpPayItem().getEmpCode(), count));
             return count;
-        }finally {
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
+            context.getFuncEntityList().clear();
+            return 0;
+        }
+        finally {
             sl.unlockWrite(stamp);
         }
     }

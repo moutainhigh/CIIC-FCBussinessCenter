@@ -63,6 +63,33 @@ public class TaskSubDeclareDetailDTO {
     private BigDecimal deductDlenessInsurance;//失业保险费
     private BigDecimal deductHouseFund;//住房公积金
     private BigDecimal incomeTotal;//收入额
+    private BigDecimal taxRate;//税率
+    private BigDecimal quickCalDeduct;//速算扣除数
+    private BigDecimal deductTotal;//合计（税前扣除项目）
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
+    }
+
+    public BigDecimal getQuickCalDeduct() {
+        return quickCalDeduct;
+    }
+
+    public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
+        this.quickCalDeduct = quickCalDeduct;
+    }
+
+    public BigDecimal getDeductTotal() {
+        return deductTotal;
+    }
+
+    public void setDeductTotal(BigDecimal deductTotal) {
+        this.deductTotal = deductTotal;
+    }
 
     public BigDecimal getDeductRetirementInsurance() {
         return deductRetirementInsurance;
