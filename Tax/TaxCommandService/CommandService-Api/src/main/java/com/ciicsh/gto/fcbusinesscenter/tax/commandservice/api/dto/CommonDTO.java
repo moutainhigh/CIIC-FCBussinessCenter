@@ -49,6 +49,39 @@ public class CommonDTO {
     //收入额
     private BigDecimal incomeTotal;
 
+    //税率
+    private BigDecimal taxRate;
+
+    //速算扣除数
+    private BigDecimal quickCalDeduct;
+
+    //合计（税前扣除项目）
+    private BigDecimal deductTotal;
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
+    }
+
+    public BigDecimal getQuickCalDeduct() {
+        return quickCalDeduct;
+    }
+
+    public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
+        this.quickCalDeduct = quickCalDeduct;
+    }
+
+    public BigDecimal getDeductTotal() {
+        return deductTotal;
+    }
+
+    public void setDeductTotal(BigDecimal deductTotal) {
+        this.deductTotal = deductTotal;
+    }
+
     public BigDecimal getIncomeTotal() {
         return incomeTotal;
     }

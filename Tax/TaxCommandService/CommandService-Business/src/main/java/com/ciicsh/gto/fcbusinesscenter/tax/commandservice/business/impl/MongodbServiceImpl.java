@@ -261,7 +261,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                         agreementBO.setProof(true);//完税凭证
                     }
                 });
-                agreementBO.setSupport(convert(taxInfo_agreement,"isSupplier",Boolean.class));//是否供应商处理
+                agreementBO.setSupport(getBooleanFromInt(convert(taxInfo_agreement,"isSupplier",Integer.class)));//是否供应商处理
                 agreementBO.setReceiptAccount(convert(taxInfo_agreement,"supplierAccountReceivale",String.class));//供应商收款账户
                 agreementBO.setSupportName(convert(taxInfo_agreement,"supplierName",String.class));//供应商名称
                 //String supplierNo =
@@ -833,6 +833,18 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         }
         return bd;
 
+    }
+
+    //isSupplier类型转换
+    private boolean getBooleanFromInt(Integer to){
+
+        boolean rv=false;
+
+        if(to!=null && to.intValue()==1){
+            rv = true;
+        }
+
+        return rv;
     }
 
     //新增或更新批次主信息
