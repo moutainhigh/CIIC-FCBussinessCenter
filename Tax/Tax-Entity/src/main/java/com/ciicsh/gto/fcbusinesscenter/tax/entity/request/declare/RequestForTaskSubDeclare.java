@@ -73,6 +73,11 @@ public class RequestForTaskSubDeclare extends PageInfo {
      */
     private String accountType;
 
+    /**
+     * 申报账户(中文)
+     */
+    private String declareAccountName;
+
     public Long getId() {
         return id;
     }
@@ -183,5 +188,13 @@ public class RequestForTaskSubDeclare extends PageInfo {
 
     public void setAccountType(String accountType) {
         this.accountType = accountType;
+    }
+
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
     }
 }

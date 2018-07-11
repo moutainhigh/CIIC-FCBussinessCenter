@@ -55,8 +55,8 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
             wrapper.and("id = {0}", requestForSubPayment.getId());
         }
         //缴纳账户模糊查询条件
-        if (StrKit.notBlank(requestForSubPayment.getPaymentAccount())) {
-            wrapper.like("payment_account", requestForSubPayment.getPaymentAccount());
+        if (StrKit.notBlank(requestForSubPayment.getPayAccountName())) {
+            wrapper.like("pay_account_name", requestForSubPayment.getPayAccountName());
         }
         //管理方名称
         Optional.ofNullable(requestForSubPayment.getManagerNos()).ifPresent(managerNos -> {

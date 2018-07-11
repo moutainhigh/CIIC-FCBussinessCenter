@@ -115,6 +115,11 @@ public class TaskProofDTO {
      */
     private String taskType;
 
+    /**
+     * 申报账户(中文)
+     */
+    private String declareAccountName;
+
 
     public Long getId() {
         return id;
@@ -292,6 +297,14 @@ public class TaskProofDTO {
         this.period = period;
     }
 
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
+    }
+
     @Override
     public String toString() {
         return "TaskProofDTO{" +
@@ -317,6 +330,7 @@ public class TaskProofDTO {
                 ", idNo='" + idNo + '\'' +
                 ", period='" + period + '\'' +
                 ", taskType='" + taskType + '\'' +
+                ", declareAccountName='" + declareAccountName + '\'' +
                 '}';
     }
 }

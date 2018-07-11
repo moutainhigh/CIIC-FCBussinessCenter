@@ -45,6 +45,7 @@
         <result column="id_type" property="idType"/>
         <result column="id_no" property="idNo"/>
         <result column="declare_account" property="declareAccount"/>
+        <result column="declare_account_name" property="declareAccountName"/>
         <result column="income_subject" property="incomeSubject"/>
         <result column="period" property="period"/>
         <result column="income_for_tax" property="incomeForTax"/>
@@ -79,6 +80,7 @@
         tsp.manager_no,
         tsp.manager_name,
         tsp.declare_account,
+        tsp.declare_account_name,
         tsp.period,
         tsp.headcount,
         tsp.chinese_num,
@@ -96,8 +98,8 @@
             </foreach>
             or tsp.is_combined = 1)
         </if>
-        <if test="declareAccount != null and declareAccount != ''">
-            and tsp.declare_account LIKE concat('%', #{declareAccount, jdbcType=VARCHAR},'%')
+        <if test="declareAccountName != null and declareAccountName != ''">
+            and tsp.declare_account_name LIKE concat('%', #{declareAccountName, jdbcType=VARCHAR},'%')
         </if>
         <if test="period != null">
             and date(tsp.period) = date(#{period,jdbcType=TIMESTAMP})
@@ -124,6 +126,7 @@
         tsp.manager_no,
         tsp.manager_name,
         tsp.declare_account,
+        tsp.declare_account_name,
         tsp.period,
         tsp.headcount,
         tsp.chinese_num,
@@ -132,8 +135,6 @@
         tsp.task_type,
         tsp.is_combined
         from tax_fc_task_sub_proof tsp
---         left join tax_fc_task_main_proof tmp
---         on tsp.task_main_proof_id = tmp.id
         where tsp.is_active = 1 and tsp.id = #{subProofId}
 
     </select>
