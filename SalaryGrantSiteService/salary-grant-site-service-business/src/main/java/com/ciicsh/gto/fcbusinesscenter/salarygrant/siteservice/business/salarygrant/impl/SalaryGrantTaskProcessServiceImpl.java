@@ -535,8 +535,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             this.processAutoReprieveEmployeeToPool(salaryGrantMainTaskPO);
             // 调整从调整批次、回溯批次生成雇员信息时，调用后台插入雇员调整信息方法。
             if(SalaryGrantBizConsts.GRANT_TYPE_ADJUST.equals(salaryGrantMainTaskPO.getGrantType()) || SalaryGrantBizConsts.GRANT_TYPE_BACK_TRACE.equals(salaryGrantMainTaskPO.getGrantType())){
-                // todo 更新master代码后，添加方法参数
-                salaryGrantEmployeeCommandService.saveSalaryAdjustmentInfoForEmployee();
+                salaryGrantEmployeeCommandService.saveSalaryAdjustmentInfoForEmployee(salaryGrantMainTaskPO);
             }
             return true;
         }else{
