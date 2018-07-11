@@ -100,6 +100,11 @@ public class RequestForProof extends PageInfo {
      */
     private String[] managerNos;
 
+    /**
+     * 申报账户(中文)
+     */
+    private String declareAccountName;
+
     public Long getId() {
         return id;
     }
@@ -250,5 +255,13 @@ public class RequestForProof extends PageInfo {
 
     public void setManagerNos(String[] managerNos) {
         this.managerNos = managerNos;
+    }
+
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
     }
 }

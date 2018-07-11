@@ -40,7 +40,11 @@ public class JsonResult<T> {
 
         RECOVERY_1("雇员所在任务已经变更为取消关账状态，不能恢复"),
 
-        RECOVERY_2("雇员所在任务已经创建，不能恢复");
+        RECOVERY_2("雇员所在任务已经创建，不能恢复"),
+
+        SETTLEMENT_1("结算中心验证批次是否存在出错!"),
+
+        SETTLEMENT_2("结算中心打卡出错!");
 
 
         private String  message;

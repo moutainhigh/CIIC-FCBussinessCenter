@@ -28,6 +28,7 @@ public class EmpGroupMongoOpt extends BaseOpt {
         DBObject indexOptions = new BasicDBObject();
         indexOptions.put("emp_group_id",1);
         indexOptions.put(PayItemName.EMPLOYEE_CODE_CN,1);
+        indexOptions.put(PayItemName.EMPLOYEE_COMPANY_ID,1);
         CompoundIndexDefinition indexDefinition = new CompoundIndexDefinition(indexOptions);
         mongoTemplate.indexOps(PR_EMPLOYEE_GROUP).ensureIndex(indexDefinition);
     }

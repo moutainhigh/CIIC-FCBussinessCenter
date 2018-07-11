@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseService;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchAccountPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
@@ -36,7 +37,7 @@ public class ExportAboutVoucherPuDong extends BaseService {
      * @param type
      * @return
      */
-    public HSSFWorkbook getPuDongVoucherWB(List<TaskSubProofDetailPO> taskSubProofDetailPOList, String fileName, String type) {
+    public HSSFWorkbook getPuDongVoucherWB(List<TaskSubProofDetailPO> taskSubProofDetailPOList, CalculationBatchAccountPO calculationBatchAccountPO, String fileName, String type) {
         POIFSFileSystem fs = null;
         HSSFWorkbook wb = null;
         try {
@@ -44,24 +45,23 @@ public class ExportAboutVoucherPuDong extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
-            // TODO 完税凭证模板(浦东)表头信息
             //用于存放模板列表头部
             Map<String, String> map = new HashMap<>(16);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
             //扣缴单位
-            map.put("withholdingUnit", "上海中智");
+            map.put("withholdingUnit", calculationBatchAccountPO.getAccountName());
             //电脑编码
-            map.put("withholdingCode", "123456789");
+            map.put("withholdingCode", calculationBatchAccountPO.getAccountNumber());
             //通用缴款书流水号
-            map.put("generalPaymentBook", "147258369");
-            //办税人员
+            map.put("generalPaymentBook", calculationBatchAccountPO.getCommissionContractSerialNumber());
+            // TODO 办税人员
             map.put("taxationPersonnel", "admin");
-            //联系电话
+            // TODO 联系电话
             map.put("phone", "18201886666");
-            //换开份数
+            // TODO 换开份数
             map.put("changeNum", "2");
-            //换开原因
+            // TODO 换开原因
             map.put("changeReason", "重新申报");
             //根据不同的业务需要处理wb
             this.handlePuDongVoucherWB(wb, map, taskSubProofDetailPOList);

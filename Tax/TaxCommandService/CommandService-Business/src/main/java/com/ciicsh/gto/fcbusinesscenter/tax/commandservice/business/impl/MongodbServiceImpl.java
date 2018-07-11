@@ -151,6 +151,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 //个税信息
                 DBObject taxInfo = (DBObject)empInfo.get("tax_info");
                 this.setObjectFieldsEmpty(taxInfoBO);
+                taxInfoBO.setWorkNumber(convert(empInfo,"员工工号",String.class));//工号
+                taxInfoBO.setTaxName(convert(taxInfo,"taxReturnName",String.class));//报税名
                 taxInfoBO.setCertType(convert(taxInfo,"reportTaxCertId",Integer.class)==null? null :convert(taxInfo,"reportTaxCertId",Integer.class).toString());//报税证件类型
                 taxInfoBO.setCertNo(convert(taxInfo,"reportTaxCertNo",String.class));//报税证件号
                 taxInfoBO.setNationality(convert(taxInfo,"reportTaxCountryId",String.class));//国籍
@@ -259,7 +261,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                         agreementBO.setProof(true);//完税凭证
                     }
                 });
-                agreementBO.setSupport(convert(taxInfo_agreement,"isSupplier",Boolean.class));//是否供应商处理
+                agreementBO.setSupport(getBooleanFromInt(convert(taxInfo_agreement,"isSupplier",Integer.class)));//是否供应商处理
                 agreementBO.setReceiptAccount(convert(taxInfo_agreement,"supplierAccountReceivale",String.class));//供应商收款账户
                 agreementBO.setSupportName(convert(taxInfo_agreement,"supplierName",String.class));//供应商名称
                 //String supplierNo =
@@ -831,6 +833,18 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         }
         return bd;
 
+    }
+
+    //isSupplier类型转换
+    private boolean getBooleanFromInt(Integer to){
+
+        boolean rv=false;
+
+        if(to!=null && to.intValue()==1){
+            rv = true;
+        }
+
+        return rv;
     }
 
     //新增或更新批次主信息

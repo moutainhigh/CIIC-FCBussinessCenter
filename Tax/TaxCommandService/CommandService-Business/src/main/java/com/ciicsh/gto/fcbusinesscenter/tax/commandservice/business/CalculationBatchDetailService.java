@@ -1,10 +1,13 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business;
 
 
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForBatchDetail;
+
+import java.util.List;
 
 /**
  * @author yuantongqing on 2017/12/19
@@ -36,7 +39,7 @@ public interface CalculationBatchDetailService {
      * 批量恢复计算批次明细
      * @param ids
      */
-    void queryCalculationBatchDetail(String[] ids);
+    void recoveryCalculationBatchDetail(String[] ids);
 
     /**
      * 批量暂缓计算批次明细
@@ -50,4 +53,18 @@ public interface CalculationBatchDetailService {
      * @return
      */
     int checkTaskByDetailIds(String[] ids);
+
+    /**
+     * 根据批次ID查询批次明细列表
+     * @param batchId
+     * @return
+     */
+    List<CalculationBatchDetailPO> queryCalculationBatchDetailByBatchId(Long batchId);
+
+    /**
+     * 根据批次ID数组查询批次明细列表(不含暂缓)
+     * @param batchIds
+     * @return
+     */
+    List<CalculationBatchDetailPO> queryCalculationBatchDetailByBatchNos(List<Long> batchIds);
 }

@@ -93,22 +93,22 @@ public class BatchSyncReceiver {
      * @param message
      */
     private void processEmployees(PayrollEmpGroup message){
-        List<String> empIds = StringUtils.isNotEmpty(message.getIds())? Arrays.asList(message.getIds().split(",")): null;
+        List<String> empIdAndCompanyIds = StringUtils.isNotEmpty(message.getIds())? Arrays.asList(message.getIds().split("\\$")): null;
         List<String> groupIds = StringUtils.isNotEmpty(message.getEmpGroupIds())? Arrays.asList(message.getEmpGroupIds().split(",")): null;
 
-        if(groupIds == null || empIds == null){
-            logger.info("groupIds or empIds should not be empty");
+        if(groupIds == null && empIdAndCompanyIds == null){
+            logger.info("groupIds & empIds should not be empty");
             return;
         }
         if(message.getOperateType() == OperateTypeEnum.ADD.getValue()){
             String empGroupId = groupIds.get(0);
             logger.info("ADD Opt");
             logger.info("emp group id:" + empGroupId);
-            empGroupService.batchInsertOrUpdateGroupEmployees(empGroupId,empIds);
+            empGroupService.batchInsertOrUpdateGroupEmployees(empGroupId,empIdAndCompanyIds);
         }
         else if(message.getOperateType() == OperateTypeEnum.DELETE.getValue()){
             logger.info("DELETE Opt");
-            empGroupService.batchDelGroupEmployees(groupIds,empIds);
+            empGroupService.batchDelGroupEmployees(groupIds,empIdAndCompanyIds);
         }
 
     }

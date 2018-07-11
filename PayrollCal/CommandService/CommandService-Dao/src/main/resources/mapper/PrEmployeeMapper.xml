@@ -61,6 +61,8 @@
 		FROM pr_emp_group_emp_relation a
 		INNER JOIN pr_employee b on a.employee_id = b.employee_id
 		WHERE
+			a.company_id = b.company_id
+			and
 			a.emp_group_code = #{empGroupCode}
 		AND
 			a.is_active = 1

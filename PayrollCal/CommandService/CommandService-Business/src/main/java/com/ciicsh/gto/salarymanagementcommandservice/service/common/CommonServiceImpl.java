@@ -96,11 +96,14 @@ public class CommonServiceImpl {
                     else if (p.get("item_name").equals(PayItemName.LEAVE_DATE)) {
                         p.put("item_value", base_info.get(PayItemName.LEAVE_DATE));
                     }
+                    else if (p.get("item_name").equals(PayItemName.EMPLOYEE_COMPANY_ID)) {
+                        p.put("item_value", base_info.get(PayItemName.EMPLOYEE_COMPANY_ID));
+                    }
                 });
-                rowAffected += updateBatchMogodb(batchPO,item,clonePyItems);
+                rowAffected += updateBatchMongodb(batchPO,item,clonePyItems);
             }
         }else {
-            rowAffected += updateBatchMogodb(batchPO,null,payItems);
+            rowAffected += updateBatchMongodb(batchPO,null,payItems);
         }
         try {
             //create index
@@ -171,7 +174,7 @@ public class CommonServiceImpl {
                 dbObject.put("item_name",item.getItemName());
 
             }
-            int dataType = item.getDataType().intValue();
+            int dataType = item.getDataType();
             dbObject.put("data_type",item.getDataType());
             dbObject.put("item_type",item.getItemType());
             dbObject.put("item_code",item.getItemCode());
@@ -192,7 +195,7 @@ public class CommonServiceImpl {
         return list;
     }
 
-    private int updateBatchMogodb( PrCustBatchPO batchPO, DBObject emp,List<BasicDBObject> payItems){
+    private int updateBatchMongodb( PrCustBatchPO batchPO, DBObject emp,List<BasicDBObject> payItems){
 
         DBObject basicDBObject = new BasicDBObject();
 
@@ -203,7 +206,9 @@ public class CommonServiceImpl {
                     .andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
                             Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(emp.get(PayItemName.EMPLOYEE_CODE_CN)) //雇员编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(emp.get(PayItemName.EMPLOYEE_CODE_CN)), //雇员编码
+                            Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(emp.get(PayItemName.EMPLOYEE_COMPANY_ID)) //公司ID
+
                     )
             );
             DBObject empInfo = emp.get("base_info") == null ? emp :(DBObject)emp.get("base_info");
@@ -213,7 +218,9 @@ public class CommonServiceImpl {
                     .andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
                             Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is("") //雇员编码
+                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(""), //雇员编码
+                            Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is("") //公司ID
+
                     )
             );
         }
@@ -271,6 +278,7 @@ public class CommonServiceImpl {
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
             SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
             itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
+            itemPO.setCompanyId(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_COMPANY_ID)));
 
             DBObject calalog = (DBObject)dbObject.get("catalog");
             //DBObject empInfo = (DBObject)calalog.get("emp_info");

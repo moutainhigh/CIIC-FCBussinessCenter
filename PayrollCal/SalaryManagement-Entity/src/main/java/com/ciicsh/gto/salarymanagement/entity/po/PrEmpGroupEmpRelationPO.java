@@ -37,6 +37,12 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
      */
 	@TableField("employee_id")
 	private String employeeId;
+
+	/**
+	 * 公司ID
+	 */
+	@TableField("company_id")
+	private String companyId;
     /**
      * 是否有效
      */
@@ -126,6 +132,14 @@ public class PrEmpGroupEmpRelationPO extends Model<PrEmpGroupEmpRelationPO> {
 
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
+	}
+
+	public String getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
 	}
 
 	@Override

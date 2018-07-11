@@ -486,7 +486,7 @@ rule "免抵额" // {免抵额([国籍])}
 end
 
 /**
-** 标准薪资组
+** 一般个人所得税
 */
 rule "一般个人所得税" // {一般个人所得税([flag],[应纳税所得额])}
     when
@@ -509,11 +509,21 @@ rule "一般个人所得税" // {一般个人所得税([flag],[应纳税所得�
                 taxList = getTaxList_2011();
             }
             if(taxList != null){
-                Optional<TaxEntity> find = taxList.stream().filter(tax -> tax.getTaxDueStart() < par1 && tax.getTaxDueEnd() >= par1).findFirst();
-                if(find.isPresent()){
-                    taxRate = find.get().getTaxRate();
-                    deductions = find.get().getDeductions();
+                TaxEntity find = null;
+                for (TaxEntity tax : taxList) {
+                    if(tax.getTaxDueStart() < par1 && tax.getTaxDueEnd() >= par1){
+                        find = tax;
+                        break;
+                    }
+                }
+                if(find != null){
+                    taxRate = find.getTaxRate();
+                    System.out.print(taxRate);
+                    deductions = find.getDeductions();
+                    System.out.print(deductions);
                     BigDecimal result = new BigDecimal(par1 * taxRate - deductions);
+                    System.out.print(result);
+
                     func.setResult(result);
                 }
             }

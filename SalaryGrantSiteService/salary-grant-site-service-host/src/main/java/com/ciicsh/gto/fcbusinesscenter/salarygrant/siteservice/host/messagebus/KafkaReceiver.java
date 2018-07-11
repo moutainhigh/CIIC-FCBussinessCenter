@@ -84,7 +84,7 @@ public class KafkaReceiver {
         }
     }
 
-    @StreamListener(MsgConstants.FC.PAYROLL_MAIN)
+    @StreamListener(TaskSink.PAYROLL_MAIN)
     public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getType(), message);
     }

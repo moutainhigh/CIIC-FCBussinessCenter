@@ -151,6 +151,9 @@ public class TaskSubDeclareDetailController extends BaseController {
         tsddp.setDeductDlenessInsurance(taskSubDeclareDetailDTO.getDeductDlenessInsurance());
         tsddp.setDeductHouseFund(taskSubDeclareDetailDTO.getDeductHouseFund());
         tsddp.setIncomeTotal(taskSubDeclareDetailDTO.getIncomeTotal());
+        tsddp.setTaxRate(taskSubDeclareDetailDTO.getTaxRate());
+        tsddp.setQuickCalDeduct(taskSubDeclareDetailDTO.getQuickCalDeduct());
+        tsddp.setDeductTotal(taskSubDeclareDetailDTO.getDeductTotal());
         this.taskSubDeclareDetailService.update(tsddp,wrapper);//更新明细
 
         return jr;
