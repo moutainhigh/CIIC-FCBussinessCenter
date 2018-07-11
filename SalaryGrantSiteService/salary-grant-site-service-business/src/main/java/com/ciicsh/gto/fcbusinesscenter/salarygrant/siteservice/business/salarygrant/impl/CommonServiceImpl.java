@@ -327,6 +327,7 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
             }
+            salaryBatchDTO.setFinanceAccountId(2); //帐套ID(1:AF;2:FC;3:BPO)
         }
 
         List<SalaryEmployeeDTO> employeeList = new ArrayList<>();

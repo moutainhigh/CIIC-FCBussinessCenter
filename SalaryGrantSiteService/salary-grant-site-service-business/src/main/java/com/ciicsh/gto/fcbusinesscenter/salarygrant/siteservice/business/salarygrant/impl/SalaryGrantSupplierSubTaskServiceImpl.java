@@ -125,6 +125,7 @@ public class SalaryGrantSupplierSubTaskServiceImpl extends ServiceImpl<SalaryGra
      * @param newestEmployeePO
      */
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public boolean compareAndUpdateEmployeeNewestInfo(SalaryGrantEmployeePO currentEmployeePO, SalaryGrantEmployeePO newestEmployeePO) {
         //比较对象任一为空返回false
         if (ObjectUtils.isEmpty(currentEmployeePO) || ObjectUtils.isEmpty(newestEmployeePO)) {
