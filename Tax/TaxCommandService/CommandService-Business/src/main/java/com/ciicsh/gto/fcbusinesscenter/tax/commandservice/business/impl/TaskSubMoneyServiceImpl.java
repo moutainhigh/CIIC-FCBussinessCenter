@@ -57,8 +57,8 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             wrapper.and("id = {0}", requestForSubMoney.getId());
         }
         //缴纳账户模糊查询条件
-        if (StrKit.notBlank(requestForSubMoney.getPaymentAccount())) {
-            wrapper.like("payment_account", requestForSubMoney.getPaymentAccount());
+        if (StrKit.notBlank(requestForSubMoney.getPayAccountName())) {
+            wrapper.like("pay_account_name", requestForSubMoney.getPayAccountName());
         }
         //管理方名称
         Optional.ofNullable(requestForSubMoney.getManagerNos()).ifPresent(managerNos -> {

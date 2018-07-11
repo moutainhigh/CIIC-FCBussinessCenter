@@ -152,6 +152,11 @@ public class TaskSubDeclareDTO {
      */
     private String accountType;
 
+    /**
+     * 申报账户(中文)
+     */
+    private String declareAccountName;
+
     public Long getId() {
         return id;
     }
@@ -416,6 +421,14 @@ public class TaskSubDeclareDTO {
         this.accountType = accountType;
     }
 
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
+    }
+
     @Override
     public String toString() {
         return "TaskSubDeclareDTO{" +
@@ -452,6 +465,7 @@ public class TaskSubDeclareDTO {
                 ", hasCombined=" + hasCombined +
                 ", areaType='" + areaType + '\'' +
                 ", accountType='" + accountType + '\'' +
+                ", declareAccountName='" + declareAccountName + '\'' +
                 '}';
     }
 }
