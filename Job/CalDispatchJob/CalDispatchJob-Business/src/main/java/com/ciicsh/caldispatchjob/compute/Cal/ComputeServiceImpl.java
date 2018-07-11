@@ -182,6 +182,8 @@ public class ComputeServiceImpl {
             }
             DBObject catalog = (DBObject) dbObject.get("catalog");
             String empCode = (String) dbObject.get(PayItemName.EMPLOYEE_CODE_CN);
+            String companyId = (String) dbObject.get(PayItemName.EMPLOYEE_COMPANY_ID);
+
             List<DBObject> items = (List<DBObject>)catalog.get("pay_items");
 
             /*获取计算期间，并传递给drools context*/
@@ -198,6 +200,7 @@ public class ComputeServiceImpl {
             EmpPayItem empPayItem = new EmpPayItem();
             empPayItem.setItems(bindings);
             empPayItem.setEmpCode(empCode);
+            empPayItem.setCompanyId(companyId);
             context.setEmpPayItem(empPayItem); //用于规则引擎计算
 
             context.getFuncEntityList().clear(); // set each employee function result null
@@ -246,7 +249,6 @@ public class ComputeServiceImpl {
                         formulaContent = Special2Normal(formulaContent); //特殊字符转化
                         String conditionFormula = replaceFormula(condition, formulaContent, context);//处理计算项的公式
                         try {
-
                             if (scripts.get(itemCode) == null) {
                                 compiled = ((Compilable) JavaScriptEngine.getEngine()).compile(conditionFormula);
                                 scripts.put(itemCode, compiled);
@@ -285,6 +287,7 @@ public class ComputeServiceImpl {
                             context.getFuncEntityList().clear(); // 清除FIRE 过的函数
 
                         } catch (Exception se) {
+                            context.getFuncEntityList().clear(); // 清除FIRE 过的函数
                             logger.error(String.format("雇员编号－%s | 计算失败－%s", empCode, se.getMessage()));
                         }
 
@@ -294,16 +297,17 @@ public class ComputeServiceImpl {
                 }
             }
 
+            int rowAffected = 0;
+            Criteria criteria = Criteria.where("batch_code").is(batchCode)
+                    .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId);
             if (batchType == BatchTypeEnum.NORMAL.getValue()) {
-                normalBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+                rowAffected = normalBatchMongoOpt.update(criteria, "catalog.pay_items", items);
             } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
-                adjustBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+                rowAffected = adjustBatchMongoOpt.update(criteria, "catalog.pay_items", items);
             } else {
-                backTraceBatchMongoOpt.update(Criteria.where("batch_code").is(batchCode)
-                        .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode), "catalog.pay_items", items);
+                rowAffected = backTraceBatchMongoOpt.update(criteria, "catalog.pay_items", items);
             }
+            logger.info("row affected " + rowAffected);
             return dbObject;
         }catch (Exception ex){
             logger.info(ex.getMessage());
@@ -510,7 +514,12 @@ public class ComputeServiceImpl {
             kSession.delete(factHandle);
             logger.info(String.format("emp_code: %s, total excute rule counts: %d", context.getEmpPayItem().getEmpCode(), count));
             return count;
-        }finally {
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
+            context.getFuncEntityList().clear();
+            return 0;
+        }
+        finally {
             sl.unlockWrite(stamp);
         }
     }
