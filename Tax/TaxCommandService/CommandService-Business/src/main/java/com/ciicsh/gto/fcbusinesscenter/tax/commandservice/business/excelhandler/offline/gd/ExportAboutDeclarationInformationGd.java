@@ -97,7 +97,7 @@ public class ExportAboutDeclarationInformationGd extends BaseService{
             if (null == cellC) {
                 cellC = row.createCell(2);
             }
-            cellC.setCellValue(taskSubDeclareDetailPO.getEmployeeName());
+            cellC.setCellValue(employeeInfoBatchPO.getTaxName());
             //身份证件类型-D列
             HSSFCell cellD = row.getCell(3);
             if (null == cellD) {

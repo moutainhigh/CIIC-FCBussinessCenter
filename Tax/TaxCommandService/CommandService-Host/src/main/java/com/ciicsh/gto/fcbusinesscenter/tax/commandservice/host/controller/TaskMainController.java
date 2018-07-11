@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskMainDetail
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubsDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ConstraintService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
@@ -17,12 +18,15 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMai
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
+import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,6 +63,9 @@ public class TaskMainController extends BaseController {
 
     @Autowired
     private BatchProxy batchProxy;
+
+    @Autowired
+    private ExportFileService exportFileService;
 
     /**
      * 查询主任务列表
@@ -418,6 +425,21 @@ public class TaskMainController extends BaseController {
         }else{
             return 1;
         }
+    }
+
+    /**
+     * 根据批次编号导出员工个税申报明细
+     * @param taskNo
+     * @param batchNos
+     * @param response
+     */
+    @GetMapping(value = "/exportTaxList")
+    public void exportTaxList(@RequestParam("taskNo") String taskNo,@RequestParam("batchNos") String[] batchNos, HttpServletResponse response) {
+        UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
+        String operator = userInfoResponseDTO.getDisplayName()+"("+userInfoResponseDTO.getUserId()+")";
+        Map<String,Object> map = this.exportFileService.exportTaxList(taskNo,batchNos,operator);
+        //导出excel
+        exportExcel(response, (HSSFWorkbook)map.get("wb"), map.get("fileName").toString());
     }
 
 }

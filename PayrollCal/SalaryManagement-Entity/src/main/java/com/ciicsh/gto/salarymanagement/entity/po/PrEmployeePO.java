@@ -345,6 +345,8 @@ public class PrEmployeePO extends Model<PrEmployeePO> {
 		isActive = active;
 	}
 
+
+
 	@Override
 	protected Serializable pkVal() {
 		return this.employeeId;

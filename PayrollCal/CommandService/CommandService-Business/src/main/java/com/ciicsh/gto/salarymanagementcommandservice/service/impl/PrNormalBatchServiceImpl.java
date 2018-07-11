@@ -404,15 +404,17 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
             update = Update.update("catalog.pay_items", items);
         }else {
             // 雇员在雇员组不存在
-            criteria.and("pr_group_code").is(prGroupCode).and("emp_group_code").is(empGroupCode);
+            criteria.and("pr_group_code").is(prGroupCode)
+                    .and("emp_group_code").is(empGroupCode)
+                    .and(PayItemName.EMPLOYEE_COMPANY_ID).is(index.get("companyId"));
             query = Query.query(criteria);
             catalog.put("emp_info",null);
-            DBObject empIdentity = new BasicDBObject();
+            /*DBObject empIdentity = new BasicDBObject();
             empIdentity.put("emp_Code",index.get("emp_Code"));
             empIdentity.put("companyId",index.get("companyId"));
             empIdentity.put("emp_Id",index.get("emp_Id"));
 
-            catalog.put("emp_identity",empIdentity);
+            catalog.put("emp_identity",empIdentity);*/
             catalog.put("pay_items",items);
             update = Update.update("catalog", catalog);
         }

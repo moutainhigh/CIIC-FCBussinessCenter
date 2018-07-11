@@ -43,20 +43,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Boolean addEmployees(List<String> empIds, String empGroupCode) {
+    public Boolean addEmployees(List<String> empIdAndCompanyIds, String empGroupCode) {
         try {
             List<String> ids = new ArrayList<>();
-            empIds.forEach(i -> {
-                Integer revalue = empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode, i);
+            empIdAndCompanyIds.forEach(i -> {
+                String empId = i.split(",")[0];
+                String companyId = i.split(",")[1];
+                Integer revalue = empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode, empId, companyId);
                 if(revalue <= 0){
-                    empGroupEmpRelationMapper.insert(this.toEmpGroupEmpRelationPO(i, empGroupCode));
+                    empGroupEmpRelationMapper.insert(this.toEmpGroupEmpRelationPO(empId,companyId, empGroupCode));
                     ids.add(i);
                 }
             });
             if(ids.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
                 payrollEmpGroup.setEmpGroupIds(empGroupCode);
-                payrollEmpGroup.setIds(StringUtils.join(ids,","));
+                payrollEmpGroup.setIds(StringUtils.join(empIdAndCompanyIds,"$"));
                 payrollEmpGroup.setOperateType(OperateTypeEnum.ADD.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }
@@ -87,13 +89,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Integer batchDelete(List<String> employeeIds,String empGroupCode) {
-        Integer result = empGroupEmpRelationMapper.deleteEmpGroupRelation(employeeIds,empGroupCode);
+    public Integer batchDelete(List<String> employeeIdAndCompanyIds,String empGroupCode) {
+
+        Integer result = 0;
+        if(employeeIdAndCompanyIds.size() > 0) {
+            for (String empIdAndCompanyId: employeeIdAndCompanyIds) {
+                String employeeId = empIdAndCompanyId.split("-")[0];
+                String companyId = empIdAndCompanyId.split("-")[1];
+                result += empGroupEmpRelationMapper.deleteEmpGroupRelation(employeeId,companyId,empGroupCode);
+            }
+        }
         if(result > 0){
-            if(employeeIds != null && employeeIds.size() > 0){
+            if(employeeIdAndCompanyIds != null && employeeIdAndCompanyIds.size() > 0){
                 PayrollEmpGroup payrollEmpGroup = new PayrollEmpGroup();
                 payrollEmpGroup.setEmpGroupIds(empGroupCode);
-                payrollEmpGroup.setIds(StringUtils.join(employeeIds,","));
+                payrollEmpGroup.setIds(StringUtils.join(employeeIdAndCompanyIds,"$"));
                 payrollEmpGroup.setOperateType(OperateTypeEnum.DELETE.getValue());
                 sender.SendEmpGroup(payrollEmpGroup);
             }
@@ -112,10 +122,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return 0;
     }
 
-    private PrEmpGroupEmpRelationPO toEmpGroupEmpRelationPO(String empId, String empGroupCode){
+    private PrEmpGroupEmpRelationPO toEmpGroupEmpRelationPO(String empId, String companyId, String empGroupCode){
         PrEmpGroupEmpRelationPO empGroupEmpRelationPO = new PrEmpGroupEmpRelationPO();
         empGroupEmpRelationPO.setEmpGroupCode(empGroupCode);
         empGroupEmpRelationPO.setEmployeeId(empId);
+        empGroupEmpRelationPO.setCompanyId(companyId);
         empGroupEmpRelationPO.setActive(true);
         empGroupEmpRelationPO.setCreatedTime(new Date());
         empGroupEmpRelationPO.setCreatedBy(UserContext.getUser().getUserId());

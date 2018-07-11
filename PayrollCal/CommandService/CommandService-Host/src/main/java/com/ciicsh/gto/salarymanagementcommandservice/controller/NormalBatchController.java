@@ -293,6 +293,7 @@ public class NormalBatchController {
         long begin = System.currentTimeMillis(); //begin 5秒
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN).
+                include(PayItemName.EMPLOYEE_COMPANY_ID).
                 include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
                 include("catalog.pay_items.data_type").
                 include("catalog.pay_items.canLock").
