@@ -40,6 +40,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -570,13 +571,13 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     /**
      * 每天晚上8点执行任务
      */
-    @Scheduled(cron = "0 0 20 * * ?")
-    //每30秒执行一次
-//    @Scheduled(cron = "*/30 * * * * ?")
+//    @Scheduled(cron = "0 0 20 * * ?")
+    //每3分钟执行一次
+    @Scheduled(cron = "0 0/3 * * * ?")
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void queryForPayment() {
-//        System.out.println("薪资发放定时任务 启动");
+//        System.out.println("薪资发放定时任务 启动时间: " + LocalDateTime.now());
 
         //获取次日日期
         String grantDate = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -662,6 +663,6 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             }
         }
 
-//        System.out.println("薪资发放定时任务 完成");
+//        System.out.println("薪资发放定时任务 完成时间: " + LocalDateTime.now());
     }
 }
