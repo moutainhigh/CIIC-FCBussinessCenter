@@ -330,6 +330,7 @@ public class CompleteComputeServiceImpl {
                 tax.put("resJjAmount", taxInfo.getResJjAmount());
                 tax.put("resPayAmount", taxInfo.getResPayAmount() == null ? "" : taxInfo.getResPayAmount().doubleValue());
                 tax.put("resMonthlyStrikeIncome", taxInfo.getResMonthlyStrikeIncome() == null? "" : taxInfo.getResMonthlyStrikeIncome().doubleValue());
+                tax.put("fitFormula", taxInfo.getFitFormula());
 
                 basicDBObject.put("tax_info", tax);
 
