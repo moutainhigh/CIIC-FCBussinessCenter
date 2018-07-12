@@ -5,10 +5,7 @@ import com.ciicsh.gt1.BaseOpt;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.MongodbService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchAccountMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeInfoBatchMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.EmployeeServiceBatchMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchNoStatus;
@@ -68,6 +65,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
     private CalculationBatchAccountMapper calculationBatchAccountMapper;
 
     @Autowired
+    private CalculationBatchSupplierMapper calculationBatchSupplierMapper;
+
+    @Autowired
     private MongodbServiceImpl mongodbService;
 
     @Transactional(rollbackFor = Exception.class)
@@ -87,7 +87,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
          AccountBO contributionAccountBO = new AccountBO();//缴纳账户（mongodb）
 
+         SupplierBO supplierBO = new SupplierBO();//供应商（mongodb）
+
          Set<String> accounts = new HashSet<>();//批次已处理账户集合
+
+         Set<String> suppliers = new HashSet<>();//批次已处理供应商集合
 
          CalculationBatchPO newCal = new CalculationBatchPO();//批次主信息
 
@@ -192,7 +196,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 taxInfoBO.setRestrictTotal(convert(taxInfo,"resAllAmount",Integer.class));//(限制性)被激励对象获得的限制性股票总份数
                 taxInfoBO.setRestrictPayment(convert(taxInfo,"resPayAmount",BigDecimal.class));//(限制性)被激励对象实际支付的资金总额
                 taxInfoBO.setRestrictExerciseIncome(convert(taxInfo,"resMonthlyStrikeIncome",BigDecimal.class));//(限制性)本月行权收入
-                taxInfoBO.setApplicableFormula(convert(taxInfo,"applicableFormula",String.class));//适用公式
+                taxInfoBO.setApplicableFormula(convert(taxInfo,"fitFormula",String.class));//适用公式
 
                 //服务协议
                 DBObject empAgreement = (DBObject)empInfo.get("雇员服务协议");
@@ -262,8 +266,28 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     }
                 });
                 agreementBO.setSupport(getBooleanFromInt(convert(taxInfo_agreement,"isSupplier",Integer.class)));//是否供应商处理
-                agreementBO.setReceiptAccount(convert(taxInfo_agreement,"supplierAccountReceivale",String.class));//供应商收款账户
-                agreementBO.setSupportName(convert(taxInfo_agreement,"supplierName",String.class));//供应商名称
+//                agreementBO.setReceiptAccount(convert(taxInfo_agreement,"supplierAccountReceivale",String.class));//供应商收款账户
+//                agreementBO.setSupportName(convert(taxInfo_agreement,"supplierName",String.class));//供应商名称
+
+                if(agreementBO.getSupport()!=null && agreementBO.getSupport()){
+                    //供应商详情
+                    DBObject supplierDetail = (DBObject)taxInfo_agreement.get("supplierDetail");
+                    Long supplierId = convert(supplierDetail,"id",Long.class);
+                    if(supplierId!=null){
+                        this.setObjectFieldsEmpty(supplierBO);
+                        supplierBO.setSupplierId(supplierId.toString());
+                        supplierBO.setAccountName(convert(supplierDetail,"accountName",String.class));
+                        supplierBO.setAccount(convert(supplierDetail,"account",String.class));
+                        supplierBO.setTaxAccountOpeningBank(convert(supplierDetail,"taxAccountOpeningBank",String.class));
+                        supplierBO.setProvinceCode(convert(supplierDetail,"provinceCode",String.class));
+                        supplierBO.setCityCode(convert(supplierDetail,"cityCode",String.class));
+                        this.saveOrUpdateSupplier(suppliers,supplierBO);
+                        agreementBO.setSupportNo(supplierBO.getSupplierId());//供应商编号
+                        agreementBO.setSupportName(supplierBO.getAccountName());//供应商名称
+                    }
+
+                }
+
                 //String supplierNo =
                 List<Integer> supplierServiceTypes = (List<Integer>)taxInfo_agreement.get("supplierServiceType");
                 supplierServiceTypes.stream().forEach(supplierServiceType -> {
@@ -795,6 +819,28 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 calculationBatchAccountMapper.insert(calculationBatchAccountPO);
             }
             accountNumber.add(accountBO.getAccountNumber());
+        }
+    }
+
+    //新增或更新供应商
+    private void saveOrUpdateSupplier(Set<String> supplierNumber, SupplierBO supplierBO){
+        if( StrKit.isNotEmpty(supplierBO.getSupplierId())
+                && !supplierNumber.contains(supplierBO.getSupplierId())){
+            CalculationBatchSupplierPO calculationBatchSupplierPO = new CalculationBatchSupplierPO();
+            BeanUtils.copyProperties(supplierBO, calculationBatchSupplierPO);
+
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.eq("supplier_id",supplierBO.getSupplierId());
+            wrapper.eq("is_active",true);
+            List<CalculationBatchSupplierPO> cs = calculationBatchSupplierMapper.selectList(wrapper);
+
+            if(cs!=null && cs.size()>0){
+                calculationBatchSupplierPO.setId(cs.get(0).getId());
+                calculationBatchSupplierMapper.updateById(calculationBatchSupplierPO);
+            }else{
+                calculationBatchSupplierMapper.insert(calculationBatchSupplierPO);
+            }
+            supplierNumber.add(supplierBO.getSupplierId());
         }
     }
 

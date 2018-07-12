@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.salarymanagement.entity.po.PrBatchExcelMapPO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,5 +17,6 @@ public interface PrBatchExcelMapMapper extends BaseMapper<PrBatchExcelMapPO> {
 
     int updateBatchExcelMap(PrBatchExcelMapPO prBatchExcelMapPO);
 
+    int deleteBatchExcel(@Param("batchCode") String batchCode);
 
 }
