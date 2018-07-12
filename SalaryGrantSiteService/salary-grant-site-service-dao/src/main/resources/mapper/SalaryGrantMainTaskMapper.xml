@@ -285,9 +285,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t1.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and t1.approve_user_id = #{userId}
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and t1.approve_user_id = #{userId}-->
+            <!--</if>-->
             and
               t1.is_active=1
         </where>
@@ -317,9 +317,9 @@
             <if test="grantCycle != null and grantCycle != ''">
                 and t2.grant_cycle = #{grantCycle}
             </if>
-            <if test="userId != null and userId != ''">
-                and t2.approve_user_id = #{userId}
-            </if>
+            <!--<if test="userId != null and userId != ''">-->
+                <!--and t2.approve_user_id = #{userId}-->
+            <!--</if>-->
             and
               t2.task_type=1
             and

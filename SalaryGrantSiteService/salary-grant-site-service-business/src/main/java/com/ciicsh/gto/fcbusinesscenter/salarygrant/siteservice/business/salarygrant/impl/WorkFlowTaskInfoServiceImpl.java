@@ -3,7 +3,6 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantWorkFlowEnums;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.WorkFlowTaskInfoService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.WorkFlowTaskInfoMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
@@ -44,14 +43,14 @@ public class WorkFlowTaskInfoServiceImpl extends ServiceImpl<WorkFlowTaskInfoMap
         workFlowTaskInfoPO.setWorkFlowProcessId(taskCreateMsgDTO.getProcessId());
         workFlowTaskInfoPO.setWorkFlowTaskId(taskCreateMsgDTO.getTaskId());
         workFlowTaskInfoPO.setTaskCode(taskCreateMsgDTO.getMissionId());
-        workFlowTaskInfoPO.setTaskDealUserId(variables.get("taskDealUserId").toString());
-        workFlowTaskInfoPO.setTaskDealUserName(variables.get("taskDealUserName").toString());
+        workFlowTaskInfoPO.setTaskDealUserId(String.valueOf(variables.get("taskDealUserId")));
+        workFlowTaskInfoPO.setTaskDealUserName(String.valueOf(variables.get("taskDealUserName")));
         workFlowTaskInfoPO.setTaskDealTime(new Date());
-        workFlowTaskInfoPO.setTaskDealOperation(variables.get("taskDealOperation").toString());
-        workFlowTaskInfoPO.setApprovedOpinion(variables.get("approvedOpinion").toString());
-        workFlowTaskInfoPO.setCreatedBy(variables.get("taskDealUserId").toString());
+        workFlowTaskInfoPO.setTaskDealOperation(String.valueOf(variables.get("action")));
+        workFlowTaskInfoPO.setApprovedOpinion(String.valueOf(variables.get("approvedOpinion")));
+        workFlowTaskInfoPO.setCreatedBy(String.valueOf(variables.get("taskDealUserId")));
+        workFlowTaskInfoPO.setWorkFlowTaskType(String.valueOf(variables.get("workFlowTaskType")));
         workFlowTaskInfoPO.setCreatedTime(new Date());
-        workFlowTaskInfoPO.setWorkFlowTaskType(SalaryGrantWorkFlowEnums.Role.OPERATOR.getName());
         workFlowTaskInfoMapper.insert(workFlowTaskInfoPO);
     }
 
