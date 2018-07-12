@@ -146,6 +146,10 @@ public class TaskSubSupplierDTO {
      * 账户类型(00:独立户,01:大库)
      */
     private String accountType;
+    /**
+     * 申报账户(中文)
+     */
+    private String declareAccountName;
 
     public Long getId() {
         return id;
@@ -411,6 +415,14 @@ public class TaskSubSupplierDTO {
         this.mainIds = mainIds;
     }
 
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
+    }
+
     @Override
     public String toString() {
         return "TaskSubSupplierDTO{" +
@@ -447,6 +459,7 @@ public class TaskSubSupplierDTO {
                 ", managerNo='" + managerNo + '\'' +
                 ", isCombined=" + isCombined +
                 ", accountType='" + accountType + '\'' +
+                ", declareAccountName='" + declareAccountName + '\'' +
                 '}';
     }
 }

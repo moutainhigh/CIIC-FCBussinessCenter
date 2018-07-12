@@ -77,7 +77,7 @@ public class CommonController extends BaseController{
 
             //合计（税前扣除项目）= 基本养老保险费 + 基本医疗保险费 + 失业保险费 + 住房公积金 + 财产原值(空) + 允许扣除的税费 + 其他（税前扣除项目）{其它扣除 + 商业保险 + 免税津贴 + 企业年金个人部分}
             BigDecimal deductTotal = BigDecimal.ZERO;
-            deductTotal.add(deductRetirementInsurance).add(deductMedicalInsurance).add(deductDlenessInsurance)
+            deductTotal = deductTotal.add(deductRetirementInsurance).add(deductMedicalInsurance).add(deductDlenessInsurance)
                         .add(deductHouseFund).add(deductTakeoff).add(others).add(businessHealthInsurance)
                         .add(dutyFreeAllowance).add(annuity);
 

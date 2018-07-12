@@ -68,8 +68,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubDeclarePO());
         //判断是否包含申报账户条件
-        if (StrKit.isNotEmpty(requestForTaskSubDeclare.getDeclareAccount())) {
-            wrapper.andNew().like("declare_account", requestForTaskSubDeclare.getDeclareAccount());
+        if (StrKit.isNotEmpty(requestForTaskSubDeclare.getDeclareAccountName())) {
+            wrapper.andNew().like("declare_account_name", requestForTaskSubDeclare.getDeclareAccountName());
         }
         //管理方名称
         Optional.ofNullable(requestForTaskSubDeclare.getManagerNos()).ifPresent(managerNos -> {

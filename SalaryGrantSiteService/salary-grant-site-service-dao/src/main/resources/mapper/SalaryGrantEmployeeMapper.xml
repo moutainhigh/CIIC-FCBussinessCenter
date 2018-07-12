@@ -324,6 +324,7 @@
         select
         t.salary_grant_employee_id   salaryGrantEmployeeId,
         t.employee_id                employeeId           ,
+        t.company_id                 companyId ,
         t.grant_account_code         grantAccountCode     ,
         t.grant_account_name         grantAccountName     ,
         t.payment_amount             paymentAmount        ,

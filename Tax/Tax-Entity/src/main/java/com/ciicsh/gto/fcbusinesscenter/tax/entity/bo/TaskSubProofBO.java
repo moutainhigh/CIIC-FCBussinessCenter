@@ -126,6 +126,11 @@ public class TaskSubProofBO {
      */
     private String modifiedByDisplayName;
 
+    /**
+     * 申报账户(中文)
+     */
+    private String declareAccountName;
+
     public Long getId() {
         return id;
     }
@@ -318,6 +323,14 @@ public class TaskSubProofBO {
         this.modifiedByDisplayName = modifiedByDisplayName;
     }
 
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -342,9 +355,10 @@ public class TaskSubProofBO {
                 ", period=" + period +
                 ", taskType='" + taskType + '\'' +
                 ", isCombined=" + isCombined +
-                ", managerNames=" + Arrays.toString(managerNos) +
+                ", managerNos=" + Arrays.toString(managerNos) +
                 ", createdByDisplayName='" + createdByDisplayName + '\'' +
                 ", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
+                ", declareAccountName='" + declareAccountName + '\'' +
                 '}';
     }
 }

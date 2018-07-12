@@ -10,11 +10,9 @@ import com.ciicsh.gto.companycenter.webcommandservice.api.dto.EmployeeGrantRuleD
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.CmyFcBankCardRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmployeeGrantRuleRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.CmyFcBankCardResponseDTO;
-import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.CmyFcCycleRuleResponseDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.CycleRuleResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.EmployeeBankcardDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.PayrollCalcResultDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantRuleDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
 import com.ciicsh.gto.settlementcenter.gathering.queryapi.ExchangeProxy;
 import org.junit.Test;
@@ -62,19 +60,26 @@ public class SalaryGrantTaskProcessServiceTest {
     @Test
     public void toClosing(){
         ClosingMsg closingMsg = new ClosingMsg();
-        closingMsg.setBatchCode("GL1800255_201805_0000000329");
+        /*closingMsg.setBatchCode("GL1800255_201805_0000000329");
         closingMsg.setBatchType(1);
-        closingMsg.setVersion(11);
+        closingMsg.setVersion(11);*/
+        /*closingMsg.setBatchCode("GL1800255_201807_0000000692");
+        closingMsg.setBatchType(1);
+        closingMsg.setVersion(1);*/
+        closingMsg.setBatchCode("GL1800255_201807_0000000700");
+        closingMsg.setBatchType(1);
+        closingMsg.setVersion(9);
         salaryGrantTaskProcessService.toClosing(closingMsg);
     }
 
     @Test
     public void getCycleRule(){
         Integer cycleRuleId = 43;
-        com.ciicsh.common.entity.JsonResult<CmyFcCycleRuleResponseDTO> cmyFcCycleRuleResponseDTOResult = cycleRuleProxy.selectById(String.valueOf(cycleRuleId));
+        com.ciicsh.common.entity.JsonResult<CycleRuleResponseDTO> cmyFcCycleRuleResponseDTOResult = cycleRuleProxy.selectById(String.valueOf(cycleRuleId));
         if(!ObjectUtils.isEmpty(cmyFcCycleRuleResponseDTOResult.getData())){
-            CmyFcCycleRuleResponseDTO cmyFcCycleRuleResponseDTO = cmyFcCycleRuleResponseDTOResult.getData();
-            System.out.println("salary_day_date:" + cmyFcCycleRuleResponseDTO.getSalaryDayDate()); //31
+            CycleRuleResponseDTO cycleRuleResponseDTO = cmyFcCycleRuleResponseDTOResult.getData();
+            System.out.println("salary_day_date:" + cycleRuleResponseDTO.getSalaryDayDate()); //31
+            System.out.println("salary_day_time:" + cycleRuleResponseDTO.getSalaryDayTime());
         }
     }
 
@@ -120,5 +125,4 @@ public class SalaryGrantTaskProcessServiceTest {
         BigDecimal exchange = ExchangeManager.exchange(Currencies.USD,Currencies.CNY);
         System.out.println("exchange_USD:" + exchange); //6.6157
     }
-
 }
