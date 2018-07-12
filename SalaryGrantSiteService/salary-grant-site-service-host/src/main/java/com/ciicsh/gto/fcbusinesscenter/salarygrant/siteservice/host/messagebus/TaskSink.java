@@ -15,7 +15,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface TaskSink {
-    @Input(MsgConstants.COMMON_TASKSERVICE_TASK_COMPLETE)
+    String COMMON_TASKSERVICE_TASK_COMPLETE = "common_taskservice_task_complete-channel";
+    @Input(COMMON_TASKSERVICE_TASK_COMPLETE)
     MessageChannel commonTaskServiceTaskComplete();
 
     @Input(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
@@ -31,25 +32,29 @@ public interface TaskSink {
     /**
      * 创建薪资发放本地本币任务单LTB工作流TOPIC
      */
-    @Input(MsgConstants.FC.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
+    String PAYROLL_LOCAL_DOMESTIC_CURRENCY = "common_taskservice_payroll_local_domestic_currency-channel";
+    @Input(PAYROLL_LOCAL_DOMESTIC_CURRENCY)
     MessageChannel salaryGrantSubTaskLTBCreateWorkFlow();
 
     /**
      * 创建薪资发放本地外币任务单LTW工作流TOPIC
      */
-    @Input(MsgConstants.FC.PAYROLL_LOCAL_FOREIGN_CURRENCY)
+    String PAYROLL_LOCAL_FOREIGN_CURRENCY = "common_taskservice_payroll_local_foreign_currency-channel";
+    @Input(PAYROLL_LOCAL_FOREIGN_CURRENCY)
     MessageChannel salaryGrantSubTaskLTWCreateWorkFlow();
 
     /**
      * 创建薪资发放外地任务单ST工作流TOPIC
      */
-    @Input(MsgConstants.FC.PAYROLL_NONLOCAL)
+    String PAYROLL_NONLOCAL = "common_taskservice_payroll_nonlocal-channel";
+    @Input(PAYROLL_NONLOCAL)
     MessageChannel salaryGrantSubTaskSTACreateWorkFlow();
 
     /**
      * 创建供应商支付任务单SPT工作流TOPIC
      */
-    @Input(MsgConstants.FC.SUPPLIER_PAYMENT)
+    String SUPPLIER_PAYMENT = "common_taskservice_supplier_payment-channel";
+    @Input(SUPPLIER_PAYMENT)
     MessageChannel salaryGrantSupplierPaymentTaskCreateWorkFlow();
 
     /**
