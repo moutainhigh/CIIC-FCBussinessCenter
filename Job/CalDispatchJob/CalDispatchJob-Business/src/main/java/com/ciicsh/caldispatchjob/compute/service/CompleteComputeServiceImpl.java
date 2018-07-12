@@ -282,6 +282,7 @@ public class CompleteComputeServiceImpl {
         }
         logger.info("公司编号：" + companyId);
         if(item != null) {
+            basicDBObject.put("联系电话", item.getMobile()); //获取雇员联系电话
             List<FcEmployeeResponseDTO.PersonalTaxInfo> taxInfos = item.getPersonalTaxInfos();
             if(taxInfos != null && taxInfos.size() > 0) { // 个税信息处理
                 FcEmployeeResponseDTO.PersonalTaxInfo taxInfo = taxInfos.get(0);
