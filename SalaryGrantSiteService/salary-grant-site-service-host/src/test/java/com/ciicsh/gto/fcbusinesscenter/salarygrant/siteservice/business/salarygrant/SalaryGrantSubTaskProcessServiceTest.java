@@ -24,12 +24,12 @@ public class SalaryGrantSubTaskProcessServiceTest {
     @Test
     public void toSubmitMainTask(){
         SalaryGrantMainTaskPO salaryGrantMainTaskPO = new SalaryGrantMainTaskPO();
-        salaryGrantMainTaskPO.setSalaryGrantMainTaskCode("SGT18070200000000016");
+        salaryGrantMainTaskPO.setSalaryGrantMainTaskCode("SGT18071100000000012");
         salaryGrantMainTaskPO.setManagementId("GL1800255");
         salaryGrantMainTaskPO.setManagementName("fc管理方1");
-        salaryGrantMainTaskPO.setBatchCode("GL1800255_201805_0000000329");
-        salaryGrantMainTaskPO.setGrantCycle("201805");
-        salaryGrantMainTaskPO.setGrantDate("20180531");
+        salaryGrantMainTaskPO.setBatchCode("GL1800255_201807_0000000700");
+        salaryGrantMainTaskPO.setGrantCycle("201807");
+        salaryGrantMainTaskPO.setGrantDate("20180701");
         salaryGrantMainTaskPO.setGrantTime(1);
         salaryGrantMainTaskPO.setGrantType(1);
         salaryGrantMainTaskPO.setAdvance(false);
@@ -41,12 +41,12 @@ public class SalaryGrantSubTaskProcessServiceTest {
     @Test
     public void toApproveMainTask(){
         SalaryGrantMainTaskPO salaryGrantMainTaskPO = new SalaryGrantMainTaskPO();
-        salaryGrantMainTaskPO.setSalaryGrantMainTaskCode("SGT18070200000000016");
+        salaryGrantMainTaskPO.setSalaryGrantMainTaskCode("SGT18071100000000012");
         salaryGrantMainTaskPO.setManagementId("GL1800255");
         salaryGrantMainTaskPO.setManagementName("fc管理方1");
-        salaryGrantMainTaskPO.setBatchCode("GL1800255_201805_0000000329");
-        salaryGrantMainTaskPO.setGrantCycle("201805");
-        salaryGrantMainTaskPO.setGrantDate("20180531");
+        salaryGrantMainTaskPO.setBatchCode("GL1800255_201807_0000000700");
+        salaryGrantMainTaskPO.setGrantCycle("201807");
+        salaryGrantMainTaskPO.setGrantDate("20180701");
         salaryGrantMainTaskPO.setGrantTime(1);
         salaryGrantMainTaskPO.setGrantType(1);
         salaryGrantMainTaskPO.setAdvance(false);

@@ -1,12 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant;
 
 public class SalaryGrantBizConsts {
-    /** 发放服务标识：0-薪资发放*/
-    public static final Integer GRANT_SERVICE_TYPE_GRANT = 0;
-    /** 发放服务标识：1-个税*/
+    /** 发放服务标识：2-净工资*/
+    public static final Integer GRANT_SERVICE_TYPE_GRANT = 2;
+    /** 发放服务标识：1-仅个税*/
     public static final Integer GRANT_SERVICE_TYPE_TAX = 1;
-    /** 发放服务标识：2-薪资发放 + 个税*/
-    public static final Integer GRANT_SERVICE_TYPE_GRANT_AND_TAX = 2;
+    /** 发放服务标识：0-工资和税*/
+    public static final Integer GRANT_SERVICE_TYPE_GRANT_AND_TAX = 0;
     /** 国籍：中国*/
     public static final String COUNTRY_CODE_CHINA = "CN";
     /** 发放方式:1-中智上海账户*/

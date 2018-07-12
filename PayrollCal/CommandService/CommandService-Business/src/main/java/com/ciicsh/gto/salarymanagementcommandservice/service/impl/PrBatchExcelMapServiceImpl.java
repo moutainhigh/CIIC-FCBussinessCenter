@@ -31,4 +31,9 @@ public class PrBatchExcelMapServiceImpl implements PrBatchExcelMapService {
     public int update(PrBatchExcelMapPO prBatchExcelMapPO) {
         return batchExcelMapMapper.updateBatchExcelMap(prBatchExcelMapPO);
     }
+
+    @Override
+    public int deleteBatchExcel(String batchCode) {
+        return batchExcelMapMapper.deleteBatchExcel(batchCode);
+    }
 }

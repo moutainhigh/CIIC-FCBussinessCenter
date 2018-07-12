@@ -40,6 +40,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,7 +80,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Autowired
     private SalaryGrantSubTaskWorkFlowService salaryGrantSubTaskWorkFlowService;
     @Autowired
-    private SalaryGrantSupplierSubTaskService salaryGrantSupplierSubTaskService;
+    private SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
 
     /**
      * 刷新草稿状态任务单信息
@@ -97,7 +98,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             refreshList.parallelStream().forEach(x -> x.getEmpList().parallelStream().forEach(y -> {
                 System.out.println(x.getTaskCode() + " =====>   " + y.getCompanyId() + " -><- " + y.getEmployeeId());
                 SalaryGrantEmployeePO newPo = commonService.getEmployeeNewestInfo(y);
-                if (true) {
+                boolean updateResult = salaryGrantEmployeeCommandService.compareAndUpdateEmployeeNewestInfo(y, newPo);
+                if (updateResult) {
                     updateList.add(x);
                 }
             }));
@@ -355,16 +357,16 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             if (list.isEmpty()) {
                 MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
                 Result<StartProcessResponseDTO> dto =  sheetServiceProxy.startProcess(missionRequestDTO);
-                if (ResultCode.SUCCESS.code == dto.getCode()) {
-                    WorkFlowTaskInfoPO po = createTaskInfo(bo);
-                    po.setWorkFlowProcessId(dto.getObject().getProcessId());
-                    workFlowTaskInfoMapper.insert(po);
-                } else {
-                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getResult());
-                    workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getExtension());
-                }
+//                if (ResultCode.SUCCESS.code == dto.getCode()) {
+//                    WorkFlowTaskInfoPO po = createTaskInfo(bo);
+//                    po.setWorkFlowProcessId(dto.getObject().getProcessId());
+//                    workFlowTaskInfoMapper.insert(po);
+//                } else {
+//                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getResult());
+//                    workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getExtension());
+//                }
             } else {
-                sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo, list.get(0)));
+                sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), SalaryGrantWorkFlowEnums.Role.OPERATOR.getName(), bo, list.get(0)));
             }
         }
         return workFlowResultBO;
@@ -387,7 +389,9 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
         }
         List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
-        sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_APPROVAL.getAction(), bo, list.get(0)));
+        if (!list.isEmpty()) {
+            sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_APPROVAL.getAction(), SalaryGrantWorkFlowEnums.Role.AUDIT.getName(), bo, list.get(0)));
+        }
     }
 
     /**
@@ -407,23 +411,27 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
         }
         List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
-        sheetServiceProxy.completeTask( createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_REJECT.getAction(), bo, list.get(0)));
+        if (!list.isEmpty()) {
+            sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_REJECT.getAction(), SalaryGrantWorkFlowEnums.Role.AUDIT.getName(), bo, list.get(0)));
+        }
     }
 
     private MissionRequestDTO createMissionDto(String action, SalaryGrantTaskBO bo) {
         MissionRequestDTO missionRequestDTO = BeanUtils.instantiate(MissionRequestDTO.class);
         Map variables = new HashMap<>();
         variables.put("action", action);
-        variables.put("taskDealOperation", action);
+        variables.put("taskDealTime", new Date());
         variables.put("taskDealUserId", bo.getUserId());
         variables.put("taskDealUserName", bo.getUserName());
+        variables.put("approvedOpinion", bo.getApprovedOpinion());
+        variables.put("workFlowTaskType", SalaryGrantWorkFlowEnums.Role.OPERATOR.getName());
         missionRequestDTO.setVariables(variables);
         missionRequestDTO.setMissionId(bo.getTaskCode());
         missionRequestDTO.setProcessDefinitionKey(getDefinitionKey(bo.getTaskCode().substring(0, 3)));
         return missionRequestDTO;
     }
 
-    private TaskRequestDTO createTaskRequestDTO(String action, SalaryGrantTaskBO task, WorkFlowTaskInfoBO bo) {
+    private TaskRequestDTO createTaskRequestDTO(String action, String role, SalaryGrantTaskBO task, WorkFlowTaskInfoBO bo) {
         TaskRequestDTO taskRequestDTO = BeanUtils.instantiate(TaskRequestDTO.class);
         Map variables = new HashMap<>();
         variables.put("action", action);
@@ -431,6 +439,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         variables.put("taskDealUserId", task.getUserId());
         variables.put("taskDealUserName", task.getUserName());
         variables.put("approvedOpinion", task.getApprovedOpinion());
+        variables.put("workFlowTaskType", role);
         taskRequestDTO.setVariables(variables);
         taskRequestDTO.setAssignee(task.getUserId());
         taskRequestDTO.setTaskId(bo.getWorkFlowTaskId());
@@ -570,13 +579,13 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     /**
      * 每天晚上8点执行任务
      */
-    @Scheduled(cron = "0 0 20 * * ?")
-    //每30秒执行一次
-//    @Scheduled(cron = "*/30 * * * * ?")
+//    @Scheduled(cron = "0 0 20 * * ?")
+    //每3分钟执行一次
+    @Scheduled(cron = "0 0/3 * * * ?")
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void queryForPayment() {
-//        System.out.println("薪资发放定时任务 启动");
+//        System.out.println("薪资发放定时任务 启动时间: " + LocalDateTime.now());
 
         //获取次日日期
         String grantDate = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -662,6 +671,6 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             }
         }
 
-//        System.out.println("薪资发放定时任务 完成");
+//        System.out.println("薪资发放定时任务 完成时间: " + LocalDateTime.now());
     }
 }

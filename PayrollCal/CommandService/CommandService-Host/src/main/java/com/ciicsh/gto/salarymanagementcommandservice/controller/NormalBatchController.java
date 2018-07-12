@@ -659,6 +659,16 @@ public class NormalBatchController {
 
     }
 
+    @PostMapping("api/deleteBatchExcel")
+    public JsonResult deleteBatchExcel(@RequestParam String batchCode){
+        int rowAffected = excelMapService.deleteBatchExcel(batchCode);
+        if(rowAffected > 0){
+            return JsonResult.success("删除成功");
+        }else {
+            return JsonResult.faultMessage("删除失败");
+        }
+    }
+
     @GetMapping("api/checkMapping")
     public JsonResult checkMapping(@RequestParam String batchCode){
         PrBatchExcelMapPO batchExcelMapPO = excelMapService.getBatchExcelMap(batchCode);
