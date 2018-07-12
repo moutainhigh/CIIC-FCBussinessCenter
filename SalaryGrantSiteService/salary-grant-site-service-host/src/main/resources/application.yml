@@ -108,61 +108,71 @@ spring:
           brokers: ${kafka.brokers}
           zk-nodes: ${kafka.zk-nodes}
           autoAddPartitions: true
+#        configuration:
+#            auto:
+#               offset:
+#                  reset: latest
       bindings:
         sleuth:
           destination: sleuth-itdev # topic name
         sg_compute-close-output-channel:
           destination: fc_compute_close # 关帐
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
         sg_compute-unclose-output-channel:
           destination: fc_compute_unclose # 取消关帐
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
         pay-apply-pay-status-stream-input-channel:
           destination: pay-apply-pay-status-stream # 结算中心支付结果
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
         common_taskservice_payroll_main-channel:
           destination: common_taskservice_payroll_main # 本地
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
         common_taskservice_payroll_nonlocal-channel:
           destination: common_taskservice_payroll_nonlocal # 外地
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
         common_taskservice_payroll_local_domestic_currency-channel:
           destination: common_taskservice_payroll_local_domestic_currency # 本地人民币
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
         common_taskservice_payroll_local_foreign_currency-channel:
           destination: common_taskservice_payroll_local_foreign_currency # 本地外币
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
         common_taskservice_supplier_payment-channel:
           destination: common_taskservice_supplier_payment # 供应商
           content-type: application/json
-          group: dev
+          group: ${spring.application.name}
           consumer:
             partitioned: true
 #        common_taskservice_process_complete:
 #          destination: common_taskservice_process_complete # 流程结束
 #          content-type: application/json
-#          group: dev
+#          group: ${spring.application.name}
+#          consumer:
+#            partitioned: true
+#        common-taskservice-process-complete:
+#          destination: common_taskservice_process_complete
+#          group: ${spring.application.name}
+#          content-type: application/json
 #          consumer:
 #            partitioned: true
 #        common_taskservice_task_complete-channel:

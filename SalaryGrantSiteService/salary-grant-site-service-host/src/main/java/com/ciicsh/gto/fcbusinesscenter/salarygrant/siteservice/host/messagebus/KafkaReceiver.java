@@ -116,9 +116,9 @@ public class KafkaReceiver {
     @StreamListener(TaskSink.COMMON_TASKSERVICE_TASK_COMPLETE)
     public void commonTaskServiceTaskComplete(Message<TaskCompleteMsgDTO> message) {
         try {
-            //TaskCompleteMsgDTO  taskCompleteMsgDTO = message.getPayload();
+            TaskCompleteMsgDTO  taskCompleteMsgDTO = message.getPayload();
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 ").setContent(""));
-            //workFlowTaskInfoService.taskComplete(taskCompleteMsgDTO);
+            workFlowTaskInfoService.taskComplete(taskCompleteMsgDTO);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 --> exception").setContent(e.getMessage()));
         }
@@ -127,17 +127,13 @@ public class KafkaReceiver {
     /**
      * 流程结束消息
      * @param message
-     *
+     */
     @StreamListener(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
     public void commonTaskServiceProcessComplete(Message<ProcessCompleteMsgDTO> message) {
         ProcessCompleteMsgDTO msgDto = message.getPayload();
         if (checkDefinitionKey(msgDto.getProcessDefinitionKey())) {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("流程结束 ").setContent("TEST"));
         }
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("流程结束 ").setContent(""));
-    }*/
-     @StreamListener(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
-    public void commonTaskServiceProcessComplete(Object message) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("流程结束 ").setContent(""));
     }
 

@@ -40,7 +40,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -357,14 +356,14 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
             if (list.isEmpty()) {
                 MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
                 Result<StartProcessResponseDTO> dto =  sheetServiceProxy.startProcess(missionRequestDTO);
-//                if (ResultCode.SUCCESS.code == dto.getCode()) {
-//                    WorkFlowTaskInfoPO po = createTaskInfo(bo);
-//                    po.setWorkFlowProcessId(dto.getObject().getProcessId());
-//                    workFlowTaskInfoMapper.insert(po);
-//                } else {
-//                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getResult());
-//                    workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getExtension());
-//                }
+                if (ResultCode.SUCCESS.code == dto.getCode()) {
+                    WorkFlowTaskInfoPO po = createTaskInfo(bo);
+                    po.setWorkFlowProcessId(dto.getObject().getProcessId());
+                    //workFlowTaskInfoMapper.insert(po);
+                } else {
+                    workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getResult());
+                    workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.EXCEPTION.getExtension());
+                }
             } else {
                 sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), SalaryGrantWorkFlowEnums.Role.OPERATOR.getName(), bo, list.get(0)));
             }
