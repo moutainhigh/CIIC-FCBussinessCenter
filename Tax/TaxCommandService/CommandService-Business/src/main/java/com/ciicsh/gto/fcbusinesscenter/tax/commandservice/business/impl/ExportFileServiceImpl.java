@@ -686,6 +686,10 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             TaskSubDeclarePO taskSubDeclarePO = taskSubDeclareService.queryTaskSubDeclaresById(subDeclareId);
             //根据申报子任务ID查询申报明细
             List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOListCurrent = taskSubDeclareDetailService.querySubDeclareDetailList(subDeclareId);
+            //雇员信息根据雇员编号去重
+            List<TaskSubDeclareDetailPO> uniqueListCurrent = taskSubDeclareDetailPOListCurrent.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getEmployeeNo()))), ArrayList::new));
+            //筛选出当前雇员编号集合
+            List<String> empNoListCurrent  = uniqueListCurrent.stream().map(item -> item.getEmployeeNo()).collect(Collectors.toList());
             EntityWrapper wrapper = new EntityWrapper();
             wrapper.setEntity(new TaskSubDeclareDetailPO());
             //申报账户
@@ -694,8 +698,10 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             wrapper.and("period = {0} ", taskSubDeclarePO.getPeriod().minusMonths(1));
             //根据申报账户和个税期间，查询出上个月的申报人员
             List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOListLast = taskSubDeclareDetailService.selectList(wrapper);
+            //雇员信息根据雇员编号去重
+            List<TaskSubDeclareDetailPO> uniqueListLast = taskSubDeclareDetailPOListLast.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getEmployeeNo()))), ArrayList::new));
             //筛选出离职人员(即上个月有的申报人员，申报ID查询出来的结果没有的)
-            List<TaskSubDeclareDetailPO> quitTaskSubDeclareDetailList = taskSubDeclareDetailPOListLast.stream().filter(item -> !taskSubDeclareDetailPOListCurrent.contains(item)).collect(Collectors.toList());
+            List<TaskSubDeclareDetailPO> quitTaskSubDeclareDetailList = uniqueListLast.stream().filter(item -> !empNoListCurrent.contains(item.getEmployeeNo())).collect(Collectors.toList());
             //申报明细计算批次明细ID
             List<Long> taskSubDeclareDetailIdList = quitTaskSubDeclareDetailList.stream().map(TaskSubDeclareDetailPO::getCalculationBatchDetailId).collect(Collectors.toList());
             //获取雇员个税信息

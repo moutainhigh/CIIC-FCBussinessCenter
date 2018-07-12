@@ -210,7 +210,7 @@ public class ExportAboutTaxList extends BaseService {
             //应纳税所得额小计
             BigDecimal incomeForTaxSmall = new BigDecimal(0);
             for(EmployeeInfoBatchPO employeeInfoBatchPO: employeeInfoBatchPOS){
-                CalculationBatchDetailPO calculationBatchDetailPO = calculationBatchDetailPOList.stream().filter(item -> item.getId().equals(employeeInfoBatchPO.getCalBatchDetailId())).findAny().get();
+                CalculationBatchDetailPO calculationBatchDetailPO = calculationBatchDetailPOList.stream().filter(item -> item.getId().equals(employeeInfoBatchPO.getCalBatchDetailId())).findFirst().orElse(new CalculationBatchDetailPO());
                 CalculationBatchAccountPO calculationBatchAccountPO = accountMap.get(calculationBatchDetailPO.getDeclareAccount());
                 HSSFRow row = sheet.getRow(rowIndex);
                 if (null == row) {
@@ -227,8 +227,8 @@ public class ExportAboutTaxList extends BaseService {
                 if (null == cellB) {
                     cellB = row.createCell(1);
                 }
-                periodSmall = DateTimeFormatter.ofPattern("yyyyMM").format(calculationBatchDetailPO.getPeriod());
-                cellB.setCellValue(DateTimeFormatter.ofPattern("yyyyMM").format(calculationBatchDetailPO.getPeriod()));
+                periodSmall = calculationBatchDetailPO.getPeriod() == null ? "" : DateTimeFormatter.ofPattern("yyyyMM").format(calculationBatchDetailPO.getPeriod());
+                cellB.setCellValue(periodSmall);
                 //公司编号-C列
                 HSSFCell cellC = row.getCell(2);
                 if (null == cellC) {
@@ -256,20 +256,22 @@ public class ExportAboutTaxList extends BaseService {
                 //独立库金额
                 String amountIndependent = "0";
                 //判断是否是大库
-                if(SOURCE_BIG.equals(calculationBatchAccountPO.getSource())){
-                    //判断是中智公司还是财务公司
-                    List<String> ciicList = Arrays.asList(CIIC_COMPANY).stream().filter(item -> item.contains(calculationBatchAccountPO.getAccountName())).collect(Collectors.toList());
-                    List<String> financeList = Arrays.asList(FINANCE_COMPANY).stream().filter(item -> item.contains(calculationBatchAccountPO.getAccountName())).collect(Collectors.toList());
-                    if(ciicList.size() > 0){
-                        amountCiic = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
-                        ciicAmountMoneySmall = ciicAmountMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
-                    }else if(financeList.size() > 0){
-                        amountFinance = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
-                        financeMoneySmall = financeMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
+                if(calculationBatchAccountPO != null && calculationBatchAccountPO.getSource() != null){
+                    if(calculationBatchAccountPO.getSource().equals(SOURCE_BIG)){
+                        //判断是中智公司还是财务公司
+                        List<String> ciicList = Arrays.asList(CIIC_COMPANY).stream().filter(item -> item.contains(calculationBatchAccountPO.getAccountName())).collect(Collectors.toList());
+                        List<String> financeList = Arrays.asList(FINANCE_COMPANY).stream().filter(item -> item.contains(calculationBatchAccountPO.getAccountName())).collect(Collectors.toList());
+                        if(ciicList.size() > 0){
+                            amountCiic = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
+                            ciicAmountMoneySmall = ciicAmountMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
+                        }else if(financeList.size() > 0){
+                            amountFinance = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
+                            financeMoneySmall = financeMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
+                        }
+                    }else{
+                        amountIndependent = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
+                        amountIndependentMoneySmall = amountIndependentMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
                     }
-                }else{
-                    amountIndependent = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
-                    amountIndependentMoneySmall = amountIndependentMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
                 }
                 //扣个人所得税(中智公司)-G列
                 HSSFCell cellG = row.getCell(6);
