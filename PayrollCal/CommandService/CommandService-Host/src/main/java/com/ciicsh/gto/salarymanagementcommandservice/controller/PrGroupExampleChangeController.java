@@ -2,7 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.*;
-import com.ciicsh.gto.salarymanagementcommandservice.service.GroupExampleChangeService;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupExampleChangeService;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.CmyFcConfigureTaskTranslator;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/salaryManagement")
-public class GroupExampleChangeController {
+public class PrGroupExampleChangeController {
 
     @Autowired
-    private GroupExampleChangeService groupExampleChangeService;
+    private PrGroupExampleChangeService groupExampleChangeService;
 
     @PostMapping(value = "/selectPrGroupExampleList")
     public JsonResult selectPrGroupExampleList(@RequestParam(required = false, defaultValue = "1") Integer pageNum,

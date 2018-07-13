@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Mapper
 @Component
-public interface GroupExampleChangeMapper extends BaseMapper<CmyFcConfigureTaskPO> {
+public interface PrGroupExampleChangeMapper extends BaseMapper<CmyFcConfigureTaskPO> {
 
     /**
      * 获取薪资组实例变更任务单列表

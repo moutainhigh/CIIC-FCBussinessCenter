@@ -9,7 +9,7 @@ import com.github.pagehelper.PageInfo;
  * @createTime 2018-07-11 16:42
  * @description 薪资组实例变更任务单Service
  */
-public interface GroupExampleChangeService {
+public interface PrGroupExampleChangeService {
 
     /**
      * 获取薪资组实例变更任务单列表
