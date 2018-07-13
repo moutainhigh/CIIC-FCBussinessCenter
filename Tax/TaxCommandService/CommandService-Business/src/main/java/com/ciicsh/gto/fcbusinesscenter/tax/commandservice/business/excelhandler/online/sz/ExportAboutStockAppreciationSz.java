@@ -68,7 +68,7 @@ public class ExportAboutStockAppreciationSz extends BaseService{
      */
     public void handleStockAppreciationWB(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         //根据股权收入类型,筛选出股票期权的股权收入
-        List<EmployeeInfoBatchPO> employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKAPPRECIATION.getCode().equals(item.getStockType())).collect(Collectors.toList());
+        List<EmployeeInfoBatchPO> employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKAPPRECIATION.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //在相应的单元格进行赋值
