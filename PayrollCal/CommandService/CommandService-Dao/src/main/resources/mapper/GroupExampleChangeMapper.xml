@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.GroupExampleChangeMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.CmyFcConfigureTaskPO">
+		<id column="cmy_fc_configure_task_id" property="cmyFcConfigureTaskId" />
+		<result column="management_id" property="managementId" />
+		<result column="status" property="status" />
+		<result column="type" property="type" />
+		<result column="target_id" property="targetId" />
+		<result column="upload_url" property="uploadUrl" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="modified_by" property="modifiedBy" />
+		<result column="group_code" property="groupCode" />
+		<result column="group_name" property="groupName" />
+	</resultMap>
+
+	<select id="selectPrGroupExampleList" parameterType="com.ciicsh.gto.salarymanagement.entity.po.CmyFcConfigureTaskPO" resultMap="BaseResultMap">
+		SELECT
+		  cfck.cmy_fc_configure_task_id,
+		  cfck.management_id,
+		  cfck.status,
+		  cfck.type,
+		  cfck.target_id,
+		  cfck.remark,
+		  ppg.group_code,
+		  ppg.group_name
+		FROM
+		  cmy_fc_configure_task cfck
+		  LEFT JOIN pr_payroll_group ppg
+			ON cfck.target_id = ppg.group_code
+		WHERE cfck.is_active = 1
+		  AND ppg.is_active = 1
+		  AND cfck.management_id = ppg.management_id
+		<if test="type != null">
+		  AND cfck.type = #{type}
+		</if>
+		<if test="managementId != null and managementId != ''">
+		  AND cfck.management_id = #{managementId}
+		</if>
+		<if test="groupCode != null and groupCode != ''">
+		  AND ppg.group_code = #{groupCode}
+		</if>
+		<if test="groupName != null and groupName !=''">
+		  AND ppg.group_name LIKE concat('%', #{groupName, jdbcType=VARCHAR}, '%')
+		</if>
+		ORDER BY cfck.modified_time
+	</select>
+
+	<insert id="inserTcmyFcConfigureTask" parameterType="com.ciicsh.gto.salarymanagement.entity.po.CmyFcConfigureTaskPO">
+		INSERT INTO cmy_fc_configure_task (
+		  cmy_fc_configure_task_id,
+		  management_id,
+		  status,
+		  type,
+		  target_id,
+		  upload_url,
+		  remark,
+		  created_by,
+		  modified_by
+		)
+		VALUES(
+		  #{cmyFcConfigureTaskId},
+		  #{managementId},
+		  #{status},
+		  #{type},
+		  #{targetId},
+		  #{uploadUrl},
+		  #{remark},
+		  #{createdBy},
+		  #{modifiedBy}
+		 )
+	</insert>
+
+</mapper>

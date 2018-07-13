@@ -1,9 +1,11 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.util.messageBus;
 
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.ConfigTaskMsgDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
+import com.ciicsh.gto.salarymanagementcommandservice.service.GroupExampleChangeService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupTemplateService;
 import org.slf4j.Logger;
@@ -26,6 +28,9 @@ public class PayrollReceiver {
 
     @Autowired
     private PrGroupTemplateService prGroupTemplateService;
+
+    @Autowired
+    private GroupExampleChangeService groupExampleChangeService;
 
     @Autowired
     private PrGroupService prGroupService;
@@ -51,5 +56,11 @@ public class PayrollReceiver {
                 logger.warn(be.getMessage());
             }
         });
+    }
+
+    @StreamListener(PayCalSink.PAYROLL_GROUP_CHANGE_INPUT)
+    public void payrollChangeReceiveHandler(ConfigTaskMsgDTO taskMsgDTO){
+        groupExampleChangeService.filterToSave(taskMsgDTO);
+
     }
 }
