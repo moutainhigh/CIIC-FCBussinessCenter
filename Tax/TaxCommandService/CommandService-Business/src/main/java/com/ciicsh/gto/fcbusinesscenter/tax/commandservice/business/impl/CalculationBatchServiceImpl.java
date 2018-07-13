@@ -775,9 +775,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                 }
             }
             if(StrKit.isNotEmpty(calculationBatchAccountPO.getSource())){
-                if(calculationBatchAccountPO.getSource().trim().equals("0")){
+                if(calculationBatchAccountPO.getSource().trim().equals("1")){
                     accountType = "01";
-                }else{
+                }else if(calculationBatchAccountPO.getSource().trim().equals("2")){
                     accountType = "00";
                 }
             }

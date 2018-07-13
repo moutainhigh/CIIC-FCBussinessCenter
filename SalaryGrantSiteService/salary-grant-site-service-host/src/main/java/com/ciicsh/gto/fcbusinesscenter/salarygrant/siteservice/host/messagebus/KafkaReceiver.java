@@ -62,7 +62,7 @@ public class KafkaReceiver {
      * @param message
      */
     @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CREATE_TASK)
-    public void salaryGrantMainTaskCreateTask(Message<ClosingMsg> message){
+    public void salaryGrantMainTaskCreateTask(Message<ClosingMsg> message) {
         ClosingMsg closingMsg = message.getPayload();
         try{
             if(!ObjectUtils.isEmpty(closingMsg)){
@@ -89,22 +89,22 @@ public class KafkaReceiver {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getType(), message);
     }
 
-    @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
+    @StreamListener(TaskSink.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
     public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTB.getType(), message);
     }
 
-    @StreamListener(MsgConstants.FC.PAYROLL_LOCAL_FOREIGN_CURRENCY)
+    @StreamListener(TaskSink.PAYROLL_LOCAL_FOREIGN_CURRENCY)
     public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTW.getType(), message);
     }
 
-    @StreamListener(MsgConstants.FC.PAYROLL_NONLOCAL)
+    @StreamListener(TaskSink.PAYROLL_NONLOCAL)
     public void salaryGrantSubTaskSTACreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.STA.getType(), message);
     }
 
-    @StreamListener(MsgConstants.FC.SUPPLIER_PAYMENT)
+    @StreamListener(TaskSink.SUPPLIER_PAYMENT)
     public void salaryGrantSupplierPaymentTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
         this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SPT.getType(), message);
     }
@@ -113,11 +113,11 @@ public class KafkaReceiver {
      * 接收任务完成消息
      * @param message
      */
-    @StreamListener(MsgConstants.COMMON_TASKSERVICE_TASK_COMPLETE)
+    @StreamListener(TaskSink.COMMON_TASKSERVICE_TASK_COMPLETE)
     public void commonTaskServiceTaskComplete(Message<TaskCompleteMsgDTO> message) {
         try {
             TaskCompleteMsgDTO  taskCompleteMsgDTO = message.getPayload();
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 ").setContent(JSON.toJSONString(taskCompleteMsgDTO)));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 ").setContent(""));
             workFlowTaskInfoService.taskComplete(taskCompleteMsgDTO);
         } catch (Exception e) {
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 --> exception").setContent(e.getMessage()));
@@ -130,12 +130,11 @@ public class KafkaReceiver {
      */
     @StreamListener(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
     public void commonTaskServiceProcessComplete(Message<ProcessCompleteMsgDTO> message) {
-        ProcessCompleteMsgDTO processCompleteMsgDTO = message.getPayload();
-        //todo 把消息返回的任务信息插入到任务日志表中
-        String returnInfo = "processId="+processCompleteMsgDTO.getProcessId()+
-                ",missionId="+processCompleteMsgDTO.getMissionId()+
-                ",processDefinitionKey="+processCompleteMsgDTO.getProcessDefinitionKey();
-        //logger.info("收到流程结束消息: " + returnInfo);
+        ProcessCompleteMsgDTO msgDto = message.getPayload();
+        if (checkDefinitionKey(msgDto.getProcessDefinitionKey())) {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("流程结束 ").setContent("TEST"));
+        }
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("流程结束 ").setContent(""));
     }
 
     /**
@@ -144,7 +143,7 @@ public class KafkaReceiver {
      */
     @Transactional(rollbackFor = Exception.class)
     @StreamListener(TaskSink.SALARY_GRANT_REFUND)
-    public void salaryGrantRefundProcess(Message<PayApplyReturnTicketDTO> message){
+    public void salaryGrantRefundProcess(Message<PayApplyReturnTicketDTO> message) {
         PayApplyReturnTicketDTO payApplyReturnTicketDTO = message.getPayload();
         if (!ObjectUtils.isEmpty(payApplyReturnTicketDTO)) {
             //发放批次号
@@ -199,14 +198,19 @@ public class KafkaReceiver {
     private void handleMessage(String action, Message<TaskCreateMsgDTO> message) {
         try {
             TaskCreateMsgDTO taskMsgDTO = message.getPayload();
-            if (workFlowTaskInfoService.selectWfTaskInfoByTaskId(taskMsgDTO.getTaskId()) == 0) {
-                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle(action + " --> start").setContent(JSON.toJSONString(taskMsgDTO)));
+            if (!ObjectUtils.isEmpty(taskMsgDTO) && workFlowTaskInfoService.selectWfTaskInfoByTaskId(taskMsgDTO.getTaskId()) ==0) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放 --> 工作流：" + action).setTitle("start").setContent(JSON.toJSONString(taskMsgDTO)));
                 workFlowTaskInfoService.createMessage(taskMsgDTO);
-                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle(action + " --> end"));
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放 --> 工作流：" + action).setTitle("end"));
             }
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle(action + " --> exception").setContent(e.getMessage()));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放 --> 工作流：" + action).setTitle("exception").setContent(e.getMessage()));
         }
+    }
+
+    private Boolean checkDefinitionKey(String key) {
+        final String definitionKey = "payroll_main,payroll_local_domestic_currency,payroll_local_foreign_currency,payroll_nonlocal,supplier_payment";
+        return definitionKey.indexOf(key) != -1;
     }
 
 }

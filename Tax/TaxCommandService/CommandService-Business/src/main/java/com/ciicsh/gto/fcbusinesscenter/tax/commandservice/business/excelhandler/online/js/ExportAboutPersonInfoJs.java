@@ -14,9 +14,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,8 +41,10 @@ public class ExportAboutPersonInfoJs extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
+            //雇员信息根据雇员编号去重
+            List<TaskSubDeclareDetailPO> unique = taskSubDeclareDetailPOList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getEmployeeNo()))), ArrayList::new));
             //根据不同的业务需要处理wb
-            this.handlePersonInfoWB(wb, taskSubDeclareDetailPOList, employeeInfoBatchPOList);
+            this.handlePersonInfoWB(wb, unique, employeeInfoBatchPOList);
         } catch (Exception e) {
             if (wb != null) {
                 try {

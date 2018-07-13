@@ -196,7 +196,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 taxInfoBO.setRestrictTotal(convert(taxInfo,"resAllAmount",Integer.class));//(限制性)被激励对象获得的限制性股票总份数
                 taxInfoBO.setRestrictPayment(convert(taxInfo,"resPayAmount",BigDecimal.class));//(限制性)被激励对象实际支付的资金总额
                 taxInfoBO.setRestrictExerciseIncome(convert(taxInfo,"resMonthlyStrikeIncome",BigDecimal.class));//(限制性)本月行权收入
-                taxInfoBO.setApplicableFormula(convert(taxInfo,"applicableFormula",String.class));//适用公式
+                taxInfoBO.setApplicableFormula(convert(taxInfo,"fitFormula",String.class));//适用公式
 
                 //服务协议
                 DBObject empAgreement = (DBObject)empInfo.get("雇员服务协议");
@@ -267,12 +267,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 });
                 agreementBO.setSupport(getBooleanFromInt(convert(taxInfo_agreement,"isSupplier",Integer.class)));//是否供应商处理
 //                agreementBO.setReceiptAccount(convert(taxInfo_agreement,"supplierAccountReceivale",String.class));//供应商收款账户
-                agreementBO.setSupportName(convert(taxInfo_agreement,"supplierName",String.class));//供应商名称
+//                agreementBO.setSupportName(convert(taxInfo_agreement,"supplierName",String.class));//供应商名称
 
                 if(agreementBO.getSupport()!=null && agreementBO.getSupport()){
                     //供应商详情
                     DBObject supplierDetail = (DBObject)taxInfo_agreement.get("supplierDetail");
-                    Integer supplierId = convert(supplierDetail,"id",Integer.class);
+                    Long supplierId = convert(supplierDetail,"id",Long.class);
                     if(supplierId!=null){
                         this.setObjectFieldsEmpty(supplierBO);
                         supplierBO.setSupplierId(supplierId.toString());

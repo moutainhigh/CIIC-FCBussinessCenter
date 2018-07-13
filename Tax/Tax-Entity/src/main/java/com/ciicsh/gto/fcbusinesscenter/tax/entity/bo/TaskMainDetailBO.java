@@ -266,7 +266,7 @@ public class TaskMainDetailBO {
     /**
      * 实际工作年限数
      */
-    private Integer workingYears;
+    private String workingYears;
     /**
      * 税延养老保险费
      */
@@ -274,11 +274,11 @@ public class TaskMainDetailBO {
     /**
      * 境内天数
      */
-    private Integer domesticDays;
+    private String domesticDays;
     /**
      * 境外天数
      */
-    private Integer overseasDays;
+    private String overseasDays;
     /**
      * 境内所得境内支付
      */
@@ -344,14 +344,6 @@ public class TaskMainDetailBO {
      */
     private BigDecimal exerciseTaxAmount;
 
-    public Integer getWorkingYears() {
-        return workingYears;
-    }
-
-    public void setWorkingYears(Integer workingYears) {
-        this.workingYears = workingYears;
-    }
-
     public BigDecimal getEndowmentInsurance() {
         return endowmentInsurance;
     }
@@ -360,19 +352,19 @@ public class TaskMainDetailBO {
         this.endowmentInsurance = endowmentInsurance;
     }
 
-    public Integer getDomesticDays() {
+    public String getDomesticDays() {
         return domesticDays;
     }
 
-    public void setDomesticDays(Integer domesticDays) {
+    public void setDomesticDays(String domesticDays) {
         this.domesticDays = domesticDays;
     }
 
-    public Integer getOverseasDays() {
+    public String getOverseasDays() {
         return overseasDays;
     }
 
-    public void setOverseasDays(Integer overseasDays) {
+    public void setOverseasDays(String overseasDays) {
         this.overseasDays = overseasDays;
     }
 
