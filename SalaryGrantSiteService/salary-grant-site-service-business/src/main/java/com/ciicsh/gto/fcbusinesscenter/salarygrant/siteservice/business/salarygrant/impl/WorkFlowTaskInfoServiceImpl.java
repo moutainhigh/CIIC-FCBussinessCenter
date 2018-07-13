@@ -82,13 +82,21 @@ public class WorkFlowTaskInfoServiceImpl extends ServiceImpl<WorkFlowTaskInfoMap
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void processComplete(ProcessCompleteMsgDTO processCompleteMsgDTO) {
-        WorkFlowTaskInfoPO po = BeanUtils.instantiate(WorkFlowTaskInfoPO.class);
+        WorkFlowTaskInfoPO workFlowTaskInfoPO = BeanUtils.instantiate(WorkFlowTaskInfoPO.class);
         Map<String, Object> variables = processCompleteMsgDTO.getVariables();
-        //po.setWorkFlowTaskId(processCompleteMsgDTO);
-        po.setTaskDealUserId(variables.get("taskDealUserId").toString());
-        po.setTaskDealUserName(variables.get("taskDealUserName").toString());
-        po.setApprovedOpinion(variables.get("approvedOpinion").toString());
-        //workFlowTaskInfoMapper.updateByTaskId(po);
+        workFlowTaskInfoPO.setProcessDefinitionKey(processCompleteMsgDTO.getProcessDefinitionKey());
+        workFlowTaskInfoPO.setWorkFlowProcessId(processCompleteMsgDTO.getProcessId());
+        //workFlowTaskInfoPO.setWorkFlowTaskId(processCompleteMsgDTO.getTaskId());
+        workFlowTaskInfoPO.setTaskCode(processCompleteMsgDTO.getMissionId());
+        workFlowTaskInfoPO.setTaskDealUserId(String.valueOf(variables.get("taskDealUserId")));
+        workFlowTaskInfoPO.setTaskDealUserName(String.valueOf(variables.get("taskDealUserName")));
+        workFlowTaskInfoPO.setTaskDealTime(new Date());
+        workFlowTaskInfoPO.setTaskDealOperation(String.valueOf(variables.get("action")));
+        workFlowTaskInfoPO.setApprovedOpinion(String.valueOf(variables.get("approvedOpinion")));
+        workFlowTaskInfoPO.setCreatedBy(String.valueOf(variables.get("taskDealUserId")));
+        workFlowTaskInfoPO.setWorkFlowTaskType(String.valueOf(variables.get("workFlowTaskType")));
+        workFlowTaskInfoPO.setCreatedTime(new Date());
+        workFlowTaskInfoMapper.insert(workFlowTaskInfoPO);
     }
 
     /**
