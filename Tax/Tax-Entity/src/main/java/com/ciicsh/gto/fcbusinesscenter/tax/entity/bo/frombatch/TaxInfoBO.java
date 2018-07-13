@@ -1,7 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class TaxInfoBO {
     /**
@@ -43,15 +43,15 @@ public class TaxInfoBO {
     /**
      * 来华时间
      */
-    private Date comingToChinaDate;
+    private LocalDate comingToChinaDate;
     /**
      * 任职期限
      */
-    private Date termOfService;
+    private String termOfService;
     /**
      * 预计离境时间
      */
-    private Date expectedLeaveDate;
+    private LocalDate expectedLeaveDate;
     /**
      * 预计离境地点
      */
@@ -293,27 +293,27 @@ public class TaxInfoBO {
         this.chineseName = chineseName;
     }
 
-    public Date getComingToChinaDate() {
-        return comingToChinaDate;
-    }
-
-    public void setComingToChinaDate(Date comingToChinaDate) {
-        this.comingToChinaDate = comingToChinaDate;
-    }
-
-    public Date getTermOfService() {
+    public String getTermOfService() {
         return termOfService;
     }
 
-    public void setTermOfService(Date termOfService) {
+    public void setTermOfService(String termOfService) {
         this.termOfService = termOfService;
     }
 
-    public Date getExpectedLeaveDate() {
+    public LocalDate getComingToChinaDate() {
+        return comingToChinaDate;
+    }
+
+    public void setComingToChinaDate(LocalDate comingToChinaDate) {
+        this.comingToChinaDate = comingToChinaDate;
+    }
+
+    public LocalDate getExpectedLeaveDate() {
         return expectedLeaveDate;
     }
 
-    public void setExpectedLeaveDate(Date expectedLeaveDate) {
+    public void setExpectedLeaveDate(LocalDate expectedLeaveDate) {
         this.expectedLeaveDate = expectedLeaveDate;
     }
 

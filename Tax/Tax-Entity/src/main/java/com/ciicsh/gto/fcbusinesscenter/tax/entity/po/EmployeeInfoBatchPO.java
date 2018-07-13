@@ -70,7 +70,7 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
     /**
      * 任职期限
      */
-	private LocalDate termOfService;
+	private String termOfService;
     /**
      * 预计离境时间
      */
@@ -381,11 +381,11 @@ public class EmployeeInfoBatchPO extends Model<EmployeeInfoBatchPO> {
 		this.comingToChinaDate = comingToChinaDate;
 	}
 
-	public LocalDate getTermOfService() {
+	public String getTermOfService() {
 		return termOfService;
 	}
 
-	public void setTermOfService(LocalDate termOfService) {
+	public void setTermOfService(String termOfService) {
 		this.termOfService = termOfService;
 	}
 

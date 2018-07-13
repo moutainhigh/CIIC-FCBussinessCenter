@@ -146,11 +146,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 empInfoBO.setEmployeeNo(convert(empInfo,"雇员编号",String.class));//雇员编号
                 empInfoBO.setEmployeeName(convert(empInfo,"雇员名称",String.class));//雇员名称
                 empInfoBO.setGender(convert(empInfo,"性别",String.class));//性别
-                empInfoBO.setBirthday(str2Date(convert(empInfo,"出生日期",String.class),"yyyy-MM-dd"));//出生日期
+                empInfoBO.setBirthday(this.UDateToLocalDate(str2Date(convert(empInfo,"出生日期",String.class),"yyyy-MM-dd")));//出生日期
                 empInfoBO.setMobile(convert(empInfo,"联系电话",String.class));//联系电话
 //                empInfoBO.setCompanyNo(convert(empInfo,"公司编号",String.class));//公司编号
-                empInfoBO.setEntryDate(str2Date(convert(empInfo,"入职日期",String.class),"yyyy-MM-dd"));//入职日期
-                empInfoBO.setLeaveDate(str2Date(convert(empInfo,"离职日期",String.class),"yyyy-MM-dd"));//离职日期
+                empInfoBO.setEntryDate(this.UDateToLocalDate(str2Date(convert(empInfo,"入职日期",String.class),"yyyy-MM-dd")));//入职日期
+                empInfoBO.setLeaveDate(this.UDateToLocalDate(str2Date(convert(empInfo,"离职日期",String.class),"yyyy-MM-dd")));//离职日期
 
                 //个税信息
                 DBObject taxInfo = (DBObject)empInfo.get("tax_info");
@@ -166,9 +166,9 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 taxInfoBO.setOverseas(convert(taxInfo,"isForeign",Boolean.class));//是否境外人员
                 taxInfoBO.setPersonalInvestment(convert(taxInfo,"preInvestAmount",BigDecimal.class));//个人股本(投资)额
                 taxInfoBO.setChineseName(convert(taxInfo,"cnName",String.class));//外籍员工中文名
-                taxInfoBO.setComingToChinaDate(convert(taxInfo,"arriveCnTime",Date.class));//来华时间
-                //taxInfoBO.setTermOfService(convert(taxInfo,"officeTerm",Date.class));//任职期限
-                taxInfoBO.setExpectedLeaveDate(convert(taxInfo,"prevLeaveTime",Date.class ));//预计离境时间
+                taxInfoBO.setComingToChinaDate(this.UDateToLocalDate(convert(taxInfo,"arriveCnTime",Date.class)));//来华时间
+                taxInfoBO.setTermOfService(convert(taxInfo,"officeTerm",String.class));//任职期限
+                taxInfoBO.setExpectedLeaveDate(this.UDateToLocalDate(convert(taxInfo,"prevLeaveTime",Date.class )));//预计离境时间
                 taxInfoBO.setExpectedLeavePlace(convert(taxInfo,"prevLeavePlace",String.class));//预计离境地点
                 taxInfoBO.setDomesticDuty(convert(taxInfo,"churchyardJob",String.class));//境内职务
                 taxInfoBO.setOverseasDuty(convert(taxInfo,"overseasJob",String.class));//境外职务

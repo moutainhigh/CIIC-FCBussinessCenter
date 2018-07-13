@@ -1,6 +1,6 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * 雇员基本信息
@@ -26,7 +26,7 @@ public class EmpInfoBO {
     /**
      * 出生日期
      */
-    private Date birthday;
+    private LocalDate birthday;
     /**
      * 联系电话
      */
@@ -34,26 +34,30 @@ public class EmpInfoBO {
     /**
      * 入职日期
      */
-    private Date entryDate;
+    private LocalDate entryDate;
     /**
      * 离职日期
      */
-    private Date leaveDate;
+    private LocalDate leaveDate;
 
-    public Date getLeaveDate() {
-        return leaveDate;
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 
-    public void setLeaveDate(Date leaveDate) {
-        this.leaveDate = leaveDate;
-    }
-
-    public Date getEntryDate() {
+    public LocalDate getEntryDate() {
         return entryDate;
     }
 
-    public void setEntryDate(Date entryDate) {
+    public void setEntryDate(LocalDate entryDate) {
         this.entryDate = entryDate;
+    }
+
+    public LocalDate getLeaveDate() {
+        return leaveDate;
+    }
+
+    public void setLeaveDate(LocalDate leaveDate) {
+        this.leaveDate = leaveDate;
     }
 
     public String getEmployeeNo() {
@@ -96,11 +100,4 @@ public class EmpInfoBO {
         this.mobile = mobile;
     }
 
-    public Date getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
 }

@@ -874,7 +874,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             if (null == cellX) {
                 cellX = row.createCell(23);
             }
-            cellX.setCellValue(employeeInfoBatchPO.getTermOfService() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM-dd").format(employeeInfoBatchPO.getTermOfService()));
+            cellX.setCellValue(employeeInfoBatchPO.getTermOfService());
             //预计离境时间-Y列
             HSSFCell cellY = row.getCell(24);
             if (null == cellY) {
