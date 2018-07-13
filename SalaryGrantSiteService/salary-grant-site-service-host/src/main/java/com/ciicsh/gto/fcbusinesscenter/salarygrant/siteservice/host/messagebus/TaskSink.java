@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface TaskSink {
-    String COMMON_TASKSERVICE_TASK_COMPLETE = "common_taskservice_task_complete-channel";
-    @Input(COMMON_TASKSERVICE_TASK_COMPLETE)
+    @Input(MsgConstants.COMMON_TASKSERVICE_TASK_COMPLETE)
     MessageChannel commonTaskServiceTaskComplete();
 
     @Input(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
