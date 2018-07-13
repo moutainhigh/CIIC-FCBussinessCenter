@@ -39,6 +39,7 @@
 		INNER JOIN pr_approved_payroll_item b on a.payroll_item_code = b.item_code
 		WHERE
 		a.account_set_code = #{accountSetCode}
+		ORDER by b.display_priority ASC
 	</select>
 
 	<sql id="AccountItemRelation_Extension_All_Columns">
