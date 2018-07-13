@@ -38,4 +38,12 @@ public class PayrollEmpGroup {
     public void setEmpGroupIds(String empGroupIds) {
         this.empGroupIds = empGroupIds;
     }
+
+    @Override
+    public String toString(){
+        return " empGroupIds :" + empGroupIds
+                + " ids :" + ids
+                + " operateType :" +  String.valueOf(operateType)
+                ;
+    }
 }

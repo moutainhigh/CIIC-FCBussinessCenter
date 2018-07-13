@@ -12,4 +12,6 @@ public interface PrBatchExcelMapService {
     int insert(PrBatchExcelMapPO prBatchExcelMapPO);
 
     int update(PrBatchExcelMapPO prBatchExcelMapPO);
+
+    int deleteBatchExcel(String batchCode);
 }

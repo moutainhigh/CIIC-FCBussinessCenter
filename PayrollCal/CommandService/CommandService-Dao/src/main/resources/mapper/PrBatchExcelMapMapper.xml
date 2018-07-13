@@ -43,5 +43,11 @@
         batch_code = #{batchCode}
     </update>
 
+    <delete id="deleteBatchExcel">
+        DELETE FROM pr_batch_excel_map
+        WHERE
+          batch_code = #{batchCode}
+    </delete>
+
 
 </mapper>

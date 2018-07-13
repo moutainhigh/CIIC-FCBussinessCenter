@@ -252,7 +252,7 @@ public class SalaryGrantEmployeePO extends Model<SalaryGrantEmployeePO> implemen
 	@TableField("grant_time")
 	private Integer grantTime;
 	/**
-	 * 发放服务标识:0-薪资发放，1-个税，2-薪资发放+个税
+	 * 发放服务标识:0 - 工资和税, 1 - 仅个税, 2 - 净工资, 3 - 仅计算
 	 */
 	@TableField("grant_service_type")
 	private Integer grantServiceType;

@@ -68,8 +68,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.setEntity(new TaskSubDeclarePO());
         //判断是否包含申报账户条件
-        if (StrKit.isNotEmpty(requestForTaskSubDeclare.getDeclareAccount())) {
-            wrapper.andNew().like("declare_account", requestForTaskSubDeclare.getDeclareAccount());
+        if (StrKit.isNotEmpty(requestForTaskSubDeclare.getDeclareAccountName())) {
+            wrapper.andNew().like("declare_account_name", requestForTaskSubDeclare.getDeclareAccountName());
         }
         //管理方名称
         Optional.ofNullable(requestForTaskSubDeclare.getManagerNos()).ifPresent(managerNos -> {
@@ -206,6 +206,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             taskSubDeclare.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_DECLARE));
             //设置申报账户
             taskSubDeclare.setDeclareAccount(taskSubDeclarePOList.get(0).getDeclareAccount());
+            //设置申报账户名称
+            taskSubDeclare.setDeclareAccountName(taskSubDeclarePOList.get(0).getDeclareAccountName());
             //设置个税期间
             taskSubDeclare.setPeriod(taskSubDeclarePOList.get(0).getPeriod());
             //设置总金额
@@ -287,6 +289,8 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 taskSubDeclareDetailPO.setIdNo(entry.getValue().get(0).getIdNo());//证件编号
                 taskSubDeclareDetailPO.setDeclareAccount(entry.getValue().get(0).getDeclareAccount());//申报账号
                 taskSubDeclareDetailPO.setPayAccount(entry.getValue().get(0).getPayAccount());//缴纳账号
+                taskSubDeclareDetailPO.setDeclareAccountName(entry.getValue().get(0).getDeclareAccountName());//申报账号名称
+                taskSubDeclareDetailPO.setPayAccountName(entry.getValue().get(0).getPayAccountName());//缴纳账号名称
                 taskSubDeclareDetailPO.setPeriod(entry.getValue().get(0).getPeriod());//个税期间
                 taskSubDeclareDetailPO.setIncomeSubject(entry.getValue().get(0).getIncomeSubject());//所得项目
                 taskSubDeclareDetailPO.setDeduction(entry.getValue().get(0).getDeduction());//免税额

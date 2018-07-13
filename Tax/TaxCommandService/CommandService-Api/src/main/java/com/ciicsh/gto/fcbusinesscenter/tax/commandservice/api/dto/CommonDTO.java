@@ -20,7 +20,7 @@ public class CommonDTO {
     private BigDecimal deductTakeoff;
 
     //其它扣除
-    private BigDecimal otherDeductions;
+    private BigDecimal others;
 
     //商业保险
     private BigDecimal businessHealthInsurance;
@@ -48,6 +48,39 @@ public class CommonDTO {
 
     //收入额
     private BigDecimal incomeTotal;
+
+    //税率
+    private BigDecimal taxRate;
+
+    //速算扣除数
+    private BigDecimal quickCalDeduct;
+
+    //合计（税前扣除项目）
+    private BigDecimal deductTotal;
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
+    }
+
+    public BigDecimal getQuickCalDeduct() {
+        return quickCalDeduct;
+    }
+
+    public void setQuickCalDeduct(BigDecimal quickCalDeduct) {
+        this.quickCalDeduct = quickCalDeduct;
+    }
+
+    public BigDecimal getDeductTotal() {
+        return deductTotal;
+    }
+
+    public void setDeductTotal(BigDecimal deductTotal) {
+        this.deductTotal = deductTotal;
+    }
 
     public BigDecimal getIncomeTotal() {
         return incomeTotal;
@@ -89,12 +122,12 @@ public class CommonDTO {
         this.deductTakeoff = deductTakeoff;
     }
 
-    public BigDecimal getOtherDeductions() {
-        return otherDeductions;
+    public BigDecimal getOthers() {
+        return others;
     }
 
-    public void setOtherDeductions(BigDecimal otherDeductions) {
-        this.otherDeductions = otherDeductions;
+    public void setOthers(BigDecimal others) {
+        this.others = others;
     }
 
     public BigDecimal getBusinessHealthInsurance() {

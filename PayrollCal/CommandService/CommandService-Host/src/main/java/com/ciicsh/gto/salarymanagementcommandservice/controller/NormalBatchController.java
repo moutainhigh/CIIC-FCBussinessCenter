@@ -293,6 +293,7 @@ public class NormalBatchController {
         long begin = System.currentTimeMillis(); //begin 5秒
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN).
+                include(PayItemName.EMPLOYEE_COMPANY_ID).
                 include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
                 include("catalog.pay_items.data_type").
                 include("catalog.pay_items.canLock").
@@ -656,6 +657,16 @@ public class NormalBatchController {
             return JsonResult.success(batchExcelMapDTO);
         }
 
+    }
+
+    @PostMapping("api/deleteBatchExcel")
+    public JsonResult deleteBatchExcel(@RequestParam String batchCode){
+        int rowAffected = excelMapService.deleteBatchExcel(batchCode);
+        if(rowAffected > 0){
+            return JsonResult.success("删除成功");
+        }else {
+            return JsonResult.faultMessage("删除失败");
+        }
     }
 
     @GetMapping("api/checkMapping")

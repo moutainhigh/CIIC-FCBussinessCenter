@@ -23,7 +23,7 @@ public class EmpGroupEmpRelationServiceImpl implements EmpGroupEmpRelationServic
     }
 
     @Override
-    public Integer isExistEmpGroupEmpRelation(String empGroupCode, String empId) {
-        return empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode, empId);
+    public Integer isExistEmpGroupEmpRelation(String empGroupCode, String empId, String companyId) {
+        return empGroupEmpRelationMapper.isExistEmpGroupEmpRelation(empGroupCode, empId, companyId);
     }
 }

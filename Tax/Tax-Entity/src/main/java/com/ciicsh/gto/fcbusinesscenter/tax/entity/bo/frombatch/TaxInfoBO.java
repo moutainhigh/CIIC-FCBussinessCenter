@@ -172,6 +172,30 @@ public class TaxInfoBO {
      * 公司名称
      */
     private String companyName;
+    /**
+     * 报税名
+     */
+    private String taxName;
+    /**
+     * 工号
+     */
+    private String workNumber;
+
+    public String getTaxName() {
+        return taxName;
+    }
+
+    public void setTaxName(String taxName) {
+        this.taxName = taxName;
+    }
+
+    public String getWorkNumber() {
+        return workNumber;
+    }
+
+    public void setWorkNumber(String workNumber) {
+        this.workNumber = workNumber;
+    }
 
     public String getCompanyNo() {
         return companyNo;

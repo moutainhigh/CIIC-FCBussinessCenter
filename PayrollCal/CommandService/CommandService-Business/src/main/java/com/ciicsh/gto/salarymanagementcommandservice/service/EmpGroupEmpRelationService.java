@@ -21,5 +21,5 @@ public interface EmpGroupEmpRelationService {
      * @param empId 雇员ID
      * @return 返回值大于0表示记录已经存在，返回小于或者等于0表示记录不存在
      */
-    Integer isExistEmpGroupEmpRelation(String empGroupCode, String empId);
+    Integer isExistEmpGroupEmpRelation(String empGroupCode, String empId, String companyId);
 }

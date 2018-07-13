@@ -93,7 +93,7 @@ public class ExportAboutLaborRescission extends BaseService {
             if (null == cellB) {
                 cellB = row.createCell(1);
             }
-            cellB.setCellValue(po.getEmployeeName());
+            cellB.setCellValue(employeeInfoBatchPO.getTaxName());
             //*证照类型-C列
             HSSFCell cellC = row.getCell(2);
             if (null == cellC) {

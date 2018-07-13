@@ -14,9 +14,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,8 +41,10 @@ public class ExportAboutPersonInfo extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
+            //雇员信息根据雇员编号去重
+            List<TaskSubDeclareDetailPO> unique = taskSubDeclareDetailPOList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getEmployeeNo()))), ArrayList::new));
             //根据不同的业务需要处理wb
-            this.handlePersonInfoWB(wb, taskSubDeclareDetailPOList, employeeInfoBatchPOList);
+            this.handlePersonInfoWB(wb, unique, employeeInfoBatchPOList);
         } catch (Exception e) {
             if (wb != null) {
                 try {
@@ -93,7 +93,7 @@ public class ExportAboutPersonInfo extends BaseService {
             if (null == cellB) {
                 cellB = row.createCell(1);
             }
-            cellB.setCellValue(po.getEmployeeName());
+            cellB.setCellValue(employeeInfoBatchPO.getTaxName());
             //*证照类型-C列
             HSSFCell cellC = row.getCell(2);
             if (null == cellC) {
@@ -117,7 +117,8 @@ public class ExportAboutPersonInfo extends BaseService {
             if (null == cellF) {
                 cellF = row.createCell(5);
             }
-            cellF.setCellValue(EnumUtil.getMessage(EnumUtil.GENDER_TYPE, employeeInfoBatchPO.getGender()));
+//            cellF.setCellValue(EnumUtil.getMessage(EnumUtil.GENDER_TYPE, employeeInfoBatchPO.getGender()));
+            cellF.setCellValue(employeeInfoBatchPO.getGender());
             //出生年月-G列
             HSSFCell cellG = row.getCell(6);
             if (null == cellG) {

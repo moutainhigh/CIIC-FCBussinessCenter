@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseService;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchAccountPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
@@ -36,7 +37,7 @@ public class ExportAboutVoucherXuHui extends BaseService {
      * @param type
      * @return
      */
-    public HSSFWorkbook getXuHuiVoucherWB(List<TaskSubProofDetailPO> taskSubProofDetailPOList, String fileName, String type) {
+    public HSSFWorkbook getXuHuiVoucherWB(List<TaskSubProofDetailPO> taskSubProofDetailPOList, CalculationBatchAccountPO calculationBatchAccountPO, String fileName, String type) {
         POIFSFileSystem fs = null;
         HSSFWorkbook wb = null;
         try {
