@@ -95,7 +95,6 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         if (!refreshList.isEmpty()) {
             List<RefreshTaskBO> updateList = new ArrayList<>();
             refreshList.parallelStream().forEach(x -> x.getEmpList().parallelStream().forEach(y -> {
-                System.out.println(x.getTaskCode() + " =====>   " + y.getCompanyId() + " -><- " + y.getEmployeeId());
                 SalaryGrantEmployeePO newPo = commonService.getEmployeeNewestInfo(y);
                 boolean updateResult = salaryGrantEmployeeCommandService.compareAndUpdateEmployeeNewestInfo(y, newPo);
                 if (updateResult) {
