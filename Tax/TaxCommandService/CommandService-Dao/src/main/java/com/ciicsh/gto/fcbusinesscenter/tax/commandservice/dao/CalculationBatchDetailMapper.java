@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.CalculationBatchDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
+import feign.Param;
 
 import java.util.List;
 
@@ -40,4 +41,11 @@ public interface CalculationBatchDetailMapper extends BaseMapper<CalculationBatc
      * @return
      */
     List<CalculationBatchDetailBO> queryTaxBatchDetailByRes(Pagination page, CalculationBatchDetailBO calculationBatchDetailBO);
+
+    /**
+     * 根据批次号查询批次划款明细列表
+     * @param batchId
+     * @return
+     */
+    List<CalculationBatchDetailPO> queryCalBatchDetailMoneyByBatchId(@Param("batchId") Long batchId);
 }
