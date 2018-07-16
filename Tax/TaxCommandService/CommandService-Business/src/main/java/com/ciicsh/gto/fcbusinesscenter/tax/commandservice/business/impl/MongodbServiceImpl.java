@@ -93,6 +93,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
          Set<String> suppliers = new HashSet<>();//批次已处理供应商集合
 
+         Set<String> serviceCategorys = new HashSet<>();//批次已处理服务类型集合
+
          CalculationBatchPO newCal = new CalculationBatchPO();//批次主信息
 
         //关账消息对象
@@ -157,7 +159,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 this.setObjectFieldsEmpty(taxInfoBO);
                 taxInfoBO.setWorkNumber(convert(empInfo,"员工工号",String.class));//工号
                 taxInfoBO.setTaxName(convert(taxInfo,"taxReturnName",String.class));//报税名
-                taxInfoBO.setCertType(convert(taxInfo,"reportTaxCertId",Integer.class)==null? null :convert(taxInfo,"reportTaxCertId",Integer.class).toString());//报税证件类型
+                taxInfoBO.setCertType(convert(taxInfo,"reportTaxCertId",String.class));//报税证件类型
                 taxInfoBO.setCertNo(convert(taxInfo,"reportTaxCertNo",String.class));//报税证件号
                 taxInfoBO.setNationality(convert(taxInfo,"reportTaxCountryId",String.class));//国籍
                 taxInfoBO.setDisability(convert(taxInfo,"isSpecialStatus",Boolean.class));//是否残疾烈属孤老
@@ -174,7 +176,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 taxInfoBO.setOverseasDuty(convert(taxInfo,"overseasJob",String.class));//境外职务
                 taxInfoBO.setPaymentPlace(convert(taxInfo,"payPlace",String.class));//支付地
                 taxInfoBO.setPaymentOverseasPlace(convert(taxInfo,"overseasPayPlace",String.class));//境外支付地(国家/地区)
-                taxInfoBO.setBurden(convert(taxInfo,"taxPayType",Integer.class )==null?null:convert(taxInfo,"taxPayType",Integer.class).toString());//税款负担方式
+                taxInfoBO.setBurden(convert(taxInfo,"taxPayType",String.class ));//税款负担方式
                 taxInfoBO.setRecognitionCode(convert(taxInfo,"taxSuperCode",String.class));//税优识别码
                 taxInfoBO.setAnnualPremium(convert(taxInfo,"annualPremium",BigDecimal.class));//年度保费
                 taxInfoBO.setMonthlyPremium(convert(taxInfo,"monthlyPremium",BigDecimal.class));//月度保费
@@ -286,6 +288,12 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                         agreementBO.setSupportName(supplierBO.getAccountName());//供应商名称
                     }
 
+                }
+                //服务类型
+                String serviceCategory = convert(taxInfo_agreement,"serviceCategory",String.class);
+                if(StrKit.isNotEmpty(serviceCategory)){
+                    agreementBO.setServiceCategory(serviceCategory);
+                    serviceCategorys.add(serviceCategory);
                 }
 
                 //String supplierNo =
@@ -609,7 +617,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
             });
 
             //将批次置为有效
-            this.updateValid(newCal);
+            this.updateValid(newCal,serviceCategorys);
         }
     }
 
@@ -680,6 +688,8 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 }else{
                     return clazz.cast(dBObject.get(key));
                 }
+            }else if(dBObject.get(key).getClass()==Integer.class && clazz == String.class){
+                return clazz.cast(dBObject.get(key).toString());
             }else{
                 return clazz.cast(dBObject.get(key));
             }
@@ -917,10 +927,18 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
     }
 
     //将主任务置为有效
-    private void updateValid(CalculationBatchPO cal){
+    private void updateValid(CalculationBatchPO cal,Set<String> serviceCategorys){
         CalculationBatchPO p = new CalculationBatchPO();
         p.setId(cal.getId());
         p.setValid(true);
+        //服务类别 (0-工资和税,1-仅个税,2-净工资,3-仅计算)
+        if(serviceCategorys.contains("1") && serviceCategorys.contains("0")){
+            p.setServiceCategory("0");
+        }else if(serviceCategorys.contains("1")){
+            p.setServiceCategory("1");
+        }else if(serviceCategorys.contains("0")){
+            p.setServiceCategory("0");
+        }
         this.calculationBatchService.updateById(p);
     }
 
@@ -959,5 +977,4 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
 
         }
     }
-
 }
