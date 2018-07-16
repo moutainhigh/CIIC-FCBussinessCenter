@@ -7,6 +7,7 @@ import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
@@ -228,8 +229,8 @@ public class NormalBatchController {
         try {
             ExcelUploadStatistics statistics = batchService.uploadEmpPRItemsByExcel(batchCode, empGroupCode, batchType, importType, file);
             return JsonResult.success(statistics);
-        }catch (Exception ex){
-            return JsonResult.faultMessage("数据导入失败！");
+        }catch (BusinessException ex){
+            return JsonResult.faultMessage(ex.getMessage());
         }
 
     }

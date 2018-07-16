@@ -1,8 +1,10 @@
 package com.ciicsh.gto.salarymanagementcommandservice.util;
 
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,7 +23,20 @@ public class DateUtil {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DateUtil.class);
 
-	public static final String yyyyMMdd = "yyyyMMdd";
+	/**
+	 * yyyy-MM-dd
+	 */
+	public static final String YYYY_MM_DD = "yyyy-MM-dd";
+
+	/**
+	 * yyyy/MM/dd
+	 */
+	public static final String _YYYYMMDD = "yyyy/MM/dd";
+
+	/**
+	 * yyyyMMdd
+	 */
+	public static final String YYYYMMDD = "yyyyMMdd";
 	
 	/**
 	 * 日期转字符串
@@ -93,7 +108,7 @@ public class DateUtil {
 	}
 	
 //	public static void main(String[] args) {
-//		System.out.println(getWeek(toDate("20161022", "yyyyMMdd")));
+//		System.out.println(getWeek(toDate("20161022", YYYYMMDD)));
 //		System.out.println(getTotalHours(toDate("20161025221500", "yyyyMMddHHmmss").getTime(), toDate("20161026211500", "yyyyMMddHHmmss").getTime()));
 //	}
 	
@@ -263,6 +278,69 @@ public class DateUtil {
     public static String getNowDate(LocalDateTime localDateTime, String formatter){
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(formatter);
 		return localDateTime.format(dateTimeFormatter);
+	}
+
+	/**
+	 * 验证字符串日期格式是否合规，并得到yyyy-MM-dd
+	 * @param dateString 字符串日期
+	 * @return yyy-MM-dd
+	 */
+	public static String getValidDate(String dateString) {
+		boolean convertSuccess = true;
+		SimpleDateFormat format;
+		int type;
+		if (dateString.contains("-")) {
+			format = new SimpleDateFormat(YYYY_MM_DD);
+			type = 1;
+		} else if (dateString.contains("/")) {
+			format = new SimpleDateFormat(_YYYYMMDD);
+			type = 2;
+		} else {
+			type = 3;
+			format = new SimpleDateFormat(YYYYMMDD);
+		}
+		try {
+			format.setLenient(false);
+			format.parse(dateString);
+		} catch (ParseException e) {
+			convertSuccess = false;
+		}
+		if(convertSuccess){
+			return strToDateFormat(dateString, type);
+		} else {
+			logger.error("Date format not specified:{}", dateString);
+			throw new BusinessException("字符串日期不合规，正确格式为yyyy-MM-dd或yyyy/MM/dd或yyyyMMdd");
+		}
+	}
+
+	/**
+	 * 将字符串格式的yyyyMMdd、yyyy/MM/dd或者yyyy-MM-dd统一转换成yyyy-MM-dd
+	 *
+	 * @param dateString 字符串日期
+	 * @param type       字符串类型 1:yyyy-MM-dd; 2: yyyy/MM/dd; 3:yyyyMMdd
+	 * @return yyyy-MM-dd
+	 */
+	public static String strToDateFormat(String dateString, int type) {
+		DateTimeFormatter df = null;
+		switch (type) {
+			case 1:
+				df = DateTimeFormatter.ofPattern(YYYY_MM_DD);
+				break;
+			case 2:
+				df = DateTimeFormatter.ofPattern(_YYYYMMDD);
+				break;
+			case 3:
+				df = DateTimeFormatter.ofPattern(YYYYMMDD);
+				break;
+			default:
+		}
+
+		String resultDate = LocalDate.parse(dateString, df).toString();
+		resultDate = resultDate.replace("-", "").replace("/", "");
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(YYYYMMDD);
+		return LocalDate.parse(resultDate, dtf).toString();
+
 	}
 
 }
