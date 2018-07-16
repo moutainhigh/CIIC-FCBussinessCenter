@@ -268,12 +268,15 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
             // 把新建的SubTask的任务单编号，回填至batchUpdateMap对应的薪资发放雇员信息中。
             batchUpdateLastMap.put(entityId, batchUpdateMap.get(grantAccountCode));
         });
-        // 调用薪资发放任务子表mapper的批量插入语句
-        Boolean isCreated = salaryGrantSubTaskWorkFlowService.insertBatch(salaryGrantSubTaskPOList);
-        if(isCreated){
-            this.toBatchUpdateSalaryGrantEmployee(batchUpdateLastMap, salaryGrantMainTaskCode);
-        }else{
-            logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，任务单主表编号为：" + salaryGrantMainTaskCode).setContent("新增薪资发放任务单子表信息失败！"));
+
+        if (!CollectionUtils.isEmpty(salaryGrantSubTaskPOList)) {
+            // 调用薪资发放任务子表mapper的批量插入语句
+            Boolean isCreated = salaryGrantSubTaskWorkFlowService.insertBatch(salaryGrantSubTaskPOList, salaryGrantSubTaskPOList.size());
+            if(isCreated){
+                this.toBatchUpdateSalaryGrantEmployee(batchUpdateLastMap, salaryGrantMainTaskCode);
+            }else{
+                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，任务单主表编号为：" + salaryGrantMainTaskCode).setContent("新增薪资发放任务单子表信息失败！"));
+            }
         }
     }
 
@@ -285,20 +288,27 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      */
     @Transactional(rollbackFor = Exception.class)
     protected void toBatchUpdateSalaryGrantEmployee(Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap, String salaryGrantMainTaskCode){
-        batchUpdateMap.forEach((salaryGrantSubTaskCode,salaryGrantEmployeeBOList)-> {
-            List<SalaryGrantEmployeePO> updateList = new ArrayList();
-            salaryGrantEmployeeBOList.forEach(SalaryGrantEmployeeBO -> {
-                SalaryGrantEmployeePO salaryGrantEmployeePO = new SalaryGrantEmployeePO();
-                salaryGrantEmployeePO.setSalaryGrantEmployeeId(SalaryGrantEmployeeBO.getSalaryGrantEmployeeId());
-                salaryGrantEmployeePO.setSalaryGrantSubTaskCode(salaryGrantSubTaskCode);
-                updateList.add(salaryGrantEmployeePO);
-            });
-            // 调用薪资发放雇员信息表的批量修改方法
-            Boolean isModified = salaryGrantEmployeeService.updateBatchById(updateList);
-            if(!isModified){
-                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，任务单主表编号为：" + salaryGrantMainTaskCode).setContent("修改雇员信息的薪资发放任务单子表编号失败！"));
-            }
-        }) ;
+        if (!CollectionUtils.isEmpty(batchUpdateMap)) {
+            batchUpdateMap.forEach((salaryGrantSubTaskCode,salaryGrantEmployeeBOList)-> {
+                List<SalaryGrantEmployeePO> updateList = new ArrayList();
+
+                salaryGrantEmployeeBOList.forEach(SalaryGrantEmployeeBO -> {
+                    SalaryGrantEmployeePO salaryGrantEmployeePO = new SalaryGrantEmployeePO();
+                    salaryGrantEmployeePO.setSalaryGrantEmployeeId(SalaryGrantEmployeeBO.getSalaryGrantEmployeeId());
+                    salaryGrantEmployeePO.setSalaryGrantSubTaskCode(salaryGrantSubTaskCode);
+                    updateList.add(salaryGrantEmployeePO);
+                });
+
+                if (!CollectionUtils.isEmpty(updateList)) {
+                    // 调用薪资发放雇员信息表的批量修改方法
+                    Boolean isModified = salaryGrantEmployeeService.updateBatchById(updateList);
+
+                    if(!isModified){
+                        logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，任务单主表编号为：" + salaryGrantMainTaskCode).setContent("修改雇员信息的薪资发放任务单子表编号失败！"));
+                    }
+                }
+            }) ;
+        }
     }
 
     /**
