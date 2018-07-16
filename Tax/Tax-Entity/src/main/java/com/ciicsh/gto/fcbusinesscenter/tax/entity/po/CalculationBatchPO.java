@@ -139,6 +139,16 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	private String serviceCategory;
+
+	public String getServiceCategory() {
+		return serviceCategory;
+	}
+
+	public void setServiceCategory(String serviceCategory) {
+		this.serviceCategory = serviceCategory;
+	}
+
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
 	}

@@ -112,6 +112,16 @@ public class AgreementBO {
      */
     private String areaType;
 
+    private String serviceCategory;
+
+    public String getServiceCategory() {
+        return serviceCategory;
+    }
+
+    public void setServiceCategory(String serviceCategory) {
+        this.serviceCategory = serviceCategory;
+    }
+
     public String getDeclareAccountName() {
         return declareAccountName;
     }
