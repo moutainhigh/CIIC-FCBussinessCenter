@@ -481,10 +481,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 List<SalaryGrantEmployeePO> employeePOList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
                 if (!CollectionUtils.isEmpty(employeePOList)) {
                     employeePOList.stream().forEach(salaryGrantEmployeePO -> {
-                        SalaryGrantEmployeePO updateEmployeePO = new SalaryGrantEmployeePO();
-                        updateEmployeePO.setSalaryGrantEmployeeId(salaryGrantEmployeePO.getSalaryGrantEmployeeId());
-                        updateEmployeePO.setSalaryGrantSubTaskCode("");
-                        salaryGrantEmployeeMapper.updateById(updateEmployeePO);
+                        salaryGrantEmployeePO.setSalaryGrantSubTaskCode(null);
+                        salaryGrantEmployeeMapper.updateAllColumnById(salaryGrantEmployeePO);
                     });
                 }
 
