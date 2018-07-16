@@ -87,12 +87,12 @@ public class SalaryGrantController {
             SalaryGrantTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantTaskBO.class);
             bo.setManagementIds(CommonHelper.getManagementIDs());
             bo.setUserId(UserContext.getUserId());
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("刷新数据").setContent(JSON.toJSONString(bo)));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步待提交雇员信息").setContent(JSON.toJSONString(bo)));
             Page<SalaryGrantTaskBO> page = salaryGrantTaskQueryService.refreshDraftTask(bo);
             return ResultGenerator.genSuccessResult(page);
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("刷新数据异常").setContent(e.getMessage()));
-            return ResultGenerator.genServerFailResult("刷新数据失败！");
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步待提交雇员信息异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("同步待提交雇员信息失败！");
         }
     }
 

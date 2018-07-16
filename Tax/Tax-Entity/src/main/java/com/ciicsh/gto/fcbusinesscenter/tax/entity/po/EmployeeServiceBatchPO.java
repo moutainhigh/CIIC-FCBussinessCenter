@@ -168,6 +168,16 @@ public class EmployeeServiceBatchPO extends Model<EmployeeServiceBatchPO> {
 	@TableField("pay_account_name")
 	private String payAccountName;
 
+	private String serviceCategory;
+
+	public String getServiceCategory() {
+		return serviceCategory;
+	}
+
+	public void setServiceCategory(String serviceCategory) {
+		this.serviceCategory = serviceCategory;
+	}
+
 	public String getDeclareAccountName() {
 		return declareAccountName;
 	}

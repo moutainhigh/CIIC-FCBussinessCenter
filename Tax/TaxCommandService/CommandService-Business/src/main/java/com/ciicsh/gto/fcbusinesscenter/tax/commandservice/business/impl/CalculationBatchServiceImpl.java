@@ -365,7 +365,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                            || "3".equals(x.getIdType())//士兵证
                            || "4".equals(x.getIdType())//武警警官证
                            || ("7".equals(x.getIdType())//中国护照，且境外人员为否
-                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()==null || y.getOverseas()==false))))
                    );
                 }
                 ).collect(Collectors.groupingBy(TaskSubDeclareDetailPO::getTaskSubDeclareId, Collectors.counting()));
@@ -404,7 +404,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                                     || "3".equals(x.getIdType())//士兵证
                                     || "4".equals(x.getIdType())//武警警官证
                                     || ("7".equals(x.getIdType())//中国护照，且境外人员为否
-                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()==null || y.getOverseas()==false))))
                             );
                         }
                 ).collect(Collectors.groupingBy(TaskSubMoneyDetailPO::getTaskSubMoneyId, Collectors.counting()));
@@ -441,7 +441,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                                     || "3".equals(x.getIdType())//士兵证
                                     || "4".equals(x.getIdType())//武警警官证
                                     || ("7".equals(x.getIdType())//中国护照，且境外人员为否
-                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()==null || y.getOverseas()==false))))
                             );
                         }
                 ).collect(Collectors.groupingBy(TaskSubPaymentDetailPO::getTaskSubPaymentId, Collectors.counting()));
@@ -478,7 +478,7 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                                     || "3".equals(x.getIdType())//士兵证
                                     || "4".equals(x.getIdType())//武警警官证
                                     || ("7".equals(x.getIdType())//中国护照，且境外人员为否
-                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()!=null && y.getOverseas()==false))))
+                                    && (taskMainDetailBOList.stream().anyMatch(y -> y.getCalculationBatchDetailId().equals(x.getCalculationBatchDetailId()) && (y.getOverseas()==null || y.getOverseas()==false))))
                             );
                         }
                 ).collect(Collectors.groupingBy(TaskSubSupplierDetailPO::getTaskSubSupplierId, Collectors.counting()));
