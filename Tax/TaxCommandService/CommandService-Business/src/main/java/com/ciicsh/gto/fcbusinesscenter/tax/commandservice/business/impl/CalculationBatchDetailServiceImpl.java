@@ -273,4 +273,14 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
         wrapper.and("is_active = {0} ", true);
         return baseMapper.selectList(wrapper);
     }
+
+    /**
+     * 根据批次号查询批次划款明细列表
+     * @param batchId
+     * @return
+     */
+    @Override
+    public List<CalculationBatchDetailPO> queryCalBatchDetailMoneyByBatchId(Long batchId) {
+        return baseMapper.queryCalBatchDetailMoneyByBatchId(batchId);
+    }
 }

@@ -463,14 +463,16 @@
             t.modified_time = now()
         where
             t.salary_grant_sub_task_id = #{taskId}
-        <if test="modifiedTime == null">
-            and t.modified_time is null
-        </if>
-        <if test="modifiedTime != null">
-            and t.modified_time = #{modifiedTime}
-        </if>
-        and
-            t.is_active = 1
+            <choose>
+                <when test="modifiedTime == null">
+                    and t.modified_time is null
+                </when>
+                <otherwise>
+                    and t.modified_time = #{modifiedTime}
+                </otherwise>
+            </choose>
+            and
+                t.is_active = 1
     </update>
 
 </mapper>

@@ -154,8 +154,8 @@ public class PrItemServiceImpl implements PrItemService {
         this.updateRelatedGroupStatus(first);
         //批量插入
         paramList.forEach(i -> {
-            if (StringUtils.isEmpty(i.getItemCode())){
-                i.setItemCode(codeGenerator.genPrItemCode(i.getManagementId()));
+            if(StringUtils.isEmpty(i.getItemCode())) {
+                i.setItemCode(codeGenerator.genPrItemCode(i.getManagementId())); //TODO updated by bill
             }
             i.setModifiedTime(new Date());
             i.setCreatedTime(new Date());

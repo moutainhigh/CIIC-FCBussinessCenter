@@ -35,7 +35,7 @@ spring:
           autoAddPartitions: true
       bindings:
         pr-normal-batch-output-channel:
-          destination: fc_payroll_normal_batch # topic name
+          destination: fc_payroll_batch # topic name
           content-type: application/json
           producer:
             partitionCount: 2
@@ -70,6 +70,7 @@ spring:
           group: socket_consumer_7035 # consumer group
           consumer:
             partitioned : true
+
 
         pr_management-input-channel:
           destination: fc_payroll_management

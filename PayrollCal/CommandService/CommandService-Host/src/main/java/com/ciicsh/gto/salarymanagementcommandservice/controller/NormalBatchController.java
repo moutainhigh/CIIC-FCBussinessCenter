@@ -264,7 +264,7 @@ public class NormalBatchController {
     public JsonResult getFilterEmployees(
                                     @RequestParam(required = false, defaultValue = "") String empCode,
                                     @RequestParam(required = false, defaultValue = "") String empName,
-                                    @RequestParam(required = false, defaultValue = "") String customKey,
+                                    @RequestParam(required = false, defaultValue = "") String customKey,   //格式：字段名称,字段类型
                                     @RequestParam(required = false, defaultValue = "") String customValue,
                                     @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
@@ -281,7 +281,14 @@ public class NormalBatchController {
             criteria.and("catalog.emp_info."+ PayItemName.EMPLOYEE_NAME_CN).regex(empName);
         }
         if(StringUtils.isNotEmpty(customKey) && StringUtils.isNotEmpty(customValue)){
-            criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(customKey).and("item_value").regex(customValue));
+            String fieldName = customKey.split(",")[0];
+            String dataType = customKey.split(",")[1];
+            if(dataType.equals(String.valueOf(DataTypeEnum.NUM.getValue()))){
+                double val = Double.parseDouble(customValue);
+                criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(fieldName).and("item_value").is(val));
+            }else {
+                criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(fieldName).and("item_value").regex(customValue));
+            }
         }
         Query query = new Query(criteria);
         query.fields().include("batch_code");
@@ -395,7 +402,6 @@ public class NormalBatchController {
         Boolean result = false;
 
         int status = fcBizTransactionMongoOpt.getTransactionStatus(batchCode);
-        result = status > 0 ? false :true;
         /*
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             PrNormalBatchPO normalBatchPO = batchService.getBatchByCode(batchCode);
@@ -407,7 +413,7 @@ public class NormalBatchController {
             PrBackTrackingBatchPO backTrackingBatchPO = backTrackingBatchService.getPrBackTrackingBatchPO(batchCode);
             result = backTrackingBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
         }*/
-        if(!result) {
+        if(status > 0) {
             return JsonResult.faultMessage("该批次不能取消关帐，请联系相关人员处理!");
         }else {
             return JsonResult.success("可以取消关帐");
@@ -492,7 +498,7 @@ public class NormalBatchController {
             list.add(map);
             count ++;
             if(count == 1) {
-                payItems.stream().forEach(item -> {
+                payItems.forEach(item -> {
                     excelExportEntities.add(new ExcelExportEntity((String) item.get("item_name"), item.get("item_name")));
                 });
             }

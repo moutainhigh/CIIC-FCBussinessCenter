@@ -310,7 +310,8 @@ public class CommonServiceImpl implements CommonService {
             salaryBatchDTO.setTotalEmployeeCount(taskPaymentBO.getTotalPersonCount()); //雇员总数（计算批次的雇员数量）
             salaryBatchDTO.setPayAmount(taskPaymentBO.getPayAmount()); //本批次将付金额（计算批次里正常的雇员的实发工资之和）
             salaryBatchDTO.setPayEmployeeCount(taskPaymentBO.getPayEmployeeCount()); //本批次将付雇员数量（正常的雇员）
-            salaryBatchDTO.setApplyer(getUserNameById(taskPaymentBO.getOperatorUserId())); //申请人
+//            salaryBatchDTO.setApplyer(getUserNameById(taskPaymentBO.getOperatorUserId())); //申请人
+            salaryBatchDTO.setApplyer("申请人"); //申请人
             salaryBatchDTO.setApplyDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))); //申请日期
             salaryBatchDTO.setAgentFeeAmount(new BigDecimal(0)); //财务代理费
             //is_advance，逻辑判断
@@ -408,7 +409,7 @@ public class CommonServiceImpl implements CommonService {
             if ("0".equals(salaryBatchDTOJsonResult.getCode())) {
                 return salaryBatchDTOJsonResult.getData();
             } else {
-                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放定时任务").setTitle("调用结算中心发放工资清单接口").setContent("接口返回结果错误"));
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放定时任务").setTitle("调用结算中心发放工资清单接口").setContent("接口返回结果错误 消息：" + salaryBatchDTOJsonResult.getMsg()));
             }
         } else {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放定时任务").setTitle("调用结算中心发放工资清单接口").setContent("调用接口异常"));

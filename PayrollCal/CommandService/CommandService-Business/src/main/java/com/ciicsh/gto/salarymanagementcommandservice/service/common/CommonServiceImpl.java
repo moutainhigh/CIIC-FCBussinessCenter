@@ -43,10 +43,6 @@ public class CommonServiceImpl {
     @Autowired
     private NormalBatchMongoOpt normalBatchMongoOpt;
 
-
-    @Autowired
-    private PrPayrollItemMapper prPayrollItemMapper;
-
     @Autowired
     private PrItemService itemService;
 
@@ -100,7 +96,7 @@ public class CommonServiceImpl {
                         p.put("item_value", base_info.get(PayItemName.EMPLOYEE_COMPANY_ID));
                     }
                 });
-                rowAffected += updateBatchMongodb(batchPO,item,clonePyItems);
+                rowAffected += updateBatchMongodb(batchPO,base_info,clonePyItems);
             }
         }else {
             rowAffected += updateBatchMongodb(batchPO,null,payItems);
@@ -201,22 +197,24 @@ public class CommonServiceImpl {
 
     private int updateBatchMongodb( PrCustBatchPO batchPO, DBObject emp,List<BasicDBObject> payItems){
 
-        DBObject basicDBObject = new BasicDBObject();
+        BasicDBObject catalog = new BasicDBObject();
+
+        int count = 0;
 
         Query query = null;
 
         if(emp != null) {
-                    query = Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
-                    .andOperator(
+
+            Criteria criteria = Criteria.where("batch_code").is(batchPO.getCode()).
+                    andOperator(
                             Criteria.where("pr_group_code").is(batchPO.getPrGroupCode()),   //薪资组或薪资组模版编码
                             Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(emp.get(PayItemName.EMPLOYEE_CODE_CN)), //雇员编码
-                            Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(emp.get(PayItemName.EMPLOYEE_COMPANY_ID)) //公司ID
+                            Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(emp.get(PayItemName.EMPLOYEE_COMPANY_ID)) //公司ID emp.get(PayItemName.EMPLOYEE_COMPANY_ID)
+                    );
+            query = Query.query(criteria);
+            catalog.put("emp_info", emp);
 
-                    )
-            );
-            DBObject empInfo = emp.get("base_info") == null ? emp :(DBObject)emp.get("base_info");
-            basicDBObject.put("emp_info", empInfo);
         }else {
             query = Query.query(Criteria.where("batch_code").is(batchPO.getCode())  //批次号
                     .andOperator(
@@ -228,12 +226,17 @@ public class CommonServiceImpl {
                     )
             );
         }
-        basicDBObject.put("batch_info", BatchPOToDBObject(batchPO));
-        basicDBObject.put("pay_items", payItems);
-        Update update = Update.update("catalog", basicDBObject);
-
+        catalog.put("batch_info", BatchPOToDBObject(batchPO));
+        catalog.put("pay_items", payItems);
+        //Update update = Update.update("catalog", catalog);
+        Update update = new Update();
+        update.set("catalog",catalog);
         WriteResult result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        //count = normalBatchMongoOpt.upsert(query,update);
+
         return result.getN();
+        //WriteResult result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        //return result.getN();
     }
 
     private List<BasicDBObject> cloneListDBObject(List<BasicDBObject> source){
@@ -297,8 +300,12 @@ public class CommonServiceImpl {
                 simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
                 simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
                 simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
-                simplePayItemDTO.setCanLock(dbItem.get("canLock") == null ? false : true);
-                simplePayItemDTO.setLocked(dbItem.get("isLocked") == null ? false : true);
+                simplePayItemDTO.setCanLock((boolean)dbItem.get("canLock"));
+                if(dbItem.get("isLocked") == null){
+                    simplePayItemDTO.setLocked(false);
+                }else {
+                    simplePayItemDTO.setLocked((boolean)dbItem.get("isLocked"));
+                }
 
                 if(dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)){ //雇员姓名
                     itemPO.setEmpName(String.valueOf(dbItem.get("item_value")));
