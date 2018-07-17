@@ -150,7 +150,11 @@ public class CommonServiceImpl {
         }
 
         //获取薪资帐套下的薪资项列表
-        List<PayrollAccountItemRelationExtPO> itemRelationExtsList = accountItemRelationMapper.getAccountItemRelationExts(batchPO.getAccountSetCode());
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("accountSetCode", batchPO.getAccountSetCode());
+        paramMap.put("payrollGroupCode", batchPO.getPrGroupCode());
+        paramMap.put("managementId", batchPO.getManagementId());
+        List<PayrollAccountItemRelationExtPO> itemRelationExtsList = accountItemRelationMapper.getAccountItemRelationExts(paramMap);
 
         prList = prList.stream()
                 .filter(p-> itemRelationExtsList.stream().anyMatch(f -> f.getPayrollItemCode().equals(p.getItemCode()) && f.getIsActive()))

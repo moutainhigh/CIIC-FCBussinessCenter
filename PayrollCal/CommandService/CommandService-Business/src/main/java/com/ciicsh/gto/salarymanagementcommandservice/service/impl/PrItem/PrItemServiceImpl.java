@@ -113,9 +113,11 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public PrPayrollItemPO getItemByCode(String code) {
+    public PrPayrollItemPO getItemByCode(String itemCode, String groupCode, String managementId) {
         PrPayrollItemPO param = new PrPayrollItemPO();
-        param.setItemCode(code);
+        param.setItemCode(itemCode);
+        param.setPayrollGroupCode(groupCode);
+        param.setManagementId(managementId);
         return prPayrollItemMapper.selectOne(param);
     }
 
@@ -165,7 +167,7 @@ public class PrItemServiceImpl implements PrItemService {
     @Transactional(rollbackFor = RuntimeException.class)
     public int updateItem(PrPayrollItemPO param) {
         //先获取该薪资项当前详情用作check
-        PrPayrollItemPO prPayrollItemPO = this.getItemByCode(param.getItemCode());
+        PrPayrollItemPO prPayrollItemPO = this.getItemByCode(param.getItemCode(), param.getPayrollGroupCode(), param.getManagementId());
 
         // 如果该薪资项只存在于薪资组中，则修改无限制
         if (StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
@@ -250,11 +252,11 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public int deleteItemByCodes(List<String> codes) {
+    public int deleteItemByCodes(List<String> itemCodes, String groupCode, String managementId) {
         //先获取该薪资项当前详情用作check
-        PrPayrollItemPO first = this.getItemByCode(codes.get(0));
+        PrPayrollItemPO first = this.getItemByCode(itemCodes.get(0), groupCode, managementId);
         this.updateRelatedGroupStatus(first);
-        return prPayrollItemMapper.deleteItemByCodes(codes);
+        return prPayrollItemMapper.deleteItemByCodes(itemCodes, groupCode, managementId);
     }
 
     @Override
@@ -292,6 +294,24 @@ public class PrItemServiceImpl implements PrItemService {
     @Override
     public List<PrItemInAccountSetPO> selectItemNames(String batchCode) {
         return prPayrollItemMapper.selectItemNames(batchCode);
+    }
+
+    @Override
+    public int deleteItemByTemplateCode(String itemCode, String payrollGroupTemplateCode) {
+        PrPayrollItemPO prPayrollItemPO = new PrPayrollItemPO();
+        prPayrollItemPO.setItemCode(itemCode);
+        prPayrollItemPO.setPayrollGroupTemplateCode(payrollGroupTemplateCode);
+        EntityWrapper ew = new EntityWrapper(prPayrollItemPO);
+        return prPayrollItemMapper.delete(ew);
+
+    }
+
+    @Override
+    public PrPayrollItemPO getItemByCode(String itemCode, String payrollGroupTemplateCode) {
+        PrPayrollItemPO param = new PrPayrollItemPO();
+        param.setItemCode(itemCode);
+        param.setPayrollGroupTemplateCode(payrollGroupTemplateCode);
+        return prPayrollItemMapper.selectOne(param);
     }
 
     private void updateRelatedGroupStatus(PrPayrollItemPO param) {

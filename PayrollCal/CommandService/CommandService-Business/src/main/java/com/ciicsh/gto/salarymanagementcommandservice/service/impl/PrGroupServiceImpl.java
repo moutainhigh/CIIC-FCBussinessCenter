@@ -132,6 +132,18 @@ public class PrGroupServiceImpl implements PrGroupService {
             itemService.addList(itemList);
             result = prPayrollGroupMapper.insert(paramItem);
             prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
+            // 审批通过，保存历史数据
+            if (ApprovalStatusEnum.APPROVE.getValue() == paramItem.getApprovalStatus()) {
+                // 保存历史数据
+                PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
+                prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
+                prPayrollGroupHistoryPO.setVersion(DEFAULT_VERSION);
+                prPayrollGroupHistoryPO.setPayrollGroupHistory(JSON.toJSONString(itemList));
+                prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
+                prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
+                prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
+
+            }
             return result;
         }
 
