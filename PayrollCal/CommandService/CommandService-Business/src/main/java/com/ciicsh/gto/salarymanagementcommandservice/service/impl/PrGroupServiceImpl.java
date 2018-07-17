@@ -125,7 +125,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setManagementId(paramItem.getManagementId());
                         item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
-                        item.setDefaultValue(i.getDataType() == 3 ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.yyyyMMdd) : i.getDefaultValue());
+                        item.setDefaultValue(i.getDataType() == 3 ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.YYYY_MM_DD) : i.getDefaultValue());
                         return item;
                     })
                     .collect(Collectors.toList());

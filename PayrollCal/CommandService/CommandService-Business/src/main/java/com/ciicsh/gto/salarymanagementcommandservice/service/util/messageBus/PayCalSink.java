@@ -19,4 +19,9 @@ public interface PayCalSink {
     @Input(MANAGEMENT_INPUT)
     MessageChannel managementInput();
 
+    String PAYROLL_GROUP_CHANGE_INPUT = "pr_payroll_group_change-input-channel";
+
+    @Input(PAYROLL_GROUP_CHANGE_INPUT)
+    MessageChannel payrollGroupChangeInput();
+
 }

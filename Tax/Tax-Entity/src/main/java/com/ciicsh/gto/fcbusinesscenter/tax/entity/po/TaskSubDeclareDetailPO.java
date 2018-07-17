@@ -77,9 +77,17 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
      */
 	private String declareAccount;
     /**
+     * 申报账户名称
+     */
+	private String declareAccountName;
+    /**
      * 缴纳账户
      */
 	private String payAccount;
+    /**
+     * 缴纳账户名称
+     */
+	private String payAccountName;
     /**
      * 个税期间
      */
@@ -331,6 +339,22 @@ public class TaskSubDeclareDetailPO extends Model<TaskSubDeclareDetailPO> {
 
 	//其他扣除
 	private BigDecimal others;
+
+	public String getPayAccountName() {
+		return payAccountName;
+	}
+
+	public void setPayAccountName(String payAccountName) {
+		this.payAccountName = payAccountName;
+	}
+
+	public String getDeclareAccountName() {
+		return declareAccountName;
+	}
+
+	public void setDeclareAccountName(String declareAccountName) {
+		this.declareAccountName = declareAccountName;
+	}
 
 	public BigDecimal getOthers() {
 		return others;

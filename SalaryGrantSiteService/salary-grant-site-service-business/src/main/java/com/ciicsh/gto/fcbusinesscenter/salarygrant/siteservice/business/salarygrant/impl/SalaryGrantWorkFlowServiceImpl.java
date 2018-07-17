@@ -366,34 +366,36 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     //4、查询计算批次信息，调用接口 BatchProxy.getBatchInfo，查询条件batchCode=batchCode，batchType= grantType，查询返回结果PrBatchDTO。
                     //   根据PrBatchDTO. hasMoney和PrBatchDTO. hasAdvance进行条件分支判断：
                     PrBatchDTO prBatchDTO = commonService.getBatchInfo(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
-                    //4、（1）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance=0 直接返回结果false,不执行下面处理逻辑。
-                    if (false == prBatchDTO.getHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
-                        return 1; //1-未来款，无垫付流程
-                    }
+                    if (!ObjectUtils.isEmpty(prBatchDTO)) {
+                        //4、（1）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance=0 直接返回结果false,不执行下面处理逻辑。
+                        if (false == prBatchDTO.getHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
+                            return 1; //1-未来款，无垫付流程
+                        }
 
-                    //4、（2）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance in (1,2,3,4)，调用接口内部方法 isOverdue(SalaryGrantTaskBO salaryGrantTaskBO)，
-                    //     如果isOverdue方法返回true，直接返回结果false,不执行下面处理逻辑；
-                    //     如果isOverdue方法返回false，修改SalaryGrantMainTaskPO. balanceGrant=1。
-                    if (false == prBatchDTO.getHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
-                        Boolean isOverdueResult = isOverdue(salaryGrantTaskBO);
+                        //4、（2）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance in (1,2,3,4)，调用接口内部方法 isOverdue(SalaryGrantTaskBO salaryGrantTaskBO)，
+                        //     如果isOverdue方法返回true，直接返回结果false,不执行下面处理逻辑；
+                        //     如果isOverdue方法返回false，修改SalaryGrantMainTaskPO. balanceGrant=1。
+                        if (false == prBatchDTO.getHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
+                            Boolean isOverdueResult = isOverdue(salaryGrantTaskBO);
 
-                        if (true == isOverdueResult) {
-                            return 2; //2-未来款，已逾期
-                        } else {
+                            if (true == isOverdueResult) {
+                                return 2; //2-未来款，已逾期
+                            } else {
+                                SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
+                                grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
+                                grantMainTaskPO.setBalanceGrant(1); //结算发放标识:0-正常，1-垫付
+                                salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
+                            }
+                        }
+
+                        //4、（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
+                        if (true == prBatchDTO.getHasMoney()) {
+                            //（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
                             SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                             grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                            grantMainTaskPO.setBalanceGrant(1); //结算发放标识:0-正常，1-垫付
+                            grantMainTaskPO.setBalanceGrant(0); //结算发放标识:0-正常，1-垫付
                             salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
                         }
-                    }
-
-                    //4、（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
-                    if (true == prBatchDTO.getHasMoney()) {
-                        //（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
-                        SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
-                        grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
-                        grantMainTaskPO.setBalanceGrant(0); //结算发放标识:0-正常，1-垫付
-                        salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
                     }
                 }
 
@@ -479,10 +481,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 List<SalaryGrantEmployeePO> employeePOList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
                 if (!CollectionUtils.isEmpty(employeePOList)) {
                     employeePOList.stream().forEach(salaryGrantEmployeePO -> {
-                        SalaryGrantEmployeePO updateEmployeePO = new SalaryGrantEmployeePO();
-                        updateEmployeePO.setSalaryGrantEmployeeId(salaryGrantEmployeePO.getSalaryGrantEmployeeId());
-                        updateEmployeePO.setSalaryGrantSubTaskCode("");
-                        salaryGrantEmployeeMapper.updateById(updateEmployeePO);
+                        salaryGrantEmployeePO.setSalaryGrantSubTaskCode(null);
+                        salaryGrantEmployeeMapper.updateAllColumnById(salaryGrantEmployeePO);
                     });
                 }
 

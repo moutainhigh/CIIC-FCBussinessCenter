@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.WorkFlowTaskInfoService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.WorkFlowTaskInfoMapper;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
+import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
 import org.springframework.beans.BeanUtils;
@@ -70,6 +71,32 @@ public class WorkFlowTaskInfoServiceImpl extends ServiceImpl<WorkFlowTaskInfoMap
         po.setTaskDealUserName(variables.get("taskDealUserName").toString());
         po.setApprovedOpinion(variables.get("approvedOpinion").toString());
         workFlowTaskInfoMapper.updateByTaskId(po);
+    }
+
+    /**
+     * 流程结束
+     * @author chenpb
+     * @since 2018-07-13
+     * @param processCompleteMsgDTO
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void processComplete(ProcessCompleteMsgDTO processCompleteMsgDTO) {
+        WorkFlowTaskInfoPO workFlowTaskInfoPO = BeanUtils.instantiate(WorkFlowTaskInfoPO.class);
+        Map<String, Object> variables = processCompleteMsgDTO.getVariables();
+        workFlowTaskInfoPO.setProcessDefinitionKey(processCompleteMsgDTO.getProcessDefinitionKey());
+        workFlowTaskInfoPO.setWorkFlowProcessId(processCompleteMsgDTO.getProcessId());
+        //workFlowTaskInfoPO.setWorkFlowTaskId(processCompleteMsgDTO.getTaskId());
+        workFlowTaskInfoPO.setTaskCode(processCompleteMsgDTO.getMissionId());
+        workFlowTaskInfoPO.setTaskDealUserId(String.valueOf(variables.get("taskDealUserId")));
+        workFlowTaskInfoPO.setTaskDealUserName(String.valueOf(variables.get("taskDealUserName")));
+        workFlowTaskInfoPO.setTaskDealTime(new Date());
+        workFlowTaskInfoPO.setTaskDealOperation(String.valueOf(variables.get("action")));
+        workFlowTaskInfoPO.setApprovedOpinion(String.valueOf(variables.get("approvedOpinion")));
+        workFlowTaskInfoPO.setCreatedBy(String.valueOf(variables.get("taskDealUserId")));
+        workFlowTaskInfoPO.setWorkFlowTaskType(String.valueOf(variables.get("workFlowTaskType")));
+        workFlowTaskInfoPO.setCreatedTime(new Date());
+        workFlowTaskInfoMapper.insert(workFlowTaskInfoPO);
     }
 
     /**

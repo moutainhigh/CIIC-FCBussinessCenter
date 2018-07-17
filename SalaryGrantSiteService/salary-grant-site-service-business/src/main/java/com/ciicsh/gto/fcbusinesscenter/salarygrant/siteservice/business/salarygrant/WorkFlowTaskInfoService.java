@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.service.IService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
+import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
 
@@ -29,6 +30,14 @@ public interface WorkFlowTaskInfoService extends IService<WorkFlowTaskInfoPO> {
      * @param taskCompleteMsgDTO
      */
     void taskComplete(TaskCompleteMsgDTO taskCompleteMsgDTO);
+
+    /**
+     * 流程结束
+     * @author chenpb
+     * @since 2018-07-13
+     * @param processCompleteMsgDTO
+     */
+    void processComplete(ProcessCompleteMsgDTO processCompleteMsgDTO);
 
     /**
      * taskId去重

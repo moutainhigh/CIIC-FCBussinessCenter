@@ -19,6 +19,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServic
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.excel.PRExcelColumnsReader;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.excel.PRItemExcelReader;
+import com.ciicsh.gto.salarymanagementcommandservice.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mongodb.BasicDBObject;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -220,7 +222,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
             statistics.setFailedCount(failed);
         }
         if(failedItems.size() > 0){
-            statistics.setFailedContent((String[])failedItems.toArray());
+            statistics.setFailedContent(failedItems.toArray(new String[failedItems.size()]));
         }
         statistics.setSuccessCount(success);
         statistics.setTotal(total);
@@ -410,10 +412,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
     }
 
      private String TimeStamp2Date(String timestampString) {
-        String formats = "yyyy-MM-dd";
-        Long timestamp = Long.parseLong(timestampString); //Long.parseLong(timestampString) * 1000;
-        String date = new SimpleDateFormat(formats, Locale.CHINA).format(new Date(timestamp));
-        return date;
+        return DateUtil.getValidDate(timestampString);
     }
 
     private int updateItems(String batchCode,String empCode, String companyId, boolean empExistGroup, String empGroupCode, String prGroupCode,

@@ -8,15 +8,15 @@ public enum StockIncomeType {
     /**
      * 个人股票期权行权收入-股票期权
      */
-    STOCKOPTION("01","个人股票期权行权收入-股票期权"),
+    STOCKOPTION("1","个人股票期权行权收入-股票期权"),
     /**
      * 个人股票期权行权收入-股票增值权
      */
-    STOCKAPPRECIATION("02","个人股票期权行权收入-股票增值权"),
+    STOCKAPPRECIATION("2","个人股票期权行权收入-股票增值权"),
     /**
      * 个人股票期权行权收入-限制性股票
      */
-    RESTRICTIVESTOCK("03","个人股票期权行权收入-限制性股票");
+    RESTRICTIVESTOCK("3","个人股票期权行权收入-限制性股票");
 
     private String  code;
 

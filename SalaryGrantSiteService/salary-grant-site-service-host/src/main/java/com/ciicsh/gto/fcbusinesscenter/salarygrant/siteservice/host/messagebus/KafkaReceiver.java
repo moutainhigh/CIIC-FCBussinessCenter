@@ -113,14 +113,17 @@ public class KafkaReceiver {
      * 接收任务完成消息
      * @param message
      */
-    @StreamListener(TaskSink.COMMON_TASKSERVICE_TASK_COMPLETE)
+    @StreamListener(MsgConstants.COMMON_TASKSERVICE_TASK_COMPLETE)
     public void commonTaskServiceTaskComplete(Message<TaskCompleteMsgDTO> message) {
+        TaskCompleteMsgDTO msgDto = message.getPayload();
         try {
-            TaskCompleteMsgDTO  taskCompleteMsgDTO = message.getPayload();
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 ").setContent(""));
-            workFlowTaskInfoService.taskComplete(taskCompleteMsgDTO);
+            if (checkDefinitionKey(msgDto.getProcessDefinitionKey())) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("工作流 --> 任务完成 开始").setContent(JSON.toJSONString(msgDto)));
+                workFlowTaskInfoService.taskComplete(msgDto);
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("工作流 --> 任务完成 结束"));
+            }
         } catch (Exception e) {
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("任务完成 --> exception").setContent(e.getMessage()));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("工作流 --> 任务完成 异常").setContent(e.getMessage()));
         }
     }
 
@@ -131,10 +134,15 @@ public class KafkaReceiver {
     @StreamListener(MsgConstants.COMMON_TASKSERVICE_PROCESS_COMPLETE)
     public void commonTaskServiceProcessComplete(Message<ProcessCompleteMsgDTO> message) {
         ProcessCompleteMsgDTO msgDto = message.getPayload();
-        if (checkDefinitionKey(msgDto.getProcessDefinitionKey())) {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("流程结束 ").setContent("TEST"));
+        try {
+            if (checkDefinitionKey(msgDto.getProcessDefinitionKey())) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("工作流 --> 流程完成 开始").setContent(JSON.toJSONString(msgDto)));
+                workFlowTaskInfoService.processComplete(msgDto);
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("工作流 --> 流程完成 结束"));
+            }
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("工作流 --> 流程完成 异常").setContent(e.getMessage()));
         }
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("流程结束 ").setContent(""));
     }
 
     /**

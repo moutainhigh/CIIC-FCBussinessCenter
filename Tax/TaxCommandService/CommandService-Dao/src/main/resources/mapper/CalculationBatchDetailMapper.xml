@@ -171,4 +171,14 @@
 		</if>
 	</select>
 
+	<!--根据批次号查询批次划款明细列表-->
+	<select id="queryCalBatchDetailMoneyByBatchId" resultMap="BaseResultMap">
+		SELECT cbd.*
+		FROM tax_fc_calculation_batch_detail cbd
+		LEFT JOIN tax_fc_employee_service_batch esb
+		ON cbd.id = esb.cal_batch_detail_id
+		WHERE esb.is_transfer = true
+		and cbd.calculation_batch_id =  #{batchId}
+	</select>
+
 </mapper>
