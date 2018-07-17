@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -28,10 +30,26 @@ public class AccountItemRelationController {
     @Autowired
     private PrPayrollAccountItemRelationService relationService;
 
+    /**
+     * 获取薪资账套的薪资项
+     * @param accountSetCode 薪资账套编码
+     * @param payrollGroupTemplateCode 薪资模板编码
+     * @param payrollGroupCode 薪资组编码
+     * @param managementId 管理方ID
+     * @return 薪资项
+     */
     @GetMapping("/getPayrollAccountItemRelationExts")
     @ResponseBody
-    public JsonResult getPayrollAccountItemRelationExts(@RequestParam String accountSetCode){
-        List<PayrollAccountItemRelationExtPO> relationPOS = relationService.getAccountItemRelationExts(accountSetCode);
+    public JsonResult getPayrollAccountItemRelationExts(@RequestParam String accountSetCode,
+                                                        @RequestParam String payrollGroupTemplateCode,
+                                                        @RequestParam String payrollGroupCode,
+                                                        @RequestParam String managementId){
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("accountSetCode", accountSetCode);
+        paramMap.put("payrollGroupTemplateCode", payrollGroupTemplateCode);
+        paramMap.put("payrollGroupCode", payrollGroupCode);
+        paramMap.put("managementId", managementId);
+        List<PayrollAccountItemRelationExtPO> relationPOS = relationService.getAccountItemRelationExts(paramMap);
         List<PayrollAccountItemRelationExtDTO> relationExtDTOS = relationPOS
                 .stream()
                 .map(PayrollAccountSetTranslator::toPayrollAccountItemRelationExtDTO)

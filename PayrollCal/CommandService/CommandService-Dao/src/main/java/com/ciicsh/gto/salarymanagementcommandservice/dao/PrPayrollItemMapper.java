@@ -24,11 +24,15 @@ import java.util.List;
 public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
 
     /**
-     * 删除薪资项by code
-     * @param codes
-     * @return
+     * 根据itemCode、groupCode、managementId删除薪资项
+     * @param itemCodes
+     * @param groupCode
+     * @param managementId
+     * @return 删除条数
      */
-    Integer deleteItemByCodes(@Param("codes") List<String> codes);
+    Integer deleteItemByCodes(@Param("itemCodes") List<String> itemCodes,
+                              @Param("groupCode") String groupCode,
+                              @Param("managementId") String managementId);
 
     /**
      * 获取薪资项列表
