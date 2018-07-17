@@ -71,6 +71,7 @@ spring:
           consumer:
             partitioned : true
 
+
         pr_management-input-channel:
           destination: fc_payroll_management
           content-type: application/json

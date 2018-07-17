@@ -49,19 +49,20 @@ public class ExportAboutTaxList extends BaseService {
     /**
      * 财务公司数组
      */
-    public static final String[] FINANCE_COMPANY={"财务公司建行徐汇","财务公司中信徐汇","财务公司北京账户"};
+    public static final String[] FINANCE_COMPANY = {"财务公司建行徐汇", "财务公司中信徐汇", "财务公司北京账户"};
 
     /**
      * 获取员工个税申报明细WB
-     * @param map
-     * @param calculationBatchDetailPOList
-     * @param employeeInfoBatchPOList
-     * @param accountMap
+     *
+     * @param topMaps
+     * @param detailListMap
+     * @param employeeListMap
+     * @param accountMaps
      * @param fileName
      * @param type
      * @return
      */
-    public HSSFWorkbook getTaxListReportWB(Map<String,String> map, List<CalculationBatchDetailPO> calculationBatchDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList, Map<String,CalculationBatchAccountPO> accountMap, String fileName, String type) {
+    public HSSFWorkbook getTaxListReportWB(Map<String, Map<String, String>> topMaps, Map<String, List<CalculationBatchDetailPO>> detailListMap, Map<String, List<EmployeeInfoBatchPO>> employeeListMap, Map<String, Map<String, CalculationBatchAccountPO>> accountMaps, String fileName, String type) {
         POIFSFileSystem fs = null;
         HSSFWorkbook wb = null;
         try {
@@ -69,8 +70,29 @@ public class ExportAboutTaxList extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
-            //根据不同的业务需要处理wb
-            this.handleTaxListReportWB(wb, map, calculationBatchDetailPOList, employeeInfoBatchPOList,accountMap);
+            //判断是否需要创建新的sheet页
+            int size = topMaps.size();
+            if (size > 1) {
+                //复制sheet页签
+                for (int i = 1; i < size; i++) {
+                    wb.cloneSheet(0);
+                }
+            }
+            int sheetIndex = 0;
+            for (String key : topMaps.keySet()) {
+                //批次号头部map信息
+                Map<String, String> map = topMaps.get(key);
+                //批次号数据列表
+                List<CalculationBatchDetailPO> calculationBatchDetailPOList = detailListMap.get(key);
+                //批次号雇员信息
+                List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeListMap.get(key);
+                //批次号账户信息
+                Map<String, CalculationBatchAccountPO> accountMap = accountMaps.get(key);
+                wb.setSheetName(sheetIndex,key);
+                //根据不同的业务需要处理wb
+                this.handleTaxListReportWB(wb, sheetIndex, map, calculationBatchDetailPOList, employeeInfoBatchPOList, accountMap);
+                sheetIndex++;
+            }
         } catch (Exception e) {
             if (wb != null) {
                 try {
@@ -88,15 +110,17 @@ public class ExportAboutTaxList extends BaseService {
 
     /**
      * 处理员工个税申报明细WB
+     *
      * @param wb
+     * @param sheetIndex
      * @param map
      * @param calculationBatchDetailPOList
      * @param employeeInfoBatchPOList
      * @param accountMap
      */
-    private void handleTaxListReportWB(HSSFWorkbook wb, Map<String, String> map, List<CalculationBatchDetailPO> calculationBatchDetailPOList,List<EmployeeInfoBatchPO> employeeInfoBatchPOList,Map<String,CalculationBatchAccountPO> accountMap){
+    private void handleTaxListReportWB(HSSFWorkbook wb, int sheetIndex, Map<String, String> map, List<CalculationBatchDetailPO> calculationBatchDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList, Map<String, CalculationBatchAccountPO> accountMap) {
         // 读取了模板内所有sheet内容
-        HSSFSheet sheet = wb.getSheetAt(0);
+        HSSFSheet sheet = wb.getSheetAt(sheetIndex);
         //第2行
         HSSFRow row2 = sheet.getRow(1);
         if (null == row2) {
@@ -136,12 +160,12 @@ public class ExportAboutTaxList extends BaseService {
         if (null == row4) {
             row4 = sheet.createRow(3);
         }
-        //公司-B4
-        HSSFCell cellB4 = row4.getCell(1);
-        if (null == cellB4) {
-            cellB4 = row4.createCell(1);
+        //管理方-C4
+        HSSFCell cellC4 = row4.getCell(2);
+        if (null == cellC4) {
+            cellC4 = row4.createCell(2);
         }
-        cellB4.setCellValue(map.get("company"));
+        cellC4.setCellValue(map.get("managerInfo"));
         //服务中心-H4
         HSSFCell cellH4 = row4.getCell(7);
         if (null == cellH4) {
@@ -159,15 +183,15 @@ public class ExportAboutTaxList extends BaseService {
         if (null == row5) {
             row5 = sheet.createRow(4);
         }
-        //原公司编号-C5
+        //是否垫付-C5
         HSSFCell cellC5 = row5.getCell(2);
         if (null == cellC5) {
             cellC5 = row5.createCell(2);
         }
-        cellC5.setCellValue(map.get("oldCompanyNo"));
+        cellC5.setCellValue(map.get("isAdvance"));
 
         //将结果集按照公司分类
-        Map<String,List<EmployeeInfoBatchPO>> employeeMapAboutCompany = employeeInfoBatchPOList.stream().collect(Collectors.groupingBy(EmployeeInfoBatchPO::getCompanyNo));
+        Map<String, List<EmployeeInfoBatchPO>> employeeMapAboutCompany = employeeInfoBatchPOList.stream().collect(Collectors.groupingBy(EmployeeInfoBatchPO::getCompanyNo));
         int mapSize = employeeMapAboutCompany.size();
         //如果结果集大于模板列表初始大小
         if (calculationBatchDetailPOList.size() > TAX_LIST_SIZE) {
@@ -209,7 +233,7 @@ public class ExportAboutTaxList extends BaseService {
             BigDecimal amountIndependentMoneySmall = new BigDecimal(0);
             //应纳税所得额小计
             BigDecimal incomeForTaxSmall = new BigDecimal(0);
-            for(EmployeeInfoBatchPO employeeInfoBatchPO: employeeInfoBatchPOS){
+            for (EmployeeInfoBatchPO employeeInfoBatchPO : employeeInfoBatchPOS) {
                 CalculationBatchDetailPO calculationBatchDetailPO = calculationBatchDetailPOList.stream().filter(item -> item.getId().equals(employeeInfoBatchPO.getCalBatchDetailId())).findFirst().orElse(new CalculationBatchDetailPO());
                 CalculationBatchAccountPO calculationBatchAccountPO = accountMap.get(calculationBatchDetailPO.getDeclareAccount());
                 HSSFRow row = sheet.getRow(rowIndex);
@@ -256,21 +280,21 @@ public class ExportAboutTaxList extends BaseService {
                 //独立库金额
                 String amountIndependent = "0";
                 //判断是否是大库
-                if(calculationBatchAccountPO != null && calculationBatchAccountPO.getSource() != null){
-                    if(calculationBatchAccountPO.getSource().equals(SOURCE_BIG)){
+                if (calculationBatchAccountPO != null && calculationBatchAccountPO.getSource() != null) {
+                    if (calculationBatchAccountPO.getSource().equals(SOURCE_BIG)) {
                         //判断是中智公司还是财务公司
                         List<String> ciicList = Arrays.asList(CIIC_COMPANY).stream().filter(item -> item.contains(calculationBatchAccountPO.getAccountName())).collect(Collectors.toList());
                         List<String> financeList = Arrays.asList(FINANCE_COMPANY).stream().filter(item -> item.contains(calculationBatchAccountPO.getAccountName())).collect(Collectors.toList());
-                        if(ciicList.size() > 0){
+                        if (ciicList.size() > 0) {
                             amountCiic = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
-                            ciicAmountMoneySmall = ciicAmountMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
-                        }else if(financeList.size() > 0){
+                            ciicAmountMoneySmall = ciicAmountMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal());
+                        } else if (financeList.size() > 0) {
                             amountFinance = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
-                            financeMoneySmall = financeMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
+                            financeMoneySmall = financeMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal());
                         }
-                    }else{
+                    } else {
                         amountIndependent = calculationBatchDetailPO.getTaxReal() == null ? "0" : calculationBatchDetailPO.getTaxReal().toString();
-                        amountIndependentMoneySmall = amountIndependentMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal() );
+                        amountIndependentMoneySmall = amountIndependentMoneySmall.add(calculationBatchDetailPO.getTaxReal() == null ? new BigDecimal(0) : calculationBatchDetailPO.getTaxReal());
                     }
                 }
                 //扣个人所得税(中智公司)-G列
@@ -297,7 +321,7 @@ public class ExportAboutTaxList extends BaseService {
                     cellJ = row.createCell(9);
                 }
                 cellJ.setCellValue(calculationBatchDetailPO.getIncomeForTax() == null ? "0" : calculationBatchDetailPO.getIncomeForTax().toString());
-                incomeForTaxSmall = incomeForTaxSmall.add(calculationBatchDetailPO.getIncomeForTax() == null ? new BigDecimal(0) : calculationBatchDetailPO.getIncomeForTax() );
+                incomeForTaxSmall = incomeForTaxSmall.add(calculationBatchDetailPO.getIncomeForTax() == null ? new BigDecimal(0) : calculationBatchDetailPO.getIncomeForTax());
                 empNumSmall++;
                 rowIndex++;
                 num++;
@@ -319,7 +343,7 @@ public class ExportAboutTaxList extends BaseService {
             if (null == cellC) {
                 cellC = rowSmall.createCell(2);
             }
-            cellC.setCellValue(companyNoSmall+"小计");
+            cellC.setCellValue(companyNoSmall + "小计");
             //雇员姓名-E列
             HSSFCell cellE = rowSmall.getCell(4);
             if (null == cellE) {
@@ -404,9 +428,9 @@ public class ExportAboutTaxList extends BaseService {
         }
         cellJ.setCellValue(incomeForTaxTotal.toString());
         //表格尾部
-        HSSFRow rowOperator = sheet.getRow(rowIndex+3);
+        HSSFRow rowOperator = sheet.getRow(rowIndex + 3);
         if (null == rowOperator) {
-            rowOperator = sheet.createRow(rowIndex+3);
+            rowOperator = sheet.createRow(rowIndex + 3);
         }
         //操作员-C列
         HSSFCell cellC = rowOperator.getCell(2);

@@ -67,4 +67,11 @@ public interface CalculationBatchDetailService {
      * @return
      */
     List<CalculationBatchDetailPO> queryCalculationBatchDetailByBatchNos(List<Long> batchIds);
+
+    /**
+     * 根据批次号查询批次划款明细列表
+     * @param batchId
+     * @return
+     */
+    List<CalculationBatchDetailPO> queryCalBatchDetailMoneyByBatchId(Long batchId);
 }
