@@ -72,9 +72,6 @@ public class CommonServiceImpl {
 
         int rowAffected = 0;
 
-        //create index
-        normalBatchMongoOpt.createIndex();
-
         if(employees !=null && employees.size() > 0) {
             for (DBObject item: employees) {
                 DBObject base_info =item.get("base_info") == null ? item :(DBObject)item.get("base_info");
@@ -105,6 +102,8 @@ public class CommonServiceImpl {
             rowAffected += updateBatchMongodb(batchPO,null,payItems);
         }
         try {
+            //create index
+            normalBatchMongoOpt.createIndex();
             logger.info("add normal batch row affected : " + String.valueOf(rowAffected));
             return rowAffected;
 
@@ -228,7 +227,7 @@ public class CommonServiceImpl {
         //Update update = Update.update("catalog", catalog);
         Update update = new Update();
         update.set("catalog",catalog);
-        WriteResult result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,DBObject.class);
+        WriteResult result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,NormalBatchMongoOpt.PR_NORMAL_BATCH);
         //count = normalBatchMongoOpt.upsert(query,update);
 
         return result.getN();

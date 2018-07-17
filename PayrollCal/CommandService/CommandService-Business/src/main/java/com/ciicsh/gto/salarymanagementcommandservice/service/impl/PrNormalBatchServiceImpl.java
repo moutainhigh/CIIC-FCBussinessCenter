@@ -439,7 +439,7 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
             update = Update.update("catalog", catalog);
         }
 
-        items.remove(0); // 如果包含索引列，需要删除该列
+        //items.remove(0); // 如果包含索引列，需要删除该列
 
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,NormalBatchMongoOpt.PR_NORMAL_BATCH);
