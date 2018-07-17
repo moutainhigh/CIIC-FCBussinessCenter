@@ -228,23 +228,20 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return statistics;
     }
 
-    private BasicDBObject getEmpInfoFromMongo(String batchCode, String empCode, int batchType){
+    private BasicDBObject getEmpInfoFromMongo(String batchCode, String empCode, String companyId, int batchType){
         List<DBObject> batchList = null;
 
-        Criteria criteria = null;
-        if(StringUtils.isEmpty(empCode)){
-            criteria = Criteria.where("batch_code").is(batchCode);
-        }else {
-            criteria = Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
-        }
+        Criteria  criteria = Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId);
+
         Query query = new Query(criteria);
         query.fields()
-                .include("batch_code")
+                /*.include("batch_code")
                 .include("emp_group_code")
                 .include("pr_group_code")
                 .include(PayItemName.EMPLOYEE_CODE_CN)
-                .include("catalog.batch_info")
-                .include("catalog.pay_items.item_type")
+                .include(PayItemName.EMPLOYEE_COMPANY_ID)*/
+                .include("catalog.pay_items")
+                /*.include("catalog.pay_items.item_type")
                 .include("catalog.pay_items.data_type")
                 .include("catalog.pay_items.cal_priority")
                 .include("catalog.pay_items.item_name")
@@ -253,12 +250,8 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                 .include("catalog.pay_items.decimal_process_type")
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
-                .include("catalog.pay_items.display_priority");
-
-        if(StringUtils.isEmpty(empCode)){ // 雇员编号不存在，
-            query = query.skip(0).limit(1);
-        }
-
+                .include("catalog.pay_items.display_priority")*/
+                ;
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             //根据批次号获取雇员信息：雇员基础信息，雇员薪资信息，批次信息
             batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH);
@@ -274,6 +267,33 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
     }
 
+    private BasicDBObject getPayItemsFromMongo(String batchCode, int batchType){
+        List<DBObject> batchList = null;
+
+        Criteria criteria = Criteria.where("batch_code").is(batchCode);
+
+        Query query = new Query(criteria);
+        query.fields()
+                .include("batch_code")
+                .include("emp_group_code")
+                .include("pr_group_code")
+                .include("catalog.pay_items");
+
+        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
+            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
+            batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
+        }else {
+            batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
+        }
+        if(batchList != null && batchList.size() > 0 ){
+            return (BasicDBObject)batchList.get(0);
+        }
+        return null;
+
+    }
+
+
     private int processSuccessRows(String batchCode, int batchType, int importType, List<List<BasicDBObject>> excelRows){
         int rowAffected = 0;
 
@@ -283,9 +303,12 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
 
         for (List<BasicDBObject> row : filterRows) {
             String empCode = row.get(0).get("emp_code") == null ? "" : String.valueOf(row.get(0).get("emp_code"));
+            String companyId = row.get(0).get("companyId") == null ? "" : String.valueOf(row.get(0).get("companyId"));
 
-            if(StringUtils.isNotEmpty(empCode)) {
-                emp = getEmpInfoFromMongo(batchCode,empCode,batchType);
+            emp = getEmpInfoFromMongo(batchCode,empCode,companyId,batchType);
+
+            if(emp != null){ // 批次中查找到该雇员
+
                 /*
                  2、修改导入
                  场景：计算批次雇员组中已经有雇员。导入时根据外部文件中提供的雇员基本信息匹配雇员：
@@ -297,18 +320,20 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                  1）.如果匹配上做修改导入
                  2）. 如果匹配不上做覆盖导入
                  */
-                if(emp != null) { // 雇员组找到雇员
-                    if (importType == CompExcelImportEmum.MODIFY_EXPORT.getValue() ||
-                            importType == CompExcelImportEmum.APPEND_EXPORT.getValue()) {
-                        BasicDBObject catalog = (BasicDBObject) emp.get("catalog");
-                        List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
 
-                        payItems.forEach(item -> {
-                            setItemValue(item,row);
-                        });
-                        rowAffected += updateItems(batchCode, empCode, true, null, null, null, batchType, payItems); // update items
-                    }
-                }else { // 雇员组中没有雇员
+                if (importType == CompExcelImportEmum.MODIFY_EXPORT.getValue() ||
+                        importType == CompExcelImportEmum.APPEND_EXPORT.getValue()) {
+                    BasicDBObject catalog = (BasicDBObject) emp.get("catalog");
+                    List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
+
+                    payItems.forEach(item -> {
+                        setItemValue(item,row);
+                    });
+                    rowAffected += updateItems(batchCode, empCode, companyId, true, null, null, null, batchType, payItems); // update items
+                }
+
+            }else { //批次中未找到该雇员
+
                  /*
                  1、覆盖导入
                  场景：计算批次雇员组中没有雇员，全部从外部文件导入。导入后系统将文件内雇员加入当前批次中雇员组，
@@ -322,25 +347,26 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
                  2）.如果匹配不上做覆盖导入
                  是否覆盖导入一定要有
                  */
-                    emp = getEmpInfoFromMongo(batchCode, null, batchType); // 获取薪资结构项列表
+                if (importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue() ||
+                        importType == CompExcelImportEmum.APPEND_EXPORT.getValue()) {
 
-                    if (importType == CompExcelImportEmum.OVERRIDE_EXPORT.getValue() ||
-                            importType == CompExcelImportEmum.APPEND_EXPORT.getValue()) {
+                    BasicDBObject batchInfo = getPayItemsFromMongo(batchCode,batchType);
+                            //.include(PayItemName.EMPLOYEE_CODE_CN)
+                            //.include(PayItemName.EMPLOYEE_COMPANY_ID)
 
-                        BasicDBObject catalog = (BasicDBObject) emp.get("catalog");
-                        String empGroupCode = String.valueOf(emp.get("emp_group_code"));
-                        String prGroupCode = String.valueOf(emp.get("pr_group_code"));
+                    BasicDBObject catalog = (BasicDBObject) batchInfo.get("catalog");
+                    String empGroupCode = String.valueOf(batchInfo.get("emp_group_code"));
+                    String prGroupCode = String.valueOf(batchInfo.get("pr_group_code"));
 
-                        List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
-                        List<BasicDBObject> clonePayItems = cloneListDBObject(payItems);
-                        for (BasicDBObject item : clonePayItems) {
-                            setItemValue(item,row);
-                        }
-                        rowAffected += updateItems(batchCode, empCode, false, empGroupCode, prGroupCode, catalog, batchType, clonePayItems);
+                    List<BasicDBObject> payItems = (List<BasicDBObject>) catalog.get("pay_items");
+                    List<BasicDBObject> clonePayItems = cloneListDBObject(payItems);
+                    for (BasicDBObject item : clonePayItems) {
+                        setItemValue(item,row);
                     }
+                    rowAffected += updateItems(batchCode, empCode, companyId, false, empGroupCode, prGroupCode, catalog, batchType, clonePayItems);
                 }
-
             }
+
         }
 
         /*
@@ -390,13 +416,14 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return date;
     }
 
-    private int updateItems(String batchCode,String empCode, boolean empExistGroup, String empGroupCode, String prGroupCode,
+    private int updateItems(String batchCode,String empCode, String companyId, boolean empExistGroup, String empGroupCode, String prGroupCode,
                             BasicDBObject catalog, int batchType, List<BasicDBObject> items){
 
-        DBObject index = (DBObject) items.get(0).get("row_index");
         WriteResult result = null;
         Criteria criteria = Criteria.where("batch_code").is(batchCode)
-                .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
+                .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode)
+                .and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId);
+
         Query query = null;
         Update update = null;
         if(empExistGroup) { // 该雇员在雇员组中有
@@ -405,22 +432,16 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         }else {
             // 雇员在雇员组不存在
             criteria.and("pr_group_code").is(prGroupCode)
-                    .and("emp_group_code").is(empGroupCode)
-                    .and(PayItemName.EMPLOYEE_COMPANY_ID).is(index.get("companyId"));
+                    .and("emp_group_code").is(empGroupCode);
+
             query = Query.query(criteria);
             catalog.put("emp_info",null);
-            /*DBObject empIdentity = new BasicDBObject();
-            empIdentity.put("emp_Code",index.get("emp_Code"));
-            empIdentity.put("companyId",index.get("companyId"));
-            empIdentity.put("emp_Id",index.get("emp_Id"));
-
-            catalog.put("emp_identity",empIdentity);*/
             catalog.put("pay_items",items);
             update = Update.update("catalog", catalog);
         }
-        if(index != null){
-            items.remove(0); // 如果包含索引列，需要删除该列
-        }
+
+        items.remove(0); // 如果包含索引列，需要删除该列
+
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,NormalBatchMongoOpt.PR_NORMAL_BATCH);
         }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {

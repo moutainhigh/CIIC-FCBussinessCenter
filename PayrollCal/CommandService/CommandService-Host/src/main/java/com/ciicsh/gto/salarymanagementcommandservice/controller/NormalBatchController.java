@@ -394,7 +394,6 @@ public class NormalBatchController {
         Boolean result = false;
 
         int status = fcBizTransactionMongoOpt.getTransactionStatus(batchCode);
-        result = status > 0 ? false :true;
         /*
         if(batchType == BatchTypeEnum.NORMAL.getValue()) {
             PrNormalBatchPO normalBatchPO = batchService.getBatchByCode(batchCode);
@@ -406,7 +405,7 @@ public class NormalBatchController {
             PrBackTrackingBatchPO backTrackingBatchPO = backTrackingBatchService.getPrBackTrackingBatchPO(batchCode);
             result = backTrackingBatchPO.getStatus() >= BatchStatusEnum.ISSUED.getValue();
         }*/
-        if(!result) {
+        if(status > 0) {
             return JsonResult.faultMessage("该批次不能取消关帐，请联系相关人员处理!");
         }else {
             return JsonResult.success("可以取消关帐");
@@ -491,7 +490,7 @@ public class NormalBatchController {
             list.add(map);
             count ++;
             if(count == 1) {
-                payItems.stream().forEach(item -> {
+                payItems.forEach(item -> {
                     excelExportEntities.add(new ExcelExportEntity((String) item.get("item_name"), item.get("item_name")));
                 });
             }

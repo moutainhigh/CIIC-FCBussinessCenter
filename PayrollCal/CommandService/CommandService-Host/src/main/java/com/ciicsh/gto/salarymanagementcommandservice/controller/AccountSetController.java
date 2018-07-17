@@ -205,4 +205,12 @@ public class AccountSetController extends BaseController {
         PrPayrollAccountSetPO prPayrollAccountSetPO = prAccountSetService.getAccountSetInfo(accSetCode);
         return JsonResult.success(prPayrollAccountSetPO);
     }
+
+    @GetMapping("/checkEmpGroupCanDel")
+    public JsonResult checkEmpGroupCanDel(@RequestParam("empGroupCodes") String empGroupCodes) {
+
+        return JsonResult.success("");
+    }
+
+
 }
