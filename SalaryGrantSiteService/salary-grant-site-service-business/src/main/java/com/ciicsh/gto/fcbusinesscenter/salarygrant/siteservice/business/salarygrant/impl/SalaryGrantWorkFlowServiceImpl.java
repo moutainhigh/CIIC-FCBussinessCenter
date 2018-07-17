@@ -358,9 +358,10 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
 
         if (!CollectionUtils.isEmpty(mainTaskPOList)) {
             for (SalaryGrantMainTaskPO mainTaskPO : mainTaskPOList) {
+                /** 添加薪资发放日期，代码维度处理。业务待确认  2017-07-17*/
+                mainTaskPO.setGrantDate(salaryGrantTaskBO.getGrantDate());
                 //发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
                 Integer grantType = mainTaskPO.getGrantType();
-
                 //3、如果SalaryGrantMainTaskPO. grantType in (1,2,3)，则继续执行第4步；否则直接跳转到第5步。
                 if (SalaryGrantBizConsts.GRANT_TYPE_NORMAL == grantType || SalaryGrantBizConsts.GRANT_TYPE_ADJUST == grantType || SalaryGrantBizConsts.GRANT_TYPE_BACK_TRACE == grantType) {
                     //4、查询计算批次信息，调用接口 BatchProxy.getBatchInfo，查询条件batchCode=batchCode，batchType= grantType，查询返回结果PrBatchDTO。
