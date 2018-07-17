@@ -260,7 +260,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
                 }
             });
             if (needDeleteItemCodes.size() > 0) {
-                prItemService.deleteItemByCodes(needDeleteItemCodes);
+                prItemService.deleteItemByCodes(needDeleteItemCodes, i.getGroupCode(), i.getManagementId());
             }
             // 更新，添加继承项
             prItemsInTemplate.forEach(j -> {

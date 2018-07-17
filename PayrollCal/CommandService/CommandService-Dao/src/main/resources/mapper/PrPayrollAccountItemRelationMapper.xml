@@ -33,12 +33,35 @@
 
 	<select id="getAccountItemRelationExts" resultMap="BaseExtResultMap">
 		SELECT
-		<include refid="AccountItemRelation_Extension_All_Columns" />
+			a.id,
+			a.account_set_code,
+			a.payroll_item_code,
+			a.payroll_item_alias,
+			a.is_active,
+			b.item_name,
+			b.item_type,
+			b.data_type,
+			b.item_code,
+			b.payroll_group_code,
+			b.management_id,
+			b.payroll_group_template_code
 		FROM
-		pr_payroll_account_item_relation a
+			pr_payroll_account_item_relation a
 		INNER JOIN pr_approved_payroll_item b on a.payroll_item_code = b.item_code
 		WHERE
-		a.account_set_code = #{accountSetCode}
+			a.is_active = 1
+		<if test="accountSetCode != null and accountSetCode != ''">
+			AND a.account_set_code = #{accountSetCode}
+		</if>
+		<if test="payrollGroupTemplateCode != null and payrollGroupTemplateCode != ''">
+			AND b.payroll_group_template_code = #{payrollGroupTemplateCode}
+		</if>
+		<if test="payrollGroupCode != null and payrollGroupCode != ''">
+			AND b.payroll_group_code = #{payrollGroupCode}
+		</if>
+		<if test="managementId != null and managementId != ''">
+			AND b.management_id = #{managementId}
+		</if>
 		ORDER by b.display_priority ASC
 	</select>
 

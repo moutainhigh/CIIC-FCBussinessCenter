@@ -71,7 +71,7 @@ public class GroupController implements PayrollGroupProxy{
     }
 
     /**
-     * 拷贝薪资组
+     * 复制薪资组
      * @param srcCode
      * @param newName
      * @return
