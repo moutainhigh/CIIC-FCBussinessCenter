@@ -37,4 +37,9 @@ public class SalaryGrantTaskQueryServiceTest {
             List<WorkFlowTaskInfoBO> workFlowTaskInfoBOList = workFlowTaskInfoBOPage.getRecords();
         }
     }
+
+    @Test
+    public void queryForPayment() {
+        taskQueryService.queryForPayment();
+    }
 }
