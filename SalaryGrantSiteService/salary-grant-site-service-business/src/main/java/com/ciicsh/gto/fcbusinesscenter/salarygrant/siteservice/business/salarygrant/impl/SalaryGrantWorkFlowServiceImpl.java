@@ -360,6 +360,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
             for (SalaryGrantMainTaskPO mainTaskPO : mainTaskPOList) {
                 /** 添加薪资发放日期，代码维度处理。业务待确认  2017-07-17*/
                 mainTaskPO.setGrantDate(salaryGrantTaskBO.getGrantDate());
+                /** 添加操作员字段处理，代码维度处理。业务待确认  2017-07-17*/
+                mainTaskPO.setOperatorUserId(salaryGrantTaskBO.getUserId());
                 //发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
                 Integer grantType = mainTaskPO.getGrantType();
                 //3、如果SalaryGrantMainTaskPO. grantType in (1,2,3)，则继续执行第4步；否则直接跳转到第5步。
@@ -404,6 +406,8 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                 grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
                 grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_APPROVAL); //状态:1-审批中
+                /** 添加操作员字段处理，代码维度处理。业务待确认  2017-07-17*/
+                grantMainTaskPO.setOperatorUserId(mainTaskPO.getOperatorUserId());
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
                 //6、检查提交的雇员信息是否有变更，可以从自动暂缓改为正常，调用雇员信息变更接口。--后面补充，步骤预留
@@ -511,11 +515,15 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
         List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
         if (!CollectionUtils.isEmpty(mainTaskPOList)) {
             for (SalaryGrantMainTaskPO mainTaskPO : mainTaskPOList) {
+                /** 添加审核员字段处理，代码维度处理。业务待确认  2017-07-17*/
+                mainTaskPO.setApproveUserId(salaryGrantTaskBO.getUserId());
                 //  （1）更新主表字段: task_status=2 ，approved_opinion = salaryGrantTaskBO. approvedOpinion
                 SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                 grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
                 grantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_PASS); //状态:2-审批通过
                 grantMainTaskPO.setApprovedOpinion(salaryGrantTaskBO.getApprovedOpinion()); //审批意见
+                /** 添加审核员字段处理，代码维度处理。业务待确认  2017-07-17*/
+                grantMainTaskPO.setApproveUserId(salaryGrantTaskBO.getUserId());
                 salaryGrantMainTaskMapper.updateById(grantMainTaskPO);
 
                 //拆分子表
