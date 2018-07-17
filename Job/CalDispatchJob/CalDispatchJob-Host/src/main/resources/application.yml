@@ -19,7 +19,7 @@ spring:
         pr-normal-batch-input-channel:
           destination: fc_payroll_batch # 正常批次新增或者删除
           content-type: application/json
-          group: batch_receive # consumer group
+          group: ${spring.application.name} # consumer group
           consumer:
             partitioned: true
 

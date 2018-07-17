@@ -90,4 +90,7 @@ public interface PrAccountSetService {
      * @return
      */
     List<PrAccountSetOptPO> getAccountSetWithItemsByManagementId(String managementId);
+
+    int countByEmpGroupCodeList(@Param("empGroupCodes") List<String> empGroupCodes);
+
 }
