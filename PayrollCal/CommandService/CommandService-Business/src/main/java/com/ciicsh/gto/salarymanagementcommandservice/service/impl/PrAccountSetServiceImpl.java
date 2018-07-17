@@ -180,6 +180,11 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
         return accountSetMapper.selectAccountSetWithItemsByManagementId(managementId);
     }
 
+    @Override
+    public int countByEmpGroupCodeList(List<String> empGroupCodes) {
+        return accountSetMapper.countByEmpGroupCodeList(empGroupCodes);
+    }
+
     private PrPayrollAccountItemRelationPO toPayrollAccountItemRelationPO(PrPayrollItemPO payrollItemPO,PrPayrollAccountSetPO payrollAccountSetPO){
         PrPayrollAccountItemRelationPO relationPO = new PrPayrollAccountItemRelationPO();
         relationPO.setAccountSetCode(payrollAccountSetPO.getAccountSetCode());

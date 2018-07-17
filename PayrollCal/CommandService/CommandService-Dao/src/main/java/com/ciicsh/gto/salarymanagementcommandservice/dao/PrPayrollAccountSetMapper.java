@@ -65,4 +65,6 @@ public interface PrPayrollAccountSetMapper extends BaseMapper<PrPayrollAccountSe
      * @return 薪资账套列表带薪资项列表
      */
     List<PrAccountSetOptPO> selectAccountSetWithItemsByManagementId(@Param("managementId") String managementId);
+
+    int countByEmpGroupCodeList(@Param("empGroupCodes") List<String> empGroupCodes);
 }

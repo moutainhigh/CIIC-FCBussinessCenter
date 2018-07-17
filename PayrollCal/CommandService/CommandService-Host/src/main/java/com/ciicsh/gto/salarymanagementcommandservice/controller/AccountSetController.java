@@ -17,6 +17,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetExtensionTranslator;
 import com.ciicsh.gto.salarymanagementcommandservice.translator.PayrollAccountSetTranslator;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -208,8 +210,16 @@ public class AccountSetController extends BaseController {
 
     @GetMapping("/checkEmpGroupCanDel")
     public JsonResult checkEmpGroupCanDel(@RequestParam("empGroupCodes") String empGroupCodes) {
-
-        return JsonResult.success("");
+        if(StringUtils.isNotEmpty(empGroupCodes)) {
+            List<String> empGroupCodeList = Arrays.asList(empGroupCodes.split(","));
+            int result = prAccountSetService.countByEmpGroupCodeList(empGroupCodeList);
+            if(result > 0) {
+                return JsonResult.faultMessage("雇员组已经绑定薪资帐套");
+            } else {
+                JsonResult.success("ok");
+            }
+        }
+        return JsonResult.faultMessage("没有选中的雇员组");
     }
 
 
