@@ -22,8 +22,8 @@ spring:
           group: compute_async_1 # consumer group
           consumer:
             partitioned: true
-            resetOffsets: true
-            startOffset: latest
+            #resetOffsets: true
+            #startOffset: latest
 
         pr_compute-status-output-channel:
           destination: fc_payroll_compute-status # topic name
@@ -37,7 +37,6 @@ spring:
       #instance-index: 1
 server:
   port: 7034
-
 
 app:
   id: 10007022
