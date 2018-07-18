@@ -310,8 +310,7 @@ public class CommonServiceImpl implements CommonService {
             salaryBatchDTO.setTotalEmployeeCount(taskPaymentBO.getTotalPersonCount()); //雇员总数（计算批次的雇员数量）
             salaryBatchDTO.setPayAmount(taskPaymentBO.getPayAmount()); //本批次将付金额（计算批次里正常的雇员的实发工资之和）
             salaryBatchDTO.setPayEmployeeCount(taskPaymentBO.getPayEmployeeCount()); //本批次将付雇员数量（正常的雇员）
-//            salaryBatchDTO.setApplyer(getUserNameById(taskPaymentBO.getOperatorUserId())); //申请人
-            salaryBatchDTO.setApplyer("申请人"); //申请人
+            salaryBatchDTO.setApplyer(getUserNameById(taskPaymentBO.getOperatorUserId())); //申请人
             salaryBatchDTO.setApplyDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))); //申请日期
             salaryBatchDTO.setAgentFeeAmount(new BigDecimal(0)); //财务代理费
             //is_advance，逻辑判断
@@ -386,7 +385,7 @@ public class CommonServiceImpl implements CommonService {
                 salaryEmployeeDTO.setPayAmount(employeePaymentBO.getPaymentAmount()); //应付金额 实发工资
                 salaryEmployeeDTO.setSalaryMonth(employeePaymentBO.getGrantCycle()); //工资月份
                 salaryEmployeeDTO.setTaxMonth(employeePaymentBO.getTaxCycle()); //个税月份
-                salaryEmployeeDTO.setFinanceAccountId(ObjectUtils.isEmpty(employeePaymentBO.getContractFirstParty()) ? null : Integer.parseInt(employeePaymentBO.getContractFirstParty())); //帐套ID
+//                salaryEmployeeDTO.setFinanceAccountId(ObjectUtils.isEmpty(employeePaymentBO.getContractFirstParty()) ? null : Integer.parseInt(employeePaymentBO.getContractFirstParty())); //帐套ID
                 salaryEmployeeDTO.setServiceFee(employeePaymentBO.getServiceFeeAmount()); //个人薪酬服务费
                 //如果雇员是暂缓grant_status（1-手动、2-自动）不发放，则置为-1；否则赋值为对应grant_status的值
                 if (!ObjectUtils.isEmpty(employeePaymentBO.getGrantStatus())) {
