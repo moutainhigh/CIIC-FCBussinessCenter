@@ -50,7 +50,7 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void queryUserName(){
+    public void getUserNameById(){
         String userName = commonService.getUserNameById("XTY00699");
         System.out.println("userName: " + userName);
     }
