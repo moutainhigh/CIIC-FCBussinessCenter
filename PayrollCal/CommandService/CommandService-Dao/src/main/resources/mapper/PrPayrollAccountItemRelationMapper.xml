@@ -81,6 +81,7 @@
 		pr_payroll_account_item_relation(
 			id,
 			account_set_code,
+			payroll_group_code,
 			payroll_item_code,
 			payroll_item_alias,
 			is_active,
@@ -94,6 +95,7 @@
 		(
 			#{item.id},
 			#{item.accountSetCode},
+			#{item.payrollGroupCode},
 			#{item.payrollItemCode},
 			#{item.payrollItemAlias},
 			#{item.isActive},
@@ -104,5 +106,13 @@
 		)
 		</foreach>
 	</insert>
+
+	<select id="selectAccountCodeList" resultMap="BaseResultMap">
+		SELECT DISTINCT
+		  account_set_code
+		FROM
+		  pr_payroll_account_item_relation
+		WHERE payroll_group_code = #{payrollGroupCode}
+	</select>
 
 </mapper>
