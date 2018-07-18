@@ -333,6 +333,9 @@ public class CommonServiceImpl implements CommonService {
         List<SalaryEmployeeDTO> employeeList = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(employeePaymentBOList)) {
+            // -------------- 过滤出没有银行卡信息的雇员 待确认业务逻辑----------------
+            employeePaymentBOList = employeePaymentBOList.stream().filter(employeePaymentBO -> !StringUtils.isEmpty(employeePaymentBO.getCardNum())).collect(Collectors.toList());
+
             employeePaymentBOList.stream().forEach(employeePaymentBO -> {
                 SalaryEmployeeDTO salaryEmployeeDTO = new SalaryEmployeeDTO();
                 salaryEmployeeDTO.setCompanyId(employeePaymentBO.getCompanyId()); //公司ID
