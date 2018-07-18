@@ -371,14 +371,14 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                     PrBatchDTO prBatchDTO = commonService.getBatchInfo(salaryGrantTaskBO.getBatchCode(), salaryGrantTaskBO.getGrantType());
                     if (!ObjectUtils.isEmpty(prBatchDTO)) {
                         //4、（1）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance=0 直接返回结果false,不执行下面处理逻辑。
-                        if (false == prBatchDTO.getHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
+                        if (false == prBatchDTO.isHasMoney() && 0 == prBatchDTO.getHasAdvance()) {
                             return 1; //1-未来款，无垫付流程
                         }
 
                         //4、（2）PrBatchDTO. hasMoney=0 && PrBatchDTO. hasAdvance in (1,2,3,4)，调用接口内部方法 isOverdue(SalaryGrantTaskBO salaryGrantTaskBO)，
                         //     如果isOverdue方法返回true，直接返回结果false,不执行下面处理逻辑；
                         //     如果isOverdue方法返回false，修改SalaryGrantMainTaskPO. balanceGrant=1。
-                        if (false == prBatchDTO.getHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
+                        if (false == prBatchDTO.isHasMoney() && (1 == prBatchDTO.getHasAdvance() || 2 == prBatchDTO.getHasAdvance() || 3 == prBatchDTO.getHasAdvance() || 4 == prBatchDTO.getHasAdvance())){
                             Boolean isOverdueResult = isOverdue(salaryGrantTaskBO);
 
                             if (true == isOverdueResult) {
@@ -392,7 +392,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                         }
 
                         //4、（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
-                        if (true == prBatchDTO.getHasMoney()) {
+                        if (true == prBatchDTO.isHasMoney()) {
                             //（3）PrBatchDTO. hasMoney=1，修改SalaryGrantMainTaskPO. balanceGrant=0
                             SalaryGrantMainTaskPO grantMainTaskPO = new SalaryGrantMainTaskPO();
                             grantMainTaskPO.setSalaryGrantMainTaskId(mainTaskPO.getSalaryGrantMainTaskId());
