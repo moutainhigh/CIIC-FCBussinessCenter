@@ -17,23 +17,22 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.mongodb.DBObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import scala.Int;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -59,9 +58,12 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     @Override
     public Page<SalaryGrantEmployeeBO> queryEmployeeTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
         Page<SalaryGrantEmployeeBO> employeeBOList;
-        //查询主表的雇员信息
-        if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantEmployeeBO.getTaskStatus())) {
+        //if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantEmployeeBO.getTaskStatus())) {
+        /** 根据查询一览数据查询条件修改，不保证业务正确性。 2018-07-18*/
+        if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_RETREAT.equals(salaryGrantEmployeeBO.getTaskStatus())
+                || SalaryGrantBizConsts.TASK_STATUS_REJECT.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_NULLIFY.equals(salaryGrantEmployeeBO.getTaskStatus())) {
             employeeBOList = queryEmpHisInfo(salaryGrantEmployeeBO.getTaskId(), page.getCurrent(), page.getSize());
+        //查询主表的雇员信息
         } else if (salaryGrantEmployeeBO.getTaskType() == SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.intValue()) {
             salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
             employeeBOList = queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
@@ -329,7 +331,7 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
 
         DBObject dbObject = salaryGrantEmpHisOpt.get(Criteria.where("task_his_id").is(task_his_id));
         if (!ObjectUtils.isEmpty(dbObject)) {
-            List<SalaryGrantEmployeeBO> employeeBOList = (List<SalaryGrantEmployeeBO>) dbObject.get("employeeInfo");
+            List<SalaryGrantEmployeeBO> employeeBOList = JSON.parseArray(String.valueOf(dbObject.get("employeeInfo")), SalaryGrantEmployeeBO.class) ;
             if (!CollectionUtils.isEmpty(employeeBOList)) {
 
                 //雇员记录数大于等于起始分页记录数时，若雇员记录数大于等于雇员总记录数，则返回分页记录数；否则，返回起始分页记录数之后的雇员记录数
