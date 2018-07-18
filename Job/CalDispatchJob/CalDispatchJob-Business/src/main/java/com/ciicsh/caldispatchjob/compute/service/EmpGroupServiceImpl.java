@@ -120,7 +120,8 @@ public class EmpGroupServiceImpl {
                             Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is(item.getCompanyId())
                     );
             Query query = Query.query(criteria);
-            Update update = Update.update("base_info",basicDBObject);
+            Update update = new Update();
+            update.set("base_info",basicDBObject);
 
             WriteResult result = empGroupMongoOpt.getMongoTemplate().upsert(query,update,EmpGroupMongoOpt.PR_EMPLOYEE_GROUP);
             if(result != null){

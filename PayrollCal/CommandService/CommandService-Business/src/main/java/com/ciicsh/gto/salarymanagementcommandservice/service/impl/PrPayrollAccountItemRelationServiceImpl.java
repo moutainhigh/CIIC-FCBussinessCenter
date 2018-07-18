@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by houwanhua on 2017/12/20.
@@ -19,8 +20,8 @@ public class PrPayrollAccountItemRelationServiceImpl implements PrPayrollAccount
     private PrPayrollAccountItemRelationMapper relationMapper;
 
     @Override
-    public List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(String accountSetCode) {
-        return relationMapper.getAccountItemRelationExts(accountSetCode);
+    public List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(Map<String, Object> paramMap) {
+        return relationMapper.getAccountItemRelationExts(paramMap);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ItemController extends BaseController{
      * @param pageSize
      * @return
      */
-    @GetMapping(value = "/prItem")
+    @GetMapping(value = "/getPrItemPage")
     public JsonResult getPrItemList(@RequestParam String groupCode,
                                       @RequestParam Integer parentType,
                                       @RequestParam(required = false, defaultValue = "1") Integer pageNum,
@@ -77,13 +77,33 @@ public class ItemController extends BaseController{
     }
 
     /**
-     * 获取薪资项
-     * @param code
-     * @return
+     * 根据itemCode、groupCode、managemengId获取薪资项
+     *
+     * @param itemCode     薪资项编码
+     * @param groupCode    薪资组编码
+     * @param managementId 管理方ID
+     * @return 薪资项列表
      */
-    @GetMapping(value = "/prItem/{code}")
-    public JsonResult getPrItem(@PathVariable("code") String code) {
-        PrPayrollItemPO result =  itemService.getItemByCode(code);
+    @GetMapping(value = "/getPrItem")
+    public JsonResult getPrItem(@RequestParam("itemCode") String itemCode,
+                                @RequestParam("groupCode") String groupCode,
+                                @RequestParam("managementId") String managementId) {
+        PrPayrollItemPO result = itemService.getItemByCode(itemCode, groupCode, managementId);
+        PrPayrollItemDTO resultItem = ItemTranslator.toPrPayrollItemDTO(result);
+        return JsonResult.success(resultItem);
+    }
+
+    /**
+     * 根据itemCode、payrollGroupTemplateCode获取薪资项
+     *
+     * @param itemCode                 薪资项编码
+     * @param payrollGroupTemplateCode 薪资组模板编码
+     * @return 薪资项列表
+     */
+    @GetMapping(value = "/getPrItemByPrTemplateCode")
+    public JsonResult getPrItemByPrTemplateCode(@RequestParam("itemCode") String itemCode,
+                                                @RequestParam("payrollGroupTemplateCode") String payrollGroupTemplateCode) {
+        PrPayrollItemPO result = itemService.getItemByCode(itemCode, payrollGroupTemplateCode);
         PrPayrollItemDTO resultItem = ItemTranslator.toPrPayrollItemDTO(result);
         return JsonResult.success(resultItem);
     }
@@ -195,10 +215,28 @@ public class ItemController extends BaseController{
         return resultId > 0 ? JsonResult.success(newParam.getItemCode()) : JsonResult.faultMessage("新建薪资项失败");
     }
 
-    @DeleteMapping("/prItem/{code}")
-    public JsonResult deleteItem(@PathVariable("code") String code) {
-        String[] codes = code.split(",");
-        int i = itemService.deleteItemByCodes(Arrays.asList(codes));
+    /**
+     * 根据itemCode、groupCode、managemengId删除薪资项
+     * @param itemCode 薪资项编码
+     * @param managementId 管理方ID
+     * @return 删除结果
+     */
+    @DeleteMapping("/deletePrItemByGroupCode")
+    public JsonResult deletePrItemByGroupCode(@RequestParam("itemCode") String itemCode,
+                                 @RequestParam("groupCode") String groupCode,
+                                 @RequestParam("managementId") String managementId) {
+        String[] itemCodes = itemCode.split(",");
+        int i = itemService.deleteItemByCodes(Arrays.asList(itemCodes), groupCode, managementId);
+        if (i >= 1){
+            return JsonResult.success(i,"删除成功");
+        }else {
+            return JsonResult.faultMessage();
+        }
+    }
+    @DeleteMapping("/deletePrItemByTemplateCode")
+    public JsonResult deletePrItemByTemplateCode(@RequestParam("itemCode") String itemCode,
+                                                 @RequestParam("payrollGroupTemplateCode") String payrollGroupTemplateCode){
+        int i = itemService.deleteItemByTemplateCode(itemCode, payrollGroupTemplateCode);
         if (i >= 1){
             return JsonResult.success(i,"删除成功");
         }else {

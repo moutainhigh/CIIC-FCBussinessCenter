@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -29,11 +30,11 @@ public interface PrPayrollAccountItemRelationMapper extends BaseMapper<PrPayroll
     Integer delAccountItemRelationByAccountCode(@Param("accountSetCode") String accountSetCode);
 
     /**
-     * 根据薪资账套Code 获取薪资账套扩展薪资项关系数据
-     * @param accountSetCode 薪资账套Code
+     * 根据薪资账套编码，薪资组模板编码，薪资项编码，管理方ID，获取薪资账套扩展薪资项关系数据
+     * @param paramMap 查询条件Map
      * @return 返回薪资账套扩展薪资项关系数据
      */
-    List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(@Param("accountSetCode") String accountSetCode);
+    List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(Map<String, Object> paramMap);
 
     Integer insertAccountItemRelationList(List<PrPayrollAccountItemRelationPO> list);
 }

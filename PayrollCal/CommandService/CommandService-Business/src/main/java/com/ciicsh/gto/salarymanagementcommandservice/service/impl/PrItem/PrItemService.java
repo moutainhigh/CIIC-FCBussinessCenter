@@ -70,7 +70,7 @@ public interface PrItemService {
 
     /**
      * 获取薪资项列表 from 薪资组模板 分页 无草稿项
-     * @param code
+     * @param groupTemplateCode
      * @param pageNum
      * @param pageSize
      * @return 结果列表
@@ -79,7 +79,7 @@ public interface PrItemService {
 
     /**
      * 获取薪资项列表 from 薪资组模板 分页
-     * @param code
+     * @param groupTemplateCode
      * @param pageNum
      * @param pageSize
      * @param draftFlg
@@ -89,10 +89,13 @@ public interface PrItemService {
 
     /**
      * 获取一个薪资项
-     * @param id 查询参数
+     *
+     * @param itemCode     薪资项编码
+     * @param groupCode    薪资组编码
+     * @param managementId 管理方ID
      * @return 结果项
      */
-    PrPayrollItemPO getItemByCode(String id);
+    PrPayrollItemPO getItemByCode(String itemCode, String groupCode, String managementId);
 
     /**
      * 插入一个薪资项
@@ -122,15 +125,18 @@ public interface PrItemService {
     List<HashMap<String, Object>> getTypeList();
 
     /**
-     * 通过id来删除薪资项
-     * @param codes 薪资项codes
+     * 通过itemCode、groupCode、managementId来删除薪资项
+     *
+     * @param itemCodes    薪资项code的List
+     * @param managementId managementId
      * @return 删除条数
+     * @params groupCode groupCode
      */
-    int deleteItemByCodes(List<String> codes);
+    int deleteItemByCodes(List<String> itemCodes, String groupCode, String managementId);
 
     /**
      * 删除一个薪资组中的所有薪资项
-     * @param prGroupId
+     * @param groupCode
      * @return
      */
     int deleteItemByPrGroupCode(String groupCode);
@@ -159,4 +165,19 @@ public interface PrItemService {
 
     List<PrItemInAccountSetPO> selectItemNames(String batchCode);
 
+    /**
+     * 根据payrollGroupTemplateCode和itemCode删除薪资项
+     * @param itemCode
+     * @param payrollGroupTemplateCode
+     * @return
+     */
+    int deleteItemByTemplateCode(String itemCode, String payrollGroupTemplateCode);
+
+    /**
+     * 根据薪资组模板编码和薪资项编码获取薪资项
+     * @param itemCode 薪资项编码
+     * @param payrollGroupTemplateCode 薪资项模板编码
+     * @return
+     */
+    PrPayrollItemPO getItemByCode(String itemCode, String payrollGroupTemplateCode);
 }

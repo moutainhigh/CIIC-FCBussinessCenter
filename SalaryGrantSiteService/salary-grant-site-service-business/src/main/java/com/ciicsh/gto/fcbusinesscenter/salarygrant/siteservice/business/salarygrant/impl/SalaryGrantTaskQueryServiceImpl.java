@@ -176,7 +176,10 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Override
     public SalaryGrantTaskBO selectTaskByTaskCode(SalaryGrantTaskBO salaryGrantTaskBO) {
         SalaryGrantTaskBO bo;
-        if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantTaskBO.getTaskStatus())) {
+        //if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantTaskBO.getTaskStatus())) {
+        /** 根据查询一览数据查询条件修改，不保证业务正确性。 2018-07-18*/
+        if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_RETREAT.equals(salaryGrantTaskBO.getTaskStatus())
+                || SalaryGrantBizConsts.TASK_STATUS_REJECT.equals(salaryGrantTaskBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_NULLIFY.equals(salaryGrantTaskBO.getTaskStatus())) {
             bo = salaryGrantTaskHistoryMapper.selectTaskByTaskId(salaryGrantTaskBO);
         } else if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantTaskBO.getTaskType())) {
             bo = salaryGrantMainTaskMapper.selectTaskByTaskCode(salaryGrantTaskBO);
@@ -586,7 +589,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
 //        System.out.println("薪资发放定时任务 启动时间: " + LocalDateTime.now());
 
         //获取次日日期
-        String grantDate = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String grantDate = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         //查询薪资发放任务单子表记录列表
         List<SalaryGrantTaskPaymentBO> waitForPaymentTaskList = salaryGrantSubTaskMapper.queryWaitForPaymentTaskList(grantDate);

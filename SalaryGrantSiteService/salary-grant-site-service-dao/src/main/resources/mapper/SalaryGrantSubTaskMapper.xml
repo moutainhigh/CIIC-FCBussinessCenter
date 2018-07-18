@@ -465,7 +465,7 @@
             t.salary_grant_sub_task_id = #{taskId}
             <choose>
                 <when test="modifiedTime == null">
-                    and t.modifiedTime is null
+                    and t.modified_time is null
                 </when>
                 <otherwise>
                     and t.modified_time = #{modifiedTime}

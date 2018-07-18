@@ -74,10 +74,16 @@
 		DELETE FROM pr_payroll_item
 		WHERE
 		item_code IN
-		<foreach item="item" index="index" collection="codes"
+		<foreach item="item" index="index" collection="itemCodes"
 				 open="(" separator="," close=")">
 			#{item}
 		</foreach>
+		<if test="groupCode != null and groupCode != ''">
+			AND payroll_group_code = #{groupCode}
+		</if>
+		<if test="managementId != null and managementId != ''">
+			AND management_id = #{managementId}
+		</if>
 	</delete>
 
 	<select id="getPayrollItems" parameterType="PayrollGroupExtPO" resultType="PrPayrollItemPO">

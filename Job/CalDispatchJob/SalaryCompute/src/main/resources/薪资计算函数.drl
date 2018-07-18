@@ -649,31 +649,89 @@ rule "本月计薪天数" // {本月计薪天数()}
 end
 
 /**
-** 标准薪资组,薪资项52
+** 标准薪资组,税率
 */
-rule "税率" // {税率([应纳税所得额])}
+rule "税率" // {税率([flag],[应纳税所得额])}
     when
        $context:DroolsContext()
     then
         FuncEntity func = $context.getFuncEntity("税率");
-        String para1 = func.getParameters().get(0);
-
+        String flag = func.getParameters().get(0);
+        String para1 = func.getParameters().get(1);
         Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
 
-        func.setResult(BigDecimal.ZERO); // TODO
+        double taxRate = 0.0;
+        List<TaxEntity> taxList = null;
+
+        if(par1 > 0){
+
+            if(flag.equals("0")){
+                taxList = getTaxList(); // 0 表示 2011年以前的个税表
+
+            }else if(flag.equals("1")){  // 1 表示 2011年以后的个税表
+                taxList = getTaxList_2011();
+            }
+            if(taxList != null){
+                TaxEntity find = null;
+                for (TaxEntity tax : taxList) {
+                    if(tax.getTaxDueStart() < par1 && tax.getTaxDueEnd() >= par1){
+                        find = tax;
+                        break;
+                    }
+                }
+                if(find != null){
+                    taxRate = find.getTaxRate();
+                    System.out.print(taxRate);
+                    BigDecimal result = new BigDecimal(taxRate);
+                    func.setResult(result);
+                }
+            }
+
+        }else{
+            func.setResult(BigDecimal.ZERO);
+        }
 end
 
 /**
-** 标准薪资组,薪资项53
+** 标准薪资组,速扣数
 */
-rule "速扣数" // {速扣数([应纳税所得额])}
+rule "速扣数" // {速扣数([flag],[应纳税所得额])}
     when
        $context:DroolsContext()
     then
         FuncEntity func = $context.getFuncEntity("速扣数");
-        String para1 = func.getParameters().get(0);
-
+        String flag = func.getParameters().get(0);
+        String para1 = func.getParameters().get(1);
         Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
 
-        func.setResult(BigDecimal.ZERO); // TODO
+        double deductions = 0.0;
+        List<TaxEntity> taxList = null;
+
+        if(par1 > 0){
+
+            if(flag.equals("0")){
+                taxList = getTaxList(); // 0 表示 2011年以前的个税表
+
+            }else if(flag.equals("1")){  // 1 表示 2011年以后的个税表
+                taxList = getTaxList_2011();
+            }
+            if(taxList != null){
+                TaxEntity find = null;
+                for (TaxEntity tax : taxList) {
+                    if(tax.getTaxDueStart() < par1 && tax.getTaxDueEnd() >= par1){
+                        find = tax;
+                        break;
+                    }
+                }
+                if(find != null){
+                    deductions = find.getDeductions();
+                    System.out.print(deductions);
+                    BigDecimal result = new BigDecimal(deductions);
+                    func.setResult(result);
+                }
+            }
+
+        }else{
+            func.setResult(BigDecimal.ZERO);
+        }
 end

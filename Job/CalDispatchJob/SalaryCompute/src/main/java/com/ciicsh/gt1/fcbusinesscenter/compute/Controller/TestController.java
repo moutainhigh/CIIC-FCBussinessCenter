@@ -737,7 +737,7 @@ public class TestController {
 
         //设置函数信息
         FuncEntity funcEntity = new FuncEntity();
-        funcEntity.setFuncName("一般个人所得税");
+        funcEntity.setFuncName("速扣数");
         List<String> list = new ArrayList<>();
         list.add("0");
         list.add("应纳税所得额");
@@ -755,7 +755,7 @@ public class TestController {
 
         //设置需要触发的规则名称
         HashSet hashSet = new HashSet();
-        hashSet.add("一般个人所得税");
+        hashSet.add("速扣数");
         //end
 
         //触发规则

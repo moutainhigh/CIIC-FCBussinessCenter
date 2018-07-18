@@ -82,6 +82,31 @@ public class PrsMainTaskController {
         return JsonResult.success(prsMainTaskService.updateTaskEmp(params));
     }
 
+    @RequestMapping(value = "/sentFailed")
+    public JsonResult sentFailed(@RequestParam("task_id") String taskId, @RequestParam("emp_id") String empId, @RequestParam("exception") String exception) {
+        Map<String, Object> updConds = new HashMap<String, Object>(){
+            {
+                put("task_id", taskId);
+                put("emp_id", empId);
+            }
+        };
+
+        Map<String, Object> updFields = new HashMap<String, Object>(){
+            {
+                put("publish_state", 4);
+                put("exception", exception);
+            }
+        };
+
+        Map<String, Object> params = new HashMap<String, Object>(){
+            {
+                put("updConds", updConds);
+                put("updFields", updFields);
+            }
+        };
+        return JsonResult.success(prsMainTaskService.updateTaskEmp(params));
+    }
+
     @RequestMapping(value = "/addPrsMainTask")
     public JsonResult add(@RequestBody Map<String, Object> params) {
         return JsonResult.success(prsMainTaskService.addPrsMainTask(params));
