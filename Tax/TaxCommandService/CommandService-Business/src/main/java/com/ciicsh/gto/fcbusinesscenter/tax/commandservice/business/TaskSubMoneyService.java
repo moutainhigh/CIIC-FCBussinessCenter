@@ -4,6 +4,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubMoneyPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubMoney;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.DisposableChargeProxyDTO;
 
 import java.math.BigDecimal;
 
@@ -52,5 +53,12 @@ public interface TaskSubMoneyService {
      * @param fine
      */
     void updateTaskSubMoneyOverdueAndFine(Long subMoneyId, BigDecimal overdue,BigDecimal fine);
+
+    /**
+     * 获取划款子任务来款情况列表
+     * @param taskNos
+     * @return
+     */
+    DisposableChargeProxyDTO whetherHasMoneyBySubMoneyTaskNo(String[] taskNos);
 
 }

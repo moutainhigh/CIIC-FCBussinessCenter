@@ -89,6 +89,14 @@
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-commandservice-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1.billcenter</groupId>
+            <artifactId>fcmodule-service-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
+            <artifactId>gt1.settlementcenter-payment-command-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
