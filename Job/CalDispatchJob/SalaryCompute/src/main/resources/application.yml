@@ -19,9 +19,11 @@ spring:
         pr_compute-input-channel:
           destination: fc_payroll_compute_result # 薪资计算 topic
           content-type: application/json
-          group: compute_async # consumer group
+          group: compute_async_1 # consumer group
           consumer:
             partitioned: true
+            resetOffsets: true
+            startOffset: latest
 
         pr_compute-status-output-channel:
           destination: fc_payroll_compute-status # topic name

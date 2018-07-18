@@ -298,7 +298,7 @@ public class NormalBatchController {
             return JsonResult.success(0);
         }
 
-        long begin = System.currentTimeMillis(); //begin 5秒
+        long begin = System.currentTimeMillis(); //begin
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN).
                 include(PayItemName.EMPLOYEE_COMPANY_ID).

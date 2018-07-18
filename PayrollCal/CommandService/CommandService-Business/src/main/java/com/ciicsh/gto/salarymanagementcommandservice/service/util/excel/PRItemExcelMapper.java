@@ -158,11 +158,12 @@ public class PRItemExcelMapper implements RowMapper<List<BasicDBObject>> {
             //int IDType = 1; //1:身份证 2:护照 3:军(警)官证 4:士兵证 5:台胞证 6:回乡证 7:其他
             FcBaseEmpRequestDTO empRequestDTO = new FcBaseEmpRequestDTO();
             //empRequestDTO.setIdCardType(IDType);
-            //empRequestDTO.setIdNum(idNum);
-            empRequestDTO.setEmployeeCode(empCode);
+            empRequestDTO.setIdNum(idNum);
+            empRequestDTO.setEmployeeCode(empId); // 员工工号
+            //empRequestDTO.setEmployeeId(empCode); // 中智雇员编号 TODO
             empRequestDTO.setEmployeeName(empName);
-            //companyID TODO
-            //empRequestDTO.setCompanyId(companyId);
+            //companyID
+            empRequestDTO.setCompanyId(companyId); // 公司编号
 
             JsonResult<FcBaseEmpResponseDTO> result = employeeServiceProxy.getFcBaseEmpInfos(empRequestDTO); //TODO empID, empcode, companyId
             if(result.isSuccess() && result.getData() != null) {
