@@ -37,6 +37,13 @@ public class PrPayrollAccountItemRelationPO extends Model<PrPayrollAccountItemRe
      */
 	@TableField("payroll_item_code")
 	private String payrollItemCode;
+
+	/**
+	 * 薪资组编码，规则为：XZZ-客户ID-xxx(三位数字序号)
+	 */
+	@TableField("payroll_group_code")
+
+	private String payrollGroupCode;
     /**
      * 薪资账套薪资项别名
      */
@@ -91,6 +98,14 @@ public class PrPayrollAccountItemRelationPO extends Model<PrPayrollAccountItemRe
 
 	public void setPayrollItemCode(String payrollItemCode) {
 		this.payrollItemCode = payrollItemCode;
+	}
+
+	public String getPayrollGroupCode() {
+		return payrollGroupCode;
+	}
+
+	public void setPayrollGroupCode(String payrollGroupCode) {
+		this.payrollGroupCode = payrollGroupCode;
 	}
 
 	public String getPayrollItemAlias() {
