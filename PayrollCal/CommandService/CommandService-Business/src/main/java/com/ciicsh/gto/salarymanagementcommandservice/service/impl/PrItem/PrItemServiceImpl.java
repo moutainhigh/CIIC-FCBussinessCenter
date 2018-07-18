@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
-import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupTemplatePO;
-import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
+import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrApprovedPayrollItemMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupTemplateMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
@@ -38,6 +36,9 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Autowired
     private PrPayrollItemMapper prPayrollItemMapper;
+
+    @Autowired
+    private PrApprovedPayrollItemMapper prApprovedPayrollItemMapper;
 
     @Autowired
     private PrPayrollGroupMapper prPayrollGroupMapper;
@@ -276,6 +277,12 @@ public class PrItemServiceImpl implements PrItemService {
             param.setItemCode(codes.get(i));
             param.setDisplayPriority(i);
             prPayrollItemMapper.updateItemByCode(param);
+
+            PrApprovedPayrollItemPO approvedPO = new PrApprovedPayrollItemPO();
+            approvedPO.setItemCode(codes.get(i));
+            approvedPO.setDisplayPriority(i);
+            prApprovedPayrollItemMapper.updateApprovedItem(approvedPO);
+
         }
         return true;
     }
@@ -377,4 +384,5 @@ public class PrItemServiceImpl implements PrItemService {
         }
         return content;
     }
+
 }
