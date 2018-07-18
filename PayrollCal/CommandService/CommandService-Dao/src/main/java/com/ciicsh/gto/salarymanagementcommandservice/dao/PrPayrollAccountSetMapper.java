@@ -66,5 +66,5 @@ public interface PrPayrollAccountSetMapper extends BaseMapper<PrPayrollAccountSe
      */
     List<PrAccountSetOptPO> selectAccountSetWithItemsByManagementId(@Param("managementId") String managementId);
 
-    int countByEmpGroupCodeList(@Param("empGroupCodes") List<String> empGroupCodes);
+    int countByEmpGroupCodeList(List<String> empGroupCodes);
 }

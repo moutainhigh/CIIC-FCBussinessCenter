@@ -49,8 +49,13 @@ public class FCBizTransactionMongoOpt extends BaseOpt {
                 .and("batch_type").is(bathType)
                 .and("events").elemMatch(Criteria.where("event_name").is(eventName));
         Query query = Query.query(criteria);
-        Update update = Update.update("events.$.event_status",status);
-        return this.upsert(query,update);
+        long totalCount = this.getMongoTemplate().find(query,DBObject.class,EVENT_SOURCING).stream().count();
+        if(totalCount > 0) {
+            Update update = Update.update("events.$.event_status", status);
+            return this.upsert(query, update);
+        }else {
+            return 0;
+        }
     }
 
     /*批量提交更新*/
@@ -61,8 +66,13 @@ public class FCBizTransactionMongoOpt extends BaseOpt {
         Criteria criteria = Criteria.where("batch_code").in(batchCodes)
                 .and("events").elemMatch(Criteria.where("event_name").is(eventName));
         Query query = Query.query(criteria);
-        Update update = Update.update("events.$.event_status",status);
-        return this.upsert(query,update);
+        long totalCount = this.getMongoTemplate().find(query,DBObject.class,EVENT_SOURCING).stream().count();
+        if(totalCount > 0) {
+            Update update = Update.update("events.$.event_status", status);
+            return this.upsert(query, update);
+        }else {
+            return 0;
+        }
     }
 
     public int initDistributedTransaction(DistributedTranEntity tranEntity){

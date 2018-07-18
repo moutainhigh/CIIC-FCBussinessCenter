@@ -478,7 +478,7 @@ rule "免抵额" // {免抵额([国籍])}
         // 去除前后空格
         String nation = String.valueOf($context.getItemValByCode(para1)).trim();
 
-        if(nation.equals("中华人民共和国")) {
+        if(nation.equals("中华人民共和国") || nation.equals("中国")) {
             func.setResult(new BigDecimal("3500.00"));
         } else {
             func.setResult(new BigDecimal("4800.00"));
@@ -496,16 +496,17 @@ rule "一般个人所得税" // {一般个人所得税([flag],[应纳税所得�
         String flag = func.getParameters().get(0);
         String para1 = func.getParameters().get(1);
         Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+        String falgVal = $context.getItemValByCode(flag) == null ? flag : String.valueOf($context.getItemValByCode(flag));
 
         double taxRate, deductions = 0.0;
         List<TaxEntity> taxList = null;
 
         if(par1 > 0){
 
-            if(flag.equals("0")){
+            if(falgVal.equals("0")){
                 taxList = getTaxList(); // 0 表示 2011年以前的个税表
 
-            }else if(flag.equals("1")){  // 1 表示 2011年以后的个税表
+            }else if(falgVal.equals("1")){  // 1 表示 2011年以后的个税表
                 taxList = getTaxList_2011();
             }
             if(taxList != null){
@@ -659,16 +660,17 @@ rule "税率" // {税率([flag],[应纳税所得额])}
         String flag = func.getParameters().get(0);
         String para1 = func.getParameters().get(1);
         Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+        String falgVal = $context.getItemValByCode(flag) == null ? flag : String.valueOf($context.getItemValByCode(flag));
 
         double taxRate = 0.0;
         List<TaxEntity> taxList = null;
 
         if(par1 > 0){
 
-            if(flag.equals("0")){
+            if(falgVal.equals("0")){
                 taxList = getTaxList(); // 0 表示 2011年以前的个税表
 
-            }else if(flag.equals("1")){  // 1 表示 2011年以后的个税表
+            }else if(falgVal.equals("1")){  // 1 表示 2011年以后的个税表
                 taxList = getTaxList_2011();
             }
             if(taxList != null){
@@ -703,16 +705,17 @@ rule "速扣数" // {速扣数([flag],[应纳税所得额])}
         String flag = func.getParameters().get(0);
         String para1 = func.getParameters().get(1);
         Double par1 = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); // 应纳税所得额
+        String falgVal = $context.getItemValByCode(flag) == null ? flag : String.valueOf($context.getItemValByCode(flag));
 
         double deductions = 0.0;
         List<TaxEntity> taxList = null;
 
         if(par1 > 0){
 
-            if(flag.equals("0")){
+            if(falgVal.equals("0")){
                 taxList = getTaxList(); // 0 表示 2011年以前的个税表
 
-            }else if(flag.equals("1")){  // 1 表示 2011年以后的个税表
+            }else if(falgVal.equals("1")){  // 1 表示 2011年以后的个税表
                 taxList = getTaxList_2011();
             }
             if(taxList != null){

@@ -198,9 +198,6 @@ public class CommonServiceImpl {
     private int updateBatchMongodb( PrCustBatchPO batchPO, DBObject emp,List<BasicDBObject> payItems){
 
         BasicDBObject catalog = new BasicDBObject();
-
-        int count = 0;
-
         Query query = null;
 
         if(emp != null) {
@@ -222,13 +219,11 @@ public class CommonServiceImpl {
                             Criteria.where("emp_group_code").is(batchPO.getEmpGroupCode()), //雇员组编码
                             Criteria.where(PayItemName.EMPLOYEE_CODE_CN).is(""), //雇员编码
                             Criteria.where(PayItemName.EMPLOYEE_COMPANY_ID).is("") //公司ID
-
                     )
             );
         }
         catalog.put("batch_info", BatchPOToDBObject(batchPO));
         catalog.put("pay_items", payItems);
-        //Update update = Update.update("catalog", catalog);
         Update update = new Update();
         update.set("catalog",catalog);
         WriteResult result = normalBatchMongoOpt.getMongoTemplate().upsert(query,update,NormalBatchMongoOpt.PR_NORMAL_BATCH);

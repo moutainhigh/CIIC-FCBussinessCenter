@@ -251,12 +251,12 @@
 			pas.management_id = #{managementId}
 	</select>
 
-	<select id="countByEmpGroupCodeList" parameterType="list">
+	<select id="countByEmpGroupCodeList" resultType="int">
 		select count(*) from pr_payroll_account_set
 		<where>
 			emp_group_code in
-			<foreach item="item" collection="empGroupCodes" separator="," open="(" close=")" index="">
-				#{item}
+			<foreach item="eGroupCode" collection="list" open="(" separator="," close=")">
+				#{eGroupCode}
 			</foreach>
 		</where>
 	</select>
