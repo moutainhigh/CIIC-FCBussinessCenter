@@ -130,7 +130,7 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 
 	/*是否来款：0表示未来款，1表示已来款*/
 	@TableField("has_money")
-	private Boolean hasMoney;
+	private boolean hasMoney;
 
 	/*周期垫付日*/
 	@TableField("advance_day")
@@ -321,7 +321,7 @@ public class PrNormalBatchPO extends Model<PrNormalBatchPO> {
 		this.hasAdvance = hasAdvance;
 	}
 
-	public Boolean getHasMoney() {
+	public boolean getHasMoney() {
 		return hasMoney;
 	}
 
