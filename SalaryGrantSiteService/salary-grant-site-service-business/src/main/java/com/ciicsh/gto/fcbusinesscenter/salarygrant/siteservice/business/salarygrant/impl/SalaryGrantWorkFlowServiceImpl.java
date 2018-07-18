@@ -590,7 +590,7 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 //3、查询任务单子表信息SalaryGrantSubTaskPO，
                 //   查询条件：子表.salary_grant_main_task_code = 主表.salary_grant_main_task_code and is_active = 1，如果查询结果不为空则：
                 EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
-                subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} is_active = 1", mainTaskPO.getSalaryGrantMainTaskCode());
+                subTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskPO.getSalaryGrantMainTaskCode());
                 List<SalaryGrantSubTaskPO> subTaskPOList = salaryGrantSubTaskMapper.selectList(subTaskPOEntityWrapper);
                 if (!CollectionUtils.isEmpty(subTaskPOList)) {
                     for (SalaryGrantSubTaskPO subTaskPO : subTaskPOList) {
@@ -623,10 +623,12 @@ public class SalaryGrantWorkFlowServiceImpl implements SalaryGrantWorkFlowServic
                 List<SalaryGrantEmployeePO> mainEmployeePOList2 = salaryGrantEmployeeMapper.selectList(mainEmployeePOEntityWrapper2);
                 if (!CollectionUtils.isEmpty(mainEmployeePOList2)) {
                     mainEmployeePOList2.stream().forEach(salaryGrantEmployeePO -> {
-                        SalaryGrantEmployeePO grantEmployeePO = new SalaryGrantEmployeePO();
-                        grantEmployeePO.setSalaryGrantEmployeeId(salaryGrantEmployeePO.getSalaryGrantEmployeeId());
-                        grantEmployeePO.setSalaryGrantSubTaskCode("");
-                        salaryGrantEmployeeMapper.updateById(grantEmployeePO);
+                        /** 代码维度处理异常，不保证业务正确性  2017-07-18*/
+//                        SalaryGrantEmployeePO grantEmployeePO = new SalaryGrantEmployeePO();
+//                        grantEmployeePO.setSalaryGrantEmployeeId(salaryGrantEmployeePO.getSalaryGrantEmployeeId());
+//                        grantEmployeePO.setSalaryGrantSubTaskCode("");
+                        salaryGrantEmployeePO.setSalaryGrantSubTaskCode(null);
+                        salaryGrantEmployeeMapper.updateById(salaryGrantEmployeePO);
                     });
                 }
 
