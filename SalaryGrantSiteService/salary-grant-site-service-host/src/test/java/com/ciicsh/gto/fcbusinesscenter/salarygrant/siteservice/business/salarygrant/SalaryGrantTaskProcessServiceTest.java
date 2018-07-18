@@ -66,7 +66,7 @@ public class SalaryGrantTaskProcessServiceTest {
         /*closingMsg.setBatchCode("GL1800255_201807_0000000692");
         closingMsg.setBatchType(1);
         closingMsg.setVersion(1);*/
-        closingMsg.setBatchCode("GL1800255_201807_0000000700");
+        closingMsg.setBatchCode("GL1800255_201806_0000000299");
         closingMsg.setBatchType(1);
         closingMsg.setVersion(9);
         salaryGrantTaskProcessService.toClosing(closingMsg);
