@@ -14,6 +14,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskWorkflowHistoryPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyPayStatusDTO;
+import com.ciicsh.gto.sheetservice.api.ProDefKeyConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
 import com.ciicsh.gto.sheetservice.api.dto.TaskCreateMsgDTO;
 import org.slf4j.Logger;
@@ -145,7 +146,8 @@ public class TaxKafkaReceiver {
     public void wfProcessCompleteMessage(ProcessCompleteMsgDTO processCompleteMsgDTO) {
 
         try {
-            if(processCompleteMsgDTO!=null){
+            if(processCompleteMsgDTO!=null && processCompleteMsgDTO.getProcessDefinitionKey()!=null
+                    && processCompleteMsgDTO.getProcessDefinitionKey().trim().equals(ProDefKeyConstants.FC.BUS_TAX_MAIN_AUDIT)){
                 Map<String, Object> variables = processCompleteMsgDTO.getVariables();
                 String taskNo = processCompleteMsgDTO.getMissionId();
                 EntityWrapper wrapper = new EntityWrapper();
