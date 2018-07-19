@@ -9,14 +9,13 @@ import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
-import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrGroupService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CodeGenerator;
+import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceConst;
 import com.ciicsh.gto.salarymanagementcommandservice.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jayway.jsonpath.internal.function.json.Append;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +52,9 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     @Autowired
     private ApprovalHistoryService approvalHistoryService;
+
+    @Autowired
+    private PrPayrollAccountItemRelationMapper prPayrollAccountItemRelationMapper;
 
     @Autowired
     private CodeGenerator codeGenerator;
@@ -273,6 +275,28 @@ public class PrGroupServiceImpl implements PrGroupService {
             prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
             prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
+            /**
+             * 同步审批通过的薪资组的薪资项到薪资账套薪资项表pr_payroll_account_item_relation
+             * 1,查出所有应用此薪资组的薪资账套code -> accountCodeList
+             * 2,根据薪资组code和账套code删除账套薪资项表中的薪资项数据
+             * 3,插入审批通过的薪资项到账套薪资项表
+             */
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("payrollGroupCode", paramItem.getGroupCode());
+            List<PrPayrollAccountItemRelationPO> accountCodeList = prPayrollAccountItemRelationMapper.selectAccountCodeList(paramMap);
+            accountCodeList.forEach(accountPO -> {
+                HashMap<String, Object> delParamMap = new HashMap<>();
+                delParamMap.put("account_set_code", accountPO.getAccountSetCode());
+                delParamMap.put("payroll_group_code", paramItem.getGroupCode());
+                prPayrollAccountItemRelationMapper.deleteByMap(delParamMap);
+                List<PrPayrollAccountItemRelationPO> relations = items
+                        .stream()
+                        .map(item -> toAccountItemPOFromItemPO(item, accountPO.getAccountSetCode()))
+                        .collect(Collectors.toList());
+                if (relations != null && relations.size() > 0) {
+                    prPayrollAccountItemRelationMapper.insertAccountItemRelationList(relations);
+                }
+            });
         }
         // 更新审批历史
         ApprovalHistoryPO approvalHistoryPO = new ApprovalHistoryPO();
@@ -341,5 +365,20 @@ public class PrGroupServiceImpl implements PrGroupService {
             buffer.append(s);
         }
         return buffer.toString();
+    }
+
+    private PrPayrollAccountItemRelationPO toAccountItemPOFromItemPO(PrPayrollItemPO payrollItemPO, String accountCode) {
+        PrPayrollAccountItemRelationPO relationPO = new PrPayrollAccountItemRelationPO();
+        relationPO.setAccountSetCode(accountCode);
+        relationPO.setPayrollGroupCode(payrollItemPO.getPayrollGroupCode());
+        relationPO.setPayrollItemCode(payrollItemPO.getItemCode());
+        relationPO.setPayrollItemAlias(payrollItemPO.getItemName());
+        relationPO.setActive(true);
+        relationPO.setCreatedTime(new Date());
+        relationPO.setCreatedBy(UserContext.getUserId());
+        relationPO.setModifiedTime(new Date());
+        relationPO.setModifiedBy(UserContext.getUserId());
+        return relationPO;
+
     }
 }

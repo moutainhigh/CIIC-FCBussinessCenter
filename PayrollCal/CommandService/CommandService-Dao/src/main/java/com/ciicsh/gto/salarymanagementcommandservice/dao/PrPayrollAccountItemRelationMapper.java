@@ -1,12 +1,13 @@
 package com.ciicsh.gto.salarymanagementcommandservice.dao;
 
+import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountItemRelationPO;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +38,11 @@ public interface PrPayrollAccountItemRelationMapper extends BaseMapper<PrPayroll
     List<PayrollAccountItemRelationExtPO> getAccountItemRelationExts(Map<String, Object> paramMap);
 
     Integer insertAccountItemRelationList(List<PrPayrollAccountItemRelationPO> list);
+
+    /**
+     *
+     * @param paramMap
+     * @return
+     */
+    List<PrPayrollAccountItemRelationPO> selectAccountCodeList(HashMap<String, Object> paramMap);
 }

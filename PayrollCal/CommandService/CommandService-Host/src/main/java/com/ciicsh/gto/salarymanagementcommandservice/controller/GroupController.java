@@ -226,15 +226,13 @@ public class GroupController implements PayrollGroupProxy{
 
     /**
      * 审批薪资组
-     * @param code 薪资组code
      * @param paramItem 薪资组信息
      * @return 审批结果
      */
-    @PutMapping("/approvePayrollGroup/{code}")
-    public JsonResult approvePayrollGroup(@PathVariable("code") String code, @RequestBody PrPayrollGroupDTO paramItem){
+    @PutMapping("/approvePayrollGroup")
+    public JsonResult approvePayrollGroup(@RequestBody PrPayrollGroupDTO paramItem) {
         PrPayrollGroupPO updateParam = new PrPayrollGroupPO();
         TranslatorUtils.copyNotNullProperties(paramItem, updateParam);
-        updateParam.setGroupCode(code);
         updateParam.setModifiedBy(UserContext.getUserId());
         boolean result = prGroupService.approvePrGroup(updateParam);
         return result ? JsonResult.success(null, MessageConst.PAYROLL_GROUP_APPROVE_SUCCESS)
