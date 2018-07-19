@@ -201,7 +201,12 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
                     //     SalaryGrantTaskBO. taskCode=SalaryGrantSubTaskPO. salaryGrantMainTaskCode，
                     //     把任务单子表对应的任务单主表编号传给暂缓池接口的主表信息中
                     //（5）根据客服中心暂缓池操作接口的返回值，判断processReprieveToPoll方法的返回值是true or false。--待客服中心接口确认后再定
+                    /** 修改未测试垃圾代码，业务功能待确认  2017-07-19*/
                     salaryGrantTaskBO.setTaskCode(mainTaskPO.getSalaryGrantMainTaskCode());
+                    salaryGrantTaskBO.setBatchCode(mainTaskPO.getBatchCode());
+                    salaryGrantTaskBO.setManagementId(mainTaskPO.getManagementId());
+                    salaryGrantTaskBO.setManagementName(mainTaskPO.getManagementName());
+                    salaryGrantTaskBO.setGrantCycle(mainTaskPO.getGrantCycle());
                     return commonService.addDeferredPool(salaryGrantTaskBO, employeeList);
                 }
             }
@@ -225,7 +230,12 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
                     //     SalaryGrantTaskBO. taskCode=SalaryGrantSubTaskPO. salaryGrantMainTaskCode，
                     //     把任务单子表对应的任务单主表编号传给暂缓池接口的主表信息中
                     //（5）根据客服中心暂缓池操作接口的返回值，判断processReprieveToPoll方法的返回值是true or false。--待客服中心接口确认后再定
+                    /** 修改未测试垃圾代码，业务功能待确认  2017-07-19*/
                     salaryGrantTaskBO.setTaskCode(subTaskPO.getSalaryGrantMainTaskCode());
+                    salaryGrantTaskBO.setBatchCode(subTaskPO.getBatchCode());
+                    salaryGrantTaskBO.setManagementId(subTaskPO.getManagementId());
+                    salaryGrantTaskBO.setManagementName(subTaskPO.getManagementName());
+                    salaryGrantTaskBO.setGrantCycle(subTaskPO.getGrantCycle());
                     return commonService.addDeferredPool(salaryGrantTaskBO, employeeList);
                 }
             }
