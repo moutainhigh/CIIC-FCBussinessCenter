@@ -299,29 +299,19 @@
         <module>Company/WebQueryService/WebQueryService-Entity</module>
         <module>Company/WebQueryService/WebQueryService-Host</module>
 
-        <module>PayrollGrant/GrantCommandService/GrantCommandService-Api</module>
-        <module>PayrollGrant/GrantCommandService/GrantCommandService-Business</module>
-        <module>PayrollGrant/GrantCommandService/GrantCommandService-Dao</module>
-        <module>PayrollGrant/GrantCommandService/GrantCommandService-Entity</module>
-        <module>PayrollGrant/GrantCommandService/GrantCommandService-Host</module>
 
-        <module>SalaryGrantSiteService/salary-grant-site-service-api</module>
-        <module>SalaryGrantSiteService/salary-grant-site-service-business</module>
-        <module>SalaryGrantSiteService/salary-grant-site-service-dao</module>
-        <module>SalaryGrantSiteService/salary-grant-site-service-entity</module>
-        <module>SalaryGrantSiteService/salary-grant-site-service-host</module>
 
-        <module>SalaryGrantApiService/salary-grant-api-service-api</module>
-        <module>SalaryGrantApiService/salary-grant-api-service-business</module>
-        <module>SalaryGrantApiService/salary-grant-api-service-dao</module>
-        <module>SalaryGrantApiService/salary-grant-api-service-entity</module>
-        <module>SalaryGrantApiService/salary-grant-api-service-host</module>
+        <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-api</module>
+        <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-business</module>
+        <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-dao</module>
+        <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-entity</module>
+        <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-host</module>
 
-        <module>PayrollGrant/GrantQueryService/GrantQueryService-Api</module>
-        <module>PayrollGrant/GrantQueryService/GrantQueryService-Business</module>
-        <module>PayrollGrant/GrantQueryService/GrantQueryService-Dao</module>
-        <module>PayrollGrant/GrantQueryService/GrantQueryService-Entity</module>
-        <module>PayrollGrant/GrantQueryService/GrantQueryService-Host</module>
+        <module>PayrollGrant/SalaryGrantApiService/salary-grant-api-service-api</module>
+        <module>PayrollGrant/SalaryGrantApiService/salary-grant-api-service-business</module>
+        <module>PayrollGrant/SalaryGrantApiService/salary-grant-api-service-dao</module>
+        <module>PayrollGrant/SalaryGrantApiService/salary-grant-api-service-entity</module>
+        <module>PayrollGrant/SalaryGrantApiService/salary-grant-api-service-host</module>
 
         <module>PayrollSlip/SlipCommandService/SlipCommandService-Api</module>
         <module>PayrollSlip/SlipCommandService/SlipCommandService-Business</module>
