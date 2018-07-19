@@ -104,6 +104,13 @@ public class PrPayrollBaseItemPO extends Model<PrPayrollBaseItemPO> {
 	private String modifiedBy;
 
 
+	/**
+	 * 薪资项显示顺序(该属性不属于数据库表字段，但排序时要用到，故exist=false)
+	 */
+	@TableField(exist = false)
+	private Integer displayPriority;
+
+
 	public Integer getId() {
 		return id;
 	}
@@ -222,6 +229,14 @@ public class PrPayrollBaseItemPO extends Model<PrPayrollBaseItemPO> {
 
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
+	}
+
+	public Integer getDisplayPriority() {
+		return displayPriority;
+	}
+
+	public void setDisplayPriority(Integer displayPriority) {
+		this.displayPriority = displayPriority;
 	}
 
 	@Override
