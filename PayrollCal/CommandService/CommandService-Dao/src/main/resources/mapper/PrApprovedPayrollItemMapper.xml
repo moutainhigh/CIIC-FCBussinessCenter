@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrApprovedPayrollItemMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrApprovedPayrollItemPO">
+		<id column="item_code" property="itemCode" />
+		<result column="parent_item_code" property="parentItemCode" />
+		<result column="management_id" property="managementId" />
+		<result column="payroll_group_code" property="payrollGroupCode" />
+		<result column="payroll_group_template_code" property="payrollGroupTemplateCode" />
+		<result column="item_name" property="itemName" />
+		<result column="item_type" property="itemType" />
+		<result column="base_item_code" property="baseItemCode" />
+		<result column="data_type" property="dataType" />
+		<result column="default_value_style" property="defaultValueStyle" />
+		<result column="default_value" property="defaultValue" />
+		<result column="decimal_process_type" property="decimalProcessType" />
+		<result column="cal_precision" property="calPrecision" />
+		<result column="full_formula" property="fullFormula" />
+		<result column="origin_formula" property="originFormula" />
+		<result column="formula_content" property="formulaContent" />
+		<result column="origin_condition" property="originCondition" />
+		<result column="item_condition" property="itemCondition" />
+		<result column="cal_priority" property="calPriority" />
+		<result column="display_priority" property="displayPriority" />
+		<result column="remark" property="remark" />
+		<result column="can_lock" property="canLock" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+	</resultMap>
+
+
+
+    <!-- 更新薪资项 -->
+    <update id="updateApprovedItem" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrApprovedPayrollItemPO">
+    UPDATE pr_approved_payroll_item
+        <trim prefix="set" suffixOverrides=",">
+			<if test="payrollGroupCode != null">
+				payroll_group_code = #{payrollGroupCode},
+			</if>
+            <if test="parentItemCode != null">
+                parent_item_code = #{parentItemCode},
+            </if>
+            <if test="managementId != null">
+                management_id = #{managementId},
+            </if>
+            <if test="payrollGroupTemplateCode != null">
+                payroll_group_template_code = #{payrollGroupTemplateCode},
+            </if>
+            <if test="itemName != null">
+                item_name = #{itemName},
+            </if>
+            <if test="itemType != null">
+                item_type = #{itemType},
+            </if>
+			<if test="baseItemCode != null">
+				base_item_code = #{baseItemCode},
+			</if>
+            <if test="dataType != null">
+                data_type = #{dataType},
+            </if>
+            <if test="defaultValueStyle != null">
+                default_value_style = #{defaultValueStyle},
+            </if>
+            <if test="defaultValue != null">
+                default_value = #{defaultValue},
+            </if>
+            <if test="decimalProcessType != null">
+                decimal_process_type = #{decimalProcessType},
+            </if>
+            <if test="calPrecision != null">
+                cal_precision = #{calPrecision},
+            </if>
+			<if test="fullFormula != null">
+				full_formula = #{fullFormula},
+			</if>
+			<if test="originFormula != null">
+				origin_formula = #{originFormula},
+			</if>
+            <if test="formulaContent != null">
+                formula_content = #{formulaContent},
+            </if>
+			<if test="originCondition != null">
+				origin_condition = #{originCondition},
+			</if>
+            <if test="itemCondition != null">
+                item_condition = #{itemCondition},
+            </if>
+            <if test="calPriority != null">
+                cal_priority = #{calPriority},
+            </if>
+            <if test="displayPriority != null">
+                display_priority = #{displayPriority},
+            </if>
+			<if test="canLock != null">
+				can_lock = #{canLock},
+			</if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+			<if test="itemValue != null">
+				item_value = #{itemValue},
+			</if>
+            <if test="isActive != null">
+                is_active = #{isActive},
+            </if>
+            <if test="modifiedBy != null">
+                modified_by = #{modifiedBy},
+            </if>
+            modified_time = sysdate()
+        </trim>
+    WHERE
+        item_code = #{itemCode}
+    </update>
+
+</mapper>

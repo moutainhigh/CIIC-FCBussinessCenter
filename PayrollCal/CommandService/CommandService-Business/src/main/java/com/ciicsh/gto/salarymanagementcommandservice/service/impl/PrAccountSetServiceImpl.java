@@ -188,6 +188,7 @@ public class PrAccountSetServiceImpl implements PrAccountSetService {
     private PrPayrollAccountItemRelationPO toPayrollAccountItemRelationPO(PrPayrollItemPO payrollItemPO,PrPayrollAccountSetPO payrollAccountSetPO){
         PrPayrollAccountItemRelationPO relationPO = new PrPayrollAccountItemRelationPO();
         relationPO.setAccountSetCode(payrollAccountSetPO.getAccountSetCode());
+        relationPO.setPayrollGroupCode(payrollItemPO.getPayrollGroupCode());
         relationPO.setPayrollItemCode(payrollItemPO.getItemCode());
         relationPO.setPayrollItemAlias(payrollItemPO.getItemName());
         relationPO.setActive(true);

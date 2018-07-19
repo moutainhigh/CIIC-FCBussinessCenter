@@ -214,9 +214,9 @@ public class AccountSetController extends BaseController {
             List<String> empGroupCodeList = Arrays.asList(empGroupCodes.split(","));
             int result = prAccountSetService.countByEmpGroupCodeList(empGroupCodeList);
             if(result > 0) {
-                return JsonResult.faultMessage("雇员组已经绑定薪资帐套");
+                return JsonResult.faultMessage("雇员组已经绑定薪资帐套, 不能删除！");
             } else {
-                JsonResult.success("ok");
+                return JsonResult.success("ok");
             }
         }
         return JsonResult.faultMessage("没有选中的雇员组");

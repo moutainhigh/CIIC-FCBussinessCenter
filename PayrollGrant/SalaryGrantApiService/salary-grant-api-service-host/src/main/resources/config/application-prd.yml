@@ -1,0 +1,33 @@
+database:
+  host: 172.16.22.108
+  port: 3306
+  databasename: gtobusinessdb
+  username: root
+  password: a111111
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://172.16.9.56:9602/eureka"
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 40
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+kafka:
+  brokers: 172.16.100.101:9092
+  zk-nodes: 172.16.100.101:2181,172.16.100.102:2181,172.16.100.109:2181
+seaweed:
+  masterHost: "172.16.22.110:9333"
+#zipkin:
+#  base-url: http://172.16.100.103:9623  #ZipkinService地址
+#  enabled: true
+sleuth:
+  percentage: 0.1
+druid:
+#  configPathBasic:  /data/appdatas/gt1/gtobasicdb_prd.properties
+  configPathBusiness:  /data/appdatas/gt1/gtobusinessdb_prd.properties
+#  configPathPayroll:  /data/appdatas/gt1/gtopayrolldb_prd.properties
+#  configPathProduct:  /data/appdatas/gt1/gtoproductdb_prd.properties
+#  configPathSm:  /data/appdatas/gt1/gtosmdb_prd.properties
+#  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_prd.properties
+admin.url: http://172.16.100.103:9625
