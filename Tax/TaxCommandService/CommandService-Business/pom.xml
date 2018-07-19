@@ -78,6 +78,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>common-auth</artifactId>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-ci</artifactId>
         </dependency>

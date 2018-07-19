@@ -23,9 +23,13 @@ public interface TaxSink {
      */
     String PR_COMPUTE_UNCLOSE_OUTPUT_CHANNEL = "pr-compute-unclose-output-channel";
     /**
-     * 工作流topic
+     * 工作流(完成任务)
      */
-    String WORKFLOW_CHANNEL = "workflow-channel";
+    String WORKFLOW_CHANNEL_TASK = "common_taskservice_fc_tax_main_task_audit";
+    /**
+     * 工作流(完成流程)
+     */
+    String WORKFLOW_CHANNEL_PROCESS_COMPLETE = "common_taskservice_process_complete";
 
 
     /**
@@ -48,12 +52,17 @@ public interface TaxSink {
      */
     @Input(PR_COMPUTE_UNCLOSE_OUTPUT_CHANNEL)
     MessageChannel unclMessage();
-
     /**
-     * 监听工作引擎消息
+     * 监听工作引擎消息(任务完成)
      * @return
      */
-    @Input(WORKFLOW_CHANNEL)
-    MessageChannel wfMessage();
+    @Input(WORKFLOW_CHANNEL_TASK)
+    MessageChannel wfTaskCompleteMessage();
+    /**
+     * 监听工作引擎消息(流程完成)
+     * @return
+     */
+    @Input(WORKFLOW_CHANNEL_PROCESS_COMPLETE)
+    MessageChannel wfProcessCompleteMessage();
 
 }
