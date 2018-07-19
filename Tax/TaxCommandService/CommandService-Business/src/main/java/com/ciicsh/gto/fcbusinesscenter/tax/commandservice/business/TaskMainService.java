@@ -78,5 +78,8 @@ public interface TaskMainService {
      * @return
      */
     TaskMainPO queryTaskMainById(Long id);
+
+    //更新主任务状态
+    void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus);
 }
 

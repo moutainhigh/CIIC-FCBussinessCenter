@@ -32,6 +32,8 @@ public class RequestForTaskMain extends PageInfo {
 
     private String taskNo;
 
+    private String[] taskNos;
+
     private boolean isCombined;
 
     private Long taskMainDetailId;
@@ -49,6 +51,14 @@ public class RequestForTaskMain extends PageInfo {
      * 管理方编号(管理方切换)
      */
     private String[] managerNos;
+
+    public String[] getTaskNos() {
+        return taskNos;
+    }
+
+    public void setTaskNos(String[] taskNos) {
+        this.taskNos = taskNos;
+    }
 
     public String[] getStatus() {
         return status;

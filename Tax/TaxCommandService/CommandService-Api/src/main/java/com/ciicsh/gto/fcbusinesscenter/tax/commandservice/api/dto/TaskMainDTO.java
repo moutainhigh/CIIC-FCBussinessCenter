@@ -28,6 +28,15 @@ public class TaskMainDTO {
      * 批次号数组
      */
     private String[] batchNos;
+    private String[] taskNos;
+
+    public String[] getTaskNos() {
+        return taskNos;
+    }
+
+    public void setTaskNos(String[] taskNos) {
+        this.taskNos = taskNos;
+    }
 
     public String[] getStatus() {
         return status;

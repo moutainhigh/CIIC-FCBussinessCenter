@@ -211,6 +211,10 @@ public class CalculationBatchDetailBO {
      */
     private Boolean isPaySupported;
     /**
+     * 是否供应商完税凭证
+     */
+    private Boolean isProofSupported;
+    /**
      * 是否有完税凭证服务
      */
     private Boolean isProof;
@@ -331,6 +335,14 @@ public class CalculationBatchDetailBO {
 
     //缴纳账户名称
     private String payAccountName;
+
+    public Boolean getProofSupported() {
+        return isProofSupported;
+    }
+
+    public void setProofSupported(Boolean proofSupported) {
+        isProofSupported = proofSupported;
+    }
 
     public String getDeclareAccountName() {
         return declareAccountName;
