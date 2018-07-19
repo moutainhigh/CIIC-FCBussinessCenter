@@ -63,6 +63,8 @@
             t1.foreigner_count      foreignerCount  ,
             t1.grant_account_code   grantAccountCode,
             t1.grant_account_name   grantAccountName,
+            t1.modified_by          modifiedBy      ,
+            t1.modified_time        modifiedTime    ,
             t1.approved_opinion     approvedOpinion
         FROM
             sg_salary_grant_task_history t1
