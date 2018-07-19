@@ -1,89 +1,165 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="m1527759382452" name="" targetNamespace="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema">
-  <process id="fc_tax_main_task_audit" isClosed="false" isExecutable="true" name="个税任务审批" processType="None">
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="fc_tax_main_task_audit" name="FC个税-主任务审批流程" isExecutable="true">
     <extensionElements>
-      <activiti:executionListener class="com.ciicsh.gto.sheetservice.host.listener.ProcessEndListener" event="end"/>
+      <activiti:executionListener event="end" class="com.ciicsh.gto.sheetservice.host.listener.ProcessEndListener"></activiti:executionListener>
     </extensionElements>
-    <startEvent id="startevent1" name="开始"/>
-    <userTask activiti:exclusive="true" activiti:formKey="common_taskservice_sal_new_project_audit" id="operation_audit" name="薪酬操作员">
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <userTask id="overdue_fine_audit" name="审核滞纳金、罚金" activiti:formKey="common_taskservice_fc_tax_main_task_audit">
       <extensionElements>
-        <activiti:taskListener class="com.ciicsh.gto.sheetservice.host.listener.TaskCreateListener" event="create">
+        <activiti:taskListener event="create" class="com.ciicsh.gto.sheetservice.host.listener.TaskCreateListener">
           <activiti:field name="type">
-            <activiti:string><![CDATA[control_center_audit]]></activiti:string>
+            <activiti:string><![CDATA[overdue_fine_audit]]></activiti:string>
           </activiti:field>
           <activiti:field name="assumer">
-            <activiti:string><![CDATA[1237]]></activiti:string>
+            <activiti:string><![CDATA[XTJ0170]]></activiti:string>
           </activiti:field>
           <activiti:field name="assumeType">
-            <activiti:string><![CDATA[position]]></activiti:string>
+            <activiti:string><![CDATA[ROLE]]></activiti:string>
           </activiti:field>
         </activiti:taskListener>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="operation_audit"/>
-    <userTask activiti:exclusive="true" id="verify_audit" name="薪酬审核员"/>
-    <sequenceFlow id="_3" name="提交" sourceRef="operation_audit" targetRef="verify_audit">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action=='approval'}]]></conditionExpression>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="overdue_fine_audit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${overdueOrFine == 'true'}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="_4" name="退回" sourceRef="verify_audit" targetRef="operation_audit">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action=='refuse'}]]></conditionExpression>
+    <userTask id="finance_audit" name="财务审核员审批" activiti:formKey="common_taskservice_fc_tax_main_task_audit">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.ciicsh.gto.sheetservice.host.listener.TaskCreateListener">
+          <activiti:field name="type">
+            <activiti:string><![CDATA[finance_audit]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="assumer">
+            <activiti:string><![CDATA[XTJ0174]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="assumeType">
+            <activiti:string><![CDATA[ROLE]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="audit_pass" name="End"></endEvent>
+    <endEvent id="audit_reject" name="End"></endEvent>
+    <sequenceFlow id="flow5" name="审批不通过" sourceRef="overdue_fine_audit" targetRef="audit_reject">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action =='refuse'}]]></conditionExpression>
     </sequenceFlow>
-    <endEvent id="_2" name="EndEvent"/>
-    <sequenceFlow id="_5" sourceRef="verify_audit" targetRef="_2"/>
+    <sequenceFlow id="flow6" name="审批不通过" sourceRef="finance_audit" targetRef="audit_reject">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action =='refuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow7" name="审批通过" sourceRef="finance_audit" targetRef="audit_pass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 'approval'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="salary_audit" name="薪资审核员审批" activiti:formKey="common_taskservice_fc_tax_main_task_audit">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.ciicsh.gto.sheetservice.host.listener.TaskCreateListener">
+          <activiti:field name="type">
+            <activiti:string><![CDATA[salary_audit]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="assumer">
+            <activiti:string><![CDATA[XTJ0170]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="assumeType">
+            <activiti:string><![CDATA[ROLE]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow8" name="审核通过" sourceRef="overdue_fine_audit" targetRef="salary_audit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 'approval'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow9" name="审核通过" sourceRef="salary_audit" targetRef="finance_audit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 'approval' && serviceType=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow10" sourceRef="startevent1" targetRef="salary_audit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${overdueOrFine == 'false'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow11" name="审核通过" sourceRef="salary_audit" targetRef="audit_pass">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 'approval' && serviceType!='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow12" name="审核不通过" sourceRef="salary_audit" targetRef="audit_reject">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action =='refuse'}]]></conditionExpression>
+    </sequenceFlow>
   </process>
-  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
-    <bpmndi:BPMNPlane bpmnElement="fc_tax_main_task_audit">
-      <bpmndi:BPMNShape bpmnElement="startevent1" id="Shape-startevent1">
-        <omgdc:Bounds height="32.0" width="32.0" x="80.0" y="250.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_fc_tax_main_task_audit">
+    <bpmndi:BPMNPlane bpmnElement="fc_tax_main_task_audit" id="BPMNPlane_fc_tax_main_task_audit">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="170.0" y="320.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="operation_audit" id="Shape-operation_audit">
-        <omgdc:Bounds height="55.0" width="121.0" x="240.0" y="240.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="55.0" width="121.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape bpmnElement="overdue_fine_audit" id="BPMNShape_overdue_fine_audit">
+        <omgdc:Bounds height="55.0" width="193.0" x="336.0" y="310.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="verify_audit" id="Shape-verify_audit">
-        <omgdc:Bounds height="55.0" width="115.0" x="475.0" y="240.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="55.0" width="115.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape bpmnElement="finance_audit" id="BPMNShape_finance_audit">
+        <omgdc:Bounds height="55.0" width="125.0" x="749.0" y="310.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_2" id="Shape-_2">
-        <omgdc:Bounds height="32.0" width="32.0" x="740.0" y="250.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape bpmnElement="audit_pass" id="BPMNShape_audit_pass">
+        <omgdc:Bounds height="35.0" width="35.0" x="1060.0" y="320.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1" sourceElement="startevent1" targetElement="operation_audit">
-        <omgdi:waypoint x="112.0" y="266.0"/>
-        <omgdi:waypoint x="240.0" y="267.5"/>
+      <bpmndi:BPMNShape bpmnElement="audit_reject" id="BPMNShape_audit_reject">
+        <omgdc:Bounds height="35.0" width="35.0" x="415.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="salary_audit" id="BPMNShape_salary_audit">
+        <omgdc:Bounds height="55.0" width="193.0" x="520.0" y="460.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="205.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="336.0" y="337.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="432.0" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="432.0" y="185.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+          <omgdc:Bounds height="14.0" width="100.0" x="434.0" y="251.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_3" id="BPMNEdge__3" sourceElement="operation_audit" targetElement="verify_audit">
-        <omgdi:waypoint x="361.0" y="267.5"/>
-        <omgdi:waypoint x="475.0" y="267.5"/>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="811.0" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="811.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="494.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="167.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+          <omgdc:Bounds height="14.0" width="60.0" x="816.0" y="251.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_4" id="BPMNEdge__4" sourceElement="verify_audit" targetElement="operation_audit">
-        <omgdi:waypoint x="532.5" y="240.0"/>
-        <omgdi:waypoint x="415.0" y="210.0"/>
-        <omgdi:waypoint x="300.5" y="240.0"/>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="874.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1060.0" y="337.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+          <omgdc:Bounds height="14.0" width="48.0" x="904.0" y="337.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_5" id="BPMNEdge__5" sourceElement="verify_audit" targetElement="_2">
-        <omgdi:waypoint x="590.0" y="267.5"/>
-        <omgdi:waypoint x="740.0" y="266.0"/>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="432.0" y="365.0"></omgdi:waypoint>
+        <omgdi:waypoint x="616.0" y="460.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+          <omgdc:Bounds height="14.0" width="48.0" x="446.0" y="397.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="616.0" y="460.0"></omgdi:waypoint>
+        <omgdi:waypoint x="811.0" y="365.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="676.0" y="411.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="187.0" y="355.0"></omgdi:waypoint>
+        <omgdi:waypoint x="187.0" y="487.0"></omgdi:waypoint>
+        <omgdi:waypoint x="520.0" y="487.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="713.0" y="487.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1077.0" y="487.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1077.0" y="355.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="874.0" y="490.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="616.0" y="460.0"></omgdi:waypoint>
+        <omgdi:waypoint x="616.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="167.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="590.0" y="311.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
