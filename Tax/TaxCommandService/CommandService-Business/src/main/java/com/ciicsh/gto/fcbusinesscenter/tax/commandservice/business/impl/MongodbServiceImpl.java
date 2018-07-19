@@ -223,6 +223,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 declarationAccountBO.setTaxpayerName(convert(decAccount,"taxpayerName",String.class));
                 declarationAccountBO.setStation(convert(decAccount,"station",String.class));
                 declarationAccountBO.setSource(convert(decAccount,"source",Integer.class)==null?null:convert(decAccount,"source",Integer.class).toString());
+                //来款账户Id
+                declarationAccountBO.setBankAccountId(convert(decAccount,"bankAccountId",Integer.class));
+                //所属银行 1:中信,2:建行
+                declarationAccountBO.setBelongBankType(convert(decAccount,"belongBankType",Integer.class));
                 this.saveOrUpdateAccount(accounts,declarationAccountBO);
 
                 //缴纳账户
@@ -240,6 +244,10 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 contributionAccountBO.setTaxpayerName(convert(conAccount,"taxpayerName",String.class));
                 contributionAccountBO.setStation(convert(conAccount,"station",String.class));
                 contributionAccountBO.setSource(convert(decAccount,"source",Integer.class)==null?null:convert(decAccount,"source",Integer.class).toString());
+                //来款账户Id
+                contributionAccountBO.setBankAccountId(convert(decAccount,"bankAccountId",Integer.class));
+                //所属银行 1:中信,2:建行
+                contributionAccountBO.setBelongBankType(convert(decAccount,"belongBankType",Integer.class));
                 this.saveOrUpdateAccount(accounts,contributionAccountBO);
 
                 this.setObjectFieldsEmpty(agreementBO);
