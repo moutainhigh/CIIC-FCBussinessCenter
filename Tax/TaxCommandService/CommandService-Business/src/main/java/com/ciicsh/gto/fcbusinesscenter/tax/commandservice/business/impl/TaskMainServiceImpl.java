@@ -3,7 +3,9 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
@@ -13,6 +15,9 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskM
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import com.ciicsh.gto.identityservice.api.dto.SmRoleInfoDTO;
+import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
+import com.ciicsh.gto.sheetservice.api.ProDefKeyConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +52,13 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
     @Autowired
     private TaskMainDetailMapper taskMainDetailMapper;
+
+    @Autowired
+    private TaskMainMapper taskMainMapper;
+
+    @Autowired
+    private WorkflowService workflowService;
+
 
 
     /**
@@ -110,24 +122,28 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     @Override
     public ResponseForTaskMain queryTaskMainsForCheck(RequestForTaskMain requestForTaskMain) {
 
-        EntityWrapper wrapper = new EntityWrapper();
-//        //管理方名称
-//        if(StrKit.isNotEmpty(requestForTaskMain.getManagerName())){
-//            wrapper.like("manager_name",requestForTaskMain.getManagerName());
-//        }
+        Map<String,Object> map = new HashMap<>();
+
         //管理方名称
         Optional.ofNullable(requestForTaskMain.getManagerNos()).ifPresent(managerNos -> {
-            wrapper.in("manager_no",managerNos);
+            map.put("managerNos",managerNos);
         });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){
-            wrapper.like("task_no",requestForTaskMain.getTaskNo());
+            map.put("taskNo",requestForTaskMain.getTaskNo());
         }
-        //wrapper.like("manager_name","恒大");里
-        wrapper.in("status","01");
-        wrapper.orderBy("created_time",false);
 
-        return this.query(requestForTaskMain,wrapper);
+        String[] roles;
+
+        UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
+        if(userInfoResponseDTO==null || userInfoResponseDTO.getSmRoleInfos()==null || userInfoResponseDTO.getSmRoleInfos().size()==0){
+            return null;
+        }else{
+            List<String> roleList = userInfoResponseDTO.getSmRoleInfos().stream().map(SmRoleInfoDTO::getRoleId).collect(Collectors.toList());
+            roles = roleList.toArray(new String[roleList.size()]);
+            map.put("roles",roles);
+        }
+        return this.queryForCheck(requestForTaskMain,map);
     }
 
     private ResponseForTaskMain query(RequestForTaskMain requestForTaskMain , EntityWrapper wrapper){
@@ -152,18 +168,64 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         return responseForTaskMain;
     }
 
+    private ResponseForTaskMain queryForCheck(RequestForTaskMain requestForTaskMain , Map map){
+
+        ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
+
+        Page<TaskMainPO> page = new Page<>(requestForTaskMain.getCurrentNum(),requestForTaskMain.getPageSize());
+        List<TaskMainPO> taskMainPOList = baseMapper.queryTaskMainForCheck(page, map);
+        //查询主任务对应的批次号
+        for(TaskMainPO p : taskMainPOList){
+            Map<String, Object> columnMap = new HashMap<>();
+            columnMap.put("task_main_id",p.getId());
+            List<CalculationBatchTaskMainPO> l = calculationBatchTaskMainService.selectByMap(columnMap);
+            //组合批次号
+            String sb = l.stream().map(CalculationBatchTaskMainPO::getBatchNo).collect(Collectors.joining(", "));
+            p.setBatchIds(sb);
+        }
+        responseForTaskMain.setRowList(taskMainPOList);
+        responseForTaskMain.setCurrentNum(requestForTaskMain.getCurrentNum());
+        responseForTaskMain.setTotalNum(page.getTotal());
+
+        return responseForTaskMain;
+    }
+
     /**
      * 提交主任务
      * @param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseForTaskMain submitTaskMains(RequestForTaskMain requestForTaskMain){
 
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
+        String[] taskNos = requestForTaskMain.getTaskNos();
+        List<String> ts = new ArrayList<>();
 
-        this.updateTaskMainsStatus(taskMainIds,"01",requestForTaskMain.getStatus());
+        int i = 0;
+
+        for(String taskMainId : taskMainIds){
+            //启动工作流
+            Map<String, Object> variables = new HashMap<>();
+            int c = taskMainMapper.selectNumsForOverdueOrFine(Long.valueOf(taskMainId));
+            if(c>0){
+                variables.put("overdueOrFine","true");
+            }else{
+                variables.put("overdueOrFine","false");
+            }
+            boolean flag = this.workflowService.startProcess(taskNos[i], ProDefKeyConstants.FC.BUS_TAX_MAIN_AUDIT,variables);
+            if(flag){
+                ts.add(taskMainId);
+            }
+            i++;
+        }
+
+        if(ts.size()>0){
+            String[] tns = new String[ts.size()];
+            this.updateTaskMainsStatus(ts.toArray(tns),"01",requestForTaskMain.getStatus());
+        }
 
         return responseForTaskMain;
     }
@@ -179,8 +241,26 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
+        String[] taskNos = requestForTaskMain.getTaskNos();
 
-        this.updateTaskMainsStatus(taskMainIds,"02",requestForTaskMain.getStatus());
+        int i = 0;
+
+        for(String taskMainId : taskMainIds){
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("action","approval");
+            variables.put("serviceType","");
+            List<String> sc = taskMainMapper.queryServiceCategoryForTaskMain(Long.valueOf(taskMainId));
+            //主任务下所在批次的服务类型均为1：仅个税，则需要财务审批
+            Long l = sc.stream().filter(s -> StrKit.isNotEmpty(s)&&s.trim().equals("1")).count();
+            if(l!=null && (l.intValue() == sc.size())){
+                variables.put("serviceType","1");
+            }
+
+            //完成任务
+            workflowService.completeTask(taskNos[i],variables);
+
+            i++;
+        }
 
         return responseForTaskMain;
     }
@@ -201,7 +281,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         return responseForTaskMain;
     }
     /**
-     * 退回主任务
+     * 审批拒绝主任务
      * @param
      * @return
      */
@@ -210,15 +290,21 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
 
-        String[] taskMainIds = requestForTaskMain.getTaskMainIds();
+        String[] taskNos = requestForTaskMain.getTaskNos();
 
-        this.updateTaskMainsStatus(taskMainIds,"03",requestForTaskMain.getStatus());
+        for(String taskNo : taskNos){
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("action","refuse");
+            //完成任务
+            workflowService.completeTask(taskNo,variables);
+        }
 
         return responseForTaskMain;
     }
 
     //更新主任务状态
-    private void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus){
+    @Transactional(rollbackFor = Exception.class)
+    public void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus){
 
         List<TaskMainPO> tps = new ArrayList<>();
         for(String taskMainId : taskMainIds){
