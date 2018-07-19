@@ -18,7 +18,6 @@ import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
-import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;
@@ -72,9 +71,6 @@ public class CompleteComputeServiceImpl {
 
     @Autowired
     private FCBizTransactionMongoOpt bizTransactionMongoOpt;
-
-    @Autowired
-    private CompanyProxy companyProxy;
 
     @Autowired
     private PrNormalBatchService normalBatchService;

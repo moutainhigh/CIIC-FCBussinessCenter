@@ -358,19 +358,6 @@
         <module>PayrollCal/QueryService/QueryService-Host</module>
         <module>PayrollCal/QueryService/QueryService-Api</module>
 
-        <module>Company/WebCommandService/WebCommandService-Api</module>
-        <module>Company/WebCommandService/WebCommandService-Business</module>
-        <module>Company/WebCommandService/WebCommandService-Dao</module>
-        <module>Company/WebCommandService/WebCommandService-Entity</module>
-        <module>Company/WebCommandService/WebCommandService-Host</module>
-
-        <module>Company/WebQueryService/WebQueryService-Api</module>
-        <module>Company/WebQueryService/WebQueryService-Business</module>
-        <module>Company/WebQueryService/WebQueryService-Dao</module>
-        <module>Company/WebQueryService/WebQueryService-Entity</module>
-        <module>Company/WebQueryService/WebQueryService-Host</module>
-
-
         <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-api</module>
         <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-business</module>
         <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-dao</module>
