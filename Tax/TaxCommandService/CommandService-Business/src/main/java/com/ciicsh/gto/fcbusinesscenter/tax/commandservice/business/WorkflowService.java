@@ -8,18 +8,24 @@ import java.util.Map;
  */
 public interface WorkflowService {
 
-
-    enum Process{
-        fc_tax_main_task_audit;
+    enum operationType{
+        //启动工作流
+        startProcess,
+        //创建任务
+        createTask,
+        //完成任务
+        completeTask,
+        //完成工作流
+        completeProcess;
     }
 
     //启动流程
-    boolean startProcess(String missionId , Process process , Map<String, Object> variables);
+    boolean startProcess(String missionId , String processDef , Map<String, Object> variables);
+
+    //创建任务
+    void createTask(String taskId,String taskType,String missionId,String processId,String processDefinitionKey,String assumer,String assumeType);
 
     //完成任务
-    boolean completeTaskByMissionId(String missionId , Map<String, Object> variables);
-
-    //完成任务
-    boolean completeTaskByTaskId(String taskId , Map<String, Object> variables);
+    void completeTask(String missionId , Map<String, Object> variables);
 
 }

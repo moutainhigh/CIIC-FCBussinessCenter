@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.DroolsService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchAccountMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper;
@@ -80,9 +79,6 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
     @Autowired
     private TaskNoService taskNoService;
-
-    @Autowired
-    private WorkflowService workflowService;
 
     @Autowired
     private DroolsService droolsService;
@@ -495,9 +491,6 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
                     taskSubSupplierService.updateById(taskSubSupplierPO);
                 }
             }
-
-            //启动工作流
-//            this.workflowService.startProcess(p.getId().toString(),WorkflowService.Process.fc_tax_main_task_audit,null);
     }
 
     /**
