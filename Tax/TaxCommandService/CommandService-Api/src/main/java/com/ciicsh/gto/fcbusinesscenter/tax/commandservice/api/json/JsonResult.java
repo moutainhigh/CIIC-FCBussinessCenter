@@ -42,9 +42,11 @@ public class JsonResult<T> {
 
         RECOVERY_2("雇员所在任务已经创建，不能恢复"),
 
-        SETTLEMENT_1("结算中心验证批次是否存在出错!"),
+        SETTLEMENT_1("调用结算中心划款接口异常!"),
 
-        SETTLEMENT_2("结算中心打卡出错!");
+        SETTLEMENT_2("结算中心验证批次是否存在出错!"),
+
+        SETTLEMENT_3("结算中心打卡出错!");
 
 
         private String  message;

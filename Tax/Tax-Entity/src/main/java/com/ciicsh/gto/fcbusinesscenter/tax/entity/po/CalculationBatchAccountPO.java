@@ -113,6 +113,15 @@ public class CalculationBatchAccountPO extends Model<CalculationBatchAccountPO> 
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	/**
+	 * 来款账户Id
+	 */
+	private Integer bankAccountId;
+	/**
+	 * 所属银行 1:中信,2:建行
+	 */
+	private Integer belongBankType;
+
 
 	public Long getId() {
 		return id;
@@ -274,6 +283,22 @@ public class CalculationBatchAccountPO extends Model<CalculationBatchAccountPO> 
 		this.modifiedByDisplayName = modifiedByDisplayName;
 	}
 
+	public Integer getBankAccountId() {
+		return bankAccountId;
+	}
+
+	public void setBankAccountId(Integer bankAccountId) {
+		this.bankAccountId = bankAccountId;
+	}
+
+	public Integer getBelongBankType() {
+		return belongBankType;
+	}
+
+	public void setBelongBankType(Integer belongBankType) {
+		this.belongBankType = belongBankType;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -281,27 +306,29 @@ public class CalculationBatchAccountPO extends Model<CalculationBatchAccountPO> 
 
 	@Override
 	public String toString() {
-		return "CalculationBatchAccount{" +
+		return "CalculationBatchAccountPO{" +
 				"id=" + id +
-				", accountName=" + accountName +
-				", accountNumber=" + accountNumber +
-				", commissionContractSerialNumber=" + commissionContractSerialNumber +
-				", provinceCode=" + provinceCode +
-				", cityCode=" + cityCode +
-				", substation=" + substation +
-				", taxpayerAccountName=" + taxpayerAccountName +
-				", account=" + account +
-				", taxAccountOpeningBank=" + taxAccountOpeningBank +
-				", taxpayerName=" + taxpayerName +
-				", station=" + station +
-				", source=" + source +
+				", accountName='" + accountName + '\'' +
+				", accountNumber='" + accountNumber + '\'' +
+				", commissionContractSerialNumber='" + commissionContractSerialNumber + '\'' +
+				", provinceCode='" + provinceCode + '\'' +
+				", cityCode='" + cityCode + '\'' +
+				", substation='" + substation + '\'' +
+				", taxpayerAccountName='" + taxpayerAccountName + '\'' +
+				", account='" + account + '\'' +
+				", taxAccountOpeningBank='" + taxAccountOpeningBank + '\'' +
+				", taxpayerName='" + taxpayerName + '\'' +
+				", station='" + station + '\'' +
+				", source='" + source + '\'' +
 				", isActive=" + isActive +
 				", createdTime=" + createdTime +
 				", modifiedTime=" + modifiedTime +
-				", createdBy=" + createdBy +
-				", modifiedBy=" + modifiedBy +
-				", createdByDisplayName=" + createdByDisplayName +
-				", modifiedByDisplayName=" + modifiedByDisplayName +
-				"}";
+				", createdBy='" + createdBy + '\'' +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", createdByDisplayName='" + createdByDisplayName + '\'' +
+				", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
+				", bankAccountId=" + bankAccountId +
+				", belongBankType=" + belongBankType +
+				'}';
 	}
 }
