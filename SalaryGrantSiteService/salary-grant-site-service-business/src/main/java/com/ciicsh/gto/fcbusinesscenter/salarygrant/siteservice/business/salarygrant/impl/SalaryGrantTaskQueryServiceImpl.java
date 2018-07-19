@@ -355,7 +355,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         }
         if (SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult().equals(workFlowResultBO.getResult())) {
             List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
-            if (list.isEmpty()) {
+            if (list.isEmpty() || (list.size()>0 && StringUtils.isEmpty(list.get(0).getWorkFlowTaskId()))) {
                 MissionRequestDTO missionRequestDTO = createMissionDto(SalaryGrantWorkFlowEnums.ActionType.ACTION_SUBMIT.getAction(), bo);
                 Result<StartProcessResponseDTO> dto =  sheetServiceProxy.startProcess(missionRequestDTO);
                 if (ResultCode.SUCCESS.code == dto.getCode()) {
