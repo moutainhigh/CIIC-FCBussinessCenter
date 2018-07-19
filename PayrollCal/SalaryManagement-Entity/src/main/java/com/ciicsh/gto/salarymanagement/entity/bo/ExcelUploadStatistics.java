@@ -1,6 +1,5 @@
 package com.ciicsh.gto.salarymanagement.entity.bo;
 
-import org.apache.catalina.LifecycleState;
 
 /**
  * Created by bill on 18/5/20.
