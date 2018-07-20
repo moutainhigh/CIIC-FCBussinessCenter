@@ -347,11 +347,15 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         workFlowResultBO.setTaskCode(bo.getTaskCode());
         workFlowResultBO.setTaskType(bo.getTaskType());
         workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult());
-        if (flag) {
+        if (flag && salaryGrantMainTaskMapper.lockTask(bo)> 0) {
             Integer result =  salaryGrantWorkFlowService.doSubmitTask(bo);
             workFlowResultBO.setResult(result);
-        } else {
+        } else if (salaryGrantSubTaskMapper.lockTask(bo) > 0) {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
+        } else {
+            workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getResult());
+            workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getExtension());
+            return workFlowResultBO;
         }
         if (SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult().equals(workFlowResultBO.getResult())) {
             List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
@@ -383,16 +387,22 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void approvalPass(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
-        if (flag) {
+    public WorkFlowResultBO approvalPass(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
+        if (flag && salaryGrantMainTaskMapper.lockTask(bo)> 0) {
             salaryGrantWorkFlowService.doApproveTask(bo);
-        } else {
+        } else if (salaryGrantSubTaskMapper.lockTask(bo) > 0) {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
+        } else {
+            workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getResult());
+            workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getExtension());
+            return workFlowResultBO;
         }
         List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
         if (!list.isEmpty()) {
             sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_APPROVAL.getAction(), SalaryGrantWorkFlowEnums.Role.AUDIT.getName(), bo, list.get(0)));
         }
+        return workFlowResultBO;
     }
 
     /**
@@ -405,16 +415,22 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void approvalReject(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
-        if (flag) {
+    public WorkFlowResultBO approvalReject(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
+        WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
+        if (flag && salaryGrantMainTaskMapper.lockTask(bo)> 0) {
             salaryGrantWorkFlowService.doReturnTask(bo);
-        } else {
+        } else if (salaryGrantSubTaskMapper.lockTask(bo) > 0) {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
+        } else {
+            workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getResult());
+            workFlowResultBO.setMessage(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getExtension());
+            return workFlowResultBO;
         }
         List<WorkFlowTaskInfoBO> list = workFlowTaskInfoMapper.operation(bo);
         if (!list.isEmpty()) {
             sheetServiceProxy.completeTask(createTaskRequestDTO(SalaryGrantWorkFlowEnums.ActionType.ACTION_REJECT.getAction(), SalaryGrantWorkFlowEnums.Role.AUDIT.getName(), bo, list.get(0)));
         }
+        return workFlowResultBO;
     }
 
     private MissionRequestDTO createMissionDto(String action, SalaryGrantTaskBO bo) {
