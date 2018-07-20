@@ -7,12 +7,14 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.MongodbServic
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubMoneyService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskWorkflowHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskWorkflowHistoryPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyPayStatusDTO;
 import com.ciicsh.gto.sheetservice.api.ProDefKeyConstants;
 import com.ciicsh.gto.sheetservice.api.dto.ProcessCompleteMsgDTO;
@@ -102,7 +104,7 @@ public class TaxKafkaReceiver {
                 mongodbService.acquireBatch(closingMsg);
             }
         } catch (Exception e) {
-            logger.error("关账消息处理异常!",e);
+            LogTaskFactory.getLogger().error(e, "TaxKafkaReceiver.clMessage", "其他", LogType.APP,null);
         }
     }
 
@@ -115,7 +117,7 @@ public class TaxKafkaReceiver {
         try {
             mongodbService.cancelBatch(cancelClosingMsg);
         } catch (Exception e) {
-            logger.error("计算引擎取消关账信息异常!",e);
+            LogTaskFactory.getLogger().error(e, "TaxKafkaReceiver.unclMessage", "其他", LogType.APP,null);
         }
     }
 
@@ -133,7 +135,7 @@ public class TaxKafkaReceiver {
             }
 
         } catch (Exception e) {
-            logger.error("工作流,创建任务失败!",e);
+            LogTaskFactory.getLogger().error(e, "TaxKafkaReceiver.wfTaskCompleteMessage", "其他", LogType.APP,null);
         }
     }
 
@@ -177,7 +179,7 @@ public class TaxKafkaReceiver {
                 taskWorkflowHistoryMapper.insert(taskWorkflowHistoryPO);//记录流程创建信息
             }
         } catch (Exception e) {
-            logger.error("流程结束异常!",e);
+            LogTaskFactory.getLogger().error(e, "TaxKafkaReceiver.wfProcessCompleteMessage", "其他", LogType.APP,null);
         }
     }
 }
