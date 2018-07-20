@@ -100,9 +100,10 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
      * @since 2018-06-08
      * @param flag
      * @param bo
+     * @return
      * @throws Exception
      */
-    void approvalPass(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
+    WorkFlowResultBO approvalPass(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
 
     /**
      * 审批退回
@@ -110,9 +111,10 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
      * @since 2018-06-08
      * @param flag
      * @param bo
+     * @return
      * @throws Exception
      */
-    void approvalReject(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
+    WorkFlowResultBO approvalReject(Boolean flag, SalaryGrantTaskBO bo) throws Exception;
 
     /**
      * 抢占资源锁
