@@ -72,6 +72,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ciicsh.gt1.afsystemmanagecenter</groupId>
+            <artifactId>gt1.afsystemmanagecenter.apiservice-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.ciicsh.gt1.salecenter</groupId>
             <artifactId>gt1.salecenter.apiservice-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
@@ -87,6 +93,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
         </dependency>
 
         <dependency>
