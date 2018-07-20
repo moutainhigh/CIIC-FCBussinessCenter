@@ -594,9 +594,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         //查询薪资发放任务单子表记录列表
         List<SalaryGrantTaskPaymentBO> waitForPaymentTaskList = salaryGrantSubTaskMapper.queryWaitForPaymentTaskList(grantDate);
         if (!CollectionUtils.isEmpty(waitForPaymentTaskList)) {
-            int taskPaymentBOListSize = waitForPaymentTaskList.size();
-            for (int i = 0; i < taskPaymentBOListSize; i++) {
-                SalaryGrantTaskPaymentBO salaryGrantTaskPaymentBO = waitForPaymentTaskList.get(i);
+            waitForPaymentTaskList.forEach(salaryGrantTaskPaymentBO -> {
                 //任务单子表编号
                 String taskCode = salaryGrantTaskPaymentBO.getTaskCode();
                 //任务单主表编号
@@ -669,7 +667,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
                         fcBizTransactionMongoOpt.commitEvent(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType(), EventName.FC_GRANT_EVENT, 1);
                     });
                 }
-            }
+            });
         }
 
 //        System.out.println("薪资发放定时任务 完成时间: " + LocalDateTime.now());
