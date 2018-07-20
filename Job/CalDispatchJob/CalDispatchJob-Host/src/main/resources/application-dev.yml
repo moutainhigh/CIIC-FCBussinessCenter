@@ -9,13 +9,6 @@ eureka:
       prefer-ip-address: true
       instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 
-database:
-  host: 172.16.9.15
-  port: 3306
-  databasename: gtopayrolldb
-  username: root
-  password: a111111
-
 kafka:
   brokers: 172.16.9.11:9092
   zk-nodes: 172.16.9.11:2181
@@ -48,3 +41,6 @@ mongo:
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
+
+druid:
+  configPath:  /data/appdatas/gt1/gtopayrolldb_dev.properties

@@ -12,7 +12,6 @@ import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmployeeGr
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.CmyFcBankCardResponseDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.CycleRuleResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.PayrollCalcResultDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.App;
 import com.ciicsh.gto.settlementcenter.gathering.queryapi.ExchangeProxy;
 import org.junit.Test;
@@ -54,7 +53,7 @@ public class SalaryGrantTaskProcessServiceTest {
         Map batchParam = new HashMap();
         batchParam.put("batchCode","GL1800255_201806_0000000299");
         batchParam.put("batchType",1);
-        List<PayrollCalcResultDTO> payrollCalcResultDTOList = salaryGrantTaskProcessService.listPayrollCalcResult(batchParam);
+//        List<PayrollCalcResultDTO> payrollCalcResultDTOList = salaryGrantTaskProcessService.listPayrollCalcResult(batchParam);
     }
 
     @Test
@@ -69,7 +68,7 @@ public class SalaryGrantTaskProcessServiceTest {
         closingMsg.setBatchCode("GL1800255_201806_0000000299");
         closingMsg.setBatchType(1);
         closingMsg.setVersion(9);
-        salaryGrantTaskProcessService.toClosing(closingMsg);
+        salaryGrantTaskProcessService.closing(closingMsg);
     }
 
     @Test
