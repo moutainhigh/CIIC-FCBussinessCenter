@@ -111,11 +111,12 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         param.setActive(true);
         //查询主任务单
         SalaryGrantMainTaskPO salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(param);
-        //设置关账版本号
-        param.setBatchVersion(closingMsg.getVersion());
         if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO) && salaryGrantMainTaskPO.getBatchVersion().compareTo(salaryGrantMainTaskPO.getBatchVersion()) > 0) {
+            salaryGrantMainTaskPO.setBatchVersion(closingMsg.getVersion());
             this.modifySalaryGrantMainTask(salaryGrantMainTaskPO);
         } else {
+            //设置关账版本号
+            param.setBatchVersion(closingMsg.getVersion());
             this.createSalaryGrantMainTask(param);
         }
     }
