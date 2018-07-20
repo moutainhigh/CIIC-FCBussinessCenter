@@ -96,6 +96,10 @@ public class EmpInfoBO {
         return mobile;
     }
 
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }

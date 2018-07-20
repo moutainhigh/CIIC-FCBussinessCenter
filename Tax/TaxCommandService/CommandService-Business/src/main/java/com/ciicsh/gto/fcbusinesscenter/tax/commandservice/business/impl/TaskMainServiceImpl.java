@@ -271,6 +271,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             Long l = sc.stream().filter(s -> StrKit.isNotEmpty(s)&&s.trim().equals("1")).count();
             if(l!=null && (l.intValue() == sc.size())){
                 variables.put("serviceType","1");
+                //创建一次性滞纳金和罚金
+//                createOneTimeChargeBillByTaskMainIds(taskMainIds);
             }
 
             //完成任务
@@ -473,10 +475,10 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             moneyWrapper.andNew("overdue > 0 ").or(" fine > 0 ");
             List<TaskSubMoneyPO>  taskSubMoneyPOList = taskSubMoneyService.selectList(moneyWrapper);
             for(TaskSubMoneyPO taskSubMoneyPO : taskSubMoneyPOList){
-                //划款子任务滞纳金和罚金总和
-                BigDecimal totalMoney = taskSubMoneyPO.getOverdue().add(taskSubMoneyPO.getFine());
-                //划款子任务总税金
-                BigDecimal totalTaxReal = taskSubMoneyPO.getTaxAmount();
+                //划款子任务滞纳金
+                BigDecimal totalOverdue = taskSubMoneyPO.getOverdue();
+                //划款子任务罚金
+                BigDecimal totalFine = taskSubMoneyPO.getFine();
                 //根据子任务id查询子任务明细
                 EntityWrapper moneyDetailWrapper = new EntityWrapper();
                 moneyDetailWrapper.setEntity(new TaskSubMoneyDetailPO());
@@ -500,46 +502,74 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
                 List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatch.selectList(employeeWrapper);
                 //根据公司分组雇员
                 Map<String,List<EmployeeInfoBatchPO>> companyEmpMap = employeeInfoBatchPOList.stream().collect(groupingBy(EmployeeInfoBatchPO::getCompanyNo));
-                for (String key : companyEmpMap.keySet()) {
-                    List<EmployeeInfoBatchPO> employeeInfoBatchPOS = companyEmpMap.get(key);
-                    //筛选出当前雇员编号集合
-                    List<Long> calBatchDetailNoList = employeeInfoBatchPOS.stream().map(item -> item.getCalBatchDetailId()).collect(Collectors.toList());
-                    List<TaskMainDetailPO> taskMainDetailPOS = taskMainDetailPOList.stream().filter(item -> calBatchDetailNoList.contains(item.getCalculationBatchDetailId())).collect(Collectors.toList());
-                    //收费额
-                    BigDecimal chargeAmount = new BigDecimal(0);
-                    //雇员税金总和
-                    BigDecimal taxRealTotal = taskMainDetailPOS.stream()
-                            .map(TaskMainDetailPO::getTaxReal)
-                            //使用reduce聚合函数,实现累加器
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    chargeAmount = taxRealTotal.divide(totalTaxReal).multiply(totalMoney).setScale(2, BigDecimal.ROUND_HALF_UP);
-                    FcChargeDisposableProxyDTO fcChargeDisposableProxyDTO = new FcChargeDisposableProxyDTO();
-                    //管理方编号
-                    fcChargeDisposableProxyDTO.setManagementId(taskSubMoneyPO.getManagerNo());
-                    //管理方名称
-                    fcChargeDisposableProxyDTO.setManagementName(taskSubMoneyPO.getManagerName());
-                    //收费对象：1-客户；2-雇员
-                    fcChargeDisposableProxyDTO.setChargeObject(1);
-                    //公司ID
-                    fcChargeDisposableProxyDTO.setCompanyId(key);
-                    //公司名称
-                    fcChargeDisposableProxyDTO.setCompanyName(employeeInfoBatchPOS.size() > 0 ? employeeInfoBatchPOS.get(0).getCompanyName() : "");
-                    //业务编码
-                    fcChargeDisposableProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
-                    //业务类型:(0-手工；1-FC个税)
-                    fcChargeDisposableProxyDTO.setBusinessType(1);
-                    //实际月份
-                    fcChargeDisposableProxyDTO.setActualChargeMonth(taskSubMoneyPO.getPeriod() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(taskSubMoneyPO.getPeriod()) : "");
-                    //合同我方（账套）ID(1:AF;2:FC;3:BPO)
-                    fcChargeDisposableProxyDTO.setFinanceAccountId(2);
-                    //收费金额
-                    fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
-                    //创建方式：0-直接导入;1-页面操作;2-外部接口;
-                    fcChargeDisposableProxyDTO.setCreateType(2);
-                    //备注
-                    fcChargeDisposableProxyDTO.setRemark("个税滞纳金和罚金一次性账单!");
-                    fcChargeDisposableProxyDTOList.add(fcChargeDisposableProxyDTO);
+                //滞纳金大于0平均到没个客户
+                if(totalOverdue.compareTo(BigDecimal.ZERO) == 1){
+                    for (String key : companyEmpMap.keySet()) {
+                        List<EmployeeInfoBatchPO> employeeInfoBatchPOS = companyEmpMap.get(key);
+                        //收费额
+                        BigDecimal chargeAmount = totalOverdue.divide(new BigDecimal(companyEmpMap.size())).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        FcChargeDisposableProxyDTO fcChargeDisposableProxyDTO = new FcChargeDisposableProxyDTO();
+                        //管理方编号
+                        fcChargeDisposableProxyDTO.setManagementId(taskSubMoneyPO.getManagerNo());
+                        //管理方名称
+                        fcChargeDisposableProxyDTO.setManagementName(taskSubMoneyPO.getManagerName());
+                        //收费对象：1-客户；2-雇员
+                        fcChargeDisposableProxyDTO.setChargeObject(1);
+                        //公司ID
+                        fcChargeDisposableProxyDTO.setCompanyId(key);
+                        //公司名称
+                        fcChargeDisposableProxyDTO.setCompanyName(employeeInfoBatchPOS.size() > 0 ? employeeInfoBatchPOS.get(0).getCompanyName() : "");
+                        //业务编码
+                        fcChargeDisposableProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
+                        //业务类型:(0-手工；1-FC个税滞纳金,2-FC个税罚金)
+                        fcChargeDisposableProxyDTO.setBusinessType(1);
+                        //实际月份
+                        fcChargeDisposableProxyDTO.setActualChargeMonth(taskSubMoneyPO.getPeriod() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(taskSubMoneyPO.getPeriod()) : "");
+                        //合同我方（账套）ID(1:AF;2:FC;3:BPO)
+                        fcChargeDisposableProxyDTO.setFinanceAccountId(2);
+                        //收费金额
+                        fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
+                        //创建方式：0-直接导入;1-页面操作;2-外部接口;
+                        fcChargeDisposableProxyDTO.setCreateType(2);
+                        //备注
+                        fcChargeDisposableProxyDTO.setRemark("个税滞纳金一次性账单!");
+                        fcChargeDisposableProxyDTOList.add(fcChargeDisposableProxyDTO);
+                    }
                 }
+                if(totalFine.compareTo(BigDecimal.ZERO) == 1){
+                    for (String key : companyEmpMap.keySet()) {
+                        List<EmployeeInfoBatchPO> employeeInfoBatchPOS = companyEmpMap.get(key);
+                        //收费额
+                        BigDecimal chargeAmount =  totalFine.divide(new BigDecimal(companyEmpMap.size())).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        FcChargeDisposableProxyDTO fcChargeDisposableProxyDTO = new FcChargeDisposableProxyDTO();
+                        //管理方编号
+                        fcChargeDisposableProxyDTO.setManagementId(taskSubMoneyPO.getManagerNo());
+                        //管理方名称
+                        fcChargeDisposableProxyDTO.setManagementName(taskSubMoneyPO.getManagerName());
+                        //收费对象：1-客户；2-雇员
+                        fcChargeDisposableProxyDTO.setChargeObject(1);
+                        //公司ID
+                        fcChargeDisposableProxyDTO.setCompanyId(key);
+                        //公司名称
+                        fcChargeDisposableProxyDTO.setCompanyName(employeeInfoBatchPOS.size() > 0 ? employeeInfoBatchPOS.get(0).getCompanyName() : "");
+                        //业务编码
+                        fcChargeDisposableProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
+                        //业务类型:(0-手工；1-FC个税滞纳金,2-FC个税罚金)
+                        fcChargeDisposableProxyDTO.setBusinessType(2);
+                        //实际月份
+                        fcChargeDisposableProxyDTO.setActualChargeMonth(taskSubMoneyPO.getPeriod() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(taskSubMoneyPO.getPeriod()) : "");
+                        //合同我方（账套）ID(1:AF;2:FC;3:BPO)
+                        fcChargeDisposableProxyDTO.setFinanceAccountId(2);
+                        //收费金额
+                        fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
+                        //创建方式：0-直接导入;1-页面操作;2-外部接口;
+                        fcChargeDisposableProxyDTO.setCreateType(2);
+                        //备注
+                        fcChargeDisposableProxyDTO.setRemark("个税罚金一次性账单!");
+                        fcChargeDisposableProxyDTOList.add(fcChargeDisposableProxyDTO);
+                    }
+                }
+
             }
         }
         try {

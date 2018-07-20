@@ -1044,12 +1044,15 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 List<CalculationBatchAccountPO> calculationBatchAccountPOS = calculationBatchAccountService.queryCalculationBatchAccountInfoByAccountNos(accountNums);
                 //已识别号为key转成map
                 Map<String, CalculationBatchAccountPO> accountMap = calculationBatchAccountPOS.stream().collect(Collectors.toMap(CalculationBatchAccountPO::getAccountNumber, account -> account));
-                //获取雇员个税信息
-                EntityWrapper wrapper = new EntityWrapper();
-                wrapper.setEntity(new EmployeeInfoBatchPO());
-                wrapper.in("cal_batch_detail_id", batchDetailsIds);
-                wrapper.and("is_active = {0} ", true);
-                List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchImpl.selectList(wrapper);
+                List<EmployeeInfoBatchPO> employeeInfoBatchPOList = new ArrayList<>();
+                if(batchDetailsIds.size() > 0 ){
+                    //获取雇员个税信息
+                    EntityWrapper wrapper = new EntityWrapper();
+                    wrapper.setEntity(new EmployeeInfoBatchPO());
+                    wrapper.in("cal_batch_detail_id", batchDetailsIds);
+                    wrapper.and("is_active = {0} ", true);
+                    employeeInfoBatchPOList = employeeInfoBatchImpl.selectList(wrapper);
+                }
                 //管理方
                 topMap.put("managerInfo", calculationBatchPO.getManagerNo() + " " + calculationBatchPO.getManagerName());
                 //是否垫付

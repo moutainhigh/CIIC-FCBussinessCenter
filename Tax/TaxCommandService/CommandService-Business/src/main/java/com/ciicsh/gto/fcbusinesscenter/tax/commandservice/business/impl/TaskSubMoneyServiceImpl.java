@@ -202,20 +202,31 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     /**
      * 获取划款子任务来款情况列表
-     * @param taskNos
+     * @param moneyIds
      * @return
      */
     @Override
-    public DisposableChargeProxyDTO whetherHasMoneyBySubMoneyTaskNo(String[] taskNos) {
+    public DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(String[] moneyIds) {
         DisposableChargeProxyDTO disposableChargeProxyDTOReturn = new DisposableChargeProxyDTO();
         DisposableChargeProxyDTO disposableChargeProxyDTO = new DisposableChargeProxyDTO();
         List<DisposableChargeDetailProxyDTO> disposableChargeDetailProxyDTOS = new ArrayList<>();
-        for(int i = 0;i < taskNos.length;i++){
-            String taskNo = taskNos[i];
-            DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
-            disposableChargeDetailProxyDTO.setBusinessId(taskNo);
-            disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX);
-            disposableChargeDetailProxyDTOS.add(disposableChargeDetailProxyDTO);
+        for(int i = 0;i < moneyIds.length;i++){
+            String moneyId = moneyIds[i];
+            TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(moneyId);
+            //判断滞纳金是否来款
+            if(taskSubMoneyPO.getOverdue().compareTo(BigDecimal.ZERO) == 1){
+                DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
+                disposableChargeDetailProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
+                disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX_LATE_FEE);
+                disposableChargeDetailProxyDTOS.add(disposableChargeDetailProxyDTO);
+            }
+            //判断罚金是否来款
+            if(taskSubMoneyPO.getFine().compareTo(BigDecimal.ZERO) == 1){
+                DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
+                disposableChargeDetailProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
+                disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX_FINE);
+                disposableChargeDetailProxyDTOS.add(disposableChargeDetailProxyDTO);
+            }
         }
         disposableChargeProxyDTO.setList(disposableChargeDetailProxyDTOS);
         JsonResult<DisposableChargeProxyDTO> jsonResult = disposableChargeProxy.disposableChargeIsReceived(disposableChargeProxyDTO);

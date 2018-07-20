@@ -56,9 +56,9 @@ public interface TaskSubMoneyService {
 
     /**
      * 获取划款子任务来款情况列表
-     * @param taskNos
+     * @param moneyIds
      * @return
      */
-    DisposableChargeProxyDTO whetherHasMoneyBySubMoneyTaskNo(String[] taskNos);
+    DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(String[] moneyIds);
 
 }
