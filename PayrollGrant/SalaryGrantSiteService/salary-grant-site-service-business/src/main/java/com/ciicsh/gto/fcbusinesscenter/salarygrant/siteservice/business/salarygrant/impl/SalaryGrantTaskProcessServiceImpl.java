@@ -40,6 +40,7 @@ import com.ciicsh.gto.salecenter.apiservice.api.proxy.ManagementProxy;
 import com.ciicsh.gto.settlementcenter.gathering.queryapi.ExchangeProxy;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -101,50 +102,21 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
     SalaryGrantEmployeeCommandService salaryGrantEmployeeCommandService;
 
     @Override
-    public void toClosing(ClosingMsg closingMsg) {
-        // 1、接收消息返回的计算批次号、批次类型、版本号
-        String batchCode = closingMsg.getBatchCode();
-        Integer batchType = closingMsg.getBatchType();
-        Long version = closingMsg.getVersion();
-
-        Map batchParam = new HashMap();
-        batchParam.put("batchCode",batchCode);
-        batchParam.put("batchType",batchType);
-        batchParam.put("version",version);
-        // 2、根据计算批次号查询批次业务表的批次数据信息，包括计算结果数据及雇员服务协议信息。发起薪资发放任务单。
-        SalaryGrantMainTaskPO salaryGrantMainTaskPO;
-        SalaryGrantMainTaskPO condition = new SalaryGrantMainTaskPO();
-        condition.setBatchCode(batchCode);
-        condition.setGrantType(batchType);
-        condition.setTaskType(SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK);
-        condition.setActive(true);
-        salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(condition);
-        if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO)){
-            if (Long.valueOf(version).compareTo(salaryGrantMainTaskPO.getBatchVersion()) > 0){
-                salaryGrantMainTaskPO.setBatchVersion(version);
-                this.modifySalaryGrantMainTask(salaryGrantMainTaskPO);
-            }
-        }else{
-            this.createSalaryGrantMainTask(batchParam);
-        }
-    }
-
-    @Override
-    public Boolean isExistSalaryGrantMainTask(Map batchParam) {
-        SalaryGrantMainTaskPO salaryGrantMainTaskPO;
-        SalaryGrantMainTaskPO condition = new SalaryGrantMainTaskPO();
-        // 1、接收计算引擎消息，获取计算批次号、批次类型
-        condition.setBatchCode((String)batchParam.get("batchCode"));
-        condition.setGrantType((Integer)batchParam.get("batchType"));
-        condition.setTaskType(SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK);
-        condition.setActive(true);
-        salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(condition);
-        if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO)){
-            // 任务单主表已存在，当其他模块对批次数据要求重算，需要对任务单进行退回至草稿状态，对已存在的任务单需要根据最新批次信息进行修改。
-            return true;
-        }else{
-            // 计算批次对应的任务单信息不存在，根据业务批次信息创建任务单主表信息及雇员信息。
-            return false;
+    public void closing(ClosingMsg closingMsg) {
+        // 接收关账参数并设置主任务单查询条件
+        SalaryGrantMainTaskPO param = BeanUtils.instantiate(SalaryGrantMainTaskPO.class);
+        param.setBatchCode(closingMsg.getBatchCode());
+        param.setGrantType(closingMsg.getBatchType());
+        param.setTaskType(SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK);
+        param.setActive(true);
+        //查询主任务单
+        SalaryGrantMainTaskPO salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(param);
+        //设置关账版本号
+        salaryGrantMainTaskPO.setBatchVersion(closingMsg.getVersion());
+        if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO) && salaryGrantMainTaskPO.getBatchVersion().compareTo(salaryGrantMainTaskPO.getBatchVersion()) > 0) {
+            this.modifySalaryGrantMainTask(salaryGrantMainTaskPO);
+        } else {
+            this.createSalaryGrantMainTask(param);
         }
     }
 
@@ -160,37 +132,26 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         salaryGrantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
         // 重新从mongodb获取雇员信息
         // 根据重算批次的计算信息进行汇总到任务单主表,修改薪资发放任务单
-        boolean isModified = this.toModifySalaryGrantMainTask(salaryGrantMainTaskPO);
+        boolean isModified = this.modifyMainTask(salaryGrantMainTaskPO);
         if(isModified){
             // 重新生成发放雇员数据
-            Map batchParam = new HashMap(2);
-            batchParam.put("batchCode", salaryGrantMainTaskPO.getBatchCode());
-            batchParam.put("batchType", salaryGrantMainTaskPO.getGrantType());
-            List<PayrollCalcResultDTO> payrollCalcResultDTOList = this.listPayrollCalcResult(batchParam);
-            this.toCreateSalaryGrantEmployee(salaryGrantMainTaskPO,payrollCalcResultDTOList);
+            List<PayrollCalcResultDTO> payrollCalcResultDTOList = this.listPayrollCalcResult(salaryGrantMainTaskPO);
+            this.createEmployee(salaryGrantMainTaskPO,payrollCalcResultDTOList);
         }else{
             logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("修改薪资发放任务单主表信息，计算批次号为："+salaryGrantMainTaskPO.getBatchCode()).setContent("修改薪资发放任务单记录失败，导致无法生成薪资发放雇员信息！"));
         }
     }
 
-    @Override
-    public void createSalaryGrantMainTask(Map batchParam) {
-        SalaryGrantMainTaskPO salaryGrantMainTaskPO = new SalaryGrantMainTaskPO();
-
-        // 1、接收计算引擎消息，获取计算批次号、批次类型、版本号
-        salaryGrantMainTaskPO.setBatchCode((String)batchParam.get("batchCode"));
-        salaryGrantMainTaskPO.setGrantType((Integer)batchParam.get("batchType"));
-        salaryGrantMainTaskPO.setBatchVersion((Long)batchParam.get("version"));
+    public void createSalaryGrantMainTask(SalaryGrantMainTaskPO po) {
         // 2、查询批次计算结果
-        List<PayrollCalcResultDTO> payrollCalcResultDTOList = this.listPayrollCalcResult(batchParam);
-
+        List<PayrollCalcResultDTO> payrollCalcResultDTOList = this.listPayrollCalcResult(po);
         // 3、创建薪资发放任务单
-        boolean isCreated = this.toCreateSalaryGrantMainTask(salaryGrantMainTaskPO, payrollCalcResultDTOList);
+        boolean isCreated = this.createMainTask(po, payrollCalcResultDTOList);
         // 4、生成薪资发放雇员信息
         if(isCreated){
-            this.toCreateSalaryGrantEmployee(salaryGrantMainTaskPO, payrollCalcResultDTOList);
+            this.createEmployee(po, payrollCalcResultDTOList);
         }else{
-            logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单主表信息，计算批次号为："+salaryGrantMainTaskPO.getBatchCode()).setContent("插入薪资发放任务单记录失败，导致无法生成薪资发放雇员信息！"));
+            logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单主表信息，计算批次号为："+po.getBatchCode()).setContent("插入薪资发放任务单记录失败，导致无法生成薪资发放雇员信息！"));
         }
     }
 
@@ -200,7 +161,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      * @return SalaryGrantMainTaskPO
      */
     @Transactional(rollbackFor = Exception.class)
-    protected boolean toCreateSalaryGrantMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO,List<PayrollCalcResultDTO> payrollCalcResultDTOList){
+    protected boolean createMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO,List<PayrollCalcResultDTO> payrollCalcResultDTOList){
         // 1、 根据批次编号batch_code，批次对应的计算类型（正常、调整、回溯），查询批次表信息
         // 调用计算引擎提供查询批次信息的接口方法
         PrBatchDTO PrBatchDTO = batchProxy.getBatchInfo(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType());
@@ -234,13 +195,15 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         return true;
     }
 
-    @Override
-    public List<PayrollCalcResultDTO> listPayrollCalcResult(Map batchParam) {
-        String batchCode = (String)batchParam.get("batchCode");
-        Integer batchType = (Integer)batchParam.get("batchType");
+    /**
+     * 查询mongo薪资发放数据
+     * @param po
+     * @return
+     */
+    private List<PayrollCalcResultDTO> listPayrollCalcResult(SalaryGrantMainTaskPO po) {
         List<PayrollCalcResultDTO> payrollCalcResultDTOList = new ArrayList<PayrollCalcResultDTO>();
         // 调用计算引擎提供的mongodb数据库查询工具类
-        List<DBObject> list  = calResultMongoOpt.list(Criteria.where("batch_id").is(batchCode).and("batch_type").is(batchType));
+        List<DBObject> list  = calResultMongoOpt.list(Criteria.where("batch_id").is(po.getBatchCode()).and("batch_type").is(po.getGrantType()));
         if (list != null && list.size() > 0) {
             list.forEach(dbObject ->{
                 PayrollCalcResultDTO payrollCalcResultDTO = this.toConvertToPayrollCalcResultDTO(dbObject);
@@ -500,7 +463,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      * @return boolean
      */
     @Transactional(rollbackFor = Exception.class)
-    protected boolean toCreateSalaryGrantEmployee(SalaryGrantMainTaskPO salaryGrantMainTaskPO,List<PayrollCalcResultDTO> payrollCalcResultDTOList){
+    protected boolean createEmployee(SalaryGrantMainTaskPO salaryGrantMainTaskPO,List<PayrollCalcResultDTO> payrollCalcResultDTOList){
         // 1、查询批次计算
         // 2、解析payrollCalcResultDTOList批次数据信息
         List<SalaryGrantEmployeePO> salaryGrantEmployeePOList = this.toResolvePayrollCalcResultForEmployee(payrollCalcResultDTOList, salaryGrantMainTaskPO);
@@ -2063,16 +2026,13 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      * @param salaryGrantMainTaskPO
      * @return SalaryGrantMainTaskPO
      */
-    private boolean toModifySalaryGrantMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO){
-        Map batchParam = new HashMap(2);
-        batchParam.put("batchCode", salaryGrantMainTaskPO.getBatchCode());
-        batchParam.put("batchType", salaryGrantMainTaskPO.getGrantType());
+    private boolean modifyMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO){
         // 1、 根据批次编号batch_code，批次对应的计算类型（正常、调整、回溯），查询批次表信息
         // 调用计算引擎提供查询批次信息的接口方法
         PrBatchDTO PrBatchDTO = batchProxy.getBatchInfo(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType());
         salaryGrantMainTaskPO = this.convertBatchInfoToSalaryGrantMainTask(salaryGrantMainTaskPO, PrBatchDTO);
         // 2、查询批次计算结果
-        List<PayrollCalcResultDTO> payrollCalcResultDTOList = this.listPayrollCalcResult(batchParam);
+        List<PayrollCalcResultDTO> payrollCalcResultDTOList = this.listPayrollCalcResult(salaryGrantMainTaskPO);
         if(!CollectionUtils.isEmpty(payrollCalcResultDTOList)){
             // 3、解析雇员计算结果数据，过滤薪资发放的雇员信息，汇总相关数据。
             salaryGrantMainTaskPO = this.toResolvePayrollCalcResultForTask(payrollCalcResultDTOList, salaryGrantMainTaskPO);
@@ -2090,6 +2050,24 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         return true;
     }
 
+    @Override
+    public Boolean isExistSalaryGrantMainTask(Map batchParam) {
+        SalaryGrantMainTaskPO salaryGrantMainTaskPO;
+        SalaryGrantMainTaskPO condition = new SalaryGrantMainTaskPO();
+        // 1、接收计算引擎消息，获取计算批次号、批次类型
+        condition.setBatchCode((String)batchParam.get("batchCode"));
+        condition.setGrantType((Integer)batchParam.get("batchType"));
+        condition.setTaskType(SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK);
+        condition.setActive(true);
+        salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(condition);
+        if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO)){
+            // 任务单主表已存在，当其他模块对批次数据要求重算，需要对任务单进行退回至草稿状态，对已存在的任务单需要根据最新批次信息进行修改。
+            return true;
+        }else{
+            // 计算批次对应的任务单信息不存在，根据业务批次信息创建任务单主表信息及雇员信息。
+            return false;
+        }
+    }
 
     /**
      * 提供外部接口API，对选择的暂缓雇员进行薪资发放

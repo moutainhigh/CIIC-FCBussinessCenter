@@ -6,7 +6,6 @@ import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +23,7 @@ public interface SalaryGrantTaskProcessService extends IService<SalaryGrantMainT
      * @param closingMsg
      * @return
      */
-    void toClosing(ClosingMsg closingMsg);
+    void closing(ClosingMsg closingMsg);
     /**
      *  根据计算批次编号判断薪资发放任务单主表是否已存在
      * @param batchParam
@@ -39,7 +38,7 @@ public interface SalaryGrantTaskProcessService extends IService<SalaryGrantMainT
      * @param batchParam 计算批次号batchCode
      * @return
      */
-    void createSalaryGrantMainTask(Map batchParam);
+//    void createSalaryGrantMainTask(Map batchParam);
 
     /**
      *  当批次已进入业务处理，其他模块可能会对批次要求进行重算处理，薪资发放模块要对批次任务做相应的处理。
@@ -53,7 +52,7 @@ public interface SalaryGrantTaskProcessService extends IService<SalaryGrantMainT
      * @param batchParam 计算批次号batchCode
      * @return List 对应批次的雇员信息列表
      */
-    List listPayrollCalcResult(Map batchParam);
+//    List listPayrollCalcResult(Map batchParam);
 
     /**
      * 修改任务单信息（薪资发放日、上下午标识、审批意见、失效原因等）
