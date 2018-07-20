@@ -45,43 +45,12 @@ public class FcPayrollCalcResultController {
     @Autowired
     private FcPayrollCalcResultService fcPayrollCalcResultService;
 
-    @Autowired
-    private MongoConfig mongoConfig;
-
     @RequestMapping(value = "/listFcPayrollCalcResults")
     public JsonResult list(@RequestBody String params) {
         return JsonResult.success(fcPayrollCalcResultService.listFcPayrollCalcResults(params));
     }
 
-    @RequestMapping(value = "/pageFcPayrollCalcResults")
-    public JsonResult page(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(fcPayrollCalcResultService.pageFcPayrollCalcResults(params));
-    }
 
-    @RequestMapping(value = "/getFcPayrollCalcResult")
-    public JsonResult get(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(fcPayrollCalcResultService.getFcPayrollCalcResult(params));
-    }
-
-    @RequestMapping(value = "/addFcPayrollCalcResult")
-    public JsonResult add(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(fcPayrollCalcResultService.addFcPayrollCalcResult(params));
-    }
-
-    @RequestMapping(value = "/updateFcPayrollCalcResult")
-    public JsonResult update(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(fcPayrollCalcResultService.updateFcPayrollCalcResult(params));
-    }
-
-    @RequestMapping(value = "/listBatchIds")
-    public JsonResult listBatchIds(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(fcPayrollCalcResultService.listBatchIds(params));
-    }
-
-    @RequestMapping(value = "/listPayrollTypes")
-    public JsonResult listPayrollTypes(@RequestBody Map<String, Object> params) {
-        return JsonResult.success(fcPayrollCalcResultService.listPayrollTypes(params));
-    }
 
 
 
