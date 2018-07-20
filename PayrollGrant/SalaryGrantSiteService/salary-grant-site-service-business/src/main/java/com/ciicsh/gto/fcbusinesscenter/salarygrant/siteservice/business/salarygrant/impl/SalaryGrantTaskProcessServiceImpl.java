@@ -112,7 +112,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         //查询主任务单
         SalaryGrantMainTaskPO salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(param);
         //设置关账版本号
-        salaryGrantMainTaskPO.setBatchVersion(closingMsg.getVersion());
+        param.setBatchVersion(closingMsg.getVersion());
         if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO) && salaryGrantMainTaskPO.getBatchVersion().compareTo(salaryGrantMainTaskPO.getBatchVersion()) > 0) {
             this.modifySalaryGrantMainTask(salaryGrantMainTaskPO);
         } else {
@@ -162,11 +162,11 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      */
     @Transactional(rollbackFor = Exception.class)
     protected boolean createMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO,List<PayrollCalcResultDTO> payrollCalcResultDTOList){
-        // 1、 根据批次编号batch_code，批次对应的计算类型（正常、调整、回溯），查询批次表信息
-        // 调用计算引擎提供查询批次信息的接口方法
-        PrBatchDTO PrBatchDTO = batchProxy.getBatchInfo(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType());
-        salaryGrantMainTaskPO = this.convertBatchInfoToSalaryGrantMainTask(salaryGrantMainTaskPO, PrBatchDTO);
         if(!CollectionUtils.isEmpty(payrollCalcResultDTOList)){
+            // 1、 根据批次编号batch_code，批次对应的计算类型（正常、调整、回溯），查询批次表信息
+            // 调用计算引擎提供查询批次信息的接口方法
+            PrBatchDTO PrBatchDTO = batchProxy.getBatchInfo(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType());
+            salaryGrantMainTaskPO = this.convertBatchInfoToSalaryGrantMainTask(salaryGrantMainTaskPO, PrBatchDTO);
             // 3、解析雇员计算结果数据，过滤薪资发放的雇员信息，汇总相关数据。
             salaryGrantMainTaskPO = this.toResolvePayrollCalcResultForTask(payrollCalcResultDTOList, salaryGrantMainTaskPO);
             // 4、生成薪资发放任务单的entity_id
