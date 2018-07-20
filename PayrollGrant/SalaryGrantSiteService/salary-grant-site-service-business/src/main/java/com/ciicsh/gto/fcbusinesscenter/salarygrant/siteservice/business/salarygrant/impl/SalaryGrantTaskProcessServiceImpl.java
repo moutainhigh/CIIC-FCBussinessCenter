@@ -472,21 +472,21 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             // 3、插入薪资发放雇员信息表数据。批量插入，调用接口方法新增薪资发放雇员信息，带入任务单编号salaryGrantMainTaskCode。
             salaryGrantEmployeeService.insertBatch(salaryGrantEmployeePOList);
             // 4、是否有本地外币发放，对主表外币发放标识进行回写。
-            List<SalaryGrantEmployeePO> localList = salaryGrantEmployeePOList.stream().filter(SalaryGrantEmployeePO -> SalaryGrantEmployeePO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL)).collect(Collectors.toList());
-            Long ltwCount = localList.stream().filter(SalaryGrantEmployeePO -> !SalaryGrantEmployeePO.getCurrencyCode().equals(SalaryGrantBizConsts.CURRENCY_CNY)).count();
+            List<SalaryGrantEmployeePO> localList = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeePO -> SalaryGrantEmployeePO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL)).collect(Collectors.toList());
+            Long ltwCount = localList.parallelStream().filter(SalaryGrantEmployeePO -> !SalaryGrantEmployeePO.getCurrencyCode().equals(SalaryGrantBizConsts.CURRENCY_CNY)).count();
 
             // 对相同发放账户的雇员信息遍历list，统计总人数
             salaryGrantMainTaskPO.setTotalPersonCount(Integer.valueOf(salaryGrantEmployeePOList.size()));
             // 针对发放账户统计中、外方人数，根据country_code
-            Long chineseCount = salaryGrantEmployeePOList.stream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
+            Long chineseCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
             salaryGrantMainTaskPO.setChineseCount(ObjectUtils.isEmpty(chineseCount) ? 0 : Integer.valueOf(chineseCount.toString()));
-            Long foreignerCount = salaryGrantEmployeePOList.stream().filter(SalaryGrantEmployeeBO -> !SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
+            Long foreignerCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> !SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
             salaryGrantMainTaskPO.setForeignerCount(ObjectUtils.isEmpty(foreignerCount) ? 0 : Integer.valueOf(foreignerCount.toString()));
             // 中智上海发薪人数，发放方式(1)进行累计
-            Long localGrantCount = salaryGrantEmployeePOList.stream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL)).count();
+            Long localGrantCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL)).count();
             salaryGrantMainTaskPO.setLocalGrantCount(ObjectUtils.isEmpty(localGrantCount) ? 0 : Integer.valueOf(localGrantCount.toString()));
             // 中智代发（委托机构）发薪人数，发放方式(2)进行累计
-            Long supplierGrantCount = salaryGrantEmployeePOList.stream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_SUPPLIER)).count();
+            Long supplierGrantCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_SUPPLIER)).count();
             salaryGrantMainTaskPO.setSupplierGrantCount(ObjectUtils.isEmpty(supplierGrantCount) ? 0 : Integer.valueOf(supplierGrantCount.toString()));
             salaryGrantMainTaskPO.setGrantDate(salaryGrantEmployeePOList.get(0).getGrantDate());
             salaryGrantMainTaskPO.setGrantTime(salaryGrantEmployeePOList.get(0).getGrantTime());
