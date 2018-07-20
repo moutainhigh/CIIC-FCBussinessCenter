@@ -156,7 +156,7 @@ public class GroupTemplateController extends BaseController {
     }
 
     /**
-     * 审核薪资租模板
+     * 审核薪资组模板
      * @param code
      * @param paramItem
      * @return

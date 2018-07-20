@@ -7,12 +7,6 @@ eureka:
       lease-renewal-interval-in-seconds: 40
       prefer-ip-address: true
       instance-id: ${spring.cloud.client.ipAddress}:${server.port}
-database:
-  host: 172.16.9.15
-  port: 3306
-  databasename: gtopayrolldb
-  username: root
-  password: a111111
 
 kafka:
   brokers: 172.16.9.17:9092,172.16.9.18:9092
@@ -41,3 +35,6 @@ mongo:
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
+
+druid:
+  configPath:  /data/appdatas/gt1/gtopayrolldb_test.properties

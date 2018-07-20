@@ -275,7 +275,7 @@ public class CalculationBatchDetailServiceImpl extends ServiceImpl<CalculationBa
     }
 
     /**
-     * 根据批次号查询批次划款明细列表
+     * 根据批次号查询批次划款明细列表(不含暂缓)
      * @param batchId
      * @return
      */

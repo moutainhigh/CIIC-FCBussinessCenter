@@ -52,6 +52,7 @@
         <sheetserviceapi.version>1.0.0-SNAPSHOT</sheetserviceapi.version>
         <fcbusinesscenter.salarymanagement.version>1.0.0-SNAPSHOT</fcbusinesscenter.salarymanagement.version>
         <sba.version>1.5.7</sba.version>
+        <fcmodule.version>1.0.0-SNAPSHOT</fcmodule.version>
     </properties>
 
     <distributionManagement>
@@ -284,7 +285,7 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
-                <version>#{sba.version}</version>
+                <version>${sba.version}</version>
             </dependency>
             <!-- druid -->
             <dependency>
@@ -303,6 +304,12 @@
                 <groupId>com.dianping.cat</groupId>
                 <artifactId>cat-client</artifactId>
                 <version>2.0.0</version>
+            </dependency>
+            <!-- 一次性收费账单 -->
+            <dependency>
+                <groupId>com.ciicsh.gt1.billcenter</groupId>
+                <artifactId>fcmodule-service-api</artifactId>
+                <version>${fcmodule.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,11 +1,5 @@
 
 spring:
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://${database.host}:${database.port}/${database.databasename}?characterEncoding=utf8&useSSL=true&allowMultiQueries=true
-    username: ${database.username}
-    password: ${database.password}
   application:
     name: fcbusiness-center-compute-task
   cloud:

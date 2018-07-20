@@ -18,7 +18,6 @@ import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
-import com.ciicsh.gto.salecenter.apiservice.api.proxy.CompanyProxy;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.slf4j.Logger;
@@ -72,9 +71,6 @@ public class CompleteComputeServiceImpl {
 
     @Autowired
     private FCBizTransactionMongoOpt bizTransactionMongoOpt;
-
-    @Autowired
-    private CompanyProxy companyProxy;
 
     @Autowired
     private PrNormalBatchService normalBatchService;
@@ -337,9 +333,14 @@ public class CompleteComputeServiceImpl {
         employeeRequestDTO.setEmployeeIds(empCode);
         employeeRequestDTO.setManagementId(mgrId);
         employeeRequestDTO.setCompanyId(companyId);
-        JsonResult<List<FcEmployeeResponseDTO>> result = employeeServiceProxy.getFcEmployeeInfos(employeeRequestDTO);
-        if (result.isSuccess() && result.getData() != null && result.getData().size() > 0) {
-            return result.getData().get(0);
+        try {
+            JsonResult<List<FcEmployeeResponseDTO>> result = employeeServiceProxy.getFcEmployeeInfos(employeeRequestDTO);
+            if (result.isSuccess() && result.getData() != null && result.getData().size() > 0) {
+                return result.getData().get(0);
+            }
+        }
+        catch (Exception ex){
+            logger.info("获取雇员服务协议失败： " + ex.getMessage());
         }
         return null;
     }

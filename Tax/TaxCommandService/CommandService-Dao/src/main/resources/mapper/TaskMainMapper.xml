@@ -93,6 +93,24 @@
 
 	</resultMap>
 
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap2" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainPO">
+		<id column="id" property="id" />
+		<result column="task_no" property="taskNo" />
+		<result column="manager_no" property="managerNo" />
+		<result column="manager_name" property="managerName" />
+		<result column="status" property="status" />
+		<result column="remark" property="remark" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+		<result column="has_combined" property="hasCombined" />
+		<result column="created_by_display_name" property="createdByDisplayName" />
+		<result column="modified_by_display_name" property="modifiedByDisplayName" />
+	</resultMap>
+
     <!-- 通用查询结果列 -->
     <!--<sql id="Base_Column_List">
         id, task_no, manager_no, manager_name, status, remark, is_active, created_time, modified_time, created_by, modified_by
@@ -113,6 +131,62 @@
 		FROM tax_fc_task_main_detail t1,tax_fc_employee_service_batch t2,tax_fc_task_main t3,tax_fc_employee_info_batch t4
 		where t1.task_main_id = #{taskMainId} and t1.calculation_batch_detail_id = t2.cal_batch_detail_id and t1.task_main_id = t3.id and t1.calculation_batch_detail_id=t4.cal_batch_detail_id
 		and t1.task_main_detail_id is null
+	</select>
+
+
+	<select id="selectNumsForOverdueOrFine" resultType="java.lang.Integer">
+		select count(tt.c) from (
+		select count(1) as c from tax_fc_task_main t1,tax_fc_task_sub_declare t2 where t1.id = t2.task_main_id and (t2.overdue <![CDATA[ <> ]]> 0 or t2.fine <![CDATA[ <> ]]> 0) and t1.id = #{taskMainId}
+		union all
+		select count(1) as c  from tax_fc_task_main t1,tax_fc_task_sub_money t3 where t1.id = t3.task_main_id and (t3.overdue <![CDATA[ <> ]]> 0 or t3.fine <![CDATA[ <> ]]> 0) and t1.id = #{taskMainId}
+		union all
+		select count(1) as c  from tax_fc_task_main t1,tax_fc_task_sub_payment t4 where t1.id = t4.task_main_id and (t4.overdue <![CDATA[ <> ]]> 0 or t4.fine <![CDATA[ <> ]]> 0) and t1.id = #{taskMainId}
+		union all
+		select count(1) as c  from tax_fc_task_main t1,tax_fc_task_sub_supplier t5 where t1.id = t5.task_main_id and (t5.overdue <![CDATA[ <> ]]> 0 or t5.fine <![CDATA[ <> ]]> 0) and t1.id = #{taskMainId}
+		) tt where tt.c >0
+	</select>
+
+	<!--查询待审批主任务-->
+	<select id="queryTaskMainForCheck" resultMap="BaseResultMap2"  parameterType="java.util.Map">
+		select t1.id,
+		t1.task_no,
+		t1.manager_no,
+		t1.manager_name,
+		t1.status,
+		t1.remark,
+		t1.is_active,
+		t1.created_time,
+		t1.modified_time,
+		t1.created_by,
+		t1.modified_by,
+		t1.has_combined,
+		t1.created_by_display_name,
+		t1.modified_by_display_name
+		from tax_fc_task_main t1,tax_fc_task_workflow t2
+		where t1.is_active = 1 and t2.is_active = 1 and t1.task_no = t2.mission_id
+		<if test="managerNos != null and managerNos.length != 0">
+			and t1.manager_no in
+			<foreach collection="managerNos" item="managerNo"
+					 index="index" open="(" close=")" separator=",">
+				#{managerNo}
+			</foreach>
+		</if>
+		<if test="taskNo != null and taskNo != ''">
+			and t1.task_no = #{taskNo}
+		</if>
+		<if test="roles != null and roles.length != 0">
+			and t2.assumer_code in
+			<foreach collection="roles" item="role"
+					 index="index" open="(" close=")" separator=",">
+				#{role}
+			</foreach>
+		</if>
+		order by t2.created_time desc
+	</select>
+
+	<select id="queryServiceCategoryForTaskMain" resultType="java.lang.String">
+		select t2.service_category from tax_fc_task_main t1,tax_fc_calculation_batch t2,tax_fc_calculation_batch_task_main t3
+		where t1.id =t3.task_main_id and t2.id = t3.cal_batch_id and t1.id = #{taskMainId}
 	</select>
 
 </mapper>

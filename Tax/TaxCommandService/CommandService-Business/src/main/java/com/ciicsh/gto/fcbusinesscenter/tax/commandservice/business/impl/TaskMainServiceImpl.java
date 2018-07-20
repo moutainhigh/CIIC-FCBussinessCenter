@@ -3,7 +3,11 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.billcenter.fcmodule.api.FcChargeDisposableProxy;
+import com.ciicsh.gto.billcenter.fcmodule.api.dto.FcChargeDisposableProxyDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
@@ -13,13 +17,20 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskM
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import com.ciicsh.gto.identityservice.api.dto.SmRoleInfoDTO;
+import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
+import com.ciicsh.gto.sheetservice.api.ProDefKeyConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author wuhua
@@ -47,6 +58,24 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
     @Autowired
     private TaskMainDetailMapper taskMainDetailMapper;
+
+    @Autowired
+    private TaskMainMapper taskMainMapper;
+
+    @Autowired
+    private WorkflowService workflowService;
+
+    @Autowired
+    private FcChargeDisposableProxy fcChargeDisposableProxy;
+
+    @Autowired
+    private TaskSubMoneyDetailServiceImpl taskSubMoneyDetailService;
+
+    @Autowired
+    private TaskMainDetailServiceImpl taskMainDetailService;
+
+    @Autowired
+    private EmployeeInfoBatchImpl employeeInfoBatch;
 
 
     /**
@@ -110,24 +139,28 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     @Override
     public ResponseForTaskMain queryTaskMainsForCheck(RequestForTaskMain requestForTaskMain) {
 
-        EntityWrapper wrapper = new EntityWrapper();
-//        //管理方名称
-//        if(StrKit.isNotEmpty(requestForTaskMain.getManagerName())){
-//            wrapper.like("manager_name",requestForTaskMain.getManagerName());
-//        }
+        Map<String,Object> map = new HashMap<>();
+
         //管理方名称
         Optional.ofNullable(requestForTaskMain.getManagerNos()).ifPresent(managerNos -> {
-            wrapper.in("manager_no",managerNos);
+            map.put("managerNos",managerNos);
         });
         //薪酬计算批次号
         if(StrKit.isNotEmpty(requestForTaskMain.getTaskNo())){
-            wrapper.like("task_no",requestForTaskMain.getTaskNo());
+            map.put("taskNo",requestForTaskMain.getTaskNo());
         }
-        //wrapper.like("manager_name","恒大");里
-        wrapper.in("status","01");
-        wrapper.orderBy("created_time",false);
 
-        return this.query(requestForTaskMain,wrapper);
+        String[] roles;
+
+        UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
+        if(userInfoResponseDTO==null || userInfoResponseDTO.getSmRoleInfos()==null || userInfoResponseDTO.getSmRoleInfos().size()==0){
+            return null;
+        }else{
+            List<String> roleList = userInfoResponseDTO.getSmRoleInfos().stream().map(SmRoleInfoDTO::getRoleId).collect(Collectors.toList());
+            roles = roleList.toArray(new String[roleList.size()]);
+            map.put("roles",roles);
+        }
+        return this.queryForCheck(requestForTaskMain,map);
     }
 
     private ResponseForTaskMain query(RequestForTaskMain requestForTaskMain , EntityWrapper wrapper){
@@ -152,18 +185,64 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         return responseForTaskMain;
     }
 
+    private ResponseForTaskMain queryForCheck(RequestForTaskMain requestForTaskMain , Map map){
+
+        ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
+
+        Page<TaskMainPO> page = new Page<>(requestForTaskMain.getCurrentNum(),requestForTaskMain.getPageSize());
+        List<TaskMainPO> taskMainPOList = baseMapper.queryTaskMainForCheck(page, map);
+        //查询主任务对应的批次号
+        for(TaskMainPO p : taskMainPOList){
+            Map<String, Object> columnMap = new HashMap<>();
+            columnMap.put("task_main_id",p.getId());
+            List<CalculationBatchTaskMainPO> l = calculationBatchTaskMainService.selectByMap(columnMap);
+            //组合批次号
+            String sb = l.stream().map(CalculationBatchTaskMainPO::getBatchNo).collect(Collectors.joining(", "));
+            p.setBatchIds(sb);
+        }
+        responseForTaskMain.setRowList(taskMainPOList);
+        responseForTaskMain.setCurrentNum(requestForTaskMain.getCurrentNum());
+        responseForTaskMain.setTotalNum(page.getTotal());
+
+        return responseForTaskMain;
+    }
+
     /**
      * 提交主任务
      * @param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public ResponseForTaskMain submitTaskMains(RequestForTaskMain requestForTaskMain){
 
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
+        String[] taskNos = requestForTaskMain.getTaskNos();
+        List<String> ts = new ArrayList<>();
 
-        this.updateTaskMainsStatus(taskMainIds,"01",requestForTaskMain.getStatus());
+        int i = 0;
+
+        for(String taskMainId : taskMainIds){
+            //启动工作流
+            Map<String, Object> variables = new HashMap<>();
+            int c = taskMainMapper.selectNumsForOverdueOrFine(Long.valueOf(taskMainId));
+            if(c>0){
+                variables.put("overdueOrFine","true");
+            }else{
+                variables.put("overdueOrFine","false");
+            }
+            boolean flag = this.workflowService.startProcess(taskNos[i], ProDefKeyConstants.FC.BUS_TAX_MAIN_AUDIT,variables);
+            if(flag){
+                ts.add(taskMainId);
+            }
+            i++;
+        }
+
+        if(ts.size()>0){
+            String[] tns = new String[ts.size()];
+            this.updateTaskMainsStatus(ts.toArray(tns),"01",requestForTaskMain.getStatus());
+        }
 
         return responseForTaskMain;
     }
@@ -179,8 +258,26 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
 
         String[] taskMainIds = requestForTaskMain.getTaskMainIds();
+        String[] taskNos = requestForTaskMain.getTaskNos();
 
-        this.updateTaskMainsStatus(taskMainIds,"02",requestForTaskMain.getStatus());
+        int i = 0;
+
+        for(String taskMainId : taskMainIds){
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("action","approval");
+            variables.put("serviceType","");
+            List<String> sc = taskMainMapper.queryServiceCategoryForTaskMain(Long.valueOf(taskMainId));
+            //主任务下所在批次的服务类型均为1：仅个税，则需要财务审批
+            Long l = sc.stream().filter(s -> StrKit.isNotEmpty(s)&&s.trim().equals("1")).count();
+            if(l!=null && (l.intValue() == sc.size())){
+                variables.put("serviceType","1");
+            }
+
+            //完成任务
+            workflowService.completeTask(taskNos[i],variables);
+
+            i++;
+        }
 
         return responseForTaskMain;
     }
@@ -201,7 +298,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         return responseForTaskMain;
     }
     /**
-     * 退回主任务
+     * 审批拒绝主任务
      * @param
      * @return
      */
@@ -210,15 +307,21 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
 
         ResponseForTaskMain responseForTaskMain = new ResponseForTaskMain();
 
-        String[] taskMainIds = requestForTaskMain.getTaskMainIds();
+        String[] taskNos = requestForTaskMain.getTaskNos();
 
-        this.updateTaskMainsStatus(taskMainIds,"03",requestForTaskMain.getStatus());
+        for(String taskNo : taskNos){
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("action","refuse");
+            //完成任务
+            workflowService.completeTask(taskNo,variables);
+        }
 
         return responseForTaskMain;
     }
 
     //更新主任务状态
-    private void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus){
+    @Transactional(rollbackFor = Exception.class)
+    public void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus){
 
         List<TaskMainPO> tps = new ArrayList<>();
         for(String taskMainId : taskMainIds){
@@ -352,6 +455,98 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
     @Override
     public TaskMainPO queryTaskMainById(Long id) {
         return baseMapper.selectById(id);
+    }
+
+    /**
+     * 生成一次性收费账单
+     * @param taskMainIds
+     */
+    private void createOneTimeChargeBillByTaskMainIds(String[] taskMainIds){
+        List<FcChargeDisposableProxyDTO> fcChargeDisposableProxyDTOList = new ArrayList<>();
+        for(int i = 0 ;i < taskMainIds.length;i++){
+            //主任务ID
+            Long taskMainId =  Long.valueOf(taskMainIds[i]);
+            //根据主任务ID查询划款子任务
+            EntityWrapper moneyWrapper = new EntityWrapper();
+            moneyWrapper.setEntity(new TaskSubMoneyPO());
+            moneyWrapper.andNew("task_main_id = {0} ",taskMainId);
+            moneyWrapper.andNew("overdue > 0 ").or(" fine > 0 ");
+            List<TaskSubMoneyPO>  taskSubMoneyPOList = taskSubMoneyService.selectList(moneyWrapper);
+            for(TaskSubMoneyPO taskSubMoneyPO : taskSubMoneyPOList){
+                //划款子任务滞纳金和罚金总和
+                BigDecimal totalMoney = taskSubMoneyPO.getOverdue().add(taskSubMoneyPO.getFine());
+                //划款子任务总税金
+                BigDecimal totalTaxReal = taskSubMoneyPO.getTaxAmount();
+                //根据子任务id查询子任务明细
+                EntityWrapper moneyDetailWrapper = new EntityWrapper();
+                moneyDetailWrapper.setEntity(new TaskSubMoneyDetailPO());
+                moneyDetailWrapper.and(" task_sub_money_id = {0} ",taskSubMoneyPO.getId());
+                moneyDetailWrapper.and(" is_active = {0} ",true);
+                List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.selectList(moneyDetailWrapper);
+                //获取主任务明细ID
+                List<Long> mainDetailIdsList = taskSubMoneyDetailPOList.stream().map(item -> item.getTaskMainDetailId()).collect(Collectors.toList());
+                //根据主任务明细ID查询主任务明细
+                EntityWrapper mainDetailWrapper = new EntityWrapper();
+                mainDetailWrapper.in("id",mainDetailIdsList).or().in("task_main_detail_id",mainDetailIdsList);
+                List<TaskMainDetailPO> taskMainDetailPOList = taskMainDetailService.selectList(mainDetailWrapper);
+                //过滤出非合并任务的主任务明细
+                List<TaskMainDetailPO> taskMainDetailPOListUnMerge = taskMainDetailPOList.stream().filter(item -> item.getCombined() != true).collect(Collectors.toList());
+                //批次明细id集合
+                List<Long> calBatchDetailIdsList =  taskMainDetailPOListUnMerge.stream().map(item -> item.getCalculationBatchDetailId()).collect(Collectors.toList());
+                //根据批次明细ID查询雇员个税信息
+                EntityWrapper employeeWrapper = new EntityWrapper();
+                employeeWrapper.setEntity(new EmployeeInfoBatchPO());
+                employeeWrapper.in("cal_batch_detail_id",calBatchDetailIdsList);
+                List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatch.selectList(employeeWrapper);
+                //根据公司分组雇员
+                Map<String,List<EmployeeInfoBatchPO>> companyEmpMap = employeeInfoBatchPOList.stream().collect(groupingBy(EmployeeInfoBatchPO::getCompanyNo));
+                for (String key : companyEmpMap.keySet()) {
+                    List<EmployeeInfoBatchPO> employeeInfoBatchPOS = companyEmpMap.get(key);
+                    //筛选出当前雇员编号集合
+                    List<Long> calBatchDetailNoList = employeeInfoBatchPOS.stream().map(item -> item.getCalBatchDetailId()).collect(Collectors.toList());
+                    List<TaskMainDetailPO> taskMainDetailPOS = taskMainDetailPOList.stream().filter(item -> calBatchDetailNoList.contains(item.getCalculationBatchDetailId())).collect(Collectors.toList());
+                    //收费额
+                    BigDecimal chargeAmount = new BigDecimal(0);
+                    //雇员税金总和
+                    BigDecimal taxRealTotal = taskMainDetailPOS.stream()
+                            .map(TaskMainDetailPO::getTaxReal)
+                            //使用reduce聚合函数,实现累加器
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    chargeAmount = taxRealTotal.divide(totalTaxReal).multiply(totalMoney).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    FcChargeDisposableProxyDTO fcChargeDisposableProxyDTO = new FcChargeDisposableProxyDTO();
+                    //管理方编号
+                    fcChargeDisposableProxyDTO.setManagementId(taskSubMoneyPO.getManagerNo());
+                    //管理方名称
+                    fcChargeDisposableProxyDTO.setManagementName(taskSubMoneyPO.getManagerName());
+                    //收费对象：1-客户；2-雇员
+                    fcChargeDisposableProxyDTO.setChargeObject(1);
+                    //公司ID
+                    fcChargeDisposableProxyDTO.setCompanyId(key);
+                    //公司名称
+                    fcChargeDisposableProxyDTO.setCompanyName(employeeInfoBatchPOS.size() > 0 ? employeeInfoBatchPOS.get(0).getCompanyName() : "");
+                    //业务编码
+                    fcChargeDisposableProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
+                    //业务类型:(0-手工；1-FC个税)
+                    fcChargeDisposableProxyDTO.setBusinessType(1);
+                    //实际月份
+                    fcChargeDisposableProxyDTO.setActualChargeMonth(taskSubMoneyPO.getPeriod() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(taskSubMoneyPO.getPeriod()) : "");
+                    //合同我方（账套）ID(1:AF;2:FC;3:BPO)
+                    fcChargeDisposableProxyDTO.setFinanceAccountId(2);
+                    //收费金额
+                    fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
+                    //创建方式：0-直接导入;1-页面操作;2-外部接口;
+                    fcChargeDisposableProxyDTO.setCreateType(2);
+                    //备注
+                    fcChargeDisposableProxyDTO.setRemark("个税滞纳金和罚金一次性账单!");
+                    fcChargeDisposableProxyDTOList.add(fcChargeDisposableProxyDTO);
+                }
+            }
+        }
+        try {
+            fcChargeDisposableProxy.batchInsert(fcChargeDisposableProxyDTOList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

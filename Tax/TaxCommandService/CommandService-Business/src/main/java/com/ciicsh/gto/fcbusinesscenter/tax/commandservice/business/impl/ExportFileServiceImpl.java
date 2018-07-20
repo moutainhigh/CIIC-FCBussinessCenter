@@ -1064,8 +1064,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 accountMaps.put(batchNo, accountMap);
             }
             //文件名称
-            String fileName = "";
-            fileName = "个税工资清单.xls";
+            String fileName = "个税工资清单.xls";
             wb = exportAboutTaxList.getTaxListReportWB(topMaps, detailListMap, employeeListMap, accountMaps, fileName, "voucher");
             map.put("fileName", fileName);
         } catch (Exception e) {
