@@ -150,14 +150,14 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                 empInfoBO.setGender(convert(empInfo,"性别",String.class));//性别
                 empInfoBO.setBirthday(this.UDateToLocalDate(str2Date(convert(empInfo,"出生日期",String.class),"yyyy-MM-dd")));//出生日期
                 empInfoBO.setMobile(convert(empInfo,"联系电话",String.class));//联系电话
-//                empInfoBO.setCompanyNo(convert(empInfo,"公司编号",String.class));//公司编号
                 empInfoBO.setEntryDate(this.UDateToLocalDate(str2Date(convert(empInfo,"入职日期",String.class),"yyyy-MM-dd")));//入职日期
                 empInfoBO.setLeaveDate(this.UDateToLocalDate(str2Date(convert(empInfo,"离职日期",String.class),"yyyy-MM-dd")));//离职日期
+                empInfoBO.setWorkNumber(convert(empInfo,"员工工号",String.class));
 
                 //个税信息
                 DBObject taxInfo = (DBObject)empInfo.get("tax_info");
                 this.setObjectFieldsEmpty(taxInfoBO);
-                taxInfoBO.setWorkNumber(convert(empInfo,"员工工号",String.class));//工号
+                taxInfoBO.setWorkNumber(empInfoBO.getWorkNumber());//工号
                 taxInfoBO.setTaxName(convert(taxInfo,"taxReturnName",String.class));//报税名
                 taxInfoBO.setCertType(convert(taxInfo,"reportTaxCertId",String.class));//报税证件类型
                 taxInfoBO.setCertNo(convert(taxInfo,"reportTaxCertNo",String.class));//报税证件号
@@ -577,6 +577,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setPeriod(this.UDateToLocalDate(agreementBO.getPeriod()));//所得期间
                     calculationBatchDetailPO.setIncomeSubject(IncomeSubject.LABORCONTRACT.getCode());//所得项目
                     calculationBatchDetailPO.setIncomeTotal(calResultBO.getSeparationPayment());//离职金
+                    calculationBatchDetailPO.setWorkingYears(calResultBO.getWorkingYears());//实际工作年限
                     //免税所得 : 当离职金 ≥ 离职金免税额时，=离职金免税额；当离职金<离职金免税额时，=离职金
                     if(calResultBO.getSeparationPayment()!=null && calResultBO.getSeparationPaymentTaxFee()!=null
                             && calResultBO.getSeparationPayment().compareTo(calResultBO.getSeparationPaymentTaxFee())==-1){
