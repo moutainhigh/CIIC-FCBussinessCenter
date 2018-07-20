@@ -114,6 +114,10 @@ public class PrGroupServiceImpl implements PrGroupService {
         if (StringUtils.isEmpty(paramItem.getGroupTemplateCode())) {
             List<PrPayrollBaseItemPO> paramList = prPayrollBaseItemMapper.selectList(
                     new EntityWrapper<>(new PrPayrollBaseItemPO()));
+            // 初始化基本薪资项的显示顺序
+            for(PrPayrollBaseItemPO p : paramList){
+                p.setDisplayPriority(paramList.indexOf(p));
+            }
             List<PrPayrollItemPO> itemList = paramList.stream()
                     .map(i -> {
                         PrPayrollItemPO item = new PrPayrollItemPO();
@@ -125,7 +129,7 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setCanLock(false);
                         item.setPayrollGroupCode(paramItem.getGroupCode());
                         item.setManagementId(paramItem.getManagementId());
-                        item.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
+                        item.setDisplayPriority(i.getDisplayPriority());
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
                         item.setDefaultValue(i.getDataType() == 3 ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.YYYY_MM_DD) : i.getDefaultValue());
                         return item;

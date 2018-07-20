@@ -32,7 +32,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.6</version>
         </dependency>
 
         <!--<dependency>-->
@@ -43,18 +42,15 @@
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-core</artifactId>
-            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
-            <version>2.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.8.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mapstruct</groupId>
@@ -65,43 +61,53 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.8.0</version>
         </dependency>
 
         <!--<dependency>-->
             <!--<groupId>org.springframework.cloud</groupId>-->
             <!--<artifactId>spring-cloud-starter-bus-kafka</artifactId>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter-stream-kafka</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.springframework.cloud</groupId>-->
             <!--<artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>-->
         <!--</dependency>-->
 
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
-            <version>1.5.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
 
         <!--easypoi依赖-->
         <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-base</artifactId>
-            <version>3.0.4.1</version>
         </dependency>
         <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-web</artifactId>
-            <version>3.0.4.1</version>
         </dependency>
         <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-annotation</artifactId>
-            <version>3.0.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- 内部模块依赖 -->
@@ -122,6 +128,23 @@
             <artifactId>fcbusinesscenter-entity</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.ciicsh.gt1.commonservice</groupId>
+            <artifactId>gt1.commonservice.logservice-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1.commonservice</groupId>
+            <artifactId>gt1.commonservice.logservice-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+        </dependency>
+
     </dependencies>
 
 

@@ -177,7 +177,7 @@
 		FROM tax_fc_calculation_batch_detail cbd
 		LEFT JOIN tax_fc_employee_service_batch esb
 		ON cbd.id = esb.cal_batch_detail_id
-		WHERE esb.is_transfer = true
+		WHERE cbd.is_defer = false and esb.is_transfer = true
 		and cbd.calculation_batch_id =  #{batchId}
 	</select>
 

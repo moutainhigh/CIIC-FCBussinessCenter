@@ -8,6 +8,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskMainDetailServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskMainServiceImpl;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskWorkflowHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubMoneyBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.money.RequestForSubMoney;
@@ -28,7 +30,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -59,6 +64,12 @@ public class TaskSubMoneyController extends BaseController {
 
     @Autowired
     private CalculationBatchAccountService calculationBatchAccountService;
+
+    @Autowired
+    private TaskWorkflowHistoryMapper taskWorkflowHistoryMapper;
+
+    @Autowired
+    private TaskMainServiceImpl taskMainServiceImpl;
 
 
     /**
@@ -151,149 +162,160 @@ public class TaskSubMoneyController extends BaseController {
     @PostMapping(value = "/taxPayment/{id}")
     public JsonResult<Boolean> taxPayment(@PathVariable Long id) {
         JsonResult<Boolean> jr = new JsonResult<>();
-        try {
-            TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(id);
-            //根据扣缴义务人编码查询批次账户信息
-            CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubMoneyPO.getPaymentAccount());
-            //调用结算中心上海个税接口
-            PayApplyProxyDTO payApplyProxyDTO = new PayApplyProxyDTO();
-            //部门名称
-            payApplyProxyDTO.setDepartmentName("财务咨询业务中心");
-            //是否财务部0:否:1:是
-            payApplyProxyDTO.setIsFinancedept(0);
-            //业务类型6:独立库个税,13:大库个税
-            if(SOURCE_BIG.equals(calculationBatchAccountPO.getSource())){
-                payApplyProxyDTO.setBusinessType(13);
-            }else{
-                payApplyProxyDTO.setBusinessType(6);
-            }
-            //业务方主键ID
-            payApplyProxyDTO.setBusinessPkId(id);
-            //付款方式1:现金:2:支票:3:转账:4:微信:5:支付宝;
-            payApplyProxyDTO.setPayWay(3);
-            //申请支付金额
-            payApplyProxyDTO.setPayAmount(taskSubMoneyPO.getTaxAmount());
-            //收款方名称(纳税人名称)
-            payApplyProxyDTO.setReceiver(calculationBatchAccountPO.getTaxpayerName());
-            //申请人
-            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
-            payApplyProxyDTO.setApplyer(userInfoResponseDTO.getLoginName());
-            //申请日期(yyyy-MM-dd)
-            payApplyProxyDTO.setApplyDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now()));
-            //TODO 付款用途
-            payApplyProxyDTO.setPayPurpose("个税");
-            //TODO 付款原因
-            payApplyProxyDTO.setPayReason("个税");
-            //TODO 收款账号ID
-            payApplyProxyDTO.setReceiveAccountId(12);
-            //收款账号
-            payApplyProxyDTO.setReceiveAccount(calculationBatchAccountPO.getAccount());
-            //总经理president
-            //分管领导leader
-            //部门经理departmentManager
-            //审核人reviewer
-            //payApplyProxyDTO.setReviewer("admin");
-            //根据任务ID查询所有雇员
-            List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(id);
-            //划款明细计算批次明细ID
-            List<Long> batchIds = taskSubMoneyDetailPOList.stream().map(TaskSubMoneyDetailPO::getCalculationBatchDetailId).collect(Collectors.toList());
-            //根据划款明细计算批次明细ID查询雇员个税信息
-            List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchService.queryEmployeeInfoBatchesByBatchIds(batchIds);
-            //公司编号为key的雇员信息map
-            Map<String, List<EmployeeInfoBatchPO>> companyMap =
-                    employeeInfoBatchPOList.stream().collect(groupingBy(EmployeeInfoBatchPO::getCompanyNo));
-            Map<Long,String> batchDetailIdMap = employeeInfoBatchPOList.stream().collect(Collectors.toMap(EmployeeInfoBatchPO::getCalBatchDetailId,EmployeeInfoBatchPO ::getCompanyNo));
-            //设置公司信息companyList
-            List<PayapplyCompanyProxyDTO> companyList = new ArrayList<>();
-            for (String key : companyMap.keySet()) {
-                //根据key获取对应的雇员个税信息
-                List<EmployeeInfoBatchPO> employeeInfoBatchPOS = companyMap.get(key);
-                List<Long> taskSubMoneyDetailIdsList = employeeInfoBatchPOS.stream().map(EmployeeInfoBatchPO :: getCalBatchDetailId).collect(Collectors.toList());
-                List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOS = taskSubMoneyDetailService.querySubMonetDetailsByBatchDetailIds(taskSubMoneyDetailIdsList);
-                //根据划款明细对象集合求出个税总金额
-                BigDecimal taxAmountSum = taskSubMoneyDetailPOS.stream()
-                        //将TaskSubMoneyDetailPO对象的tax_amount取出来map为Bigdecimal
-                        .map(TaskSubMoneyDetailPO::getTaxAmount)
-                        //使用reduce聚合函数,实现累加器
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                PayapplyCompanyProxyDTO payapplyCompanyProxyDTO = new PayapplyCompanyProxyDTO();
-                payapplyCompanyProxyDTO.setCompanyId(key);
-                //公司名称
-                if(employeeInfoBatchPOS.size() > 0 ){
-                    payapplyCompanyProxyDTO.setCompanyName(employeeInfoBatchPOS.get(0).getCompanyName());
-                }
-                payapplyCompanyProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyPO.getPeriod()));
-                payapplyCompanyProxyDTO.setPayAmount(taxAmountSum);
-                companyList.add(payapplyCompanyProxyDTO);
-            }
-            payApplyProxyDTO.setCompanyList(companyList);
-            //所有薪酬计算批次号集合
-            List<String> batchNoListAll = new ArrayList<>();
-            //设置雇员信息employeeList
-            List<PayapplyEmployeeProxyDTO> employeeList = new ArrayList<>();
-            for (TaskSubMoneyDetailPO taskSubMoneyDetailPO : taskSubMoneyDetailPOList) {
-                //获取公司编号
-                String companyNo = taskSubMoneyDetailPO.getCalculationBatchDetailId() == null ? "" : batchDetailIdMap.getOrDefault(taskSubMoneyDetailPO.getCalculationBatchDetailId(),"");
-                PayapplyEmployeeProxyDTO payapplyEmployeeProxyDTO = new PayapplyEmployeeProxyDTO();
-                payapplyEmployeeProxyDTO.setEmployeeId(taskSubMoneyDetailPO.getEmployeeNo());
-                payapplyEmployeeProxyDTO.setEmployeeName(taskSubMoneyDetailPO.getEmployeeName());
-                payapplyEmployeeProxyDTO.setCompanyId(companyNo);
-                payapplyEmployeeProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyDetailPO.getPeriod()));
-                payapplyEmployeeProxyDTO.setPayAmount(taskSubMoneyDetailPO.getTaxAmount());
-                //薪酬计算批次号集合
-                List<String> batchCodeList = new ArrayList<>();
-                //设置雇员薪酬计算批次
-                if(StrKit.notBlank(taskSubMoneyDetailPO.getBatchNo())){
-                    batchCodeList.add(taskSubMoneyDetailPO.getBatchNo());
-                    batchNoListAll.add(taskSubMoneyDetailPO.getBatchNo());
-                }else{
-                    //根据task_main_detail_id 查询 batch_no taskMainDetailServiceImpl
-                    Long taskMainDetailId = taskSubMoneyDetailPO.getTaskMainDetailId();
-                    EntityWrapper wrapper = new EntityWrapper();
-                    wrapper.setEntity(new TaskMainDetailPO());
-                    wrapper.and(" task_main_detail_id = {0}",taskMainDetailId);
-                    wrapper.and("is_active = {0} ", true);
-                    //根据task_main_detail_id获取主任务明细集合
-                    List<TaskMainDetailPO> taskMainDetailPOS = taskMainDetailServiceImpl.selectList(wrapper);
-                    List<String> batchNoList = taskMainDetailPOS.stream().map(TaskMainDetailPO :: getBatchNo).collect(Collectors.toList());
-                    batchCodeList.addAll(batchNoList);
-                    batchNoListAll.addAll(batchNoList);
-                }
-                //设置批次号
-                payapplyEmployeeProxyDTO.setBatchCodeList(batchCodeList);
-                employeeList.add(payapplyEmployeeProxyDTO);
-            }
-            payApplyProxyDTO.setEmployeeList(employeeList);
-            //执行划款
-            com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult paymentJr = payapplyServiceProxy.shIncomeTax(payApplyProxyDTO);
-            if ("0".equals(paymentJr.getCode())) {
-                //更改划款任务状态以及划款凭单号
-                PayApplyProxyDTO payApplyProxyDTO1 = (PayApplyProxyDTO) paymentJr.getData();
-                //付款申请ID
-                int payApplyId = payApplyProxyDTO1.getPayapplyId();
-                //付款凭证编号(结算单编号)
-                String payApplyCode = payApplyProxyDTO1.getPayapplyCode();
-                try {
-                    TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
-                    taskSubMoneyBO.setId(id);
-                    taskSubMoneyBO.setPayStatus("01");
-                    taskSubMoneyBO.setPayApplyId((long) payApplyId);
-                    taskSubMoneyBO.setPayApplyCode(payApplyCode);
-                    taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);
-                } catch (Exception e) {
-                    //日志工具类返回
-                    LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, null);
-                    jr.error();
-                }
+        TaskSubMoneyPO taskSubMoneyPO = taskSubMoneyService.querySubMoneyById(id);
+        //获取主任务信息
+        TaskMainPO taskMainPO = taskMainServiceImpl.selectById(taskSubMoneyPO.getTaskMainId());
+        EntityWrapper historyWrapper = new EntityWrapper();
+        historyWrapper.and("mission_id = {0}",taskMainPO.getTaskNo());
+        historyWrapper.and("operation_type = {0}", WorkflowService.operationType.completeTask.toString());
+        historyWrapper.orderBy("modified_time",false);
+        List<TaskWorkflowHistoryPO> taskWorkflowHistoryPOS = taskWorkflowHistoryMapper.selectList(historyWrapper);
+        //根据扣缴义务人编码查询批次账户信息
+        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubMoneyPO.getPaymentAccount());
+        //调用结算中心上海个税接口
+        PayApplyProxyDTO payApplyProxyDTO = new PayApplyProxyDTO();
+        //部门名称
+        payApplyProxyDTO.setDepartmentName("财务咨询业务中心");
+        //是否财务部0:否:1:是
+        payApplyProxyDTO.setIsFinancedept(0);
+        //业务类型6:大库个税,13:独立库个税
+        if (SOURCE_BIG.equals(calculationBatchAccountPO.getSource())) {
+            payApplyProxyDTO.setBusinessType(6);
+            //付款账号ID(大库时不为空)
+            payApplyProxyDTO.setPayAccountId(calculationBatchAccountPO.getBankAccountId());
+        } else {
+            payApplyProxyDTO.setBusinessType(13);
+            //付款银行（独立库时必填）1建行，12，中信，5其他
+            if (calculationBatchAccountPO.getBelongBankType() != null && 1 == calculationBatchAccountPO.getBelongBankType()) {
+                payApplyProxyDTO.setPayBankId(12);
+            } else if (calculationBatchAccountPO.getBelongBankType() != null && 2 == calculationBatchAccountPO.getBelongBankType()) {
+                payApplyProxyDTO.setPayBankId(1);
+            } else if (calculationBatchAccountPO.getBelongBankType() != null && 3 == calculationBatchAccountPO.getBelongBankType()) {
+                payApplyProxyDTO.setPayBankId(5);
             } else {
+                payApplyProxyDTO.setPayBankId(5);
+            }
+            //收款账号ID(独立库时不为空)
+            payApplyProxyDTO.setReceiveAccountId(calculationBatchAccountPO.getBankAccountId());
+        }
+        //业务方主键ID
+        payApplyProxyDTO.setBusinessPkId(id);
+        //付款方式1:现金:2:支票:3:转账:4:微信:5:支付宝;
+        payApplyProxyDTO.setPayWay(3);
+        //申请支付金额
+        payApplyProxyDTO.setPayAmount(taskSubMoneyPO.getTaxAmount());
+        //收款方名称(纳税人名称)
+        payApplyProxyDTO.setReceiver(calculationBatchAccountPO.getTaxpayerName());
+        //申请人
+        UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
+        payApplyProxyDTO.setApplyer(userInfoResponseDTO.getLoginName());
+        //申请日期(yyyy-MM-dd)
+        payApplyProxyDTO.setApplyDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now()));
+        //TODO 付款用途
+        payApplyProxyDTO.setPayPurpose("个税");
+        //TODO 付款原因
+        payApplyProxyDTO.setPayReason("个税");
+        //财务账套（1AF,2FC,3BPO）
+        payApplyProxyDTO.setFinanceAccountCode(2);
+        //总经理president
+        //分管领导leader
+        //部门经理departmentManager
+        //审核人reviewer
+        payApplyProxyDTO.setReviewer(taskWorkflowHistoryPOS.size() > 0 ? taskWorkflowHistoryPOS.get(0).getOwnerName() : "");
+        //根据任务ID查询所有雇员
+        List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOList = taskSubMoneyDetailService.querySubMonetDetailsBySubMoneyId(id);
+        //划款明细计算批次明细ID
+        List<Long> batchIds = taskSubMoneyDetailPOList.stream().map(TaskSubMoneyDetailPO::getCalculationBatchDetailId).collect(Collectors.toList());
+        //根据划款明细计算批次明细ID查询雇员个税信息
+        List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchService.queryEmployeeInfoBatchesByBatchIds(batchIds);
+        //公司编号为key的雇员信息map
+        Map<String, List<EmployeeInfoBatchPO>> companyMap =
+                employeeInfoBatchPOList.stream().collect(groupingBy(EmployeeInfoBatchPO::getCompanyNo));
+        Map<Long, String> batchDetailIdMap = employeeInfoBatchPOList.stream().collect(Collectors.toMap(EmployeeInfoBatchPO::getCalBatchDetailId, EmployeeInfoBatchPO::getCompanyNo));
+        //设置公司信息companyList
+        List<PayapplyCompanyProxyDTO> companyList = new ArrayList<>();
+        for (String key : companyMap.keySet()) {
+            //根据key获取对应的雇员个税信息
+            List<EmployeeInfoBatchPO> employeeInfoBatchPOS = companyMap.get(key);
+            List<Long> taskSubMoneyDetailIdsList = employeeInfoBatchPOS.stream().map(EmployeeInfoBatchPO::getCalBatchDetailId).collect(Collectors.toList());
+            List<TaskSubMoneyDetailPO> taskSubMoneyDetailPOS = taskSubMoneyDetailService.querySubMonetDetailsByBatchDetailIds(taskSubMoneyDetailIdsList);
+            //根据划款明细对象集合求出个税总金额
+            BigDecimal taxAmountSum = taskSubMoneyDetailPOS.stream()
+                    //将TaskSubMoneyDetailPO对象的tax_amount取出来map为Bigdecimal
+                    .map(TaskSubMoneyDetailPO::getTaxAmount)
+                    //使用reduce聚合函数,实现累加器
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            PayapplyCompanyProxyDTO payapplyCompanyProxyDTO = new PayapplyCompanyProxyDTO();
+            payapplyCompanyProxyDTO.setCompanyId(key);
+            //公司名称
+            if (employeeInfoBatchPOS.size() > 0) {
+                payapplyCompanyProxyDTO.setCompanyName(employeeInfoBatchPOS.get(0).getCompanyName());
+            }
+            payapplyCompanyProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyPO.getPeriod()));
+            payapplyCompanyProxyDTO.setPayAmount(taxAmountSum);
+            companyList.add(payapplyCompanyProxyDTO);
+        }
+        payApplyProxyDTO.setCompanyList(companyList);
+        //所有薪酬计算批次号集合
+        List<String> batchNoListAll = new ArrayList<>();
+        //设置雇员信息employeeList
+        List<PayapplyEmployeeProxyDTO> employeeList = new ArrayList<>();
+        for (TaskSubMoneyDetailPO taskSubMoneyDetailPO : taskSubMoneyDetailPOList) {
+            //获取公司编号
+            String companyNo = taskSubMoneyDetailPO.getCalculationBatchDetailId() == null ? "" : batchDetailIdMap.getOrDefault(taskSubMoneyDetailPO.getCalculationBatchDetailId(), "");
+            PayapplyEmployeeProxyDTO payapplyEmployeeProxyDTO = new PayapplyEmployeeProxyDTO();
+            payapplyEmployeeProxyDTO.setEmployeeId(taskSubMoneyDetailPO.getEmployeeNo());
+            payapplyEmployeeProxyDTO.setEmployeeName(taskSubMoneyDetailPO.getEmployeeName());
+            payapplyEmployeeProxyDTO.setCompanyId(companyNo);
+            payapplyEmployeeProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyDetailPO.getPeriod()));
+            payapplyEmployeeProxyDTO.setPayAmount(taskSubMoneyDetailPO.getTaxAmount());
+            //薪酬计算批次号集合
+            List<String> batchCodeList = new ArrayList<>();
+            //设置雇员薪酬计算批次
+            if (StrKit.notBlank(taskSubMoneyDetailPO.getBatchNo())) {
+                batchCodeList.add(taskSubMoneyDetailPO.getBatchNo());
+                batchNoListAll.add(taskSubMoneyDetailPO.getBatchNo());
+            } else {
+                //根据task_main_detail_id 查询 batch_no taskMainDetailServiceImpl
+                Long taskMainDetailId = taskSubMoneyDetailPO.getTaskMainDetailId();
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskMainDetailPO());
+                wrapper.and(" task_main_detail_id = {0}", taskMainDetailId);
+                wrapper.and("is_active = {0} ", true);
+                //根据task_main_detail_id获取主任务明细集合
+                List<TaskMainDetailPO> taskMainDetailPOS = taskMainDetailServiceImpl.selectList(wrapper);
+                List<String> batchNoList = taskMainDetailPOS.stream().map(TaskMainDetailPO::getBatchNo).collect(Collectors.toList());
+                batchCodeList.addAll(batchNoList);
+                batchNoListAll.addAll(batchNoList);
+            }
+            //设置批次号
+            payapplyEmployeeProxyDTO.setBatchCodeList(batchCodeList);
+            employeeList.add(payapplyEmployeeProxyDTO);
+        }
+        payApplyProxyDTO.setEmployeeList(employeeList);
+        //执行划款
+        com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult paymentJr = payapplyServiceProxy.shIncomeTax(payApplyProxyDTO);
+        if ("0".equals(paymentJr.getCode())) {
+            //更改划款任务状态以及划款凭单号
+            PayApplyProxyDTO payApplyProxyDTO1 = (PayApplyProxyDTO) paymentJr.getData();
+            //付款申请ID
+            int payApplyId = payApplyProxyDTO1.getPayapplyId();
+            //付款凭证编号(结算单编号)
+            String payApplyCode = payApplyProxyDTO1.getPayapplyCode();
+            try {
+                TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();
+                taskSubMoneyBO.setId(id);
+                taskSubMoneyBO.setPayStatus("01");
+                taskSubMoneyBO.setPayApplyId((long) payApplyId);
+                taskSubMoneyBO.setPayApplyCode(payApplyCode);
+                taskSubMoneyService.updateTaskSubMoneyById(taskSubMoneyBO);
+            } catch (Exception e) {
+                //日志工具类返回
+                LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, null);
                 jr.error();
             }
-        } catch (Exception e) {
-            Map<String, String> tags = new HashMap<>(16);
-            tags.put("subMoneyId", id.toString());
-            //日志工具类返回
-            LogTaskFactory.getLogger().error(e, "TaskSubMoneyController.taxPayment", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "03"), LogType.APP, tags);
-            jr.error();
+        } else {
+            jr.fill(JsonResult.ReturnCode.SETTLEMENT_1);
         }
         return jr;
     }
@@ -324,7 +346,7 @@ public class TaskSubMoneyController extends BaseController {
     @PostMapping(value = "/updateTaskSubMoney")
     public JsonResult<Boolean> updateTaskSubMoney(@RequestBody TaskSubMoneyDTO taskSubMoneyDTO) {
         JsonResult<Boolean> jr = new JsonResult<>();
-        taskSubMoneyService.updateTaskSubMoneyOverdueAndFine(taskSubMoneyDTO.getId(),taskSubMoneyDTO.getOverdue(),taskSubMoneyDTO.getFine());
+        taskSubMoneyService.updateTaskSubMoneyOverdueAndFine(taskSubMoneyDTO.getId(), taskSubMoneyDTO.getOverdue(), taskSubMoneyDTO.getFine());
         return jr;
     }
 }
