@@ -63,6 +63,8 @@
             date_format(t1.created_time, '%Y-%m-%d')   createdTimeStr,
             t1.grant_date                   grantDate       ,
             t1.grant_time                   grantTime       ,
+            t1.modified_by                  modifiedBy      ,
+            t1.modified_time                modifiedTime    ,
             t1.remark
         FROM
             sg_salary_grant_sub_task t1
@@ -105,6 +107,8 @@
             t1.foreigner_count                        foreignerCount  ,
             t1.grant_account_code                     grantAccountCode,
             t1.grant_account_name                     grantAccountName,
+            t1.modified_by                            modifiedBy      ,
+            t1.modified_time                          modifiedTime    ,
             t1.remark
         FROM
             sg_salary_grant_sub_task t1
@@ -147,6 +151,8 @@
             t1.foreigner_count              foreignerCount  ,
             t1.grant_account_code           grantAccountCode,
             t1.grant_account_name           grantAccountName,
+            t1.modified_by                  modifiedBy      ,
+            t1.modified_time                modifiedTime    ,
             t1.remark
         FROM
             sg_salary_grant_sub_task t1
@@ -192,6 +198,8 @@
             t1.foreigner_count              foreignerCount  ,
             t1.grant_account_code           grantAccountCode,
             t1.grant_account_name           grantAccountName,
+            t1.modified_by                  modifiedBy      ,
+            t1.modified_time                modifiedTime    ,
             t1.approved_opinion             approvedOpinion
         FROM
             sg_salary_grant_sub_task t1

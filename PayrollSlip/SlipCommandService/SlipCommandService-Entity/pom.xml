@@ -13,8 +13,13 @@
     <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
     <artifactId>slipcommandservice-entity</artifactId>
     <version>1.0.0</version>
-    <dependencies>
-
-    </dependencies>
     <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

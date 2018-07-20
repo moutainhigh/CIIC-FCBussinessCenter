@@ -59,6 +59,15 @@ public class AccountBO {
      */
     private String source;
 
+    /**
+     * 来款账户Id
+     */
+    private Integer bankAccountId;
+    /**
+     * 所属银行 1:中信,2:建行
+     */
+    private Integer belongBankType;
+
     public Long getCalBatchId() {
         return calBatchId;
     }
@@ -169,5 +178,21 @@ public class AccountBO {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Integer getBankAccountId() {
+        return bankAccountId;
+    }
+
+    public void setBankAccountId(Integer bankAccountId) {
+        this.bankAccountId = bankAccountId;
+    }
+
+    public Integer getBelongBankType() {
+        return belongBankType;
+    }
+
+    public void setBelongBankType(Integer belongBankType) {
+        this.belongBankType = belongBankType;
     }
 }

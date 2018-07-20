@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
@@ -136,5 +137,12 @@ public class SalaryGrantTaskDTO extends PagingDTO implements Serializable {
      * 创建时间字符串
      */
     private String createdTimeStr;
-
+    /**
+     * 最后修改人
+     */
+    private String modifiedBy;
+    /**
+     * 修改时间
+     */
+    private Date modifiedTime;
 }

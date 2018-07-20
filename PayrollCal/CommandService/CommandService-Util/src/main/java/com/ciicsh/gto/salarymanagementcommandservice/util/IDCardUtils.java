@@ -1,6 +1,5 @@
 package com.ciicsh.gto.salarymanagementcommandservice.util;
 
-import com.sun.org.apache.regexp.internal.RE;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

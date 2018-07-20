@@ -13,6 +13,11 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.money.ResponseForSubM
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.DisposableChargeProxy;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.common.JsonResult;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.DisposableChargeBusinessTypeEmum;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.DisposableChargeDetailProxyDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.DisposableChargeProxyDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +39,9 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     @Autowired
     private TaskMainService taskMainService;
+
+    @Autowired
+    private DisposableChargeProxy disposableChargeProxy;
 
     /**
      * 条件查询划款子任务
@@ -189,5 +198,30 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
         taskSubMoneyPO.setOverdue(overdue);
         taskSubMoneyPO.setFine(fine);
         baseMapper.updateById(taskSubMoneyPO);
+    }
+
+    /**
+     * 获取划款子任务来款情况列表
+     * @param taskNos
+     * @return
+     */
+    @Override
+    public DisposableChargeProxyDTO whetherHasMoneyBySubMoneyTaskNo(String[] taskNos) {
+        DisposableChargeProxyDTO disposableChargeProxyDTOReturn = new DisposableChargeProxyDTO();
+        DisposableChargeProxyDTO disposableChargeProxyDTO = new DisposableChargeProxyDTO();
+        List<DisposableChargeDetailProxyDTO> disposableChargeDetailProxyDTOS = new ArrayList<>();
+        for(int i = 0;i < taskNos.length;i++){
+            String taskNo = taskNos[i];
+            DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
+            disposableChargeDetailProxyDTO.setBusinessId(taskNo);
+            disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX);
+            disposableChargeDetailProxyDTOS.add(disposableChargeDetailProxyDTO);
+        }
+        disposableChargeProxyDTO.setList(disposableChargeDetailProxyDTOS);
+        JsonResult<DisposableChargeProxyDTO> jsonResult = disposableChargeProxy.disposableChargeIsReceived(disposableChargeProxyDTO);
+        if ("0".equals(jsonResult.getCode())) {
+            disposableChargeProxyDTOReturn = jsonResult.getData();
+        }
+        return disposableChargeProxyDTOReturn;
     }
 }

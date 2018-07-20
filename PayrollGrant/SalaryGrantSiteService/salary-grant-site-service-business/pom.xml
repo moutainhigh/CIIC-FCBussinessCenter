@@ -92,6 +92,22 @@
           <artifactId>gt1.settlementcenter.gatheringqueryservice-api</artifactId>
           <version>1.0.0-SNAPSHOT</version>
       </dependency>
+
+      <dependency>
+          <groupId>com.ciicsh.gt1.commonservice</groupId>
+          <artifactId>gt1.commonservice.logservice-api</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>com.ciicsh.gt1.commonservice</groupId>
+          <artifactId>gt1.commonservice.logservice-client</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>com.ciicsh.gt1.afsystemmanagecenter</groupId>
+          <artifactId>gt1.afsystemmanagecenter.apiservice-api</artifactId>
+      </dependency>
+
       <dependency>
           <groupId>com.ciicsh.gt1</groupId>
           <artifactId>exchangerate</artifactId>
