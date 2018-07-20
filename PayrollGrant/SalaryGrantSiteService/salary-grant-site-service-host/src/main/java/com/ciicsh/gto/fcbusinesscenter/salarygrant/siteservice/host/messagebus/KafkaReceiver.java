@@ -67,13 +67,10 @@ public class KafkaReceiver {
         try{
             if(!ObjectUtils.isEmpty(closingMsg)){
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> start").setContent(JSON.toJSONString(closingMsg)));
-                String batchCode = closingMsg.getBatchCode();
-                Integer batchType = closingMsg.getBatchType();
-                Long version = closingMsg.getVersion();
-                if(StringUtil.isEmpty(batchCode) || batchType == null || version == null){
+                if(StringUtil.isEmpty(closingMsg.getBatchCode()) || ObjectUtils.isEmpty(closingMsg.getBatchType()) || ObjectUtils.isEmpty(closingMsg.getVersion())){
                     logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账").setContent("关账传入参数缺失，生成薪资发放任务单失败！"));
                 }else{
-                    salaryGrantTaskProcessService.toClosing(closingMsg);
+                    salaryGrantTaskProcessService.closing(closingMsg);
                 }
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("关账 --> end"));
             }
