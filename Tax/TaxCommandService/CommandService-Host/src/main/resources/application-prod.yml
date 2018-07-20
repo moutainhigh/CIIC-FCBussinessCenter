@@ -86,14 +86,36 @@ spring:
             autoAddPartitions: true
             replicationFactor: 2
         bindings:
-          pay_apply_pay_status_stream:
+          pay-apply-pay-status-stream:
             destination: pay_apply_pay_status_stream
             content-type: application/json
             group: ${spring.application.name}
             consumer:
               partitioned: false
-          sleuth:
-            destination: sleuth-itdev
+          pr-compute-close-output-channel:
+            destination: fc_compute_close
+            content-type: application/json
+            group: ${spring.application.name}
+            consumer:
+              partitioned: false
+          pr-compute-unclose-output-channel:
+            destination: fc_compute_unclose
+            content-type: application/json
+            group: ${spring.application.name}
+            consumer:
+              partitioned: false
+          common-taskservice-fc-tax-main-task-audit:
+            destination: common_taskservice_fc_tax_main_task_audit
+            content-type: application/json
+            group: ${spring.application.name}
+            consumer:
+              partitioned: false
+          common-taskservice-process-complete:
+            destination: common_taskservice_process_complete
+            content-type: application/json
+            group: ${spring.application.name}
+            consumer:
+              partitioned: false
     data:
       mongodb:
         uri: mongodb://ciicit:ciicit!%23%25@172.16.9.15:27017/payroll_db
