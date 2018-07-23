@@ -1104,14 +1104,14 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         if ("00".equals(taskSubDeclarePO.getAreaType())) {
             zipName = "上海地区个税模板对应关系.zip";
             //获取上海本地根据模板生产的临时文件集合
-            templateFileBOList = getTemplateFileListBySubDeclareIdAboutSH(taskSubDeclareDetailPOList, employeeInfoBatchPOList);
+            templateFileBOList = getTemplateFileListBySubDeclareIdAboutSH(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList);
         } else {
             if (PROVINCE_CODE_JS.equals(calculationBatchAccountPO.getProvinceCode())) {
                 zipName = "江苏模板.zip";
-                templateFileBOList = getTemplateFileListBySubDeclareIdAboutJS(taskSubDeclareDetailPOList, employeeInfoBatchPOList);
+                templateFileBOList = getTemplateFileListBySubDeclareIdAboutJS(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList);
             } else if (CITY_CODE_SZ.equals(calculationBatchAccountPO.getCityCode())) {
                 zipName = "深圳金三软件版.zip";
-                templateFileBOList = getTemplateFileListBySubDeclareIdAboutSZ(taskSubDeclareDetailPOList, employeeInfoBatchPOList);
+                templateFileBOList = getTemplateFileListBySubDeclareIdAboutSZ(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList);
             }
         }
         try {
@@ -1146,7 +1146,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      * @param employeeInfoBatchPOList
      * @return
      */
-    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSH(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
+    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSH(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
 
         //减免事项附表
@@ -1200,13 +1200,13 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         //外籍人员正常工资薪金
         TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
         templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySh.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sh"));
+        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySh.getForeignNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sh"));
         templateFileForeignNormalSalary.setType(true);
         templateFileBOList.add(templateFileForeignNormalSalary);
         //正常工资薪金
         TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
         templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sh"));
+        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sh"));
         templateFileNormalSalary.setType(true);
         templateFileBOList.add(templateFileNormalSalary);
         //个人股票期权行权收入(文件夹)Personal stock option revenue
@@ -1246,7 +1246,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      * @param employeeInfoBatchPOList
      * @return
      */
-    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutJS(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
+    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutJS(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
 
         //解除劳动合同一次性补偿金
@@ -1294,14 +1294,14 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         //外籍人员正常工资薪金
         TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
         templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalaryJs.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "js"));
+        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalaryJs.getForeignNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "js"));
         templateFileForeignNormalSalary.setType(true);
         templateFileBOList.add(templateFileForeignNormalSalary);
 
         //正常工资薪金
         TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
         templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "js"));
+        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "js"));
         templateFileNormalSalary.setType(true);
         templateFileBOList.add(templateFileNormalSalary);
 
@@ -1341,7 +1341,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      * @param employeeInfoBatchPOList
      * @return
      */
-    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSZ(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
+    public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSZ(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
 
         //解除劳动合同一次性补偿金
@@ -1389,14 +1389,14 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         //外籍人员正常工资薪金
         TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
         templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySz.getForeignNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sz"));
+        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySz.getForeignNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sz"));
         templateFileForeignNormalSalary.setType(true);
         templateFileBOList.add(templateFileForeignNormalSalary);
 
         //正常工资薪金
         TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
         templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalarySz.getNormalSalaryWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sz"));
+        templateFileNormalSalary.setWb(exportAboutNormalSalarySz.getNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sz"));
         templateFileNormalSalary.setType(true);
         templateFileBOList.add(templateFileNormalSalary);
 
