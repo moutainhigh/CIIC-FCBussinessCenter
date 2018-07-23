@@ -1,11 +1,5 @@
-app:
-  id: 10007010
-  name: TaxCommandService
-
 spring:
-  profiles:
-    active: dev
-  application:
-    name: fcbusiness-center-tax-command-service
+    profiles:
+        active: dev
 
 

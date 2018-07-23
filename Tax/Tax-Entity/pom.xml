@@ -18,20 +18,16 @@
 
     <dependencies>
 
-        <!--工程内部模块依赖-->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
             <artifactId>fcbusinesscenter-tax-util</artifactId>
             <version>1.0.0</version>
         </dependency>
 
-        <!--数据访问 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus</artifactId>
         </dependency>
-
-        <!--其他 -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>

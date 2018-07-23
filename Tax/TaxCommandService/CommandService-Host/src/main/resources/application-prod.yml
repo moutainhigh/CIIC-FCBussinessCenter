@@ -64,19 +64,21 @@ server:
 #    context-path: /tax
     session-timeout: '# session timeout in seconds'
     tomcat:
-        background-processor-delay: 30
+        background-processor-delay: 30.0
         basedir: '/tmp '
-        max-threads: 0
+        max-threads: 0.0
         protocol-header: 'x-forwarded-proto '
         remote-ip-header: x-forwarded-for
 spring:
-  jpa:
-    database: MYSQL
-    hibernate:
-        ddl-auto: update
-    show-sql: true
-  cloud:
-    stream:
+    application:
+        name: fcbusiness-center-tax-command-service
+    jpa:
+        database: MYSQL
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+    cloud:
+      stream:
         kafka:
           binder:
             brokers: 172.16.9.17:9092,172.16.9.18:9092

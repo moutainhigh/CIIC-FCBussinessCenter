@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareDetailService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareDetailMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForSubDeclareDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wuhua
@@ -27,6 +30,9 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
 
     @Autowired
     private TaskSubDeclareMapper taskSubDeclareMapper;
+
+    @Autowired
+    private EmployeeInfoBatchImpl employeeInfoBatchImpl;
 
     /**
      * 根据申报ID查询申报明细集合
@@ -141,4 +147,51 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         int count = baseMapper.selectCount(wrapper);
         return count;
     }
+
+    /**
+     * 根据申报明细ID查询申报明细合并前数据信息
+     * @param subDeclareDetailId
+     * @return
+     */
+    @Override
+    public List<TaskSubDeclareDetailPO> querySubDeclareDetailListBeforeMergeByMergeId(Long subDeclareDetailId) {
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubDeclareDetailPO());
+        wrapper.and("task_sub_declare_detail_id = {0}",subDeclareDetailId);
+        return baseMapper.selectList(wrapper);
+    }
+
+    /**
+     * 添加合并后的申报明细
+     * @param taskSubDeclarePO
+     * @param taskSubDeclareDetailPOList
+     * @param employeeInfoBatchPOList
+     */
+    public void addMergeSubDeclareDetailList(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
+        EntityWrapper subDeclareDetailWrapper = new EntityWrapper();
+        subDeclareDetailWrapper.setEntity(new TaskSubDeclareDetailPO());
+        subDeclareDetailWrapper.and("task_sub_declare_id = {0}", taskSubDeclarePO.getId());
+        subDeclareDetailWrapper.and("is_active = {0} ", true);
+        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOSMerge = baseMapper.selectList(subDeclareDetailWrapper);
+        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOSMerge){
+            if(!taskSubDeclareDetailPOList.contains(po)){
+                taskSubDeclareDetailPOList.add(po);
+            }
+        }
+        //根据明细合并ID查询合并前数据
+        for(TaskSubDeclareDetailPO taskSubDeclareDetailPO:taskSubDeclareDetailPOSMerge){
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList1 = querySubDeclareDetailListBeforeMergeByMergeId(taskSubDeclareDetailPO.getId());
+            List<Long> taskSubDeclareDetailIdList1 = taskSubDeclareDetailPOList1.stream().map(TaskSubDeclareDetailPO::getCalculationBatchDetailId).collect(Collectors.toList());
+            EntityWrapper wrapper = new EntityWrapper();
+            wrapper.setEntity(new EmployeeInfoBatchPO());
+            wrapper.in("cal_batch_detail_id", taskSubDeclareDetailIdList1);
+            List<EmployeeInfoBatchPO> employeeInfoBatchPOList1 = employeeInfoBatchImpl.selectList(wrapper);
+            for(EmployeeInfoBatchPO employeeInfoBatchPO : employeeInfoBatchPOList1){
+                if(!employeeInfoBatchPOList.contains(employeeInfoBatchPO)){
+                    employeeInfoBatchPOList.add(employeeInfoBatchPO);
+                }
+            }
+        }
+    }
+
 }

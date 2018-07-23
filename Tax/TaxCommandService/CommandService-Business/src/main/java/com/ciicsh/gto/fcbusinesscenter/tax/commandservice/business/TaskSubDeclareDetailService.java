@@ -35,5 +35,12 @@ public interface TaskSubDeclareDetailService {
      */
     int selectCount(String[] hasCombinedDeclareIds);
 
+    /**
+     * 根据申报明细ID查询申报明细合并前数据信息
+     * @param subDeclareDetailId
+     * @return
+     */
+    List<TaskSubDeclareDetailPO> querySubDeclareDetailListBeforeMergeByMergeId(Long subDeclareDetailId);
+
 }
 
