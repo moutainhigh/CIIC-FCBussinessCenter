@@ -105,7 +105,7 @@
                 and t.salary_grant_main_task_code=#{salaryGrantMainTaskCode}
             </if>
             <if test="grantMode != null and grantMode = '12'">
-                and t.grant_mode in (1, 2)
+                and t.grant_mode in (3, 4)
             </if>
             <if test="salaryGrantSubTaskCode != null">
                 and t.salary_grant_sub_task_code=#{salaryGrantSubTaskCode}

@@ -17,6 +17,8 @@
     </build>
 
   <dependencies>
+
+     <!--工程内模块依赖 -->
       <dependency>
           <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
           <artifactId>salary-grant-site-service-entity</artifactId>
@@ -37,6 +39,19 @@
           <artifactId>salary-grant-site-service-api</artifactId>
           <version>1.0.0</version>
       </dependency>
+
+      <dependency>
+          <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+          <artifactId>salarymanagement-commandservice-api</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+          <artifactId>fcbusinesscenter-entity</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+      <!--工程外模块依赖 -->
       <dependency>
           <groupId>com.ciicsh.gt1.commonservice</groupId>
           <artifactId>gt1.commonservice.sheetservice-api</artifactId>
@@ -52,11 +67,7 @@
           <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
           <version>1.0.0-SNAPSHOT</version>
       </dependency>
-      <dependency>
-          <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-          <artifactId>salarymanagement-commandservice-api</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
-      </dependency>
+
       <dependency>
           <groupId>com.ciicsh.gt1.salecenter</groupId>
           <artifactId>gt1.salecenter.apiservice-api</artifactId>
@@ -82,11 +93,7 @@
           <artifactId>fcmodule-service-api</artifactId>
           <version>1.0.0-SNAPSHOT</version>
       </dependency>
-      <dependency>
-          <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-          <artifactId>fcbusinesscenter-entity</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
-      </dependency>
+
       <dependency>
           <groupId>com.ciicsh.gt1.settlementcenter</groupId>
           <artifactId>gt1.settlementcenter.gatheringqueryservice-api</artifactId>

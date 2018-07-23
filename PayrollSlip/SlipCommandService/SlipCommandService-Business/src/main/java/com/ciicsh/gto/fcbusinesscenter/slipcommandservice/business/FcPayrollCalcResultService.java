@@ -17,17 +17,8 @@ import org.bson.Document;
 public interface FcPayrollCalcResultService {
     List<Document> listFcPayrollCalcResults(String params);
 
-    Page<FcPayrollCalcResultPO> pageFcPayrollCalcResults(Map<String, Object> params);
 
-    FcPayrollCalcResultPO getFcPayrollCalcResult(Map<String, Object> params);
 
-    Boolean addFcPayrollCalcResult(Map<String, Object> params);
 
-    Boolean updateFcPayrollCalcResult(Map<String, Object> params);
 
-    List<FcPayrollCalcResultPO> listBatchIds(Map<String, Object> params);
-
-    List<FcPayrollCalcResultPO> listPayrollTypes(Map<String, Object> params);
-
-    List<DBObject> getCustomSearchResult(Map<String, Object> params, Map<String,Integer> sorts, int pageSize, int pageNum);
 }

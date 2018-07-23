@@ -31,8 +31,8 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus</artifactId>
         </dependency>
-        <!---->
 
+        <!--工程内的模块依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-entity</artifactId>

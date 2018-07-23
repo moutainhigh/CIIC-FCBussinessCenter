@@ -15,27 +15,73 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!--应用模块依赖-->
+        <!--Spring Cloud -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+        </dependency>
+
+        <!--Spring Boot-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-devtools</artifactId>-->
+        <!--<optional>true</optional>-->
+        <!--<scope>true</scope>-->
+        <!--</dependency>-->
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--Spring-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+        </dependency>
+
+        <!--工程内的模块依赖-->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-commandservice-dao</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-commandservice-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-entity</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-commandservice-bussiness</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-commandservice-util</artifactId>
@@ -49,6 +95,14 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salarymanagement-commandservice-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+
+        <!--工程外的模块依赖-->
+        <dependency>
             <groupId>com.ciicsh.gt1.companycenter</groupId>
             <artifactId>webcommandservice-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
@@ -58,11 +112,6 @@
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>seaweedFS-client</artifactId>
             <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>salarymanagement-commandservice-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -82,34 +131,30 @@
             <artifactId>gt1.salecenter.apiservice-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-        <!---->
 
-        <!--Spring Boot-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-
+        <!-- 数据访问-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatisplus-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- 其他 -->
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-core</artifactId>
@@ -118,34 +163,6 @@
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-devtools</artifactId>-->
-            <!--<optional>true</optional>-->
-            <!--<scope>true</scope>-->
-        <!--</dependency>-->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!---->
-
-        <!--Spring-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-websocket</artifactId>
-            <version>4.3.11.RELEASE</version>
-        </dependency>
-        <!---->
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -180,7 +197,6 @@
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-web</artifactId>
         </dependency>
-
 
     </dependencies>
 

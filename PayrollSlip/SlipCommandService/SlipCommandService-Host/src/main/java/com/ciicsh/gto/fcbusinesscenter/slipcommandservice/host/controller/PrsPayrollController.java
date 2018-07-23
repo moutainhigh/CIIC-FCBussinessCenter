@@ -1,26 +1,18 @@
 package com.ciicsh.gto.fcbusinesscenter.slipcommandservice.host.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.ciicsh.gt1.FileHandler;
 import com.ciicsh.gt1.config.MongoConfig;
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.api.JsonResult;
 
 import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.business.PrsPayrollService;
-import com.ciicsh.gto.fcbusinesscenter.slipcommandservice.entity.po.PrsPayrollPO;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;

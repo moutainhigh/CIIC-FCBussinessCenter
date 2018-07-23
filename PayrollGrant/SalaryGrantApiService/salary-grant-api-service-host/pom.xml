@@ -16,13 +16,68 @@
   <packaging>jar</packaging>
 
   <dependencies>
-    <!-- 外部依赖 -->
+  <!-- 工程内部模块依赖 -->
+    <dependency>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+        <artifactId>salary-grant-api-service-api</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+        <artifactId>salary-grant-api-service-business</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+        <artifactId>salary-grant-api-service-entity</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+
+    <!-- 工程外部模块依赖 -->
+    <dependency>
+      <groupId>com.ciicsh.gt1.commonservice</groupId>
+      <artifactId>gt1.commonservice.logservice-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.ciicsh.gt1.commonservice</groupId>
+      <artifactId>gt1.commonservice.logservice-client</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>com.ciicsh.gt1</groupId>
       <artifactId>mongo-client</artifactId>
     </dependency>
 
+    <!--数据访问-->
 
+    <!--<dependency>-->
+      <!--<groupId>org.mybatis.spring.boot</groupId>-->
+      <!--<artifactId>mybatis-spring-boot-starter</artifactId>-->
+    <!--</dependency>-->
+
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatisplus-spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid-spring-boot-starter</artifactId>
+    </dependency>
+
+
+    <!-- 其他 -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -53,72 +108,11 @@
       <artifactId>springfox-swagger-ui</artifactId>
     </dependency>
 
-    <!--<dependency>-->
-      <!--<groupId>org.springframework.cloud</groupId>-->
-      <!--<artifactId>spring-cloud-starter-bus-kafka</artifactId>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-      <!--<groupId>org.springframework.cloud</groupId>-->
-      <!--<artifactId>spring-cloud-starter-stream-kafka</artifactId>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-      <!--<groupId>org.springframework.cloud</groupId>-->
-      <!--<artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>-->
-    <!--</dependency>-->
-
     <dependency>
       <groupId>de.codecentric</groupId>
       <artifactId>spring-boot-admin-starter-client</artifactId>
     </dependency>
 
-
-    <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>druid-spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mybatis.spring.boot</groupId>
-      <artifactId>mybatis-spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.baomidou</groupId>
-      <artifactId>mybatisplus-spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.baomidou</groupId>
-      <artifactId>mybatis-plus</artifactId>
-    </dependency>
-
-    <!-- 内部模块依赖 -->
-    <dependency>
-        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-        <artifactId>salary-grant-api-service-api</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-        <artifactId>salary-grant-api-service-business</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-    <dependency>
-        <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-        <artifactId>salary-grant-api-service-entity</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-    <!-- 内部模块依赖 -->
-
-    <dependency>
-      <groupId>com.ciicsh.gt1.commonservice</groupId>
-      <artifactId>gt1.commonservice.logservice-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.ciicsh.gt1.commonservice</groupId>
-      <artifactId>gt1.commonservice.logservice-client</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
