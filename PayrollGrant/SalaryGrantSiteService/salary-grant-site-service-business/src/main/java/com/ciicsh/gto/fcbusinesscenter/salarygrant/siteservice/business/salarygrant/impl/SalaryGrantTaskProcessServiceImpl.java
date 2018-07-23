@@ -111,7 +111,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         param.setActive(true);
         //查询主任务单
         SalaryGrantMainTaskPO salaryGrantMainTaskPO = this.getSalaryGrantMainTaskPO(param);
-        if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO) && salaryGrantMainTaskPO.getBatchVersion().compareTo(salaryGrantMainTaskPO.getBatchVersion()) > 0) {
+        if(!ObjectUtils.isEmpty(salaryGrantMainTaskPO) && Long.valueOf(closingMsg.getVersion()).compareTo(salaryGrantMainTaskPO.getBatchVersion()) > 0) {
             salaryGrantMainTaskPO.setBatchVersion(closingMsg.getVersion());
             this.modifySalaryGrantMainTask(salaryGrantMainTaskPO);
         } else {
@@ -121,16 +121,13 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         }
     }
 
-    /*
+    /**
       2018-06-26 最新调整
       对于已存在的任务单主表信息（任务单状态为5-待生成），关账动作，相当于计算引擎重新计算后重新发送计算结果数据，
       发放模块的任务单编号不变，任务单中的汇总数据和雇员信息是重新从mongodb获取的。
       因此修改任务单方法中，包括修改任务单汇总数据、修改version、修改任务单状态（从5-待生成改为0-草稿），重新生成发放雇员数据。
    */
-    @Override
     public void modifySalaryGrantMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO) {
-        // 修改流程表中的任务单主表状态为草稿
-        salaryGrantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
         // 重新从mongodb获取雇员信息
         // 根据重算批次的计算信息进行汇总到任务单主表,修改薪资发放任务单
         boolean isModified = this.modifyMainTask(salaryGrantMainTaskPO);
@@ -360,7 +357,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
                 /*CmyFcCycleRuleResponseDTO cmyFcCycleRuleResponseDTO = this.getCycleRule(employeeServiceAgreementDTOOne.getCycleRuleId());
                 if(!ObjectUtils.isEmpty(cmyFcCycleRuleResponseDTO)){
                     if(!StringUtils.isEmpty(cmyFcCycleRuleResponseDTO.getSalaryDayDate())){
-                        grantDate = salaryGrantMainTaskPO.getGrantCycle() + this.toZeroizeForDate(cmyFcCycleRuleResponseDTO.getSalaryDayDate());
+                        grantDate = salaryGrantMainTaskPO.getGrantCycle() + this.fillZeroForDate(cmyFcCycleRuleResponseDTO.getSalaryDayDate());
                     }
                     if(!StringUtils.isEmpty(cmyFcCycleRuleResponseDTO.getSalaryDayTime())){
                         grantTime = Integer.valueOf(cmyFcCycleRuleResponseDTO.getSalaryDayTime());
@@ -440,9 +437,9 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         if(ObjectUtils.isEmpty(salaryGrantMainTaskPO.getSalaryGrantMainTaskId())){
             salaryGrantMainTaskPO.setActive(true);
             salaryGrantMainTaskPO.setCreatedTime(new Date());
-            salaryGrantMainTaskPO.setCreatedBy("system");
+            salaryGrantMainTaskPO.setCreatedBy(SalaryGrantBizConsts.SYSTEM_EN);
         }else{
-            salaryGrantMainTaskPO.setModifiedBy("system");
+            salaryGrantMainTaskPO.setModifiedBy(SalaryGrantBizConsts.SYSTEM_EN);
             salaryGrantMainTaskPO.setModifiedTime(new Date());
         }
         return insertOrUpdate(salaryGrantMainTaskPO);
@@ -450,7 +447,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
     /**
      * 生成薪资发放雇员信息
-     * 1、分别对批次计算结果数据及雇员服务协议信息进行json转换解析
+     1、分别对批次计算结果数据及雇员服务协议信息进行json转换解析
      2、查询服务周期规则信息:cmy_fc_cycle_rule 服务周期规则表  薪资发放日_日salary_day_date varchar(2) 薪资发放日_时段：1上午 2下午salary_day_time char(1)
      3、把薪资发放日、时段回填到薪资发放任务主表中
      4、查询雇员的银行卡信息
@@ -474,25 +471,24 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             // 4、是否有本地外币发放，对主表外币发放标识进行回写。
             List<SalaryGrantEmployeePO> localList = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeePO -> SalaryGrantEmployeePO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL)).collect(Collectors.toList());
             Long ltwCount = localList.parallelStream().filter(SalaryGrantEmployeePO -> !SalaryGrantEmployeePO.getCurrencyCode().equals(SalaryGrantBizConsts.CURRENCY_CNY)).count();
-
+            if(ltwCount > 0L){
+                salaryGrantMainTaskPO.setIncludeForeignCurrency(true);
+            }
             // 对相同发放账户的雇员信息遍历list，统计总人数
             salaryGrantMainTaskPO.setTotalPersonCount(Integer.valueOf(salaryGrantEmployeePOList.size()));
             // 针对发放账户统计中、外方人数，根据country_code
             Long chineseCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
-            salaryGrantMainTaskPO.setChineseCount(ObjectUtils.isEmpty(chineseCount) ? 0 : Integer.valueOf(chineseCount.toString()));
+            salaryGrantMainTaskPO.setChineseCount(Integer.valueOf(chineseCount.intValue()));
             Long foreignerCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> !SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA)).count();
-            salaryGrantMainTaskPO.setForeignerCount(ObjectUtils.isEmpty(foreignerCount) ? 0 : Integer.valueOf(foreignerCount.toString()));
+            salaryGrantMainTaskPO.setForeignerCount(Integer.valueOf(foreignerCount.intValue()));
             // 中智上海发薪人数，发放方式(1)进行累计
             Long localGrantCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL)).count();
-            salaryGrantMainTaskPO.setLocalGrantCount(ObjectUtils.isEmpty(localGrantCount) ? 0 : Integer.valueOf(localGrantCount.toString()));
+            salaryGrantMainTaskPO.setLocalGrantCount(Integer.valueOf(localGrantCount.intValue()));
             // 中智代发（委托机构）发薪人数，发放方式(2)进行累计
             Long supplierGrantCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_SUPPLIER)).count();
-            salaryGrantMainTaskPO.setSupplierGrantCount(ObjectUtils.isEmpty(supplierGrantCount) ? 0 : Integer.valueOf(supplierGrantCount.toString()));
+            salaryGrantMainTaskPO.setSupplierGrantCount(Integer.valueOf(supplierGrantCount.intValue()));
             salaryGrantMainTaskPO.setGrantDate(salaryGrantEmployeePOList.get(0).getGrantDate());
             salaryGrantMainTaskPO.setGrantTime(salaryGrantEmployeePOList.get(0).getGrantTime());
-            if(ltwCount > 0L){
-                salaryGrantMainTaskPO.setIncludeForeignCurrency(true);
-            }
             this.updateSalaryGrantMainTask(salaryGrantMainTaskPO);
 
             // 雇员置为自动暂缓，把信息拷贝至薪资发放暂缓池中。调用客服中心暂缓池的插入方法。
@@ -557,7 +553,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
                     CycleRuleResponseDTO cycleRuleResponseDTO  = this.getCycleRule(employeeServiceAgreementDTO.getCycleRuleId());
                     if(!ObjectUtils.isEmpty(cycleRuleResponseDTO)){
                         if(!StringUtils.isEmpty(cycleRuleResponseDTO.getSalaryDayDate())){
-                            grantDate = salaryGrantMainTaskPO.getGrantCycle() + this.toZeroizeForDate(cycleRuleResponseDTO.getSalaryDayDate());
+                            grantDate = salaryGrantMainTaskPO.getGrantCycle() + this.fillZeroForDate(cycleRuleResponseDTO.getSalaryDayDate());
                         }
                         if(!StringUtils.isEmpty(cycleRuleResponseDTO.getSalaryDayTime())){
                             grantTime = Integer.valueOf(cycleRuleResponseDTO.getSalaryDayTime());
@@ -921,9 +917,9 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         if(SalaryGrantBizConsts.GRANT_SERVICE_TYPE_TAX.equals(grantServiceType) || SalaryGrantBizConsts.GRANT_SERVICE_TYPE_GRANT_AND_TAX.equals(grantServiceType)){
             Integer taxPeriod = employeeServiceAgreementDTO.getTaxPeriod();
             if(taxPeriod != null){
-                if(taxPeriod == SalaryGrantBizConsts.TAX_PERIOD_CURRENT_MONTH ){
+                if(SalaryGrantBizConsts.TAX_PERIOD_CURRENT_MONTH.equals(taxPeriod)){
                     salaryGrantEmployeePO.setTaxCycle(grantCycle);
-                }else if(taxPeriod == SalaryGrantBizConsts.TAX_PERIOD_NEXT_MONTH){
+                }else if( SalaryGrantBizConsts.TAX_PERIOD_NEXT_MONTH.equals(taxPeriod)){
                     DateFormat df = new SimpleDateFormat("yyyyMM");
                     try {
                         Calendar ct = Calendar.getInstance();
@@ -1002,15 +998,11 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         employeeBankcardDTO.setIban(cmyFcBankCardResponseDTO.getIban());
         employeeBankcardDTO.setBankcardType(cmyFcBankCardResponseDTO.getBankcardType());
         employeeBankcardDTO.setUsage(cmyFcBankCardResponseDTO.getUsage());
-        Boolean isDefault = true;
-        if(ObjectUtils.isEmpty(cmyFcBankCardResponseDTO.getDefult())){
-            isDefault = false;
-        }else if(cmyFcBankCardResponseDTO.getDefult() == 1){
-            isDefault = true;
+        if(!ObjectUtils.isEmpty(cmyFcBankCardResponseDTO.getDefult()) && cmyFcBankCardResponseDTO.getDefult() == 1){
+            employeeBankcardDTO.setDefaultCard(true);
         }else{
-            isDefault = false;
+            employeeBankcardDTO.setDefaultCard(false);
         }
-        employeeBankcardDTO.setDefaultCard(isDefault);
         employeeBankcardDTO.setDefaultCardCurrencyCode(cmyFcBankCardResponseDTO.getCurrencyCode());
         employeeBankcardDTO.setDefaultCardExchange(cmyFcBankCardResponseDTO.getExchange());
         employeeBankcardDTO.setProvinceCode(cmyFcBankCardResponseDTO.getProvinceCode());
@@ -1206,15 +1198,15 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
 
         // 1、遍历批次数据信息PayrollCalcResultDTO，把雇员相关的信息存储在自己的数据结构中PayrollCalcResultBO，包括一个雇员计算结果数据的信息、服务协议、日期信息等
         if(salaryGrantEmployeePOList != null && salaryGrantEmployeePOList.size() > 0) {
-            paymentTotalSumCount = salaryGrantEmployeePOList.stream().map(SalaryGrantEmployeePO::getPaymentAmountRMB).reduce(BigDecimal.ZERO, BigDecimal::add);
-            totalPersonCount = salaryGrantEmployeePOList.stream().map(SalaryGrantEmployeePO::getEmployeeId).count();
-            chineseCount = salaryGrantEmployeePOList.stream().filter(SalaryGrantEmployeePO -> SalaryGrantEmployeePO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
+            paymentTotalSumCount = salaryGrantEmployeePOList.parallelStream().map(SalaryGrantEmployeePO::getPaymentAmountRMB).reduce(BigDecimal.ZERO, BigDecimal::add);
+            totalPersonCount = salaryGrantEmployeePOList.parallelStream().map(SalaryGrantEmployeePO::getEmployeeId).count();
+            chineseCount = salaryGrantEmployeePOList.parallelStream().filter(SalaryGrantEmployeePO -> SalaryGrantEmployeePO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
                     .map(SalaryGrantEmployeePO::getEmployeeId).count();
-            foreignerCount = salaryGrantEmployeePOList.stream().filter(salaryGrantEmployeePO -> !salaryGrantEmployeePO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
+            foreignerCount = salaryGrantEmployeePOList.parallelStream().filter(salaryGrantEmployeePO -> !salaryGrantEmployeePO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
                     .map(SalaryGrantEmployeePO::getEmployeeId).count();
-            localGrantCount = salaryGrantEmployeePOList.stream().filter(salaryGrantEmployeePO -> !salaryGrantEmployeePO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL))
+            localGrantCount = salaryGrantEmployeePOList.parallelStream().filter(salaryGrantEmployeePO -> !salaryGrantEmployeePO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_LOCAL))
                     .map(SalaryGrantEmployeePO::getEmployeeId).count();
-            supplierGrantCount = salaryGrantEmployeePOList.stream().filter(salaryGrantEmployeePO -> !salaryGrantEmployeePO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_SUPPLIER))
+            supplierGrantCount = salaryGrantEmployeePOList.parallelStream().filter(salaryGrantEmployeePO -> !salaryGrantEmployeePO.getGrantMode().equals(SalaryGrantBizConsts.GRANT_MODE_SUPPLIER))
                     .map(SalaryGrantEmployeePO::getEmployeeId).count();
             SalaryGrantEmployeePO salaryGrantEmployeePO = salaryGrantEmployeePOList.get(0);
             grantDate = salaryGrantEmployeePO.getGrantDate();
@@ -1257,7 +1249,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
     // todo 查询任务单列表时，对草稿状态的任务单需要查询任务单下雇员的信息是否有变更，调用接口方法查询雇员变更日志信息表，
     //       有变更则需要刷新薪资发放雇员信息表中的雇员信息，同时对任务单主表的明细信息（中方发薪人数、外方发薪人数、中智上海发薪人数、中智代发（委托机构）发薪人数、发放方式、备注）进行修改。
     //       提供给任务列表页面和雇员列表的备注显示变更信息链接。
-    /*
+    /**
      * 1、查询状态是草稿的任务单列表时，调用雇员变更日志信息表查询方法，遍历任务单雇员编号查询雇员变更日志信息表中是否有计算批次号对应的雇员信息。
      * 2、对存在变更的雇员，记录变更字段信息，对应变更类型中。
      * 3、根据雇员信息变更的类型进行归类，归类的信息包括employeeId列表、雇员变更类型（1 - 国籍；2 - 发放方式；3 - 发放账户；4 - 银行卡；5 - 雇员服务协议；6 - 薪资发放规则）、变更类型原来值、变更类型新的值。
@@ -1273,7 +1265,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      * 7、根据雇员变更类型组织备注链接信息，修改薪资发放雇员信息表的备注字段，给页面提供备注显示的链接信息。
      *    -- 组织json，直接放到备注信息中，不再进行第二次遍历查找，浪费资源。把原来薪资发放雇员信息表中的从批次数据中获取的存一份，把从雇员信息表中查询的数据放一份新的。
      *       保存到变更日志字段中，再把薪资发放雇员信息的数据刷新。
-     * */
+     */
 
     // 1、查询状态是草稿的任务单列表
     // 2、调用雇员变更日志信息表查询方法
@@ -1293,7 +1285,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         // 查询返回的结果是所有草稿状态任务单及薪资发放雇员信息的变更雇员列表
         List<EmployeeChangeLogBO> employeeChangeLogBOList = new ArrayList<>();
         String changeType = (String)paraMap.get("changeType");
-        /*
+        /**
             查询语句放到薪资发放雇员信息表的mapper的xml中
             select t3.employee_id,t3.change_table_name,t3.change_table_id,t3.change_field,t3.change_value,t3.change_type,t3.change_operation,t3.modified_time,
             t4.salary_grant_main_task_code, t4.salary_grant_employee_id,t4.grant_account_code,t4.grant_mode,t4.salary_grant_rule_id,
@@ -1316,7 +1308,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             bankcard:select t3.card_num,t3.account_name,t3.bank_code,t3.deposit_bank
             grantrule:select t3.grant_rule_id,t3.card_num,t3.currency,t3.rule_amount,t3.rule_ratio
             serviceagreement:select t3.payrollType,t3.payrollAccount
-        * */
+        */
         // 雇员变更日志信息表:变更类型、变更信息（根据不同类型，放入不同格式的json串，对每个修改的字段存放2个值，修改前和修改后的值，便于后面对比）、修改时间。
         // todo 通过查询语句，获取草稿状态的任务单下的雇员信息是否有变更，在雇员变更日志信息表可以查询到结果
         // 暂定：传入参数change_type，根据不同的变更类型查询日志表中不同的变更字段信息。如果变更信息采用json串，需要解析json中的值。
@@ -2028,6 +2020,8 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
      * @return SalaryGrantMainTaskPO
      */
     private boolean modifyMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO){
+        // 修改流程表中的任务单主表状态为草稿
+        salaryGrantMainTaskPO.setTaskStatus(SalaryGrantBizConsts.TASK_STATUS_DRAFT);
         // 1、 根据批次编号batch_code，批次对应的计算类型（正常、调整、回溯），查询批次表信息
         // 调用计算引擎提供查询批次信息的接口方法
         PrBatchDTO PrBatchDTO = batchProxy.getBatchInfo(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType());
@@ -2201,7 +2195,7 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
         return "";
     }
 
-    private String toZeroizeForDate(String dateStr){
+    private String fillZeroForDate(String dateStr){
         if(dateStr.length() == 1){
             dateStr = "0" + dateStr;
         }

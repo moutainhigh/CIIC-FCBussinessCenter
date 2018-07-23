@@ -45,7 +45,7 @@ public interface SalaryGrantTaskProcessService extends IService<SalaryGrantMainT
      * @param salaryGrantMainTaskPO
      * @return
      */
-    void modifySalaryGrantMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO);
+//    void modifySalaryGrantMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO);
 
     /**
      *  根据计算批次号查询批次业务表的批次数据信息，包括计算结果数据及雇员服务协议信息。
