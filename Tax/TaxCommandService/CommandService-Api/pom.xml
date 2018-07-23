@@ -9,6 +9,13 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <parent>
+        <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
+        <artifactId>fcbusinesscenter-tax-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
     <properties>
         <maven-compiler-plugin.version>2.5</maven-compiler-plugin.version>
         <java.version>1.8</java.version>
@@ -19,7 +26,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-feign</artifactId>
-            <version>1.3.5.RELEASE</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

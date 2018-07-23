@@ -14,32 +14,31 @@
 	<version>1.0.0</version>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-
+		<!-- Spring Boot-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 
+		<!-- 数据访问 -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus</artifactId>
 		</dependency>
 
+		<!-- Other -->
 		<dependency>
-			<groupId>com.ciicsh.gt1.commonservice</groupId>
-			<artifactId>gt1.commonservice.basicdataservice-api</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
-		<!-- 内部模块依赖 -->
+
+		<!-- 工程内部模块依赖 -->
 		<dependency>
 			<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
 			<artifactId>salary-grant-api-service-dao</artifactId>
@@ -51,7 +50,14 @@
 			<artifactId>salary-grant-api-service-entity</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<!-- 内部模块依赖 -->
+
+		<!-- 工程外部模块依赖 -->
+		<dependency>
+			<groupId>com.ciicsh.gt1.commonservice</groupId>
+			<artifactId>gt1.commonservice.basicdataservice-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

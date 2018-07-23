@@ -64,14 +64,12 @@ server:
 #    context-path: /tax
     session-timeout: '# session timeout in seconds'
     tomcat:
-        background-processor-delay: 30.0
+        background-processor-delay: 30
         basedir: '/tmp '
-        max-threads: 0.0
+        max-threads: 0
         protocol-header: 'x-forwarded-proto '
         remote-ip-header: x-forwarded-for
 spring:
-    application:
-        name: fcbusiness-center-tax-command-service
     jpa:
         database: MYSQL
         hibernate:

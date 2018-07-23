@@ -17,29 +17,7 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!--二方库依赖 ST-->
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>salarymanagement-entity</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>fcbusinesscenter-util</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-        </dependency>
-
+        <!--Spring Cloud-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-kafka</artifactId>
@@ -56,29 +34,37 @@
             <artifactId>spring-batch-infrastructure</artifactId>
         </dependency>
 
+        <!--工程内的模块依赖-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salarymanagement-entity</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>fcbusinesscenter-util</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!--其他-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+        </dependency>
+
+        <!-- 数据访问 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus</artifactId>
         </dependency>
 
-        <!---->
-        <!--<dependency>-->
-            <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
-            <!--<artifactId>salarymanagement-entity</artifactId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
-            <!--<artifactId>salarymanagement-entity</artifactId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
-            <!--<artifactId>salarymanagement-entity</artifactId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
-        <!--二方库依赖 ED-->
+
     </dependencies>
 
 </project>

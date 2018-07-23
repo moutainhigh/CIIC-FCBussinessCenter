@@ -17,6 +17,8 @@
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!--工程内部模块依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
             <artifactId>fcbusinesscenter-tax-commandservice-dao</artifactId>
@@ -27,22 +29,18 @@
             <artifactId>fcbusinesscenter-tax-util</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>fcbusinesscenter-entity</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>com.ciicsh.gt1.logservice</groupId>
-            <artifactId>logservice-api</artifactId>
-        </dependency>-->
+
+        <!--工程外部模块依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1.commonservice</groupId>
             <artifactId>gt1.commonservice.logservice-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>seaweedFS-client</artifactId>
@@ -56,22 +54,12 @@
             <groupId>com.ciicsh.gt1.commonservice</groupId>
             <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>mongo-client</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>fcbusinesscenter-entity</artifactId>
-        </dependency>
-
-        <!--工作流-->
         <dependency>
             <groupId>com.ciicsh.gt1.commonservice</groupId>
             <artifactId>gt1.commonservice.sheetservice-api</artifactId>
@@ -82,15 +70,6 @@
             <artifactId>common-auth</artifactId>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-ci</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-spring</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-commandservice-api</artifactId>
@@ -103,6 +82,32 @@
             <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
             <artifactId>gt1.settlementcenter-payment-command-api</artifactId>
         </dependency>
+
+        <!--其他-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.apache.ant</groupId>-->
+            <!--<artifactId>ant</artifactId>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-ci</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-spring</artifactId>
+        </dependency>
+
+        <!-- 数据访问 -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

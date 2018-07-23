@@ -17,51 +17,12 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-            <artifactId>fcbusinesscenter-tax-commandservice-business</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
-            <artifactId>fcbusinesscenter-tax-commandservice-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <!--打印付款凭单-->
-        <dependency>
-            <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
-            <artifactId>gt1.settlementcenter-payment-command-api</artifactId>
-        </dependency>
+        <!-- Spring Cloud -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-kafka</artifactId>
         </dependency>
-        <!--认证-->
-        <!--<dependency>
-            <groupId>com.ciicsh.gt1.commonservice</groupId>
-            <artifactId>gt1.commonservice.identityservice-api</artifactId>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>com.ciicsh.gt1.commonservice</groupId>
-            <artifactId>commonservice-util</artifactId>
-        </dependency>-->
-        <dependency>
-            <groupId>com.ciicsh.gt1</groupId>
-            <artifactId>common-auth</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka</artifactId>
@@ -75,14 +36,29 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>
         </dependency>-->
+
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+
+        <!--数据访问-->
         <dependency>
             <groupId>org.mybatis.generator</groupId>
             <artifactId>mybatis-generator-core</artifactId>
@@ -99,20 +75,34 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!--其他-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>${jsonlib.version}</version>
-            <classifier>jdk15</classifier>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>net.sf.json-lib</groupId>-->
+            <!--<artifactId>json-lib</artifactId>-->
+            <!--<version>${jsonlib.version}</version>-->
+            <!--<classifier>jdk15</classifier>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -131,42 +121,38 @@
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--swagger-ui-->
+        <!--<dependency>-->
+            <!--<groupId>org.mockito</groupId>-->
+            <!--<artifactId>mockito-all</artifactId>-->
+            <!--<version>${mockito.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.8.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.8.0</version>
         </dependency>
-        <!--mongodb-->
-        <!--<dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>fcbusinesscenter-util</artifactId>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>com.ciicsh.gt1</groupId>
-            <artifactId>mongo-client</artifactId>
-        </dependency>-->
-        <!--drools-->
-        <!--<dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-api</artifactId>
-        </dependency>-->
 
         <dependency>
-        <groupId>com.ciicsh.gt1</groupId>
-        <artifactId>common-entity</artifactId>
+            <groupId>com.dianping.cat</groupId>
+            <artifactId>cat-core</artifactId>
+        </dependency>
+
+        <!-- 工程内部模块依赖 -->
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
+            <artifactId>fcbusinesscenter-tax-commandservice-business</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter.tax</groupId>
+            <artifactId>fcbusinesscenter-tax-commandservice-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -175,22 +161,33 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>salarymanagement-commandservice-api</artifactId>
+        </dependency>
+
+        <!--工程外部模块依赖-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
+            <artifactId>gt1.settlementcenter-payment-command-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>common-auth</artifactId>
+        </dependency>
+
+
+        <dependency>
+        <groupId>com.ciicsh.gt1</groupId>
+        <artifactId>common-entity</artifactId>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>mongo-client</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>salarymanagement-commandservice-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.dianping.cat</groupId>
-            <artifactId>cat-core</artifactId>
-        </dependency>
     </dependencies>
 
 

@@ -12,11 +12,11 @@
     <artifactId>salarymanagement-commandservice-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
-
-
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!-- Spring Cloud -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-feign</artifactId>
@@ -27,11 +27,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- 其他-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!-- 工程外的应用模块依赖-->
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>common-entity</artifactId>

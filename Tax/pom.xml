@@ -70,13 +70,16 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--<dependency>
+
+            <!-- Spring Cloud -->
+            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring.cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>-->
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-stream-kafka</artifactId>
@@ -104,41 +107,35 @@
                 <artifactId>spring-cloud-sleuth-zipkin-stream</artifactId>
                 <version>1.2.5.RELEASE</version>
             </dependency>
+
+            <!--Spring Boot Admin-->
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${sba.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
+
+
+
+            <!-- 数据访问 -->
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis.springboot.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper</artifactId>
-                <version>${pagehelper.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-core</artifactId>
                 <version>${mybatis.generator.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.connector.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatisplus-spring-boot-starter</artifactId>
@@ -149,16 +146,59 @@
                 <artifactId>mybatis-plus</artifactId>
                 <version>${mybatisplus.version}</version>
             </dependency>
+
+
+            <!-- druid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>1.1.9</version>
+            </dependency>
+
+            <!-- 其他 -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>2.8.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>2.8.0</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.ciicsh.gt1</groupId>
-                <artifactId>seaweedFS-client</artifactId>
-                <version>${seaweedFS.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>net.sf.json-lib</groupId>
                 <artifactId>json-lib</artifactId>
@@ -181,66 +221,6 @@
                 <version>${poi-ooxml.version}</version>
             </dependency>
 
-            <!--打印付款凭单-->
-            <dependency>
-                <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
-                <artifactId>gt1.settlementcenter-payment-command-api</artifactId>
-                <version>${payment.version}</version>
-            </dependency>
-
-            <!--日志系统-->
-            <dependency>
-                <groupId>com.ciicsh.gt1.commonservice</groupId>
-                <artifactId>gt1.commonservice.logservice-api</artifactId>
-                <version>${logservice.version}</version>
-            </dependency>
-
-            <!--认证-->
-            <!--<dependency>
-                <groupId>com.ciicsh.gt1.commonservice</groupId>
-                <artifactId>gt1.commonservice.identityservice-api</artifactId>
-                <version>${identityservice.version}</version>
-            </dependency>-->
-
-            <!--登录信息-->
-            <dependency>
-                <groupId>com.ciicsh.gt1</groupId>
-                <artifactId>common-auth</artifactId>
-                <version>${commonauth.version}</version>
-            </dependency>
-
-            <!--基础数据-->
-            <dependency>
-                <groupId>com.ciicsh.gt1.commonservice</groupId>
-                <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
-                <version>${commonservice.version}</version>
-            </dependency>
-
-            <!--common-entity-->
-            <dependency>
-                <groupId>com.ciicsh.gt1</groupId>
-                <artifactId>common-entity</artifactId>
-                <version>${commonentity.version}</version>
-            </dependency>
-
-            <!--fcbusinesscenter-entity-->
-            <dependency>
-                <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-                <artifactId>fcbusinesscenter-entity</artifactId>
-                <version>${fcbusinesscenterentity.version}</version>
-            </dependency>
-            <!--mongodb工具-->
-            <dependency>
-                <groupId>com.ciicsh.gt1</groupId>
-                <artifactId>mongo-client</artifactId>
-                <version>${mongoclient.version}</version>
-            </dependency>
-            <!--工作流-->
-            <dependency>
-                <groupId>com.ciicsh.gt1.commonservice</groupId>
-                <artifactId>gt1.commonservice.sheetservice-api</artifactId>
-                <version>${sheetserviceapi.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.kie</groupId>
                 <artifactId>kie-ci</artifactId>
@@ -270,31 +250,13 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.ant</groupId>
                 <artifactId>ant</artifactId>
                 <version>${ant.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-                <artifactId>salarymanagement-commandservice-api</artifactId>
-                <version>${fcbusinesscenter.salarymanagement.version}</version>
-            </dependency>
-            <!--Spring Boot Admin-->
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-starter-client</artifactId>
-                <version>${sba.version}</version>
-            </dependency>
-            <!-- druid -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-starter</artifactId>
-                <version>1.1.6</version>
-            </dependency>
-
-            <!-- Cat服务 -->
             <dependency>
                 <groupId>com.dianping.cat</groupId>
                 <artifactId>cat-core</artifactId>
@@ -305,12 +267,79 @@
                 <artifactId>cat-client</artifactId>
                 <version>2.0.0</version>
             </dependency>
-            <!-- 一次性收费账单 -->
+
+            <!--工程内部模块依赖-->
+            <dependency>
+                <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+                <artifactId>fcbusinesscenter-entity</artifactId>
+                <version>${fcbusinesscenterentity.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+                <artifactId>salarymanagement-commandservice-api</artifactId>
+                <version>${fcbusinesscenter.salarymanagement.version}</version>
+            </dependency>
+
+            <!-- 工程外部模块依赖 -->
+            <dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>seaweedFS-client</artifactId>
+                <version>${seaweedFS.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ciicsh.gt1.settlementcenter.payment</groupId>
+                <artifactId>gt1.settlementcenter-payment-command-api</artifactId>
+                <version>${payment.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ciicsh.gt1.commonservice</groupId>
+                <artifactId>gt1.commonservice.logservice-api</artifactId>
+                <version>${logservice.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.ciicsh.gt1.billcenter</groupId>
                 <artifactId>fcmodule-service-api</artifactId>
                 <version>${fcmodule.version}</version>
             </dependency>
+
+
+            <!--登录信息-->
+            <dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>common-auth</artifactId>
+                <version>${commonauth.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ciicsh.gt1.commonservice</groupId>
+                <artifactId>gt1.commonservice.basicdataservice-api</artifactId>
+                <version>${commonservice.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>common-entity</artifactId>
+                <version>${commonentity.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ciicsh.gt1</groupId>
+                <artifactId>mongo-client</artifactId>
+                <version>${mongoclient.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ciicsh.gt1.commonservice</groupId>
+                <artifactId>gt1.commonservice.sheetservice-api</artifactId>
+                <version>${sheetserviceapi.version}</version>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 
@@ -321,9 +350,6 @@
         <module>./TaxCommandService/CommandService-Business</module>
         <module>./TaxCommandService/CommandService-Api</module>
         <module>./TaxCommandService/CommandService-Host</module>
-        <!--<module>./TaxQueryService/QueryService-Dao</module>
-        <module>./TaxQueryService/QueryService-Business</module>
-        <module>./TaxQueryService/QueryService-Api</module>
-        <module>./TaxQueryService/QueryService-Host</module>-->
+
     </modules>
 </project>

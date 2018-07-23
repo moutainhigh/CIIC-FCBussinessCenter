@@ -15,6 +15,18 @@
     <version>1.0.0</version>
 
     <dependencies>
+
+        <!--Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+
+        <!-- 数据访问-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatisplus-spring-boot-starter</artifactId>
@@ -29,6 +41,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!--其他 -->
+        <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
         </dependency>
@@ -37,6 +55,17 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.dianping.cat</groupId>
+            <artifactId>cat-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dianping.cat</groupId>
+            <artifactId>cat-client</artifactId>
+        </dependency>
+
+        <!-- 工程内部模块依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>slipcommandservice-api</artifactId>
@@ -57,6 +86,8 @@
             <artifactId>slipcommandservice-bussiness</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!--工程外部模块依赖-->
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>seaweedFS-client</artifactId>
@@ -82,33 +113,7 @@
              <artifactId>mongo-client</artifactId>
              <version>1.1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-             <groupId>org.springframework.boot</groupId>
-             <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-starter-client</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dianping.cat</groupId>
-            <artifactId>cat-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.dianping.cat</groupId>
-            <artifactId>cat-client</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>-->
-            <!--<artifactId>salarymanagement-commandservice-api</artifactId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
     </dependencies>
 
     <build>

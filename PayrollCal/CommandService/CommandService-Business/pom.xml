@@ -19,12 +19,25 @@
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!-- Spring Cloud -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-kafka</artifactId>
         </dependency>
 
-        <!-- 其他模块依赖 -->
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <!-- 工程内的模块依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>salarymanagement-commandservice-dao</artifactId>
@@ -38,15 +51,16 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ciicsh.gt1</groupId>
-            <artifactId>mongo-client</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
             <artifactId>fcbusinesscenter-entity</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- 工程外的模块依赖 -->
+        <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>mongo-client</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -54,7 +68,6 @@
             <artifactId>webcommandservice-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-        <!-- -->
 
         <!-- 其他 -->
         <dependency>
@@ -66,22 +79,6 @@
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
         </dependency>
-        <!-- -->
-
-
-        <!-- Spring Boot -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-        <!---->
-
 
     </dependencies>
 
