@@ -352,11 +352,6 @@
         <module>PayrollCal/CommandService/CommandService-Business</module>
         <module>PayrollCal/CommandService/CommandService-Host</module>
         <module>PayrollCal/CommandService/CommandService-Api</module>
-        <module>PayrollCal/QueryService/QueryService-Dao</module>
-        <module>PayrollCal/QueryService/QueryService-Util</module>
-        <module>PayrollCal/QueryService/QueryService-Business</module>
-        <module>PayrollCal/QueryService/QueryService-Host</module>
-        <module>PayrollCal/QueryService/QueryService-Api</module>
 
         <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-api</module>
         <module>PayrollGrant/SalaryGrantSiteService/salary-grant-site-service-business</module>
@@ -375,24 +370,6 @@
         <module>PayrollSlip/SlipCommandService/SlipCommandService-Dao</module>
         <module>PayrollSlip/SlipCommandService/SlipCommandService-Entity</module>
         <module>PayrollSlip/SlipCommandService/SlipCommandService-Host</module>
-
-        <module>PayrollSlip/SlipQueryService/SlipQueryService-Api</module>
-        <module>PayrollSlip/SlipQueryService/SlipQueryService-Business</module>
-        <module>PayrollSlip/SlipQueryService/SlipQueryService-Dao</module>
-        <module>PayrollSlip/SlipQueryService/SlipQueryService-Entity</module>
-        <module>PayrollSlip/SlipQueryService/SlipQueryService-Host</module>
-
-        <module>Supplier/SupplierCommandService/SupplierCommandService-Api</module>
-        <module>Supplier/SupplierCommandService/SupplierCommandService-Business</module>
-        <module>Supplier/SupplierCommandService/SupplierCommandService-Dao</module>
-        <module>Supplier/SupplierCommandService/SupplierCommandService-Entity</module>
-        <module>Supplier/SupplierCommandService/SupplierCommandService-Host</module>
-
-        <module>Supplier/SupplierQueryService/SupplierQueryService-Api</module>
-        <module>Supplier/SupplierQueryService/SupplierQueryService-Business</module>
-        <module>Supplier/SupplierQueryService/SupplierQueryService-Dao</module>
-        <module>Supplier/SupplierQueryService/SupplierQueryService-Entity</module>
-        <module>Supplier/SupplierQueryService/SupplierQueryService-Host</module>
 
         <module>Job/CalDispatchJob/CalDispatchJob-Api</module>
         <module>Job/CalDispatchJob/CalDispatchJob-Business</module>
