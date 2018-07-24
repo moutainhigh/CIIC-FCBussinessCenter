@@ -67,7 +67,7 @@ public interface PrPayrollItemMapper extends BaseMapper<PrPayrollItemPO> {
      * @param prPayrollItemPO
      * @return
      */
-    Integer updateItemByCode(PrPayrollItemPO prPayrollItemPO);
+    Integer updateItemById(PrPayrollItemPO prPayrollItemPO);
 
     /**
      * 获取当前薪资组中的最大计算顺序

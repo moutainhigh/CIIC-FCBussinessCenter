@@ -1,17 +1,12 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem;
 
-import com.ciicsh.gto.salarymanagement.entity.PrItemEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
-import com.ciicsh.gto.salarymanagement.entity.po.custom.PrAccountSetOptPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
-import scala.annotation.meta.param;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jiangtianning on 2017/11/6.
@@ -88,16 +83,6 @@ public interface PrItemService {
     PageInfo<PrPayrollItemPO> getListByGroupTemplateCode(String groupTemplateCode, Integer pageNum, Integer pageSize, boolean draftFlg);
 
     /**
-     * 获取一个薪资项
-     *
-     * @param itemCode     薪资项编码
-     * @param groupCode    薪资组编码
-     * @param managementId 管理方ID
-     * @return 结果项
-     */
-    PrPayrollItemPO getItemByCode(String itemCode, String groupCode, String managementId);
-
-    /**
      * 插入一个薪资项
      * @param param 待插入实体
      * @return 插入结果
@@ -116,7 +101,7 @@ public interface PrItemService {
      * @param param 更新薪资项实体
      * @return 更新条数
      */
-    int updateItem(PrPayrollItemPO param);
+    int updatePrItemById(PrPayrollItemPO param);
 
     /**
      * 获取薪资项类型列表
@@ -174,10 +159,17 @@ public interface PrItemService {
     int deleteItemByTemplateCode(String itemCode, String payrollGroupTemplateCode);
 
     /**
-     * 根据薪资组模板编码和薪资项编码获取薪资项
-     * @param itemCode 薪资项编码
-     * @param payrollGroupTemplateCode 薪资项模板编码
-     * @return
+     *薪资组模板、薪资组获取薪资项
+     * @param paramPO 查询条件对象
+     * @return 薪资项
      */
-    PrPayrollItemPO getItemByCode(String itemCode, String payrollGroupTemplateCode);
+    PrPayrollItemPO getItemByCode(PrPayrollItemPO paramPO);
+
+    /**
+     * 根据薪资项id查询薪资项明细
+     * @param id 薪资项id
+     * @return 薪资项明细
+     */
+    PrPayrollItemPO selectById(Integer id);
+
 }

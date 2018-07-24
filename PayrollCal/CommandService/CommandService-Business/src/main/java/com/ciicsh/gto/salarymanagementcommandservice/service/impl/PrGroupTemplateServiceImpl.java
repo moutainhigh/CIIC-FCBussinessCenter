@@ -279,7 +279,7 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
                     updateParam.setDisplayPriority(null);
                     updateParam.setCalPriority(null);
                     updateParam.setModifiedBy(UserContext.getUserId());
-                    prItemService.updateItem(updateParam);
+                    prItemService.updatePrItemById(updateParam);
                 } else {
                     // 不存在则插入
                     PrPayrollItemPO insertParam = j.deepClone();
