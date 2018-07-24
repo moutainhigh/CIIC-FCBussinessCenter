@@ -242,7 +242,7 @@ public class TaskSubMoneyController extends BaseController {
             //根据划款明细对象集合求出个税总金额
             BigDecimal taxAmountSum = taskSubMoneyDetailPOS.stream()
                     //将TaskSubMoneyDetailPO对象的tax_amount取出来map为Bigdecimal
-                    .map(TaskSubMoneyDetailPO::getTaxAmount)
+                    .map(TaskSubMoneyDetailPO::getTaxReal)
                     //使用reduce聚合函数,实现累加器
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             PayapplyCompanyProxyDTO payapplyCompanyProxyDTO = new PayapplyCompanyProxyDTO();
@@ -268,7 +268,7 @@ public class TaskSubMoneyController extends BaseController {
             payapplyEmployeeProxyDTO.setEmployeeName(taskSubMoneyDetailPO.getEmployeeName());
             payapplyEmployeeProxyDTO.setCompanyId(companyNo);
             payapplyEmployeeProxyDTO.setPayMonth(DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubMoneyDetailPO.getPeriod()));
-            payapplyEmployeeProxyDTO.setPayAmount(taskSubMoneyDetailPO.getTaxAmount());
+            payapplyEmployeeProxyDTO.setPayAmount(taskSubMoneyDetailPO.getTaxReal());
             //薪酬计算批次号集合
             List<String> batchCodeList = new ArrayList<>();
             //设置雇员薪酬计算批次

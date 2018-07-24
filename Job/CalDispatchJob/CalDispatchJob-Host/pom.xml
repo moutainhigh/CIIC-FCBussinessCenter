@@ -16,19 +16,7 @@
     <version>1.0.0</version>
 
     <dependencies>
-
-        <dependency>
-            <groupId>com.ciicsh.gt1</groupId>
-            <artifactId>mongo-client</artifactId>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>caldispatchjob-business</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
+        <!--Spring Cloud-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-config-server</artifactId>
@@ -43,16 +31,15 @@
             <artifactId>spring-cloud-starter-bus-kafka</artifactId>
         </dependency>
 
+
+        <!--工程内的模块依赖-->
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatisplus-spring-boot-starter</artifactId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>caldispatchjob-business</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus</artifactId>
-        </dependency>
-
+        <!--工程外的模块依赖-->
         <dependency>
             <groupId>com.ciicsh.gt1.companycenter</groupId>
             <artifactId>webcommandservice-api</artifactId>
@@ -66,10 +53,32 @@
         </dependency>
 
         <dependency>
+            <groupId>com.ciicsh.gt1</groupId>
+            <artifactId>mongo-client</artifactId>
+        </dependency>
+
+        <!--数据访问-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatisplus-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!--其他-->
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-core</artifactId>
@@ -78,11 +87,6 @@
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
     </dependencies>

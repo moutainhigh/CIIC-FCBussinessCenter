@@ -31,9 +31,8 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bus-kafka</artifactId>
         </dependency>
-        <!---->
 
-        <!-- MyBatis -->
+        <!-- 数据访问 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatisplus-spring-boot-starter</artifactId>
@@ -44,11 +43,17 @@
             <artifactId>mybatis-plus</artifactId>
         </dependency>
 
-        <!--Druid-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!--其他-->
         <dependency>
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-core</artifactId>
@@ -57,18 +62,20 @@
             <groupId>com.dianping.cat</groupId>
             <artifactId>cat-client</artifactId>
         </dependency>
+
+        <!--工程内应用模块依赖 -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>caldispatchjob-business</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
-        <!-- 应用模块依赖 -->
 
+        <!-- 工程外应用模块依赖 -->
         <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>mongo-client</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>com.ciicsh.gt1.companycenter</groupId>
@@ -77,18 +84,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
-            <artifactId>caldispatchjob-business</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.ciicsh.gt1</groupId>
             <artifactId>payroll_common_function</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-        <!---->
-
 
     </dependencies>
 
