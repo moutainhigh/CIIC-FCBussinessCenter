@@ -2,7 +2,6 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.config;
 
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.plugins.PerformanceInterceptor;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.interceptor.CatMybatisInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,9 +30,6 @@ public class MybatisPlusConfig {
         return performanceInterceptor;
     }
 
-    @Bean
-    public CatMybatisInterceptor catMybatisInterceptor() {
-        return new CatMybatisInterceptor();
-    }
+
 }
 
