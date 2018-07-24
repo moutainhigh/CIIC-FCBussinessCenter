@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
@@ -114,16 +115,6 @@ public class PrItemServiceImpl implements PrItemService {
             resultList = prPayrollItemMapper.selectApprovedGroupTemplateItems(param);
         }
         return new PageInfo<>(resultList);
-    }
-
-    /**
-     * 薪资组模板获取薪资项、薪资组获取薪资项共用业务
-     * @param paramPO 查询条件对象
-     * @return 薪资项
-     */
-    @Override
-    public PrPayrollItemPO getItemByCode(PrPayrollItemPO paramPO) {
-        return prPayrollItemMapper.selectOne(paramPO);
     }
 
     /**
@@ -267,39 +258,29 @@ public class PrItemServiceImpl implements PrItemService {
     }
 
     @Override
-    public int deleteItemByCodes(List<String> itemCodes, String groupCode, String managementId) {
-        //先获取该薪资项当前详情用作check
-        PrPayrollItemPO paramPO = new PrPayrollItemPO();
-        paramPO.setItemCode(itemCodes.get(0));
-        paramPO.setPayrollGroupCode(groupCode);
-        paramPO.setManagementId(managementId);
-        PrPayrollItemPO first = this.getItemByCode(paramPO);
-        this.updateRelatedGroupStatus(first);
-        return prPayrollItemMapper.deleteItemByCodes(itemCodes, groupCode, managementId);
+    public int deletePrItemById(Integer id) {
+        PrPayrollItemPO itemPO = this.selectById(id);
+        // 将所在薪资组的审核状态更新为草稿
+        this.updateRelatedGroupStatus(itemPO);
+        return prPayrollItemMapper.deleteById(id);
     }
 
     @Override
-    public int deleteItemByPrGroupCode(String groupCode) {
-        return prPayrollItemMapper.deleteItemByGroupCode(groupCode);
-    }
-
-    @Override
-    public List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO) {
-        return prPayrollItemMapper.getPayrollItems(extPO);
-    }
-
-    @Override
-    public boolean updateDisplayPriority(List<String> codes) {
-        for(int i = 0; i < codes.size(); i++) {
+    public boolean updateDisplayPriority(List<Integer> ids) {
+        for(int i = 0; i < ids.size(); i++) {
             PrPayrollItemPO param = new PrPayrollItemPO();
-            param.setItemCode(codes.get(i));
+            param.setId(ids.get(i));
             param.setDisplayPriority(i);
-            prPayrollItemMapper.updateItemById(param);
+            param.setModifiedTime(new Date());
+            param.setModifiedBy(UserContext.getUserId());
+            prPayrollItemMapper.updateById(param);
 
             PrApprovedPayrollItemPO approvedPO = new PrApprovedPayrollItemPO();
-            approvedPO.setItemCode(codes.get(i));
+            approvedPO.setId(ids.get(i));
             approvedPO.setDisplayPriority(i);
-            prApprovedPayrollItemMapper.updateApprovedItem(approvedPO);
+            approvedPO.setModifiedTime(new Date());
+            approvedPO.setModifiedBy(UserContext.getUserId());
+            prApprovedPayrollItemMapper.updateById(approvedPO);
 
         }
         return true;

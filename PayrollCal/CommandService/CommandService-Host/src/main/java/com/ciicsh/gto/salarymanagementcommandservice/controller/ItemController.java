@@ -69,27 +69,6 @@ public class ItemController extends BaseController{
     }
 
     /**
-     * 根据itemCode、groupCode、managemengId获取薪资项
-     *
-     * @param itemCode     薪资项编码
-     * @param groupCode    薪资组编码
-     * @param managementId 管理方ID
-     * @return 薪资项列表
-     */
-    @GetMapping(value = "/getPrItem")
-    public JsonResult getPrItem(@RequestParam("itemCode") String itemCode,
-                                @RequestParam("groupCode") String groupCode,
-                                @RequestParam("managementId") String managementId) {
-        PrPayrollItemPO paramPO = new PrPayrollItemPO();
-        paramPO.setItemCode(itemCode);
-        paramPO.setPayrollGroupCode(groupCode);
-        paramPO.setManagementId(managementId);
-        PrPayrollItemPO result = itemService.getItemByCode(paramPO);
-        PrPayrollItemDTO resultItem = ItemTranslator.toPrPayrollItemDTO(result);
-        return JsonResult.success(resultItem);
-    }
-
-    /**
      * 根据薪资项ID查询信息项明细
      * @param id 薪资项ID
      * @return 薪资项明细
@@ -106,8 +85,8 @@ public class ItemController extends BaseController{
      * @param paramDTO 更新明细
      * @return 更新结果
      */
-    @PutMapping(value = "/updatePrItemByCode")
-    public JsonResult updatePrItemByCode(@RequestBody PrPayrollItemDTO paramDTO) {
+    @PutMapping(value = "/updatePrItemById")
+    public JsonResult updatePrItemById(@RequestBody PrPayrollItemDTO paramDTO) {
         // 校验同名薪资项
         JsonResult checkJsonResult = checkSameNamePrItem(paramDTO);
         if (checkJsonResult != null) return checkJsonResult;
@@ -122,21 +101,6 @@ public class ItemController extends BaseController{
         } catch (Exception e) {
             return JsonResult.faultMessage(MessageConst.PAYROLL_ITEM_UPDATE_FAIL);
         }
-    }
-
-    /**
-     * editPrItemCode不为空，则为编辑，编辑时忽略当前编辑项与数据库中自身的薪资项name同名校验
-     * editPrItemCode为空，则为新增，无需做checkItemList的步骤
-     *
-     * @param editPrItemCode 当前编辑的薪资项code
-     * @param itemList       数据库中查出来的薪资项列表
-     * @return 参与校验的薪资项列表
-     */
-    private List<PrPayrollItemPO> checkItemList(String editPrItemCode, List<PrPayrollItemPO> itemList) {
-        if (StringUtils.isNotBlank(editPrItemCode)) {
-            itemList.removeIf(item -> item.getItemCode().equals(editPrItemCode));
-        }
-        return itemList;
     }
 
     /**
@@ -176,27 +140,13 @@ public class ItemController extends BaseController{
     }
 
     /**
-     * 根据itemCode、groupCode、managemengId删除薪资项
-     * @param itemCode 薪资项编码
-     * @param managementId 管理方ID
-     * @return 删除结果
+     * 根据薪资项ID删除薪资项
+     * @param id 薪资项ID
+     * @return 删除条数
      */
-    @DeleteMapping("/deletePrItemByGroupCode")
-    public JsonResult deletePrItemByGroupCode(@RequestParam("itemCode") String itemCode,
-                                 @RequestParam("groupCode") String groupCode,
-                                 @RequestParam("managementId") String managementId) {
-        String[] itemCodes = itemCode.split(",");
-        int i = itemService.deleteItemByCodes(Arrays.asList(itemCodes), groupCode, managementId);
-        if (i >= 1){
-            return JsonResult.success(i,"删除成功");
-        }else {
-            return JsonResult.faultMessage();
-        }
-    }
-    @DeleteMapping("/deletePrItemByTemplateCode")
-    public JsonResult deletePrItemByTemplateCode(@RequestParam("itemCode") String itemCode,
-                                                 @RequestParam("payrollGroupTemplateCode") String payrollGroupTemplateCode){
-        int i = itemService.deleteItemByTemplateCode(itemCode, payrollGroupTemplateCode);
+    @DeleteMapping("/deletePrItemById/{id}")
+    public JsonResult deletePrItemById(@PathVariable("id") Integer id) {
+        int i = itemService.deletePrItemById(id);
         if (i >= 1){
             return JsonResult.success(i,"删除成功");
         }else {
@@ -205,8 +155,8 @@ public class ItemController extends BaseController{
     }
 
     @PostMapping("/prItemDisplayPriority")
-    public JsonResult updateDisplayPriority(@RequestBody List<String> codes) {
-        return itemService.updateDisplayPriority(codes) ?
+    public JsonResult updateDisplayPriority(@RequestBody List<Integer> ids) {
+        return itemService.updateDisplayPriority(ids) ?
                 JsonResult.message(true,"更新薪资项显示顺序成功") : JsonResult.faultMessage("更新薪资项显示顺序失败");
     }
 
@@ -248,6 +198,7 @@ public class ItemController extends BaseController{
     public JsonResult getDataTypeEnums() {
         return JsonResult.success(EnumHelpUtil.getLabelValueList(DataTypeEnum.class));
     }
+
     /**
      * 新增和编辑时校验薪资项是否有重名
      *
@@ -278,5 +229,20 @@ public class ItemController extends BaseController{
             }
         }
         return null;
+    }
+
+    /**
+     * editPrItemCode不为空，则为编辑，编辑时忽略当前编辑项与数据库中自身的薪资项name同名校验
+     * editPrItemCode为空，则为新增，无需做checkItemList的步骤
+     *
+     * @param editPrItemCode 当前编辑的薪资项code
+     * @param itemList       数据库中查出来的薪资项列表
+     * @return 参与校验的薪资项列表
+     */
+    private List<PrPayrollItemPO> checkItemList(String editPrItemCode, List<PrPayrollItemPO> itemList) {
+        if (StringUtils.isNotBlank(editPrItemCode)) {
+            itemList.removeIf(item -> item.getItemCode().equals(editPrItemCode));
+        }
+        return itemList;
     }
 }
