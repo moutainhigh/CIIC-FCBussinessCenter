@@ -23,7 +23,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,13 +116,24 @@ public class PrItemServiceImpl implements PrItemService {
         return new PageInfo<>(resultList);
     }
 
+    /**
+     * 薪资组模板获取薪资项、薪资组获取薪资项共用业务
+     * @param paramPO 查询条件对象
+     * @return 薪资项
+     */
     @Override
-    public PrPayrollItemPO getItemByCode(String itemCode, String groupCode, String managementId) {
-        PrPayrollItemPO param = new PrPayrollItemPO();
-        param.setItemCode(itemCode);
-        param.setPayrollGroupCode(groupCode);
-        param.setManagementId(managementId);
-        return prPayrollItemMapper.selectOne(param);
+    public PrPayrollItemPO getItemByCode(PrPayrollItemPO paramPO) {
+        return prPayrollItemMapper.selectOne(paramPO);
+    }
+
+    /**
+     * 根据薪资项id查询薪资项明细
+     * @param id 薪资项id
+     * @return 薪资项明细
+     */
+    @Override
+    public PrPayrollItemPO selectById(Integer id) {
+        return prPayrollItemMapper.selectById(id);
     }
 
     @Override
@@ -166,9 +180,9 @@ public class PrItemServiceImpl implements PrItemService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public int updateItem(PrPayrollItemPO param) {
+    public int updatePrItemById(PrPayrollItemPO paramPO) {
         //先获取该薪资项当前详情用作check
-        PrPayrollItemPO prPayrollItemPO = this.getItemByCode(param.getItemCode(), param.getPayrollGroupCode(), param.getManagementId());
+        PrPayrollItemPO prPayrollItemPO = this.selectById(paramPO.getId());
 
         // 如果该薪资项只存在于薪资组中，则修改无限制
         if (StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode())) {
@@ -178,7 +192,7 @@ public class PrItemServiceImpl implements PrItemService {
         // 如果该薪资项由薪资组继承而产生，则需进行校验，不能修改薪资项名
         if (!StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupTemplateCode()) &&
                 !StringUtils.isEmpty(prPayrollItemPO.getPayrollGroupCode())) {
-            if (param.getItemName() != null && !prPayrollItemPO.getItemName().equals(param.getItemName())) {
+            if (paramPO.getItemName() != null && !prPayrollItemPO.getItemName().equals(paramPO.getItemName())) {
                 throw new BusinessException(MessageConst.PAYROLL_ITEM_UPDATE_NAME_ERROR);
             }
 //            this.realUpdateItem(param);
@@ -230,7 +244,7 @@ public class PrItemServiceImpl implements PrItemService {
 //            result.put("FAILURE", failList);
 //            return result;
 //        }
-        TranslatorUtils.copyNotNullProperties(param, prPayrollItemPO);
+        TranslatorUtils.copyNotNullProperties(paramPO, prPayrollItemPO);
         return this.realUpdateItem(prPayrollItemPO);
     }
 
@@ -243,7 +257,7 @@ public class PrItemServiceImpl implements PrItemService {
         }
         param.setModifiedTime(new Date());
         this.replaceItemNameWithCode(param);
-        return prPayrollItemMapper.updateItemByCode(param);
+        return prPayrollItemMapper.updateItemById(param);
     }
 
     @Override
@@ -255,7 +269,11 @@ public class PrItemServiceImpl implements PrItemService {
     @Override
     public int deleteItemByCodes(List<String> itemCodes, String groupCode, String managementId) {
         //先获取该薪资项当前详情用作check
-        PrPayrollItemPO first = this.getItemByCode(itemCodes.get(0), groupCode, managementId);
+        PrPayrollItemPO paramPO = new PrPayrollItemPO();
+        paramPO.setItemCode(itemCodes.get(0));
+        paramPO.setPayrollGroupCode(groupCode);
+        paramPO.setManagementId(managementId);
+        PrPayrollItemPO first = this.getItemByCode(paramPO);
         this.updateRelatedGroupStatus(first);
         return prPayrollItemMapper.deleteItemByCodes(itemCodes, groupCode, managementId);
     }
@@ -276,7 +294,7 @@ public class PrItemServiceImpl implements PrItemService {
             PrPayrollItemPO param = new PrPayrollItemPO();
             param.setItemCode(codes.get(i));
             param.setDisplayPriority(i);
-            prPayrollItemMapper.updateItemByCode(param);
+            prPayrollItemMapper.updateItemById(param);
 
             PrApprovedPayrollItemPO approvedPO = new PrApprovedPayrollItemPO();
             approvedPO.setItemCode(codes.get(i));
@@ -293,7 +311,7 @@ public class PrItemServiceImpl implements PrItemService {
             PrPayrollItemPO param = new PrPayrollItemPO();
             param.setItemCode(codes.get(i));
             param.setCalPriority(i+1);
-            prPayrollItemMapper.updateItemByCode(param);
+            prPayrollItemMapper.updateAllColumnById(param);
         }
         return true;
     }
@@ -311,14 +329,6 @@ public class PrItemServiceImpl implements PrItemService {
         EntityWrapper ew = new EntityWrapper(prPayrollItemPO);
         return prPayrollItemMapper.delete(ew);
 
-    }
-
-    @Override
-    public PrPayrollItemPO getItemByCode(String itemCode, String payrollGroupTemplateCode) {
-        PrPayrollItemPO param = new PrPayrollItemPO();
-        param.setItemCode(itemCode);
-        param.setPayrollGroupTemplateCode(payrollGroupTemplateCode);
-        return prPayrollItemMapper.selectOne(param);
     }
 
     private void updateRelatedGroupStatus(PrPayrollItemPO param) {
@@ -383,6 +393,21 @@ public class PrItemServiceImpl implements PrItemService {
             content = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
         }
         return content;
+    }
+
+    /**
+     * editPrItemCode不为空，则为编辑，编辑时忽略当前编辑项与数据库中自身的薪资项name同名校验
+     * editPrItemCode为空，则为新增，无需做checkItemList的步骤
+     *
+     * @param editPrItemCode 当前编辑的薪资项code
+     * @param itemList       数据库中查出来的薪资项列表
+     * @return 参与校验的薪资项列表
+     */
+    private List<PrPayrollItemPO> checkItemList(String editPrItemCode, List<PrPayrollItemPO> itemList) {
+        if (org.apache.commons.lang.StringUtils.isNotBlank(editPrItemCode)) {
+            itemList.removeIf(item -> item.getItemCode().equals(editPrItemCode));
+        }
+        return itemList;
     }
 
 }

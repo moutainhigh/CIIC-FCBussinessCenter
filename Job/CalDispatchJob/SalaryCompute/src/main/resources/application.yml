@@ -25,7 +25,7 @@ spring:
           producer:
             partitionCount: 1
   profiles:
-    active: test
+    active: dev
 
       #instance-count: 2
       #instance-index: 1

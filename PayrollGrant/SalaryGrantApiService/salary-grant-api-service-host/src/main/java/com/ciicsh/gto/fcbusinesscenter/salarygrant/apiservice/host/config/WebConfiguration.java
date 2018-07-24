@@ -1,19 +1,16 @@
-package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.config;
+package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.config;
 
-
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.interceptor.CatInterceptor;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.interceptor.CatInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * @author chenpb
- * @since 2018/4/17
+ * 服务前置拦截
  */
 @Configuration
-public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
-
+public class WebConfiguration extends WebMvcConfigurerAdapter {
     /**
      * 拦截器
      *
@@ -38,6 +35,4 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
                 .allowedOrigins("*");
         super.addCorsMappings(registry);
     }
-
-    // api接口暂时不考虑统一异常处理，直接抛出给业务系统
 }

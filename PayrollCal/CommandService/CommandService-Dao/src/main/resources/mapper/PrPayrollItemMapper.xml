@@ -249,7 +249,7 @@
     </delete>
 
     <!-- 更新薪资项 -->
-    <update id="updateItemByCode" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">
+    <update id="updateItemById" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">
     UPDATE pr_payroll_item
         <trim prefix="set" suffixOverrides=",">
             <if test="parentItemCode != null">
@@ -322,6 +322,12 @@
         </trim>
     WHERE
         item_code = #{itemCode}
+		<if test="payrollGroupTemplateCode != null and payrollGroupTemplateCode != ''">
+			AND payroll_group_template_code = #{payrollGroupTemplateCode}
+		</if>
+		<if test="payrollGroupCode != null and payrollGroupCode != ''">
+			AND payroll_group_code = #{payrollGroupCode}
+		</if>
     </update>
 
 	<select id="selectMaxCalPriorityOfGroup" resultType="int">
