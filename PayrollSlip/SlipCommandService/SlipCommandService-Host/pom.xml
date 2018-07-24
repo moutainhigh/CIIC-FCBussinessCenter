@@ -16,6 +16,12 @@
 
     <dependencies>
 
+        <!-- Spring Cloud -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+        </dependency>
+
         <!--Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
