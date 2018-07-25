@@ -1194,7 +1194,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
         //商业保险commercial insurance
         TemplateFileBO templateFileCI = new TemplateFileBO();
         templateFileCI.setTemplateName("商业保险.xls");
-        templateFileCI.setWb(exportAboutCommercialInsuranceSh.getCommercialInsuranceWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "商业保险.xls", "sh"));
+        templateFileCI.setWb(exportAboutCommercialInsuranceSh.getCommercialInsuranceWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "商业保险.xls", "sh"));
         templateFileCI.setType(true);
         templateFileBOList.add(templateFileCI);
         //外籍人员正常工资薪金
