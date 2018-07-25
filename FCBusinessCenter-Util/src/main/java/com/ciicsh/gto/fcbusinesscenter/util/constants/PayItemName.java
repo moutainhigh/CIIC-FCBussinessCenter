@@ -63,5 +63,15 @@ public class PayItemName {
 
     public static final String EMPLOYEE_ID = "员工工号";
 
+    public static final String ENDOWMENT_INSURANCE = "养老保险费合计_报税用";
+
+    public static final String MEDICAL_INSURANCE = "医疗保险费合计_报税用";
+
+    public static final String UNEMPLOYMENT_INSURANCE = "失业保险费合计_报税用";
+
+    public static final String HOUSING_FUNDS = "住房公积金合计（报税用）";
+
+
+
 
 }
