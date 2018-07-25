@@ -9,6 +9,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclar
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
@@ -43,6 +45,12 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
     @Autowired
     private TaskMainService taskMainService;
 
+    @Autowired
+    private TaskMainDetailServiceImpl taskMainDetailService;
+
+    @Autowired
+    private EmployeeInfoBatchImpl employeeInfoBatch;
+
     /**
      * 当期
      */
@@ -73,7 +81,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         }
         //管理方名称
         Optional.ofNullable(requestForTaskSubDeclare.getManagerNos()).ifPresent(managerNos -> {
-            wrapper.andNew().in("manager_no",managerNos).or("is_combined",true);
+            wrapper.andNew().in("manager_no", managerNos).or("is_combined", true);
         });
         //判断是否包含个税期间条件
         if (StrKit.notBlank(requestForTaskSubDeclare.getPeriod())) {
@@ -146,13 +154,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             BigDecimal overdue = new BigDecimal(0);
             //罚金
             BigDecimal fine = new BigDecimal(0);
-            //总人数
-            int headcount = 0;
-            //中方人数
-            int chineseNum = 0;
-            //外方人数
-            int foreignerNum = 0;
-            //计算总人数，中方人数，外方人数
+            //计算总金额，滞纳金，罚金
             for (TaskSubDeclarePO taskSubDeclarePO : taskSubDeclarePOList) {
                 //如果总金额为null,默认为0
                 if (taskSubDeclarePO.getTaxAmount() != null && !"".equals(taskSubDeclarePO.getTaxAmount())) {
@@ -165,24 +167,6 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 //如果罚金为null,默认为0
                 if (taskSubDeclarePO.getFine() != null && !"".equals(taskSubDeclarePO.getFine())) {
                     fine = fine.add(taskSubDeclarePO.getFine());
-                }
-                //如果总人数为null,默认为0 )
-                if (taskSubDeclarePO.getHeadcount() != null && !"".equals(taskSubDeclarePO.getHeadcount())) {
-                    headcount += taskSubDeclarePO.getHeadcount();
-                } else {
-                    headcount += 0;
-                }
-                //如果中方人数为null，默认为0
-                if (taskSubDeclarePO.getChineseNum() != null && !"".equals(taskSubDeclarePO.getChineseNum())) {
-                    chineseNum += taskSubDeclarePO.getChineseNum();
-                } else {
-                    chineseNum += 0;
-                }
-                //如果外方人数为null,默认为0
-                if (taskSubDeclarePO.getForeignerNum() != null && !"".equals(taskSubDeclarePO.getForeignerNum())) {
-                    foreignerNum += taskSubDeclarePO.getForeignerNum();
-                } else {
-                    foreignerNum += 0;
                 }
                 //判断是不是合并后的任务
                 if (taskSubDeclarePO.getCombined()) {
@@ -216,12 +200,12 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             taskSubDeclare.setOverdue(overdue);
             //设置罚金
             taskSubDeclare.setFine(fine);
-            //设置总人数
-            taskSubDeclare.setHeadcount(headcount);
-            //设置中方人数
-            taskSubDeclare.setChineseNum(chineseNum);
-            //设置外方人数
-            taskSubDeclare.setForeignerNum(foreignerNum);
+//            //设置总人数
+//            taskSubDeclare.setHeadcount(headcount);
+//            //设置中方人数
+//            taskSubDeclare.setChineseNum(chineseNum);
+//            //设置外方人数
+//            taskSubDeclare.setForeignerNum(foreignerNum);
             //设置任务状态
             taskSubDeclare.setStatus(taskSubDeclarePOList.get(0).getStatus());
             //设置是否为合并任务
@@ -248,6 +232,10 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
             //申报子任务明细合并
             merge(taskSubDeclare.getId(), ids);
+
+            //修改合并后的申报子任务，总人数，中方人数，外方人数
+            updateMergedSubDeclarePersonNum(taskSubDeclare.getId(),ids);
+
         }
 
     }
@@ -303,19 +291,19 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 BigDecimal deductTakeoff = new BigDecimal(0);//允许扣除的税费
                 BigDecimal otherDeductions = new BigDecimal(0);//其它（税前扣除项目）
                 BigDecimal businessHealthInsurance = new BigDecimal(0);//商业保险
-                BigDecimal deductRetirementInsurance=new BigDecimal(0);//基本养老保险费（税前扣除项目）
-                BigDecimal deductMedicalInsurance=new BigDecimal(0);//基本医疗保险费（税前扣除项目）
-                BigDecimal deductDlenessInsurance=new BigDecimal(0);//失业保险费（税前扣除项目）
-                BigDecimal deductHouseFund=new BigDecimal(0);//住房公积金（税前扣除项目）
+                BigDecimal deductRetirementInsurance = new BigDecimal(0);//基本养老保险费（税前扣除项目）
+                BigDecimal deductMedicalInsurance = new BigDecimal(0);//基本医疗保险费（税前扣除项目）
+                BigDecimal deductDlenessInsurance = new BigDecimal(0);//失业保险费（税前扣除项目）
+                BigDecimal deductHouseFund = new BigDecimal(0);//住房公积金（税前扣除项目）
                 BigDecimal dutyFreeAllowance = new BigDecimal(0);//免税津贴
                 BigDecimal annuity = new BigDecimal(0);//企业年金个人部分
                 BigDecimal incomeDutyfree = new BigDecimal(0);//免税所得
-                BigDecimal taxReal=new BigDecimal(0);//税金
-                BigDecimal incomeTotal=new BigDecimal(0);//收入额
-                BigDecimal preTaxAggregate=new BigDecimal(0);//税前合计
-                BigDecimal taxDeduction=new BigDecimal(0);//减免税额
-                BigDecimal taxRate=null;//税率
-                BigDecimal quickCalDeduct=null;//速算扣除数
+                BigDecimal taxReal = new BigDecimal(0);//税金
+                BigDecimal incomeTotal = new BigDecimal(0);//收入额
+                BigDecimal preTaxAggregate = new BigDecimal(0);//税前合计
+                BigDecimal taxDeduction = new BigDecimal(0);//减免税额
+                BigDecimal taxRate = null;//税率
+                BigDecimal quickCalDeduct = null;//速算扣除数
                 BigDecimal others = new BigDecimal(0);//其它扣除
                 BigDecimal incomeForTax = null;//应纳税所得额
 
@@ -326,41 +314,41 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                     taskSubDeclareDetailIds.add(tp.getId());
 
                     //参与倒推计算的各项合计
-                    donation = donation.add(tp.getDonation()==null?BigDecimal.ZERO:tp.getDonation());//准予扣除的捐赠额合计
-                    deductTakeoff = deductTakeoff.add(tp.getDeductTakeoff()==null?BigDecimal.ZERO:tp.getDeductTakeoff());//允许扣除的税费合计
-                    businessHealthInsurance = businessHealthInsurance.add(tp.getBusinessHealthInsurance()==null?BigDecimal.ZERO:tp.getBusinessHealthInsurance());//商业保险合计
-                    deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance()==null?BigDecimal.ZERO:tp.getDeductRetirementInsurance());//基本养老保险费（税前扣除项目）合计
-                    deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance()==null?BigDecimal.ZERO:tp.getDeductMedicalInsurance());//基本医疗保险费（税前扣除项目）合计
-                    deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance()==null?BigDecimal.ZERO:tp.getDeductDlenessInsurance());//失业保险费（税前扣除项目）合计
-                    deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund()==null?BigDecimal.ZERO:tp.getDeductHouseFund());//住房公积金（税前扣除项目）合计
-                    dutyFreeAllowance = dutyFreeAllowance.add(tp.getDutyFreeAllowance()==null?BigDecimal.ZERO:tp.getDutyFreeAllowance());//免税津贴合计
-                    annuity = annuity.add(tp.getAnnuity()==null?BigDecimal.ZERO:tp.getAnnuity());//企业年金个人部分合计
-                    incomeDutyfree = incomeDutyfree.add(tp.getIncomeDutyfree()==null?BigDecimal.ZERO:tp.getIncomeDutyfree());//免税所得合计
-                    taxReal = taxReal.add(tp.getTaxReal()==null?BigDecimal.ZERO:tp.getTaxReal());//税金合计
-                    incomeTotal = incomeTotal.add(tp.getIncomeTotal()==null?BigDecimal.ZERO:tp.getIncomeTotal());//收入额合计
-                    preTaxAggregate = preTaxAggregate.add(tp.getPreTaxAggregate()==null?BigDecimal.ZERO:tp.getPreTaxAggregate());//税前合计
-                    taxDeduction = taxDeduction.add(tp.getTaxDeduction()==null?BigDecimal.ZERO:tp.getTaxDeduction());//减免税额合计
-                    others = others.add(tp.getOthers()==null?BigDecimal.ZERO:tp.getOthers());//其他扣除合计
+                    donation = donation.add(tp.getDonation() == null ? BigDecimal.ZERO : tp.getDonation());//准予扣除的捐赠额合计
+                    deductTakeoff = deductTakeoff.add(tp.getDeductTakeoff() == null ? BigDecimal.ZERO : tp.getDeductTakeoff());//允许扣除的税费合计
+                    businessHealthInsurance = businessHealthInsurance.add(tp.getBusinessHealthInsurance() == null ? BigDecimal.ZERO : tp.getBusinessHealthInsurance());//商业保险合计
+                    deductRetirementInsurance = deductRetirementInsurance.add(tp.getDeductRetirementInsurance() == null ? BigDecimal.ZERO : tp.getDeductRetirementInsurance());//基本养老保险费（税前扣除项目）合计
+                    deductMedicalInsurance = deductMedicalInsurance.add(tp.getDeductMedicalInsurance() == null ? BigDecimal.ZERO : tp.getDeductMedicalInsurance());//基本医疗保险费（税前扣除项目）合计
+                    deductDlenessInsurance = deductDlenessInsurance.add(tp.getDeductDlenessInsurance() == null ? BigDecimal.ZERO : tp.getDeductDlenessInsurance());//失业保险费（税前扣除项目）合计
+                    deductHouseFund = deductHouseFund.add(tp.getDeductHouseFund() == null ? BigDecimal.ZERO : tp.getDeductHouseFund());//住房公积金（税前扣除项目）合计
+                    dutyFreeAllowance = dutyFreeAllowance.add(tp.getDutyFreeAllowance() == null ? BigDecimal.ZERO : tp.getDutyFreeAllowance());//免税津贴合计
+                    annuity = annuity.add(tp.getAnnuity() == null ? BigDecimal.ZERO : tp.getAnnuity());//企业年金个人部分合计
+                    incomeDutyfree = incomeDutyfree.add(tp.getIncomeDutyfree() == null ? BigDecimal.ZERO : tp.getIncomeDutyfree());//免税所得合计
+                    taxReal = taxReal.add(tp.getTaxReal() == null ? BigDecimal.ZERO : tp.getTaxReal());//税金合计
+                    incomeTotal = incomeTotal.add(tp.getIncomeTotal() == null ? BigDecimal.ZERO : tp.getIncomeTotal());//收入额合计
+                    preTaxAggregate = preTaxAggregate.add(tp.getPreTaxAggregate() == null ? BigDecimal.ZERO : tp.getPreTaxAggregate());//税前合计
+                    taxDeduction = taxDeduction.add(tp.getTaxDeduction() == null ? BigDecimal.ZERO : tp.getTaxDeduction());//减免税额合计
+                    others = others.add(tp.getOthers() == null ? BigDecimal.ZERO : tp.getOthers());//其他扣除合计
                 }
 
                 //计算收入额
-                HashMap<String,BigDecimal> m = new HashMap<>();
-                m.put("taxReal",taxReal);//税金
-                m.put("preTaxAggregate",preTaxAggregate);//税前合计
-                m.put("deduction",taskSubDeclareDetailPO.getDeduction());//免抵税额
-                m.put("donation",donation);//准予扣除的捐赠额
-                m.put("deductTakeoff",deductTakeoff);//允许扣除的税费
-                m.put("others",others);//其它扣除
-                m.put("businessHealthInsurance",businessHealthInsurance);//商业保险
-                m.put("deductHouseFund",deductHouseFund);//住房公积金
-                m.put("deductDlenessInsurance",deductDlenessInsurance);//失业保险费
-                m.put("deductMedicalInsurance",deductMedicalInsurance);//基本医疗保险费
-                m.put("deductRetirementInsurance",deductRetirementInsurance);//基本养老保险费
-                m.put("dutyFreeAllowance",dutyFreeAllowance);//免税津贴
-                m.put("annuity",annuity);//企业年金个人部分
-                m.put("incomeDutyfree",incomeDutyfree);//免税所得
+                HashMap<String, BigDecimal> m = new HashMap<>();
+                m.put("taxReal", taxReal);//税金
+                m.put("preTaxAggregate", preTaxAggregate);//税前合计
+                m.put("deduction", taskSubDeclareDetailPO.getDeduction());//免抵税额
+                m.put("donation", donation);//准予扣除的捐赠额
+                m.put("deductTakeoff", deductTakeoff);//允许扣除的税费
+                m.put("others", others);//其它扣除
+                m.put("businessHealthInsurance", businessHealthInsurance);//商业保险
+                m.put("deductHouseFund", deductHouseFund);//住房公积金
+                m.put("deductDlenessInsurance", deductDlenessInsurance);//失业保险费
+                m.put("deductMedicalInsurance", deductMedicalInsurance);//基本医疗保险费
+                m.put("deductRetirementInsurance", deductRetirementInsurance);//基本养老保险费
+                m.put("dutyFreeAllowance", dutyFreeAllowance);//免税津贴
+                m.put("annuity", annuity);//企业年金个人部分
+                m.put("incomeDutyfree", incomeDutyfree);//免税所得
 
-                Map<String,BigDecimal> tm = droolsService.incomeTotal(m);//收入额
+                Map<String, BigDecimal> tm = droolsService.incomeTotal(m);//收入额
                 incomeTotal = tm.get("incomeTotal");//收入额
                 taxRate = tm.get("taxRate");//税率
                 quickCalDeduct = tm.get("quickCalDeduct");//速算扣除数
@@ -534,7 +522,7 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      * @param requestForTaskSubDeclare
      */
     @Transactional(rollbackFor = Exception.class)
-    public void rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare){
+    public void rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
         if (requestForTaskSubDeclare.getSubDeclareIds() != null && !"".equals(requestForTaskSubDeclare.getSubDeclareIds())) {
             TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
             //设置任务状态
@@ -574,5 +562,85 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         return taskSubDeclarePOList;
     }
 
+    /**
+     * 修改申报子任务人数
+     * @param subDeclareId
+     * @param taskSubDeclareIds
+     */
+    public void updateMergedSubDeclarePersonNum(Long subDeclareId,Long[] taskSubDeclareIds){
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.in("task_sub_declare_id", taskSubDeclareIds);
+        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList = this.taskSubDeclareDetailService.selectList(entityWrapper);
+        //筛选出正常薪资和外籍人正常薪资的集合
+        List<TaskSubDeclareDetailPO> normalTaskSubDeclareDetailPOList = taskSubDeclareDetailPOList.stream().filter(item -> item.getIncomeSubject().equals(IncomeSubject.NORMALSALARY.getCode()) || item.getIncomeSubject().equals(IncomeSubject.NORMALSALARY.getCode())).collect(Collectors.toList());
+        //筛选出其他明细集合
+        List<TaskSubDeclareDetailPO> otherTaskSubDeclareDetailPOList = taskSubDeclareDetailPOList.stream().filter(item -> !item.getIncomeSubject().equals(IncomeSubject.NORMALSALARY.getCode()) && !item.getIncomeSubject().equals(IncomeSubject.NORMALSALARY.getCode())).collect(Collectors.toList());
+        //按照雇员、所得期间、所得项目分组
+        Map<String, List<TaskSubDeclareDetailPO>> normalMap = normalTaskSubDeclareDetailPOList.stream()
+                .collect(Collectors.groupingBy(TaskSubDeclareDetailPO::groupBys));
+
+        //获取主任务明细ID
+        List<Long> mainDetailIdsList = taskSubDeclareDetailPOList.stream().map(item -> item.getTaskMainDetailId()).collect(Collectors.toList());
+        //根据主任务明细ID查询主任务明细
+        EntityWrapper mainDetailWrapper = new EntityWrapper();
+        mainDetailWrapper.in("id",mainDetailIdsList).or().in("task_main_detail_id",mainDetailIdsList);
+        List<TaskMainDetailPO> taskMainDetailPOList = taskMainDetailService.selectList(mainDetailWrapper);
+        //过滤出非合并任务的主任务明细
+        List<TaskMainDetailPO> taskMainDetailPOListUnMerge = taskMainDetailPOList.stream().filter(item -> item.getCombined() != true).collect(Collectors.toList());
+        //批次明细id集合
+        List<Long> calBatchDetailIdsList =  taskMainDetailPOListUnMerge.stream().map(item -> item.getCalculationBatchDetailId()).collect(Collectors.toList());
+        //根据批次明细ID查询雇员个税信息
+        EntityWrapper employeeWrapper = new EntityWrapper();
+        employeeWrapper.setEntity(new EmployeeInfoBatchPO());
+        employeeWrapper.in("cal_batch_detail_id",calBatchDetailIdsList);
+        List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatch.selectList(employeeWrapper);
+        //总人数
+        int headcount = normalMap.size() + otherTaskSubDeclareDetailPOList.size();
+        //其他所得项目中方人数
+        Long otherChineseNumLong = otherTaskSubDeclareDetailPOList.stream()
+                .filter(item -> isChinesePerson(item,employeeInfoBatchPOList)).count();
+        int otherChineseNum = otherChineseNumLong.intValue();
+        //正常薪资中方人数
+        int normalChineseNum = 0;
+        for (String key : normalMap.keySet()) {
+            List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList1 = normalMap.get(key);
+            TaskSubDeclareDetailPO taskSubDeclareDetailPO = taskSubDeclareDetailPOList1.size() > 0 ? taskSubDeclareDetailPOList1.get(0) : new TaskSubDeclareDetailPO();
+            if(isChinesePerson(taskSubDeclareDetailPO,employeeInfoBatchPOList)){
+                normalChineseNum++;
+            }
+        }
+        //中方人数
+        int chineseNum = otherChineseNum + normalChineseNum;
+        //外方人数
+        int foreignerNum = headcount - chineseNum;
+        TaskSubDeclarePO taskSubDeclarePO = baseMapper.selectById(subDeclareId);
+        taskSubDeclarePO.setHeadcount(headcount);
+        taskSubDeclarePO.setChineseNum(chineseNum);
+        taskSubDeclarePO.setForeignerNum(foreignerNum);
+        baseMapper.updateById(taskSubDeclarePO);
+
+    }
+
+    /**
+     * 判断该申报明细是否是中法
+     * @param taskSubDeclareDetailPO
+     * @param employeeInfoBatchPOList
+     * @return
+     */
+    public boolean isChinesePerson(TaskSubDeclareDetailPO taskSubDeclareDetailPO,List<EmployeeInfoBatchPO> employeeInfoBatchPOList){
+        if("1".equals(taskSubDeclareDetailPO.getIdType())){
+            return true;
+        }else if("2".equals(taskSubDeclareDetailPO.getIdType())){
+            return true;
+        }else if("3".equals(taskSubDeclareDetailPO.getIdType())){
+            return true;
+        }else if("4".equals(taskSubDeclareDetailPO.getIdType())){
+            return true;
+        }else if(("7".equals(taskSubDeclareDetailPO.getIdType()) && (employeeInfoBatchPOList.stream().anyMatch(employee-> employee.getCalBatchDetailId().equals(taskSubDeclareDetailPO.getCalculationBatchDetailId()) && (employee.getOverseas()==null || employee.getOverseas()==false))))){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 }

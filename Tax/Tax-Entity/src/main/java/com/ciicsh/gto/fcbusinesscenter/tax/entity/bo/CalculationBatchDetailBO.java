@@ -400,14 +400,6 @@ public class CalculationBatchDetailBO {
         this.workingYears = workingYears;
     }
 
-    public void setDomesticDays(String domesticDays) {
-        this.domesticDays = domesticDays;
-    }
-
-    public void setOverseasDays(String overseasDays) {
-        this.overseasDays = overseasDays;
-    }
-
     public BigDecimal getBusinessHealthInsurance() {
         return businessHealthInsurance;
     }
@@ -984,6 +976,22 @@ public class CalculationBatchDetailBO {
 
     public void setManagerNos(String[] managerNos) {
         this.managerNos = managerNos;
+    }
+
+    public String getDomesticDays() {
+        return domesticDays;
+    }
+
+    public void setDomesticDays(String domesticDays) {
+        this.domesticDays = domesticDays;
+    }
+
+    public String getOverseasDays() {
+        return overseasDays;
+    }
+
+    public void setOverseasDays(String overseasDays) {
+        this.overseasDays = overseasDays;
     }
 
     @Override

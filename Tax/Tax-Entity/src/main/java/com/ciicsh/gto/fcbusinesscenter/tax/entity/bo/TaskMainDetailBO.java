@@ -1034,6 +1034,14 @@ public class TaskMainDetailBO {
         this.batchNo = batchNo;
     }
 
+    public String getWorkingYears() {
+        return workingYears;
+    }
+
+    public void setWorkingYears(String workingYears) {
+        this.workingYears = workingYears;
+    }
+
     @Override
     public String toString() {
         return "CalculationBatchDetailBO{" +

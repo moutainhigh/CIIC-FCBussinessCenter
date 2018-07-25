@@ -208,7 +208,7 @@ public class TaskSubMoneyController extends BaseController {
         payApplyProxyDTO.setReceiver(calculationBatchAccountPO.getTaxpayerName());
         //申请人
         UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
-        payApplyProxyDTO.setApplyer(userInfoResponseDTO.getLoginName());
+        payApplyProxyDTO.setApplyer(userInfoResponseDTO.getDisplayName());
         //申请日期(yyyy-MM-dd)
         payApplyProxyDTO.setApplyDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now()));
         //TODO 付款用途

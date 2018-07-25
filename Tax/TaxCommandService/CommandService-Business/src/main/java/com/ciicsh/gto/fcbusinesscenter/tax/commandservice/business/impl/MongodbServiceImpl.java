@@ -577,7 +577,6 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                     calculationBatchDetailPO.setPeriod(this.UDateToLocalDate(agreementBO.getPeriod()));//所得期间
                     calculationBatchDetailPO.setIncomeSubject(IncomeSubject.LABORCONTRACT.getCode());//所得项目
                     calculationBatchDetailPO.setIncomeTotal(calResultBO.getSeparationPayment());//离职金
-                    calculationBatchDetailPO.setWorkingYears(calResultBO.getWorkingYears());//实际工作年限
                     //免税所得 : 当离职金 ≥ 离职金免税额时，=离职金免税额；当离职金<离职金免税额时，=离职金
                     if(calResultBO.getSeparationPayment()!=null && calResultBO.getSeparationPaymentTaxFee()!=null
                             && calResultBO.getSeparationPayment().compareTo(calResultBO.getSeparationPaymentTaxFee())==-1){
