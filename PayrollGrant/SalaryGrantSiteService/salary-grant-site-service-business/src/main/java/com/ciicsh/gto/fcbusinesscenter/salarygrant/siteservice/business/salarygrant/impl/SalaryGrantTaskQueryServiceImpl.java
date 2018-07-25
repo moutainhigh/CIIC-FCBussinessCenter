@@ -598,7 +598,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
 //    @Scheduled(cron = "0 0 20 * * ?")
     //每3分钟执行一次
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/3 * * * ?")
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void queryForPayment() {
