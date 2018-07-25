@@ -115,6 +115,9 @@
         <if test="name != null and name != ''">
             AND group_template_name LIKE concat('%', #{name}, '%')
         </if>
+		<if test="managementId != null and managementId != ''">
+			AND management_id = #{managementId}
+		</if>
         LIMIT 50
     </select>
 

@@ -233,9 +233,9 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     }
 
     @Override
-    public List<HashMap<String, String>> getPrGroupTemplateNameList(String query) {
+    public List<HashMap<String, String>> getPrGroupTemplateNameList(String name , String managementId) {
         List<HashMap<String, String>> result;
-        result = prPayrollGroupTemplateMapper.selectGroupTemplateNameListByName(query);
+        result = prPayrollGroupTemplateMapper.selectGroupTemplateNameListByName(name, managementId);
         return result;
     }
 

@@ -275,7 +275,7 @@ public class PrGroupServiceImpl implements PrGroupService {
             // 保存历史数据
             PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
             prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
-            prPayrollGroupHistoryPO.setVersion(version);
+            prPayrollGroupHistoryPO.setVersion(String.valueOf(Double.parseDouble(version) + 1));
             prPayrollGroupHistoryPO.setPayrollGroupHistory(itemsJsonStr);
             prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
             prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
@@ -329,9 +329,9 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     @Override
-    public List<HashMap<String, String>> getPrGroupNameList(String query, String managementId) {
+    public List<HashMap<String, String>> getPrGroupNameList(String name, String managementId) {
         List<HashMap<String, String>> result = new ArrayList<>(50);
-        result = prPayrollGroupMapper.selectGroupNameListByName(query, managementId);
+        result = prPayrollGroupMapper.selectGroupNameListByName(name, managementId);
         return result;
     }
 
