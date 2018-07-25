@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.configuration;
 
 import com.ciicsh.gt1.common.auth.AuthenticateInterceptor;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.interceptor.CatInterceptor;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.interceptor.DataInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,6 +61,10 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsByCombined");
         dataInterceptor.addPathPatterns("/tax/querySubSupplierDetailsForCombined");
         dataInterceptor.addPathPatterns("/tax/exportQuitPerson/**");
+
+        //cat Interceptor
+        InterceptorRegistration catInterceptor = registry.addInterceptor(new CatInterceptor());
+        catInterceptor.addPathPatterns("/**");
 
     }
 }
