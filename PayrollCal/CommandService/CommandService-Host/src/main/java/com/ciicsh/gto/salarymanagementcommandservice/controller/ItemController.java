@@ -161,8 +161,8 @@ public class ItemController extends BaseController{
     }
 
     @PostMapping("/prItemCalPriority")
-    public JsonResult updateCalPriority(@RequestBody List<String> codes) {
-        return itemService.updateCalPriority(codes) ?
+    public JsonResult updateCalPriority(@RequestBody List<Integer> ids) {
+        return itemService.updateCalPriority(ids) ?
                 JsonResult.message(true,"更新薪资项计算顺序成功") : JsonResult.faultMessage("更新薪资项计算顺序失败");
     }
 //    @RequestMapping("/addTest")

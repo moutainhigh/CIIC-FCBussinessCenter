@@ -50,10 +50,10 @@
 				AND management_id = #{managementId}
 			</if>
 			<if test="groupCode != null and groupCode != ''">
-				AND group_code LIKE concat(#{groupCode},'%')
+				AND group_code LIKE concat('%', #{groupCode}, '%')
 			</if>
 			<if test="groupName != null and groupName !=''">
-				AND group_name LIKE concat(#{groupName},'%')
+				AND group_name LIKE concat('%', #{groupName}, '%')
 			</if>
 			<if test="approvalStatus != null">
 				AND approval_status = #{managementId}

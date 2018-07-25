@@ -273,26 +273,28 @@ public class PrItemServiceImpl implements PrItemService {
             param.setDisplayPriority(i);
             param.setModifiedTime(new Date());
             param.setModifiedBy(UserContext.getUserId());
-            prPayrollItemMapper.updateById(param);
+            prPayrollItemMapper.updateItemById(param);
 
             PrApprovedPayrollItemPO approvedPO = new PrApprovedPayrollItemPO();
             approvedPO.setId(ids.get(i));
             approvedPO.setDisplayPriority(i);
             approvedPO.setModifiedTime(new Date());
             approvedPO.setModifiedBy(UserContext.getUserId());
-            prApprovedPayrollItemMapper.updateById(approvedPO);
+            prApprovedPayrollItemMapper.updateApprovedItemById(approvedPO);
 
         }
         return true;
     }
 
     @Override
-    public boolean updateCalPriority(List<String> codes) {
-        for(int i = 0; i < codes.size(); i++) {
+    public boolean updateCalPriority(List<Integer> ids) {
+        for(int i = 0; i < ids.size(); i++) {
             PrPayrollItemPO param = new PrPayrollItemPO();
-            param.setItemCode(codes.get(i));
+            param.setId(ids.get(i));
             param.setCalPriority(i+1);
-            prPayrollItemMapper.updateAllColumnById(param);
+            param.setModifiedTime(new Date());
+            param.setModifiedBy(UserContext.getUserId());
+            prPayrollItemMapper.updateItemById(param);
         }
         return true;
     }
@@ -300,16 +302,6 @@ public class PrItemServiceImpl implements PrItemService {
     @Override
     public List<PrItemInAccountSetPO> selectItemNames(String batchCode) {
         return prPayrollItemMapper.selectItemNames(batchCode);
-    }
-
-    @Override
-    public int deleteItemByTemplateCode(String itemCode, String payrollGroupTemplateCode) {
-        PrPayrollItemPO prPayrollItemPO = new PrPayrollItemPO();
-        prPayrollItemPO.setItemCode(itemCode);
-        prPayrollItemPO.setPayrollGroupTemplateCode(payrollGroupTemplateCode);
-        EntityWrapper ew = new EntityWrapper(prPayrollItemPO);
-        return prPayrollItemMapper.delete(ew);
-
     }
 
     private void updateRelatedGroupStatus(PrPayrollItemPO param) {
@@ -320,14 +312,14 @@ public class PrItemServiceImpl implements PrItemService {
             groupTemplatePO.setGroupTemplateCode(param.getPayrollGroupTemplateCode());
             groupTemplatePO.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
             groupTemplatePO.setModifiedTime(new Date());
-            groupTemplatePO.setModifiedBy(param.getModifiedBy());
+            groupTemplatePO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupTemplateMapper.updateItemByCode(groupTemplatePO);
         } else {
             PrPayrollGroupPO groupPO = new PrPayrollGroupPO();
             groupPO.setGroupCode(param.getPayrollGroupCode());
             groupPO.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
             groupPO.setModifiedTime(new Date());
-            groupPO.setModifiedBy(param.getModifiedBy());
+            groupPO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupMapper.updateItemByCode(groupPO);
         }
     }
@@ -374,21 +366,6 @@ public class PrItemServiceImpl implements PrItemService {
             content = content.replace("[" + payItemName + "]", nameCodeMap.get(payItemName));
         }
         return content;
-    }
-
-    /**
-     * editPrItemCode不为空，则为编辑，编辑时忽略当前编辑项与数据库中自身的薪资项name同名校验
-     * editPrItemCode为空，则为新增，无需做checkItemList的步骤
-     *
-     * @param editPrItemCode 当前编辑的薪资项code
-     * @param itemList       数据库中查出来的薪资项列表
-     * @return 参与校验的薪资项列表
-     */
-    private List<PrPayrollItemPO> checkItemList(String editPrItemCode, List<PrPayrollItemPO> itemList) {
-        if (org.apache.commons.lang.StringUtils.isNotBlank(editPrItemCode)) {
-            itemList.removeIf(item -> item.getItemCode().equals(editPrItemCode));
-        }
-        return itemList;
     }
 
 }

@@ -1,6 +1,5 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem;
 
-import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import com.github.pagehelper.PageInfo;
@@ -120,27 +119,19 @@ public interface PrItemService {
     /**
      * 更新显示顺序
      * @param ids
-     * @return
+     * @return 更新结果
      */
     boolean updateDisplayPriority(List<Integer> ids);
 
     /**
      * 更新计算顺序
-     * @param codes
-     * @return
+     * @param ids
+     * @return 更新结果
      */
-    boolean updateCalPriority(List<String> codes);
+    boolean updateCalPriority(List<Integer> ids);
 
 
     List<PrItemInAccountSetPO> selectItemNames(String batchCode);
-
-    /**
-     * 根据payrollGroupTemplateCode和itemCode删除薪资项
-     * @param itemCode
-     * @param payrollGroupTemplateCode
-     * @return
-     */
-    int deleteItemByTemplateCode(String itemCode, String payrollGroupTemplateCode);
 
     /**
      * 根据薪资项id查询薪资项明细
