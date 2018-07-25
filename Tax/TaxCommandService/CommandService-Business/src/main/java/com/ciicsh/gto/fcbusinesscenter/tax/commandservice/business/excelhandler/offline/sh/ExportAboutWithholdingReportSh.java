@@ -2,6 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubDeclareDetailServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchAccountPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
@@ -12,6 +13,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,6 +29,9 @@ import java.util.Map;
  */
 @Service
 public class ExportAboutWithholdingReportSh extends BaseService {
+
+    @Autowired
+    public TaskSubDeclareDetailServiceImpl taskSubDeclareDetailService;
 
     /**
      * 扣缴个人所得税报告表初始大小3
@@ -48,6 +53,9 @@ public class ExportAboutWithholdingReportSh extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
+            if(taskSubDeclarePO.getCombined()){
+                taskSubDeclareDetailService.addMergeSubDeclareDetail(taskSubDeclarePO,taskSubDeclareDetailPOList);
+            }
             //用于存放模板列表头部
             Map<String, String> map = new HashMap<>(16);
             //税款所属期

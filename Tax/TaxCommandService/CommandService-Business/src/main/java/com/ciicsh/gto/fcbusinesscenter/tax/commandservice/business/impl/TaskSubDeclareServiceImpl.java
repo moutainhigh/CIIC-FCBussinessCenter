@@ -3,16 +3,10 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.DroolsService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -35,6 +29,20 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper, TaskSubDeclarePO> implements TaskSubDeclareService, Serializable {
+
+    /**
+     * 广东省省份编号
+     */
+    private static final String PROVINCE_CODE_GD = "440000";
+    /**
+     * 江苏省省份编号
+     */
+    private static final String PROVINCE_CODE_JS = "320000";
+
+    /**
+     * 深圳城市编号
+     */
+    private static final String CITY_CODE_SZ = "440300";
 
     @Autowired
     private TaskSubProofService taskSubProofService;
@@ -69,6 +77,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
     @Autowired
     private DroolsService droolsService;
+
+    @Autowired
+    private CalculationBatchAccountService calculationBatchAccountService;
 
     @Override
     public ResponseForTaskSubDeclare queryTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
@@ -200,12 +211,6 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             taskSubDeclare.setOverdue(overdue);
             //设置罚金
             taskSubDeclare.setFine(fine);
-//            //设置总人数
-//            taskSubDeclare.setHeadcount(headcount);
-//            //设置中方人数
-//            taskSubDeclare.setChineseNum(chineseNum);
-//            //设置外方人数
-//            taskSubDeclare.setForeignerNum(foreignerNum);
             //设置任务状态
             taskSubDeclare.setStatus(taskSubDeclarePOList.get(0).getStatus());
             //设置是否为合并任务
@@ -643,4 +648,49 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         }
     }
 
+    /**
+     * 判断该申报子任务是否有网上文件模板
+     * @param subDeclareId
+     * @return
+     */
+    public Boolean hasOnLineTemplateBySubDeclareId(Long subDeclareId){
+        TaskSubDeclarePO taskSubDeclarePO = baseMapper.selectById(subDeclareId);
+        //根据申报账户查询批次账户信息
+        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubDeclarePO.getDeclareAccount());
+        if ("00".equals(taskSubDeclarePO.getAreaType())) {
+            return true;
+        } else {
+            if (PROVINCE_CODE_JS.equals(calculationBatchAccountPO.getProvinceCode())) {
+                return true;
+            } else if (CITY_CODE_SZ.equals(calculationBatchAccountPO.getCityCode())) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 判断该申报子任务是否有手工文件模板
+     * @param subDeclareId
+     * @return
+     */
+    public Boolean hasOffLineTemplateBySubDeclareId(Long subDeclareId){
+        TaskSubDeclarePO taskSubDeclarePO = baseMapper.selectById(subDeclareId);
+        //根据申报账户查询批次账户信息
+        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubDeclarePO.getDeclareAccount());
+        if ("00".equals(taskSubDeclarePO.getAreaType())) {
+            return false;
+        } else {
+            if (PROVINCE_CODE_GD.equals(calculationBatchAccountPO.getProvinceCode())) {
+                if (CITY_CODE_SZ.equals(calculationBatchAccountPO.getCityCode())) {
+                    return true;
+                } else {
+                    return true;
+                }
+            }else{
+                return false;
+            }
+        }
+    }
 }

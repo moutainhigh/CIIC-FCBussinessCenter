@@ -2,8 +2,10 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler
 
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.TaskSubDeclareDetailServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -11,9 +13,11 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ExportAboutCommercialInsuranceSh extends BaseService {
+
+    @Autowired
+    public TaskSubDeclareDetailServiceImpl taskSubDeclareDetailService;
     /**
      * 导出商业保险
      *
@@ -35,7 +42,7 @@ public class ExportAboutCommercialInsuranceSh extends BaseService {
      * @param type
      * @return
      */
-    public HSSFWorkbook getCommercialInsuranceWB(List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList, String fileName, String type) {
+    public HSSFWorkbook getCommercialInsuranceWB(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList, String fileName, String type) {
         POIFSFileSystem fs = null;
         HSSFWorkbook wb = null;
         try {
@@ -43,6 +50,9 @@ public class ExportAboutCommercialInsuranceSh extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
+            if(taskSubDeclarePO.getCombined()){
+                taskSubDeclareDetailService.addMergeSubDeclareDetailList(taskSubDeclarePO,taskSubDeclareDetailPOList,employeeInfoBatchPOList);
+            }
             //根据不同的业务需要处理wb
             this.handleCommercialInsuranceWB(wb, taskSubDeclareDetailPOList, employeeInfoBatchPOList);
         } catch (Exception e) {
@@ -75,7 +85,15 @@ public class ExportAboutCommercialInsuranceSh extends BaseService {
         //在相应的单元格进行赋值
         int sheetRowIndex = 1;
         for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOS) {
-            List<EmployeeInfoBatchPO> employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> po.getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList());
+            List<EmployeeInfoBatchPO> employeeInfoBatchPOS = new ArrayList<>();
+            //判断是否是合并明细
+            if(po.getCombined()){
+                //获取合并前批次明细ID
+                List<TaskSubDeclareDetailPO>  taskSubDeclareDetailPOList1 = taskSubDeclareDetailService.querySubDeclareDetailListBeforeMergeByMergeId(po.getId());
+                employeeInfoBatchPOS = taskSubDeclareDetailPOList1.size() > 0 ? employeeInfoBatchPOList.stream().filter(item -> taskSubDeclareDetailPOList1.get(0).getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList()) : null;
+            }else{
+                employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> po.getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList());
+            }
             EmployeeInfoBatchPO employeeInfoBatchPO = new EmployeeInfoBatchPO();
             if (employeeInfoBatchPOS.size() > 0) {
                 employeeInfoBatchPO = employeeInfoBatchPOS.get(0);

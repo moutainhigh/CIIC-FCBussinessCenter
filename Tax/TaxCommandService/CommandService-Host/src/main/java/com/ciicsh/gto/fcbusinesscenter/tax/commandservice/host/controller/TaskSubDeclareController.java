@@ -280,4 +280,29 @@ public class TaskSubDeclareController extends BaseController {
         //导出excel
         exportExcel(response, this.exportFileService.exportQuitPerson(subDeclareId), fileName);
     }
+
+    /**
+     * 根据申报子任务ID判断是否有对应的网上文件模板
+     * @return
+     */
+    @GetMapping(value = "/hasOnLineTemplate/{subDeclareId}")
+    public JsonResult<Boolean> hasOnLineTemplate(@PathVariable Long subDeclareId){
+        JsonResult<Boolean> jr = new JsonResult<>();
+        Boolean flag = taskSubDeclareService.hasOnLineTemplateBySubDeclareId(subDeclareId);
+        jr.setData(flag);
+        return jr;
+    }
+
+    /**
+     * 根据申报子任务ID判断是否有对应的手工文件模板
+     * @return
+     */
+    @GetMapping(value = "/hasOffLineTemplate/{subDeclareId}")
+    public JsonResult<Boolean> hasOffLineTemplate(@PathVariable Long subDeclareId){
+        JsonResult<Boolean> jr = new JsonResult<>();
+        Boolean flag = taskSubDeclareService.hasOffLineTemplateBySubDeclareId(subDeclareId);
+        jr.setData(flag);
+        return jr;
+    }
+
 }
