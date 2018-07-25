@@ -2,7 +2,9 @@ package com.ciicsh.gto.salarymanagement.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,6 +27,10 @@ import java.util.Date;
 public class PrApprovedPayrollItemPO extends Model<PrApprovedPayrollItemPO> implements Serializable {
 
     private static final long serialVersionUID = 482246221031889717L;
+
+
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     /**
      * 薪资项编码, 规则为XZX-9位管理方ID-薪资项类型缩写-3位数字序号
@@ -179,6 +185,6 @@ public class PrApprovedPayrollItemPO extends Model<PrApprovedPayrollItemPO> impl
 
     @Override
     protected Serializable pkVal() {
-        return this.itemCode;
+        return this.id;
     }
 }

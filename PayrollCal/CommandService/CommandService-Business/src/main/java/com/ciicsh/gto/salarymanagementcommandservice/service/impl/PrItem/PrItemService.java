@@ -1,6 +1,5 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem;
 
-import com.ciicsh.gto.salarymanagement.entity.po.PayrollGroupExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import com.github.pagehelper.PageInfo;
@@ -110,60 +109,29 @@ public interface PrItemService {
     List<HashMap<String, Object>> getTypeList();
 
     /**
-     * 通过itemCode、groupCode、managementId来删除薪资项
+     * 根据薪资项ID删除薪资项
      *
-     * @param itemCodes    薪资项code的List
-     * @param managementId managementId
+     * @param id    薪资项id
      * @return 删除条数
-     * @params groupCode groupCode
      */
-    int deleteItemByCodes(List<String> itemCodes, String groupCode, String managementId);
-
-    /**
-     * 删除一个薪资组中的所有薪资项
-     * @param groupCode
-     * @return
-     */
-    int deleteItemByPrGroupCode(String groupCode);
-
-    /**
-     * 获取薪资项列表
-     * @param extPO
-     * @return 返回薪资项列表
-     */
-    List<PrPayrollItemPO> getPayrollItems(PayrollGroupExtPO extPO);
+    int deletePrItemById(Integer id);
 
     /**
      * 更新显示顺序
-     * @param codes
-     * @return
+     * @param ids
+     * @return 更新结果
      */
-    boolean updateDisplayPriority(List<String> codes);
+    boolean updateDisplayPriority(List<Integer> ids);
 
     /**
      * 更新计算顺序
-     * @param codes
-     * @return
+     * @param ids
+     * @return 更新结果
      */
-    boolean updateCalPriority(List<String> codes);
+    boolean updateCalPriority(List<Integer> ids);
 
 
     List<PrItemInAccountSetPO> selectItemNames(String batchCode);
-
-    /**
-     * 根据payrollGroupTemplateCode和itemCode删除薪资项
-     * @param itemCode
-     * @param payrollGroupTemplateCode
-     * @return
-     */
-    int deleteItemByTemplateCode(String itemCode, String payrollGroupTemplateCode);
-
-    /**
-     *薪资组模板、薪资组获取薪资项
-     * @param paramPO 查询条件对象
-     * @return 薪资项
-     */
-    PrPayrollItemPO getItemByCode(PrPayrollItemPO paramPO);
 
     /**
      * 根据薪资项id查询薪资项明细

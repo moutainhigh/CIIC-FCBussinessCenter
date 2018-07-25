@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@TableName("cmy_fc_configure_task")
-public class CmyFcConfigureTaskPO extends Model<CmyFcConfigureTaskPO> implements Serializable {
+@TableName("pr_payroll_config_task")
+public class PrPayrollConfigTaskPO extends Model<PrPayrollConfigTaskPO> implements Serializable {
 
     // 序列化实体类
     private static final long serialVersionUID = 5553452477711720005L;
@@ -30,32 +30,32 @@ public class CmyFcConfigureTaskPO extends Model<CmyFcConfigureTaskPO> implements
     // 指定主键
     @Override
     protected Serializable pkVal() {
-        return this.cmyFcConfigureTaskId;
+        return this.id;
     }
 
+    // 主键ID
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
     // 变更任务单编号：SP+GL+YY+5位数字(36进制)
-    @TableId(value = "cmy_fc_configure_task_id", type = IdType.INPUT)
-    private String cmyFcConfigureTaskId;
+    @TableField(value = "config_task_id")
+    private String configTaskId;
 
     // 管理方id
     @TableField(value = "management_id")
     private String managementId;
 
-    // 任务单状态 1 - 发送成功；2 -发送失败
+    // 任务单状态 1 - 未处理；2 - 已处理
     @TableField(value = "status")
     private int status;
 
-    // 任务单类型 1 - 薪资组实例变更；2 - 雇员扩展字段变更
+    // 任务单类型 1 - 薪资组变更; 预留扩展类型,目前只有薪资组变更
     @TableField(value = "type")
     private int type;
 
-    // 需要变更薪资组id或雇员扩展字段模板id
+    // 需要变更薪资组id
     @TableField(value = "target_id")
     private String targetId;
-
-    // 上传附件地址
-    @TableField(value = "upload_url")
-    private String uploadUrl;
 
     // 变更说明
     @TableField(value = "remark")
@@ -82,8 +82,10 @@ public class CmyFcConfigureTaskPO extends Model<CmyFcConfigureTaskPO> implements
     private String modifiedBy;
 
     // 薪资组编码
+    @TableField(exist = false)
     private String groupCode;
 
+    @TableField(exist = false)
     // 薪资组名称
     private String groupName;
 

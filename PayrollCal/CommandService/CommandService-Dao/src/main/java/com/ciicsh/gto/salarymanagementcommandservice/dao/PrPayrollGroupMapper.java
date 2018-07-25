@@ -22,7 +22,7 @@ import java.util.List;
 public interface PrPayrollGroupMapper extends BaseMapper<PrPayrollGroupPO> {
 
     /**
-     * 使用左匹配的方式获取薪资组模板列表 by entity
+     * 获取薪资组列表
      * @param param
      * @return
      */
