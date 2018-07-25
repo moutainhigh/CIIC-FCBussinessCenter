@@ -89,7 +89,7 @@ public class ExportAboutForeignNormalSalarySh extends BaseService {
             if(po.getCombined()){
                 //获取合并前批次明细ID
                 List<TaskSubDeclareDetailPO>  taskSubDeclareDetailPOList1 = taskSubDeclareDetailService.querySubDeclareDetailListBeforeMergeByMergeId(po.getId());
-                employeeInfoBatchPOS = taskSubDeclareDetailPOList1.size() > 0 ? employeeInfoBatchPOList.stream().filter(item -> taskSubDeclareDetailPOList1.get(0).getId().equals(item.getCalBatchDetailId())).collect(Collectors.toList()) : null;
+                employeeInfoBatchPOS = taskSubDeclareDetailPOList1.size() > 0 ? employeeInfoBatchPOList.stream().filter(item -> taskSubDeclareDetailPOList1.get(0).getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList()) : null;
             }else{
                 employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> po.getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList());
             }
