@@ -34,7 +34,7 @@ public interface PrGroupTemplateService {
 
     /**
      * 获取一个薪资项模板
-     * @param entityId entityId
+     * @param code code
      * @return 薪资项模板
      */
     PrPayrollGroupTemplatePO getItemByCode(String code);
@@ -93,7 +93,7 @@ public interface PrGroupTemplateService {
      * @param query
      * @return
      */
-    List<HashMap<String, String>> getPrGroupTemplateNameList(String query);
+    List<HashMap<String, String>> getPrGroupTemplateNameList(String query, String managementId);
 
     /**
      *

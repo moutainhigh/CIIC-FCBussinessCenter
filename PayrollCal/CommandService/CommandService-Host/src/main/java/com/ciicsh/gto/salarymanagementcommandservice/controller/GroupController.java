@@ -218,9 +218,10 @@ public class GroupController implements PayrollGroupProxy{
     }
 
     @GetMapping("/prGroupName")
-    public JsonResult<List<HashMap<String, String>>> getPayrollGroupNameList(@RequestParam("query") String query,
-                                                                             @RequestParam(value = "managementId", required = false, defaultValue = "") String managementId){
-        List<HashMap<String, String>> nameList = prGroupService.getPrGroupNameList(query, managementId);
+    public JsonResult<List<HashMap<String, String>>> getPayrollGroupNameList(
+            @RequestParam(value = "name", required = false, defaultValue = "") String name,
+            @RequestParam(value = "managementId", required = false, defaultValue = "") String managementId){
+        List<HashMap<String, String>> nameList = prGroupService.getPrGroupNameList(name, managementId);
         return JsonResult.success(nameList);
     }
 

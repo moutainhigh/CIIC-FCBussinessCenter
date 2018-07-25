@@ -99,5 +99,5 @@ public interface PrGroupService {
      * 获取薪资组名称列表
      * @return
      */
-    List<HashMap<String, String>> getPrGroupNameList(String query, String managementId);
+    List<HashMap<String, String>> getPrGroupNameList(String name, String managementId);
 }
