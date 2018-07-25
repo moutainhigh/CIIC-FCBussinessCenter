@@ -523,7 +523,7 @@
                 AND btb.back_tracking_batch_code LIKE concat('%', #{batchCode})
             </if>
 		) union_result
-		ORDER BY code
+		ORDER BY created_time
 	</select>
 
 	<select id="selectBatchPayrollSchema" resultType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO">

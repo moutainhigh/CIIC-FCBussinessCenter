@@ -247,6 +247,7 @@ public class PrGroupServiceImpl implements PrGroupService {
         List<PrPayrollItemPO> itemList = itemService.getListByGroupCode(srcEntity.getGroupCode());
         itemList.forEach(i -> {
             i.setPayrollGroupCode(newEntity.getGroupCode());
+            i.setManagementId(newEntity.getManagementId());
         });
         int itemAddResult = itemService.addList(itemList);
         if (itemAddResult == 0) {
