@@ -14,27 +14,24 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CmyFcConfigureTaskDTO implements Serializable {
+public class PrPayrollConfigTaskDTO implements Serializable {
 
     private static final long serialVersionUID = 3186480775397480660L;
 
     // 变更任务单编号：SP+GL+YY+5位数字(36进制)
-    private String cmyFcConfigureTaskId;
+    private String configTaskId;
 
     // 管理方id
     private String managementId;
 
-    // 任务单状态 1 - 发送成功；2 -发送失败
+    // 任务单状态 1 - 未处理；2 - 已处理
     private int status;
 
-    // 任务单类型 1 - 薪资组实例变更；2 - 雇员扩展字段变更
+    // 任务单类型 1 - 薪资组变更; 预留扩展类型,目前只有薪资组变更
     private int type;
 
-    // 需要变更薪资组id或雇员扩展字段模板id
+    // 需要变更薪资组id
     private String targetId;
-
-    // 上传附件地址
-    private String uploadUrl;
 
     // 变更说明
     private String remark;

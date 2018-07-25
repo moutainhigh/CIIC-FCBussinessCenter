@@ -8,6 +8,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainServi
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubSupplierService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubSupplierMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubSupplierPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.support.RequestForTaskSubSupplier;
@@ -40,6 +42,12 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
 
     @Autowired
     private TaskMainService taskMainService;
+
+    @Autowired
+    private TaskMainDetailServiceImpl taskMainDetailService;
+
+    @Autowired
+    private EmployeeInfoBatchImpl employeeInfoBatch;
 
     /**
      * 当期
@@ -160,12 +168,6 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             BigDecimal overdue = new BigDecimal(0);
             //罚金
             BigDecimal fine = new BigDecimal(0);
-            //总人数
-            int headcount = 0;
-            //中方人数
-            int chineseNum = 0;
-            //外方人数
-            int foreignerNum = 0;
             //计算总人数，中方人数，外方人数
             for (TaskSubSupplierPO taskSubSupplierPO : taskSubSupplierPOList) {
                 //如果总金额为null,默认为0
@@ -179,24 +181,6 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
                 //如果罚金为null,默认为0
                 if (taskSubSupplierPO.getFine() != null && !"".equals(taskSubSupplierPO.getFine())) {
                     fine = fine.add(taskSubSupplierPO.getFine());
-                }
-                //如果总人数为null,默认为0 )
-                if (taskSubSupplierPO.getHeadcount() != null && !"".equals(taskSubSupplierPO.getHeadcount())) {
-                    headcount += taskSubSupplierPO.getHeadcount();
-                } else {
-                    headcount += 0;
-                }
-                //如果中方人数为null，默认为0
-                if (taskSubSupplierPO.getChineseNum() != null && !"".equals(taskSubSupplierPO.getChineseNum())) {
-                    chineseNum += taskSubSupplierPO.getChineseNum();
-                } else {
-                    chineseNum += 0;
-                }
-                //如果外方人数为null,默认为0
-                if (taskSubSupplierPO.getForeignerNum() != null && !"".equals(taskSubSupplierPO.getForeignerNum())) {
-                    foreignerNum += taskSubSupplierPO.getForeignerNum();
-                } else {
-                    foreignerNum += 0;
                 }
                 //判断是不是合并后的任务
                 if (taskSubSupplierPO.getCombined()) {
@@ -226,12 +210,6 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
             taskSubSupplierPO.setOverdue(overdue);
             //设置罚金
             taskSubSupplierPO.setFine(fine);
-            //设置总人数
-            taskSubSupplierPO.setHeadcount(headcount);
-            //设置中方人数
-            taskSubSupplierPO.setChineseNum(chineseNum);
-            //设置外方人数
-            taskSubSupplierPO.setForeignerNum(foreignerNum);
             //供应商编号supportNo
             taskSubSupplierPO.setSupportNo(taskSubSupplierPOList.get(0).getSupportNo());
             //供应商名称supportName
@@ -260,6 +238,9 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
 
             //供应商子任务明细合并
             merge(taskSubSupplierPO.getId(), ids);
+
+            //修改合并后的申报子任务，总人数，中方人数，外方人数
+            updateMergedSubSupplierPersonNum(taskSubSupplierPO.getId(),ids);
         }
     }
 
@@ -552,5 +533,74 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         taskSubSupplierPO.setOverdue(overdue);
         taskSubSupplierPO.setFine(fine);
         baseMapper.updateById(taskSubSupplierPO);
+    }
+
+    /**
+     * 修改供应商子任务人数
+     * @param subSupplierId
+     * @param taskSubSupplierIds
+     */
+    public void updateMergedSubSupplierPersonNum(Long subSupplierId,Long[] taskSubSupplierIds){
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.in("task_sub_supplier_id", taskSubSupplierIds);
+        List<TaskSubSupplierDetailPO> taskSubSupplierDetailPOList = this.taskSubSupplierDetailService.selectList(entityWrapper);
+        //按照雇员、所得期间、所得项目分组
+        Map<String, List<TaskSubSupplierDetailPO>> groupMap = taskSubSupplierDetailPOList.stream()
+                .collect(Collectors.groupingBy(TaskSubSupplierDetailPO::groupBys));
+        //获取主任务明细ID
+        List<Long> mainDetailIdsList = taskSubSupplierDetailPOList.stream().map(item -> item.getTaskMainDetailId()).collect(Collectors.toList());
+        //根据主任务明细ID查询主任务明细
+        EntityWrapper mainDetailWrapper = new EntityWrapper();
+        mainDetailWrapper.in("id",mainDetailIdsList).or().in("task_main_detail_id",mainDetailIdsList);
+        List<TaskMainDetailPO> taskMainDetailPOList = taskMainDetailService.selectList(mainDetailWrapper);
+        //过滤出非合并任务的主任务明细
+        List<TaskMainDetailPO> taskMainDetailPOListUnMerge = taskMainDetailPOList.stream().filter(item -> item.getCombined() != true).collect(Collectors.toList());
+        //批次明细id集合
+        List<Long> calBatchDetailIdsList =  taskMainDetailPOListUnMerge.stream().map(item -> item.getCalculationBatchDetailId()).collect(Collectors.toList());
+        //根据批次明细ID查询雇员个税信息
+        EntityWrapper employeeWrapper = new EntityWrapper();
+        employeeWrapper.setEntity(new EmployeeInfoBatchPO());
+        employeeWrapper.in("cal_batch_detail_id",calBatchDetailIdsList);
+        List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatch.selectList(employeeWrapper);
+        //总人数
+        int headcount = groupMap.size();
+        //中方人数
+        int chineseNum = 0;
+        for (String key : groupMap.keySet()) {
+            List<TaskSubSupplierDetailPO> taskSubSupplierDetailPOS = groupMap.get(key);
+            TaskSubSupplierDetailPO taskSubSupplierDetailPO = taskSubSupplierDetailPOS.size() > 0 ? taskSubSupplierDetailPOS.get(0) : new TaskSubSupplierDetailPO();
+            if(isChinesePerson(taskSubSupplierDetailPO,employeeInfoBatchPOList)){
+                chineseNum++;
+            }
+        }
+        //外方人数
+        int foreignerNum = headcount - chineseNum;
+        TaskSubSupplierPO taskSubSupplierPO = baseMapper.selectById(subSupplierId);
+        taskSubSupplierPO.setHeadcount(headcount);
+        taskSubSupplierPO.setChineseNum(chineseNum);
+        taskSubSupplierPO.setForeignerNum(foreignerNum);
+        baseMapper.updateById(taskSubSupplierPO);
+    }
+
+    /**
+     * 判断该申报明细是否是中法
+     * @param taskSubSupplierDetailPO
+     * @param employeeInfoBatchPOList
+     * @return
+     */
+    public boolean isChinesePerson(TaskSubSupplierDetailPO taskSubSupplierDetailPO,List<EmployeeInfoBatchPO> employeeInfoBatchPOList){
+        if("1".equals(taskSubSupplierDetailPO.getIdType())){
+            return true;
+        }else if("2".equals(taskSubSupplierDetailPO.getIdType())){
+            return true;
+        }else if("3".equals(taskSubSupplierDetailPO.getIdType())){
+            return true;
+        }else if("4".equals(taskSubSupplierDetailPO.getIdType())){
+            return true;
+        }else if(("7".equals(taskSubSupplierDetailPO.getIdType()) && (employeeInfoBatchPOList.stream().anyMatch(employee-> employee.getCalBatchDetailId().equals(taskSubSupplierDetailPO.getCalculationBatchDetailId()) && (employee.getOverseas()==null || employee.getOverseas()==false))))){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

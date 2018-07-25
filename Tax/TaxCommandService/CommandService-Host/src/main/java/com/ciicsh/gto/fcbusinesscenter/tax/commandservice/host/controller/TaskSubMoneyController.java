@@ -45,7 +45,7 @@ import static java.util.stream.Collectors.groupingBy;
 @RestController
 public class TaskSubMoneyController extends BaseController {
 
-    public static final String SOURCE_BIG = "0";
+    public static final String SOURCE_BIG = "1";
 
     @Autowired
     private TaskSubMoneyService taskSubMoneyService;

@@ -40,10 +40,10 @@
 			pr_payroll_group_template
 		<trim prefix="WHERE" prefixOverrides="AND | OR">
 			<if test="groupTemplateCode != null and groupTemplateCode != ''">
-				AND group_template_code LIKE concat(#{groupTemplateCode},'%')
+				AND group_template_code LIKE concat('%', #{groupTemplateCode}, '%')
 			</if>
 			<if test="groupTemplateName != null and groupTemplateName !=''">
-				AND group_template_name LIKE concat(#{groupTemplateName},'%')
+				AND group_template_name LIKE concat('%', #{groupTemplateName}, '%')
 			</if>
 			<if test="approvalStatus != null">
 				AND approval_status = #{approvalStatus}
@@ -115,6 +115,9 @@
         <if test="name != null and name != ''">
             AND group_template_name LIKE concat('%', #{name}, '%')
         </if>
+		<if test="managementId != null and managementId != ''">
+			AND management_id = #{managementId}
+		</if>
         LIMIT 50
     </select>
 

@@ -14,5 +14,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface PrApprovedPayrollItemMapper extends BaseMapper<PrApprovedPayrollItemPO> {
 
-    void updateApprovedItem(PrApprovedPayrollItemPO approvedPO);
+    void updateApprovedItemById(PrApprovedPayrollItemPO approvedPO);
 }

@@ -337,10 +337,12 @@ public class CompleteComputeServiceImpl {
             JsonResult<List<FcEmployeeResponseDTO>> result = employeeServiceProxy.getFcEmployeeInfos(employeeRequestDTO);
             if (result.isSuccess() && result.getData() != null && result.getData().size() > 0) {
                 return result.getData().get(0);
+            }else {
+                logger.info(String.format("雇员ID: %s, 公司ID：%s 无雇员服务协议", empCode,companyId));
             }
         }
         catch (Exception ex){
-            logger.info("获取雇员服务协议失败： " + ex.getMessage());
+            logger.info(String.format("雇员ID: %s, 公司ID：%s 获取雇员服务协议失败: %s", empCode,companyId,ex.getMessage()));
         }
         return null;
     }
