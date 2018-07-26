@@ -116,7 +116,7 @@ public class GroupTemplateController extends BaseController {
 
     @GetMapping(value = "/prGroupTemplateName")
     public JsonResult getPrGroupTemplateNameList(
-            @RequestParam(value = "name",required = false, defaultValue = "") String name,
+            @RequestParam(value = "query",required = false, defaultValue = "") String name,
             @RequestParam(value = "managementId", required = false, defaultValue = "") String managementId) {
         List<HashMap<String, String>> resultList = prGroupTemplateService.getPrGroupTemplateNameList(name, managementId);
         return JsonResult.success(resultList);
