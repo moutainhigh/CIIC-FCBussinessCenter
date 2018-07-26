@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class ExportAboutTaxList extends BaseService {
 
     //大库
-    public static final String SOURCE_BIG = "0";
+    public static final String SOURCE_BIG = "1";
     //列表数据初始大小
     private static final int TAX_LIST_SIZE = 1;
 

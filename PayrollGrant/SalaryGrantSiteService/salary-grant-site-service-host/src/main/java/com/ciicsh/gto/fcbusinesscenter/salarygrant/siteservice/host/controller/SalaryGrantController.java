@@ -416,6 +416,7 @@ public class SalaryGrantController {
             tags.put("taskType", String.valueOf(dto.getTaskType()));
             tags.put("taskStatus", dto.getTaskStatus());
             tags.put("grantStatus", String.valueOf(dto.getGrantStatus()));
+            tags.put("grantMode", String.valueOf(dto.getGrantMode()));
             tags.put("employeeId", dto.getEmployeeId());
             tags.put("employeeName", dto.getEmployeeName());
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("明细查询").setTags(tags));
