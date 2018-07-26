@@ -23,13 +23,13 @@ import java.util.List;
 @Component
 public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmployeePO> {
     /**
-     * 查询主表的雇员信息
-     * 主要根据主表任务单编号查询
+     * 查询雇员信息
+     * 根据任务单编号查询
      * @param page
      * @param salaryGrantEmployeeBO
      * @return Page<SalaryGrantEmployeeBO>
      */
-    List<SalaryGrantEmployeeBO> selectBOList(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+    List<SalaryGrantEmployeeBO> selectEmpList(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
 
     /**
      * 根据任务单编号查询雇员信息

@@ -11,8 +11,6 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygr
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
-import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
-import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
@@ -65,7 +63,7 @@ public class SalaryGrantEmployeeController {
         SalaryGrantEmployeeBO grantEmployeeBO = new SalaryGrantEmployeeBO();
         BeanUtils.copyProperties(salaryGrantEmployeeDTO, grantEmployeeBO);
 
-        page = employeeQueryService.queryEmployeeForSubTask(page, grantEmployeeBO);
+        page = employeeQueryService.queryEmployeeTask(page, grantEmployeeBO);
 
         //字段转换
         List<SalaryGrantEmployeeBO> employeeBOList = page.getRecords();
