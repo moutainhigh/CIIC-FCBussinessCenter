@@ -14,7 +14,8 @@ import java.util.Calendar;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters
 import java.util.ArrayList
-import java.util.Optional;
+import java.util.Optional
+import java.math.RoundingMode;
 
 //2011前个税
 function List<TaxEntity> getTaxList() { // 个税表
@@ -186,6 +187,69 @@ function List<TaxEntity> getTaxList_2011() { // 个税表
 	return taxList;
 }
 
+// 劳务税表
+function List<TaxEntity> getServiceTaxList() {
+
+    List<TaxEntity> taxList = new ArrayList<>();
+
+    TaxEntity taxEntity = new TaxEntity();
+    taxEntity.setTaxDueStart(0.0000);        // 应纳税额起点
+    taxEntity.setTaxDueEnd(800.0000);        // 应纳终点起点
+    taxEntity.setTaxRate(0.0000);            // 税率
+    taxEntity.setDeductions(0.0000);         // 速算扣除数
+    taxEntity.setTaxStart(0.0000);           // 税额起点
+    taxEntity.setTaxEnd(0.0000);             // 税额终点
+    taxEntity.setAfterTaxStart(0.0000);      // 税后工资起点
+    taxEntity.setAfterTaxEnd(800.0000);      // 税后工资终点
+    taxList.add(taxEntity);
+
+    taxEntity = new TaxEntity();
+    taxEntity.setTaxDueStart(800.0000);      // 应纳税额起点
+    taxEntity.setTaxDueEnd(4000.0000);       // 应纳终点起点
+    taxEntity.setTaxRate(0.2000);            // 税率
+    taxEntity.setDeductions(0.0000);         // 速算扣除数
+    taxEntity.setTaxStart(0.0000);           // 税额起点
+    taxEntity.setTaxEnd(640.0000);           // 税额终点
+    taxEntity.setAfterTaxStart(800.0000);    // 税后工资起点
+    taxEntity.setAfterTaxEnd(3360.0000);     // 税后工资终点
+    taxList.add(taxEntity);
+
+    taxEntity = new TaxEntity();
+    taxEntity.setTaxDueStart(4000.0000);     // 应纳税额起点
+    taxEntity.setTaxDueEnd(25000.0000);      // 应纳终点起点
+    taxEntity.setTaxRate(0.2000);            // 税率
+    taxEntity.setDeductions(0.0000);         // 速算扣除数
+    taxEntity.setTaxStart(640.0000);         // 税额起点
+    taxEntity.setTaxEnd(4000.0000);          // 税额终点
+    taxEntity.setAfterTaxStart(3360.0000);   // 税后工资起点
+    taxEntity.setAfterTaxEnd(21000.0000);    // 税后工资终点
+    taxList.add(taxEntity);
+
+    taxEntity = new TaxEntity();
+    taxEntity.setTaxDueStart(25000.0000);    // 应纳税额起点
+    taxEntity.setTaxDueEnd(62500.0000);      // 应纳终点起点
+    taxEntity.setTaxRate(0.3000);            // 税率
+    taxEntity.setDeductions(2000.0000);      // 速算扣除数
+    taxEntity.setTaxStart(4000.0000);        // 税额起点
+    taxEntity.setTaxEnd(13000.0000);         // 税额终点
+    taxEntity.setAfterTaxStart(21000.0000);  // 税后工资起点
+    taxEntity.setAfterTaxEnd(49500.0000);    // 税后工资终点
+    taxList.add(taxEntity);
+
+    taxEntity = new TaxEntity();
+    taxEntity.setTaxDueStart(62500.0000);    // 应纳税额起点
+    taxEntity.setTaxDueEnd(1000000000.0000); // 应纳终点起点
+    taxEntity.setTaxRate(0.4000);            // 税率
+    taxEntity.setDeductions(7000.0000);      // 速算扣除数
+    taxEntity.setTaxStart(13000.0000);       // 税额起点
+    taxEntity.setTaxEnd(1000000.0000);       // 税额终点
+    taxEntity.setAfterTaxStart(49500.0000);  // 税后工资起点
+    taxEntity.setAfterTaxEnd(1000000.0000);  // 税后工资终点
+    taxList.add(taxEntity);
+
+	return taxList;
+}
+
 
 rule "最低工资标准" // {最低工资标准([城市])}
     when
@@ -287,10 +351,45 @@ rule "劳务税" // {劳务税([劳务费])}
         $context:DroolsContext()
     then
         FuncEntity func = $context.getFuncEntity("劳务税");
-        String para1 = func.getParameters().get(0);
-        Double laborCosts = Double.parseDouble(String.valueOf($context.getItemValByCode(para1))); //劳务费
+        BigDecimal salaryBigDecimal = new BigDecimal(func.getParameters().get(0));
 
-        func.setResult(new BigDecimal("800.00")); // TODO
+        // 劳务税表
+        List<TaxEntity> taxList = null;
+        // 计算结果
+        BigDecimal resultBigDecimal = null;
+
+        if (salaryBigDecimal.compareTo(new BigDecimal(4000)) >= 0) {
+            taxList = getServiceTaxList(); //获取劳务税表
+
+            if (taxList != null) {
+                // 应纳税额起点 < @moneynum and 应纳税额终点 >= @moneynum
+                TaxEntity taxEntity = taxList.stream().filter(
+                        entity -> new BigDecimal(entity.getTaxDueStart()).compareTo(salaryBigDecimal) < 0 &&
+                                  new BigDecimal(entity.getTaxDueEnd()).compareTo(salaryBigDecimal) >= 0
+                ).findFirst().orElse(null);
+
+                if (taxEntity != null) {
+                    // (@moneynum * 0.8) * 税率 - 速算扣除数
+                    resultBigDecimal = salaryBigDecimal.multiply(new BigDecimal(0.8))
+                                                       .multiply(new BigDecimal(taxEntity.getTaxRate()))
+                                                       .subtract(new BigDecimal(taxEntity.getDeductions()))
+                                                       .setScale(2, 4);
+
+                    func.setResult(resultBigDecimal);
+                }
+            }
+        } else {
+            if (salaryBigDecimal.compareTo(new BigDecimal(800)) > 0) {
+                // (@moneynum - 800) * 0.2
+                resultBigDecimal = salaryBigDecimal.subtract(new BigDecimal(800))
+                                                   .multiply(new BigDecimal(0.2))
+                                                   .setScale(2, 4);
+
+                func.setResult(resultBigDecimal);
+            } else {
+                func.setResult(new BigDecimal(0.00));
+            }
+        }
 end
 
 rule "病假扣除比例" // {病假扣除比例([城市],[工龄],[连续工龄],[病假天数],[当年度累计病假天数],[病假基数],[最低工资标准])}
