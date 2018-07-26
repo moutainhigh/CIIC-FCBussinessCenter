@@ -530,55 +530,76 @@ public class NormalBatchController {
     @PostMapping("/clearBatchField")
     public JsonResult clearBatchField(@RequestParam String batchCode, @RequestParam String empCodes, @RequestParam String itemNames, @RequestParam int batchType){
         int rowAffected = 0;
+        List<String> empCompanyList = null;
+        List<String> itemNameList = null;
+        if(StringUtils.isNotEmpty(empCodes)){
+            empCompanyList = Arrays.asList(empCodes.split(","));
+        }
+        if(StringUtils.isNotEmpty(itemNames)){
+            itemNameList = Arrays.asList(itemNames.split(","));
+        }
 
-        List<String> empCodeList = Arrays.asList(empCodes.split(","));
-        List<String> itemNameList = Arrays.asList(itemNames.split(","));
+        if(empCompanyList == null){
+            rowAffected = update(batchType,batchCode,null,null,itemNameList);
 
-        List<DBObject> findObjs = null;
-
-        for (String payItemName: itemNameList) {
-
-            Criteria numQuery = Criteria.where("batch_code").is(batchCode)
-                    .andOperator(
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).in(empCodeList),
-                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName).and("data_type").is(DataTypeEnum.NUM.getValue()))
-                    );
-
-            Criteria strQuery = Criteria.where("batch_code").is(batchCode)
-                    .andOperator(
-                            Criteria.where(PayItemName.EMPLOYEE_CODE_CN).in(empCodeList),
-                            Criteria.where("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName))
-                    );
-
-            if (batchType == BatchTypeEnum.NORMAL.getValue()) {
-
-                findObjs = normalBatchMongoOpt.list(numQuery);
-                if(findObjs == null || findObjs.size() == 0){
-                    rowAffected += normalBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
-                }else {
-                    rowAffected += normalBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
-                }
-
-            } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
-                findObjs = adjustBatchMongoOpt.list(numQuery);
-                if(findObjs == null || findObjs.size() == 0){
-                    rowAffected += adjustBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
-                }else {
-                    rowAffected += adjustBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
-                }
-
-            } else {
-                findObjs = backTraceBatchMongoOpt.list(numQuery);
-                if(findObjs == null){
-                    rowAffected += backTraceBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
-                }else {
-                    rowAffected += backTraceBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
-                }
+        }else {
+            for (String empCompany : empCompanyList){
+                String empCode = empCompany.split("-")[0];
+                String companyId = empCompany.split("-")[1];
+                //criteria = criteria.and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId).and(PayItemName.EMPLOYEE_CODE_CN).is(empCode);
+                rowAffected = update(batchType,batchCode,empCode,companyId,itemNameList);
             }
         }
 
         return JsonResult.success(rowAffected);
 
+    }
+
+    private int update(int batchType,String batchCode,String empCode, String companyId,List<String> itemNameList){
+        int rowAffected = 0;
+        Criteria numQuery = null;
+        Criteria strQuery = null;
+
+        if(itemNameList == null){
+            if(StringUtils.isEmpty(empCode)) {
+                numQuery = Criteria.where("batch_code").is(batchCode).and("catalog.pay_items").elemMatch(Criteria.where("data_type").is(DataTypeEnum.NUM.getValue()).and("item_name").nin(PayItemName.EMPLOYEE_CODE_CN,PayItemName.EMPLOYEE_COMPANY_ID,PayItemName.EMPLOYEE_NAME_CN));
+                strQuery = Criteria.where("batch_code").is(batchCode).and("catalog.pay_items").elemMatch(Criteria.where("data_type").nin(DataTypeEnum.NUM.getValue()).and("item_name").nin(PayItemName.EMPLOYEE_CODE_CN,PayItemName.EMPLOYEE_COMPANY_ID,PayItemName.EMPLOYEE_NAME_CN));
+            }else {
+                numQuery = Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId).and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and("catalog.pay_items").elemMatch(Criteria.where("data_type").is(DataTypeEnum.NUM.getValue()).and("item_name").nin(PayItemName.EMPLOYEE_CODE_CN,PayItemName.EMPLOYEE_COMPANY_ID,PayItemName.EMPLOYEE_NAME_CN));
+                strQuery = Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId).and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and("catalog.pay_items").elemMatch(Criteria.where("data_type").nin(DataTypeEnum.NUM.getValue()).and("item_name").nin(PayItemName.EMPLOYEE_CODE_CN,PayItemName.EMPLOYEE_COMPANY_ID,PayItemName.EMPLOYEE_NAME_CN));
+            }
+            rowAffected = updateBatchMongo(batchType,numQuery,strQuery);
+
+        }else {
+            for (String payItemName: itemNameList) {
+                if(StringUtils.isEmpty(empCode)) {
+                    numQuery = Criteria.where("batch_code").is(batchCode).and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName).and("data_type").is(DataTypeEnum.NUM.getValue()));
+                    strQuery = Criteria.where("batch_code").is(batchCode).and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName).and("data_type").nin(DataTypeEnum.NUM.getValue()));
+                }else {
+                    numQuery = Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId).and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName).and("data_type").is(DataTypeEnum.NUM.getValue()));
+                    strQuery = Criteria.where("batch_code").is(batchCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId).and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(payItemName).and("data_type").nin(DataTypeEnum.NUM.getValue()));
+                }
+                rowAffected += updateBatchMongo(batchType,numQuery,strQuery);
+            }
+        }
+        return rowAffected;
+    }
+
+    private int updateBatchMongo(int batchType, Criteria numQuery, Criteria strQuery){
+        int rowAffected = 0;
+        if (batchType == BatchTypeEnum.NORMAL.getValue()) {
+            rowAffected += normalBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
+            rowAffected += normalBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
+
+        } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
+            rowAffected += adjustBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
+            rowAffected += adjustBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
+
+        } else {
+            rowAffected += backTraceBatchMongoOpt.batchUpdate(strQuery,"catalog.pay_items.$.item_value", "");
+            rowAffected += backTraceBatchMongoOpt.batchUpdate(numQuery,"catalog.pay_items.$.item_value", 0);
+        }
+        return rowAffected;
     }
 
     @PostMapping("/getHistoryBatchInfoList")

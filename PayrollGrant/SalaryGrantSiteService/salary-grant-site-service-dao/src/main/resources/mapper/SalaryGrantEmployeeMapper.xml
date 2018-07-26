@@ -73,46 +73,49 @@
         <result column="modified_time" property="modifiedTime"/>
     </resultMap>
 
-    <select id="selectBOList"
-            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO"
-            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO">
+    <select id="selectEmpList" resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO" parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO">
         select
-            t.salary_grant_employee_id   salaryGrantEmployeeId,
-            t.employee_id                employeeId           ,
-            t.employee_name              employeeName         ,
-            t.company_id                 companyId            ,
-            t.grant_cycle                grantCycle           ,
-            t.batch_code                 batchCode            ,
-            t.grant_account_code         grantAccountCode     ,
-            t.grant_account_name         grantAccountName     ,
-            t.card_num                   cardNum              ,
-            t.account_name               accountName          ,
-            t.bank_code                  bankCode             ,
-            t.deposit_bank               depositBank          ,
-            t.payment_amount             paymentAmount        ,
-            t.currency_code              currencyCode         ,
-            case t.currency_code when 'CNY' then '人民币' when 'USD' then '美元' when 'EUR' then '欧元' else '' end   currencyName,
-            t.country_code               countryCode          ,
-            ''                           countryName          ,
-            t.grant_status               grantStatus          ,
-            ''                           grantStatusName      ,
+            t.salary_grant_employee_id      salaryGrantEmployeeId,
+            t.employee_id                         employeeId,
+            t.employee_name                    employeeName,
+            t.company_id                          companyId,
+            t.grant_cycle                           grantCycle,
+            t.batch_code                           batchCode,
+            t.grant_account_code              grantAccountCode,
+            t.grant_account_name              grantAccountName,
+            t.card_num                             cardNum,
+            t.account_name                       accountName,
+            t.bank_code                            bankCode,
+            t.deposit_bank                        depositBank,
+            t.payment_amount                   paymentAmount,
+            t.currency_code                       currencyCode,
+            case t.currency_code               when 'CNY' then '人民币' when 'USD' then '美元' when 'EUR' then '欧元' else '' end   currencyName,
+            t.country_code                        countryCode,
+            ''                                            countryName,
+            t.grant_status                          grantStatus,
+            ''                                            grantStatusName,
             t.remark
         from
             sg_salary_grant_employee t
-        where
-            1 = 1
+        <where>
+            <!--<if test="taskType == 0">-->
+                <!--AND t.salary_grant_main_task_code =  #{taskCode}-->
+            <!--</if>-->
+            <!--<if test="taskType != 0">-->
+                <!--AND t.salary_grant_sub_task_code =  #{taskCode}-->
+            <!--</if>-->
             <if test="salaryGrantMainTaskCode != null">
-                and t.salary_grant_main_task_code=#{salaryGrantMainTaskCode}
-            </if>
-            <if test="grantMode != null and grantMode = '12'">
-                and t.grant_mode in (3, 4)
+                and t.salary_grant_main_task_code = #{salaryGrantMainTaskCode}
             </if>
             <if test="salaryGrantSubTaskCode != null">
-                and t.salary_grant_sub_task_code=#{salaryGrantSubTaskCode}
+                and t.salary_grant_sub_task_code = #{salaryGrantSubTaskCode}
             </if>
+            <!--<if test="grantMode != null and grantMode = '12'">-->
+                <!--and t.grant_mode in (3, 4)-->
+            <!--</if>-->
             <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
             <if test="employeeId != null and employeeId != ''">
-                and t.employee_id=#{employeeId}
+                and t.employee_id = #{employeeId}
             </if>
             <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
             <if test="employeeName != null and employeeName != ''">
@@ -120,14 +123,42 @@
             </if>
             <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
             <if test="grantStatus != null">
-                and t.grant_status=#{grantStatus}
+                and t.grant_status = #{grantStatus}
             </if>
             <if test="remark != null and remark != ''">
                 and t.remark is not null
             </if>
             and t.is_active=1
+        </where>
         order by
             t.employee_id
+    </select>
+
+    <select id="selectEmpInfoByGrantMode" resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO" parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO">
+        select
+            t.salary_grant_employee_id   salaryGrantEmployeeId,
+            t.employee_id                employeeId           ,
+            t.company_id                 companyId ,
+            t.grant_account_code         grantAccountCode     ,
+            t.grant_account_name         grantAccountName     ,
+            t.payment_amount             paymentAmount        ,
+            t.exchange,
+            t.country_code               countryCode          ,
+            t.payment_amount*t.exchange  as paymentAmountForRMB,
+            t.remark
+        from
+            sg_salary_grant_employee t
+        <where>
+            <if test="salaryGrantMainTaskCode != null">
+                and t.salary_grant_main_task_code=#{salaryGrantMainTaskCode}
+            </if>
+            <if test="grantMode != null">
+                and t.grant_mode=#{grantMode}
+            </if>
+            and t.is_active=1
+        </where>
+        order by
+          t.employee_id
     </select>
 
     <select id="queryWaitForPaymentEmpList"
@@ -316,35 +347,6 @@
             e.is_active = 1
         ORDER BY
             e.company_id, e.template_type, e.employee_id
-    </select>
-
-    <select id="selectEmpInfoByGrantMode"
-            resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO"
-            parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO">
-        select
-        t.salary_grant_employee_id   salaryGrantEmployeeId,
-        t.employee_id                employeeId           ,
-        t.company_id                 companyId ,
-        t.grant_account_code         grantAccountCode     ,
-        t.grant_account_name         grantAccountName     ,
-        t.payment_amount             paymentAmount        ,
-        t.exchange,
-        t.country_code               countryCode          ,
-        t.payment_amount*t.exchange  as paymentAmountForRMB,
-        t.remark
-        from
-        sg_salary_grant_employee t
-        where
-        1 = 1
-        <if test="salaryGrantMainTaskCode != null">
-            and t.salary_grant_main_task_code=#{salaryGrantMainTaskCode}
-        </if>
-        <if test="grantMode != null">
-            and t.grant_mode=#{grantMode}
-        </if>
-        and t.is_active=1
-        order by
-        t.employee_id
     </select>
 
 </mapper>

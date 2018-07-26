@@ -62,52 +62,43 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
         /** 根据查询一览数据查询条件修改，不保证业务正确性。 2018-07-18*/
         if (SalaryGrantBizConsts.TASK_STATUS_REFUSE.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_CANCEL.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_RETREAT.equals(salaryGrantEmployeeBO.getTaskStatus())
                 || SalaryGrantBizConsts.TASK_STATUS_REJECT.equals(salaryGrantEmployeeBO.getTaskStatus()) || SalaryGrantBizConsts.TASK_STATUS_NULLIFY.equals(salaryGrantEmployeeBO.getTaskStatus())) {
-            employeeBOList = queryEmpHisInfo(salaryGrantEmployeeBO.getTaskId(), page.getCurrent(), page.getSize());
+            employeeBOList = queryHisEmp(salaryGrantEmployeeBO.getTaskId(), page);
         //查询主表的雇员信息
-        } else if (salaryGrantEmployeeBO.getTaskType() == SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.intValue()) {
+        } else if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantEmployeeBO.getTaskType())) {
             salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
-            employeeBOList = queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
+            employeeBOList = queryEmployeeForTask(page, salaryGrantEmployeeBO);
         } else {
             //查询子表的雇员信息
             salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
-            employeeBOList = queryEmployeeForSubTask(page, salaryGrantEmployeeBO);
+            employeeBOList = queryEmployeeForTask(page, salaryGrantEmployeeBO);
         }
-
         if (!employeeBOList.getRecords().isEmpty()) {
             employeeBOList.getRecords().forEach(salaryGrantTaskBO -> {
                 //国籍转码
                 if (!StringUtils.isEmpty(salaryGrantTaskBO.getCountryCode())) {
                     salaryGrantTaskBO.setCountryName(commonService.getCountryName(salaryGrantTaskBO.getCountryCode()));
                 }
-
                 //发放状态
                 if (!ObjectUtils.isEmpty(salaryGrantTaskBO.getGrantStatus())) {
                     salaryGrantTaskBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(salaryGrantTaskBO.getGrantStatus())));
                 }
             });
         }
-
         return employeeBOList;
     }
 
-    @Override
-    public Page<SalaryGrantEmployeeBO> queryEmployeeForMainTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
-        return page.setRecords(salaryGrantEmployeeMapper.selectBOList(page, salaryGrantEmployeeBO));
-    }
-
-    @Override
-    public Page<SalaryGrantEmployeeBO> queryEmployeeForSubTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
-        return page.setRecords(salaryGrantEmployeeMapper.selectBOList(page, salaryGrantEmployeeBO));
+    private Page<SalaryGrantEmployeeBO> queryEmployeeForTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+        return page.setRecords(salaryGrantEmployeeMapper.selectEmpList(page, salaryGrantEmployeeBO));
     }
 
     @Override
     public Page<SalaryGrantEmployeeBO> queryEmployeeInfoChanged(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
-        if (salaryGrantEmployeeBO.getTaskType().intValue() == SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.intValue()) {
+        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantEmployeeBO.getTaskType())) {
             salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
         } else {
             salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
         }
-        return page.setRecords(salaryGrantEmployeeMapper.selectBOList(page, salaryGrantEmployeeBO));
+        return page.setRecords(salaryGrantEmployeeMapper.selectEmpList(page, salaryGrantEmployeeBO));
     }
 
     @Override
@@ -119,7 +110,6 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
     @Override
     public List<CalcResultItemBO> getSalaryCalcResultItemsList(Map batchParam) {
         List<CalcResultItemBO> salaryCalcResultItemsList = new ArrayList<>();
-
         String batchCode = (String) batchParam.get("batchCode");
         Integer batchType = (Integer) batchParam.get("batchType");
         List<DBObject> dbObjectList = calResultMongoOpt.list(Criteria.where("batch_id").is(batchCode).and("batch_type").is(batchType));
@@ -130,13 +120,11 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
                             CalcResultItemBO resultItemBO = new CalcResultItemBO();
                             resultItemBO.setItemCode(dbObject.get("item_code").toString());
                             resultItemBO.setItemName(dbObject.get("item_name").toString());
-
                             salaryCalcResultItemsList.add(resultItemBO);
                         }
                 );
             }
         }
-
         return salaryCalcResultItemsList;
     }
 
@@ -323,34 +311,25 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
         return empCalcResultBOFilterList;
     }
 
-    @Override
-    public Page<SalaryGrantEmployeeBO> queryEmpHisInfo(long task_his_id, Integer pageNum, Integer pageSize) {
-        Page<SalaryGrantEmployeeBO> employeeBOPage = new Page<>();
-        employeeBOPage.setCurrent(pageNum);
-        employeeBOPage.setSize(pageSize);
-
+    private Page<SalaryGrantEmployeeBO> queryHisEmp(long task_his_id, Page<SalaryGrantEmployeeBO> page) {
         DBObject dbObject = salaryGrantEmpHisOpt.get(Criteria.where("task_his_id").is(task_his_id));
         if (!ObjectUtils.isEmpty(dbObject)) {
             List<SalaryGrantEmployeeBO> employeeBOList = JSON.parseArray(String.valueOf(dbObject.get("employeeInfo")), SalaryGrantEmployeeBO.class) ;
-            if (!CollectionUtils.isEmpty(employeeBOList)) {
-
+            if (!employeeBOList.isEmpty()) {
                 //雇员记录数大于等于起始分页记录数时，若雇员记录数大于等于雇员总记录数，则返回分页记录数；否则，返回起始分页记录数之后的雇员记录数
-                int fromIndex = (pageNum - 1) * pageSize;
-                int toIndex = pageNum * pageSize;
-
+                int fromIndex = (page.getCurrent() - 1) * page.getSize();
+                int toIndex = page.getCurrent() * page.getSize();
                 if (employeeBOList.size() >= fromIndex) {
+                    page.setTotal(employeeBOList.size());
                     if (employeeBOList.size() >= toIndex) {
-                        employeeBOPage.setTotal(employeeBOList.size());
-                        employeeBOPage.setRecords(employeeBOList.subList(fromIndex, toIndex));
+                        page.setRecords(employeeBOList.subList(fromIndex, toIndex));
                     } else {
-                        employeeBOPage.setTotal(employeeBOList.size());
-                        employeeBOPage.setRecords(employeeBOList.subList(fromIndex, employeeBOList.size()));
+                        page.setRecords(employeeBOList.subList(fromIndex, employeeBOList.size()));
                     }
                 }
             }
         }
-
-        return employeeBOPage;
+        return page;
     }
 
     @Override
