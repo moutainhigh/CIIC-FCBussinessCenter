@@ -161,7 +161,7 @@
         from
             sg_salary_grant_employee
         where
-            is_active = 1
+            is_active = 1 and grant_status not in (1,2) and payment_amount != 0
             and salary_grant_sub_task_code = #{taskCode}
     </select>
 

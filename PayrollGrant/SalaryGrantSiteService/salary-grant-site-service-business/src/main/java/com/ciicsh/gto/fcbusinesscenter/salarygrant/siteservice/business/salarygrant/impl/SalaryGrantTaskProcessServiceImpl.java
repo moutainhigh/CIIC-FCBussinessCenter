@@ -438,6 +438,8 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
             salaryGrantMainTaskPO.setActive(true);
             salaryGrantMainTaskPO.setCreatedTime(new Date());
             salaryGrantMainTaskPO.setCreatedBy(SalaryGrantBizConsts.SYSTEM_EN);
+            salaryGrantMainTaskPO.setModifiedTime(new Date());
+            salaryGrantMainTaskPO.setModifiedBy(SalaryGrantBizConsts.SYSTEM_EN);
         }else{
             salaryGrantMainTaskPO.setModifiedBy(SalaryGrantBizConsts.SYSTEM_EN);
             salaryGrantMainTaskPO.setModifiedTime(new Date());
@@ -577,8 +579,10 @@ public class SalaryGrantTaskProcessServiceImpl extends ServiceImpl<SalaryGrantMa
                     */
                         salaryGrantEmployeePO.setGrantStatus(SalaryGrantBizConsts.GRANT_STATUS_NORMAL);
                         salaryGrantEmployeePO.setActive(true);
-                        salaryGrantEmployeePO.setCreatedBy("system");
+                        salaryGrantEmployeePO.setCreatedBy(SalaryGrantBizConsts.SYSTEM_EN);
                         salaryGrantEmployeePO.setCreatedTime(new Date());
+                        salaryGrantEmployeePO.setModifiedBy(SalaryGrantBizConsts.SYSTEM_EN);
+                        salaryGrantEmployeePO.setModifiedTime(new Date());
                         salaryGrantEmployeePOSplitList = this.toDealSingleEmployeeInfo(salaryGrantEmployeePO, employeeServiceAgreementDTO);
                         salaryGrantEmployeePOFinalList.addAll(salaryGrantEmployeePOSplitList);
                     }
