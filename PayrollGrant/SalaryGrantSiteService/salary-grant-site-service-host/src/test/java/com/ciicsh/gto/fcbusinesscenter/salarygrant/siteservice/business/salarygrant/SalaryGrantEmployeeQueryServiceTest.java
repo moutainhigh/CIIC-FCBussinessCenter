@@ -70,8 +70,8 @@ public class SalaryGrantEmployeeQueryServiceTest {
         salaryGrantEmployeeBO.setSalaryGrantMainTaskCode("SGT2018032800000001");
         salaryGrantEmployeeBO.setActive(true);
 
-        Page<SalaryGrantEmployeeBO> retPage = queryService.queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
-        System.out.println("查询主表的雇员信息 page: " + retPage + " 记录: " + retPage.getRecords());
+//        Page<SalaryGrantEmployeeBO> retPage = queryService.queryEmployeeForMainTask(page, salaryGrantEmployeeBO);
+//        System.out.println("查询主表的雇员信息 page: " + retPage + " 记录: " + retPage.getRecords());
     }
 
     @Test
@@ -134,8 +134,8 @@ public class SalaryGrantEmployeeQueryServiceTest {
         long task_his_id = 1;
         Integer pageNum = 2;
         Integer pageSize = 20;
-        Page<SalaryGrantEmployeeBO> employeeBOPage = queryService.queryEmpHisInfo(task_his_id, pageNum, pageSize);
-        System.out.println("-----------");
+//        Page<SalaryGrantEmployeeBO> employeeBOPage = queryService.queryEmpHisInfo(task_his_id, pageNum, pageSize);
+//        System.out.println("-----------");
     }
 
     @Test

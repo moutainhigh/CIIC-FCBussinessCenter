@@ -32,26 +32,6 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
     Page<SalaryGrantEmployeeBO> queryEmployeeTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
 
     /**
-     * 查询主表的雇员信息
-     * 主要根据主表任务单编号查询
-     *
-     * @param page
-     * @param salaryGrantEmployeeBO
-     * @return Page<SalaryGrantEmployeeBO>
-     */
-    Page<SalaryGrantEmployeeBO> queryEmployeeForMainTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
-
-    /**
-     * 查询子表的雇员信息
-     * 主要根据子表任务单编号查询
-     *
-     * @param page
-     * @param salaryGrantEmployeeBO
-     * @return Page<SalaryGrantEmployeeBO>
-     */
-    Page<SalaryGrantEmployeeBO> queryEmployeeForSubTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
-
-    /**
      * 查询发放变化的雇员信息
      *
      * @param page
@@ -94,14 +74,6 @@ public interface SalaryGrantEmployeeQueryService extends IService<SalaryGrantEmp
      * @return
      */
     List<EmpCalcResultBO> getEmployeeForBizList(List<CalcResultItemBO> checkedItemsList, SalaryGrantTaskBO salaryGrantTaskBO);
-
-    /**
-     * 查询任务单对应雇员历史数据
-     *
-     * @param task_his_id
-     * @return
-     */
-    Page<SalaryGrantEmployeeBO> queryEmpHisInfo(long task_his_id, Integer pageNum, Integer pageSize);
 
     /**
      * 查询雇员变更信息
