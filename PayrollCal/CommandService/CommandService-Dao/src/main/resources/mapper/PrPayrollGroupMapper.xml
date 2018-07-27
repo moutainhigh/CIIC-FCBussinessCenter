@@ -19,6 +19,8 @@
 		<result column="modified_time" property="modifiedTime" />
 		<result column="created_by" property="createdBy" />
 		<result column="modified_by" property="modifiedBy" />
+		<result column="emp_extend_field_template_id" property="empExtendFieldTemplateId" />
+		<result column="emp_extend_field_template_name" property="empExtendFieldTemplateName" />
 	</resultMap>
 
 	<resultMap id="getKeyValueMap" type="KeyValuePO">
@@ -38,6 +40,8 @@
 			is_template,
 			approval_status,
 			comments,
+		    emp_extend_field_template_id,
+            emp_extend_field_template_name,
 			is_active,
 			created_time,
 			modified_time,

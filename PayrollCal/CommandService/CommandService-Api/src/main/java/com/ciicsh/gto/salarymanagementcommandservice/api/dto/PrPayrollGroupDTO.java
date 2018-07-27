@@ -91,4 +91,12 @@ public class PrPayrollGroupDTO {
      * 最后修改人
      */
 	private String modifiedBy;
+    /**
+     * 雇员扩展字段模板ID
+     */
+	private Long empExtendFieldTemplateId;
+    /**
+     * 雇员扩展字段模板名称
+     */
+    private String empExtendFieldTemplateName;
 }

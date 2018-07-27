@@ -198,6 +198,11 @@
             <artifactId>easypoi-web</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcoperationcenter</groupId>
+            <artifactId>apiservice-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

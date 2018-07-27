@@ -2,6 +2,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;
@@ -46,6 +47,7 @@ public class ItemController extends BaseController{
      */
     @GetMapping(value = "/getPrItemPage")
     public JsonResult getPrItemList(@RequestParam String groupCode,
+                                      @RequestParam Integer templateId,
                                       @RequestParam Integer parentType,
                                       @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                       @RequestParam(required = false, defaultValue = "50") Integer pageSize) {
@@ -63,9 +65,26 @@ public class ItemController extends BaseController{
                 .stream()
                 .map(ItemTranslator::toPrPayrollItemDTO)
                 .collect(Collectors.toList());
+
+
+
         PageInfo<PrPayrollItemDTO> resultPage = new PageInfo<>(resultList);
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
         return JsonResult.success(resultPage);
+    }
+
+    /**
+     * 雇员扩展模板字段转换为薪资项明细字段
+     *
+     * @param employeeExtendFieldDTO
+     * @return
+     */
+    private PrPayrollItemDTO employeeExtendFieldDTO2PrPayrollItemDTO(EmployeeExtendFieldDTO employeeExtendFieldDTO){
+        PrPayrollItemDTO prPayrollItemDTO = new PrPayrollItemDTO();
+        prPayrollItemDTO.setItemType(1); //薪资项类型：1 - 固定输入项
+        prPayrollItemDTO.setItemName(employeeExtendFieldDTO.getFieldName()); //薪资项名称
+
+        return prPayrollItemDTO;
     }
 
     /**
