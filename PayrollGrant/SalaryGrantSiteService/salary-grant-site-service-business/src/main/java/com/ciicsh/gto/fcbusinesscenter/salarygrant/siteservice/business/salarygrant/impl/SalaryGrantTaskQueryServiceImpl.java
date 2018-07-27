@@ -598,8 +598,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
 //    @Scheduled(cron = "0 0 20 * * ?")
     //每3分钟执行一次
-    @Scheduled(cron = "0 0/3 * * * ?")
-    @Transactional(rollbackFor = Exception.class)
+//    @Scheduled(cron = "0 0/3 * * * ?")
+//    @Transactional(rollbackFor = Exception.class)
     @Override
     public void queryForPayment() {
 //        System.out.println("薪资发放定时任务 启动时间: " + LocalDateTime.now());
