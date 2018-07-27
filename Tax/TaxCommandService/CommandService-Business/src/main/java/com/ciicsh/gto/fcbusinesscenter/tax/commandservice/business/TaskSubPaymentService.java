@@ -34,7 +34,7 @@ public interface TaskSubPaymentService {
      *
      * @param requestForSubPayment
      */
-    void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment);
+    Boolean rejectTaskSubPayment(RequestForSubPayment requestForSubPayment);
 
 
     /**

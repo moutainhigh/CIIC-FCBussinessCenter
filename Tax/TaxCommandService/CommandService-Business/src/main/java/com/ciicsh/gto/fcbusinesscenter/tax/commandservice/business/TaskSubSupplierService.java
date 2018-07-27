@@ -64,7 +64,7 @@ public interface TaskSubSupplierService {
      *
      * @param requestForTaskSubSupplier
      */
-    void rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier);
+    Boolean rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier);
 
     /**
      * 更新划款滞纳金和罚金

@@ -137,9 +137,13 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
-        updateTaskSubMoneyStatus(requestForSubMoney);
-        taskMainService.updateTaskMainStatus(requestForSubMoney.getMainIds());
+    public Boolean rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
+        Boolean flag = taskMainService.updateTaskMainStatus(requestForSubMoney.getMainIds());
+        if(flag){
+            updateTaskSubMoneyStatus(requestForSubMoney);
+        }
+        return flag;
+
     }
 
     /**
@@ -206,22 +210,22 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      * @return
      */
     @Override
-    public DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(String[] moneyIds) {
+    public DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(Long[] moneyIds) {
         DisposableChargeProxyDTO disposableChargeProxyDTOReturn = new DisposableChargeProxyDTO();
         DisposableChargeProxyDTO disposableChargeProxyDTO = new DisposableChargeProxyDTO();
         List<DisposableChargeDetailProxyDTO> disposableChargeDetailProxyDTOS = new ArrayList<>();
         for(int i = 0;i < moneyIds.length;i++){
-            String moneyId = moneyIds[i];
+            Long moneyId = moneyIds[i];
             TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(moneyId);
             //判断滞纳金是否来款
-            if(taskSubMoneyPO.getOverdue().compareTo(BigDecimal.ZERO) == 1){
+            if(taskSubMoneyPO.getOverdue() != null && taskSubMoneyPO.getOverdue().compareTo(BigDecimal.ZERO) == 1){
                 DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
                 disposableChargeDetailProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
                 disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX_LATE_FEE);
                 disposableChargeDetailProxyDTOS.add(disposableChargeDetailProxyDTO);
             }
             //判断罚金是否来款
-            if(taskSubMoneyPO.getFine().compareTo(BigDecimal.ZERO) == 1){
+            if(taskSubMoneyPO.getFine() != null && taskSubMoneyPO.getFine().compareTo(BigDecimal.ZERO) == 1){
                 DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
                 disposableChargeDetailProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
                 disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX_FINE);

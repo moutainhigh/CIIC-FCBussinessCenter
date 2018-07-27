@@ -221,8 +221,10 @@ public class TaskSubDeclareController extends BaseController {
         requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
         //任务状态
         requestForTaskSubDeclare.setStatus("03");
-        taskSubDeclareService.rejectTaskSubDeclares(requestForTaskSubDeclare);
-
+        Boolean flag = taskSubDeclareService.rejectTaskSubDeclares(requestForTaskSubDeclare);
+        if(!flag){
+            jr.fill(JsonResult.ReturnCode.BILLCENTER_2);
+        }
         return jr;
     }
 

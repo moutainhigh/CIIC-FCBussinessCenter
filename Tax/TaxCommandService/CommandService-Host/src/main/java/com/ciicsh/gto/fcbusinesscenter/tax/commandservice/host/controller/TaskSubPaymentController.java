@@ -82,8 +82,10 @@ public class TaskSubPaymentController extends BaseController {
         BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
         //任务状态
         requestForSubPayment.setStatus("03");
-        taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
-
+        Boolean flag = taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
+        if(!flag){
+            jr.fill(JsonResult.ReturnCode.BILLCENTER_2);
+        }
         return jr;
     }
 

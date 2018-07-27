@@ -127,9 +127,12 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
-        updateTaskSubPaymentStatus(requestForSubPayment);
-        taskMainService.updateTaskMainStatus(requestForSubPayment.getMainIds());
+    public Boolean rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
+        Boolean flag = taskMainService.updateTaskMainStatus(requestForSubPayment.getMainIds());
+        if(flag){
+            updateTaskSubPaymentStatus(requestForSubPayment);
+        }
+        return flag;
     }
 
     /**

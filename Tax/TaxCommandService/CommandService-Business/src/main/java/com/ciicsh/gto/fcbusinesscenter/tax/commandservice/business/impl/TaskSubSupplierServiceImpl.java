@@ -502,23 +502,28 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier) {
+    public Boolean rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier) {
+        Boolean deleteFlag = false;
         if (requestForTaskSubSupplier.getSubSupplierIds() != null && !"".equals(requestForTaskSubSupplier.getSubSupplierIds())) {
-            TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
-            //设置任务状态
-            taskSubSupplierPO.setStatus(requestForTaskSubSupplier.getStatus());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubSupplierPO());
-            //任务为通过状态
-            wrapper.and("status = {0} ", "02");
-            //任务为可用状态
-            wrapper.and("is_active = {0} ", true);
-            //主任务ID IN条件
-            wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
-            //修改供应商子任务
-            baseMapper.update(taskSubSupplierPO, wrapper);
-            taskMainService.updateTaskMainStatus(requestForTaskSubSupplier.getMainIds());
+            Boolean flag = taskMainService.updateTaskMainStatus(requestForTaskSubSupplier.getMainIds());
+            if(flag){
+                TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
+                //设置任务状态
+                taskSubSupplierPO.setStatus(requestForTaskSubSupplier.getStatus());
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskSubSupplierPO());
+                //任务为通过状态
+                wrapper.and("status = {0} ", "02");
+                //任务为可用状态
+                wrapper.and("is_active = {0} ", true);
+                //主任务ID IN条件
+                wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
+                //修改供应商子任务
+                baseMapper.update(taskSubSupplierPO, wrapper);
+            }
+            deleteFlag = flag;
         }
+        return deleteFlag;
     }
 
     /**

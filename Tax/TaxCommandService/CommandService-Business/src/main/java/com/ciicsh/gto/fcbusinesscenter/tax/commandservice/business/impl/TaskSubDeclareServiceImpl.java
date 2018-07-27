@@ -527,25 +527,30 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      * @param requestForTaskSubDeclare
      */
     @Transactional(rollbackFor = Exception.class)
-    public void rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
+    public Boolean rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
+        Boolean deleteFlag = false;
         if (requestForTaskSubDeclare.getSubDeclareIds() != null && !"".equals(requestForTaskSubDeclare.getSubDeclareIds())) {
-            TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
-            //设置任务状态
-            taskSubDeclarePO.setStatus(requestForTaskSubDeclare.getStatus());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubDeclarePO());
-            //任务为通过状态
-            wrapper.and("status = {0} ", "02");
-            //任务为可用状态
-            wrapper.and("is_active = {0} ", true);
-            //主任务ID IN条件
-            wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
-            //修改完税凭证子任务
-            baseMapper.update(taskSubDeclarePO, wrapper);
-            //修改申报子任务合并ID为数组ID的任务状态
-            baseMapper.updateBeforeMergeDeclareStatus(requestForTaskSubDeclare.getSubDeclareIds(), requestForTaskSubDeclare.getStatus(), requestForTaskSubDeclare.getModifiedBy(), LocalDateTime.now());
-            taskMainService.updateTaskMainStatus(requestForTaskSubDeclare.getMainIds());
+            Boolean flag = taskMainService.updateTaskMainStatus(requestForTaskSubDeclare.getMainIds());
+            if(flag){
+                TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
+                //设置任务状态
+                taskSubDeclarePO.setStatus(requestForTaskSubDeclare.getStatus());
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskSubDeclarePO());
+                //任务为通过状态
+                wrapper.and("status = {0} ", "02");
+                //任务为可用状态
+                wrapper.and("is_active = {0} ", true);
+                //主任务ID IN条件
+                wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
+                //修改完税凭证子任务
+                baseMapper.update(taskSubDeclarePO, wrapper);
+                //修改申报子任务合并ID为数组ID的任务状态
+                baseMapper.updateBeforeMergeDeclareStatus(requestForTaskSubDeclare.getSubDeclareIds(), requestForTaskSubDeclare.getStatus(), requestForTaskSubDeclare.getModifiedBy(), LocalDateTime.now());
+            }
+            deleteFlag = flag;
         }
+        return deleteFlag;
     }
 
 

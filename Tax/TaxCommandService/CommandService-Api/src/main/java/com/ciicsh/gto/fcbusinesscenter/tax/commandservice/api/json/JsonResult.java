@@ -42,6 +42,10 @@ public class JsonResult<T> {
 
         RECOVERY_2("雇员所在任务已经创建，不能恢复"),
 
+        BILLCENTER_1("所选主任务划款子任务中滞纳金和罚金已经收款,不可退回"),
+
+        BILLCENTER_2("所选任务划款子任务中滞纳金和罚金已经来款,不可退回"),
+
         SETTLEMENT_1("调用结算中心划款接口异常!"),
 
         SETTLEMENT_2("结算中心验证批次是否存在出错!"),

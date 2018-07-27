@@ -183,8 +183,10 @@ public class TaskSubSupplierController extends BaseController {
         BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
         //任务状态
         requestForTaskSubSupplier.setStatus("03");
-        taskSubSupplierService.rejectTaskSuppliers(requestForTaskSubSupplier);
-
+        Boolean flag = taskSubSupplierService.rejectTaskSuppliers(requestForTaskSubSupplier);
+        if(!flag){
+            jr.fill(JsonResult.ReturnCode.BILLCENTER_2);
+        }
         return jr;
     }
 

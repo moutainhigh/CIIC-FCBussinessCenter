@@ -31,7 +31,7 @@ public interface TaskSubMoneyService {
      * 批量退回划款子任务
      * @param requestForSubMoney
      */
-    void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney);
+    Boolean rejectTaskSubMoney(RequestForSubMoney requestForSubMoney);
 
     /**
      * 根据划款子任务ID查询划款任务信息
@@ -59,6 +59,6 @@ public interface TaskSubMoneyService {
      * @param moneyIds
      * @return
      */
-    DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(String[] moneyIds);
+    DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(Long[] moneyIds);
 
 }

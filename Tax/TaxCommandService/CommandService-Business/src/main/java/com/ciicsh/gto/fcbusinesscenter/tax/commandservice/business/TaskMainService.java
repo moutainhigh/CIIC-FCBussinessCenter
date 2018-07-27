@@ -47,12 +47,13 @@ public interface TaskMainService {
      * @return
      */
     ResponseForTaskMain invalidTaskMains(RequestForTaskMain requestForTaskMain);
+
     /**
      * 退回主任务
-     * @param
+     * @param requestForTaskMain
      * @return
      */
-    ResponseForTaskMain rejectTaskMains(RequestForTaskMain requestForTaskMain);
+    Boolean  rejectTaskMains(RequestForTaskMain requestForTaskMain);
     /**
      * 查询主任务明细
      * @param requestForTaskMain
@@ -64,7 +65,7 @@ public interface TaskMainService {
      * @param taskMainIds
      * @return
      */
-    void updateTaskMainStatus(Long[] taskMainIds);
+    Boolean updateTaskMainStatus(Long[] taskMainIds);
     /**
      * 子任务状态是否和主任务状态一致
      * @param taskMainIds
