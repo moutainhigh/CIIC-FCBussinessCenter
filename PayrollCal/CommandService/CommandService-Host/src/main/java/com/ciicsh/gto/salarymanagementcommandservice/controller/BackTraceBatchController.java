@@ -107,7 +107,7 @@ public class BackTraceBatchController {
         return JsonResult.success(code);
     }
 
-    @GetMapping("/getBackTraceBatch")
+    @PostMapping("/getBackTraceBatch")
     public JsonResult getBackTraceBatch(
             @RequestParam(required = false, defaultValue = "") String empCode,
             @RequestParam(required = false, defaultValue = "") String empName,
