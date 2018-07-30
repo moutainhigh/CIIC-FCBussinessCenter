@@ -598,8 +598,8 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
      */
 //    @Scheduled(cron = "0 0 20 * * ?")
     //每3分钟执行一次
-    @Scheduled(cron = "0 0/3 * * * ?")
-    @Transactional(rollbackFor = Exception.class)
+//    @Scheduled(cron = "0 0/3 * * * ?")
+//    @Transactional(rollbackFor = Exception.class)
     @Override
     public void queryForPayment() {
 //        System.out.println("薪资发放定时任务 启动时间: " + LocalDateTime.now());
@@ -616,7 +616,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
                 //任务单主表编号
                 String mainTaskCode = salaryGrantTaskPaymentBO.getMainTaskCode();
 
-                //根据任务单编号查询雇员信息
+                //根据任务单编号查询雇员信息，查询语句添加过滤条件去掉暂缓雇员（手动+自动）和工资为0的雇员 update by gy on 2018-07-26
                 List<SalaryGrantEmployeePaymentBO> waitForPaymentEmpList = salaryGrantEmployeeMapper.queryWaitForPaymentEmpList(taskCode);
 
                 //设置任务单记录字段
@@ -628,6 +628,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
                 List<SalaryGrantEmployeePaymentBO> payAmountPaymentBOList;
                 //正常发放雇员的雇员数量雇员列表
                 List<SalaryGrantEmployeePaymentBO> payEmployeeCountPaymentBOList;
+                // 如果查询任务单中雇员个数为0则不同步数据到结算中心 update by gy on 2018-07-26
                 if (!CollectionUtils.isEmpty(waitForPaymentEmpList)) {
                     //汇总金额去掉 sg_salary_grant_employee.grant_status暂缓（1-自动、2-手动）的雇员发放金额
                     payAmountPaymentBOList = waitForPaymentEmpList.stream().filter(paymentBO ->
@@ -644,44 +645,44 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
                     }
 
                     payEmployeeCount = payEmployeeCountPaymentBOList.size();
-                }
 
-                //正常发放雇员的实发工资之和
-                salaryGrantTaskPaymentBO.setPayAmount(payAmount);
-                //正常发放雇员的雇员数量
-                salaryGrantTaskPaymentBO.setPayEmployeeCount(payEmployeeCount);
+                    //正常发放雇员的实发工资之和
+                    salaryGrantTaskPaymentBO.setPayAmount(payAmount);
+                    //正常发放雇员的雇员数量
+                    salaryGrantTaskPaymentBO.setPayEmployeeCount(payEmployeeCount);
 
-                //调用结算中心发放工资清单接口
-                SalaryBatchDTO salaryBatchDTO = commonService.saveSalaryBatchData(salaryGrantTaskPaymentBO, waitForPaymentEmpList);
-                if (!ObjectUtils.isEmpty(salaryBatchDTO)) {
-                    //更新任务单子表状态
-                    //更新字段
-                    SalaryGrantSubTaskPO salaryGrantSubTaskPO = new SalaryGrantSubTaskPO();
-                    salaryGrantSubTaskPO.setTaskStatus("6");
-                    //更新条件
-                    EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
-                    subTaskPOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", taskCode);
-                    salaryGrantSubTaskMapper.update(salaryGrantSubTaskPO, subTaskPOEntityWrapper);
+                    //调用结算中心发放工资清单接口
+                    SalaryBatchDTO salaryBatchDTO = commonService.saveSalaryBatchData(salaryGrantTaskPaymentBO, waitForPaymentEmpList);
+                    if (!ObjectUtils.isEmpty(salaryBatchDTO)) {
+                        //更新任务单子表状态
+                        //更新字段
+                        SalaryGrantSubTaskPO salaryGrantSubTaskPO = new SalaryGrantSubTaskPO();
+                        salaryGrantSubTaskPO.setTaskStatus("6");
+                        //更新条件
+                        EntityWrapper<SalaryGrantSubTaskPO> subTaskPOEntityWrapper = new EntityWrapper<>();
+                        subTaskPOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", taskCode);
+                        salaryGrantSubTaskMapper.update(salaryGrantSubTaskPO, subTaskPOEntityWrapper);
 
-                    //更新任务单主表状态
-                    //更新字段
-                    SalaryGrantMainTaskPO salaryGrantMainTaskPO = new SalaryGrantMainTaskPO();
-                    salaryGrantMainTaskPO.setTaskStatus("6");
-                    //更新条件
-                    EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
-                    mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
-                    salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
-                }
+                        //更新任务单主表状态
+                        //更新字段
+                        SalaryGrantMainTaskPO salaryGrantMainTaskPO = new SalaryGrantMainTaskPO();
+                        salaryGrantMainTaskPO.setTaskStatus("6");
+                        //更新条件
+                        EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
+                        mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
+                        salaryGrantMainTaskMapper.update(salaryGrantMainTaskPO, mainTaskPOEntityWrapper);
 
-                //查询任务单主表记录
-                EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper = new EntityWrapper<>();
-                mainTaskPOEntityWrapper.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
-                List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper);
-                if (!CollectionUtils.isEmpty(mainTaskPOList)) {
-                    mainTaskPOList.stream().forEach(salaryGrantMainTaskPO -> {
-                        //更新mongodb中标记为1
-                        fcBizTransactionMongoOpt.commitEvent(salaryGrantMainTaskPO.getBatchCode(), salaryGrantMainTaskPO.getGrantType(), EventName.FC_GRANT_EVENT, 1);
-                    });
+                        //查询任务单主表记录
+                        EntityWrapper<SalaryGrantMainTaskPO> mainTaskPOEntityWrapper1 = new EntityWrapper<>();
+                        mainTaskPOEntityWrapper1.where("salary_grant_main_task_code = {0} and is_active = 1", mainTaskCode);
+                        List<SalaryGrantMainTaskPO> mainTaskPOList = salaryGrantMainTaskMapper.selectList(mainTaskPOEntityWrapper1);
+                        if (!CollectionUtils.isEmpty(mainTaskPOList)) {
+                            mainTaskPOList.stream().forEach(salaryGrantMainTaskPO1 -> {
+                                //更新mongodb中标记为1
+                                fcBizTransactionMongoOpt.commitEvent(salaryGrantMainTaskPO1.getBatchCode(), salaryGrantMainTaskPO1.getGrantType(), EventName.FC_GRANT_EVENT, 1);
+                            });
+                        }
+                    }
                 }
             });
         }

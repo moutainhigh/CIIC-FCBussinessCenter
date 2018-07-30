@@ -24,44 +24,37 @@ public interface TaskSink {
     /**
      * 本地
      */
-    String PAYROLL_MAIN = "common_taskservice_payroll_main-channel";
+    String PAYROLL_MAIN = "common_taskservice_payroll_main-input-channel";
     @Input(PAYROLL_MAIN)
     MessageChannel salaryGrantMainTaskCreateWorkFlow();
 
     /**
      * 创建薪资发放本地本币任务单LTB工作流TOPIC
      */
-    String PAYROLL_LOCAL_DOMESTIC_CURRENCY = "common_taskservice_payroll_local_domestic_currency-channel";
+    String PAYROLL_LOCAL_DOMESTIC_CURRENCY = "common_taskservice_payroll_local_domestic_currency-input-channel";
     @Input(PAYROLL_LOCAL_DOMESTIC_CURRENCY)
     MessageChannel salaryGrantSubTaskLTBCreateWorkFlow();
 
     /**
      * 创建薪资发放本地外币任务单LTW工作流TOPIC
      */
-    String PAYROLL_LOCAL_FOREIGN_CURRENCY = "common_taskservice_payroll_local_foreign_currency-channel";
+    String PAYROLL_LOCAL_FOREIGN_CURRENCY = "common_taskservice_payroll_local_foreign_currency-input-channel";
     @Input(PAYROLL_LOCAL_FOREIGN_CURRENCY)
     MessageChannel salaryGrantSubTaskLTWCreateWorkFlow();
 
     /**
      * 创建薪资发放外地任务单ST工作流TOPIC
      */
-    String PAYROLL_NONLOCAL = "common_taskservice_payroll_nonlocal-channel";
+    String PAYROLL_NONLOCAL = "common_taskservice_payroll_nonlocal-input-channel";
     @Input(PAYROLL_NONLOCAL)
     MessageChannel salaryGrantSubTaskSTACreateWorkFlow();
 
     /**
      * 创建供应商支付任务单SPT工作流TOPIC
      */
-    String SUPPLIER_PAYMENT = "common_taskservice_supplier_payment-channel";
+    String SUPPLIER_PAYMENT = "common_taskservice_supplier_payment-input-channel";
     @Input(SUPPLIER_PAYMENT)
     MessageChannel salaryGrantSupplierPaymentTaskCreateWorkFlow();
-
-    /**
-     * 创建薪资发放任务单TOPIC
-     */
-    String SALARY_GRANT_MAIN_TASK_CREATE_TASK = "sg_compute-close-output-channel";
-    @Input(SALARY_GRANT_MAIN_TASK_CREATE_TASK)
-    MessageChannel salaryGrantMainTaskCreateTask();
 
     /**
      * 结算中心退票TOPIC
@@ -78,9 +71,16 @@ public interface TaskSink {
     MessageChannel salaryGrantPaymentProcess();
 
     /**
+     * 关帐TOPIC
+     */
+    String SALARY_GRANT_MAIN_TASK_CREATE_TASK = "sg-compute-close-input-channel";
+    @Input(SALARY_GRANT_MAIN_TASK_CREATE_TASK)
+    MessageChannel salaryGrantMainTaskCreateTask();
+
+    /**
      * 取消关帐TOPIC
      */
-    String SALARY_GRANT_MAIN_TASK_CANCEL_TASK = "sg_compute-unclose-output-channel";
+    String SALARY_GRANT_MAIN_TASK_CANCEL_TASK = "sg-compute-unclose-input-channel";
     @Input(SALARY_GRANT_MAIN_TASK_CANCEL_TASK)
     MessageChannel salaryGrantMainTaskCancelTask();
 }

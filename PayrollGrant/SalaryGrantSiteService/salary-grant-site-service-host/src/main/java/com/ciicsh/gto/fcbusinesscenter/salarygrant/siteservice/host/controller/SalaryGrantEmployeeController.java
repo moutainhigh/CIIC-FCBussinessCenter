@@ -6,18 +6,16 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantEmployeeDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeCommandService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantEmployeeQueryService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.CommonTransform;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +40,6 @@ public class SalaryGrantEmployeeController {
     @Autowired
     private SalaryGrantEmployeeCommandService employeeCommandService;
     @Autowired
-    private CommonService commonService;
-    @Autowired
     LogClientService logClientService;
 
     /**
@@ -57,32 +53,9 @@ public class SalaryGrantEmployeeController {
     public Page<SalaryGrantEmployeeDTO> queryEmployeeForSubTask(@RequestBody SalaryGrantEmployeeDTO salaryGrantEmployeeDTO){
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("查询子表的雇员信息").setContent(JSON.toJSONString(salaryGrantEmployeeDTO)));
 
-        Page<SalaryGrantEmployeeBO> page = new Page<>();
-        page.setCurrent(salaryGrantEmployeeDTO.getCurrent());
-        page.setSize(salaryGrantEmployeeDTO.getSize());
-        SalaryGrantEmployeeBO grantEmployeeBO = new SalaryGrantEmployeeBO();
-        BeanUtils.copyProperties(salaryGrantEmployeeDTO, grantEmployeeBO);
-
+        Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(salaryGrantEmployeeDTO.getCurrent(), salaryGrantEmployeeDTO.getSize());
+        SalaryGrantEmployeeBO grantEmployeeBO = CommonTransform.convertToEntity(salaryGrantEmployeeDTO, SalaryGrantEmployeeBO.class);
         page = employeeQueryService.queryEmployeeTask(page, grantEmployeeBO);
-
-        //字段转换
-        List<SalaryGrantEmployeeBO> employeeBOList = page.getRecords();
-        if (!CollectionUtils.isEmpty(employeeBOList)) {
-            int size = employeeBOList.size();
-            SalaryGrantEmployeeBO employeeBO;
-            for (int i = 0; i < size; i++) {
-                employeeBO = employeeBOList.get(i);
-                //国籍转码
-                if (!StringUtils.isEmpty(employeeBO.getCountryCode())){
-                    employeeBO.setCountryName(commonService.getCountryName(employeeBO.getCountryCode()));
-                }
-
-                //发放状态
-                if (!ObjectUtils.isEmpty(employeeBO.getGrantStatus())){
-                    employeeBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(employeeBO.getGrantStatus())));
-                }
-            }
-        }
 
         // BO PAGE 转换为 DTO PAGE
         String boJSONStr = JSONObject.toJSONString(page);
@@ -101,32 +74,9 @@ public class SalaryGrantEmployeeController {
     public Page<SalaryGrantEmployeeDTO> queryEmployeeInfoChanged(@RequestBody SalaryGrantEmployeeDTO salaryGrantEmployeeDTO){
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放雇员信息").setTitle("查询发放变化的雇员信息").setContent(JSON.toJSONString(salaryGrantEmployeeDTO)));
 
-        Page<SalaryGrantEmployeeBO> page = new Page<>();
-        page.setCurrent(salaryGrantEmployeeDTO.getCurrent());
-        page.setSize(salaryGrantEmployeeDTO.getSize());
-        SalaryGrantEmployeeBO grantEmployeeBO = new SalaryGrantEmployeeBO();
-        BeanUtils.copyProperties(salaryGrantEmployeeDTO, grantEmployeeBO);
-
+        Page<SalaryGrantEmployeeBO> page = new Page<SalaryGrantEmployeeBO>(salaryGrantEmployeeDTO.getCurrent(), salaryGrantEmployeeDTO.getSize());
+        SalaryGrantEmployeeBO grantEmployeeBO = CommonTransform.convertToEntity(salaryGrantEmployeeDTO, SalaryGrantEmployeeBO.class);
         page = employeeQueryService.queryEmployeeInfoChanged(page, grantEmployeeBO);
-
-        //字段转换
-        List<SalaryGrantEmployeeBO> employeeBOList = page.getRecords();
-        if (!CollectionUtils.isEmpty(employeeBOList)) {
-            int size = employeeBOList.size();
-            SalaryGrantEmployeeBO employeeBO;
-            for (int i = 0; i < size; i++) {
-                employeeBO = employeeBOList.get(i);
-                //国籍转码
-                if (!StringUtils.isEmpty(employeeBO.getCountryCode())){
-                    employeeBO.setCountryName(commonService.getCountryName(employeeBO.getCountryCode()));
-                }
-
-                //发放状态
-                if (!ObjectUtils.isEmpty(employeeBO.getGrantStatus())){
-                    employeeBO.setGrantStatusName(commonService.getNameByValue("sgGrantStatus", String.valueOf(employeeBO.getGrantStatus())));
-                }
-            }
-        }
 
         // BO PAGE 转换为 DTO PAGE
         String boJSONStr = JSONObject.toJSONString(page);
