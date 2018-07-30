@@ -13,4 +13,6 @@ public class BatchCompareItemBO {
     private String srcValue;
 
     private String tgtValue;
+
+    private boolean isSrcBatchFlag;
 }

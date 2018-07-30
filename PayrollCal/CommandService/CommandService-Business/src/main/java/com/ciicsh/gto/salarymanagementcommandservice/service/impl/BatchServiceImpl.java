@@ -10,20 +10,18 @@ import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareItemBO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.InWitchCompareBatchEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.AdvanceBatchInfoPO;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchEmpRelationMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.BatchService;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.util.*;
-import java.util.concurrent.ForkJoinPool;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by NeoJiang on 2018/5/2.
@@ -45,9 +43,9 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public List<BatchCompareEmpBO> compareBatch(String srcBatchCode, Integer srcBatchType,
-                                           String tgtBatchCode, Integer tgtBatchType,
-                                           List<String> compareKeys,
-                                           LinkedHashMap<String, String> compareMap) {
+                                                String tgtBatchCode, Integer tgtBatchType,
+                                                List<String> compareKeys,
+                                                IdentityHashMap<String, String> compareMap) {
 
         List<DBObject> srcBatchList = this.getBatchItemList(srcBatchType, srcBatchCode);
         List<DBObject> tgtBatchList = this.getBatchItemList(tgtBatchType, tgtBatchCode);
@@ -58,118 +56,79 @@ public class BatchServiceImpl implements BatchService {
         List<BatchCompareEmpBO> batchCompareEmpBOList = new ArrayList<>();
 
         srcBatchList.forEach(i -> {
-            if (i.get("雇员编号") != null) {
-                BatchCompareEmpBO empResultBO = new BatchCompareEmpBO();
-
-                String srcEmpId = i.get("雇员编号").toString();
-                empResultBO.setEmployeeId(srcEmpId);
-
-                Optional<DBObject> tgtEmpResultData = tgtBatchList.stream()
-                        .filter(j -> {
-                            String tgtEmpId = j.get("雇员编号").toString();
-                            return srcEmpId.equals(tgtEmpId);
-                        })
-                        .findFirst();
-
-                List<BatchCompareItemBO> batchCompareItemBOList = new ArrayList<>();
-
-                if (tgtEmpResultData.isPresent()) {
-                    empResultBO.setInWhichBatch(InWitchCompareBatchEnum.BOTH.getValue());
-
-                    DBObject srcCatalog = (DBObject)i.get("catalog");
-                    List<DBObject> srcPayItems = (List<DBObject>)srcCatalog.get("pay_items");
-                    DBObject tgtCatalog = (DBObject)i.get("catalog");
-                    List<DBObject> tgtPayItems = (List<DBObject>)tgtCatalog.get("pay_items");
-
-                    compareMap.forEach((k,v) -> {
-                        DBObject srcItem = srcPayItems.stream()
-                                .filter(item -> k.equals(item.get("item_name")))
-                                .findFirst()
-                                .orElse(null);
-
-                        DBObject tgtItem = tgtPayItems.stream()
-                                .filter(item -> v.equals(item.get("item_name")))
-                                .findFirst()
-                                .orElse(null);
-
-                        BatchCompareItemBO itemBO = new BatchCompareItemBO();
-
-                        itemBO.setMappingKey(k);
-                        itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
-                        itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
-
-                        batchCompareItemBOList.add(itemBO);
-                    });
-                    tgtBatchList.remove(tgtEmpResultData);
-                } else {
-                    empResultBO.setInWhichBatch(InWitchCompareBatchEnum.SRC.getValue());
-
-                    DBObject srcCatalog = (DBObject)i.get("catalog");
-                    List<DBObject> srcPayItems = (List<DBObject>)srcCatalog.get("pay_items");
-
-                    compareMap.forEach((k,v) -> {
-                        DBObject srcItem = srcPayItems.stream()
-                                .filter(item -> k.equals(item.get("item_name")))
-                                .findFirst()
-                                .orElse(null);
-
-                        BatchCompareItemBO itemBO = new BatchCompareItemBO();
-
-                        itemBO.setMappingKey(k);
-                        itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
-                        itemBO.setTgtValue("");
-
-                        batchCompareItemBOList.add(itemBO);
-                    });
-                }
-
-                empResultBO.setItemList(batchCompareItemBOList);
-                batchCompareEmpBOList.add(empResultBO);
-            }
+            compareBatchList(compareMap, tgtBatchList, batchCompareEmpBOList, i, true);
         });
 
+        IdentityHashMap<String, String> tgtCompareMap = new IdentityHashMap<>();
+        for (String k : compareMap.keySet()) {
+            tgtCompareMap.put(new String(compareMap.get(k)), k);
+        }
         tgtBatchList.forEach(i -> {
-            if (i.get("雇员编号") != null) {
-                BatchCompareEmpBO empResultBO = new BatchCompareEmpBO();
-
-                String empId = i.get("雇员编号").toString();
-                empResultBO.setEmployeeId(empId);
-
-                List<BatchCompareItemBO> batchCompareItemBOList = new ArrayList<>();
-
-                empResultBO.setInWhichBatch(InWitchCompareBatchEnum.TGT.getValue());
-
-                DBObject tgtCatalog = (DBObject)i.get("catalog");
-                List<DBObject> tgtPayItems = (List<DBObject>)tgtCatalog.get("pay_items");
-
-                compareMap.forEach((k,v) -> {
-                    DBObject tgtItem = tgtPayItems.stream()
-                            .filter(item -> v.equals(item.get("item_name")))
-                            .findFirst()
-                            .orElse(null);
-
-                    BatchCompareItemBO itemBO = new BatchCompareItemBO();
-
-                    itemBO.setMappingKey(k);
-                    itemBO.setSrcValue("");
-                    itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
-
-                    batchCompareItemBOList.add(itemBO);
-                });
-
-                empResultBO.setItemList(batchCompareItemBOList);
-                batchCompareEmpBOList.add(empResultBO);
-            }
+            compareBatchList(tgtCompareMap, srcBatchList, batchCompareEmpBOList, i, false);
         });
-//
-//
-//        compareMap.forEach((k, v) -> {
-//
-//        });
-
-        //query = query.skip(pageindex*size).limit(size);
-
         return batchCompareEmpBOList;
+    }
+
+    private void compareBatchList(IdentityHashMap<String, String> compareMap,
+                                  List<DBObject> tgtBatchList,
+                                  List<BatchCompareEmpBO> batchCompareEmpBOList,
+                                  DBObject i,
+                                  boolean isSrcBatchFlag) {
+        if (i.get("雇员编号") != null) {
+            BatchCompareEmpBO empResultBO = new BatchCompareEmpBO();
+
+            String srcEmpId = i.get("雇员编号").toString();
+            empResultBO.setEmployeeId(srcEmpId);
+
+            Optional<DBObject> tgtEmpResultData = tgtBatchList.stream()
+                    .filter(j -> {
+                        String tgtEmpId = j.get("雇员编号").toString();
+                        return srcEmpId.equals(tgtEmpId);
+                    })
+                    .findFirst();
+
+            List<BatchCompareItemBO> batchCompareItemBOList = new ArrayList<>();
+
+            empResultBO.setInWhichBatch(tgtEmpResultData.isPresent() ?
+                    InWitchCompareBatchEnum.BOTH.getValue() : InWitchCompareBatchEnum.SRC.getValue());
+
+            DBObject srcCatalog = (DBObject) i.get("catalog");
+            List<DBObject> srcPayItems = (List<DBObject>) srcCatalog.get("pay_items");
+            DBObject tgtCatalog = (DBObject) tgtBatchList.get(0).get("catalog");
+            List<DBObject> tgtPayItems = (List<DBObject>) tgtCatalog.get("pay_items");
+
+            comparePayItems(compareMap, batchCompareItemBOList, srcPayItems, tgtPayItems, isSrcBatchFlag);
+            empResultBO.setItemList(batchCompareItemBOList);
+            batchCompareEmpBOList.add(empResultBO);
+        }
+    }
+
+    private void comparePayItems(IdentityHashMap<String, String> compareMap,
+                                 List<BatchCompareItemBO> batchCompareItemBOList,
+                                 List<DBObject> srcPayItems,
+                                 List<DBObject> tgtPayItems,
+                                 boolean isSrcBatchFlag) {
+        compareMap.forEach((k, v) -> {
+            DBObject srcItem = getItemsFromDbObject(srcPayItems, k);
+
+            DBObject tgtItem = getItemsFromDbObject(tgtPayItems, v);
+
+            BatchCompareItemBO itemBO = new BatchCompareItemBO();
+
+            itemBO.setMappingKey(isSrcBatchFlag ? k : v);
+            itemBO.setSrcBatchFlag(isSrcBatchFlag);
+            itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
+            itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
+
+            batchCompareItemBOList.add(itemBO);
+        });
+    }
+
+    private DBObject getItemsFromDbObject(List<DBObject> srcPayItems, String k) {
+        return srcPayItems.stream()
+                .filter(item -> k.equals(item.get("item_name")))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -181,7 +140,7 @@ public class BatchServiceImpl implements BatchService {
         if (dbObject == null) {
             return "";
         } else {
-            Optional<Object> itemValue =  Optional.ofNullable(dbObject.get("item_value"));
+            Optional<Object> itemValue = Optional.ofNullable(dbObject.get("item_value"));
             return itemValue.map(Object::toString).orElse("");
         }
     }
@@ -200,42 +159,18 @@ public class BatchServiceImpl implements BatchService {
         ;
 
 
-        if(batchType == BatchTypeEnum.NORMAL.getValue()) {
-            batchList = normalBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH);
-        }else if(batchType == BatchTypeEnum.ADJUST.getValue()) {
-            batchList = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, AdjustBatchMongoOpt.PR_ADJUST_BATCH);
-        }else {
-            batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
+        if (batchType == BatchTypeEnum.NORMAL.getValue()) {
+            batchList = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class,
+                    NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
+            batchList = adjustBatchMongoOpt.getMongoTemplate().find(query, DBObject.class,
+                    AdjustBatchMongoOpt.PR_ADJUST_BATCH);
+        } else {
+            batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query, DBObject.class,
+                    BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
 
         return batchList;
     }
 
-    private DBObject findRecordFromListByCompareKeys(List<DBObject> records, List<String> keys) {
-
-        //平铺item list
-        List<List<DBObject>> itemListList = records.stream()
-                .map(i -> (DBObject)i.get("catalog"))
-                .map(catalog -> (List<DBObject>)catalog.get("pay_items"))
-                .collect(Collectors.toList());
-
-//        Map<String, List<DBObject>> itemListMap = itemListList.stream()
-//                .collect(Collectors.groupingBy(list -> list);
-
-//
-//                .collect(Collectors.toMap(catalog -> {
-//                    List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
-//                    List<String> keyStr = new ArrayList<>();
-//                    keys.forEach(i -> {
-//                        DBObject name = payItems.stream()
-//                                .filter(item -> i.equals(item.get("item_name")))
-//                                .findFirst()
-//                                .orElse(null);
-//
-//                    });
-//                    return "";
-//                }, catalog -> new ArrayList<DBObject>()));
-
-        return null;
-    }
 }

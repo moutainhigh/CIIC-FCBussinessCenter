@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagement.entity.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 
 /**
@@ -28,5 +29,5 @@ public class BatchCompareRequestDTO {
     private String compareKeysStr;
 
     // 对比列mapping
-    private LinkedHashMap<String, String> mapping = new LinkedHashMap<>();
+    private IdentityHashMap<String, String> mapping = new IdentityHashMap<>();
 }

@@ -5,6 +5,7 @@ import com.ciicsh.gto.salarymanagement.entity.po.AdvanceBatchInfoPO;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public interface BatchService {
                                          String targetBatchCode,
                                          Integer tgtBatchType,
                                          List<String> compareKeys,
-                                         LinkedHashMap<String, String> compareMap);
+                                         IdentityHashMap<String, String> compareMap);
 
     int updateAdvancedBatch(AdvanceBatchInfoPO advanceBatchInfoPO);
 
