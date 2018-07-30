@@ -134,7 +134,7 @@ public class AdjustBatchController {
         }
     }
 
-    @GetMapping("/getAdjustBatch")
+    @PostMapping("/getAdjustBatch/{batchCode}")
     public JsonResult getAdjustBatch(
             @RequestParam(required = false, defaultValue = "") String empCode,
             @RequestParam(required = false, defaultValue = "") String empName,
@@ -142,7 +142,7 @@ public class AdjustBatchController {
             @RequestParam(required = false, defaultValue = "") String customValue,
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
-            @RequestParam String batchCode) {
+            @PathVariable("batchCode") String batchCode) {
 
 
         Criteria criteria = Criteria.where("batch_code").is(batchCode);
@@ -153,8 +153,16 @@ public class AdjustBatchController {
         if(StringUtils.isNotEmpty(empName)){
             criteria.and("catalog.emp_info."+ PayItemName.EMPLOYEE_NAME_CN).regex(empName);
         }
+
         if(StringUtils.isNotEmpty(customKey) && StringUtils.isNotEmpty(customValue)){
-            criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(customKey).and("item_value").regex(customValue));
+            String fieldName = customKey.split(",")[0];
+            String dataType = customKey.split(",")[1];
+            if(dataType.equals(String.valueOf(DataTypeEnum.NUM.getValue()))){
+                double val = Double.parseDouble(customValue);
+                criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(fieldName).and("item_value").is(val));
+            }else {
+                criteria.and("catalog.pay_items").elemMatch(Criteria.where("item_name").is(fieldName).and("item_value").regex(customValue));
+            }
         }
 
         Query query = new Query(criteria);
@@ -167,9 +175,11 @@ public class AdjustBatchController {
 
         query.fields().
                 include(PayItemName.EMPLOYEE_CODE_CN).
+                include(PayItemName.EMPLOYEE_COMPANY_ID).
                 include("catalog.emp_info."+PayItemName.EMPLOYEE_NAME_CN).
-                include("catalog.emp_info."+PayItemName.EMPLOYEE_TAX_CN).
                 include("catalog.pay_items.data_type").
+                include("catalog.pay_items.canLock").
+                include("catalog.pay_items.isLocked").
                 include("catalog.pay_items.item_type").
                 include("catalog.pay_items.item_name").
                 include("catalog.pay_items.item_value").
@@ -179,6 +189,14 @@ public class AdjustBatchController {
         query.limit(pageSize);
 
         List<DBObject> list = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
+
+        if(list.size() == 1){ // 如果有一条纪录，但 emp_info 为 "" 时，说明雇员组没有雇员
+            DBObject checkEmpInfo = list.get(0);
+            DBObject catalog = (DBObject)checkEmpInfo.get("catalog");
+            if(catalog.get("emp_info") == null){
+                return JsonResult.success(0);
+            }
+        }
 
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = commonService.translate(list);
 

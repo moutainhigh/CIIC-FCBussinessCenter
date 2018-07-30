@@ -19,6 +19,9 @@
     <artifactId>caldispatchjob-compute</artifactId>
     <version>1.0.0</version>
 
+    <properties>
+        <hello>111</hello>
+    </properties>
 
     <dependencies>
         <!-- Spring Cloud -->
@@ -99,11 +102,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ciicsh.gt1</groupId>
-            <artifactId>payroll_common_function</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -136,6 +137,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
