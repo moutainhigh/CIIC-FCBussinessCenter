@@ -16,16 +16,15 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+@Component
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Autowired
@@ -35,18 +34,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     private MongoConfig mongoConfig;
 
     @Override
+//    @Scheduled(fixedDelay=5000)
     @Scheduled(cron = "0 */4 * * * ?")
     public void uploadEmps() {
-//        ExecutorService pool = Executors.newFixedThreadPool(5);
-//        try {
-//                pool.submit(() -> {
-//
-//                } );
-//        } finally {
-//            pool.shutdown();
-//        }
-
-
         long now = System.currentTimeMillis();
         List<String> taskIds = taskMapper.selectList(new EntityWrapper<PrsMainTaskPO>().eq("upload_state", 1)).stream().filter(po -> po.getUploadDate() != null &&  now >= po.getUploadDate().getTime()).map(po -> po.getMainTaskId()).collect(Collectors.toList());
 
@@ -92,7 +82,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 {
                     put("mainTaskId", taskId);
                     put("uploadState", 3);
-                    put("uploadExecDate", now);
+                    put("uploadExecDate", new Date(now));
                 }
             };
             taskMapper.update(updateTask);
