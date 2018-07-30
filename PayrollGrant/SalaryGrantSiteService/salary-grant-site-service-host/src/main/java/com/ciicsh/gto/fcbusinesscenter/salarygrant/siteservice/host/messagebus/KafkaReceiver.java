@@ -58,6 +58,51 @@ public class KafkaReceiver {
     private WorkFlowTaskInfoService workFlowTaskInfoService;
 
     /**
+     * 结算中心退票消息
+     * @param message
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @StreamListener(TaskSink.SALARY_GRANT_REFUND)
+    public void salaryGrantRefundProcess(Message<PayApplyReturnTicketDTO> message) {
+        PayApplyReturnTicketDTO payApplyReturnTicketDTO = message.getPayload();
+        try {
+            if (!ObjectUtils.isEmpty(payApplyReturnTicketDTO)) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心退票 --> start").setContent(JSON.toJSONString(payApplyReturnTicketDTO)));
+                //发放批次号
+                String taskCode = payApplyReturnTicketDTO.getSequenceNo();
+                //退票雇员信息列表
+                List<EmployeeReturnTicketDTO> refundEmployeeList = payApplyReturnTicketDTO.getEmployeeReturnTicketDTOList();
+                salaryGrantEmployeeCommandService.updateForRefund(taskCode, refundEmployeeList);
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心退票 --> end"));
+            }
+        } catch (Exception e) {
+            Map map = new HashMap();
+            map.put("PayApplyReturnTicketDTO", JSON.toJSONString(payApplyReturnTicketDTO));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心退票 --> exception").setContent(e.getMessage()).setTags(map));
+        }
+    }
+
+    /**
+     * 结算中心支付消息
+     * @param message
+     */
+    @StreamListener(TaskSink.SALARY_GRANT_PAYMENT)
+    public void salaryGrantPaymentProcess(Message<PayApplyPayStatusDTO> message) {
+        PayApplyPayStatusDTO dto = message.getPayload();
+        try {
+            if (!ObjectUtils.isEmpty(dto) && !ObjectUtils.isEmpty(dto.getPayApplySalaryDTOList()) && dto.getPayApplySalaryDTOList().size()>0 && SalaryGrantBizConsts.SETTLEMENT_CENTER_BUSINESS_TYPE_SG.equals(dto.getBusinessType()) && SalaryGrantBizConsts.SETTLEMENT_CENTER_PAY_STATUS_SUCCESS.equals(dto.getPayStatus())) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> start").setContent(JSON.toJSONString(dto)));
+                salaryGrantTaskQueryService.syncPayStatus(dto.getPayApplySalaryDTOList());
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> end"));
+            }
+        } catch (Exception e) {
+            Map map = new HashMap();
+            map.put("PayApplyPayStatusDTO", JSON.toJSONString(dto));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> exception").setContent(e.getMessage()).setTags(map));
+        }
+    }
+
+    /**
      * 接收计算引擎关账消息，获取计算批次号
      * @param message
      */
@@ -81,30 +126,26 @@ public class KafkaReceiver {
         }
     }
 
-    @StreamListener(TaskSink.PAYROLL_MAIN)
-    public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
-        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getType(), message);
+    /**
+     * 接收计算引擎取消关账消息，获取计算批次号
+     * @param message
+     */
+    @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CANCEL_TASK)
+    public void salaryGrantMainTaskCancelTask(Message<CancelClosingMsg> message) {
+        CancelClosingMsg cancelClosingMsg = message.getPayload();
+        try {
+            if (!ObjectUtils.isEmpty(cancelClosingMsg)) {
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> start").setContent(JSON.toJSONString(cancelClosingMsg)));
+                salaryGrantTaskQueryService.cancelClosing(cancelClosingMsg);
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> end"));
+            }
+        } catch (Exception e) {
+            Map map = new HashMap();
+            map.put("CancelClosingMsg", JSON.toJSONString(cancelClosingMsg));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> exception").setContent(e.getMessage()).setTags(map));
+        }
     }
 
-    @StreamListener(TaskSink.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
-    public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
-        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTB.getType(), message);
-    }
-
-    @StreamListener(TaskSink.PAYROLL_LOCAL_FOREIGN_CURRENCY)
-    public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
-        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTW.getType(), message);
-    }
-
-    @StreamListener(TaskSink.PAYROLL_NONLOCAL)
-    public void salaryGrantSubTaskSTACreateWorkFlow(Message<TaskCreateMsgDTO> message) {
-        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.STA.getType(), message);
-    }
-
-    @StreamListener(TaskSink.SUPPLIER_PAYMENT)
-    public void salaryGrantSupplierPaymentTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
-        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SPT.getType(), message);
-    }
 
     /**
      * 接收任务完成消息
@@ -142,62 +183,29 @@ public class KafkaReceiver {
         }
     }
 
-    /**
-     * 结算中心退票消息
-     * @param message
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @StreamListener(TaskSink.SALARY_GRANT_REFUND)
-    public void salaryGrantRefundProcess(Message<PayApplyReturnTicketDTO> message) {
-        PayApplyReturnTicketDTO payApplyReturnTicketDTO = message.getPayload();
-        if (!ObjectUtils.isEmpty(payApplyReturnTicketDTO)) {
-            //发放批次号
-            String taskCode = payApplyReturnTicketDTO.getSequenceNo();
-            //退票雇员信息列表
-            List<EmployeeReturnTicketDTO> refundEmployeeList = payApplyReturnTicketDTO.getEmployeeReturnTicketDTOList();
-
-            salaryGrantEmployeeCommandService.updateForRefund(taskCode, refundEmployeeList);
-        }
+    @StreamListener(TaskSink.PAYROLL_MAIN)
+    public void salaryGrantMainTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SGT.getType(), message);
     }
 
-    /**
-     * 结算中心支付消息
-     * @param message
-     */
-    @StreamListener(TaskSink.SALARY_GRANT_PAYMENT)
-    public void salaryGrantPaymentProcess(Message<PayApplyPayStatusDTO> message) {
-        PayApplyPayStatusDTO dto = message.getPayload();
-        try {
-            if (!ObjectUtils.isEmpty(dto) && !ObjectUtils.isEmpty(dto.getPayApplySalaryDTOList()) && dto.getPayApplySalaryDTOList().size()>0 && SalaryGrantBizConsts.SETTLEMENT_CENTER_BUSINESS_TYPE_SG.equals(dto.getBusinessType()) && SalaryGrantBizConsts.SETTLEMENT_CENTER_PAY_STATUS_SUCCESS.equals(dto.getPayStatus())) {
-                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> start").setContent(JSON.toJSONString(dto)));
-                salaryGrantTaskQueryService.syncPayStatus(dto.getPayApplySalaryDTOList());
-                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> end"));
-            }
-        } catch (Exception e) {
-            Map map = new HashMap();
-            map.put("PayApplyPayStatusDTO", JSON.toJSONString(dto));
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步结算中心支付状态 --> exception").setContent(e.getMessage()).setTags(map));
-        }
+    @StreamListener(TaskSink.PAYROLL_LOCAL_DOMESTIC_CURRENCY)
+    public void salaryGrantSubTaskLTBCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTB.getType(), message);
     }
 
-    /**
-     * 接收计算引擎取消关账消息，获取计算批次号
-     * @param message
-     */
-    @StreamListener(TaskSink.SALARY_GRANT_MAIN_TASK_CANCEL_TASK)
-    public void salaryGrantMainTaskCancelTask(Message<CancelClosingMsg> message) {
-        CancelClosingMsg cancelClosingMsg = message.getPayload();
-        try {
-            if (!ObjectUtils.isEmpty(cancelClosingMsg)) {
-                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> start").setContent(JSON.toJSONString(cancelClosingMsg)));
-                salaryGrantTaskQueryService.cancelClosing(cancelClosingMsg);
-                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> end"));
-            }
-        } catch (Exception e) {
-            Map map = new HashMap();
-            map.put("CancelClosingMsg", JSON.toJSONString(cancelClosingMsg));
-            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("取消关账 --> exception").setContent(e.getMessage()).setTags(map));
-        }
+    @StreamListener(TaskSink.PAYROLL_LOCAL_FOREIGN_CURRENCY)
+    public void salaryGrantSubTaskLTWCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.LTW.getType(), message);
+    }
+
+    @StreamListener(TaskSink.PAYROLL_NONLOCAL)
+    public void salaryGrantSubTaskSTACreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.STA.getType(), message);
+    }
+
+    @StreamListener(TaskSink.SUPPLIER_PAYMENT)
+    public void salaryGrantSupplierPaymentTaskCreateWorkFlow(Message<TaskCreateMsgDTO> message) {
+        this.handleMessage(SalaryGrantWorkFlowEnums.ProcessDefinitionKey.SPT.getType(), message);
     }
 
     private void handleMessage(String action, Message<TaskCreateMsgDTO> message) {

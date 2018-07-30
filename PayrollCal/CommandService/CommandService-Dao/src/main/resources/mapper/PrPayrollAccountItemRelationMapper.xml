@@ -59,7 +59,7 @@
 		<if test="payrollGroupCode != null and payrollGroupCode != ''">
 			AND b.payroll_group_code = #{payrollGroupCode}
 		</if>
-		<if test="managementId != null and managementId != ''">
+		<if test="managementId != null and managementId != '' and payrollGroupCode != null and payrollGroupCode != ''">
 			AND b.management_id = #{managementId}
 		</if>
 		ORDER by b.display_priority ASC
