@@ -69,9 +69,7 @@ public class PrAdjustBatchServiceImpl implements PrAdjustBatchService {
         AdjustBatchMsg batchMsg = new AdjustBatchMsg();
 
         int rowAffected = 0;
-        PrNormalBatchPO normalBatchPO = new PrNormalBatchPO();
-        normalBatchPO.setCode(adjustBatchPO.getRootBatchCode());
-        PrNormalBatchPO find = normalBatchMapper.selectOne(normalBatchPO);
+        PrNormalBatchPO find = normalBatchMapper.getNormalBatchByCode(adjustBatchPO.getRootBatchCode());
         if (find == null) { // 正常批次没有找到 ， 说明是基于原调整批次的新调整批次
             batchMsg.setRootBatchCode(adjustBatchPO.getOriginBatchCode());
         } else { // 正常批次找到 ， 说明是基于原调整批次的正常批次

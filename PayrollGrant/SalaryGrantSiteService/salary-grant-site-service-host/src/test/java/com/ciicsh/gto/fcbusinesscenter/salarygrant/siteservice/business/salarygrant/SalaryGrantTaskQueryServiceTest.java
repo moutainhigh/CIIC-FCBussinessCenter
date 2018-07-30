@@ -38,8 +38,8 @@ public class SalaryGrantTaskQueryServiceTest {
         }
     }
 
-    @Test
-    public void queryForPayment() {
-        taskQueryService.queryForPayment();
-    }
+//    @Test
+//    public void queryForPayment() {
+//        taskQueryService.queryForPayment();
+//    }
 }

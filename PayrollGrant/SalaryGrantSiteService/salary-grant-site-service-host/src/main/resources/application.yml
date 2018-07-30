@@ -115,13 +115,13 @@ spring:
       bindings:
         sleuth:
           destination: sleuth-itdev # topic name
-        sg_compute-close-output-channel:
+        sg-compute-close-input-channel:
           destination: fc_compute_close # 关帐
           content-type: application/json
           group: ${spring.application.name}
           consumer:
             partitioned: true
-        sg_compute-unclose-output-channel:
+        sg-compute-unclose-input-channel:
           destination: fc_compute_unclose # 取消关帐
           content-type: application/json
           group: ${spring.application.name}
@@ -133,31 +133,31 @@ spring:
           group: ${spring.application.name}
           consumer:
             partitioned: true
-        common_taskservice_payroll_main-channel:
+        common_taskservice_payroll_main-input-channel:
           destination: common_taskservice_payroll_main # 本地
           content-type: application/json
           group: ${spring.application.name}
           consumer:
             partitioned: true
-        common_taskservice_payroll_nonlocal-channel:
+        common_taskservice_payroll_nonlocal-input-channel:
           destination: common_taskservice_payroll_nonlocal # 外地
           content-type: application/json
           group: ${spring.application.name}
           consumer:
             partitioned: true
-        common_taskservice_payroll_local_domestic_currency-channel:
+        common_taskservice_payroll_local_domestic_currency-input-channel:
           destination: common_taskservice_payroll_local_domestic_currency # 本地人民币
           content-type: application/json
           group: ${spring.application.name}
           consumer:
             partitioned: true
-        common_taskservice_payroll_local_foreign_currency-channel:
+        common_taskservice_payroll_local_foreign_currency-input-channel:
           destination: common_taskservice_payroll_local_foreign_currency # 本地外币
           content-type: application/json
           group: ${spring.application.name}
           consumer:
             partitioned: true
-        common_taskservice_supplier_payment-channel:
+        common_taskservice_supplier_payment-input-channel:
           destination: common_taskservice_supplier_payment # 供应商
           content-type: application/json
           group: ${spring.application.name}
