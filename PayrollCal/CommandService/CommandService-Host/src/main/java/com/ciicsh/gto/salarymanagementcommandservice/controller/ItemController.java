@@ -1,7 +1,9 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.EmpExtendFieldTemplateProxy;
 import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
@@ -18,8 +20,11 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,16 +34,20 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/salaryManagement")
-public class ItemController extends BaseController{
+public class ItemController extends BaseController {
 
     @Autowired
     private PrItemService itemService;
+
+    @Autowired
+    private EmpExtendFieldTemplateProxy empExtendFieldTemplateProxy;
 
     private static final int GROUP_TEMPLATE = 0;
     private static final int GROUP = 1;
 
     /**
      * 获取薪资项列表
+     *
      * @param groupCode
      * @param parentType
      * @param pageNum
@@ -47,10 +56,10 @@ public class ItemController extends BaseController{
      */
     @GetMapping(value = "/getPrItemPage")
     public JsonResult getPrItemList(@RequestParam String groupCode,
-                                      @RequestParam Integer templateId,
-                                      @RequestParam Integer parentType,
-                                      @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                                      @RequestParam(required = false, defaultValue = "50") Integer pageSize) {
+                                    @RequestParam Long templateId,
+                                    @RequestParam Integer parentType,
+                                    @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+                                    @RequestParam(required = false, defaultValue = "50") Integer pageSize) {
         PageInfo<PrPayrollItemPO> pageInfo;
         if (GROUP_TEMPLATE == parentType) {
             // 获取薪资组模板的薪资项
@@ -66,7 +75,12 @@ public class ItemController extends BaseController{
                 .map(ItemTranslator::toPrPayrollItemDTO)
                 .collect(Collectors.toList());
 
-
+        // 获取雇员扩展模板中扩展项List
+        List<PrPayrollItemDTO> extendItemDTOList = getExtendItems(templateId);
+        // 将扩展项List添加到返回结果中
+        if (!CollectionUtils.isEmpty(resultList)) {
+            resultList.addAll(extendItemDTOList);
+        }
 
         PageInfo<PrPayrollItemDTO> resultPage = new PageInfo<>(resultList);
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
@@ -74,21 +88,59 @@ public class ItemController extends BaseController{
     }
 
     /**
-     * 雇员扩展模板字段转换为薪资项明细字段
+     * 根据模板ID获取扩展薪资项
      *
-     * @param employeeExtendFieldDTO
+     * @param templateId
      * @return
      */
-    private PrPayrollItemDTO employeeExtendFieldDTO2PrPayrollItemDTO(EmployeeExtendFieldDTO employeeExtendFieldDTO){
-        PrPayrollItemDTO prPayrollItemDTO = new PrPayrollItemDTO();
-        prPayrollItemDTO.setItemType(1); //薪资项类型：1 - 固定输入项
-        prPayrollItemDTO.setItemName(employeeExtendFieldDTO.getFieldName()); //薪资项名称
+    private List<PrPayrollItemDTO> getExtendItems(Long templateId) {
+        List<PrPayrollItemDTO> extendItemDTOList = new ArrayList<>();
 
-        return prPayrollItemDTO;
+        com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult;
+        try {
+            listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(templateId);
+
+            if (!ObjectUtils.isEmpty(listJsonResult)) {
+                List<EmployeeExtendFieldDTO> extendFieldDTOList = listJsonResult.getData();
+                if (!CollectionUtils.isEmpty(extendFieldDTOList)) {
+                    extendItemDTOList.addAll(employeeExtendFieldList2PrPayrollItemList(extendFieldDTOList));
+                }
+            }
+
+            return extendItemDTOList;
+        } catch (Exception e) {
+            return extendItemDTOList;
+        }
+    }
+
+    /**
+     * 雇员扩展模板字段List转换为薪资项明细字段List
+     *
+     * @param extendFieldDTOList
+     * @return
+     */
+    private List<PrPayrollItemDTO> employeeExtendFieldList2PrPayrollItemList(List<EmployeeExtendFieldDTO> extendFieldDTOList) {
+        List<PrPayrollItemDTO> payrollItemDTOList = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(extendFieldDTOList)) {
+            return payrollItemDTOList;
+        }
+
+        extendFieldDTOList.forEach(employeeExtendFieldDTO -> {
+            PrPayrollItemDTO prPayrollItemDTO = new PrPayrollItemDTO();
+            prPayrollItemDTO.setItemType(1); //薪资项类型：1 - 固定输入项
+            prPayrollItemDTO.setItemName(employeeExtendFieldDTO.getFieldName()); //薪资项名称
+            prPayrollItemDTO.setExtendFlag(1); //扩展标识：1-扩展字段；0-非扩展字段
+
+            payrollItemDTOList.add(prPayrollItemDTO);
+        });
+
+        return payrollItemDTOList;
     }
 
     /**
      * 根据薪资项ID查询信息项明细
+     *
      * @param id 薪资项ID
      * @return 薪资项明细
      */
@@ -101,6 +153,7 @@ public class ItemController extends BaseController{
 
     /**
      * 根据薪资项ID更新薪资项
+     *
      * @param paramDTO 更新明细
      * @return 更新结果
      */
@@ -124,6 +177,7 @@ public class ItemController extends BaseController{
 
     /**
      * 获取薪资项类型列表
+     *
      * @return
      */
     @GetMapping(value = "/prItemType")
@@ -133,6 +187,7 @@ public class ItemController extends BaseController{
 
     /**
      * 新建薪资项
+     *
      * @param paramItem
      * @return
      */
@@ -160,15 +215,16 @@ public class ItemController extends BaseController{
 
     /**
      * 根据薪资项ID删除薪资项
+     *
      * @param id 薪资项ID
      * @return 删除条数
      */
     @DeleteMapping("/deletePrItemById/{id}")
     public JsonResult deletePrItemById(@PathVariable("id") Integer id) {
         int i = itemService.deletePrItemById(id);
-        if (i >= 1){
-            return JsonResult.success(i,"删除成功");
-        }else {
+        if (i >= 1) {
+            return JsonResult.success(i, "删除成功");
+        } else {
             return JsonResult.faultMessage();
         }
     }
@@ -176,13 +232,13 @@ public class ItemController extends BaseController{
     @PostMapping("/prItemDisplayPriority")
     public JsonResult updateDisplayPriority(@RequestBody List<Integer> ids) {
         return itemService.updateDisplayPriority(ids) ?
-                JsonResult.message(true,"更新薪资项显示顺序成功") : JsonResult.faultMessage("更新薪资项显示顺序失败");
+                JsonResult.message(true, "更新薪资项显示顺序成功") : JsonResult.faultMessage("更新薪资项显示顺序失败");
     }
 
     @PostMapping("/prItemCalPriority")
     public JsonResult updateCalPriority(@RequestBody List<Integer> ids) {
         return itemService.updateCalPriority(ids) ?
-                JsonResult.message(true,"更新薪资项计算顺序成功") : JsonResult.faultMessage("更新薪资项计算顺序失败");
+                JsonResult.message(true, "更新薪资项计算顺序成功") : JsonResult.faultMessage("更新薪资项计算顺序失败");
     }
 //    @RequestMapping("/addTest")
 //    public String addTestData() throws Exception{

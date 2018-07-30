@@ -148,6 +148,10 @@ public class GroupController implements PayrollGroupProxy{
      * @return
      */
     public String getManagementName(String managementId){
+        if (org.springframework.util.StringUtils.isEmpty(managementId)) {
+            return "";
+        }
+
         String managementLabel;
 
         GetManagementRequestDTO param = new GetManagementRequestDTO();

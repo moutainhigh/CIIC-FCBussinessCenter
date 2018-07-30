@@ -52,7 +52,7 @@ public class EmpExtendFieldTemplateProxyTest {
      */
     @Test
     public void listTemplateFields() {
-        JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(18L);
+        JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(50L);
         if (!ObjectUtils.isEmpty(listJsonResult)) {
             List<EmployeeExtendFieldDTO> extendFieldDTOList = listJsonResult.getData();
             if (!CollectionUtils.isEmpty(extendFieldDTOList)) {
