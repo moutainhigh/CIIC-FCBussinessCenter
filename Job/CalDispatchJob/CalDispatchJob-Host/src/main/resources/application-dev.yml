@@ -43,4 +43,4 @@ mongo:
   pwd: ciicit!#%
 
 druid:
-  configPath:  /data/appdatas/gt1/gtopayrolldb_dev.properties
+  configPath: /data/appdatas/gt1/gtopayrolldb_dev.properties # /Users/hubing/Downloads/gtopayrolldb_dev.properties

@@ -72,8 +72,30 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
             salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
             employeeBOList = queryEmployeeForTask(page, salaryGrantEmployeeBO);
         }
-        if (!employeeBOList.getRecords().isEmpty()) {
-            employeeBOList.getRecords().forEach(salaryGrantTaskBO -> {
+        return assignName(employeeBOList);
+    }
+
+    @Override
+    public Page<SalaryGrantEmployeeBO> queryEmployeeInfoChanged(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantEmployeeBO.getTaskType())) {
+            salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
+        } else {
+            salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
+        }
+        page.setRecords(salaryGrantEmployeeMapper.selectEmpList(page, salaryGrantEmployeeBO));
+        return assignName(page);
+    }
+
+    private Page<SalaryGrantEmployeeBO> queryEmployeeForTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
+        return page.setRecords(salaryGrantEmployeeMapper.selectEmpList(page, salaryGrantEmployeeBO));
+    }
+
+    /**
+     * 国家名称，发放状态名称获取
+     */
+    private Page<SalaryGrantEmployeeBO> assignName(Page<SalaryGrantEmployeeBO> page) {
+        if (!page.getRecords().isEmpty()) {
+            page.getRecords().forEach(salaryGrantTaskBO -> {
                 //国籍转码
                 if (!StringUtils.isEmpty(salaryGrantTaskBO.getCountryCode())) {
                     salaryGrantTaskBO.setCountryName(commonService.getCountryName(salaryGrantTaskBO.getCountryCode()));
@@ -84,21 +106,7 @@ public class SalaryGrantEmployeeQueryServiceImpl extends ServiceImpl<SalaryGrant
                 }
             });
         }
-        return employeeBOList;
-    }
-
-    private Page<SalaryGrantEmployeeBO> queryEmployeeForTask(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
-        return page.setRecords(salaryGrantEmployeeMapper.selectEmpList(page, salaryGrantEmployeeBO));
-    }
-
-    @Override
-    public Page<SalaryGrantEmployeeBO> queryEmployeeInfoChanged(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO) {
-        if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(salaryGrantEmployeeBO.getTaskType())) {
-            salaryGrantEmployeeBO.setSalaryGrantMainTaskCode(salaryGrantEmployeeBO.getTaskCode());
-        } else {
-            salaryGrantEmployeeBO.setSalaryGrantSubTaskCode(salaryGrantEmployeeBO.getTaskCode());
-        }
-        return page.setRecords(salaryGrantEmployeeMapper.selectEmpList(page, salaryGrantEmployeeBO));
+        return page;
     }
 
     @Override

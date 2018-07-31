@@ -2,10 +2,7 @@ package com.ciicsh.caldispatchjob.compute.messageBus;
 
 import com.ciicsh.caldispatchjob.compute.Cal.ComputeServiceImpl;
 import com.ciicsh.caldispatchjob.compute.service.*;
-import com.ciicsh.common.entity.JsonResult;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeContractProxy;
-import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.GetEmployeeContractsDTO;
-import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmployeeContractResponseDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.message.AdjustBatchMsg;

@@ -7,12 +7,12 @@ public class TaxEntity implements java.io.Serializable {
     public TaxEntity() {
     }
 
-    private double taxDueStart; //应纳税额起点
-    private double taxDueEnd;   //应纳终点起点
-    private double taxRate;     // 税率
-    private double deductions;   // 速算扣除数
-    private double taxStart;    // 税额起点
-    private double taxEnd;       // 税额终点
+    private double taxDueStart;   // 应纳税额起点
+    private double taxDueEnd;     // 应纳税额终点
+    private double taxRate;       // 税率
+    private double deductions;    // 速算扣除数
+    private double taxStart;      // 税额起点
+    private double taxEnd;        // 税额终点
     private double afterTaxStart; // 税后工资起点
     private double afterTaxEnd;   // 税后工资终点
 
@@ -81,15 +81,15 @@ public class TaxEntity implements java.io.Serializable {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "应纳税额起点 :" + String.valueOf(taxDueStart)
-                +" 应纳终点起点:"+ String.valueOf(taxDueEnd)
-                +" 税率:"+ String.valueOf(taxRate)
-                +" 速算扣除数:"+ String.valueOf(deductions)
-                +" 税额起点:"+ String.valueOf(taxStart)
-                +" 税额终点:"+ String.valueOf(taxEnd)
-                +" 税后工资起点:"+ String.valueOf(afterTaxStart)
-                +" 税后工资终点:"+ String.valueOf(afterTaxEnd)
+                + " 应纳终点起点:" + String.valueOf(taxDueEnd)
+                + " 税率:" + String.valueOf(taxRate)
+                + " 速算扣除数:" + String.valueOf(deductions)
+                + " 税额起点:" + String.valueOf(taxStart)
+                + " 税额终点:" + String.valueOf(taxEnd)
+                + " 税后工资起点:" + String.valueOf(afterTaxStart)
+                + " 税后工资终点:" + String.valueOf(afterTaxEnd)
                 ;
     }
 
