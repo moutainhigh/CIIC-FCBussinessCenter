@@ -19,9 +19,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.PayapplyServiceProxy;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayApplyProxyDTO;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyCompanyProxyDTO;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplyEmployeeProxyDTO;
+import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -109,8 +107,13 @@ public class TaskSubMoneyController extends BaseController {
         BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
         //任务状态
         requestForSubMoney.setStatus("04");
+        //根据划款任务ID查询相关子任务退回的数目
+        int rejectCount = taskSubMoneyService.selectRejectCount(taskSubMoneyDTO.getSubMoneyIds(),"03");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.COMPLETE_ERROR);
+            return jr;
+        }
         taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
-
         return jr;
     }
 
@@ -128,8 +131,16 @@ public class TaskSubMoneyController extends BaseController {
         BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
         //任务状态
         requestForSubMoney.setStatus("03");
-        taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
-
+        //根据划款任务ID查询相关子任务完成的数目
+        int rejectCount = taskSubMoneyService.selectRejectCount(taskSubMoneyDTO.getSubMoneyIds(),"04");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.REJECT_ERROR);
+            return jr;
+        }
+        Boolean flag = taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
+        if(!flag){
+            jr.fill(JsonResult.ReturnCode.BILLCENTER_2);
+        }
         return jr;
     }
 
@@ -349,4 +360,29 @@ public class TaskSubMoneyController extends BaseController {
         taskSubMoneyService.updateTaskSubMoneyOverdueAndFine(taskSubMoneyDTO.getId(), taskSubMoneyDTO.getOverdue(), taskSubMoneyDTO.getFine());
         return jr;
     }
+
+    /**
+     * 根据划款子任务ID判断滞纳金和罚金是否已经全部来款
+     * @param subMoneyId
+     * @return
+     */
+    @GetMapping(value = "/hasMoneyBySubMoneyId/{subMoneyId}")
+    public JsonResult<Boolean> hasMoneyBySubMoneyId(@PathVariable Long subMoneyId){
+        JsonResult<Boolean> jr = new JsonResult<Boolean>();
+        List<Long> subMoneyIdList = new ArrayList<>();
+        subMoneyIdList.add(subMoneyId);
+        //将list转为数组
+        Long[] subMoneyIds = subMoneyIdList.toArray(new Long[subMoneyIdList.size()]);
+        DisposableChargeProxyDTO disposableChargeProxyDTO = taskSubMoneyService.whetherHasMoneyBySubMoneyIds(subMoneyIds);
+        List<DisposableChargeDetailProxyDTO> list = disposableChargeProxyDTO.getList();
+        //筛选出未来款集合result为false
+        List<DisposableChargeDetailProxyDTO> hasNoMoneyList = list.stream().filter(item -> !item.getResult()).collect(Collectors.toList());
+        if(hasNoMoneyList.size() > 0){
+            jr.setData(false);
+        }else{
+            jr.setData(true);
+        }
+        return jr;
+    }
+
 }
