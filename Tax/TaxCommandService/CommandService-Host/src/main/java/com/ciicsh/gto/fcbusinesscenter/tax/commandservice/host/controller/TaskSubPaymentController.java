@@ -63,6 +63,12 @@ public class TaskSubPaymentController extends BaseController {
         BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
         //任务状态:
         requestForSubPayment.setStatus("04");
+        //根据缴纳任务ID查询相关子任务退回的数目
+        int rejectCount = taskSubPaymentService.selectRejectCount(taskSubPaymentDTO.getSubPaymentIds(),"03");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.COMPLETE_ERROR);
+            return jr;
+        }
         taskSubPaymentService.completeTaskSubPayment(requestForSubPayment);
 
         return jr;
@@ -82,6 +88,12 @@ public class TaskSubPaymentController extends BaseController {
         BeanUtils.copyProperties(taskSubPaymentDTO, requestForSubPayment);
         //任务状态
         requestForSubPayment.setStatus("03");
+        //根据缴纳任务ID查询相关子任务完成的数目
+        int rejectCount = taskSubPaymentService.selectRejectCount(taskSubPaymentDTO.getSubPaymentIds(),"04");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.REJECT_ERROR);
+            return jr;
+        }
         Boolean flag = taskSubPaymentService.rejectTaskSubPayment(requestForSubPayment);
         if(!flag){
             jr.fill(JsonResult.ReturnCode.BILLCENTER_2);

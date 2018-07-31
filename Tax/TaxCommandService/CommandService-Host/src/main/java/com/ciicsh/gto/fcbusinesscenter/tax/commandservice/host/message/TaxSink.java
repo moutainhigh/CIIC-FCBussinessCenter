@@ -13,7 +13,7 @@ public interface TaxSink {
     /**
      * 结算中心划款topic
      */
-    String PAY_APPLY_PAY_STATUS_STREAM = "pay-apply-pay-status-stream";
+    String PAY_APPLY_PAY_STATUS_STREAM_INPUT_CHANNEL = "pay-apply-pay-status-stream-input-channel";
     /**
      * 计算引擎关账topic
      */
@@ -36,7 +36,7 @@ public interface TaxSink {
      * 监听结算中心划款消息
      * @return
      */
-    @Input(PAY_APPLY_PAY_STATUS_STREAM)
+    @Input(PAY_APPLY_PAY_STATUS_STREAM_INPUT_CHANNEL)
     MessageChannel moneyMessage();
 
     /**

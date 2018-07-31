@@ -17,9 +17,12 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForEmploye
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatch;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForCalBatchDetail;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.collector.CollectorsUtil;
+import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +40,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMapper, CalculationBatchPO> implements CalculationBatchService, Serializable {
-
-    @Autowired
-    private CalculationBatchDetailServiceImpl calculationBatchDetailServiceImpl;
 
     @Autowired
     private TaskMainServiceImpl taskMainService;
@@ -85,6 +85,9 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
 
     @Autowired
     private CalculationBatchAccountMapper calculationBatchAccountMapper;
+
+    @Autowired
+    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
 
     @Override
     public ResponseForCalBatch queryCalculationBatchs(RequestForCalBatch requestForCalBatch) {
@@ -779,4 +782,34 @@ public class CalculationBatchServiceImpl extends ServiceImpl<CalculationBatchMap
         m.put("areaType",areaType);
         return m;
     }
+
+    /**
+     * 子任务完成后调用薪资计算接口通知更改批次状态
+     * @param taskMainIds
+     */
+    public void commitBatchNoToSalaryCal(List<Long> taskMainIds){
+        //根据主任务ID查询批次ID
+        List<CalculationBatchPO> calculationBatchPOList = baseMapper.queryBatchIdsByTaskMainIds(taskMainIds);
+        for(CalculationBatchPO calculationBatchPO : calculationBatchPOList){
+            fcBizTransactionMongoOpt.commitEvent(calculationBatchPO.getBatchNo(),getBatchTypeOfInt(calculationBatchPO.getBatchType()), EventName.FC_TAX_EVENT,1);
+        }
+    }
+
+    /**
+     * 根据批次类型字符型获取批次类型int型
+     * @param batchTypeStr
+     * @return
+     */
+    public int getBatchTypeOfInt(String batchTypeStr){
+        if(BatchType.normal.getCode().equals(batchTypeStr)){
+            return 1;
+        }else if(BatchType.ajust.getCode().equals(batchTypeStr)){
+            return 2;
+        }else if(BatchType.backdate.getCode().equals(batchTypeStr)){
+            return 3;
+        }else{
+            return 1;
+        }
+    }
+
 }

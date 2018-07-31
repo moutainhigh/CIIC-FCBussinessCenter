@@ -6,6 +6,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.data.RequestForTaskMai
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMain;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.data.ResponseForTaskMainDetail;
 
+import java.util.List;
+
 /**
  * @author wuhua
  */
@@ -82,5 +84,13 @@ public interface TaskMainService {
 
     //更新主任务状态
     void updateTaskMainsStatus(String[] taskMainIds,String status,String[] currentStatus);
+
+    /**
+     * 根据主任务ID数组以及状态查询个子任务此状态的数目
+     * @param taskMainIds
+     * @param status
+     * @return
+     */
+    int querySubTaskNumByMainIdsAndStatus(List<Long> taskMainIds, String status);
 }
 

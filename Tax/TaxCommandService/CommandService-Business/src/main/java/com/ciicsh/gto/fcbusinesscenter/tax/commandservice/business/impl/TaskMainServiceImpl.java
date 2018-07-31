@@ -654,4 +654,16 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             return businessProxyDTOList;
         }
     }
+
+    /**
+     * 根据主任务ID数组以及状态查询个子任务此状态的数目
+     * @param taskMainIds
+     * @param status
+     * @return
+     */
+    @Override
+    public int querySubTaskNumByMainIdsAndStatus(List<Long> taskMainIds,String status){
+        int statusCount = baseMapper.querySubTaskNumByMainIdsAndStatus(taskMainIds,status);
+        return statusCount;
+    }
 }

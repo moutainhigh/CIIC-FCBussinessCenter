@@ -61,4 +61,12 @@ public interface TaskSubMoneyService {
      */
     DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(Long[] moneyIds);
 
+    /**
+     * 根据划款子任务ID和状态查询相关子任务状态的数目
+     * @param subMoneyIds
+     * @param status
+     * @return
+     */
+    int selectRejectCount(String[] subMoneyIds,String status);
+
 }

@@ -107,8 +107,13 @@ public class TaskSubMoneyController extends BaseController {
         BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
         //任务状态
         requestForSubMoney.setStatus("04");
+        //根据划款任务ID查询相关子任务退回的数目
+        int rejectCount = taskSubMoneyService.selectRejectCount(taskSubMoneyDTO.getSubMoneyIds(),"03");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.COMPLETE_ERROR);
+            return jr;
+        }
         taskSubMoneyService.completeTaskSubMoney(requestForSubMoney);
-
         return jr;
     }
 
@@ -126,6 +131,12 @@ public class TaskSubMoneyController extends BaseController {
         BeanUtils.copyProperties(taskSubMoneyDTO, requestForSubMoney);
         //任务状态
         requestForSubMoney.setStatus("03");
+        //根据划款任务ID查询相关子任务完成的数目
+        int rejectCount = taskSubMoneyService.selectRejectCount(taskSubMoneyDTO.getSubMoneyIds(),"04");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.REJECT_ERROR);
+            return jr;
+        }
         Boolean flag = taskSubMoneyService.rejectTaskSubMoney(requestForSubMoney);
         if(!flag){
             jr.fill(JsonResult.ReturnCode.BILLCENTER_2);

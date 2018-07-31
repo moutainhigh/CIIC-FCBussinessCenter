@@ -42,6 +42,10 @@ public class JsonResult<T> {
 
         RECOVERY_2("雇员所在任务已经创建，不能恢复"),
 
+        COMPLETE_ERROR("相关主任务下的子任务有退回的任务,不能提交"),
+
+        REJECT_ERROR("相关主任务下的子任务有完成的任务,不能退回"),
+
         BILLCENTER_1("所选主任务划款子任务中滞纳金和罚金已经收款,不可退回"),
 
         BILLCENTER_2("所选任务划款子任务中滞纳金和罚金已经来款,不可退回"),

@@ -74,5 +74,13 @@ public interface TaskSubSupplierService {
      */
     void updateTaskSubSupplierOverdueAndFine(Long subSupplierId, BigDecimal overdue, BigDecimal fine);
 
+    /**
+     * 根据供应商子任务ID和状态查询相关子任务状态的数目
+     * @param subSupplierIds
+     * @param status
+     * @return
+     */
+    int selectRejectCount(String[] subSupplierIds,String status);
+
 }
 
