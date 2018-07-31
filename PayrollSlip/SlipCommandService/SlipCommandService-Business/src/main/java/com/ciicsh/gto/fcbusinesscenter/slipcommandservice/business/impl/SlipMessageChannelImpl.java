@@ -124,7 +124,7 @@ public class SlipMessageChannelImpl {
                 };
 
                 if (contract != null && contract.get("paySheetInfo") != null) {
-                    emp.put("email", ((Document)contract.get("paySheetInfo")).get("email"));
+                    emp.put("email", ((Document)contract.get("paySheetInfo")).get("emailAddress"));
                     emp.put("payrollPassword", ((Document)contract.get("paySheetInfo")).get("payrollPassword"));
                 }
 

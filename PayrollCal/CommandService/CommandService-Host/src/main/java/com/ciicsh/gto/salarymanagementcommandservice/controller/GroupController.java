@@ -1,9 +1,13 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.EmpExtendFieldTemplateProxy;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmpExtendFieldTemplateListDTO;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.PayrollGroupProxy;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
@@ -24,6 +28,8 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +59,9 @@ public class GroupController implements PayrollGroupProxy{
 
     @Autowired
     private ManagementProxy managementProxy;
+
+    @Autowired
+    private EmpExtendFieldTemplateProxy empExtendFieldTemplateProxy;
 
     @GetMapping(value = "/importPrGroup")
     public JsonResult importPrGroup(@RequestParam String from,
@@ -119,9 +128,47 @@ public class GroupController implements PayrollGroupProxy{
                 .stream()
                 .map(GroupTranslator::toPrPayrollGroupDTO)
                 .collect(Collectors.toList());
+
+        // 赋值管理方名称
+        int size = resultList.size();
+        for (int i = 0; i < size; i++) {
+            PrPayrollGroupDTO prPayrollGroupDTO = resultList.get(i);
+            prPayrollGroupDTO.setManagementLabel(getManagementName(prPayrollGroupDTO.getManagementId()));
+        }
+
         PageInfo<PrPayrollGroupDTO> resultPage = new PageInfo<>(resultList);
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
         return JsonResult.success(resultPage);
+    }
+
+    /**
+     * 根据管理方ID获取管理方名称
+     *
+     * @param managementId
+     * @return
+     */
+    public String getManagementName(String managementId){
+        if (org.springframework.util.StringUtils.isEmpty(managementId)) {
+            return "";
+        }
+
+        String managementLabel;
+
+        GetManagementRequestDTO param = new GetManagementRequestDTO();
+        param.setQueryWords(managementId);
+        com.ciicsh.gto.salecenter.apiservice.api.dto.core.JsonResult<List<DetailResponseDTO>> managementResult = managementProxy.getManagement(param);
+        if (ObjectUtils.isEmpty(managementResult)) {
+            managementLabel = "";
+        } else {
+            List<DetailResponseDTO> managementList = managementResult.getObject();
+            if (CollectionUtils.isEmpty(managementList)) {
+                managementLabel = "";
+            } else {
+                managementLabel = managementList.get(0).getTitle();
+            }
+        }
+
+        return managementLabel;
     }
 
     /**
@@ -287,5 +334,45 @@ public class GroupController implements PayrollGroupProxy{
         if (name != null) {
             paramModel.setName(name);
         }
+    }
+
+    /**
+     * 查询管理方下雇员扩展字段模板列表
+     *
+     * @return
+     */
+    @GetMapping("/queryExtendFieldTemplateList")
+    public JsonResult queryExtendFieldTemplateList(@RequestParam String managementId) {
+        com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult<List<EmpExtendFieldTemplateListDTO>> listJsonResult = empExtendFieldTemplateProxy.listTemplates(managementId);
+        if (!ObjectUtils.isEmpty(listJsonResult)) {
+            List<EmpExtendFieldTemplateListDTO> templateListDTOList = listJsonResult.getData();
+            if (!CollectionUtils.isEmpty(templateListDTOList)) {
+                return JsonResult.success(templateListDTOList);
+            } else {
+                return JsonResult.success(new ArrayList<>());
+            }
+        }
+
+        return JsonResult.faultMessage("查询模板列表异常，请稍后重试！");
+    }
+
+    /**
+     * 查询模板下雇员扩展字段列表
+     *
+     * @return
+     */
+    @GetMapping("/queryExtendFieldList")
+    public JsonResult queryExtendFieldList(@RequestParam Long empExtendFieldTemplateId) {
+        com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(empExtendFieldTemplateId);
+        if (!ObjectUtils.isEmpty(listJsonResult)) {
+            List<EmployeeExtendFieldDTO> extendFieldDTOList = listJsonResult.getData();
+            if (!CollectionUtils.isEmpty(extendFieldDTOList)) {
+                return JsonResult.success(extendFieldDTOList);
+            } else {
+                return JsonResult.success(new ArrayList<>());
+            }
+        }
+
+        return JsonResult.faultMessage("查询扩展字段列表异常，请稍后重试！");
     }
 }
