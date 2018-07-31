@@ -25,7 +25,7 @@ CREATE TABLE `prs_main_task` (
   `selected_payroll_type` varchar(200) DEFAULT NULL COMMENT '选择的工资单类型，逗号分隔',
   `status` int(11) DEFAULT '0' COMMENT '状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效',
   `has_paper` tinyint(1) DEFAULT '0' COMMENT '是否含纸质',
-  `comments` varchar(100) DEFAULT NULL COMMENT '修改实际发布日期原因',
+  `comments` varchar(500) DEFAULT NULL COMMENT '修改实际发布日期原因',
   `template_id` bigint(20) DEFAULT NULL COMMENT '工资单模板id',
   `template_name` varchar(200) DEFAULT NULL COMMENT '模板名称',
   `remark` varchar(50) DEFAULT NULL COMMENT '备注',
