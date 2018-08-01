@@ -59,11 +59,11 @@ public class TaxKafkaReceiver {
      * 监听结算中心划款返回信息
      * @param payApplyPayStatusDTO
      */
-    @StreamListener(TaxSink.PAY_APPLY_PAY_STATUS_STREAM)
+    @StreamListener(TaxSink.PAY_APPLY_PAY_STATUS_STREAM_INPUT_CHANNEL)
     public void moneyMessage(PayApplyPayStatusDTO payApplyPayStatusDTO) {
         try {
             //上海个税类型为6
-            if (payApplyPayStatusDTO.getBusinessType() == 6) {
+            if (payApplyPayStatusDTO.getBusinessType() == 6 || payApplyPayStatusDTO.getBusinessType() == 13) {
                 long subMoneyId = payApplyPayStatusDTO.getBusinessPkId();
                 int status = payApplyPayStatusDTO.getPayStatus();
                 TaskSubMoneyBO taskSubMoneyBO = new TaskSubMoneyBO();

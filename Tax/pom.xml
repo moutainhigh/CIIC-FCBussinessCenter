@@ -48,6 +48,7 @@
         <commonentity.version>0.0.1-SNAPSHOT</commonentity.version>
         <ant.version>1.10.3</ant.version>
         <fcbusinesscenterentity.version>1.0.0-SNAPSHOT</fcbusinesscenterentity.version>
+        <fcbusinesscenterutil.version>1.0.0-SNAPSHOT</fcbusinesscenterutil.version>
         <mongoclient.version>1.1.0-SNAPSHOT</mongoclient.version>
         <sheetserviceapi.version>1.0.0-SNAPSHOT</sheetserviceapi.version>
         <fcbusinesscenter.salarymanagement.version>1.0.0-SNAPSHOT</fcbusinesscenter.salarymanagement.version>
@@ -228,6 +229,12 @@
                 <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
                 <artifactId>fcbusinesscenter-entity</artifactId>
                 <version>${fcbusinesscenterentity.version}</version>
+            </dependency>
+            <!--fcbusinesscenter-util-->
+            <dependency>
+                <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+                <artifactId>fcbusinesscenter-util</artifactId>
+                <version>${fcbusinesscenterutil.version}</version>
             </dependency>
             <!--mongodb工具-->
             <dependency>

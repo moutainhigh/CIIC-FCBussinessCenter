@@ -22,6 +22,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TemplateFileBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
@@ -718,8 +719,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchImpl.selectList(wrapperEmployee);
             //文件名称
             String fileName = "";
-            //TODO 独立户和大库
-            //00-独立户,01-独立户
+            //00-独立户,01-大库
             if ("00".equals(taskSubDeclarePO.getAccountType())) {
                 fileName = "人员信息-离职.xls";
                 //获取POIFSFileSystem对象
@@ -1032,6 +1032,8 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 topMap.put("serviceManager", "");
                 //根据批次号查询出批次信息
                 CalculationBatchPO calculationBatchPO = calculationBatchService.queryCalculationBatchPOByBatchNo(batchNo);
+                //薪资所属期
+                topMap.put("incomeYearMonth",  calculationBatchPO.getIncomeYearMonth() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(DateTimeKit.dateToLocalDate(calculationBatchPO.getIncomeYearMonth())) : "");
                 //根据批次查询批次详情(划款部分)
                 List<CalculationBatchDetailPO> calculationBatchDetailPOList = calculationBatchDetailService.queryCalBatchDetailMoneyByBatchId(calculationBatchPO.getId());
                 //个税期间

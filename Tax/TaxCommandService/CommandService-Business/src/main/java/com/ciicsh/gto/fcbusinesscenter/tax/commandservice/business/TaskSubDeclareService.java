@@ -54,5 +54,13 @@ public interface TaskSubDeclareService {
      */
     List<TaskSubDeclarePO> queryTaskSubDeclareByMergeId(long mergeId);
 
+    /**
+     * 根据申报任务ID查询相关子任务退回的数目
+     * @param subDeclareIds
+     * @param status
+     * @return
+     */
+    int selectRejectCount(String[] subDeclareIds,String status);
+
 }
 

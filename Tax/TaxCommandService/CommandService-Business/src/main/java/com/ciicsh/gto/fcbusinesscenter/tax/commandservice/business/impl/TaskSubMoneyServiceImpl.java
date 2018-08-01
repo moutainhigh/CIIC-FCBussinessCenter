@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author yuantongqing
@@ -42,6 +43,9 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
 
     @Autowired
     private DisposableChargeProxy disposableChargeProxy;
+
+    @Autowired
+    private CalculationBatchServiceImpl calculationBatchServiceImpl;
 
     /**
      * 条件查询划款子任务
@@ -127,7 +131,12 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      */
     @Override
     public void completeTaskSubMoney(RequestForSubMoney requestForSubMoney) {
-        updateTaskSubMoneyStatus(requestForSubMoney);
+        if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
+            updateTaskSubMoneyStatus(requestForSubMoney);
+            //根据划款子任务ID数组获取相关主任务ID
+            List<Long> taskMainIds = this.getTaskMainIdsBySubMoneyIds(requestForSubMoney.getSubMoneyIds());
+            calculationBatchServiceImpl.commitBatchNoToSalaryCal(taskMainIds);
+        }
     }
 
     /**
@@ -137,9 +146,15 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
-        updateTaskSubMoneyStatus(requestForSubMoney);
-        taskMainService.updateTaskMainStatus(requestForSubMoney.getMainIds());
+    public Boolean rejectTaskSubMoney(RequestForSubMoney requestForSubMoney) {
+        Boolean flag = taskMainService.updateTaskMainStatus(requestForSubMoney.getMainIds());
+        if(flag){
+            if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
+                updateTaskSubMoneyStatus(requestForSubMoney);
+            }
+        }
+        return flag;
+
     }
 
     /**
@@ -148,17 +163,15 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
      * @param requestForSubMoney
      */
     private void updateTaskSubMoneyStatus(RequestForSubMoney requestForSubMoney) {
-        if (requestForSubMoney.getSubMoneyIds() != null && !"".equals(requestForSubMoney.getSubMoneyIds())) {
-            TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
-            //任务状态
-            taskSubMoneyPO.setStatus(requestForSubMoney.getStatus());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubMoneyPO());
-            wrapper.and("is_active = {0}", true);
-            wrapper.in("id", requestForSubMoney.getSubMoneyIds());
-            //修改划款子任务状态
-            baseMapper.update(taskSubMoneyPO, wrapper);
-        }
+        TaskSubMoneyPO taskSubMoneyPO = new TaskSubMoneyPO();
+        //任务状态
+        taskSubMoneyPO.setStatus(requestForSubMoney.getStatus());
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubMoneyPO());
+        wrapper.and("is_active = {0}", true);
+        wrapper.in("id", requestForSubMoney.getSubMoneyIds());
+        //修改划款子任务状态
+        baseMapper.update(taskSubMoneyPO, wrapper);
     }
 
     /**
@@ -201,27 +214,27 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
     }
 
     /**
-     * 获取划款子任务来款情况列表
+     * 获取划款子任务()来款情况列表
      * @param moneyIds
      * @return
      */
     @Override
-    public DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(String[] moneyIds) {
+    public DisposableChargeProxyDTO whetherHasMoneyBySubMoneyIds(Long[] moneyIds) {
         DisposableChargeProxyDTO disposableChargeProxyDTOReturn = new DisposableChargeProxyDTO();
         DisposableChargeProxyDTO disposableChargeProxyDTO = new DisposableChargeProxyDTO();
         List<DisposableChargeDetailProxyDTO> disposableChargeDetailProxyDTOS = new ArrayList<>();
         for(int i = 0;i < moneyIds.length;i++){
-            String moneyId = moneyIds[i];
+            Long moneyId = moneyIds[i];
             TaskSubMoneyPO taskSubMoneyPO = baseMapper.selectById(moneyId);
             //判断滞纳金是否来款
-            if(taskSubMoneyPO.getOverdue().compareTo(BigDecimal.ZERO) == 1){
+            if(taskSubMoneyPO.getOverdue() != null && taskSubMoneyPO.getOverdue().compareTo(BigDecimal.ZERO) == 1){
                 DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
                 disposableChargeDetailProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
                 disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX_LATE_FEE);
                 disposableChargeDetailProxyDTOS.add(disposableChargeDetailProxyDTO);
             }
             //判断罚金是否来款
-            if(taskSubMoneyPO.getFine().compareTo(BigDecimal.ZERO) == 1){
+            if(taskSubMoneyPO.getFine() != null && taskSubMoneyPO.getFine().compareTo(BigDecimal.ZERO) == 1){
                 DisposableChargeDetailProxyDTO disposableChargeDetailProxyDTO = new DisposableChargeDetailProxyDTO();
                 disposableChargeDetailProxyDTO.setBusinessId(taskSubMoneyPO.getTaskNo());
                 disposableChargeDetailProxyDTO.setBusinessTypeEnum(DisposableChargeBusinessTypeEmum.FC_TAX_FINE);
@@ -234,5 +247,35 @@ public class TaskSubMoneyServiceImpl extends ServiceImpl<TaskSubMoneyMapper, Tas
             disposableChargeProxyDTOReturn = jsonResult.getData();
         }
         return disposableChargeProxyDTOReturn;
+    }
+
+    /**
+     * 根据划款子任务ID和状态查询相关子任务状态的数目
+     * @param subMoneyIds
+     * @param status
+     * @return
+     */
+    @Override
+    public int selectRejectCount(String[] subMoneyIds, String status) {
+        //根据划款子任务ID数组获取相关主任务ID
+        List<Long> taskMainIds = this.getTaskMainIdsBySubMoneyIds(subMoneyIds);
+        return taskMainService.querySubTaskNumByMainIdsAndStatus(taskMainIds,status);
+    }
+
+    /**
+     * 根据划款子任务ID查询相关主任务ID
+     * @param subMoneyIds
+     * @return
+     */
+    public List<Long> getTaskMainIdsBySubMoneyIds(String[] subMoneyIds){
+        //查询出相关划款子任务集合
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.andNew().in("id", subMoneyIds).or().in("task_sub_money_id", subMoneyIds);
+        List<TaskSubMoneyPO> taskSubMoneyPOS = baseMapper.selectList(entityWrapper);
+//            //筛选出没有合并任务的相关申报子任务
+//            List<TaskSubMoneyPO> unMergeTaskSubMoneyList = taskSubMoneyPOS.stream().filter(item -> !item.getCombined()).collect(Collectors.toList());
+        //筛选出对应主任务ID集合
+        List<Long> taskMainIds = taskSubMoneyPOS.stream().map(TaskSubMoneyPO::getTaskMainId).collect(Collectors.toList());
+        return taskMainIds;
     }
 }

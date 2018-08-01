@@ -65,6 +65,9 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
     @Autowired
     private DroolsService droolsService;
 
+    @Autowired
+    private CalculationBatchServiceImpl calculationBatchServiceImpl;
+
     /**
      * 查询供应商子任务
      *
@@ -491,6 +494,8 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
 //            List<Long> declareIdList = Arrays.asList(requestForTaskSubSupplier.getSubSupplierIds()).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
 //            //创建完税凭证自动任务
 //            taskSubProofService.createTaskSubProof(declareIdList);
+            List<Long> taskMainIds = this.getTaskMainIdsBySubSupplierIds(requestForTaskSubSupplier.getSubSupplierIds());
+            calculationBatchServiceImpl.commitBatchNoToSalaryCal(taskMainIds);
         }
     }
 
@@ -502,23 +507,28 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier) {
+    public Boolean rejectTaskSuppliers(RequestForTaskSubSupplier requestForTaskSubSupplier) {
+        Boolean deleteFlag = false;
         if (requestForTaskSubSupplier.getSubSupplierIds() != null && !"".equals(requestForTaskSubSupplier.getSubSupplierIds())) {
-            TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
-            //设置任务状态
-            taskSubSupplierPO.setStatus(requestForTaskSubSupplier.getStatus());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubSupplierPO());
-            //任务为通过状态
-            wrapper.and("status = {0} ", "02");
-            //任务为可用状态
-            wrapper.and("is_active = {0} ", true);
-            //主任务ID IN条件
-            wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
-            //修改供应商子任务
-            baseMapper.update(taskSubSupplierPO, wrapper);
-            taskMainService.updateTaskMainStatus(requestForTaskSubSupplier.getMainIds());
+            Boolean flag = taskMainService.updateTaskMainStatus(requestForTaskSubSupplier.getMainIds());
+            if(flag){
+                TaskSubSupplierPO taskSubSupplierPO = new TaskSubSupplierPO();
+                //设置任务状态
+                taskSubSupplierPO.setStatus(requestForTaskSubSupplier.getStatus());
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskSubSupplierPO());
+                //任务为通过状态
+                wrapper.and("status = {0} ", "02");
+                //任务为可用状态
+                wrapper.and("is_active = {0} ", true);
+                //主任务ID IN条件
+                wrapper.in("id", requestForTaskSubSupplier.getSubSupplierIds());
+                //修改供应商子任务
+                baseMapper.update(taskSubSupplierPO, wrapper);
+            }
+            deleteFlag = flag;
         }
+        return deleteFlag;
     }
 
     /**
@@ -533,6 +543,19 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         taskSubSupplierPO.setOverdue(overdue);
         taskSubSupplierPO.setFine(fine);
         baseMapper.updateById(taskSubSupplierPO);
+    }
+
+    /**
+     * 根据供应商子任务ID和状态查询相关子任务状态的数目
+     * @param subSupplierIds
+     * @param status
+     * @return
+     */
+    @Override
+    public int selectRejectCount(String[] subSupplierIds, String status) {
+        //根据供应商子任务ID数组获取相关主任务ID
+        List<Long> taskMainIds = this.getTaskMainIdsBySubSupplierIds(subSupplierIds);
+        return taskMainService.querySubTaskNumByMainIdsAndStatus(taskMainIds,status);
     }
 
     /**
@@ -602,5 +625,22 @@ public class TaskSubSupplierServiceImpl extends ServiceImpl<TaskSubSupplierMappe
         }else{
             return false;
         }
+    }
+
+    /**
+     * 根据供应商子任务ID查询相关主任务ID
+     * @param subPaymentIds
+     * @return
+     */
+    public List<Long> getTaskMainIdsBySubSupplierIds(String[] subPaymentIds){
+        //查询出相关供应商子任务集合
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.andNew().in("id",subPaymentIds).or().in("task_sub_supplier_id",subPaymentIds);
+        List<TaskSubSupplierPO> taskSubSupplierPOS = baseMapper.selectList(entityWrapper);
+        //筛选出没有合并任务的相关供应商子任务
+        List<TaskSubSupplierPO> unMergeTaskSubSupplierList = taskSubSupplierPOS.stream().filter(item -> !item.getCombined()).collect(Collectors.toList());
+        //筛选出对应主任务ID集合
+        List<Long> taskMainIds = unMergeTaskSubSupplierList.stream().map(TaskSubSupplierPO :: getTaskMainId).collect(Collectors.toList());
+        return taskMainIds;
     }
 }

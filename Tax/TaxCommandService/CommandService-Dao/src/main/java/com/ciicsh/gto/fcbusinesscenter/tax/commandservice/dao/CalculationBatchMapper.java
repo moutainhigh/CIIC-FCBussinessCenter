@@ -65,4 +65,11 @@ public interface CalculationBatchMapper extends BaseMapper<CalculationBatchPO> {
      */
     void cancelServicesByCalBatchId(@Param("calBatchId")Long calBatchId);
 
+    /**
+     * 根据主任务ID集合查询对应批次ID集合
+     * @param batchIds
+     * @return
+     */
+    List<CalculationBatchPO> queryBatchIdsByTaskMainIds(@Param("batchIds")List<Long> batchIds);
+
 }
