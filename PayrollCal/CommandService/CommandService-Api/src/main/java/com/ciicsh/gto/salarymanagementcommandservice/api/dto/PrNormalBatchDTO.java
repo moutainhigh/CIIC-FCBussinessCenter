@@ -55,14 +55,14 @@ public class PrNormalBatchDTO{
 	private String remark;
     /**
      * 批次状态：
-1-新建
-2-计算中
-3-计算完成
-4-审核中
-5-审核完成
-6-关账
-7-已发放
-8-个税已申报
+     * 1-新建
+     * 2-计算中
+     * 3-计算完成
+     * 4-审核中
+     * 5-审核完成
+     * 6-关账
+     * 7-已发放
+     * 8-个税已申报
      */
 	private Integer status;
     /**
@@ -113,4 +113,8 @@ public class PrNormalBatchDTO{
      * 最后修改人
      */
 	private String modifiedBy;
+    /**
+     * 表示是否为测试批次：1 表示 是； 0 表示 否；
+     */
+    private Integer isTestBatch;
 }

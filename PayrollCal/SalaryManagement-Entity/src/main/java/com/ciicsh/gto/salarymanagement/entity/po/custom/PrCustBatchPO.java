@@ -80,5 +80,8 @@ public class PrCustBatchPO {
 
     //创建人
     private String createdBy;
-
+    /**
+     * 表示是否为测试批次：1 表示 是； 0 表示 否；
+     */
+    private Integer isTestBatch;
 }
