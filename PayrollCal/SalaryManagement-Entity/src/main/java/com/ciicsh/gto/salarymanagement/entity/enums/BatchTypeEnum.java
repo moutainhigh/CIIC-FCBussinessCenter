@@ -11,6 +11,8 @@ public enum BatchTypeEnum implements ValuedEnum {
     ADJUST(2, "调整批次"),
 
     BACK(3, "回溯批次"),
+
+    Test(4, "测试批次"),
     ;
 
     private int value;
