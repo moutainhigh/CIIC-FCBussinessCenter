@@ -1019,7 +1019,6 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             for (int i = 0; i < batchNos.length; i++) {
                 //批次号
                 String batchNo = batchNos[i];
-                //TODO 员工个税申报明细头部信息
                 //组织员工个税申报明细头部信息
                 Map<String, String> topMap = new HashMap<>();
                 //流水号

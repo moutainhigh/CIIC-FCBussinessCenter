@@ -36,11 +36,6 @@ public class ExportAboutTaxList extends BaseService {
     //列表数据初始大小
     private static final int TAX_LIST_SIZE = 1;
 
-    //TODO 中智识别号
-    public static final String CIIC_RECOGNITION_NO = "123456";
-    //TODO 财务识别号
-    public static final String FINANCE_RECOGNITION_NO = "1234567";
-
     /**
      * 中智公司数组
      */
