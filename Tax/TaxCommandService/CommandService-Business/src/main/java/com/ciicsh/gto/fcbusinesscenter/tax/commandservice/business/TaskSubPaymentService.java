@@ -34,7 +34,7 @@ public interface TaskSubPaymentService {
      *
      * @param requestForSubPayment
      */
-    void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment);
+    Boolean rejectTaskSubPayment(RequestForSubPayment requestForSubPayment);
 
 
     /**
@@ -52,4 +52,12 @@ public interface TaskSubPaymentService {
      * @param fine
      */
     void updateTaskSubPayOverdueAndFine(Long subPayId, BigDecimal overdue, BigDecimal fine);
+
+    /**
+     * 根据缴纳子任务ID和状态查询相关子任务状态的数目
+     * @param subPaymentIds
+     * @param status
+     * @return
+     */
+    int selectRejectCount(String[] subPaymentIds,String status);
 }

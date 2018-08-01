@@ -59,6 +59,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
     @Autowired
     private EmployeeInfoBatchImpl employeeInfoBatch;
 
+    @Autowired
+    private CalculationBatchServiceImpl calculationBatchServiceImpl;
+
     /**
      * 当期
      */
@@ -518,6 +521,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             List<Long> declareIdList = Arrays.asList(requestForTaskSubDeclare.getSubDeclareIds()).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             //创建完税凭证自动任务
             taskSubProofService.createTaskSubProof(declareIdList);
+            //根据申报子任务ID数组获取相关主任务ID
+            List<Long> taskMainIds = this.getTaskMainIdsByDeclareIds(requestForTaskSubDeclare.getSubDeclareIds());
+            calculationBatchServiceImpl.commitBatchNoToSalaryCal(taskMainIds);
         }
     }
 
@@ -527,25 +533,30 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      * @param requestForTaskSubDeclare
      */
     @Transactional(rollbackFor = Exception.class)
-    public void rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
+    public Boolean rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
+        Boolean deleteFlag = false;
         if (requestForTaskSubDeclare.getSubDeclareIds() != null && !"".equals(requestForTaskSubDeclare.getSubDeclareIds())) {
-            TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
-            //设置任务状态
-            taskSubDeclarePO.setStatus(requestForTaskSubDeclare.getStatus());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubDeclarePO());
-            //任务为通过状态
-            wrapper.and("status = {0} ", "02");
-            //任务为可用状态
-            wrapper.and("is_active = {0} ", true);
-            //主任务ID IN条件
-            wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
-            //修改完税凭证子任务
-            baseMapper.update(taskSubDeclarePO, wrapper);
-            //修改申报子任务合并ID为数组ID的任务状态
-            baseMapper.updateBeforeMergeDeclareStatus(requestForTaskSubDeclare.getSubDeclareIds(), requestForTaskSubDeclare.getStatus(), requestForTaskSubDeclare.getModifiedBy(), LocalDateTime.now());
-            taskMainService.updateTaskMainStatus(requestForTaskSubDeclare.getMainIds());
+            Boolean flag = taskMainService.updateTaskMainStatus(requestForTaskSubDeclare.getMainIds());
+            if(flag){
+                TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
+                //设置任务状态
+                taskSubDeclarePO.setStatus(requestForTaskSubDeclare.getStatus());
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskSubDeclarePO());
+                //任务为通过状态
+                wrapper.and("status = {0} ", "02");
+                //任务为可用状态
+                wrapper.and("is_active = {0} ", true);
+                //主任务ID IN条件
+                wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
+                //修改完税凭证子任务
+                baseMapper.update(taskSubDeclarePO, wrapper);
+                //修改申报子任务合并ID为数组ID的任务状态
+                baseMapper.updateBeforeMergeDeclareStatus(requestForTaskSubDeclare.getSubDeclareIds(), requestForTaskSubDeclare.getStatus(), requestForTaskSubDeclare.getModifiedBy(), LocalDateTime.now());
+            }
+            deleteFlag = flag;
         }
+        return deleteFlag;
     }
 
 
@@ -565,6 +576,19 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         wrapper.orderBy("modified_time", false);
         List<TaskSubDeclarePO> taskSubDeclarePOList = baseMapper.selectList(wrapper);
         return taskSubDeclarePOList;
+    }
+
+    /**
+     * 根据申报任务ID查询相关子任务退回的数目
+     * @param subDeclareIds
+     * @param status
+     * @return
+     */
+    @Override
+    public int selectRejectCount(String[] subDeclareIds, String status){
+        //根据申报子任务ID数组获取相关主任务ID
+        List<Long> taskMainIds = this.getTaskMainIdsByDeclareIds(subDeclareIds);
+        return taskMainService.querySubTaskNumByMainIdsAndStatus(taskMainIds,status);
     }
 
     /**
@@ -692,5 +716,22 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
                 return false;
             }
         }
+    }
+
+    /**
+     * 根据申报子任务ID查询相关主任务ID
+     * @param subDeclareIds
+     * @return
+     */
+    public List<Long> getTaskMainIdsByDeclareIds(String[] subDeclareIds){
+        //查询出相关申报子任务集合
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.andNew().in("id",subDeclareIds).or().in("task_sub_declare_id",subDeclareIds);
+        List<TaskSubDeclarePO> taskSubDeclarePOS = baseMapper.selectList(entityWrapper);
+        //筛选出没有合并任务的相关申报子任务
+        List<TaskSubDeclarePO> unMergeTaskSubDeclareList = taskSubDeclarePOS.stream().filter(item -> !item.getCombined()).collect(Collectors.toList());
+        //筛选出对应主任务ID集合
+        List<Long> taskMainIds = unMergeTaskSubDeclareList.stream().map(TaskSubDeclarePO :: getTaskMainId).collect(Collectors.toList());
+        return taskMainIds;
     }
 }
