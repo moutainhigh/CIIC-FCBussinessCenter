@@ -5,14 +5,17 @@ import com.ciicsh.gt1.BaseOpt;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.entity.ClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.MongodbService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.frombatch.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchNoStatus;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.mongodb.DBObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -727,7 +730,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         try {
             date = formatter.parse(dateStr);
         } catch (ParseException e) {
-            e.printStackTrace();
+            LogTaskFactory.getLogger().error(e, "MongodbServiceImpl.str2Date", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "08"), LogType.APP, null);
         }
         return date;
     }
@@ -975,11 +978,11 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
                         }
                         setmethod.invoke(obj, returnObj);
                     } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
+                        LogTaskFactory.getLogger().error(e, "MongodbServiceImpl.setObjectFieldsEmpty", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "08"), LogType.APP, null);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        LogTaskFactory.getLogger().error(e, "MongodbServiceImpl.setObjectFieldsEmpty", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "08"), LogType.APP, null);
                     } catch (InvocationTargetException e) {
-                        e.printStackTrace();
+                        LogTaskFactory.getLogger().error(e, "MongodbServiceImpl.setObjectFieldsEmpty", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "08"), LogType.APP, null);
                     }
                 }
             }

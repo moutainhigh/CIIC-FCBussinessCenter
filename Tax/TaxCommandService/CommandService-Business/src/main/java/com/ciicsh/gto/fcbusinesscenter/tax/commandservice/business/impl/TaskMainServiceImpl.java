@@ -561,6 +561,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
                     fcChargeDisposableProxyDTO.setActualChargeMonth(taskSubMoneyPO.getPeriod() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(taskSubMoneyPO.getPeriod()) : "");
                     //合同我方（账套）ID(1:AF;2:FC;3:BPO)
                     fcChargeDisposableProxyDTO.setFinanceAccountId(2);
+                    //开票类型：1-增值税发票；2-定额发票；3-收据；4-不开票
+                    fcChargeDisposableProxyDTO.setInvoiceType(1);
                     //收费金额
                     fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
                     //创建方式：0-直接导入;1-页面操作;2-外部接口;
@@ -594,6 +596,8 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
                     fcChargeDisposableProxyDTO.setActualChargeMonth(taskSubMoneyPO.getPeriod() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(taskSubMoneyPO.getPeriod()) : "");
                     //合同我方（账套）ID(1:AF;2:FC;3:BPO)
                     fcChargeDisposableProxyDTO.setFinanceAccountId(2);
+                    //开票类型：1-增值税发票；2-定额发票；3-收据；4-不开票
+                    fcChargeDisposableProxyDTO.setInvoiceType(1);
                     //收费金额
                     fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
                     //创建方式：0-直接导入;1-页面操作;2-外部接口;
@@ -607,7 +611,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
         try {
             fcChargeDisposableProxy.batchInsert(fcChargeDisposableProxyDTOList);
         } catch (Exception e) {
-            LogTaskFactory.getLogger().error(e, "TaskMainServiceImpl.createOneTimeChargeBillByTaskMainIds", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "TaskMainServiceImpl.createOneTimeChargeBillByTaskMainIds", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "00"), LogType.APP, null);
         }
     }
 
@@ -650,7 +654,7 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
             businessProxyDTOList = jr.getData();
             return businessProxyDTOList;
         } catch (Exception e) {
-            LogTaskFactory.getLogger().error(e, "TaskMainServiceImpl.deleteOneTimeChargeBillByTaskMainIds", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "01"), LogType.APP, null);
+            LogTaskFactory.getLogger().error(e, "TaskMainServiceImpl.deleteOneTimeChargeBillByTaskMainIds", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "00"), LogType.APP, null);
             return businessProxyDTOList;
         }
     }
