@@ -3,6 +3,32 @@
 <mapper namespace="com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.CalculationBatchMapper">
 
 	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMapPO" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO">
+		<id column="id" property="id" />
+		<result column="batch_no" property="batchNo" />
+		<result column="manager_no" property="managerNo" />
+		<result column="manager_name" property="managerName" />
+		<result column="tax_amount" property="taxAmount" />
+		<result column="headcount" property="headcount" />
+		<result column="chinese_num" property="chineseNum" />
+		<result column="foreigner_num" property="foreignerNum" />
+		<result column="status" property="status" />
+		<result column="is_active" property="isActive" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="created_by" property="createdBy" />
+		<result column="modified_by" property="modifiedBy" />
+		<result column="version_no" property="versionNo" />
+		<result column="batch_type" property="batchType" />
+		<result column="parent_batch_no" property="parentBatchNo" />
+		<result column="task_main_id" property="taskMainId" />
+		<result column="is_valid" property="isValid" />
+		<result column="created_by_display_name" property="createdByDisplayName" />
+		<result column="modified_by_display_name" property="modifiedByDisplayName" />
+		<result column="service_category" property="serviceCategory" />
+	</resultMap>
+
+	<!-- 通用查询映射结果 -->
 	<resultMap id="QueryCalculationBatchsResultMap" type="com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchPO">
 		<id column="cal_batch_id" property="id" />
 		<result column="batch_no" property="batchNo" />
@@ -222,5 +248,14 @@
 		on t2.calculation_batch_id = t3.id
 		where t3.id = #{calBatchId}
 	</delete>
+
+	<!--根据主任务ID集合查询对应批次ID集合-->
+	<select id="queryBatchIdsByTaskMainIds" resultMap="BaseResultMapPO">
+		select cb.* from tax_fc_calculation_batch cb,tax_fc_calculation_batch_task_main cbtm,tax_fc_task_main tm
+		where cb.id = cbtm.cal_batch_id and cb.version_no = cbtm.version_no and cbtm.task_main_id = tm.id and cbtm.is_active = true and cb.is_active = true and tm.id in
+		<foreach collection="batchIds" item="batchId" open="(" separator="," close=")">
+			#{batchId}
+		</foreach>
+	</select>
 
 </mapper>

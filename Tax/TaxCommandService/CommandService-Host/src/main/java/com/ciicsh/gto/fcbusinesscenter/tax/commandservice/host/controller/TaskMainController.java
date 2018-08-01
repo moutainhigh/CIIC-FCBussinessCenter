@@ -265,8 +265,10 @@ public class TaskMainController extends BaseController {
 
         RequestForTaskMain requestForMainTaskMain = new RequestForTaskMain();
         BeanUtils.copyProperties(taskMainDTO, requestForMainTaskMain);
-        taskMainService.rejectTaskMains(requestForMainTaskMain);
-
+        Boolean flag = taskMainService.rejectTaskMains(requestForMainTaskMain);
+        if(!flag){
+            jr.fill(JsonResult.ReturnCode.BILLCENTER_1);
+        }
         return jr;
     }
     /**

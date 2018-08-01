@@ -154,17 +154,22 @@ public class TaskSubSupplierController extends BaseController {
         }
         if (count > 0) {
             jr.fill(JsonResult.ReturnCode.SU_ER01);
-        }else{
-            RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
-            BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
-            //修改人
-            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
-            requestForTaskSubSupplier.setModifiedBy(userInfoResponseDTO.getLoginName());
-            //任务状态
-            requestForTaskSubSupplier.setStatus("04");
-            taskSubSupplierService.completeTaskSubSupplier(requestForTaskSubSupplier);
+            return jr;
         }
-
+        //根据供应商任务ID查询相关子任务退回的数目
+        int rejectCount = taskSubSupplierService.selectRejectCount(taskSubSupplierDTO.getSubSupplierIds(),"03");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.COMPLETE_ERROR);
+            return jr;
+        }
+        RequestForTaskSubSupplier requestForTaskSubSupplier = new RequestForTaskSubSupplier();
+        BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
+        //修改人
+        UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
+        requestForTaskSubSupplier.setModifiedBy(userInfoResponseDTO.getLoginName());
+        //任务状态
+        requestForTaskSubSupplier.setStatus("04");
+        taskSubSupplierService.completeTaskSubSupplier(requestForTaskSubSupplier);
         return jr;
     }
 
@@ -183,8 +188,16 @@ public class TaskSubSupplierController extends BaseController {
         BeanUtils.copyProperties(taskSubSupplierDTO, requestForTaskSubSupplier);
         //任务状态
         requestForTaskSubSupplier.setStatus("03");
-        taskSubSupplierService.rejectTaskSuppliers(requestForTaskSubSupplier);
-
+        //根据供应商任务ID查询相关子任务完成的数目
+        int rejectCount = taskSubSupplierService.selectRejectCount(taskSubSupplierDTO.getSubSupplierIds(),"04");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.COMPLETE_ERROR);
+            return jr;
+        }
+        Boolean flag = taskSubSupplierService.rejectTaskSuppliers(requestForTaskSubSupplier);
+        if(!flag){
+            jr.fill(JsonResult.ReturnCode.BILLCENTER_2);
+        }
         return jr;
     }
 

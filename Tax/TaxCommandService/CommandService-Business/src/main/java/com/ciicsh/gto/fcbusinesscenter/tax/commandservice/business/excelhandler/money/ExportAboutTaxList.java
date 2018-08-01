@@ -119,6 +119,8 @@ public class ExportAboutTaxList extends BaseService {
      * @param accountMap
      */
     private void handleTaxListReportWB(HSSFWorkbook wb, int sheetIndex, Map<String, String> map, List<CalculationBatchDetailPO> calculationBatchDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList, Map<String, CalculationBatchAccountPO> accountMap) {
+        //薪资所属期
+        String incomeYearMonth = map.get("incomeYearMonth");
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(sheetIndex);
         //第2行
@@ -251,8 +253,7 @@ public class ExportAboutTaxList extends BaseService {
                 if (null == cellB) {
                     cellB = row.createCell(1);
                 }
-                periodSmall = calculationBatchDetailPO.getPeriod() == null ? "" : DateTimeFormatter.ofPattern("yyyyMM").format(calculationBatchDetailPO.getPeriod());
-                cellB.setCellValue(periodSmall);
+                cellB.setCellValue(incomeYearMonth);
                 //公司编号-C列
                 HSSFCell cellC = row.getCell(2);
                 if (null == cellC) {

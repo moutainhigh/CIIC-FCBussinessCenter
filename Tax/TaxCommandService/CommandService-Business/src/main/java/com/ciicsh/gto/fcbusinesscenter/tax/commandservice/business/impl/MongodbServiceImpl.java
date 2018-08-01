@@ -923,6 +923,7 @@ public class MongodbServiceImpl extends BaseOpt implements MongodbService{
         newCal.setParentBatchNo(mainBO.getBatchRefId());
         newCal.setVersionNo(mainBO.getVersionNo());
         newCal.setValid(false);//初始置为无效
+        newCal.setIncomeYearMonth(mainBO.getIncomeYearMonth());
 
         //如果批次不存在，新增批次；否则更新批次主信息
         if(oldCal == null){
