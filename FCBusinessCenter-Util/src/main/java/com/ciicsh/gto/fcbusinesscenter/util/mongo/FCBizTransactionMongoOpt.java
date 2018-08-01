@@ -63,16 +63,18 @@ public class FCBizTransactionMongoOpt extends BaseOpt {
         if(batchCodes == null || batchCodes.size() == 0){
             return 0;
         }
-        Criteria criteria = Criteria.where("batch_code").in(batchCodes)
-                .and("events").elemMatch(Criteria.where("event_name").is(eventName));
-        Query query = Query.query(criteria);
-        long totalCount = this.getMongoTemplate().find(query,DBObject.class,EVENT_SOURCING).stream().count();
-        if(totalCount > 0) {
-            Update update = Update.update("events.$.event_status", status);
-            return this.upsert(query, update);
-        }else {
-            return 0;
+        int rowAffected = 0;
+        for (String code : batchCodes) {
+            Criteria criteria = Criteria.where("batch_code").is(code)
+                    .and("events").elemMatch(Criteria.where("event_name").is(eventName));
+            Query query = Query.query(criteria);
+            long totalCount = this.getMongoTemplate().find(query, DBObject.class, EVENT_SOURCING).stream().count();
+            if (totalCount > 0) {
+                Update update = Update.update("events.$.event_status", status);
+                rowAffected += this.upsert(query, update);
+            }
         }
+        return rowAffected;
     }
 
     public int initDistributedTransaction(DistributedTranEntity tranEntity){

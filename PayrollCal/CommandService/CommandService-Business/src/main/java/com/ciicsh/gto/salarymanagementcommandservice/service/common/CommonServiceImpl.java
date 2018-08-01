@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -277,17 +278,27 @@ public class CommonServiceImpl {
 
         if(list.size() == 0) return null;
 
+        Map<String,Double> statics = new HashMap<>();
+
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
             SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
             itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
             itemPO.setCompanyId(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_COMPANY_ID)));
 
             DBObject calalog = (DBObject)dbObject.get("catalog");
+
+            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
+
+            if( dbObject.get("adjust_val") != null){
+                SimplePayItemDTO adjust = new SimplePayItemDTO();
+                adjust.setName("调整值");
+                adjust.setVal(dbObject.get("adjust_val"));
+                simplePayItemDTOList.add(adjust);
+            }
             //DBObject empInfo = (DBObject)calalog.get("emp_info");
             //String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
 
             List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
-            List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
             items.stream().forEach(dbItem -> {
                 SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
                 simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
@@ -305,6 +316,17 @@ public class CommonServiceImpl {
                 if(dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)){ //雇员姓名
                     itemPO.setEmpName(String.valueOf(dbItem.get("item_value")));
                 }
+
+                // 根据每个薪资项名称求和，存入hashmap
+                if(simplePayItemDTO.getDataType() == DataTypeEnum.NUM.getValue()){
+                    if(statics.containsKey(simplePayItemDTO.getName())){
+                        double current = statics.get(simplePayItemDTO.getName());
+                        statics.put(simplePayItemDTO.getName(),current + Double.valueOf(simplePayItemDTO.getVal().toString()));
+                    }else {
+                        statics.put(simplePayItemDTO.getName(),Double.valueOf(simplePayItemDTO.getVal().toString()));
+                    }
+                }//end
+
                 simplePayItemDTOList.add(simplePayItemDTO);
             });
             //设置显示顺序
@@ -312,6 +334,14 @@ public class CommonServiceImpl {
             itemPO.setPayItemDTOS(payItemDTOS);
             return itemPO;
         }).collect(Collectors.toList());
+
+        for (SimpleEmpPayItemDTO empPayItemDTO : simplePayItemDTOS){ // 为每个薪资项设置SUM结果
+            empPayItemDTO.getPayItemDTOS().parallelStream().forEach(p->{
+                if(statics.containsKey(p.getName())){
+                    p.setAmount(statics.get(p.getName()));
+                }
+            });
+        }
 
         return simplePayItemDTOS;
     }

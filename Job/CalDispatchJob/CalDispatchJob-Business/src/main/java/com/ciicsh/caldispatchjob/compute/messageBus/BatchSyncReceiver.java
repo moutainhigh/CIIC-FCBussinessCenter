@@ -78,6 +78,7 @@ public class BatchSyncReceiver {
             String rootBatchCode = adjustBatchMsg.getRootBatchCode();
             String originBatchCode = adjustBatchMsg.getOriginBatchCode();
             String adjustCode = adjustBatchMsg.getAdjustBatchCode();
+            adjustBatchService.deleteAdjustBatch(adjustBatchMsg.getAdjustBatchCode());
             adjustBatchService.addAdjustBatch(rootBatchCode,originBatchCode,adjustCode);
 
         }else {
