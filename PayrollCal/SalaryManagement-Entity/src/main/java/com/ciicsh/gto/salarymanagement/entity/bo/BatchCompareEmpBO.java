@@ -22,6 +22,11 @@ public class BatchCompareEmpBO {
     private String employeeName;
 
     /**
+     * 公司编号
+     */
+    private String companyId;
+
+    /**
      * 对比keys 暂时不使用保留今后使用
      */
     private String compareKeys;
@@ -32,7 +37,12 @@ public class BatchCompareEmpBO {
     private List<BatchCompareItemBO> itemList = new ArrayList<>();
 
     /**
-     * 对比项存在于那个批次中 0: 都存在 1: 仅存在源批次 2: 仅存在于目标批次
+     * 当前雇员存在于哪个批次中
+     * 0: 存在于源批次
+     * 1: 存在于对比批次1
+     * 2: 存在于对比批次2
+     * 99: 都存在
      */
-    private Integer inWhichBatch;
+    private Integer inWhichBatchForEmpId;
+
 }

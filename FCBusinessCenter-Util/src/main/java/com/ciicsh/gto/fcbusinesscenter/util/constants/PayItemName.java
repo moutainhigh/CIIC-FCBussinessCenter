@@ -71,6 +71,19 @@ public class PayItemName {
 
     public static final String HOUSING_FUNDS = "住房公积金合计（报税用）";
 
+    // 批次对比常量start=====================
+    // MongoDB中的薪资项计算结果记录
+    public static final String CATALOG = "catalog";
+    // 薪资项列表
+    public static final String PAY_ITEMS = "pay_items";
+    // 源批次的对比key
+    public static final String SRC_COMPANY_KEY = "srcCompareKey";
+    // 对比批次1的对比key
+    public static final String TGT_COMPANY_KEY = "tgtCompareKey";
+    // 对比批次2的对比key
+    public static final String TGTTWO_COMPANY_KEY = "tgtTwoCompareKey";
+    // 批次对比常量end=====================
+
 
 
 
