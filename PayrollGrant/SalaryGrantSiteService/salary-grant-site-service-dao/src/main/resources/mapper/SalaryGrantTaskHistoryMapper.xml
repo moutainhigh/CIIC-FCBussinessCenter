@@ -141,12 +141,15 @@
             <if test="taskCode != null and taskCode != ''">
                 and t1.task_code = #{taskCode}
             </if>
-            <if test="managementId != null and managementId != ''">
-                and t1.management_id = #{managementId}
+            <if test="managementIds != null and managementIds != ''">
+                and t1.management_id in (${managementIds})
             </if>
-            <if test="managementName != null and managementName != ''">
-                and t1.management_name like concat('%', #{managementName, jdbcType=VARCHAR}, '%')
-            </if>
+            <!--<if test="managementId != null and managementId != ''">-->
+                <!--and t1.management_id = #{managementId}-->
+            <!--</if>-->
+            <!--<if test="managementName != null and managementName != ''">-->
+                <!--and t1.management_name like concat('%', #{managementName, jdbcType=VARCHAR}, '%')-->
+            <!--</if>-->
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
             </if>
@@ -179,12 +182,15 @@
             <if test="taskCode != null and taskCode != ''">
                 and t1.task_code = #{taskCode}
             </if>
-            <if test="managementId != null and managementId != ''">
-                and t1.management_id = #{managementId}
+            <if test="managementIds != null and managementIds != ''">
+                and t1.management_id in (${managementIds})
             </if>
-            <if test="managementName != null and managementName != ''">
-                and t1.management_name like concat('%', #{managementName, jdbcType=VARCHAR}, '%')
-            </if>
+            <!--<if test="managementId != null and managementId != ''">-->
+                <!--and t1.management_id = #{managementId}-->
+            <!--</if>-->
+            <!--<if test="managementName != null and managementName != ''">-->
+                <!--and t1.management_name like concat('%', #{managementName, jdbcType=VARCHAR}, '%')-->
+            <!--</if>-->
             <if test="batchCode != null and batchCode != ''">
                 and t1.batch_code = #{batchCode}
             </if>

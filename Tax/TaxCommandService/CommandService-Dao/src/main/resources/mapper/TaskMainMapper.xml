@@ -189,4 +189,28 @@
 		where t1.id =t3.task_main_id and t2.id = t3.cal_batch_id and t1.id = #{taskMainId}
 	</select>
 
+	<!--根据主任务ID数组以及状态查询个子任务此状态的数目-->
+	<select id="querySubTaskNumByMainIdsAndStatus" resultType="java.lang.Integer">
+		select count(dmps.num) from (
+		select count(1) as num from tax_fc_task_sub_declare sd where sd.status = #{status} and sd.task_main_id in
+		<foreach collection="taskMainIds" item="taskMainId" open="(" separator="," close=")">#{taskMainId}
+		</foreach>
+		UNION ALL
+		select count(1) as num from tax_fc_task_sub_money sm where sm.status = #{status} and sm. task_main_id in
+		<foreach collection="taskMainIds" item="taskMainId" open="(" separator="," close=")">
+			#{taskMainId}
+		</foreach>
+		UNION ALL
+		select count(1) as num from tax_fc_task_sub_payment sp where sp.status = #{status} and sp.task_main_id in
+		<foreach collection="taskMainIds" item="taskMainId" open="(" separator="," close=")">
+			#{taskMainId}
+		</foreach>
+		UNION ALL
+		select count(1) as num from tax_fc_task_sub_supplier ss where ss.status = #{status} and ss.task_main_id in
+		<foreach collection="taskMainIds" item="taskMainId" open="(" separator="," close=")">
+			#{taskMainId}
+		</foreach>
+		) dmps where dmps.num > 0
+	</select>
+
 </mapper>

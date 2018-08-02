@@ -76,8 +76,8 @@ public class AdjustBatchServiceImpl {
                 dbObject.put("batch_code", adjustCode); // update origin code to adjust code
                 dbObject.put("origin_batch_code", originCode);
                 dbObject.put("root_batch_code", rootCode);
-                dbObject.put("show_adj", false); // 调整差异值是否需要显示
-                catalog.put("adjust_items", null); // 调整差异字段列表
+                //dbObject.put("show_adj", false); // 调整差异值是否需要显示
+                //catalog.put("adjust_items", null); // 调整差异字段列表
                 Object netPay = findValByName(catalog, PayItemName.EMPLOYEE_NET_PAY);
                 dbObject.put("net_pay",netPay); // 存储上个批次的实发工资
                 batchInfo.put("payroll_type", BatchTypeEnum.ADJUST.getValue());
