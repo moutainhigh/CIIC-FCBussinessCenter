@@ -133,11 +133,4 @@ public interface SalaryGrantTaskQueryService extends IService<SalaryGrantMainTas
      * @return
      */
     Integer lockSubTask(SalaryGrantTaskBO bo);
-
-    /**
-     * 薪资发放定时任务
-     *
-     * @return
-     */
-    void queryForPayment();
 }
