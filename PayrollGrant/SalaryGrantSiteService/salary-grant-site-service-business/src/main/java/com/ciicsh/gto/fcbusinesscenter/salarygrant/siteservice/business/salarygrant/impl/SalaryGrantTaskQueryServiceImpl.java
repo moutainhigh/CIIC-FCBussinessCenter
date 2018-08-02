@@ -346,6 +346,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
         workFlowResultBO.setBatchCode(bo.getBatchCode());
         workFlowResultBO.setTaskCode(bo.getTaskCode());
+        workFlowResultBO.setGrantType(bo.getGrantType());
         workFlowResultBO.setTaskType(bo.getTaskType());
         workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult());
         if (flag && salaryGrantMainTaskMapper.lockTask(bo)> 0) {
