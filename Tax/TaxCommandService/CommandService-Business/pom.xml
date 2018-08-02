@@ -71,6 +71,12 @@
             <artifactId>fcbusinesscenter-entity</artifactId>
         </dependency>
 
+        <!--fcbusinesscenter-util-->
+        <dependency>
+            <groupId>com.ciicsh.gt1.fcbusinesscenter</groupId>
+            <artifactId>fcbusinesscenter-util</artifactId>
+        </dependency>
+
         <!--工作流-->
         <dependency>
             <groupId>com.ciicsh.gt1.commonservice</groupId>

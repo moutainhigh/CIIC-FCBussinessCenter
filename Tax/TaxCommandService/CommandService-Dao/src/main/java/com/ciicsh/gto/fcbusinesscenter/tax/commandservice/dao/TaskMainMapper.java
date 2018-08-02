@@ -39,4 +39,12 @@ public interface TaskMainMapper extends BaseMapper<TaskMainPO> {
      * @return
      */
     List<String> queryServiceCategoryForTaskMain(@Param("taskMainId")Long taskMainId);
+
+    /**
+     * 根据主任务ID数组以及状态查询个子任务此状态的数目
+     * @param taskMainIds
+     * @param status
+     * @return
+     */
+    int querySubTaskNumByMainIdsAndStatus(@Param("taskMainIds")List<Long> taskMainIds,@Param("status")String status);
 }

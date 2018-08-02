@@ -190,17 +190,22 @@ public class TaskSubDeclareController extends BaseController {
         }
         if (count > 0) {
             jr.fill(JsonResult.ReturnCode.DE_ER01);
-        } else {
-            RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
-            BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
-            //修改人
-            UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
-            requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
-            //任务状态
-            requestForTaskSubDeclare.setStatus("04");
-            taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
+            return jr;
         }
-
+        //根据申报任务ID查询相关子任务退回的数目
+        int rejectCount = taskSubDeclareService.selectRejectCount(taskSubDeclareDTO.getSubDeclareIds(),"03");
+        if(rejectCount > 0){
+            jr.fill(JsonResult.ReturnCode.COMPLETE_ERROR);
+            return jr;
+        }
+        RequestForTaskSubDeclare requestForTaskSubDeclare = new RequestForTaskSubDeclare();
+        BeanUtils.copyProperties(taskSubDeclareDTO, requestForTaskSubDeclare);
+        //修改人
+        UserInfoResponseDTO userInfoResponseDTO = UserContext.getUser();
+        requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
+        //任务状态
+        requestForTaskSubDeclare.setStatus("04");
+        taskSubDeclareService.completeTaskSubDeclares(requestForTaskSubDeclare);
         return jr;
     }
 
@@ -221,8 +226,16 @@ public class TaskSubDeclareController extends BaseController {
         requestForTaskSubDeclare.setModifiedBy(userInfoResponseDTO.getLoginName());
         //任务状态
         requestForTaskSubDeclare.setStatus("03");
-        taskSubDeclareService.rejectTaskSubDeclares(requestForTaskSubDeclare);
-
+        //根据申报任务ID查询相关子任务完成的数目
+        int completeCount = taskSubDeclareService.selectRejectCount(taskSubDeclareDTO.getSubDeclareIds(),"04");
+        if(completeCount > 0){
+            jr.fill(JsonResult.ReturnCode.REJECT_ERROR);
+            return jr;
+        }
+        Boolean flag = taskSubDeclareService.rejectTaskSubDeclares(requestForTaskSubDeclare);
+        if(!flag){
+            jr.fill(JsonResult.ReturnCode.BILLCENTER_2);
+        }
         return jr;
     }
 
@@ -304,5 +317,7 @@ public class TaskSubDeclareController extends BaseController {
         jr.setData(flag);
         return jr;
     }
+
+
 
 }
