@@ -14,5 +14,13 @@ public class BatchCompareItemBO {
 
     private String tgtValue;
 
-    private boolean isSrcBatchFlag;
+    private String tgtTwoValue;
+
+    /**
+     * 当前批次
+     * 0: 源批次
+     * 1: 对比批次1
+     * 2: 对比批次2
+     */
+    private Integer currentBatch;
 }

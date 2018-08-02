@@ -3,8 +3,7 @@ package com.ciicsh.gto.salarymanagement.entity.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * Created by NeoJiang on 2018/4/28.
@@ -25,9 +24,20 @@ public class BatchCompareRequestDTO {
     // 对比批次类型
     private Integer tgtBatchType;
 
+    // 对比批次2
+    private String tgtTwo;
+
+    // 对比批次2类型
+    private Integer tgtTwoBatchType;
+
     // 对比key
     private String compareKeysStr;
 
-    // 对比列mapping
-    private IdentityHashMap<String, String> mapping = new IdentityHashMap<>();
+    // 源批次与对比批次的对比列映射List
+    private List<Map<String, String>> compareMappingList = new ArrayList<>();
+
+    /**
+     * 对比批次的数量
+     */
+    private Integer batchCount;
 }

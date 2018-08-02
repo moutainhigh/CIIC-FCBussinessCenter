@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.bo.BatchCompareEmpBO;
+import com.ciicsh.gto.salarymanagement.entity.dto.BatchCompareRequestDTO;
 import com.ciicsh.gto.salarymanagement.entity.po.AdvanceBatchInfoPO;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -15,20 +16,10 @@ import java.util.List;
 public interface BatchService {
 
     /**
-     * @param sourceBatchCode
-     * @param srcBatchType
-     * @param targetBatchCode
-     * @param tgtBatchType
-     * @param compareKeys
-     * @param compareMap
-     * @return
+     * @param compareDTO 对比批次信息
+     * @return 对比结果List
      */
-    List<BatchCompareEmpBO> compareBatch(String sourceBatchCode,
-                                         Integer srcBatchType,
-                                         String targetBatchCode,
-                                         Integer tgtBatchType,
-                                         List<String> compareKeys,
-                                         IdentityHashMap<String, String> compareMap);
+    List<BatchCompareEmpBO> compareBatch(BatchCompareRequestDTO compareDTO);
 
     int updateAdvancedBatch(AdvanceBatchInfoPO advanceBatchInfoPO);
 
