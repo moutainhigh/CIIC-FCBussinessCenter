@@ -1,18 +1,26 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.common;
 
+import com.alibaba.fastjson.JSONObject;
+import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeExtendFieldProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmployeeExtendFieldRequestDTO;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.response.EmployeeExtendFieldResponseDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.CloseAccountMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.TestBatchMongoOpt;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.EmpExtendFieldTemplateProxy;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollGroupPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrNormalBatchMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollAccountItemRelationMapper;
-import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollItemMapper;
+import com.ciicsh.gto.salarymanagementcommandservice.dao.PrPayrollGroupMapper;
 import com.ciicsh.gto.salarymanagementcommandservice.service.impl.PrItem.PrItemService;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,8 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +36,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,6 +69,18 @@ public class CommonServiceImpl {
     @Autowired
     private CloseAccountMongoOpt closeAccountMongoOpt;
 
+    @Autowired
+    private EmployeeExtendFieldProxy employeeExtendFieldProxy;
+
+    @Autowired
+    private EmpExtendFieldTemplateProxy empExtendFieldTemplateProxy;
+
+    @Autowired
+    private PrPayrollGroupMapper prPayrollGroupMapper;
+
+    @Autowired
+    private CodeGenerator codeGenerator;
+
     /**
      * 批量更新或者插入数据
      *
@@ -72,15 +93,41 @@ public class CommonServiceImpl {
         initialPO.setCode(batchCode);
         List<PrCustBatchPO> custBatchPOList = normalBatchMapper.selectBatchListByUseLike(initialPO);
 
-        PrCustBatchPO batchPO = custBatchPOList.get(0);
-
-        List<BasicDBObject> payItems = getPayItemList(batchPO);
+        PrCustBatchPO batchPO = null;
+        List<BasicDBObject> payItems = null;
+        if (!CollectionUtils.isEmpty(custBatchPOList)) {
+            batchPO = custBatchPOList.get(0);
+            payItems = getPayItemList(batchPO);
+        }
 
         int rowAffected = 0;
 
         if (employees != null && employees.size() > 0) {
             for (DBObject item : employees) {
                 DBObject base_info = item.get("base_info") == null ? item : (DBObject) item.get("base_info");
+
+                //雇员扩展薪资项List
+                List<EmployeeExtendFieldResponseDTO> employeeExtendFieldsValueList = new ArrayList<>();
+
+                if (!ObjectUtils.isEmpty(batchPO) && !batchPO.isTemplate()) {
+                    //根据薪资组code获取薪资组记录
+                    PrPayrollGroupPO paramPayrollGroupPO = new PrPayrollGroupPO();
+                    paramPayrollGroupPO.setGroupCode(batchPO.getPrGroupCode());
+                    PrPayrollGroupPO prPayrollGroupPO = prPayrollGroupMapper.selectOne(paramPayrollGroupPO);
+                    if (!ObjectUtils.isEmpty(prPayrollGroupPO)) {
+                        //获取雇员扩展薪资项的值
+                        EmployeeExtendFieldRequestDTO extendFieldRequestDTO = new EmployeeExtendFieldRequestDTO();
+                        extendFieldRequestDTO.setCompanyId(base_info.get(PayItemName.EMPLOYEE_COMPANY_ID).toString());
+                        extendFieldRequestDTO.setEmployeeId(base_info.get(PayItemName.EMPLOYEE_CODE_CN).toString());
+                        extendFieldRequestDTO.setEmpExtendFieldTemplateId(prPayrollGroupPO.getEmpExtendFieldTemplateId());
+                        employeeExtendFieldsValueList = getEmployeeExtendFieldsValue(extendFieldRequestDTO);
+                    }
+                }
+
+                //复制雇员扩展薪资项List
+                final List<EmployeeExtendFieldResponseDTO> employeeExtendFieldsValueList2 = new ArrayList<>(employeeExtendFieldsValueList);
+
+                // 复制薪资项模板中薪资项List，包括雇员扩展字段模板中薪资项List
                 List<BasicDBObject> clonePyItems = cloneListDBObject(payItems);
                 clonePyItems.forEach(p -> {
                     if (p.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)) {
@@ -96,7 +143,19 @@ public class CommonServiceImpl {
                     } else if (p.get("item_name").equals(PayItemName.EMPLOYEE_COMPANY_ID)) {
                         p.put("item_value", base_info.get(PayItemName.EMPLOYEE_COMPANY_ID));
                     }
+
+                    if (!CollectionUtils.isEmpty(employeeExtendFieldsValueList2)) {
+                        String itemName = p.get("item_name").toString();
+
+                        //在雇员扩展薪资项List中查找当前薪资项名称
+                        EmployeeExtendFieldResponseDTO fieldResponseDTO = employeeExtendFieldsValueList2.stream().filter(responseDTO -> responseDTO.getFieldName().equals(itemName)).findAny().orElse(null);
+
+                        if (!ObjectUtils.isEmpty(fieldResponseDTO)) {
+                            p.put("item_value", fieldResponseDTO.getValue());
+                        }
+                    }
                 });
+
                 rowAffected += updateBatchMongodb(batchPO, base_info, clonePyItems, batchType);
             }
         } else {
@@ -117,6 +176,30 @@ public class CommonServiceImpl {
             logger.error(e.getMessage());
         }
         return 0;
+    }
+
+    /**
+     * 获取雇员扩展薪资项的值
+     *
+     * @param extendFieldRequestDTO
+     * @return
+     */
+    private List<EmployeeExtendFieldResponseDTO> getEmployeeExtendFieldsValue(EmployeeExtendFieldRequestDTO extendFieldRequestDTO) {
+        List<EmployeeExtendFieldResponseDTO> employeeExtendFieldValueList = new ArrayList<>();
+
+        try {
+            com.ciicsh.common.entity.JsonResult<List<EmployeeExtendFieldResponseDTO>> listJsonResult = employeeExtendFieldProxy.getEmployeeExtendFieldDetails(extendFieldRequestDTO);
+            if (!ObjectUtils.isEmpty(listJsonResult)) {
+                List<EmployeeExtendFieldResponseDTO> extendFieldResponseDTOList = listJsonResult.getData();
+                if (!CollectionUtils.isEmpty(extendFieldResponseDTOList)) {
+                    employeeExtendFieldValueList.addAll(extendFieldResponseDTOList);
+                }
+            }
+
+            return employeeExtendFieldValueList;
+        } catch (Exception e) {
+            return employeeExtendFieldValueList;
+        }
     }
 
     private DBObject BatchPOToDBObject(PrCustBatchPO batchPO) {
@@ -141,7 +224,7 @@ public class CommonServiceImpl {
     //生成薪资项列表
     private List<BasicDBObject> getPayItemList(PrCustBatchPO batchPO) {
 
-        List<PrPayrollItemPO> prList = null;
+        List<PrPayrollItemPO> prList;
         List<BasicDBObject> list = new ArrayList<>();
 
         //获取薪资组或薪资组模版下的薪资项列表
@@ -172,8 +255,7 @@ public class CommonServiceImpl {
 
         prList.forEach(item -> {
             BasicDBObject dbObject = new BasicDBObject();
-            Optional<PayrollAccountItemRelationExtPO> find =
-                    itemRelationExtsList.stream().filter(r -> r.getPayrollItemCode().equals(item.getItemCode()) && StringUtils.isNotEmpty(r.getPayrollItemAlias())).findFirst();
+            Optional<PayrollAccountItemRelationExtPO> find = itemRelationExtsList.stream().filter(r -> r.getPayrollItemCode().equals(item.getItemCode()) && !StringUtils.isEmpty(r.getPayrollItemAlias())).findFirst();
             if (find.isPresent()) {
                 dbObject.put("item_name", find.get().getPayrollItemAlias()); // 设置别名
             } else {
@@ -199,8 +281,77 @@ public class CommonServiceImpl {
         });
 
         //薪资项扩展字段处理
+        List<BasicDBObject> employeeExtendFieldsList = getTemplateEmployeeExtendFields(batchPO.getPrGroupCode());
+        list.addAll(employeeExtendFieldsList);
 
         return list;
+    }
+
+    /**
+     * 获取模板雇员扩展字段列表
+     *
+     * @param prGroupCode
+     * @return
+     */
+    private List<BasicDBObject> getTemplateEmployeeExtendFields(String prGroupCode) {
+        List<BasicDBObject> extendFieldsList = new ArrayList<>();
+
+        if (StringUtils.isEmpty(prGroupCode)) {
+            return extendFieldsList;
+        }
+
+        PrPayrollGroupPO paramPayrollGroupPO = new PrPayrollGroupPO();
+        paramPayrollGroupPO.setGroupCode(prGroupCode);
+        PrPayrollGroupPO prPayrollGroupPO = prPayrollGroupMapper.selectOne(paramPayrollGroupPO);
+        if (ObjectUtils.isEmpty(prPayrollGroupPO)) {
+            return extendFieldsList;
+        }
+
+        try {
+            if (!ObjectUtils.isEmpty(prPayrollGroupPO.getEmpExtendFieldTemplateId())) {
+                JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(prPayrollGroupPO.getEmpExtendFieldTemplateId());
+                if (!ObjectUtils.isEmpty(listJsonResult)) {
+                    List<EmployeeExtendFieldDTO> extendFieldDTOList = listJsonResult.getData();
+                    if (!CollectionUtils.isEmpty(extendFieldDTOList)) {
+                        extendFieldDTOList.forEach(extendFieldDTO -> {
+                            BasicDBObject dbObject = new BasicDBObject();
+
+                            dbObject.put("item_name", extendFieldDTO.getFieldName());
+                            dbObject.put("item_type", 1); //薪资项类型：1-固定输入项;2-可变输入项;3-计算项;4-系统项
+
+                            Integer fieldType = extendFieldDTO.getFieldType(); //接口中DTO 字段类型（1.数值 2.文本 3日期 4选项）
+                            switch (fieldType) {
+                                case 1:
+                                    dbObject.put("data_type", 2); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                                    break;
+                                case 2:
+                                case 4:
+                                case 3:
+                                    dbObject.put("data_type", 1); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            dbObject.put("item_code", codeGenerator.genPrItemCode(prPayrollGroupPO.getManagementId())); //薪资项编码
+//                            dbObject.put("default_value", ); //默认数字
+//                            dbObject.put("item_condition", ); //薪资项取值范围的条件描述
+//                            dbObject.put("formula_content", ); //公式内容
+//                            dbObject.put("canLock", ); //是否可以上锁
+//                            dbObject.put("cal_precision", ); //计算精度
+//                            dbObject.put("cal_priority", ); //计算顺序
+//                            dbObject.put("default_value_style", ); //默认值处理方式： 1 - 使用历史数据 2 - 使用基本值
+//                            dbObject.put("decimal_process_type", ); //小数处理方式： 1 - 四舍五入 2 - 简单去位
+//                            dbObject.put("display_priority", ); //显示顺序
+                        });
+                    }
+                }
+            }
+
+            return extendFieldsList;
+        } catch (Exception e) {
+            return extendFieldsList;
+        }
     }
 
     private int updateBatchMongodb(PrCustBatchPO batchPO, DBObject emp, List<BasicDBObject> payItems, int batchType) {
@@ -250,9 +401,13 @@ public class CommonServiceImpl {
 
     private List<BasicDBObject> cloneListDBObject(List<BasicDBObject> source) {
         List<BasicDBObject> cloneList = new ArrayList<>();
-        for (BasicDBObject basicDBObject : source) {
-            cloneList.add((BasicDBObject) basicDBObject.copy());
+
+        if (!CollectionUtils.isEmpty(source)) {
+            for (BasicDBObject basicDBObject : source) {
+                cloneList.add((BasicDBObject) basicDBObject.copy());
+            }
         }
+
         return cloneList;
     }
 
@@ -278,7 +433,7 @@ public class CommonServiceImpl {
                             String empCode = c.get(PayItemName.EMPLOYEE_CODE_CN) == null ?
                                     "" : (String) c.get(PayItemName.EMPLOYEE_CODE_CN);
 
-                            if (StringUtils.isNotEmpty(empCode))
+                            if (!StringUtils.isEmpty(empCode))
                                 m.put(empCode, list);
                         },
                         //(m,c) -> m.put((String)c.get("item_name"), c.get("item_value")),
@@ -289,22 +444,22 @@ public class CommonServiceImpl {
         return map;
     }
 
-    public List<SimpleEmpPayItemDTO> translate(List<DBObject> list){
+    public List<SimpleEmpPayItemDTO> translate(List<DBObject> list) {
 
-        if(list.size() == 0) return null;
+        if (list.size() == 0) return null;
 
-        Map<String,Double> statics = new HashMap<>();
+        Map<String, Double> statics = new HashMap<>();
 
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = list.stream().map(dbObject -> {
             SimpleEmpPayItemDTO itemPO = new SimpleEmpPayItemDTO();
             itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
             itemPO.setCompanyId(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_COMPANY_ID)));
 
-            DBObject calalog = (DBObject)dbObject.get("catalog");
+            DBObject calalog = (DBObject) dbObject.get("catalog");
 
             List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
 
-            if( dbObject.get("adjust_val") != null){
+            if (dbObject.get("adjust_val") != null) {
                 SimplePayItemDTO adjust = new SimplePayItemDTO();
                 adjust.setName("调整值");
                 adjust.setVal(dbObject.get("adjust_val"));
@@ -313,7 +468,7 @@ public class CommonServiceImpl {
             //DBObject empInfo = (DBObject)calalog.get("emp_info");
             //String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
 
-            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
+            List<DBObject> items = (List<DBObject>) calalog.get("pay_items");
             items.stream().forEach(dbItem -> {
                 SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
                 simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
@@ -321,24 +476,24 @@ public class CommonServiceImpl {
                 simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
                 simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
                 simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
-                simplePayItemDTO.setCanLock((boolean)dbItem.get("canLock"));
-                if(dbItem.get("isLocked") == null){
+                simplePayItemDTO.setCanLock((boolean) dbItem.get("canLock"));
+                if (dbItem.get("isLocked") == null) {
                     simplePayItemDTO.setLocked(false);
-                }else {
-                    simplePayItemDTO.setLocked((boolean)dbItem.get("isLocked"));
+                } else {
+                    simplePayItemDTO.setLocked((boolean) dbItem.get("isLocked"));
                 }
 
-                if(dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)){ //雇员姓名
+                if (dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)) { //雇员姓名
                     itemPO.setEmpName(String.valueOf(dbItem.get("item_value")));
                 }
 
                 // 根据每个薪资项名称求和，存入hashmap
-                if(simplePayItemDTO.getDataType() == DataTypeEnum.NUM.getValue()){
-                    if(statics.containsKey(simplePayItemDTO.getName())){
+                if (simplePayItemDTO.getDataType() == DataTypeEnum.NUM.getValue()) {
+                    if (statics.containsKey(simplePayItemDTO.getName())) {
                         double current = statics.get(simplePayItemDTO.getName());
-                        statics.put(simplePayItemDTO.getName(),current + Double.valueOf(simplePayItemDTO.getVal().toString()));
-                    }else {
-                        statics.put(simplePayItemDTO.getName(),Double.valueOf(simplePayItemDTO.getVal().toString()));
+                        statics.put(simplePayItemDTO.getName(), current + Double.valueOf(simplePayItemDTO.getVal().toString()));
+                    } else {
+                        statics.put(simplePayItemDTO.getName(), Double.valueOf(simplePayItemDTO.getVal().toString()));
                     }
                 }//end
 
@@ -350,9 +505,9 @@ public class CommonServiceImpl {
             return itemPO;
         }).collect(Collectors.toList());
 
-        for (SimpleEmpPayItemDTO empPayItemDTO : simplePayItemDTOS){ // 为每个薪资项设置SUM结果
-            empPayItemDTO.getPayItemDTOS().parallelStream().forEach(p->{
-                if(statics.containsKey(p.getName())){
+        for (SimpleEmpPayItemDTO empPayItemDTO : simplePayItemDTOS) { // 为每个薪资项设置SUM结果
+            empPayItemDTO.getPayItemDTOS().parallelStream().forEach(p -> {
+                if (statics.containsKey(p.getName())) {
                     p.setAmount(statics.get(p.getName()));
                 }
             });
