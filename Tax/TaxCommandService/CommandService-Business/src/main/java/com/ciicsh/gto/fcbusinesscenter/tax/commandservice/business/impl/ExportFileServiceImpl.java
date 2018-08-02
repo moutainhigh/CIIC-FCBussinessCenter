@@ -898,19 +898,19 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             if (null == cellAA) {
                 cellAA = row.createCell(26);
             }
-            cellAA.setCellValue(employeeInfoBatchPO.getDomesticDuty());
+            cellAA.setCellValue(EnumUtil.getMessage(EnumUtil.POST_LEVEL_ONLINE_COMMON, employeeInfoBatchPO.getDomesticDuty()));
             //境外职务-AB
             HSSFCell cellAB = row.getCell(27);
             if (null == cellAB) {
                 cellAB = row.createCell(27);
             }
-            cellAB.setCellValue(employeeInfoBatchPO.getOverseasDuty());
+            cellAB.setCellValue(EnumUtil.getMessage(EnumUtil.POST_LEVEL_ONLINE_COMMON, employeeInfoBatchPO.getOverseasDuty()));
             //支付地-AC
             HSSFCell cellAC = row.getCell(28);
             if (null == cellAC) {
                 cellAC = row.createCell(28);
             }
-            cellAC.setCellValue(employeeInfoBatchPO.getPaymentPlace());
+            cellAC.setCellValue(EnumUtil.getMessage(EnumUtil.PAY_PLACE_ONLINE_COMMON, employeeInfoBatchPO.getPaymentPlace()));
             //境外支付地（国别/地区-AD
             HSSFCell cellAD = row.getCell(29);
             if (null == cellAD) {
