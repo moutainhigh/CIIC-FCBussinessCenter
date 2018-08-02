@@ -344,6 +344,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Transactional(rollbackFor = Exception.class)
     public WorkFlowResultBO submit(Boolean flag, SalaryGrantTaskBO bo) throws Exception {
         WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
+        workFlowResultBO.setBatchCode(bo.getBatchCode());
         workFlowResultBO.setTaskCode(bo.getTaskCode());
         workFlowResultBO.setTaskType(bo.getTaskType());
         workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.HANDLE.getResult());

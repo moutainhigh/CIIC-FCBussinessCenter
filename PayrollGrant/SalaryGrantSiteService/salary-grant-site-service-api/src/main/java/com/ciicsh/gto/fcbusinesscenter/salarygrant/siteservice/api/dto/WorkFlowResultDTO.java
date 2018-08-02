@@ -15,6 +15,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class WorkFlowResultDTO {
     /**
+     * 批次号
+     */
+    private String batchCode;
+    /**
      * 任务单
      */
     private String taskCode;
