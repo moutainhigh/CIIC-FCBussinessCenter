@@ -3,11 +3,14 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.WorkflowService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.log.LogTaskFactory;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskWorkflowHistoryMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskWorkflowMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskWorkflowHistoryPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskWorkflowPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import com.ciicsh.gto.identityservice.api.dto.response.UserInfoResponseDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.Result;
 import com.ciicsh.gto.sheetservice.api.dto.request.MissionRequestDTO;
@@ -58,7 +61,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 taskWorkflowHistoryMapper.insert(taskWorkflowHistoryPO);//记录流程创建信息
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogTaskFactory.getLogger().error(e, "WorkflowServiceImpl.startProcess", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "08"), LogType.APP, null);
             flag = false;
         }
 
@@ -132,7 +135,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 taskWorkflowHistoryMapper.update(taskWorkflowHistoryPO,wrapper2);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogTaskFactory.getLogger().error(e, "WorkflowServiceImpl.completeTask", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "08"), LogType.APP, null);
         }
     }
 }

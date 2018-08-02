@@ -3,13 +3,17 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.host.controller;
 
 import com.ciicsh.gt1.common.auth.ManagementInfo;
 import com.ciicsh.gt1.common.auth.UserContext;
+import com.ciicsh.gto.basicdataservice.api.CityServiceProxy;
+import com.ciicsh.gto.basicdataservice.api.dto.CityDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.dto.TaskSubProofDTO;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.json.JsonResult;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.api.proxy.TaskSubProofProxy;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchAccountService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchAccountPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
@@ -38,6 +42,12 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
     @Autowired
     private ExportFileService exportFileService;
 
+    @Autowired
+    private CalculationBatchAccountService calculationBatchAccountService;
+
+    @Autowired
+    private CityServiceProxy cityServiceProxy;
+
     /**
      * 根据主任务ID查询子任务
      *
@@ -54,6 +64,14 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             TaskSubProofDTO taskSubProofDTO = new TaskSubProofDTO();
             BeanUtils.copyProperties(taskSubProofPO, taskSubProofDTO);
             taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofDTO.getStatus()));
+            CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofPO.getDeclareAccount());
+            if(calculationBatchAccountPO.getId() != null){
+                //设置城市
+                CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
+                taskSubProofDTO.setCity(cityDTO.getCityName());
+                //设置税务局
+                taskSubProofDTO.setTaxOrganization(calculationBatchAccountPO.getStation());
+            }
             taskSubProofDTOLists.add(taskSubProofDTO);
         }
         jr.fill(taskSubProofDTOLists);
