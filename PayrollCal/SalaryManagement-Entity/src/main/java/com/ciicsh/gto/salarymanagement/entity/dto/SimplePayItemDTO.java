@@ -8,6 +8,7 @@ public class SimplePayItemDTO {
     private String name;     //薪资项名称
     private Object val;      //薪资项值
     private int dataType;    // 数据格式: 1-文本,2-数字,3-日期,4-布尔
+    private double amount;   //统计该薪资项的和
 
     /**
      * 薪资项类型：
@@ -77,5 +78,13 @@ public class SimplePayItemDTO {
 
     public void setDisplay(int display) {
         this.display = display;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }
