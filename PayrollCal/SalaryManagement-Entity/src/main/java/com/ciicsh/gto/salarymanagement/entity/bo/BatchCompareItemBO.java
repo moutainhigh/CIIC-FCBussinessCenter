@@ -23,4 +23,9 @@ public class BatchCompareItemBO {
      * 2: 对比批次2
      */
     private Integer currentBatch;
+
+    /**
+     * 对比批次数量
+     */
+    private Integer batchCount;
 }
