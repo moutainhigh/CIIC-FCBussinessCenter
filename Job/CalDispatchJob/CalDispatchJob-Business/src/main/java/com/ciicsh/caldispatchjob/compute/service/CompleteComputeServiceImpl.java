@@ -119,6 +119,8 @@ public class CompleteComputeServiceImpl {
             batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
 
+        if(batchList == null || batchList.size() == 0) return;
+
         List<DBObject> list = batchList.stream().map(item -> {
             DBObject catalog = (DBObject)item.get("catalog");
             String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
@@ -185,7 +187,7 @@ public class CompleteComputeServiceImpl {
             mapObj.put("annuity", ""); //年金*/
             //mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
             mapObj.put("salary_calc_result_items", payItems);
-            processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
+            //processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
 
             return mapObj;
 

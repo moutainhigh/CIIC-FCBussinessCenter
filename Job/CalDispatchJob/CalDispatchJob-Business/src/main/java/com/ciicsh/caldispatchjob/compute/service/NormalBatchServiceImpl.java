@@ -37,12 +37,6 @@ public class NormalBatchServiceImpl {
     private EmpGroupServiceImpl empGroupService;
 
     @Autowired
-    private PrPayrollItemMapper prPayrollItemMapper;
-
-    @Autowired
-    private PrPayrollAccountItemRelationMapper accountItemRelationMapper;
-
-    @Autowired
     private PrNormalBatchMapper normalBatchMapper;
 
     /**
@@ -66,7 +60,6 @@ public class NormalBatchServiceImpl {
         List<DBObject> employees = empGroupService.getEmployeesByEmpGroupCode(empGroupCode);
 
         return commonService.batchInsertOrUpdateNormalBatch(batchCode, batchType, employees);
-
     }
 
     /**

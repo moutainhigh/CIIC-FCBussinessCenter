@@ -13,7 +13,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
         {
                 "com.ciicsh.gt1",
                 "com.ciicsh.gto.fcbusinesscenter.util",
-                "com.ciicsh.gto.salarymanagementcommandservice",
+                "com.ciicsh.gto.salarymanagementcommandservice"
         })
 @EnableDiscoveryClient
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
