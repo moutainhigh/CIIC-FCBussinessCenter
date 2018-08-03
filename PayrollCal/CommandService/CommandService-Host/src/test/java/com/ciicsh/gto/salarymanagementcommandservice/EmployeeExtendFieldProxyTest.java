@@ -31,8 +31,8 @@ public class EmployeeExtendFieldProxyTest {
     @Test
     public void getEmployeeExtendFieldDetails() {
         EmployeeExtendFieldRequestDTO extendFieldRequestDTO = new EmployeeExtendFieldRequestDTO();
-        extendFieldRequestDTO.setCompanyId("KH18000371");
-        extendFieldRequestDTO.setEmployeeId("18024365");
+        extendFieldRequestDTO.setCompanyId("KH18000355");
+        extendFieldRequestDTO.setEmployeeId("18024696");
         extendFieldRequestDTO.setEmpExtendFieldTemplateId(50L);
         JsonResult<List<EmployeeExtendFieldResponseDTO>> listJsonResult = employeeExtendFieldProxy.getEmployeeExtendFieldDetails(extendFieldRequestDTO);
         if (!ObjectUtils.isEmpty(listJsonResult)) {
