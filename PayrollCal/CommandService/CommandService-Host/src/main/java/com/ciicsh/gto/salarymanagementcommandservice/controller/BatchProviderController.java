@@ -3,6 +3,7 @@ package com.ciicsh.gto.salarymanagementcommandservice.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.ciicsh.common.entity.JsonResult;
+import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 /**
@@ -61,11 +63,11 @@ public class BatchProviderController implements BatchProxy {
         int advance = advanceBatchDTO.getAdvance();
         String modifiedBy = advanceBatchDTO.getModifiedBy();
         int rowAffected = 0;
-        if(advanceBatchDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
+        if (advanceBatchDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
             rowAffected = normalBatchService.updateHasAdvance(batchCodes, advance, modifiedBy);
-        }else if(advanceBatchDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()){
+        } else if (advanceBatchDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
             rowAffected = adjustBatchService.updateHasAdvance(batchCodes, advance, modifiedBy);
-        }else if(advanceBatchDTO.getBatchType() == BatchTypeEnum.BACK.getValue()){
+        } else if (advanceBatchDTO.getBatchType() == BatchTypeEnum.BACK.getValue()) {
             rowAffected = backTrackingBatchService.updateHasAdvance(batchCodes, advance, modifiedBy);
         }
         return rowAffected;
@@ -77,11 +79,11 @@ public class BatchProviderController implements BatchProxy {
         boolean hasMoney = moneyBatchDTO.isHasMoney();
         String modifiedBy = moneyBatchDTO.getModifiedBy();
         int rowAffected = 0;
-        if(moneyBatchDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
+        if (moneyBatchDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
             rowAffected = normalBatchService.updateHasMoney(batchCodes, hasMoney, modifiedBy);
-        }else  if(moneyBatchDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
+        } else if (moneyBatchDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
             rowAffected = adjustBatchService.updateHasMoney(batchCodes, hasMoney, modifiedBy);
-        }else  if(moneyBatchDTO.getBatchType() == BatchTypeEnum.BACK.getValue()) {
+        } else if (moneyBatchDTO.getBatchType() == BatchTypeEnum.BACK.getValue()) {
             rowAffected = backTrackingBatchService.updateHasMoney(batchCodes, hasMoney, modifiedBy);
         }
         return rowAffected;
@@ -97,7 +99,8 @@ public class BatchProviderController implements BatchProxy {
         }*/
         PageInfo<PrNormalBatchPO> pageInfo = normalBatchService.getAllBatchesByManagementId(managementId, batchCode, pageNum, pageSize);
         List<PrNormalBatchDTO> resultList = JSON.parseObject(JSON.toJSONString(pageInfo.getList())
-                , new TypeReference<List<PrNormalBatchDTO>>(){});
+                , new TypeReference<List<PrNormalBatchDTO>>() {
+                });
         Pagination<PrNormalBatchDTO> resultPage = new Pagination<>();
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
         resultPage.setList(resultList);
@@ -149,11 +152,11 @@ public class BatchProviderController implements BatchProxy {
     @Override
     public int updateBatchStatus(@RequestBody BatchAuditDTO batchAuditDTO) {
         int rowAffected = 0;
-        if(batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
+        if (batchAuditDTO.getBatchType() == BatchTypeEnum.NORMAL.getValue()) {
             rowAffected = normalBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getAdvancePeriod(), batchAuditDTO.getResult());
-        }else if(batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
-            rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(),batchAuditDTO.getAdvancePeriod(), batchAuditDTO.getResult());
-        }else {
+        } else if (batchAuditDTO.getBatchType() == BatchTypeEnum.ADJUST.getValue()) {
+            rowAffected = adjustBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getAdvancePeriod(), batchAuditDTO.getResult());
+        } else {
             rowAffected = backTrackingBatchService.auditBatch(batchAuditDTO.getBatchCode(), batchAuditDTO.getComments(), batchAuditDTO.getStatus(), batchAuditDTO.getModifyBy(), batchAuditDTO.getAdvancePeriod(), batchAuditDTO.getResult());
         }
         return rowAffected;
@@ -163,7 +166,7 @@ public class BatchProviderController implements BatchProxy {
     @Override
     public int updateBatchListStatus(@RequestBody List<BatchAuditDTO> batchAuditDTOs) {
         int rowAffected = 0;
-        for (BatchAuditDTO batchAuditDTO: batchAuditDTOs) {
+        for (BatchAuditDTO batchAuditDTO : batchAuditDTOs) {
             rowAffected += updateBatchStatus(batchAuditDTO);
         }
         return rowAffected;
@@ -193,23 +196,32 @@ public class BatchProviderController implements BatchProxy {
         advanceBatchInfoPO.setBatchType(advanceBatchInfoDTO.getBatchType());
         advanceBatchInfoPO.setCode(advanceBatchInfoDTO.getCode());
         advanceBatchInfoPO.setHasAdvance(advanceBatchInfoDTO.getHasAdvance());
-        advanceBatchInfoPO.setModifyBy(!StringUtils.isNotEmpty(advanceBatchInfoDTO.getModifyBy())? "system" : advanceBatchInfoDTO.getModifyBy()) ;
+        advanceBatchInfoPO.setModifyBy(!StringUtils.isNotEmpty(advanceBatchInfoDTO.getModifyBy()) ? "system" : advanceBatchInfoDTO.getModifyBy());
         return batchService.updateAdvancedBatch(advanceBatchInfoPO);
     }
 
     @PostMapping("/compareBatch")
-    public JsonResult compareBatch(@RequestBody BatchCompareRequestDTO obj) {
+    public JsonResult compareBatch(@RequestBody BatchCompareRequestDTO compareDTO) {
 
         //TODO Excel对比
 //        ObjectMapper
-        List<BatchCompareEmpBO> batchCompareEmpBOList = batchService.compareBatch(obj.getSrc(), obj.getSrcBatchType()
-                , obj.getTgt(), obj.getTgtBatchType()
-                , Arrays.asList(obj.getCompareKeysStr().split(","))
-                , obj.getMapping());
+        List<BatchCompareEmpBO> batchCompareEmpBOList;
+        try {
+            batchCompareEmpBOList = batchService.compareBatch(compareDTO);
 
+        } catch (BusinessException ex) {
+            return JsonResult.faultMessage(ex.getMessage());
+        }
         return JsonResult.success(batchCompareEmpBOList);
+
     }
 
+    /**
+     * 根据批次code查询批次列表
+     *
+     * @param batchCodesStr 批次code
+     * @return 批次列表
+     */
     @GetMapping("/batchPayrollSchema")
     public JsonResult getBatchPayrollSchemas(@RequestParam String batchCodesStr) {
 
@@ -233,5 +245,4 @@ public class BatchProviderController implements BatchProxy {
 
         return JsonResult.success(batchPayrollSchemaDTOList);
     }
-
 }
