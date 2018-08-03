@@ -86,8 +86,8 @@ spring:
             autoAddPartitions: true
 #            replicationFactor: 2
         bindings:
-          pay-apply-pay-status-stream:
-            destination: pay_apply_pay_status_stream
+          pay-apply-pay-status-stream-input-channel:
+            destination: pay-apply-pay-status-stream
             content-type: application/json
             group: ${spring.application.name}
             consumer:

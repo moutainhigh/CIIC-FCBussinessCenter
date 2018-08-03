@@ -1,6 +1,5 @@
 package com.ciicsh.caldispatchjob.entity;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

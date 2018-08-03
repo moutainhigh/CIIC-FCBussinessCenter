@@ -59,8 +59,11 @@ public class AdjustBatchServiceImpl {
         Criteria criteria = null;
         Query query = null;
         List<DBObject> list = null;
-        if(StringUtils.isEmpty(rootCode)){ // 从调整批次中 COPY
-            criteria = Criteria.where("batch_code").is(originCode);
+        if(!rootCode.equals(originCode)){ // 从调整批次中 COPY
+            criteria = Criteria.where("batch_code").is(originCode).orOperator(
+                    Criteria.where("adjust_val").lt(0.0),
+                    Criteria.where("adjust_val").gt(0.0)
+            );;
             query = Query.query(criteria);
             list = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
         }else { // 从正常批次中 COPY
@@ -76,16 +79,18 @@ public class AdjustBatchServiceImpl {
                 dbObject.put("batch_code", adjustCode); // update origin code to adjust code
                 dbObject.put("origin_batch_code", originCode);
                 dbObject.put("root_batch_code", rootCode);
-                dbObject.put("show_adj", false); // 调整差异值是否需要显示
-                catalog.put("adjust_items", null); // 调整差异字段列表
+                //dbObject.put("show_adj", false); // 调整差异值是否需要显示
+                //catalog.put("adjust_items", null); // 调整差异字段列表
                 Object netPay = findValByName(catalog, PayItemName.EMPLOYEE_NET_PAY);
                 dbObject.put("net_pay",netPay); // 存储上个批次的实发工资
                 batchInfo.put("payroll_type", BatchTypeEnum.ADJUST.getValue());
             });
+
+            adjustBatchMongoOpt.createIndex();
+            rowAffected = adjustBatchMongoOpt.batchInsert(list); // batch insert to mongodb
+            logger.info("batch insert counts : " + String.valueOf(rowAffected));
         }
-        adjustBatchMongoOpt.createIndex();
-        rowAffected = adjustBatchMongoOpt.batchInsert(list); // batch insert to mongodb
-        logger.info("batch insert counts : " + String.valueOf(rowAffected));
+
         return rowAffected;
     }
 

@@ -49,6 +49,11 @@ public class TaskSubProofDTO{
      */
     private String managerName;
 
+    /**
+     * 申报账户名称
+     */
+    private String declareAccountName;
+
     public Long getId() {
         return id;
     }
@@ -175,6 +180,14 @@ public class TaskSubProofDTO{
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
+    }
+
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
     }
 
     @Override

@@ -197,7 +197,6 @@
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-web</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>

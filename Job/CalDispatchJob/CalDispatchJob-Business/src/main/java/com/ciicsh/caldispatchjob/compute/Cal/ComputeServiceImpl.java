@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import javax.script.*;
 import java.math.BigDecimal;
@@ -300,12 +301,15 @@ public class ComputeServiceImpl {
             int rowAffected = 0;
             Criteria criteria = Criteria.where("batch_code").is(batchCode)
                     .and(PayItemName.EMPLOYEE_CODE_CN).is(empCode).and(PayItemName.EMPLOYEE_COMPANY_ID).is(companyId);
+            Update update = Update.update("catalog.pay_items",items);
+            Query query = Query.query(criteria);
+
             if (batchType == BatchTypeEnum.NORMAL.getValue()) {
-                rowAffected = normalBatchMongoOpt.update(criteria, "catalog.pay_items", items);
+                rowAffected = normalBatchMongoOpt.upsert(query, update);
             } else if (batchType == BatchTypeEnum.ADJUST.getValue()) {
-                rowAffected = adjustBatchMongoOpt.update(criteria, "catalog.pay_items", items);
+                rowAffected = adjustBatchMongoOpt.upsert(query, update);;
             } else {
-                rowAffected = backTraceBatchMongoOpt.update(criteria, "catalog.pay_items", items);
+                rowAffected = backTraceBatchMongoOpt.upsert(query, update);;
             }
             logger.info("row affected " + rowAffected);
             return dbObject;

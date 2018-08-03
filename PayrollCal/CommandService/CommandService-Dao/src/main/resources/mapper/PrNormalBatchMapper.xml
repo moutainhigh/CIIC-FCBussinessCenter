@@ -16,6 +16,7 @@
 		<result column="result_data" property="resultData" />
 		<result column="is_impl_cal" property="isImplCal" />
 		<result column="is_active" property="isActive" />
+		<result column="is_test_batch" property="isTestBatch" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
 		<result column="created_by" property="createdBy" />
@@ -24,7 +25,7 @@
 
 	<resultMap id="CustBatchResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" >
 		<result column="code" property="code"/>
-		<result column="batch_type" property="batchType"/>
+		<!--<result column="batch_type" property="batchType"/>-->
 		<result column="management_id" property="managementId"/>
 		<result column="management_name" property="managementName"/>
 		<result column="account_set_code" property="accountSetCode"/>
@@ -41,8 +42,7 @@
 		<result column="pr_group_code" property="prGroupCode"/>
 		<result column="is_template" property="isTemplate"/>
 		<result column="created_by" property="createdBy"/>
-
-
+        <result column="is_test_batch" property="isTestBatch" />
 	</resultMap>
 
 	<select id="getCustBatchInfo" resultMap="CustBatchResultMap">
@@ -65,13 +65,14 @@
 	<select id="selectBatchListByUseLike" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" resultMap="CustBatchResultMap">
 
 		SELECT * from ( SELECT
-		a.code,
-		1 as batch_type,
+	    a.code,
+-- 		1 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
 		a.period,
 		a.actual_period,
+        a.is_test_batch,
 		a.status,
 		a.start_date,
 		a.end_date,
@@ -112,13 +113,14 @@
 
 		UNION
 		SELECT
-		a.code,
-		2 as batch_type,
+	    a.code,
+-- 		2 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
 		a.period,
 		a.actual_period,
+        a.is_test_batch,
 		a.status,
 		a.start_date,
 		a.end_date,
@@ -165,13 +167,14 @@
 
 	UNION
 		SELECT
-		a.code,
-		3 as batch_type,
+	    a.code,
+-- 		3 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
 		a.period,
 		a.actual_period,
+        a.is_test_batch,
 		a.status,
 		a.start_date,
 		a.end_date,
@@ -272,11 +275,12 @@
 		#{createdBy},
 		#{modifiedBy},
 		#{startDate},
-		#{endDate}
+		#{endDate},
+        #{isTestBatch}
 		FROM DUAL WHERE NOT EXISTS(
 		SELECT management_id
 		FROM pr_normal_batch
-		WHERE management_id = #{managementId} AND account_set_code=#{accountSetCode} AND period=#{period}
+		WHERE management_id = #{managementId} AND account_set_code=#{accountSetCode} AND period=#{period} AND is_test_batch=#{isTestBatch}
 		)
 	</insert>
 
@@ -331,7 +335,8 @@
 		created_by,
 		modified_by,
 		start_date,
-		end_date
+		end_date,
+		is_test_batch
 	</sql>
 
 	<delete id="deleteBatchByCodes">

@@ -22,6 +22,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TemplateFileBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
@@ -718,8 +719,7 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             List<EmployeeInfoBatchPO> employeeInfoBatchPOList = employeeInfoBatchImpl.selectList(wrapperEmployee);
             //文件名称
             String fileName = "";
-            //TODO 独立户和大库
-            //00-独立户,01-独立户
+            //00-独立户,01-大库
             if ("00".equals(taskSubDeclarePO.getAccountType())) {
                 fileName = "人员信息-离职.xls";
                 //获取POIFSFileSystem对象
@@ -898,19 +898,19 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             if (null == cellAA) {
                 cellAA = row.createCell(26);
             }
-            cellAA.setCellValue(employeeInfoBatchPO.getDomesticDuty());
+            cellAA.setCellValue(EnumUtil.getMessage(EnumUtil.POST_LEVEL_ONLINE_COMMON, employeeInfoBatchPO.getDomesticDuty()));
             //境外职务-AB
             HSSFCell cellAB = row.getCell(27);
             if (null == cellAB) {
                 cellAB = row.createCell(27);
             }
-            cellAB.setCellValue(employeeInfoBatchPO.getOverseasDuty());
+            cellAB.setCellValue(EnumUtil.getMessage(EnumUtil.POST_LEVEL_ONLINE_COMMON, employeeInfoBatchPO.getOverseasDuty()));
             //支付地-AC
             HSSFCell cellAC = row.getCell(28);
             if (null == cellAC) {
                 cellAC = row.createCell(28);
             }
-            cellAC.setCellValue(employeeInfoBatchPO.getPaymentPlace());
+            cellAC.setCellValue(EnumUtil.getMessage(EnumUtil.PAY_PLACE_ONLINE_COMMON, employeeInfoBatchPO.getPaymentPlace()));
             //境外支付地（国别/地区-AD
             HSSFCell cellAD = row.getCell(29);
             if (null == cellAD) {
@@ -1019,7 +1019,6 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             for (int i = 0; i < batchNos.length; i++) {
                 //批次号
                 String batchNo = batchNos[i];
-                //TODO 员工个税申报明细头部信息
                 //组织员工个税申报明细头部信息
                 Map<String, String> topMap = new HashMap<>();
                 //流水号
@@ -1032,6 +1031,8 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                 topMap.put("serviceManager", "");
                 //根据批次号查询出批次信息
                 CalculationBatchPO calculationBatchPO = calculationBatchService.queryCalculationBatchPOByBatchNo(batchNo);
+                //薪资所属期
+                topMap.put("incomeYearMonth",  calculationBatchPO.getIncomeYearMonth() != null ? DateTimeFormatter.ofPattern("yyyyMM").format(DateTimeKit.dateToLocalDate(calculationBatchPO.getIncomeYearMonth())) : "");
                 //根据批次查询批次详情(划款部分)
                 List<CalculationBatchDetailPO> calculationBatchDetailPOList = calculationBatchDetailService.queryCalBatchDetailMoneyByBatchId(calculationBatchPO.getId());
                 //个税期间
