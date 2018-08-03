@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.SMUserInfoProxy;
 import com.ciicsh.gto.afsystemmanagecenter.apiservice.api.dto.auth.SMUserInfoDTO;
 import com.ciicsh.gto.basicdataservice.api.CityServiceProxy;
@@ -334,7 +335,7 @@ public class CommonServiceImpl implements CommonService {
 
         if (!CollectionUtils.isEmpty(employeePaymentBOList)) {
             // -------------- 过滤出没有银行卡信息的雇员 待确认业务逻辑----------------
-            employeePaymentBOList = employeePaymentBOList.stream().filter(employeePaymentBO -> !StringUtils.isEmpty(employeePaymentBO.getCardNum())).collect(Collectors.toList());
+            //employeePaymentBOList = employeePaymentBOList.stream().filter(employeePaymentBO -> !StringUtils.isEmpty(employeePaymentBO.getCardNum())).collect(Collectors.toList());
 
             employeePaymentBOList.stream().forEach(employeePaymentBO -> {
                 SalaryEmployeeDTO salaryEmployeeDTO = new SalaryEmployeeDTO();
@@ -405,8 +406,9 @@ public class CommonServiceImpl implements CommonService {
         }
 
         salaryBatchDTO.setEmployeeList(employeeList);
-
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步薪资发放数据到结算中心 -> 同步薪资数据").setContent(JSON.toJSONString(salaryBatchDTO)));
         JsonResult<SalaryBatchDTO> salaryBatchDTOJsonResult = salaryServiceProxy.saveSalaryBatchData(salaryBatchDTO);
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("同步薪资发放数据到结算中心 -> 结算中心结果").setContent(JSON.toJSONString(salaryBatchDTOJsonResult)));
         if (!ObjectUtils.isEmpty(salaryBatchDTOJsonResult)) {
             if ("0".equals(salaryBatchDTOJsonResult.getCode())) {
                 return salaryBatchDTOJsonResult.getData();

@@ -19,6 +19,8 @@
 		<result column="modified_time" property="modifiedTime" />
 		<result column="created_by" property="createdBy" />
 		<result column="modified_by" property="modifiedBy" />
+		<result column="emp_extend_field_template_id" property="empExtendFieldTemplateId" />
+		<result column="emp_extend_field_template_name" property="empExtendFieldTemplateName" />
 	</resultMap>
 
 	<resultMap id="getKeyValueMap" type="KeyValuePO">
@@ -38,6 +40,8 @@
 			is_template,
 			approval_status,
 			comments,
+		    emp_extend_field_template_id,
+            emp_extend_field_template_name,
 			is_active,
 			created_time,
 			modified_time,
@@ -50,10 +54,10 @@
 				AND management_id = #{managementId}
 			</if>
 			<if test="groupCode != null and groupCode != ''">
-				AND group_code LIKE concat(#{groupCode},'%')
+				AND group_code LIKE concat('%', #{groupCode}, '%')
 			</if>
 			<if test="groupName != null and groupName !=''">
-				AND group_name LIKE concat(#{groupName},'%')
+				AND group_name LIKE concat('%', #{groupName}, '%')
 			</if>
 			<if test="approvalStatus != null">
 				AND approval_status = #{managementId}
@@ -138,7 +142,6 @@
 		<if test="managementId != null and managementId != ''">
 			AND management_id = #{managementId}
 		</if>
-		LIMIT 50
 	</select>
 
 	<select id="selectCountGroupByNameAndManagement" resultType="int">

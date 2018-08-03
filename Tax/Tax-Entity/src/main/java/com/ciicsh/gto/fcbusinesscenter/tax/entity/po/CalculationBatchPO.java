@@ -12,6 +12,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -140,6 +141,19 @@ public class CalculationBatchPO extends Model<CalculationBatchPO> {
 	private String modifiedByDisplayName;
 
 	private String serviceCategory;
+
+	/**
+	 * 薪资期间
+	 */
+	private Date incomeYearMonth;
+
+	public Date getIncomeYearMonth() {
+		return incomeYearMonth;
+	}
+
+	public void setIncomeYearMonth(Date incomeYearMonth) {
+		this.incomeYearMonth = incomeYearMonth;
+	}
 
 	public String getServiceCategory() {
 		return serviceCategory;

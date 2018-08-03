@@ -128,8 +128,10 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         salaryGrantSubTaskPO.setProcess(false);
         salaryGrantSubTaskPO.setBalanceGrant(salaryGrantMainTaskPO.getBalanceGrant());
         salaryGrantSubTaskPO.setActive(true);
-        salaryGrantSubTaskPO.setCreatedBy("system");
+        salaryGrantSubTaskPO.setCreatedBy(SalaryGrantBizConsts.SYSTEM_EN);
         salaryGrantSubTaskPO.setCreatedTime(new Date());
+        salaryGrantSubTaskPO.setModifiedBy(SalaryGrantBizConsts.SYSTEM_EN);
+        salaryGrantSubTaskPO.setModifiedTime(new Date());
         /** 添加操作员字段处理，代码维度处理。业务待确认  2017-07-17*/
         if (StringUtils.isNotBlank(salaryGrantMainTaskPO.getOperatorUserId())) {
             salaryGrantSubTaskPO.setOperatorUserId(salaryGrantMainTaskPO.getOperatorUserId());

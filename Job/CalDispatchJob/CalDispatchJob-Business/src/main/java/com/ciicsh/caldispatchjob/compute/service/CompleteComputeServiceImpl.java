@@ -15,11 +15,14 @@ import com.ciicsh.gto.fcbusinesscenter.util.entity.DistributedTranEntity;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollAccountSetPO;
+import com.ciicsh.gto.salarymanagementcommandservice.service.PrAccountSetService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.PrNormalBatchService;
 import com.ciicsh.gto.salarymanagementcommandservice.service.common.CommonServiceImpl;
 import com.ciicsh.gto.salarymanagementcommandservice.service.util.BizArith;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +76,7 @@ public class CompleteComputeServiceImpl {
     private FCBizTransactionMongoOpt bizTransactionMongoOpt;
 
     @Autowired
-    private PrNormalBatchService normalBatchService;
+    private PrAccountSetService prAccountSetService;
 
     @Autowired
     private CommonServiceImpl commonService;
@@ -91,6 +94,7 @@ public class CompleteComputeServiceImpl {
                 .include("catalog.emp_info")
                 .include("catalog.emp_info.country_code")
                 .include("catalog.batch_info.actual_period")
+                .include("catalog.batch_info.account_set_code")
                 .include("catalog.batch_info.management_ID")
                 .include("catalog.batch_info.management_Name")
                 .include("catalog.pay_items.data_type")
@@ -115,12 +119,15 @@ public class CompleteComputeServiceImpl {
             batchList = backTraceBatchMongoOpt.getMongoTemplate().find(query,DBObject.class, BackTraceBatchMongoOpt.PR_BACK_TRACE_BATCH);
         }
 
+        if(batchList == null || batchList.size() == 0) return;
+
         List<DBObject> list = batchList.stream().map(item -> {
             DBObject catalog = (DBObject)item.get("catalog");
             String empCode = (String) item.get(PayItemName.EMPLOYEE_CODE_CN);
             String companyId = item.get(PayItemName.EMPLOYEE_COMPANY_ID) == null ? "" : (String) item.get(PayItemName.EMPLOYEE_COMPANY_ID);
             DBObject batchInfo = (DBObject)catalog.get("batch_info");
             String mgrId = batchInfo.get("management_ID") == null ? "" : (String) batchInfo.get("management_ID");
+            String accountSetCode = batchInfo.get("account_set_code") == null ? "" : (String)batchInfo.get("account_set_code");
             DBObject empInfo = getEmployeeInfo(catalog,empCode,mgrId,companyId);
             List<DBObject> payItems = (List<DBObject>)catalog.get("pay_items");
             payItems = payItems.stream().map(pItem -> {
@@ -143,15 +150,15 @@ public class CompleteComputeServiceImpl {
             DBObject mapObj = new BasicDBObject();
             mapObj.put("batch_type", batchType); // 批次类型
             mapObj.put("batch_id", batchCode);  // 批次ID
-
+            mapObj.put("calendar_id", getCalendarId(accountSetCode));  // 批次ID
             long version = commonService.getBatchVersion(batchCode) + 1;
             mapObj.put("version", version); // 批次版本号
-
             mapObj.put("batch_ref_id",item.get("origin_batch_code") == null ? "" :item.get("origin_batch_code")); // 该批次引用ID
             mapObj.put("mgr_id", mgrId); // 管理方ID
             mapObj.put("mgr_name", batchInfo.get("management_Name") == null ? "" : batchInfo.get("management_Name")); // 管理方名称
             mapObj.put("emp_id", empCode); // 中智雇员ID
             mapObj.put("emp_info",empInfo); // 雇员信息
+
             mapObj.put("income_year_month", batchInfo.get("actual_period") == null ? "" : batchInfo.get("actual_period")); //工资年月
             //mapObj.put("leaving_years", empInfo.get(PayItemName.LEAVE_DATE) == null ? "" : empInfo.get(PayItemName.LEAVE_DATE)); // 离职年限
             //mapObj.put("net_pay", findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY) == null ? "" : findValByName(payItems,PayItemName.EMPLOYEE_NET_PAY)); //实发工资
@@ -180,13 +187,27 @@ public class CompleteComputeServiceImpl {
             mapObj.put("annuity", ""); //年金*/
             //mapObj.put("contract_first_party", ""); //合同我方：分三种 - AF、FC、BPO，销售中心报价单-》雇员服务协议
             mapObj.put("salary_calc_result_items", payItems);
-            processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
+            //processAdjustFields(batchCode,batchType,item); // 处理调整计算逻辑
 
             return mapObj;
 
         }).collect(Collectors.toList());
 
         doBizTransaction(batchCode, batchType,list, userID, userName);
+    }
+
+    private int getCalendarId(String accountSetCode){
+        if(StringUtils.isNotEmpty(accountSetCode)){
+            PrPayrollAccountSetPO accountSetPO = prAccountSetService.getAccountSetInfo(accountSetCode);
+            if(accountSetPO == null){
+                return 0;
+            }else {
+                return Integer.parseInt(accountSetPO.getWorkCalendarValue());
+            }
+        }
+
+        return 0;
+
     }
 
     /**
@@ -337,10 +358,12 @@ public class CompleteComputeServiceImpl {
             JsonResult<List<FcEmployeeResponseDTO>> result = employeeServiceProxy.getFcEmployeeInfos(employeeRequestDTO);
             if (result.isSuccess() && result.getData() != null && result.getData().size() > 0) {
                 return result.getData().get(0);
+            }else {
+                logger.info(String.format("雇员ID: %s, 公司ID：%s 无雇员服务协议", empCode,companyId));
             }
         }
         catch (Exception ex){
-            logger.info("获取雇员服务协议失败： " + ex.getMessage());
+            logger.info(String.format("雇员ID: %s, 公司ID：%s 获取雇员服务协议失败: %s", empCode,companyId,ex.getMessage()));
         }
         return null;
     }

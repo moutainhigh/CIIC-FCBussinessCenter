@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author yuantongqing on 2018/01/02
@@ -31,6 +32,9 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
 
     @Autowired
     private TaskMainService taskMainService;
+
+    @Autowired
+    private CalculationBatchServiceImpl calculationBatchServiceImpl;
 
     /**
      * 条件查询缴纳子任务
@@ -117,7 +121,12 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      */
     @Override
     public void completeTaskSubPayment(RequestForSubPayment requestForSubPayment) {
-        updateTaskSubPaymentStatus(requestForSubPayment);
+        if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
+            //修改缴纳子任务状态
+            updateTaskSubPaymentStatus(requestForSubPayment);
+            List<Long> taskMainIds = getTaskMainIdsBySubPaymentIds(requestForSubPayment.getSubPaymentIds());
+            calculationBatchServiceImpl.commitBatchNoToSalaryCal(taskMainIds);
+        }
     }
 
     /**
@@ -127,9 +136,14 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
-        updateTaskSubPaymentStatus(requestForSubPayment);
-        taskMainService.updateTaskMainStatus(requestForSubPayment.getMainIds());
+    public Boolean rejectTaskSubPayment(RequestForSubPayment requestForSubPayment) {
+        Boolean flag = taskMainService.updateTaskMainStatus(requestForSubPayment.getMainIds());
+        if(flag){
+            if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
+                updateTaskSubPaymentStatus(requestForSubPayment);
+            }
+        }
+        return flag;
     }
 
     /**
@@ -138,17 +152,15 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
      * @param requestForSubPayment
      */
     private void updateTaskSubPaymentStatus(RequestForSubPayment requestForSubPayment) {
-        if (requestForSubPayment.getSubPaymentIds() != null && !"".equals(requestForSubPayment.getSubPaymentIds())) {
-            TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
-            //更新缴纳任务状态
-            taskSubPaymentPO.setStatus(requestForSubPayment.getStatus());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubPaymentPO());
-            wrapper.and("is_active = {0}", true);
-            wrapper.in("id", requestForSubPayment.getSubPaymentIds());
-            //修改缴纳子任务状态
-            baseMapper.update(taskSubPaymentPO, wrapper);
-        }
+        TaskSubPaymentPO taskSubPaymentPO = new TaskSubPaymentPO();
+        //更新缴纳任务状态
+        taskSubPaymentPO.setStatus(requestForSubPayment.getStatus());
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(new TaskSubPaymentPO());
+        wrapper.and("is_active = {0}", true);
+        wrapper.in("id", requestForSubPayment.getSubPaymentIds());
+        //修改缴纳子任务状态
+        baseMapper.update(taskSubPaymentPO, wrapper);
     }
 
     /**
@@ -176,5 +188,35 @@ public class TaskSubPaymentServiceImpl extends ServiceImpl<TaskSubPaymentMapper,
         taskSubPaymentPO.setOverdue(overdue);
         taskSubPaymentPO.setFine(fine);
         baseMapper.updateById(taskSubPaymentPO);
+    }
+
+    /**
+     * 根据缴纳子任务ID和状态查询相关子任务状态的数目
+     * @param subPaymentIds
+     * @param status
+     * @return
+     */
+    @Override
+    public int selectRejectCount(String[] subPaymentIds, String status) {
+        //根据缴纳子任务ID数组获取相关主任务ID
+        List<Long> taskMainIds = this.getTaskMainIdsBySubPaymentIds(subPaymentIds);
+        return taskMainService.querySubTaskNumByMainIdsAndStatus(taskMainIds,status);
+    }
+
+    /**
+     * 根据缴纳子任务ID查询相关主任务ID集合
+     * @param subPaymentIds
+     * @return
+     */
+    public List<Long> getTaskMainIdsBySubPaymentIds(String[] subPaymentIds){
+        //查询出相关缴纳子任务集合
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.andNew().in("id", subPaymentIds).or().in("task_sub_payment_id", subPaymentIds);
+        List<TaskSubPaymentPO> taskSubPaymentPOS = baseMapper.selectList(entityWrapper);
+//            //筛选出没有合并任务的相关申报子任务
+//            List<TaskSubPaymentPO> unMergeTaskSubPaymentList = taskSubPaymentPOS.stream().filter(item -> !item.getCombined()).collect(Collectors.toList());
+        //筛选出对应主任务ID集合
+        List<Long> taskMainIds = taskSubPaymentPOS.stream().map(TaskSubPaymentPO::getTaskMainId).collect(Collectors.toList());
+        return taskMainIds;
     }
 }

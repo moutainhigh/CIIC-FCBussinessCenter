@@ -3,6 +3,9 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.ciicsh.gto.basicdataservice.api.CityServiceProxy;
+import com.ciicsh.gto.basicdataservice.api.dto.CityDTO;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBatchAccountService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainProofMapper;
@@ -10,10 +13,7 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofDetail
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubProofMapper;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubDeclareDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainProofPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProofDetail;
@@ -48,6 +48,12 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
 
     @Autowired
     private TaskSubProofDetailServiceImpl taskSubProofDetailService;
+
+    @Autowired
+    private CalculationBatchAccountService calculationBatchAccountService;
+
+    @Autowired
+    private CityServiceProxy cityServiceProxy;
 
     @Autowired
     public TaskNoService taskNoService;
@@ -102,6 +108,14 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
                 taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
+                CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
+                if(calculationBatchAccountPO.getId() != null){
+                    //设置城市
+                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
+                    taskSubProofBO.setCity(cityDTO.getCityName());
+                    //设置税务局
+                    taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+                }
                 taskSubProofBOList.add(taskSubProofBO);
             }
             responseForSubProof.setCurrentNum(requestForProof.getCurrentNum());
@@ -115,6 +129,14 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
                 taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
+                CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
+                if(calculationBatchAccountPO.getId() != null){
+                    //设置城市
+                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
+                    taskSubProofBO.setCity(cityDTO.getCityName());
+                    //设置税务局
+                    taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+                }
                 taskSubProofBOList.add(taskSubProofBO);
             }
             responseForSubProof.setRowList(taskSubProofBOList);
@@ -191,14 +213,13 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //获取完税凭证任务状态中文名
         for (TaskSubProofBO bo : taskSubProofBOList) {
             bo.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, bo.getStatus()));
-            //TODO 临时设置"城市"和"税务机构"
-            bo.setCity("上海");
-            if ("蓝天科技独立户".equals(bo.getDeclareAccount())) {
-                bo.setTaxOrganization("浦东局");
-            } else if ("联想独立户".equals(bo.getDeclareAccount())) {
-                bo.setTaxOrganization("三分局");
-            } else if ("西门子独立户".equals(bo.getDeclareAccount())) {
-                bo.setTaxOrganization("徐汇局");
+            CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(bo.getDeclareAccount());
+            if(calculationBatchAccountPO.getId() != null){
+                //设置城市
+                CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
+                bo.setCity(cityDTO.getCityName());
+                //设置税务局
+                bo.setTaxOrganization(calculationBatchAccountPO.getStation());
             }
         }
         responseForSubProof.setRowList(taskSubProofBOList);
@@ -462,14 +483,13 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     public TaskSubProofBO queryApplyDetailsBySubId(long subProofId) {
         TaskSubProofBO taskSubProofBO = baseMapper.queryApplyDetailsBySubId(subProofId);
         taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
-        //TODO 临时设置城市和税务机构
-        taskSubProofBO.setCity("上海");
-        if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
-            taskSubProofBO.setTaxOrganization("浦东局");
-        } else if ("联想独立户".equals(taskSubProofBO.getDeclareAccount())) {
-            taskSubProofBO.setTaxOrganization("三分局");
-        } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
-            taskSubProofBO.setTaxOrganization("徐汇局");
+        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
+        if(calculationBatchAccountPO.getId() != null){
+            //设置城市
+            CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
+            taskSubProofBO.setCity(cityDTO.getCityName());
+            //设置税务局
+            taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
         }
         return taskSubProofBO;
     }
@@ -597,6 +617,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                             taskSubProofPO.setTaskSubDeclareId(taskSubDeclareId);
                             taskSubProofPO.setManagerNo(taskSubDeclarePO.getManagerNo());
                             taskSubProofPO.setManagerName(taskSubDeclarePO.getManagerName());
+                            //申报账户中文名称
+                            taskSubProofPO.setDeclareAccountName(taskSubDeclarePO.getDeclareAccountName());
                             this.baseMapper.insert(taskSubProofPO);
                         }
 

@@ -233,9 +233,9 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
     }
 
     @Override
-    public List<HashMap<String, String>> getPrGroupTemplateNameList(String query) {
+    public List<HashMap<String, String>> getPrGroupTemplateNameList(String name , String managementId) {
         List<HashMap<String, String>> result;
-        result = prPayrollGroupTemplateMapper.selectGroupTemplateNameListByName(query);
+        result = prPayrollGroupTemplateMapper.selectGroupTemplateNameListByName(name, managementId);
         return result;
     }
 
@@ -252,16 +252,16 @@ public class PrGroupTemplateServiceImpl implements PrGroupTemplateService {
         prGroups.forEach(i -> {
             List<PrPayrollItemPO> itemsInGroup = prItemService.getListByGroupCode(i.getGroupCode());
             // 删除已经不存在在薪资组模板中的继承项
-            List<String> needDeleteItemCodes = new LinkedList<>();
+            List<Integer> ids = new LinkedList<>();
             itemsInGroup.forEach(j -> {
                 if (!StringUtils.isEmpty(j.getParentItemCode())
                         && prItemsInTemplate.stream().noneMatch(k -> j.getParentItemCode().equals(k.getItemCode()))) {
-                    needDeleteItemCodes.add(j.getItemCode());
+                    ids.add(j.getId());
                 }
             });
-            if (needDeleteItemCodes.size() > 0) {
-                prItemService.deleteItemByCodes(needDeleteItemCodes, i.getGroupCode(), i.getManagementId());
-            }
+            ids.forEach(id -> {
+                prItemService.deletePrItemById(id);
+            });
             // 更新，添加继承项
             prItemsInTemplate.forEach(j -> {
                 Optional<PrPayrollItemPO> prItemInGroupOpt =

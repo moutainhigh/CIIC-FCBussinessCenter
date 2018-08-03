@@ -194,4 +194,22 @@ public class TaskSubDeclareDetailServiceImpl extends ServiceImpl<TaskSubDeclareD
         }
     }
 
+    /**
+     * 添加合并后的申报明细（手工文件）
+     * @param taskSubDeclarePO
+     * @param taskSubDeclareDetailPOList
+     */
+    public void addMergeSubDeclareDetail(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList){
+        EntityWrapper subDeclareDetailWrapper = new EntityWrapper();
+        subDeclareDetailWrapper.setEntity(new TaskSubDeclareDetailPO());
+        subDeclareDetailWrapper.and("task_sub_declare_id = {0}", taskSubDeclarePO.getId());
+        subDeclareDetailWrapper.and("is_active = {0} ", true);
+        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOSMerge = baseMapper.selectList(subDeclareDetailWrapper);
+        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOSMerge){
+            if(!taskSubDeclareDetailPOList.contains(po)){
+                taskSubDeclareDetailPOList.add(po);
+            }
+        }
+    }
+
 }

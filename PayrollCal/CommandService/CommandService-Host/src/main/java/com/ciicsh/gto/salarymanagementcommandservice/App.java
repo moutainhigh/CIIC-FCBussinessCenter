@@ -13,7 +13,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
         {
                 "com.ciicsh.gt1",
                 "com.ciicsh.gto.fcbusinesscenter.util",
-                "com.ciicsh.gto.salarymanagementcommandservice",
+                "com.ciicsh.gto.salarymanagementcommandservice"
         })
 @EnableDiscoveryClient
 @MapperScan("com.ciicsh.gto.salarymanagementcommandservice.dao")
@@ -23,6 +23,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
         "com.ciicsh.gto.salecenter.apiservice.api",
         "com.ciicsh.gto.companycenter.webcommandservice.api",
         "com.ciicsh.gto.identityservice.api",
+        "com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api"
     })// 指定对应中心的 @FeignClient 所在对应的包
 public class App {
 

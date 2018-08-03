@@ -23,7 +23,7 @@ import java.util.List;
 public interface PrPayrollGroupTemplateMapper extends BaseMapper<PrPayrollGroupTemplatePO> {
 
     /**
-     * 使用左匹配的方式获取薪资组模板列表 by entity
+     * 获取薪资组模板列表
      * @param param
      * @return
      */
@@ -54,7 +54,8 @@ public interface PrPayrollGroupTemplateMapper extends BaseMapper<PrPayrollGroupT
      * @param name
      * @return
      */
-    List<HashMap<String, String>> selectGroupTemplateNameListByName(@Param("name") String name);
+    List<HashMap<String, String>> selectGroupTemplateNameListByName(@Param("name") String name,
+                                                                    @Param("managementId") String managementId);
 
     /**
      * 根据模板名称查找模板是否存在

@@ -3,16 +3,10 @@ package com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.DroolsService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskMainService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubDeclareService;
-import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.common.TaskNoService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskSubDeclareMapper;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskMainDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.declare.RequestForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.declare.ResponseForTaskSubDeclare;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
@@ -36,6 +30,20 @@ import java.util.stream.Collectors;
 @Service
 public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper, TaskSubDeclarePO> implements TaskSubDeclareService, Serializable {
 
+    /**
+     * 广东省省份编号
+     */
+    private static final String PROVINCE_CODE_GD = "440000";
+    /**
+     * 江苏省省份编号
+     */
+    private static final String PROVINCE_CODE_JS = "320000";
+
+    /**
+     * 深圳城市编号
+     */
+    private static final String CITY_CODE_SZ = "440300";
+
     @Autowired
     private TaskSubProofService taskSubProofService;
 
@@ -50,6 +58,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
     @Autowired
     private EmployeeInfoBatchImpl employeeInfoBatch;
+
+    @Autowired
+    private CalculationBatchServiceImpl calculationBatchServiceImpl;
 
     /**
      * 当期
@@ -69,6 +80,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
 
     @Autowired
     private DroolsService droolsService;
+
+    @Autowired
+    private CalculationBatchAccountService calculationBatchAccountService;
 
     @Override
     public ResponseForTaskSubDeclare queryTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
@@ -200,12 +214,6 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             taskSubDeclare.setOverdue(overdue);
             //设置罚金
             taskSubDeclare.setFine(fine);
-//            //设置总人数
-//            taskSubDeclare.setHeadcount(headcount);
-//            //设置中方人数
-//            taskSubDeclare.setChineseNum(chineseNum);
-//            //设置外方人数
-//            taskSubDeclare.setForeignerNum(foreignerNum);
             //设置任务状态
             taskSubDeclare.setStatus(taskSubDeclarePOList.get(0).getStatus());
             //设置是否为合并任务
@@ -513,6 +521,9 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
             List<Long> declareIdList = Arrays.asList(requestForTaskSubDeclare.getSubDeclareIds()).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             //创建完税凭证自动任务
             taskSubProofService.createTaskSubProof(declareIdList);
+            //根据申报子任务ID数组获取相关主任务ID
+            List<Long> taskMainIds = this.getTaskMainIdsByDeclareIds(requestForTaskSubDeclare.getSubDeclareIds());
+            calculationBatchServiceImpl.commitBatchNoToSalaryCal(taskMainIds);
         }
     }
 
@@ -522,25 +533,30 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
      * @param requestForTaskSubDeclare
      */
     @Transactional(rollbackFor = Exception.class)
-    public void rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
+    public Boolean rejectTaskSubDeclares(RequestForTaskSubDeclare requestForTaskSubDeclare) {
+        Boolean deleteFlag = false;
         if (requestForTaskSubDeclare.getSubDeclareIds() != null && !"".equals(requestForTaskSubDeclare.getSubDeclareIds())) {
-            TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
-            //设置任务状态
-            taskSubDeclarePO.setStatus(requestForTaskSubDeclare.getStatus());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubDeclarePO());
-            //任务为通过状态
-            wrapper.and("status = {0} ", "02");
-            //任务为可用状态
-            wrapper.and("is_active = {0} ", true);
-            //主任务ID IN条件
-            wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
-            //修改完税凭证子任务
-            baseMapper.update(taskSubDeclarePO, wrapper);
-            //修改申报子任务合并ID为数组ID的任务状态
-            baseMapper.updateBeforeMergeDeclareStatus(requestForTaskSubDeclare.getSubDeclareIds(), requestForTaskSubDeclare.getStatus(), requestForTaskSubDeclare.getModifiedBy(), LocalDateTime.now());
-            taskMainService.updateTaskMainStatus(requestForTaskSubDeclare.getMainIds());
+            Boolean flag = taskMainService.updateTaskMainStatus(requestForTaskSubDeclare.getMainIds());
+            if(flag){
+                TaskSubDeclarePO taskSubDeclarePO = new TaskSubDeclarePO();
+                //设置任务状态
+                taskSubDeclarePO.setStatus(requestForTaskSubDeclare.getStatus());
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskSubDeclarePO());
+                //任务为通过状态
+                wrapper.and("status = {0} ", "02");
+                //任务为可用状态
+                wrapper.and("is_active = {0} ", true);
+                //主任务ID IN条件
+                wrapper.in("id", requestForTaskSubDeclare.getSubDeclareIds());
+                //修改完税凭证子任务
+                baseMapper.update(taskSubDeclarePO, wrapper);
+                //修改申报子任务合并ID为数组ID的任务状态
+                baseMapper.updateBeforeMergeDeclareStatus(requestForTaskSubDeclare.getSubDeclareIds(), requestForTaskSubDeclare.getStatus(), requestForTaskSubDeclare.getModifiedBy(), LocalDateTime.now());
+            }
+            deleteFlag = flag;
         }
+        return deleteFlag;
     }
 
 
@@ -560,6 +576,19 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         wrapper.orderBy("modified_time", false);
         List<TaskSubDeclarePO> taskSubDeclarePOList = baseMapper.selectList(wrapper);
         return taskSubDeclarePOList;
+    }
+
+    /**
+     * 根据申报任务ID查询相关子任务退回的数目
+     * @param subDeclareIds
+     * @param status
+     * @return
+     */
+    @Override
+    public int selectRejectCount(String[] subDeclareIds, String status){
+        //根据申报子任务ID数组获取相关主任务ID
+        List<Long> taskMainIds = this.getTaskMainIdsByDeclareIds(subDeclareIds);
+        return taskMainService.querySubTaskNumByMainIdsAndStatus(taskMainIds,status);
     }
 
     /**
@@ -643,4 +672,66 @@ public class TaskSubDeclareServiceImpl extends ServiceImpl<TaskSubDeclareMapper,
         }
     }
 
+    /**
+     * 判断该申报子任务是否有网上文件模板
+     * @param subDeclareId
+     * @return
+     */
+    public Boolean hasOnLineTemplateBySubDeclareId(Long subDeclareId){
+        TaskSubDeclarePO taskSubDeclarePO = baseMapper.selectById(subDeclareId);
+        //根据申报账户查询批次账户信息
+        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubDeclarePO.getDeclareAccount());
+        if ("00".equals(taskSubDeclarePO.getAreaType())) {
+            return true;
+        } else {
+            if (PROVINCE_CODE_JS.equals(calculationBatchAccountPO.getProvinceCode())) {
+                return true;
+            } else if (CITY_CODE_SZ.equals(calculationBatchAccountPO.getCityCode())) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 判断该申报子任务是否有手工文件模板
+     * @param subDeclareId
+     * @return
+     */
+    public Boolean hasOffLineTemplateBySubDeclareId(Long subDeclareId){
+        TaskSubDeclarePO taskSubDeclarePO = baseMapper.selectById(subDeclareId);
+        //根据申报账户查询批次账户信息
+        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubDeclarePO.getDeclareAccount());
+        if ("00".equals(taskSubDeclarePO.getAreaType())) {
+            return false;
+        } else {
+            if (PROVINCE_CODE_GD.equals(calculationBatchAccountPO.getProvinceCode())) {
+                if (CITY_CODE_SZ.equals(calculationBatchAccountPO.getCityCode())) {
+                    return true;
+                } else {
+                    return true;
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 根据申报子任务ID查询相关主任务ID
+     * @param subDeclareIds
+     * @return
+     */
+    public List<Long> getTaskMainIdsByDeclareIds(String[] subDeclareIds){
+        //查询出相关申报子任务集合
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.andNew().in("id",subDeclareIds).or().in("task_sub_declare_id",subDeclareIds);
+        List<TaskSubDeclarePO> taskSubDeclarePOS = baseMapper.selectList(entityWrapper);
+        //筛选出没有合并任务的相关申报子任务
+        List<TaskSubDeclarePO> unMergeTaskSubDeclareList = taskSubDeclarePOS.stream().filter(item -> !item.getCombined()).collect(Collectors.toList());
+        //筛选出对应主任务ID集合
+        List<Long> taskMainIds = unMergeTaskSubDeclareList.stream().map(TaskSubDeclarePO :: getTaskMainId).collect(Collectors.toList());
+        return taskMainIds;
+    }
 }
