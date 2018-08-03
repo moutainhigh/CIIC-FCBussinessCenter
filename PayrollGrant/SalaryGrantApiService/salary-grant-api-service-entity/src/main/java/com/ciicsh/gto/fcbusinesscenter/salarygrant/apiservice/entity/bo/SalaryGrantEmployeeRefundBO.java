@@ -34,7 +34,7 @@ public class SalaryGrantEmployeeRefundBO implements Serializable {
      */
     private String companyId;
     /**
-     * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放
+     * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
      */
     private Integer grantType;
     /**
@@ -49,6 +49,10 @@ public class SalaryGrantEmployeeRefundBO implements Serializable {
      * 雇员银行卡账号（新）
      */
     private String cardNumNew;
+    /**
+     * 银行卡编号
+     */
+    private Long bankcardId;
     /**
      * 薪酬计算批次号（新）
      */

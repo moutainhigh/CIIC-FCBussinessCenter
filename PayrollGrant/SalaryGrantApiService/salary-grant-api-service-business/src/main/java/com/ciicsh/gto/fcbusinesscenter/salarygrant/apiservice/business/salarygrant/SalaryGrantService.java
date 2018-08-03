@@ -2,10 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygr
 
 
 import com.baomidou.mybatisplus.service.IService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.ReprieveEmployeeBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeRefundBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO;
 
 import java.util.List;
@@ -30,6 +27,8 @@ public interface SalaryGrantService extends IService<SalaryGrantTaskPO> {
 
     /**
      *  根据主表任务单编号查询薪资发放任务单子表
+     * @author gaoyang
+     * @date 2018-05-18
      * @param subTaskBO
      * @return List<SalaryGrantSubTaskBO>
      */
@@ -46,13 +45,17 @@ public interface SalaryGrantService extends IService<SalaryGrantTaskPO> {
 
     /**
      *  根据退票雇员信息创建薪资发放任务单
+     *  @author gaoyang
+     *  @date 2018-05-23
      * @param employeeRefundList
      * @return Boolean
      */
-    Boolean toCreateRefundTask(List<SalaryGrantEmployeeRefundBO> employeeRefundList);
+    ResponseRefundBO toCreateRefundTask(List<SalaryGrantEmployeeRefundBO> employeeRefundList, String batchCode);
 
     /**
      *  根据任务单信息进行驳回处理
+     *  @author gaoyang
+     *  @date 2018-05-23
      * @param salaryGrantTaskBO
      * @return Boolean
      */

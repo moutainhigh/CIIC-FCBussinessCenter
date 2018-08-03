@@ -48,11 +48,10 @@ public interface SalaryGrantEmployeeCommandService extends IService<SalaryGrantE
     /**
      * 更新退票的雇员信息
      *
-     * @param taskCode 批次号
      * @param employeeReturnTicketDTOList 退票雇员信息列表
      * @return
      */
-    boolean updateForRefund(String taskCode, List<EmployeeReturnTicketDTO> employeeReturnTicketDTOList);
+    boolean updateForRefund(List<EmployeeReturnTicketDTO> employeeReturnTicketDTOList);
 
     /**
      * 暂缓人员信息进入暂缓池

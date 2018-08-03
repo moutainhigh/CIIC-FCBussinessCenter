@@ -5,7 +5,6 @@
 	<resultMap id="BaseResultMap" type="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantTaskPO">
 		<id column="salary_grant_main_task_id" property="salaryGrantMainTaskId" />
 		<result column="salary_grant_main_task_code" property="salaryGrantMainTaskCode" />
-		<!--<result column="work_flow_task_id" property="workFlowTaskId" />-->
 		<result column="management_id" property="managementId" />
 		<result column="management_name" property="managementName" />
 		<result column="batch_code" property="batchCode" />
@@ -23,14 +22,20 @@
 		<result column="grant_mode" property="grantMode" />
 		<result column="is_adversion" property="isAdversion" />
 		<result column="adversion_type" property="adversionType" />
+		<result column="is_advance" property="isAdvance" />
+		<result column="advance_type" property="advanceType" />
+		<result column="is_process" property="isProcess" />
 		<result column="remark" property="remark" />
 		<result column="invalid_reason" property="invalidReason" />
 		<result column="approved_opinion" property="approvedOpinion" />
 		<result column="task_status" property="taskStatus" />
 		<result column="task_type" property="taskType" />
 		<result column="is_include_foreign_currency" property="isIncludeForeignCurrency" />
+		<result column="balance_grant" property="balanceGrant" />
 		<result column="operator_user_id" property="operatorUserId" />
 		<result column="approve_user_id" property="approveUserId" />
+		<result column="work_flow_user_info" property="workFlowUserInfo" />
+		<result column="batch_version" property="batchVersion" />
 		<result column="is_active" property="isActive" />
 		<result column="created_by" property="createdBy" />
 		<result column="created_time" property="createdTime" />
