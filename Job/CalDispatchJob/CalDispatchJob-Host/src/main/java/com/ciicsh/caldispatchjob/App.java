@@ -24,7 +24,8 @@ import javax.script.ScriptEngine;
 @EnableFeignClients(
         {
                 "com.ciicsh.gto.companycenter.webcommandservice.api",
-                "com.ciicsh.gto.salecenter.apiservice.api"
+                "com.ciicsh.gto.salecenter.apiservice.api",
+                "com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api"
         }
         )// 指定对应中心的 @FeignClient 所在对应的包
 public class App {
