@@ -39,6 +39,8 @@ public class EmployeeExtendFieldProxyTest {
             List<EmployeeExtendFieldResponseDTO> extendFieldResponseDTOList = listJsonResult.getData();
             if (!CollectionUtils.isEmpty(extendFieldResponseDTOList)) {
                 System.out.println("雇员扩展字段薪资计算接口调用 返回: " + JSONObject.toJSONString(extendFieldResponseDTOList));
+            } else {
+                System.out.println("雇员扩展字段薪资计算接口调用 返回为空");
             }
         } else {
             System.out.println("雇员扩展字段薪资计算接口调用 异常");

@@ -196,10 +196,25 @@ public class CommonServiceImpl {
                 }
             }
 
-            return employeeExtendFieldValueList;
         } catch (Exception e) {
-            return employeeExtendFieldValueList;
+            return new ArrayList<>();
         }
+
+        //测试代码 - 待删除 开始
+//        EmployeeExtendFieldResponseDTO fieldResponseDTO = new EmployeeExtendFieldResponseDTO();
+//        fieldResponseDTO.setFieldName("字段名称2");
+//        fieldResponseDTO.setFieldType(1);
+//        fieldResponseDTO.setValue("字段名称2Value");
+//        employeeExtendFieldValueList.add(fieldResponseDTO);
+//
+//        fieldResponseDTO = new EmployeeExtendFieldResponseDTO();
+//        fieldResponseDTO.setFieldName("工资发放地");
+//        fieldResponseDTO.setFieldType(1);
+//        fieldResponseDTO.setValue("工资发放地Value");
+//        employeeExtendFieldValueList.add(fieldResponseDTO);
+        //测试代码 - 待删除 结束
+
+        return employeeExtendFieldValueList;
     }
 
     private DBObject BatchPOToDBObject(PrCustBatchPO batchPO) {
@@ -334,24 +349,27 @@ public class CommonServiceImpl {
                             }
 
                             dbObject.put("item_code", codeGenerator.genPrItemCode(prPayrollGroupPO.getManagementId())); //薪资项编码
-//                            dbObject.put("default_value", ); //默认数字
-//                            dbObject.put("item_condition", ); //薪资项取值范围的条件描述
-//                            dbObject.put("formula_content", ); //公式内容
-//                            dbObject.put("canLock", ); //是否可以上锁
-//                            dbObject.put("cal_precision", ); //计算精度
-//                            dbObject.put("cal_priority", ); //计算顺序
-//                            dbObject.put("default_value_style", ); //默认值处理方式： 1 - 使用历史数据 2 - 使用基本值
-//                            dbObject.put("decimal_process_type", ); //小数处理方式： 1 - 四舍五入 2 - 简单去位
-//                            dbObject.put("display_priority", ); //显示顺序
+                            dbObject.put("default_value", ""); //默认数字
+                            dbObject.put("item_condition", ""); //薪资项取值范围的条件描述
+                            dbObject.put("formula_content", ""); //公式内容
+                            dbObject.put("canLock", false); //是否可以上锁
+                            dbObject.put("cal_precision", 0); //计算精度
+                            dbObject.put("cal_priority", 0); //计算顺序
+                            dbObject.put("default_value_style", 2); //默认值处理方式： 1 - 使用历史数据 2 - 使用基本值
+                            dbObject.put("decimal_process_type", 1); //小数处理方式： 1 - 四舍五入 2 - 简单去位
+                            dbObject.put("display_priority", 0); //显示顺序
+
+                            extendFieldsList.add(dbObject);
                         });
                     }
                 }
             }
 
-            return extendFieldsList;
         } catch (Exception e) {
-            return extendFieldsList;
+            return new ArrayList<>();
         }
+
+        return extendFieldsList;
     }
 
     private int updateBatchMongodb(PrCustBatchPO batchPO, DBObject emp, List<BasicDBObject> payItems, int batchType) {
