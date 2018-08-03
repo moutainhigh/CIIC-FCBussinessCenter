@@ -120,17 +120,17 @@ public class BatchServiceImpl implements BatchService {
             // 如果当前循环批次为源批次
             if (currentBatch == CurrentBatchEnum.SRC_BATCH.getValue()) {
                 processCurrentBatch(compareMappingList, srcBatchList, tgtBatchList, tgtTwoBatchList,
-                        batchCompareEmpBOList, currentBatch, currentEmpId, currentCompanyId, empResultBO);
+                        batchCompareEmpBOList, currentBatch, currentEmpId, currentCompanyId, empResultBO, batchCount);
 
             } else if (currentBatch == CurrentBatchEnum.TGT_BATCH.getValue()) {
                 // 如果当前循环批次为对比批次1
                 processCurrentBatch(compareMappingList, srcBatchList, tgtBatchList, tgtTwoBatchList,
-                        batchCompareEmpBOList, currentBatch, currentEmpId, currentCompanyId, empResultBO);
+                        batchCompareEmpBOList, currentBatch, currentEmpId, currentCompanyId, empResultBO, batchCount);
 
             } else if (currentBatch == CurrentBatchEnum.TGTTWO_BATCH.getValue()) {
                 // 如果当前循环批次为对比批次2
                 processCurrentBatch(compareMappingList, srcBatchList, tgtBatchList, tgtTwoBatchList,
-                        batchCompareEmpBOList, currentBatch, currentEmpId, currentCompanyId, empResultBO);
+                        batchCompareEmpBOList, currentBatch, currentEmpId, currentCompanyId, empResultBO, batchCount);
 
             }
         }
@@ -144,7 +144,8 @@ public class BatchServiceImpl implements BatchService {
                                      int currentBatch,
                                      String currentEmpId,
                                      String currentCompanyId,
-                                     BatchCompareEmpBO empResultBO) {
+                                     BatchCompareEmpBO empResultBO,
+                                     int batchCount) {
         // 源批次中的当前雇员薪资项信息
         Optional<DBObject> srcEmpResultData = srcBatchList.stream()
                 .filter(payItems -> {
@@ -207,6 +208,7 @@ public class BatchServiceImpl implements BatchService {
                 itemBO.setMappingKey(compareKeyMap.get(PayItemName.SRC_COMPANY_KEY));
                 // 当前批次
                 itemBO.setCurrentBatch(currentBatch);
+                itemBO.setBatchCount(batchCount);
                 itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
                 itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
                 itemBO.setTgtTwoValue(this.getItemValueFromDBObject(tgtTwoItem));
@@ -241,6 +243,7 @@ public class BatchServiceImpl implements BatchService {
                 itemBO.setMappingKey(compareKeyMap.get(PayItemName.SRC_COMPANY_KEY));
                 // 当前批次
                 itemBO.setCurrentBatch(currentBatch);
+                itemBO.setBatchCount(batchCount);
                 itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
                 itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
                 itemBO.setTgtTwoValue("");
@@ -275,6 +278,7 @@ public class BatchServiceImpl implements BatchService {
                 itemBO.setMappingKey(compareKeyMap.get(PayItemName.SRC_COMPANY_KEY));
                 // 当前批次
                 itemBO.setCurrentBatch(currentBatch);
+                itemBO.setBatchCount(batchCount);
                 itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
                 itemBO.setTgtValue("");
                 itemBO.setTgtTwoValue(this.getItemValueFromDBObject(tgtTwoItem));
@@ -302,6 +306,7 @@ public class BatchServiceImpl implements BatchService {
                 itemBO.setMappingKey(compareKeyMap.get(PayItemName.SRC_COMPANY_KEY));
                 // 当前批次
                 itemBO.setCurrentBatch(currentBatch);
+                itemBO.setBatchCount(batchCount);
                 itemBO.setSrcValue(this.getItemValueFromDBObject(srcItem));
                 itemBO.setTgtValue("");
                 itemBO.setTgtTwoValue("");
@@ -328,6 +333,7 @@ public class BatchServiceImpl implements BatchService {
                 itemBO.setMappingKey(compareKeyMap.get(PayItemName.SRC_COMPANY_KEY));
                 // 当前批次
                 itemBO.setCurrentBatch(currentBatch);
+                itemBO.setBatchCount(batchCount);
                 itemBO.setSrcValue("");
                 itemBO.setTgtValue(this.getItemValueFromDBObject(tgtItem));
                 itemBO.setTgtTwoValue("");
@@ -355,6 +361,7 @@ public class BatchServiceImpl implements BatchService {
                 itemBO.setMappingKey(compareKeyMap.get(PayItemName.SRC_COMPANY_KEY));
                 // 当前批次
                 itemBO.setCurrentBatch(currentBatch);
+                itemBO.setBatchCount(batchCount);
                 itemBO.setSrcValue("");
                 itemBO.setTgtValue("");
                 itemBO.setTgtTwoValue(this.getItemValueFromDBObject(tgtTwoItem));
