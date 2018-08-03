@@ -59,8 +59,11 @@ public class AdjustBatchServiceImpl {
         Criteria criteria = null;
         Query query = null;
         List<DBObject> list = null;
-        if(StringUtils.isEmpty(rootCode)){ // 从调整批次中 COPY
-            criteria = Criteria.where("batch_code").is(originCode);
+        if(!rootCode.equals(originCode)){ // 从调整批次中 COPY
+            criteria = Criteria.where("batch_code").is(originCode).orOperator(
+                    Criteria.where("adjust_val").lt(0.0),
+                    Criteria.where("adjust_val").gt(0.0)
+            );;
             query = Query.query(criteria);
             list = adjustBatchMongoOpt.getMongoTemplate().find(query,DBObject.class,AdjustBatchMongoOpt.PR_ADJUST_BATCH);
         }else { // 从正常批次中 COPY
@@ -82,10 +85,12 @@ public class AdjustBatchServiceImpl {
                 dbObject.put("net_pay",netPay); // 存储上个批次的实发工资
                 batchInfo.put("payroll_type", BatchTypeEnum.ADJUST.getValue());
             });
+
+            adjustBatchMongoOpt.createIndex();
+            rowAffected = adjustBatchMongoOpt.batchInsert(list); // batch insert to mongodb
+            logger.info("batch insert counts : " + String.valueOf(rowAffected));
         }
-        adjustBatchMongoOpt.createIndex();
-        rowAffected = adjustBatchMongoOpt.batchInsert(list); // batch insert to mongodb
-        logger.info("batch insert counts : " + String.valueOf(rowAffected));
+
         return rowAffected;
     }
 

@@ -15,7 +15,7 @@ public class PrCustBatchPO {
     /**
      * 批次类型
      */
-    private Integer batchType;
+//    private Integer batchType;
 
     //管理方ID
     private String managementId;

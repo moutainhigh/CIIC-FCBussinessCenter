@@ -445,20 +445,18 @@ public class AdjustBatchController {
         int rowAffected = 0;
         if(batchType == BatchTypeEnum.ADJUST.getValue()){
             rowAffected = adjustBatchService.deleteAdjustBatchByCodes(Arrays.asList(codes));
+            if (rowAffected >= 1) {
+                //send message to kafka
+                AdjustBatchMsg msg = new AdjustBatchMsg();
+                msg.setOperateTypeEnum(OperateTypeEnum.DELETE);
+                msg.setAdjustBatchCode(batchCodes);
+                sender.SendAdjustBatch(msg);
+            }
         }else {
             rowAffected = backTrackingBatchService.deleteBackTraceBatchByCodes(Arrays.asList(codes));
         }
-        if (rowAffected >= 1){
-            //send message to kafka
-            PayrollMsg msg = new PayrollMsg();
-            msg.setBatchCode(batchCodes);
-            msg.setBatchType(batchType);
-            msg.setOperateType(OperateTypeEnum.DELETE.getValue());
-            sender.Send(msg);
-            return JsonResult.success(rowAffected,"删除成功");
-        }else {
-            return JsonResult.faultMessage();
-        }
+        return JsonResult.success(rowAffected,"删除成功");
+
     }
 
     private Query createQuery(String batchCode){

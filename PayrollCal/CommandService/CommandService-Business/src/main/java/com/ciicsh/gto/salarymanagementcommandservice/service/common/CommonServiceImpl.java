@@ -6,6 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.TestBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimplePayItemDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.PayrollAccountItemRelationExtPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
@@ -104,7 +105,7 @@ public class CommonServiceImpl {
         }
         try {
             //create index
-            if (batchType == 4) {
+            if (batchType == BatchTypeEnum.Test.getValue()) {
                 testBatchMongoOpt.createIndex();
                 logger.info("add test batch row affected : " + String.valueOf(rowAffected));
             } else {
@@ -236,7 +237,7 @@ public class CommonServiceImpl {
         update.set("catalog", catalog);
 
         WriteResult result;
-        if (batchType == 4) { // 测试批次
+        if (batchType == BatchTypeEnum.Test.getValue()) { // 测试批次
             result = testBatchMongoOpt.getMongoTemplate().upsert(query, update, TestBatchMongoOpt.PR_TEST_BATCH);
         } else {
             result = normalBatchMongoOpt.getMongoTemplate().upsert(query, update, NormalBatchMongoOpt.PR_NORMAL_BATCH);
@@ -300,7 +301,7 @@ public class CommonServiceImpl {
             itemPO.setEmpCode(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_CODE_CN)));
             itemPO.setCompanyId(String.valueOf(dbObject.get(PayItemName.EMPLOYEE_COMPANY_ID)));
 
-            DBObject calalog = (DBObject)dbObject.get("catalog");
+            DBObject catalog = (DBObject)dbObject.get("catalog");
 
             List<SimplePayItemDTO> simplePayItemDTOList = new ArrayList<>();
 
@@ -313,7 +314,7 @@ public class CommonServiceImpl {
             //DBObject empInfo = (DBObject)calalog.get("emp_info");
             //String name =  empInfo.get(PayItemName.EMPLOYEE_NAME_CN) == null ? "" : (String)empInfo.get(PayItemName.EMPLOYEE_NAME_CN);
 
-            List<DBObject> items = (List<DBObject>)calalog.get("pay_items");
+            List<DBObject> items = (List<DBObject>)catalog.get("pay_items");
             items.stream().forEach(dbItem -> {
                 SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
                 simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
