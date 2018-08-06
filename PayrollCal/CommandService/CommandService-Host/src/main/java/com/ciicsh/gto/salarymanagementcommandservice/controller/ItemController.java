@@ -56,7 +56,7 @@ public class ItemController extends BaseController {
      */
     @GetMapping(value = "/getPrItemPage")
     public JsonResult getPrItemList(@RequestParam String groupCode,
-                                    @RequestParam Long templateId,
+                                    @RequestParam(required = false, defaultValue = "0") Long templateId,
                                     @RequestParam Integer parentType,
                                     @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "50") Integer pageSize) {
@@ -76,10 +76,12 @@ public class ItemController extends BaseController {
                 .collect(Collectors.toList());
 
         // 获取雇员扩展模板中扩展项List
-        List<PrPayrollItemDTO> extendItemDTOList = getExtendItems(templateId);
-        // 将扩展项List添加到返回结果中
-        if (!CollectionUtils.isEmpty(resultList)) {
-            resultList.addAll(extendItemDTOList);
+        if(templateId > 0) {
+            List<PrPayrollItemDTO> extendItemDTOList = getExtendItems(templateId);
+            // 将扩展项List添加到返回结果中
+            if (!CollectionUtils.isEmpty(resultList)) {
+                resultList.addAll(extendItemDTOList);
+            }
         }
 
         PageInfo<PrPayrollItemDTO> resultPage = new PageInfo<>(resultList);
