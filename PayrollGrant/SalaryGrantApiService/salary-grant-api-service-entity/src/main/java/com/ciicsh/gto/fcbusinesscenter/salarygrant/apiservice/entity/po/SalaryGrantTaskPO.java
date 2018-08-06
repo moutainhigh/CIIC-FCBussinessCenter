@@ -1,6 +1,10 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,88 +18,121 @@ import java.util.Date;
  * @author chenpb
  * @since 2018-04-18
  */
+@TableName("sg_salary_grant_main_task")
 public class SalaryGrantTaskPO extends Model<SalaryGrantTaskPO> {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * 任务单ID
      */
+    @TableId(value="salary_grant_main_task_id", type= IdType.AUTO)
     private Long salaryGrantMainTaskId;
     /**
      * 任务单编号
      */
+    @TableField("salary_grant_main_task_code")
     private String salaryGrantMainTaskCode;
-    /**
-     * 流程编号
-     */
-    private String workFlowProcessId;
     /**
      * 管理方编号
      */
+    @TableField("management_id")
     private String managementId;
     /**
      * 管理方名称
      */
+    @TableField("management_name")
     private String managementName;
     /**
      * 薪酬计算批次号
      */
+    @TableField("batch_code")
     private String batchCode;
     /**
      * 参考批次号
      */
+    @TableField("origin_batch_code")
     private String originBatchCode;
     /**
      * 薪资周期
      */
+    @TableField("grant_cycle")
     private String grantCycle;
     /**
      * 薪资发放总金额（RMB）
      */
+    @TableField("payment_total_sum")
     private BigDecimal paymentTotalSum;
     /**
      * 发薪人数
      */
+    @TableField("total_person_count")
     private Integer totalPersonCount;
     /**
      * 中方发薪人数
      */
+    @TableField("chinese_count")
     private Integer chineseCount;
     /**
      * 外方发薪人数
      */
+    @TableField("foreigner_count")
     private Integer foreignerCount;
     /**
      * 中智上海发薪人数
      */
+    @TableField("local_grant_count")
     private Integer localGrantCount;
     /**
      * 中智代发（委托机构）发薪人数
      */
+    @TableField("supplier_grant_count")
     private Integer supplierGrantCount;
     /**
      * 薪资发放日期
      */
+    @TableField("grant_date")
     private String grantDate;
     /**
      * 薪资发放时段:1-上午，2-下午
      */
+    @TableField("grant_time")
     private Integer grantTime;
     /**
      * 发放类型:1-正常发放，2-调整发放，3-回溯发放，4-暂缓再发放，5-退票发放，6-现金
      */
+    @TableField("grant_type")
     private Integer grantType;
     /**
-     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-中智代发（客户账户）、4-客户自行
+     * 发放方式:1-中智上海账户、2-中智代发（委托机构）、3-客户自行、4-中智代发（客户账户）
      */
+    @TableField("grant_mode")
     private String grantMode;
     /**
      * 是否内转:0-非内转，1-内转
      */
+    @TableField("is_adversion")
     private Boolean isAdversion;
     /**
      * 内转类型:1-AF转FC,2-BPO转FC,3-FC转AF,4-FC转BPO
      */
+    @TableField("adversion_type")
     private Integer adversionType;
+    /**
+     * 是否垫付:0-否，1-是
+     */
+    @TableField("is_advance")
+    private Boolean isAdvance;
+    /**
+     * 垫付类型:1-信用期垫付;2-偶然垫付;3-水单垫付;4-AF垫付;5-预付款垫付
+     */
+    @TableField("advance_type")
+    private Integer advanceType;
+    /**
+     * 是否处理:1-已处理，0-未处理
+     */
+    @TableField("is_process")
+    private Boolean isProcess;
     /**
      * 备注:任务单中雇员信息变化提示链接
      */
@@ -103,50 +140,76 @@ public class SalaryGrantTaskPO extends Model<SalaryGrantTaskPO> {
     /**
      * 失效原因
      */
+    @TableField("invalid_reason")
     private String invalidReason;
     /**
      * 审批意见
      */
+    @TableField("approved_opinion")
     private String approvedOpinion;
     /**
-     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待支付，6-未支付，7-已支付，8-撤回，9-驳回
+     * 状态:0-草稿，1-审批中，2-审批通过，3-审批拒绝，4-失效，5-待生成，6-未支付，7-已支付，8-撤回，9-驳回，13-作废
      */
+    @TableField("task_status")
     private String taskStatus;
     /**
      * 任务单类型:0-主表
      */
+    @TableField("task_type")
     private Integer taskType;
     /**
      * 外币发放标识:0-否，1-是
      */
+    @TableField("is_include_foreign_currency")
     private Boolean isIncludeForeignCurrency;
+    /**
+     * 结算发放标识:0-正常，1-垫付
+     */
+    @TableField("balance_grant")
+    private Integer balanceGrant;
     /**
      * 操作员
      */
+    @TableField("operator_user_id")
     private String operatorUserId;
     /**
      * 审核员
      */
+    @TableField("approve_user_id")
     private String approveUserId;
+    /**
+     * 任务流转信息
+     */
+    @TableField("work_flow_user_info")
+    private String workFlowUserInfo;/**
+     * 计算批次版本号
+     */
+    @TableField("batch_version")
+    private Long batchVersion;
     /**
      * 是否有效:1-有效，0-无效
      */
+    @TableField("is_active")
     private Boolean isActive;
     /**
      * 创建人
      */
+    @TableField("created_by")
     private String createdBy;
     /**
      * 创建时间
      */
+    @TableField("created_time")
     private Date createdTime;
     /**
      * 最后修改人
      */
+    @TableField("modified_by")
     private String modifiedBy;
     /**
      * 最后修改时间
      */
+    @TableField("modified_time")
     private Date modifiedTime;
 
 
@@ -164,14 +227,6 @@ public class SalaryGrantTaskPO extends Model<SalaryGrantTaskPO> {
 
     public void setSalaryGrantMainTaskCode(String salaryGrantMainTaskCode) {
         this.salaryGrantMainTaskCode = salaryGrantMainTaskCode;
-    }
-
-    public String getWorkFlowProcessId() {
-        return workFlowProcessId;
-    }
-
-    public void setWorkFlowProcessId(String workFlowProcessId) {
-        this.workFlowProcessId = workFlowProcessId;
     }
 
     public String getManagementId() {
@@ -414,6 +469,54 @@ public class SalaryGrantTaskPO extends Model<SalaryGrantTaskPO> {
         isIncludeForeignCurrency = includeForeignCurrency;
     }
 
+    public Boolean getAdvance() {
+        return isAdvance;
+    }
+
+    public void setAdvance(Boolean advance) {
+        isAdvance = advance;
+    }
+
+    public Integer getAdvanceType() {
+        return advanceType;
+    }
+
+    public void setAdvanceType(Integer advanceType) {
+        this.advanceType = advanceType;
+    }
+
+    public Boolean getProcess() {
+        return isProcess;
+    }
+
+    public void setProcess(Boolean process) {
+        isProcess = process;
+    }
+
+    public String getWorkFlowUserInfo() {
+        return workFlowUserInfo;
+    }
+
+    public void setWorkFlowUserInfo(String workFlowUserInfo) {
+        this.workFlowUserInfo = workFlowUserInfo;
+    }
+
+    public Integer getBalanceGrant() {
+        return balanceGrant;
+    }
+
+    public void setBalanceGrant(Integer balanceGrant) {
+        this.balanceGrant = balanceGrant;
+    }
+
+    public Long getBatchVersion() {
+        return batchVersion;
+    }
+
+    public void setBatchVersion(Long batchVersion) {
+        this.batchVersion = batchVersion;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.salaryGrantMainTaskId;
@@ -424,7 +527,6 @@ public class SalaryGrantTaskPO extends Model<SalaryGrantTaskPO> {
         return "SalaryGrantMainTask{" +
                 ", salaryGrantMainTaskCode=" + salaryGrantMainTaskCode +
                 ", salaryGrantMainTaskId=" + salaryGrantMainTaskId +
-                ", workFlowProcessId=" + workFlowProcessId +
                 ", managementId=" + managementId +
                 ", managementName=" + managementName +
                 ", batchCode=" + batchCode +
@@ -442,14 +544,20 @@ public class SalaryGrantTaskPO extends Model<SalaryGrantTaskPO> {
                 ", grantMode=" + grantMode +
                 ", isAdversion=" + isAdversion +
                 ", adversionType=" + adversionType +
+                ", isAdvance=" + isAdvance +
+                ", advanceType=" + advanceType +
+                ", isProcess=" + isProcess +
                 ", remark=" + remark +
                 ", invalidReason=" + invalidReason +
                 ", approvedOpinion=" + approvedOpinion +
                 ", taskStatus=" + taskStatus +
                 ", taskType=" + taskType +
                 ", isIncludeForeignCurrency=" + isIncludeForeignCurrency +
+                ", balanceGrant=" + balanceGrant +
                 ", operatorUserId=" + operatorUserId +
                 ", approveUserId=" + approveUserId +
+                ", workFlowUserInfo=" + workFlowUserInfo +
+                ", batchVersion=" + batchVersion +
                 ", isActive=" + isActive +
                 ", createdBy=" + createdBy +
                 ", createdTime=" + createdTime +

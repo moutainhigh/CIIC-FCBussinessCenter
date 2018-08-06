@@ -33,23 +33,26 @@ public class SalaryGrantEmployeeCommandServiceTest {
 
     @Test
     public void updateForRefund() {
-        String taskCode = "LTB20180328000000002";
         List<EmployeeReturnTicketDTO > employeeReturnTicketDTOList = new ArrayList<>();
         EmployeeReturnTicketDTO employeeReturnTicketDTO = new EmployeeReturnTicketDTO();
-        employeeReturnTicketDTO.setCompanyId("c001");
-        employeeReturnTicketDTO.setEmployeeId("000000001");
-        employeeReturnTicketDTO.setEmployeeBankAccount("1234567890");
-        employeeReturnTicketDTO.setPayAmount(new BigDecimal(0));
+        employeeReturnTicketDTO.setBatchCode("GL1800376_201807_0000001135");
+        employeeReturnTicketDTO.setSequenceNo("LTB18073000000000001");
+        employeeReturnTicketDTO.setCompanyId("KH18000516");
+        employeeReturnTicketDTO.setEmployeeId("18026414");
+        employeeReturnTicketDTO.setEmployeeBankAccount("6333000040035");
+        employeeReturnTicketDTO.setPayAmount(new BigDecimal("56221.00"));
         employeeReturnTicketDTOList.add(employeeReturnTicketDTO);
 
         employeeReturnTicketDTO = new EmployeeReturnTicketDTO();
-        employeeReturnTicketDTO.setCompanyId("c002");
-        employeeReturnTicketDTO.setEmployeeId("000000003");
-        employeeReturnTicketDTO.setEmployeeBankAccount("1234567892");
-        employeeReturnTicketDTO.setPayAmount(new BigDecimal(0));
+        employeeReturnTicketDTO.setBatchCode("GL1800376_201807_0000000994");
+        employeeReturnTicketDTO.setSequenceNo("LTB18072000000000003");
+        employeeReturnTicketDTO.setCompanyId("KH18000516");
+        employeeReturnTicketDTO.setEmployeeId("18026318");
+        employeeReturnTicketDTO.setEmployeeBankAccount("6333000027035");
+        employeeReturnTicketDTO.setPayAmount(new BigDecimal("56221.00"));
         employeeReturnTicketDTOList.add(employeeReturnTicketDTO);
 
-        employeeCommandService.updateForRefund(taskCode, employeeReturnTicketDTOList);
+        employeeCommandService.updateForRefund(employeeReturnTicketDTOList);
     }
 
     /**

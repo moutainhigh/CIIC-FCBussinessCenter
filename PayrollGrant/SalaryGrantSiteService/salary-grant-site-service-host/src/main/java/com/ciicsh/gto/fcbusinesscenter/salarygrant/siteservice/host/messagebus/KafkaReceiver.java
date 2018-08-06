@@ -68,11 +68,9 @@ public class KafkaReceiver {
         try {
             if (!ObjectUtils.isEmpty(payApplyReturnTicketDTO)) {
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心退票 --> start").setContent(JSON.toJSONString(payApplyReturnTicketDTO)));
-                //发放批次号
-                String taskCode = payApplyReturnTicketDTO.getSequenceNo();
                 //退票雇员信息列表
                 List<EmployeeReturnTicketDTO> refundEmployeeList = payApplyReturnTicketDTO.getEmployeeReturnTicketDTOList();
-                salaryGrantEmployeeCommandService.updateForRefund(taskCode, refundEmployeeList);
+                salaryGrantEmployeeCommandService.updateForRefund(refundEmployeeList);
                 logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心退票 --> end"));
             }
         } catch (Exception e) {

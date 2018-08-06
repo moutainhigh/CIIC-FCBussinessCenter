@@ -20,6 +20,9 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryG
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.SalaryGrantEmpHisOpt;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.logservice.client.LogClientService;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.EmployeeReturnTicketDTO;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -60,6 +63,8 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
     private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
     private SalaryGrantMainTaskMapper salaryGrantMainTaskMapper;
+    @Autowired
+    LogClientService logClientService;
 
     @Override
     public boolean saveToHistory(long task_his_id, String task_code, int task_type) {
@@ -145,27 +150,22 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean updateForRefund(String taskCode, List<EmployeeReturnTicketDTO> employeeReturnTicketDTOList) {
+    public boolean updateForRefund(List<EmployeeReturnTicketDTO> employeeReturnTicketDTOList) {
         if (!CollectionUtils.isEmpty(employeeReturnTicketDTOList)) {
-            //根据发放批次号查询雇员信息列表
-            EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
-            employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", taskCode);
-            List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
-            if (!CollectionUtils.isEmpty(employeeList)) {
-                employeeReturnTicketDTOList.stream().forEach(employeeReturnTicketDTO -> {
-                    String companyId = employeeReturnTicketDTO.getCompanyId(); //公司ID
-                    String employeeId = employeeReturnTicketDTO.getEmployeeId(); //雇员ID
-                    String employeeBankAccount = employeeReturnTicketDTO.getEmployeeBankAccount(); //雇员银行账号
-                    BigDecimal payAmount = employeeReturnTicketDTO.getPayAmount(); //支付金额
+            employeeReturnTicketDTOList.stream().forEach(employeeReturnTicketDTO -> {
+                String batchCode = employeeReturnTicketDTO.getBatchCode();
+                String taskCode = employeeReturnTicketDTO.getSequenceNo();
+                String companyId = employeeReturnTicketDTO.getCompanyId(); //公司ID
+                String employeeId = employeeReturnTicketDTO.getEmployeeId(); //雇员ID
+                String employeeBankAccount = employeeReturnTicketDTO.getEmployeeBankAccount(); //雇员银行账号
+                BigDecimal payAmount = employeeReturnTicketDTO.getPayAmount(); //支付金额
 
-                    //筛选批次雇员信息
-                    SalaryGrantEmployeePO salaryGrantEmployeePO = employeeList.stream().filter(employeePO ->
-                            !StringUtils.isEmpty(employeePO.getCompanyId()) && employeePO.getCompanyId().equals(companyId) &&
-                                    !StringUtils.isEmpty(employeePO.getEmployeeId()) && employeePO.getEmployeeId().equals(employeeId) &&
-                                    !StringUtils.isEmpty(employeePO.getCardNum()) && employeePO.getCardNum().equals(employeeBankAccount) &&
-                                    !ObjectUtils.isEmpty(employeePO.getPaymentAmount()) && employeePO.getPaymentAmount().compareTo(payAmount) == 0
-                    ).findFirst().orElse(null);
+                EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
+                employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and batch_code = {1} and company_id = {2} and employee_id = {3} and card_num = {4} and payment_amount = {5} and grant_status = 0 and is_active = 1", taskCode, batchCode, companyId, employeeId, employeeBankAccount, payAmount);
+                List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
 
+                if(!CollectionUtils.isEmpty(employeeList)){
+                    SalaryGrantEmployeePO salaryGrantEmployeePO = employeeList.get(0);
                     //筛选雇员存在时更新雇员信息
                     if (!ObjectUtils.isEmpty(salaryGrantEmployeePO)) {
                         SalaryGrantEmployeePO updateEmployeePO = new SalaryGrantEmployeePO();
@@ -173,11 +173,15 @@ public class SalaryGrantEmployeeCommandServiceImpl extends ServiceImpl<SalaryGra
                         updateEmployeePO.setGrantStatus(SalaryGrantBizConsts.GRANT_STATUS_REFUND); //发放状态:3-退票
                         salaryGrantEmployeeMapper.updateById(updateEmployeePO);
                     }
-                });
-            }
+                }else{
+                    logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心退票：" + employeeId).setContent("雇员信息为空，修改失败！"));
+                }
+            });
+            return true;
+        }else{
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心退票：").setContent("雇员信息为空，查询失败！"));
+            return false;
         }
-
-        return true;
     }
 
     @Override
