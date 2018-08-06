@@ -429,34 +429,38 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 taskSubProofPOList = taskSubProofPOList.stream().filter(item -> !taskSubProofPOSMerge.contains(item)).collect(Collectors.toList());
                 taskSubProofPOList.addAll(taskSubProofPOUnmergeList);
             }
-            List<Long> mainIdList = taskSubProofPOList.stream().collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId)).entrySet().stream()
-                    .map(x -> x.getKey()).collect(Collectors.toList());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubProofPO());
-            wrapper.in("task_main_proof_id", mainIdList);
-            wrapper.and("is_active = {0}", true);
-            //获取主任务下所有子任务信息
-            List<TaskSubProofPO> taskSubProofPOS = baseMapper.selectList(wrapper);
-            Map<Long, List<TaskSubProofPO>> taskSubProofMap = taskSubProofPOS.stream()
-                    .collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId));
-            mainIdList.forEach(mainId -> {
-                //根据主任务ID获取主任务信息
-                TaskMainProofPO taskMainProofPO = taskMainProofMapper.selectById(mainId);
-                //判断主任务下的子任务
-                List<TaskSubProofPO> taskSubProofPOSS = taskSubProofMap.get(mainId);
-                List<TaskSubProofPO> taskSubProofPOSByStatus = taskSubProofPOSS.stream().filter(taskSubProofPO1 -> requestForProof.getStatus().equals(taskSubProofPO1.getStatus())).collect(Collectors.toList());
-                //任务状态
-                String status = taskMainProofPO.getStatus();
-                //任务状态:03:退回；04;已完成；06:部分完成；07;部分退回
-                if ("04".equals(requestForProof.getStatus())) {
-                    status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "04" : ("07".equals(status) ? "07" : "06");
-                } else if ("03".equals(requestForProof.getStatus())) {
-                    status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "03" : "07";
-                }
-                taskMainProofPO.setStatus(status);
-                //修改完税凭证主任务状态
-                taskMainProofMapper.updateById(taskMainProofPO);
-            });
+            //筛选中人工的完税凭证子任务集合
+            List<TaskSubProofPO> artificialTaskSubProofPOList = taskSubProofPOList.stream().filter(item -> "02".equals(item.getTaskType())).collect(Collectors.toList());
+            if(artificialTaskSubProofPOList.size() > 0) {
+                List<Long> mainIdList = artificialTaskSubProofPOList.stream().collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId)).entrySet().stream()
+                        .map(x -> x.getKey()).collect(Collectors.toList());
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskSubProofPO());
+                wrapper.in("task_main_proof_id", mainIdList);
+                wrapper.and("is_active = {0}", true);
+                //获取主任务下所有子任务信息
+                List<TaskSubProofPO> taskSubProofPOS = baseMapper.selectList(wrapper);
+                Map<Long, List<TaskSubProofPO>> taskSubProofMap = taskSubProofPOS.stream()
+                        .collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId));
+                mainIdList.forEach(mainId -> {
+                    //根据主任务ID获取主任务信息
+                    TaskMainProofPO taskMainProofPO = taskMainProofMapper.selectById(mainId);
+                    //判断主任务下的子任务
+                    List<TaskSubProofPO> taskSubProofPOSS = taskSubProofMap.get(mainId);
+                    List<TaskSubProofPO> taskSubProofPOSByStatus = taskSubProofPOSS.stream().filter(taskSubProofPO1 -> requestForProof.getStatus().equals(taskSubProofPO1.getStatus())).collect(Collectors.toList());
+                    //任务状态
+                    String status = taskMainProofPO.getStatus();
+                    //任务状态:03:退回；04;已完成；06:部分完成；07;部分退回
+                    if ("04".equals(requestForProof.getStatus())) {
+                        status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "04" : ("07".equals(status) ? "07" : "06");
+                    } else if ("03".equals(requestForProof.getStatus())) {
+                        status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "03" : "07";
+                    }
+                    taskMainProofPO.setStatus(status);
+                    //修改完税凭证主任务状态
+                    taskMainProofMapper.updateById(taskMainProofPO);
+                });
+            }
         }
     }
 
