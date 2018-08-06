@@ -212,6 +212,10 @@ public class TaskMainDetailBO {
      */
     private Boolean isPaySupported;
     /**
+     * 是否供应商完税凭证
+     */
+    private Boolean isProofSupported;
+    /**
      * 是否有完税凭证服务
      */
     private Boolean isProof;
@@ -1042,10 +1046,21 @@ public class TaskMainDetailBO {
         this.workingYears = workingYears;
     }
 
+    public Boolean getProofSupported() {
+        return isProofSupported;
+    }
+
+    public void setProofSupported(Boolean proofSupported) {
+        isProofSupported = proofSupported;
+    }
+
     @Override
     public String toString() {
-        return "CalculationBatchDetailBO{" +
+        return "TaskMainDetailBO{" +
                 "id=" + id +
+                ", calculationBatchDetailId=" + calculationBatchDetailId +
+                ", taskMainId=" + taskMainId +
+                ", taskMainDetailId=" + taskMainDetailId +
                 ", employeeNo='" + employeeNo + '\'' +
                 ", employeeName='" + employeeName + '\'' +
                 ", idType='" + idType + '\'' +
@@ -1069,7 +1084,7 @@ public class TaskMainDetailBO {
                 ", deduction=" + deduction +
                 ", donation=" + donation +
                 ", incomeForTax=" + incomeForTax +
-                ", taxRate='" + taxRate + '\'' +
+                ", taxRate=" + taxRate +
                 ", quickCalDeduct=" + quickCalDeduct +
                 ", taxAmount=" + taxAmount +
                 ", taxDeduction=" + taxDeduction +
@@ -1093,6 +1108,42 @@ public class TaskMainDetailBO {
                 ", isDeclareSupported=" + isDeclareSupported +
                 ", isTransferSupported=" + isTransferSupported +
                 ", isPaySupported=" + isPaySupported +
+                ", isProofSupported=" + isProofSupported +
+                ", isProof=" + isProof +
+                ", isProofed=" + isProofed +
+                ", isCombineConfirmed=" + isCombineConfirmed +
+                ", accountType='" + accountType + '\'' +
+                ", areaType='" + areaType + '\'' +
+                ", managerNo='" + managerNo + '\'' +
+                ", taxReal=" + taxReal +
+                ", preTaxAggregate=" + preTaxAggregate +
+                ", dutyFreeAllowance=" + dutyFreeAllowance +
+                ", businessHealthInsurance=" + businessHealthInsurance +
+                ", annuity=" + annuity +
+                ", declareAccountName='" + declareAccountName + '\'' +
+                ", payAccountName='" + payAccountName + '\'' +
+                ", isOverseas=" + isOverseas +
+                ", others=" + others +
+                ", workingYears='" + workingYears + '\'' +
+                ", endowmentInsurance=" + endowmentInsurance +
+                ", domesticDays='" + domesticDays + '\'' +
+                ", overseasDays='" + overseasDays + '\'' +
+                ", domesticIncomeDomesticPayment=" + domesticIncomeDomesticPayment +
+                ", domesticIncomeOverseasPayment=" + domesticIncomeOverseasPayment +
+                ", overseasIncomeDomesticPayment=" + overseasIncomeDomesticPayment +
+                ", overseasIncomeOverseasPayment=" + overseasIncomeOverseasPayment +
+                ", housingSubsidy=" + housingSubsidy +
+                ", mealAllowance=" + mealAllowance +
+                ", laundryFee=" + laundryFee +
+                ", removingIndemnityFee=" + removingIndemnityFee +
+                ", missionallowance=" + missionallowance +
+                ", visitingRelativesFee=" + visitingRelativesFee +
+                ", languageTrainingFee=" + languageTrainingFee +
+                ", educationFunds=" + educationFunds +
+                ", exerciseIncomeMonth=" + exerciseIncomeMonth +
+                ", exerciseIncomeYear=" + exerciseIncomeYear +
+                ", numberOfMonths=" + numberOfMonths +
+                ", exerciseTaxAmount=" + exerciseTaxAmount +
                 '}';
     }
 }
