@@ -559,4 +559,20 @@ public class PrNormalBatchServiceImpl implements PrNormalBatchService {
         return cols;
     }
 
+    @Override
+    public PageInfo<PrCompareBatchPO> selectCompareBatchList(PrCompareBatchPO prCompareBatchPO) {
+        prCompareBatchPO.setPageNum(prCompareBatchPO.getPageNum() == 0 ? 1 : prCompareBatchPO.getPageNum());
+        prCompareBatchPO.setPageSize(prCompareBatchPO.getPageSize() == 0 ? 50 : prCompareBatchPO.getPageSize());
+
+        List<PrCompareBatchPO> resultList = new ArrayList<>();
+        PageHelper.startPage(prCompareBatchPO.getPageNum(), prCompareBatchPO.getPageSize());
+        try {
+            resultList = normalBatchMapper.selectCompareBatchList(prCompareBatchPO);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        PageInfo<PrCompareBatchPO> pageInfo = new PageInfo<>(resultList);
+        return pageInfo;
+    }
+
 }
