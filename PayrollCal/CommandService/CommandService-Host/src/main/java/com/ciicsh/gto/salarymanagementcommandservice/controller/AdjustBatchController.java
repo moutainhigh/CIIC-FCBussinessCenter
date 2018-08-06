@@ -206,12 +206,19 @@ public class AdjustBatchController {
             @RequestParam(required = false, defaultValue = "") String customValue,
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
+            @RequestParam(required = false, defaultValue = "") Integer flag,
             @PathVariable("batchCode") String batchCode) {
 
-        Criteria criteria = Criteria.where("batch_code").is(batchCode).orOperator(
-                Criteria.where("adjust_val").lt(0.0),
-                Criteria.where("adjust_val").gt(0.0)
-        );
+        Criteria criteria = null;
+
+        if(flag == null) {
+            criteria = Criteria.where("batch_code").is(batchCode).orOperator(
+                    Criteria.where("adjust_val").lt(0.0),
+                    Criteria.where("adjust_val").gt(0.0)
+            );
+        }else {
+            criteria = Criteria.where("batch_code").is(batchCode);
+        }
 
         if(StringUtils.isNotEmpty(empCode)){
             criteria.and(PayItemName.EMPLOYEE_CODE_CN).regex(empCode);
