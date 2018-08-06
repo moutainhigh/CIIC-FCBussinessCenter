@@ -215,6 +215,7 @@ public class CommonServiceImpl {
 //        employeeExtendFieldValueList.add(fieldResponseDTO);
         //测试代码 - 待删除 结束
 
+        logger.debug("获取雇员扩展薪资项的值 返回: " + JSONObject.toJSONString(employeeExtendFieldValueList));
         return employeeExtendFieldValueList;
     }
 
@@ -370,6 +371,7 @@ public class CommonServiceImpl {
             return new ArrayList<>();
         }
 
+        logger.debug("获取模板雇员扩展字段列表 返回: " + JSONObject.toJSONString(extendFieldsList));
         return extendFieldsList;
     }
 
