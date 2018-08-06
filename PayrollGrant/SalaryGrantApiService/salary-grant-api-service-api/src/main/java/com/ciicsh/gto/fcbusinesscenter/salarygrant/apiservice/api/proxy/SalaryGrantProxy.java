@@ -40,7 +40,7 @@ public interface SalaryGrantProxy {
      * @return Result<Boolean>
      */
     @PostMapping("/toCreateRefundTask")
-    Result<Boolean> toCreateRefundTask(@RequestBody SalaryGrantRefundDTO dto);
+    Result<ResponseRefundDTO> toCreateRefundTask(@RequestBody SalaryGrantRefundDTO dto);
 
     /**
      *  根据任务单信息进行驳回处理

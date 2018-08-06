@@ -24,9 +24,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -52,13 +49,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
     @Autowired
     private SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
 
-    /*
-    * 分两级拆分：
-      1.提交时，把发放方式为3-客户自行、4-中智代发（客户账户）的两种雇员数据进行归类建立子表，并按照发放账户进行拆分。
-      待补充逻辑：如果是由业务撤回或财务部驳回的上海本地的薪资发放任务单，在任务单列表点击提交和审批时，不进行雇员拆分的操作。
-      提交任务单主表，拆分任务单为多个子表，根据多个拆分规则。按发放方式、发放账户拆分出客户自行的子任务单，新建薪资发放任务单子表sg_salarygrant_sub_task
-      提交按钮后台业务逻辑：查询薪资发放日是否为空、查询批次对应的账单是否已核销/已代垫、如果是外区是否要发起代垫流程
-    * */
     @Override
     public Boolean toSubmitMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO){
         SalaryGrantSubTaskPO salaryGrantSubTaskPO = this.getCommonInfoFromMainTask(salaryGrantMainTaskPO);
@@ -79,10 +69,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
         return true;
     }
 
-    /*
-    * 2.审批通过时，把发放方式为0-中智大库、1-中智代发（委托机构）的两种雇员数据进行归类建立子表，并按照发放账户进行拆分。
-      待补充逻辑：如果是由业务撤回或财务部驳回的上海本地的薪资发放任务单，在任务单列表点击提交和审批时，不进行雇员拆分的操作。
-    * */
     @Override
     public Boolean toApproveMainTask(SalaryGrantMainTaskPO salaryGrantMainTaskPO){
         SalaryGrantSubTaskPO salaryGrantSubTaskPO = this.getCommonInfoFromMainTask(salaryGrantMainTaskPO);
@@ -107,7 +93,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
 
     /**
      * 把任务单主表的共用信息，复制到子表中。
-     * 信息包括：任务单主表编号、管理方编号、管理方名称、薪酬计算批次号、薪资周期、发放类型、薪资发放日期、薪资发放时段
      * @param salaryGrantMainTaskPO
      * @return SalaryGrantSubTaskPO
      */
@@ -191,7 +176,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
 
     /**
      * 通过查询统计薪资发放雇员信息中的发放方式和发放账户对雇员信息进行归类到各子表中。
-     * 信息包括：发放方式payroll_mode、发放账户grant_account_code、薪资发放总金额（RMB）payment_total_sum、发薪人数total_person_count、中方发薪人数chinese_count、外方发薪人数foreigner_count
      * @param salaryGrantSubTaskPO
      * @param salaryGrantEmployeeBOList
      * @param paraMap
@@ -199,10 +183,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      */
     private Map getGatherInfoForSubTask(SalaryGrantSubTaskPO salaryGrantSubTaskPO, List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList, Map paraMap){
         Map returnMap = new HashMap(2);
-        // 薪资发放任务单子表集合，按照同一发放方式，不同发放账户进行拆分。
-        Map<String,SalaryGrantSubTaskPO> splitSubTaskMap = new HashMap();
-        // 发放账户下对应的雇员id列表，用来后面把生成的任务子表编号回填到哪些对应的雇员中。后续作为参数传递，具体修改哪些雇员的子表编号，子表编号是什么，回填薪资发放雇员信息表中的子表编号，批量修改。
-        Map<String,String[]> batchUpdateMap = new HashMap<>();
         // 发放方式
         Integer grantMode = (Integer)paraMap.get("grantMode");
         salaryGrantSubTaskPO.setGrantMode(grantMode);
@@ -217,7 +197,7 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
             if(SalaryGrantBizConsts.SPLIT_CONDITION.equals(splitCondition)){
                 returnMap = this.toSplitByGrantAccountCode(salaryGrantSubTaskPO, salaryGrantEmployeeBOList, paraMap);
             }else{
-                // 预留未来需求变更,添加或使用其他拆分条件。
+                // 预留未来需求变更
             }
         }else{
             // 预留未来需求变更
@@ -226,8 +206,7 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
     }
 
     /**
-     * 建立子表信息，包括主表的共用信息和雇员信息的统计信息，生成entity_id。
-     * 信息包括：任务单编号、状态、任务单类型
+     * 建立子表信息
      * @param paraMap
      * @param splitSubTaskMap
      * @param batchUpdateMap
@@ -235,7 +214,6 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      */
     @Transactional(rollbackFor = Exception.class)
     protected void toCreateSubTask(Map paraMap, Map<String,SalaryGrantSubTaskPO> splitSubTaskMap, Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap){
-        // 遍历splitSubTaskMap，调用公共API方法生成entity_id。建立子表信息包括：任务单编号entity_id -> salaryGrantSubTaskCode、状态taskStatus、任务单类型taskType
         List<SalaryGrantSubTaskPO> salaryGrantSubTaskPOList = new ArrayList<>();
         Map<String, List<SalaryGrantEmployeeBO>> batchUpdateLastMap = new HashMap<>();
         // 发放方式
@@ -274,12 +252,10 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
                 logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("新增薪资发放任务单子表信息，计算批次号为：" + salaryGrantSubTaskPO.getBatchCode()).setContent("调用公共服务生成entity_id失败！"));
             }
             salaryGrantSubTaskPOList.add(salaryGrantSubTaskPO);
-            // 把新建的SubTask的任务单编号，回填至batchUpdateMap对应的薪资发放雇员信息中。
             batchUpdateLastMap.put(entityId, batchUpdateMap.get(grantAccountCode));
         });
 
         if (!CollectionUtils.isEmpty(salaryGrantSubTaskPOList)) {
-            // 调用薪资发放任务子表mapper的批量插入语句
             Boolean isCreated = salaryGrantSubTaskWorkFlowService.insertBatch(salaryGrantSubTaskPOList, salaryGrantSubTaskPOList.size());
             if(isCreated){
                 this.toBatchUpdateSalaryGrantEmployee(batchUpdateLastMap, salaryGrantMainTaskCode);
@@ -329,13 +305,10 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      */
     private Map toSplitByGrantAccountCode(SalaryGrantSubTaskPO salaryGrantSubTaskPO, List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList, Map paraMap){
         Map returnMap = new HashMap(2);
-        // 薪资发放任务单子表集合，按照同一发放方式，不同发放账户进行拆分。
         Map<String,SalaryGrantSubTaskPO> splitSubTaskMap = new HashMap();
-        // 发放账户下对应的雇员id列表，用来后面把生成的任务子表编号回填到哪些对应的雇员中。后续作为参数传递，具体修改哪些雇员的子表编号，子表编号是什么，回填薪资发放雇员信息表中的子表编号，批量修改。
         Map<String,List<SalaryGrantEmployeeBO>> batchUpdateMap = new HashMap<>();
 
-        // 遍历list
-        // 1、对不同发放账户信息进行分别统计，生成list，带出子表的公共信息和发放方式，后续根据不同的发放账户建立不同的任务子表。
+        // 1、对不同发放账户信息进行分别统计，生成list
         if(!CollectionUtils.isEmpty(salaryGrantEmployeeBOList)){
             // 发放方式
             Integer grantMode = (Integer)paraMap.get("grantMode");
@@ -348,7 +321,7 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
                     Map returnMapLTB = this.toCollectForSubTask(salaryGrantSubTaskPO, ltbList);
                     Map<String,SalaryGrantSubTaskPO> splitSubTaskMapLTB = (HashMap)returnMapLTB.get("splitSubTaskMap");
                     Map<String,List<SalaryGrantEmployeeBO>> batchUpdateMapLTB = (HashMap)returnMapLTB.get("batchUpdateMap");
-                    // 上海本地发放：发放账户GrantAccountCode=发放方式grantMode=中智上海账户
+                    // 上海本地发放
                     splitSubTaskMap.put(SalaryGrantBizConsts.SALARY_GRANT_SUB_TASK_LOCAL_RMB_ENTITY_PREFIX, splitSubTaskMapLTB.get(grantMode));
                     batchUpdateMap.put(SalaryGrantBizConsts.SALARY_GRANT_SUB_TASK_LOCAL_RMB_ENTITY_PREFIX, batchUpdateMapLTB.get(grantMode));
 
@@ -385,14 +358,12 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
      */
     private Map toCollectForSubTask(SalaryGrantSubTaskPO salaryGrantSubTaskPO, List<SalaryGrantEmployeeBO> salaryGrantEmployeeBOList){
         Map returnMap = new HashMap(2);
-        // 薪资发放任务单子表集合，按照同一发放方式，不同发放账户进行拆分。
         Map<String,SalaryGrantSubTaskPO> splitSubTaskMap = new HashMap();
-        // 发放账户下对应的雇员id列表，用来后面把生成的任务子表编号回填到哪些对应的雇员中。后续作为参数传递，具体修改哪些雇员的子表编号，子表编号是什么，回填薪资发放雇员信息表中的子表编号，批量修改。
         Map<String, List<SalaryGrantEmployeeBO>> batchUpdateMap = new HashMap<>();
 
         // 按照发放账户grantAccountCode分组
         Map<String, List<SalaryGrantEmployeeBO>> accountMap = salaryGrantEmployeeBOList.stream().collect(Collectors.groupingBy(SalaryGrantEmployeeBO::getGrantAccountCode));
-        // 遍历每个发放账户的分组信息：1、对employee_id进行去重，计算总人数；2、按照country_code进行统计中、外方人数；3、计算总金额
+        // 遍历每个发放账户的分组信息
         accountMap.forEach((account,accountList) -> {
             if(account != null){
                 try {
@@ -400,20 +371,8 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
                     SalaryGrantSubTaskPO salaryGrantSubTaskPOTemp = (SalaryGrantSubTaskPO) salaryGrantSubTaskPO.clone();
                     salaryGrantSubTaskPOTemp.setGrantAccountCode(account);
                     salaryGrantSubTaskPOTemp.setGrantAccountName(salaryGrantEmployeeBO.getGrantAccountName());
-                    // 对list中的所有employeeid，包括重复的人，计算总金额，进行人民币折算。薪资发放总金额（RMB），payment_amount * exchange。
                     BigDecimal totalMoney = accountList.stream().map(SalaryGrantEmployeeBO::getPaymentAmountForRMB).reduce(BigDecimal.ZERO, BigDecimal::add);
                     salaryGrantSubTaskPOTemp.setPaymentTotalSum(totalMoney);
-                /*// 对相同发放账户的雇员信息遍历list，对相同employeeid进行去重，统计总人数
-                Long totalCount = accountList.stream().map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count() ;
-                //Long totalCountNew = accountList.stream().filter(distinctByKey(o -> o.getEmployeeId())).count() ;
-                salaryGrantSubTaskPOTemp.setTotalPersonCount(ObjectUtils.isEmpty(totalCount) ? 0 : Integer.valueOf(totalCount.toString()));
-                // 针对发放账户统计中、外方人数，根据country_code
-                Long chineseCount = accountList.stream().filter(SalaryGrantEmployeeBO -> SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
-                        .map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count();
-                salaryGrantSubTaskPOTemp.setChineseCount(ObjectUtils.isEmpty(chineseCount) ? 0 : Integer.valueOf(chineseCount.toString()));
-                Long foreignerCount = accountList.stream().filter(SalaryGrantEmployeeBO -> !SalaryGrantEmployeeBO.getCountryCode().equals(SalaryGrantBizConsts.COUNTRY_CODE_CHINA))
-                        .map(SalaryGrantEmployeeBO::getEmployeeId).distinct().count();
-                salaryGrantSubTaskPOTemp.setForeignerCount(ObjectUtils.isEmpty(foreignerCount) ? 0 : Integer.valueOf(foreignerCount.toString()));*/
 
                     // 对相同发放账户的雇员信息遍历list，统计总人数
                     salaryGrantSubTaskPOTemp.setTotalPersonCount(Integer.valueOf(accountList.size()));
@@ -440,9 +399,4 @@ public class SalaryGrantSubTaskProcessServiceImpl implements SalaryGrantSubTaskP
 
         return returnMap;
     }
-
-    /*public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-    }*/
 }
