@@ -108,13 +108,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
                 taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
-                CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
-                if(calculationBatchAccountPO.getId() != null){
+                if(taskSubProofBO.getCityCode() != null && !"".equals(taskSubProofBO.getCityCode())){
                     //设置城市
-                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-                    taskSubProofBO.setCity(cityDTO.getCityName());
-                    //设置税务局
-                    taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(taskSubProofBO.getCityCode());
+                    taskSubProofBO.setCity(cityDTO == null ? "" : cityDTO.getCityName());
                 }
                 taskSubProofBOList.add(taskSubProofBO);
             }
@@ -129,13 +126,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
                 taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
-                CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
-                if(calculationBatchAccountPO.getId() != null){
+                if(taskSubProofBO.getCityCode() != null && !"".equals(taskSubProofBO.getCityCode())){
                     //设置城市
-                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-                    taskSubProofBO.setCity(cityDTO.getCityName());
-                    //设置税务局
-                    taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(taskSubProofBO.getCityCode());
+                    taskSubProofBO.setCity(cityDTO == null ? "" : cityDTO.getCityName());
                 }
                 taskSubProofBOList.add(taskSubProofBO);
             }
@@ -213,13 +207,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //获取完税凭证任务状态中文名
         for (TaskSubProofBO bo : taskSubProofBOList) {
             bo.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, bo.getStatus()));
-            CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(bo.getDeclareAccount());
-            if(calculationBatchAccountPO.getId() != null){
+            if(bo.getCityCode() != null && !"".equals(bo.getCityCode())){
                 //设置城市
-                CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-                bo.setCity(cityDTO.getCityName());
-                //设置税务局
-                bo.setTaxOrganization(calculationBatchAccountPO.getStation());
+                CityDTO cityDTO = cityServiceProxy.selectByCityCode(bo.getCityCode());
+                bo.setCity(cityDTO == null ? "" : cityDTO.getCityName());
             }
         }
         responseForSubProof.setRowList(taskSubProofBOList);
@@ -483,13 +474,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     public TaskSubProofBO queryApplyDetailsBySubId(long subProofId) {
         TaskSubProofBO taskSubProofBO = baseMapper.queryApplyDetailsBySubId(subProofId);
         taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
-        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
-        if(calculationBatchAccountPO.getId() != null){
+        if(taskSubProofBO.getCityCode() != null && !"".equals(taskSubProofBO.getCityCode())){
             //设置城市
-            CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-            taskSubProofBO.setCity(cityDTO.getCityName());
-            //设置税务局
-            taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+            CityDTO cityDTO = cityServiceProxy.selectByCityCode(taskSubProofBO.getCityCode());
+            taskSubProofBO.setCity(cityDTO == null ? "" : cityDTO.getCityName());
         }
         return taskSubProofBO;
     }
@@ -606,6 +594,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                             taskSubProofDetailPOs = new ArrayList<>();
                         }
 
+                        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubDeclarePO.getDeclareAccount());
                         //新建完税凭证子任务
                         if (taskSubProofPO == null) {
                             taskSubProofPO = new TaskSubProofPO();
@@ -619,6 +608,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                             taskSubProofPO.setManagerName(taskSubDeclarePO.getManagerName());
                             //申报账户中文名称
                             taskSubProofPO.setDeclareAccountName(taskSubDeclarePO.getDeclareAccountName());
+                            taskSubProofPO.setCityCode(calculationBatchAccountPO.getCityCode());
+                            taskSubProofPO.setStation(calculationBatchAccountPO.getStation());
                             this.baseMapper.insert(taskSubProofPO);
                         }
 
@@ -634,6 +625,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                         taskSubProofDetailPO.setIncomeStart(taskSubDeclareDetailBO.getPeriod());
                         taskSubProofDetailPO.setIncomeForTax(taskSubDeclareDetailBO.getIncomeForTax());
                         taskSubProofDetailPO.setWithholdedAmount(taskSubDeclareDetailBO.getTaxAmount());
+                        taskSubProofDetailPO.setDeclareAccountName(taskSubDeclarePO.getDeclareAccountName());
 
                         taskSubProofDetailPOs.add(taskSubProofDetailPO);
                     }

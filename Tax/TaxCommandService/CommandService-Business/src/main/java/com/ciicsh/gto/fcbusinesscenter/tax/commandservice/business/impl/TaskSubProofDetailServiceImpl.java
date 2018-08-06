@@ -124,6 +124,12 @@ public class TaskSubProofDetailServiceImpl extends ServiceImpl<TaskSubProofDetai
                         taskSubProofPO.setManagerNo(requestForSubDetail.getManagerNo());
                         //设置管理方名称
                         taskSubProofPO.setManagerName(requestForSubDetail.getManagerName());
+                        //设置申报账户(中文)
+                        taskSubProofPO.setDeclareAccountName(taskSubProofDetailBO.getDeclareAccountName());
+                        //设置城市编号
+                        taskSubProofPO.setCityCode(taskSubProofDetailBO.getCityCode());
+                        //设置税务局
+                        taskSubProofPO.setStation(taskSubProofDetailBO.getStation());
                         //新增完税凭证子任务
                         taskSubProofMapper.insert(taskSubProofPO);
                         subMap.put(taskSubProofDetailBO.getDeclareAccount(), taskSubProofPO.getId());

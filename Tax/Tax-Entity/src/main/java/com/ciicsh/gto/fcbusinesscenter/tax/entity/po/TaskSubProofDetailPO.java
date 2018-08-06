@@ -131,6 +131,12 @@ public class TaskSubProofDetailPO implements Serializable {
 	@TableField(value="modified_by_display_name",fill = FieldFill.INSERT_UPDATE)
 	private String modifiedByDisplayName;
 
+	/**
+	 * 申报账户名称
+	 */
+	@TableField("declare_account_name")
+	private String declareAccountName;
+
 	public String getCreatedByDisplayName() {
 		return createdByDisplayName;
 	}
@@ -299,6 +305,14 @@ public class TaskSubProofDetailPO implements Serializable {
 		this.incomeSubjectName = incomeSubjectName;
 	}
 
+	public String getDeclareAccountName() {
+		return declareAccountName;
+	}
+
+	public void setDeclareAccountName(String declareAccountName) {
+		this.declareAccountName = declareAccountName;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubProofDetailPO{" +
@@ -321,6 +335,9 @@ public class TaskSubProofDetailPO implements Serializable {
 				", modifiedTime=" + modifiedTime +
 				", createdBy='" + createdBy + '\'' +
 				", modifiedBy='" + modifiedBy + '\'' +
+				", createdByDisplayName='" + createdByDisplayName + '\'' +
+				", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
+				", declareAccountName='" + declareAccountName + '\'' +
 				'}';
 	}
 }
