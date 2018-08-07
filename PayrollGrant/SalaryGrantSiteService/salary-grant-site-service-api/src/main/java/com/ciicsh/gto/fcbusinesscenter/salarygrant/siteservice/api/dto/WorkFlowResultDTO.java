@@ -3,6 +3,8 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * <p>
  * 流程结果
@@ -38,4 +40,8 @@ public class WorkFlowResultDTO {
      * 消息
      */
     private String message;
+    /**
+     * 修改时间
+     */
+    private Date modifiedTime;
 }
