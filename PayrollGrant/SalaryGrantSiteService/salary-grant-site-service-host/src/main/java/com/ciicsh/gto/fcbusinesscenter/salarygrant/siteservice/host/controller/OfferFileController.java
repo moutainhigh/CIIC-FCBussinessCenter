@@ -5,31 +5,28 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.Result;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.core.ResultGenerator;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.OfferDocumentDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.SalaryGrantTaskDTO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.CommonService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.OfferDocumentFileService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.SalaryGrantOfferDocumentTaskService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.OfferDocumentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentFilePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.CommonTransform;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
-import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.BankFileProxy;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -49,8 +46,6 @@ public class OfferFileController {
     @Autowired
     private OfferDocumentFileService offerDocumentFileService;
     @Autowired
-    private CommonService commonService;
-    @Autowired
     LogClientService logClientService;
 
     /**
@@ -60,37 +55,23 @@ public class OfferFileController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/offerFile/DocumentTask")
-    public Page<SalaryGrantTaskDTO> queryOfferDocumentTaskPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("查询薪资发放报盘任务单列表").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
-
-        Page<SalaryGrantTaskBO> page = new Page<>();
-        page.setCurrent(salaryGrantTaskDTO.getCurrent());
-        page.setSize(salaryGrantTaskDTO.getSize());
-        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        //设置管理方信息
-        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
-        page = offerDocumentTaskService.queryOfferDocumentTaskPage(page, salaryGrantTaskBO);
-
-        //字段转换
-        List<SalaryGrantTaskBO> grantTaskBOList = page.getRecords();
-        if (!CollectionUtils.isEmpty(grantTaskBOList)) {
-            int size = grantTaskBOList.size();
-            SalaryGrantTaskBO grantTaskBO;
-            for (int i = 0; i < size; i++) {
-                grantTaskBO = grantTaskBOList.get(i);
-                //发放类型不为空时设置发放类型名称
-                if (!ObjectUtils.isEmpty(grantTaskBO.getGrantType())) {
-                    grantTaskBO.setGrantTypeName(commonService.getNameByValue("sgmGrantType", String.valueOf(grantTaskBO.getGrantType())));
-                }
-            }
+    public Result<Page<SalaryGrantTaskDTO>> queryOfferDocumentTaskPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("查询薪资发放报盘任务单列表").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+            SalaryGrantTaskBO salaryGrantTaskBO = CommonTransform.convertToEntity(salaryGrantTaskDTO, SalaryGrantTaskBO.class);
+            Page<SalaryGrantTaskBO> page = new Page<>(salaryGrantTaskDTO.getCurrent(), salaryGrantTaskDTO.getSize());
+            //设置管理方信息
+            salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+            page = offerDocumentTaskService.queryOfferDocumentTaskPage(page, salaryGrantTaskBO);
+            // BO PAGE 转换为 DTO PAGE
+            String boJSONStr = JSONObject.toJSONString(page);
+            Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+            return ResultGenerator.genSuccessResult(taskDTOPage);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("查询薪资发放报盘任务单列表异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
         }
 
-        // BO PAGE 转换为 DTO PAGE
-        String boJSONStr = JSONObject.toJSONString(page);
-        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
-
-        return taskDTOPage;
     }
 
     /**
@@ -99,27 +80,18 @@ public class OfferFileController {
      * @return
      */
     @RequestMapping("/offerFile/generateOfferDocument/{taskCode}")
-    public List<OfferDocumentDTO> generateOfferDocument(@PathVariable String taskCode){
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件").setContent("taskCode: " + taskCode));
-
-        List<OfferDocumentBO> documentBOList = offerDocumentTaskService.generateOfferDocument(taskCode, UserContext.getUserId());
-
-        //字段转换
-        if (!CollectionUtils.isEmpty(documentBOList)) {
-            int size = documentBOList.size();
-            OfferDocumentBO documentBO;
-            for (int i = 0; i < size; i++) {
-                documentBO = documentBOList.get(i);
-                //银行卡种类不为空时设置银行卡种类名称
-                if (!ObjectUtils.isEmpty(documentBO.getBankcardType())) {
-                    documentBO.setBankcardName(commonService.getNameByValue("sgBankcardType", String.valueOf(documentBO.getBankcardType())));
-                }
-            }
+    public Result<List<OfferDocumentDTO>> generateOfferDocument(@PathVariable String taskCode) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 开始").setContent("taskCode: " + taskCode));
+            List<OfferDocumentBO> documentBOList = offerDocumentTaskService.generateOfferDocument(taskCode, UserContext.getUserId());
+            // BO List 转换为 DTO List
+            String boJSONStr = JSONObject.toJSONString(documentBOList);
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("薪资发放报盘文件信息").setContent(boJSONStr));
+            return ResultGenerator.genSuccessResult(JSONObject.parseArray(boJSONStr, OfferDocumentDTO.class));
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
         }
-
-        // BO List 转换为 DTO List
-        String boJSONStr = JSONObject.toJSONString(documentBOList);
-        return JSONObject.parseArray(boJSONStr, OfferDocumentDTO.class);
     }
 
     /**
@@ -129,10 +101,9 @@ public class OfferFileController {
      */
     @RequestMapping("/offerFile/download/{offerDocumentFileId}")
     public void download(HttpServletResponse response, @PathVariable Long offerDocumentFileId){
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("offerDocumentFileId: " + offerDocumentFileId));
-
-        OfferDocumentFilePO documentFilePO = offerDocumentFileService.selectById(offerDocumentFileId);
         try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("offerDocumentFileId: " + offerDocumentFileId));
+            OfferDocumentFilePO documentFilePO = offerDocumentFileService.selectById(offerDocumentFileId);
             //获取文件
             URL url = new URL(documentFilePO.getFilePath());
             URLConnection urlConnection = url.openConnection();
@@ -154,8 +125,8 @@ public class OfferFileController {
 
             outputStream.close();
             inputStream.close();
-        } catch (IOException e) {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("异常"));
+        } catch (Exception e) {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件异常").setContent(e.getMessage()));
         }
     }
 }
