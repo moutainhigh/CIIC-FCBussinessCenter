@@ -1,5 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant;
 
+import java.util.Map;
+
 /**
  * <p>
  * 公共服务接口 服务类
@@ -16,4 +18,11 @@ public interface CommonService {
      * @return String 字典项内容
      */
     String getNameByValue(String dicValue, String dicItemValue);
+
+    /**
+     *  调用公共服务生成薪资发放任务单的entity_id
+     * @param entityParam 定义薪资发放idCode
+     * @return String ENTITY_ID
+     */
+    String getEntityIdForSalaryGrantTask(Map entityParam);
 }
