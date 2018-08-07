@@ -25,7 +25,7 @@
 
 	<resultMap id="CustBatchResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" >
 		<result column="code" property="code"/>
-		<result column="batch_type" property="batchType"/>
+		<!--<result column="batch_type" property="batchType"/>-->
 		<result column="management_id" property="managementId"/>
 		<result column="management_name" property="managementName"/>
 		<result column="account_set_code" property="accountSetCode"/>
@@ -43,6 +43,19 @@
 		<result column="is_template" property="isTemplate"/>
 		<result column="created_by" property="createdBy"/>
         <result column="is_test_batch" property="isTestBatch" />
+	</resultMap>
+
+	<resultMap id="CompareBatchResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrCompareBatchPO" >
+		<result column="code" property="code"/>
+		<result column="period" property="period"/>
+		<result column="account_set_code" property="accountSetCode"/>
+		<result column="account_set_name" property="accountSetName"/>
+		<result column="management_id" property="managementId"/>
+		<result column="management_name" property="managementName"/>
+		<result column="start_date" property="beginDate"/>
+		<result column="end_date" property="endDate"/>
+		<result column="status" property="status"/>
+		<result column="batch_type" property="batchType"/>
 	</resultMap>
 
 	<select id="getCustBatchInfo" resultMap="CustBatchResultMap">
@@ -65,8 +78,8 @@
 	<select id="selectBatchListByUseLike" parameterType="com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO" resultMap="CustBatchResultMap">
 
 		SELECT * from ( SELECT
-		a.code,
-		1 as batch_type,
+	    a.code,
+-- 		1 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
@@ -113,8 +126,8 @@
 
 		UNION
 		SELECT
-		a.code,
-		2 as batch_type,
+	    a.code,
+-- 		2 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
@@ -167,8 +180,8 @@
 
 	UNION
 		SELECT
-		a.code,
-		3 as batch_type,
+	    a.code,
+-- 		3 as batch_type,
 		a.management_id,
 		a.management_name,
 		a.account_set_code,
@@ -698,5 +711,89 @@
 			</otherwise>
 		</choose>
 	</update>
+
+	<select id="selectCompareBatchList" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrCompareBatchPO" resultMap="CompareBatchResultMap">
+		SELECT
+		  pnb.code AS code,
+		  pnb.period,
+		  pnb.account_set_code,
+		  nbv.account_set_name,
+		  pnb.management_id,
+		  pnb.management_name,
+		  pnb.start_date,
+		  pnb.end_date,
+		  pnb.status,
+		  1 AS batch_type
+		FROM
+		  pr_normal_batch pnb
+		INNER JOIN normal_batch_view nbv
+		  ON nbv.account_set_code = pnb.account_set_code
+		WHERE pnb.status IN (5, 7, 8, 9)
+		<if test="code != null and code != ''">
+			AND pnb.code LIKE concat('%', #{code}, '%')
+		</if>
+		<if test="managementId != null and managementId !=''">
+			AND pnb.management_id IN (${managementId})
+		</if>
+		<if test="accountSetName != null and accountSetName != ''">
+			AND nbv.account_set_name LIKE concat('%', #{accountSetName}, '%')
+		</if>
+		UNION
+		SELECT
+		  pab.adjust_batch_code AS code,
+		  pnb.period,
+		  pnb.account_set_code,
+		  nbv.account_set_name,
+		  pnb.management_id,
+		  pnb.management_name,
+		  pnb.start_date,
+		  pnb.end_date,
+		  pnb.status,
+		  2 AS batch_type
+		FROM
+		  pr_adjust_batch pab
+		  INNER JOIN pr_normal_batch pnb
+			ON pnb.code = pab.origin_batch_code
+		  INNER JOIN normal_batch_view nbv
+			ON nbv.account_set_code = pnb.account_set_code
+		WHERE pnb.status IN (5, 7, 8, 9)
+		<if test="code != null and code != ''">
+			AND pnb.code LIKE concat('%', #{code}, '%')
+		</if>
+		<if test="managementId != null and managementId !=''">
+			AND pnb.management_id IN (${managementId})
+		</if>
+		<if test="accountSetName != null and accountSetName != ''">
+			AND nbv.account_set_name LIKE concat('%', #{accountSetName}, '%')
+		</if>
+		 UNION
+		SELECT
+		  pbtb.back_tracking_batch_code AS code,
+		  pnb.period,
+		  pnb.account_set_code,
+		  nbv.account_set_name,
+		  pnb.management_id,
+		  pnb.management_name,
+		  pnb.start_date,
+		  pnb.end_date,
+		  pnb.status,
+		  3 AS batch_type
+		FROM
+		  pr_back_tracking_batch pbtb
+		  INNER JOIN pr_normal_batch pnb
+			ON pnb.code = pbtb.back_tracking_batch_code
+		  INNER JOIN normal_batch_view nbv
+			ON nbv.account_set_code = pnb.account_set_code
+		WHERE pnb.status IN (5, 7, 8, 9)
+		<if test="code != null and code != ''">
+			AND pnb.code LIKE concat('%', #{code}, '%')
+		</if>
+		<if test="managementId != null and managementId !=''">
+			AND pnb.management_id IN (${managementId})
+		</if>
+		<if test="accountSetName != null and accountSetName != ''">
+			AND nbv.account_set_name LIKE concat('%', #{accountSetName}, '%')
+		</if>
+	</select>
 
 </mapper>

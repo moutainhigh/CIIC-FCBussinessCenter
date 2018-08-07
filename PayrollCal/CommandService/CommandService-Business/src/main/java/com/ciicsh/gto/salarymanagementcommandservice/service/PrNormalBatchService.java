@@ -1,6 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service;
 
 import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
+import com.ciicsh.gto.salarymanagement.entity.po.PrCompareBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrNormalBatchPO;
 import com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrCustBatchPO;
@@ -117,4 +118,10 @@ public interface PrNormalBatchService {
 
     String[] readExcelColumns(String batchCode, InputStream stream);
 
+    /**
+     * 所有对比的批次列表
+     * @param prCompareBatchPO
+     * @return
+     */
+    PageInfo<PrCompareBatchPO> selectCompareBatchList(PrCompareBatchPO prCompareBatchPO);
 }
