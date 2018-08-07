@@ -6,9 +6,7 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.ResultGen
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.ReprieveEmployeeBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantSubTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.transform.CommonTransform;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
@@ -57,8 +55,15 @@ public class SalaryGrantController implements SalaryGrantProxy {
         }
     }
 
+    /**
+     *  根据主表任务单编号查询薪资发放任务单子表
+     * @author gaoyang
+     * @date 2018-04-19
+     * @param dto
+     * @return Result<ReponseSubTaskDTO>
+     */
     @Override
-    public Result<ReponseSubTaskDTO> getSubTask(RequestSubTaskDTO dto) {
+    public Result<ReponseSubTaskDTO> getSubTask(@RequestBody RequestSubTaskDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("查询任务单子表").setContent(JSON.toJSONString(dto)));
         try {
             SalaryGrantSubTaskBO bo = CommonTransform.convertToEntity(dto, SalaryGrantSubTaskBO.class);
@@ -93,11 +98,35 @@ public class SalaryGrantController implements SalaryGrantProxy {
         }
     }
 
+    /**
+     *  根据退票雇员信息创建薪资发放任务单
+     * @author gaoyang
+     * @date 2018-05-22
+     * @param dto
+     * @return Result<Boolean>
+     */
     @Override
-    public Result<Boolean> toCreateRefundTask(SalaryGrantRefundDTO dto) {
-        return null;
+    public Result<ResponseRefundDTO> toCreateRefundTask(@RequestBody SalaryGrantRefundDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退票发放").setContent(JSON.toJSONString(dto)));
+        try{
+            String batchCode = dto.getBatchCode();
+            List<SalaryGrantEmployeeRefundBO> employeeRefundList =  CommonTransform.convertToDTOs(dto.getEmployeeList(), SalaryGrantEmployeeRefundBO.class);
+            ResponseRefundBO responseRefundBO = salaryGrantService.toCreateRefundTask(employeeRefundList, batchCode);
+            ResponseRefundDTO responseDto = CommonTransform.convertToDTO(responseRefundBO, ResponseRefundDTO.class);
+            return ResultGenerator.genSuccessResult(responseDto);
+        } catch (Exception e){
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退票发放异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("处理失败");
+        }
     }
 
+    /**
+     *  根据任务单信息进行驳回处理
+     * @author gaoyang
+     * @date 2018-05-22
+     * @param dto
+     * @return Result<Boolean>
+     */
     @Override
     public Result<Boolean> toRejectTask(SalaryGrantTaskDTO dto) {
         return null;

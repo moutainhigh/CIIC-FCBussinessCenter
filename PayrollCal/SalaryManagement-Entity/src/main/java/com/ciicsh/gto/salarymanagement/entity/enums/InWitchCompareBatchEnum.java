@@ -3,11 +3,14 @@ package com.ciicsh.gto.salarymanagement.entity.enums;
 /**
  * Created by NeoJiang on 2018/5/5.
  */
-public enum InWitchCompareBatchEnum implements ValuedEnum{
+public enum InWitchCompareBatchEnum implements ValuedEnum {
 
-    BOTH(0, "都存在"),
-    SRC(1, "源批次"),
-    TGT(2, "对比批次");
+    ALL(0, "都存在"),
+    TGT_ONLY(1, "只存在于对比批次1"),
+    TGTTWO_ONLY(2, "只存在于对比批次2"),
+    SRC_ONLY(9, "只存在于源批次"),
+    SRC_TGT(91, "存在于源批次和对比批次1"),
+    SRC_TGTTWO(92, "存在于源批次和对比批次2");
 
     private int value;
 
@@ -24,5 +27,7 @@ public enum InWitchCompareBatchEnum implements ValuedEnum{
     }
 
     @Override
-    public String getLabel() { return label; }
+    public String getLabel() {
+        return label;
+    }
 }

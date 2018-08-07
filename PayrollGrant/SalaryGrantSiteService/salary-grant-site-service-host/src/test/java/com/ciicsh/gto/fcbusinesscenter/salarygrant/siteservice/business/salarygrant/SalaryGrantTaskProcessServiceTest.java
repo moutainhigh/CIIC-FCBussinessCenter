@@ -6,6 +6,7 @@ import com.ciicsh.gt1.exchangerate.ExchangeManager;
 import com.ciicsh.gto.companycenter.webcommandservice.api.CycleRuleProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmpFcBankProxy;
 import com.ciicsh.gto.companycenter.webcommandservice.api.EmployeeGrantRuleProxy;
+import com.ciicsh.gto.companycenter.webcommandservice.api.dto.ComputeServiceDateDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.EmployeeGrantRuleDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.CmyFcBankCardRequestDTO;
 import com.ciicsh.gto.companycenter.webcommandservice.api.dto.request.EmployeeGrantRuleRequestDTO;
@@ -127,5 +128,17 @@ public class SalaryGrantTaskProcessServiceTest {
     public void getCurrentExchangeInfo(){
         BigDecimal exchange = ExchangeManager.exchange(Currencies.USD,Currencies.CNY);
         System.out.println("exchange_USD:" + exchange); //6.6157
+    }
+
+    @Test
+    public void getSalaryPayDate(){
+        ComputeServiceDateDTO computeServiceDateDTO = new ComputeServiceDateDTO();
+        computeServiceDateDTO.setWorkingCalendarId(113);
+        computeServiceDateDTO.setCycleRuleId(65);
+        computeServiceDateDTO.setCurrentMonth("201807");
+
+        JsonResult dateResult = cycleRuleProxy.computeServiceDate(computeServiceDateDTO);
+        String salaryPayDate = dateResult.getData().toString();
+        System.out.println("date result : " + salaryPayDate);
     }
 }

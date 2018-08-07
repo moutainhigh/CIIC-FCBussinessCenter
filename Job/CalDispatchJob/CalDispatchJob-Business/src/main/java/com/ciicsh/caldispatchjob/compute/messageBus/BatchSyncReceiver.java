@@ -73,7 +73,7 @@ public class BatchSyncReceiver {
 
     @StreamListener(PayrollSink.PR_ADJUST_BATCH_INPUT)
     public void receiveAdjustBatch(AdjustBatchMsg adjustBatchMsg) {
-        logger.info("received adjust batch change from message: " + adjustBatchMsg);
+        logger.info("received adjust batch change from message: " + adjustBatchMsg.getAdjustBatchCode());
         if (adjustBatchMsg.getOperateTypeEnum() == OperateTypeEnum.ADD) {
             String rootBatchCode = adjustBatchMsg.getRootBatchCode();
             String originBatchCode = adjustBatchMsg.getOriginBatchCode();

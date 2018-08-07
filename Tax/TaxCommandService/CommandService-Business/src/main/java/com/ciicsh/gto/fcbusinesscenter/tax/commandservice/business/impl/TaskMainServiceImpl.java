@@ -565,6 +565,10 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
                     fcChargeDisposableProxyDTO.setInvoiceType(1);
                     //收费金额
                     fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
+                    //调整金额
+                    fcChargeDisposableProxyDTO.setChargeAdjustmentAmount(new BigDecimal(0));
+                    //调整后金额
+                    fcChargeDisposableProxyDTO.setChargeAdjustmentAmount(chargeAmount);
                     //创建方式：0-直接导入;1-页面操作;2-外部接口;
                     fcChargeDisposableProxyDTO.setCreateType(2);
                     //备注
@@ -600,6 +604,10 @@ public class TaskMainServiceImpl extends ServiceImpl<TaskMainMapper, TaskMainPO>
                     fcChargeDisposableProxyDTO.setInvoiceType(1);
                     //收费金额
                     fcChargeDisposableProxyDTO.setChargeAmount(chargeAmount);
+                    //调整金额
+                    fcChargeDisposableProxyDTO.setChargeAdjustmentAmount(new BigDecimal(0));
+                    //调整后金额
+                    fcChargeDisposableProxyDTO.setChargeAdjustmentAmount(chargeAmount);
                     //创建方式：0-直接导入;1-页面操作;2-外部接口;
                     fcChargeDisposableProxyDTO.setCreateType(2);
                     //备注

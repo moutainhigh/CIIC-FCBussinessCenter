@@ -15,12 +15,8 @@ import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrEmployeeTestDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
@@ -188,6 +184,22 @@ public class NormalBatchController {
 
         PageInfo<PrCustBatchPO> list = batchService.getList(custBatchPO, pageNum, pageSize);
         return JsonResult.success(list);
+
+    }
+
+    /**
+     * 查询所有对比的批次列表
+     * @param prCompareBatchDTO
+     * @return
+     */
+    @PostMapping("/getCompareBatchList")
+    public JsonResult getCompareBatchList(@RequestBody PrCompareBatchDTO prCompareBatchDTO) {
+        String managementIds = CommonHelper.getManagementIDs();
+        prCompareBatchDTO.setManagementId(managementIds);
+
+        PrCompareBatchPO prCompareBatchPO = BathTranslator.toPrCompareBatchPO(prCompareBatchDTO);
+        PageInfo<PrCompareBatchPO> compareBatchList = batchService.selectCompareBatchList(prCompareBatchPO);
+        return JsonResult.success(compareBatchList);
 
     }
 

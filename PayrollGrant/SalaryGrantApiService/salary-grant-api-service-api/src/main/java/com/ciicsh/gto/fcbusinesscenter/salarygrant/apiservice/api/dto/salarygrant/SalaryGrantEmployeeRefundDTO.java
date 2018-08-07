@@ -51,6 +51,10 @@ public class SalaryGrantEmployeeRefundDTO {
      */
     private String cardNumNew;
     /**
+     * 银行卡编号
+     */
+    private Long bankcardId;
+    /**
      * 薪酬计算批次号（新）
      */
     private String batchCodeNew;
