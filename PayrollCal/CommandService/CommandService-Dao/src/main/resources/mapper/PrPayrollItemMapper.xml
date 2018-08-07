@@ -27,6 +27,7 @@
 		<result column="display_priority" property="displayPriority" />
 		<result column="remark" property="remark" />
 		<result column="can_lock" property="canLock" />
+        <result column="extend_flag" property="extendFlag" />
 		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
@@ -118,6 +119,7 @@
 		display_priority,
 		remark,
 		can_lock,
+		extend_flag,
 		is_active,
 		created_time,
 		modified_time,
@@ -148,6 +150,7 @@
 		display_priority,
 		remark,
 		can_lock,
+		extend_flag,
 		is_active,
 		created_time,
 		modified_time,
@@ -196,6 +199,7 @@
 			display_priority,
 			remark,
 			can_lock,
+            extend_flag,
 			is_active,
 			created_time,
 			modified_time,
@@ -227,6 +231,7 @@
                 #{item.displayPriority},
                 #{item.remark},
 				#{item.canLock},
+                #{item.extendFlag},
                 #{item.isActive},
                 sysdate(),
                 sysdate(),
