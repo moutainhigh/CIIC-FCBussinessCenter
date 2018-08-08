@@ -319,22 +319,26 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
             List<TaskSubProofDetailPO> taskSubProofDetailPOList = taskSubProofService.querySubProofDetailList(subProofId);
             //文件名称
             String fileName = "";
-            //用于存放模板列表头部
-            Map<String, String> map = new HashMap<>(16);
-            // TODO 测试代码："联想独立户"=>"完税凭证_三分局","中智上海财务咨询公司大库"=>"完税凭证_徐汇","蓝天科技独立户"=>"完税凭证_浦东"
+            // TODO 目前税务局如果包含"三分局"就选择"完税凭证_三分局"，包含"徐汇"就选择"完税凭证_徐汇"，包含"浦东"就选择"完税凭证_浦东"。其他情况都默认选择"完税凭证_徐汇"
+            String station = taskSubProofBO.getStation();
             //根据申报账户选择模板
-            if ("联想独立户".equals(taskSubProofBO.getDeclareAccount())) {
-                fileName = "完税凭证_三分局.xls";
-                wb = exportAboutVoucherSanFenJu.getSanFenJuVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
-            } else if ("西门子独立户".equals(taskSubProofBO.getDeclareAccount())) {
+            if(station != null && !"".equals(station)){
+                if (station.contains("三分局")) {
+                    fileName = "完税凭证_三分局.xls";
+                    wb = exportAboutVoucherSanFenJu.getSanFenJuVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
+                } else if (station.contains("徐汇")) {
+                    fileName = "完税凭证_徐汇.xls";
+                    wb = exportAboutVoucherXuHui.getXuHuiVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
+                } else if (station.contains("浦东")) {
+                    fileName = "完税凭证_浦东.xls";
+                    wb = exportAboutVoucherPuDong.getPuDongVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
+                } else {
+                    fileName = "完税凭证_徐汇.xls";
+                    wb = exportAboutVoucherXuHui.getXuHuiVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
+                }
+            }else {
                 fileName = "完税凭证_徐汇.xls";
                 wb = exportAboutVoucherXuHui.getXuHuiVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
-            } else if ("蓝天科技独立户".equals(taskSubProofBO.getDeclareAccount())) {
-                fileName = "完税凭证_浦东.xls";
-                wb = exportAboutVoucherPuDong.getPuDongVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
-            } else {
-                fileName = "完税凭证_浦东.xls";
-                wb = exportAboutVoucherPuDong.getPuDongVoucherWB(taskSubProofDetailPOList, calculationBatchAccountPO, fileName, "voucher");
             }
         } catch (Exception e) {
             if (wb != null) {
