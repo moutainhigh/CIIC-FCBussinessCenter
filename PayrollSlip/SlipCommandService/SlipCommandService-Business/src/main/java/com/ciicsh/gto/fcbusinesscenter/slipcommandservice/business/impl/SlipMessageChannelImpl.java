@@ -8,6 +8,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrBatchDTO;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import org.apache.commons.lang.ArrayUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -124,7 +125,15 @@ public class SlipMessageChannelImpl {
                 };
 
                 if (contract != null && contract.get("paySheetInfo") != null) {
-                    emp.put("email", ((Document)contract.get("paySheetInfo")).get("emailAddress"));
+                    if (((Document)contract.get("paySheetInfo")).get("emailAddress") != null) {
+                        String[] emails = ((String)((Document)contract.get("paySheetInfo")).get("emailAddress")).replaceAll(",", ";").split(";");
+                        if (((Document)contract.get("paySheetInfo")).get("ccPerson") != null) {
+                            String[] ccs = ((String)((Document)contract.get("paySheetInfo")).get("ccPerson")).replaceAll(",", ";").split(";");
+                            emails = (String[])ArrayUtils.addAll(emails, ccs);
+                        }
+                        emp.put("email", String.join(";", emails));
+                    }
+
                     emp.put("payrollPassword", ((Document)contract.get("paySheetInfo")).get("payrollPassword"));
                 }
 

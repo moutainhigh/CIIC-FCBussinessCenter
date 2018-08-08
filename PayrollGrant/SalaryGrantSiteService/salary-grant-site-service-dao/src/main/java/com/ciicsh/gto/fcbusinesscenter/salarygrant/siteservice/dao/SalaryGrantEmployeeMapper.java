@@ -2,10 +2,7 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.FinanceEmployeeBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeeBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantEmployeePaymentBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantFinanceBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -73,4 +70,13 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      * @return List<SalaryGrantEmployeeBO>
      */
     List<SalaryGrantEmployeeBO> selectEmpInfoByGrantMode(SalaryGrantEmployeeBO salaryGrantEmployeeBO);
+
+    /**
+     * 根据主任务单编号更新雇员子任务单编号为null
+     * @author chenpb
+     * @since 2018-08-03
+     * @param salaryGrantTaskBO
+     * @return
+     */
+    Integer updateSubTaskCodeToNull(SalaryGrantTaskBO salaryGrantTaskBO);
 }
