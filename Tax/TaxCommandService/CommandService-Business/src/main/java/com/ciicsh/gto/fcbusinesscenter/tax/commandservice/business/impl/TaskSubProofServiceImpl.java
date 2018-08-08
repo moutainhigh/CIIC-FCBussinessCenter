@@ -271,7 +271,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                     foreignerNum += 0;
                 }
                 //判断是不是合并后的任务
-                if (taskSubProofPO.getTaskMainProofId() == null || "".equals(taskSubProofPO.getTaskMainProofId())) {
+                if (taskSubProofPO.getCombined()) {
                     sbCombinedParams.append(taskSubProofPO.getId() + ",");
                 } else {
                     unCombinedIds.add(taskSubProofPO.getId());
@@ -282,6 +282,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             newTaskSubProof.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
             //设置申报账户
             newTaskSubProof.setDeclareAccount(taskSubProofPOList.get(0).getDeclareAccount());
+            //设置申报账户中文
+            newTaskSubProof.setDeclareAccountName(taskSubProofPOList.get(0).getDeclareAccountName());
             //设置个税期间
             newTaskSubProof.setPeriod(taskSubProofPOList.get(0).getPeriod());
             //设置总人数
@@ -294,6 +296,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             newTaskSubProof.setStatus(taskSubProofPOList.get(0).getStatus());
             //设置任务类型
             newTaskSubProof.setTaskType(taskSubProofPOList.get(0).getTaskType());
+            //设置城市编号
+            newTaskSubProof.setCityCode(taskSubProofPOList.get(0).getCityCode());
+            //设置税务局
+            newTaskSubProof.setStation(taskSubProofPOList.get(0).getStation());
             //设置是否为合并任务
             newTaskSubProof.setCombined(true);
             //新增完税凭证子任务
