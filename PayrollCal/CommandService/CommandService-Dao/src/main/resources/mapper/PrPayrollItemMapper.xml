@@ -27,6 +27,7 @@
 		<result column="display_priority" property="displayPriority" />
 		<result column="remark" property="remark" />
 		<result column="can_lock" property="canLock" />
+        <result column="extend_flag" property="extendFlag" />
 		<result column="is_active" property="isActive" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
@@ -118,6 +119,7 @@
 		display_priority,
 		remark,
 		can_lock,
+		extend_flag,
 		is_active,
 		created_time,
 		modified_time,
@@ -148,6 +150,7 @@
 		display_priority,
 		remark,
 		can_lock,
+		extend_flag,
 		is_active,
 		created_time,
 		modified_time,
@@ -196,6 +199,7 @@
 			display_priority,
 			remark,
 			can_lock,
+            extend_flag,
 			is_active,
 			created_time,
 			modified_time,
@@ -227,6 +231,7 @@
                 #{item.displayPriority},
                 #{item.remark},
 				#{item.canLock},
+                #{item.extendFlag},
                 #{item.isActive},
                 sysdate(),
                 sysdate(),
@@ -355,7 +360,33 @@
 
 	<select id="selectApprovedGroupItems" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO" resultMap="ApprovedResultMap">
 		SELECT
-		<include refid="PayrollItem_All_Columns_no_id" />
+item_code,
+		parent_item_code,
+		management_id,
+		payroll_group_code,
+		payroll_group_template_code,
+		item_name,
+		item_type,
+		base_item_code,
+		data_type,
+		default_value_style,
+		default_value,
+		decimal_process_type,
+		cal_precision,
+		full_formula,
+		origin_formula,
+		formula_content,
+		origin_condition,
+		item_condition,
+		cal_priority,
+		display_priority,
+		remark,
+		can_lock,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
 		FROM
 		pr_approved_payroll_item
 		WHERE
@@ -366,7 +397,33 @@
 
 	<select id="selectApprovedGroupTemplateItems" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrPayrollItemPO" resultMap="ApprovedResultMap">
 		SELECT
-		<include refid="PayrollItem_All_Columns_no_id" />
+		item_code,
+		parent_item_code,
+		management_id,
+		payroll_group_code,
+		payroll_group_template_code,
+		item_name,
+		item_type,
+		base_item_code,
+		data_type,
+		default_value_style,
+		default_value,
+		decimal_process_type,
+		cal_precision,
+		full_formula,
+		origin_formula,
+		formula_content,
+		origin_condition,
+		item_condition,
+		cal_priority,
+		display_priority,
+		remark,
+		can_lock,
+		is_active,
+		created_time,
+		modified_time,
+		created_by,
+		modified_by
 		FROM
 		pr_approved_payroll_item
 		WHERE
