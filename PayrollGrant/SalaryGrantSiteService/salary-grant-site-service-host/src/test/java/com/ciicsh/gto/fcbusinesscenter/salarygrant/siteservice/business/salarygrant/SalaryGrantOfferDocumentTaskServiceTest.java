@@ -35,20 +35,20 @@ public class SalaryGrantOfferDocumentTaskServiceTest {
         System.out.println("查询薪资发放报盘任务单列表 page: " + taskBOPage + " 记录: " + taskBOPage.getRecords());
     }
 
-    @Test
-    public void queryOfferDocument() {
-        List<OfferDocumentBO> documentBOList = documentTaskService.queryOfferDocument("AT201803280000000002");
+//    @Test
+//    public void queryOfferDocument() {
+//        List<OfferDocumentBO> documentBOList = documentTaskService.queryOfferDocument("AT201803280000000002");
+//
+//        // BO List 转换为 DTO List
+//        String boJSONStr = JSONObject.toJSONString(documentBOList);
+//        List<OfferDocumentDTO> documentDTOList = JSONObject.parseArray(boJSONStr, OfferDocumentDTO.class);
+//        System.out.println("查询薪资发放报盘文件 documentDTOList: " + documentDTOList);
+//
+//    }
 
-        // BO List 转换为 DTO List
-        String boJSONStr = JSONObject.toJSONString(documentBOList);
-        List<OfferDocumentDTO> documentDTOList = JSONObject.parseArray(boJSONStr, OfferDocumentDTO.class);
-        System.out.println("查询薪资发放报盘文件 documentDTOList: " + documentDTOList);
-
-    }
-
-    @Test
-    public void createOfferDocument() {
-        documentTaskService.createOfferDocument("sdfsdf", "李三");
-
-    }
+//    @Test
+//    public void createOfferDocument() {
+//        documentTaskService.createOfferDocument("sdfsdf", "李三");
+//
+//    }
 }

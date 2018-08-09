@@ -1,6 +1,5 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo;
 
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import lombok.Data;
 
@@ -29,7 +28,7 @@ public class SalaryGrantEmployeeGroupInfoBO {
      */
     private String companyName;
     /**
-     * 银行卡种类:1:中国银行2:建设银行3:工商银行4:招商银行5:其他银行
+     * 银行卡种类 =>1：建行，2：工行，3：招商银行，4：中国银行，5：其他银行
      */
     private Integer bankcardType;
     /**
