@@ -131,6 +131,16 @@ public class TaskSubProofBO {
      */
     private String declareAccountName;
 
+    /**
+     * 所属税务局
+     */
+    private String station;
+
+    /**
+     * 城市代码
+     */
+    private String cityCode;
+
     public Long getId() {
         return id;
     }
@@ -331,6 +341,22 @@ public class TaskSubProofBO {
         this.declareAccountName = declareAccountName;
     }
 
+    public String getStation() {
+        return station;
+    }
+
+    public void setStation(String station) {
+        this.station = station;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofBO{" +
@@ -359,6 +385,8 @@ public class TaskSubProofBO {
                 ", createdByDisplayName='" + createdByDisplayName + '\'' +
                 ", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
                 ", declareAccountName='" + declareAccountName + '\'' +
+                ", station='" + station + '\'' +
+                ", cityCode='" + cityCode + '\'' +
                 '}';
     }
 }

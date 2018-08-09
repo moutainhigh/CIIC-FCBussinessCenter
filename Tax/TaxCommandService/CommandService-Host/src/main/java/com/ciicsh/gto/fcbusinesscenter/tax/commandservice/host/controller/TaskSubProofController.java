@@ -13,7 +13,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.CalculationBa
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.ExportFileService;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.TaskSubProofService;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
-import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.CalculationBatchAccountPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubProofPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.request.voucher.RequestForProof;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.response.voucher.ResponseForSubProof;
@@ -64,13 +63,10 @@ public class TaskSubProofController extends BaseController implements TaskSubPro
             TaskSubProofDTO taskSubProofDTO = new TaskSubProofDTO();
             BeanUtils.copyProperties(taskSubProofPO, taskSubProofDTO);
             taskSubProofDTO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofDTO.getStatus()));
-            CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofPO.getDeclareAccount());
-            if(calculationBatchAccountPO.getId() != null){
+            if(taskSubProofDTO.getCityCode() != null && !"".equals(taskSubProofDTO.getCityCode())){
                 //设置城市
-                CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-                taskSubProofDTO.setCity(cityDTO.getCityName());
-                //设置税务局
-                taskSubProofDTO.setTaxOrganization(calculationBatchAccountPO.getStation());
+                CityDTO cityDTO = cityServiceProxy.selectByCityCode(taskSubProofDTO.getCityCode());
+                taskSubProofDTO.setCity(cityDTO == null ? "" : cityDTO.getCityName());
             }
             taskSubProofDTOLists.add(taskSubProofDTO);
         }

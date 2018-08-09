@@ -7,7 +7,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclarePO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -51,9 +50,6 @@ public class ExportAboutNormalSalarySz extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
-            if(taskSubDeclarePO.getCombined()){
-                taskSubDeclareDetailService.addMergeSubDeclareDetailList(taskSubDeclarePO,taskSubDeclareDetailPOList,employeeInfoBatchPOList);
-            }
             //根据不同的业务需要处理wb
             this.handleNormalSalaryWB(wb, taskSubDeclareDetailPOList, employeeInfoBatchPOList);
         } catch (Exception e) {
@@ -79,13 +75,11 @@ public class ExportAboutNormalSalarySz extends BaseService {
      * @param employeeInfoBatchPOList
      */
     public void handleNormalSalaryWB(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
-        //筛选出正常工资薪金详细信息
-        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOS = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.NORMALSALARY.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //在相应的单元格进行赋值
         int sheetRowIndex = 1;
-        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOS) {
+        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOList) {
             List<EmployeeInfoBatchPO> employeeInfoBatchPOS = new ArrayList<>();
             //判断是否是合并明细
             if(po.getCombined()){

@@ -359,26 +359,33 @@ public class CompleteComputeServiceImpl {
             if (result.isSuccess() && result.getData() != null && result.getData().size() > 0) {
                 return result.getData().get(0);
             }else {
-                logger.info(String.format("雇员ID: %s, 公司ID：%s 无雇员服务协议", empCode,companyId));
+                logger.info(String.format("雇员ID: %s, 公司ID：%s 无雇员信息", empCode,companyId));
             }
         }
         catch (Exception ex){
-            logger.info(String.format("雇员ID: %s, 公司ID：%s 获取雇员服务协议失败: %s", empCode,companyId,ex.getMessage()));
+            logger.info(String.format("雇员ID: %s, 公司ID：%s 获取雇员信息失败: %s", empCode,companyId,ex.getMessage()));
         }
         return null;
     }
 
     private Object getEmpAgreement(String empCode, String companyId){
-        EmployeeContractsRequestDTO contractsRequestDTO = new EmployeeContractsRequestDTO();
-        List<EmployeeContractsRequestDTO.EmployeeContractsRequestWrapper> list = new ArrayList<>();
-        EmployeeContractsRequestDTO.EmployeeContractsRequestWrapper wrapper = new EmployeeContractsRequestDTO.EmployeeContractsRequestWrapper();
-        wrapper.setCompanyId(companyId);
-        wrapper.setEmpId(empCode);
-        list.add(wrapper);
-        contractsRequestDTO.setEmployeeContractsRequestWrapperList(list);
-        JsonResult<List<EmployeeContractResponseDTO>> result = employeeContractProxy.getEmployeeContractsByEmpIdAndCompanyId(contractsRequestDTO);
-        if(result.isSuccess() && result.getData() != null && result.getData().size() > 0){
-            return com.alibaba.fastjson.JSON.toJSON(result.getData().get(0));
+        try {
+            EmployeeContractsRequestDTO contractsRequestDTO = new EmployeeContractsRequestDTO();
+            List<EmployeeContractsRequestDTO.EmployeeContractsRequestWrapper> list = new ArrayList<>();
+            EmployeeContractsRequestDTO.EmployeeContractsRequestWrapper wrapper = new EmployeeContractsRequestDTO.EmployeeContractsRequestWrapper();
+            wrapper.setCompanyId(companyId);
+            wrapper.setEmpId(empCode);
+            list.add(wrapper);
+            contractsRequestDTO.setEmployeeContractsRequestWrapperList(list);
+            JsonResult<List<EmployeeContractResponseDTO>> result = employeeContractProxy.getEmployeeContractsByEmpIdAndCompanyId(contractsRequestDTO);
+            if (result.isSuccess() && result.getData() != null && result.getData().size() > 0) {
+                return com.alibaba.fastjson.JSON.toJSON(result.getData().get(0));
+            }else {
+                logger.info(String.format("雇员ID: %s, 公司ID：%s 无雇员服务协议", empCode,companyId));
+            }
+        }
+        catch (Exception ex){
+            logger.info(String.format("雇员ID: %s, 公司ID：%s 获取雇员服务协议失败: %s", empCode,companyId,ex.getMessage()));
         }
         return "";
     }
