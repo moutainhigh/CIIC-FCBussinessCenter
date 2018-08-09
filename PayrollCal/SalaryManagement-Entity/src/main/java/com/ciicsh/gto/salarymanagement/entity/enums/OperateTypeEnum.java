@@ -12,6 +12,8 @@ public enum  OperateTypeEnum implements ValuedEnum {
     DELETE("删除", 3),
 
     SEARCH("查询", 4),
+
+    IMPORT("导入", 5),
     ;
 
     private int val;

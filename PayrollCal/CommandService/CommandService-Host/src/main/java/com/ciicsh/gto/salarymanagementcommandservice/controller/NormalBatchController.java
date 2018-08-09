@@ -13,12 +13,8 @@ import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrEmployeeTestDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
@@ -130,6 +126,10 @@ public class NormalBatchController {
         prNormalBatchPO.setModifiedBy(UserContext.getUserId());
         Integer isTestBatch = batchDTO.getIsTestBatch(); //表示是否为测试批次：1 表示 是； 0 表示 否；
         prNormalBatchPO.setIsTestBatch(isTestBatch);
+        // 批次类型 1 正常批次, 2 调整批次, 3 回溯批次, 4 测试批次, 5 导入批次;
+        int batchType = batchDTO.getBatchType();
+        // 源批次code
+        String originBatchCode = batchDTO.getCode();
 
         PrPayrollAccountSetPO accountSetPO = accountSetService.getAccountSetInfo(batchDTO.getAccountSetCode());
 
@@ -139,7 +139,11 @@ public class NormalBatchController {
         prNormalBatchPO.setCode(code);
         prNormalBatchPO.setActualPeriod(actualPeriod);
 
-        String[] dates = BatchUtils.getPRDates(batchDTO.getPeriod(), accountSetPO.getStartDay(), accountSetPO.getEndDay(), accountSetPO.getPayrollPeriod());
+        String[] dates = BatchUtils.getPRDates(
+                batchDTO.getPeriod(),
+                accountSetPO.getStartDay(),
+                accountSetPO.getEndDay(),
+                accountSetPO.getPayrollPeriod());
         prNormalBatchPO.setStartDate(dates[0]);
         prNormalBatchPO.setEndDate(dates[1]);
 
@@ -149,22 +153,28 @@ public class NormalBatchController {
             if (result > 0) {
                 //send message to kafka
                 PayrollMsg msg = new PayrollMsg();
+                // 新建批次生成的batchCode
                 msg.setBatchCode(code);
-                if (isTestBatch == 1) {
-                    msg.setBatchType(BatchTypeEnum.Test.getValue());
-                } else {
-                    msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
-                }
-                msg.setOperateType(OperateTypeEnum.ADD.getValue());
+                // 源批次Code, 导入批次时需要; 新建批次时不需要此字段,为默认值
+                msg.setOriginBatchCode(originBatchCode);
+                // 批次类型 1 正常批次, 2 调整批次, 3 回溯批次, 4 测试批次, 5 导入批次;
+                msg.setBatchType(
+                        isTestBatch == 1 ? BatchTypeEnum.Test.getValue()
+                                : (batchType == BatchTypeEnum.IMPORT.getValue() ? BatchTypeEnum.IMPORT.getValue()
+                                        : BatchTypeEnum.NORMAL.getValue()));
+                // 操作类型 1 增加, 2 更新, 3 删除, 4 查询, 5 导入;
+                msg.setOperateType(batchType == OperateTypeEnum.IMPORT.getValue() ? OperateTypeEnum.IMPORT.getValue()
+                        : OperateTypeEnum.ADD.getValue());
+
                 sender.Send(msg);
-                System.out.println("新增薪资帐套：%s" + msg.toString());
+                logger.info("新增/导入薪资帐套：{}", msg.toString());
 
                 return JsonResult.success(result);
             } else {
                 return JsonResult.faultMessage("插入记录重复");
             }
         } catch (Exception e) {
-            return JsonResult.faultMessage("保持失败");
+            return JsonResult.faultMessage("保存失败");
         }
     }
 
@@ -188,6 +198,22 @@ public class NormalBatchController {
 
         PageInfo<PrCustBatchPO> list = batchService.getList(custBatchPO, pageNum, pageSize);
         return JsonResult.success(list);
+
+    }
+
+    /**
+     * 查询所有对比的批次列表
+     * @param prCompareBatchDTO
+     * @return
+     */
+    @PostMapping("/getCompareBatchList")
+    public JsonResult getCompareBatchList(@RequestBody PrCompareBatchDTO prCompareBatchDTO) {
+        String managementIds = CommonHelper.getManagementIDs();
+        prCompareBatchDTO.setManagementId(managementIds);
+
+        PrCompareBatchPO prCompareBatchPO = BathTranslator.toPrCompareBatchPO(prCompareBatchDTO);
+        PageInfo<PrCompareBatchPO> compareBatchList = batchService.selectCompareBatchList(prCompareBatchPO);
+        return JsonResult.success(compareBatchList);
 
     }
 

@@ -108,13 +108,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
                 taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
-                CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
-                if(calculationBatchAccountPO.getId() != null){
+                if(taskSubProofBO.getCityCode() != null && !"".equals(taskSubProofBO.getCityCode())){
                     //设置城市
-                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-                    taskSubProofBO.setCity(cityDTO.getCityName());
-                    //设置税务局
-                    taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(taskSubProofBO.getCityCode());
+                    taskSubProofBO.setCity(cityDTO == null ? "" : cityDTO.getCityName());
                 }
                 taskSubProofBOList.add(taskSubProofBO);
             }
@@ -129,13 +126,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 BeanUtils.copyProperties(taskSubProofPO, taskSubProofBO);
                 //获取完税凭证任务状态
                 taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
-                CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
-                if(calculationBatchAccountPO.getId() != null){
+                if(taskSubProofBO.getCityCode() != null && !"".equals(taskSubProofBO.getCityCode())){
                     //设置城市
-                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-                    taskSubProofBO.setCity(cityDTO.getCityName());
-                    //设置税务局
-                    taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+                    CityDTO cityDTO = cityServiceProxy.selectByCityCode(taskSubProofBO.getCityCode());
+                    taskSubProofBO.setCity(cityDTO == null ? "" : cityDTO.getCityName());
                 }
                 taskSubProofBOList.add(taskSubProofBO);
             }
@@ -213,13 +207,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
         //获取完税凭证任务状态中文名
         for (TaskSubProofBO bo : taskSubProofBOList) {
             bo.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, bo.getStatus()));
-            CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(bo.getDeclareAccount());
-            if(calculationBatchAccountPO.getId() != null){
+            if(bo.getCityCode() != null && !"".equals(bo.getCityCode())){
                 //设置城市
-                CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-                bo.setCity(cityDTO.getCityName());
-                //设置税务局
-                bo.setTaxOrganization(calculationBatchAccountPO.getStation());
+                CityDTO cityDTO = cityServiceProxy.selectByCityCode(bo.getCityCode());
+                bo.setCity(cityDTO == null ? "" : cityDTO.getCityName());
             }
         }
         responseForSubProof.setRowList(taskSubProofBOList);
@@ -280,7 +271,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                     foreignerNum += 0;
                 }
                 //判断是不是合并后的任务
-                if (taskSubProofPO.getTaskMainProofId() == null || "".equals(taskSubProofPO.getTaskMainProofId())) {
+                if (taskSubProofPO.getCombined()) {
                     sbCombinedParams.append(taskSubProofPO.getId() + ",");
                 } else {
                     unCombinedIds.add(taskSubProofPO.getId());
@@ -291,6 +282,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             newTaskSubProof.setTaskNo(taskNoService.getTaskNo(TaskNoService.TASK_SUB_PROOF));
             //设置申报账户
             newTaskSubProof.setDeclareAccount(taskSubProofPOList.get(0).getDeclareAccount());
+            //设置申报账户中文
+            newTaskSubProof.setDeclareAccountName(taskSubProofPOList.get(0).getDeclareAccountName());
             //设置个税期间
             newTaskSubProof.setPeriod(taskSubProofPOList.get(0).getPeriod());
             //设置总人数
@@ -303,6 +296,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
             newTaskSubProof.setStatus(taskSubProofPOList.get(0).getStatus());
             //设置任务类型
             newTaskSubProof.setTaskType(taskSubProofPOList.get(0).getTaskType());
+            //设置城市编号
+            newTaskSubProof.setCityCode(taskSubProofPOList.get(0).getCityCode());
+            //设置税务局
+            newTaskSubProof.setStation(taskSubProofPOList.get(0).getStation());
             //设置是否为合并任务
             newTaskSubProof.setCombined(true);
             //新增完税凭证子任务
@@ -429,34 +426,38 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                 taskSubProofPOList = taskSubProofPOList.stream().filter(item -> !taskSubProofPOSMerge.contains(item)).collect(Collectors.toList());
                 taskSubProofPOList.addAll(taskSubProofPOUnmergeList);
             }
-            List<Long> mainIdList = taskSubProofPOList.stream().collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId)).entrySet().stream()
-                    .map(x -> x.getKey()).collect(Collectors.toList());
-            EntityWrapper wrapper = new EntityWrapper();
-            wrapper.setEntity(new TaskSubProofPO());
-            wrapper.in("task_main_proof_id", mainIdList);
-            wrapper.and("is_active = {0}", true);
-            //获取主任务下所有子任务信息
-            List<TaskSubProofPO> taskSubProofPOS = baseMapper.selectList(wrapper);
-            Map<Long, List<TaskSubProofPO>> taskSubProofMap = taskSubProofPOS.stream()
-                    .collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId));
-            mainIdList.forEach(mainId -> {
-                //根据主任务ID获取主任务信息
-                TaskMainProofPO taskMainProofPO = taskMainProofMapper.selectById(mainId);
-                //判断主任务下的子任务
-                List<TaskSubProofPO> taskSubProofPOSS = taskSubProofMap.get(mainId);
-                List<TaskSubProofPO> taskSubProofPOSByStatus = taskSubProofPOSS.stream().filter(taskSubProofPO1 -> requestForProof.getStatus().equals(taskSubProofPO1.getStatus())).collect(Collectors.toList());
-                //任务状态
-                String status = taskMainProofPO.getStatus();
-                //任务状态:03:退回；04;已完成；06:部分完成；07;部分退回
-                if ("04".equals(requestForProof.getStatus())) {
-                    status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "04" : ("07".equals(status) ? "07" : "06");
-                } else if ("03".equals(requestForProof.getStatus())) {
-                    status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "03" : "07";
-                }
-                taskMainProofPO.setStatus(status);
-                //修改完税凭证主任务状态
-                taskMainProofMapper.updateById(taskMainProofPO);
-            });
+            //筛选中人工的完税凭证子任务集合
+            List<TaskSubProofPO> artificialTaskSubProofPOList = taskSubProofPOList.stream().filter(item -> "02".equals(item.getTaskType())).collect(Collectors.toList());
+            if(artificialTaskSubProofPOList.size() > 0) {
+                List<Long> mainIdList = artificialTaskSubProofPOList.stream().collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId)).entrySet().stream()
+                        .map(x -> x.getKey()).collect(Collectors.toList());
+                EntityWrapper wrapper = new EntityWrapper();
+                wrapper.setEntity(new TaskSubProofPO());
+                wrapper.in("task_main_proof_id", mainIdList);
+                wrapper.and("is_active = {0}", true);
+                //获取主任务下所有子任务信息
+                List<TaskSubProofPO> taskSubProofPOS = baseMapper.selectList(wrapper);
+                Map<Long, List<TaskSubProofPO>> taskSubProofMap = taskSubProofPOS.stream()
+                        .collect(Collectors.groupingBy(TaskSubProofPO::getTaskMainProofId));
+                mainIdList.forEach(mainId -> {
+                    //根据主任务ID获取主任务信息
+                    TaskMainProofPO taskMainProofPO = taskMainProofMapper.selectById(mainId);
+                    //判断主任务下的子任务
+                    List<TaskSubProofPO> taskSubProofPOSS = taskSubProofMap.get(mainId);
+                    List<TaskSubProofPO> taskSubProofPOSByStatus = taskSubProofPOSS.stream().filter(taskSubProofPO1 -> requestForProof.getStatus().equals(taskSubProofPO1.getStatus())).collect(Collectors.toList());
+                    //任务状态
+                    String status = taskMainProofPO.getStatus();
+                    //任务状态:03:退回；04;已完成；06:部分完成；07;部分退回
+                    if ("04".equals(requestForProof.getStatus())) {
+                        status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "04" : ("07".equals(status) ? "07" : "06");
+                    } else if ("03".equals(requestForProof.getStatus())) {
+                        status = taskSubProofPOSS.size() == taskSubProofPOSByStatus.size() ? "03" : "07";
+                    }
+                    taskMainProofPO.setStatus(status);
+                    //修改完税凭证主任务状态
+                    taskMainProofMapper.updateById(taskMainProofPO);
+                });
+            }
         }
     }
 
@@ -483,13 +484,10 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
     public TaskSubProofBO queryApplyDetailsBySubId(long subProofId) {
         TaskSubProofBO taskSubProofBO = baseMapper.queryApplyDetailsBySubId(subProofId);
         taskSubProofBO.setStatusName(EnumUtil.getMessage(EnumUtil.TASK_STATUS, taskSubProofBO.getStatus()));
-        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubProofBO.getDeclareAccount());
-        if(calculationBatchAccountPO.getId() != null){
+        if(taskSubProofBO.getCityCode() != null && !"".equals(taskSubProofBO.getCityCode())){
             //设置城市
-            CityDTO cityDTO = cityServiceProxy.selectByCityCode(calculationBatchAccountPO.getCityCode());
-            taskSubProofBO.setCity(cityDTO.getCityName());
-            //设置税务局
-            taskSubProofBO.setTaxOrganization(calculationBatchAccountPO.getStation());
+            CityDTO cityDTO = cityServiceProxy.selectByCityCode(taskSubProofBO.getCityCode());
+            taskSubProofBO.setCity(cityDTO == null ? "" : cityDTO.getCityName());
         }
         return taskSubProofBO;
     }
@@ -606,6 +604,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                             taskSubProofDetailPOs = new ArrayList<>();
                         }
 
+                        CalculationBatchAccountPO calculationBatchAccountPO = calculationBatchAccountService.getCalculationBatchAccountInfoByAccountNo(taskSubDeclarePO.getDeclareAccount());
                         //新建完税凭证子任务
                         if (taskSubProofPO == null) {
                             taskSubProofPO = new TaskSubProofPO();
@@ -619,6 +618,8 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                             taskSubProofPO.setManagerName(taskSubDeclarePO.getManagerName());
                             //申报账户中文名称
                             taskSubProofPO.setDeclareAccountName(taskSubDeclarePO.getDeclareAccountName());
+                            taskSubProofPO.setCityCode(calculationBatchAccountPO.getCityCode());
+                            taskSubProofPO.setStation(calculationBatchAccountPO.getStation());
                             this.baseMapper.insert(taskSubProofPO);
                         }
 
@@ -634,6 +635,7 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                         taskSubProofDetailPO.setIncomeStart(taskSubDeclareDetailBO.getPeriod());
                         taskSubProofDetailPO.setIncomeForTax(taskSubDeclareDetailBO.getIncomeForTax());
                         taskSubProofDetailPO.setWithholdedAmount(taskSubDeclareDetailBO.getTaxAmount());
+                        taskSubProofDetailPO.setDeclareAccountName(taskSubDeclarePO.getDeclareAccountName());
 
                         taskSubProofDetailPOs.add(taskSubProofDetailPO);
                     }

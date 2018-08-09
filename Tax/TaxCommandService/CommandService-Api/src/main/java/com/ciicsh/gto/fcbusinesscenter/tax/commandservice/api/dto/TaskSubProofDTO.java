@@ -54,6 +54,16 @@ public class TaskSubProofDTO{
      */
     private String declareAccountName;
 
+    /**
+     * 所属税务局
+     */
+    private String station;
+
+    /**
+     * 城市代码
+     */
+    private String cityCode;
+
     public Long getId() {
         return id;
     }
@@ -190,6 +200,22 @@ public class TaskSubProofDTO{
         this.declareAccountName = declareAccountName;
     }
 
+    public String getStation() {
+        return station;
+    }
+
+    public void setStation(String station) {
+        this.station = station;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofDTO{" +
@@ -209,6 +235,9 @@ public class TaskSubProofDTO{
                 ", createdTime=" + createdTime +
                 ", managerNo='" + managerNo + '\'' +
                 ", managerName='" + managerName + '\'' +
+                ", declareAccountName='" + declareAccountName + '\'' +
+                ", station='" + station + '\'' +
+                ", cityCode='" + cityCode + '\'' +
                 '}';
     }
 }

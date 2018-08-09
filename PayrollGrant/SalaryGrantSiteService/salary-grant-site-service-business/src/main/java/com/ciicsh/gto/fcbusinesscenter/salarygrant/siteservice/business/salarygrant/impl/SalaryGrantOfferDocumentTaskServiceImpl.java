@@ -1,6 +1,7 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -17,10 +18,14 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDo
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
+import com.ciicsh.gto.logservice.api.dto.LogDTO;
+import com.ciicsh.gto.logservice.api.dto.LogType;
+import com.ciicsh.gto.logservice.client.LogClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -41,6 +46,8 @@ import java.util.stream.Collectors;
 @Service
 public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryGrantSubTaskMapper, SalaryGrantSubTaskPO> implements SalaryGrantOfferDocumentTaskService {
     @Autowired
+    LogClientService logClientService;
+    @Autowired
     SalaryGrantSubTaskMapper salaryGrantSubTaskMapper;
     @Autowired
     OfferDocumentMapper offerDocumentMapper;
@@ -53,29 +60,26 @@ public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryG
 
     @Override
     public Page<SalaryGrantTaskBO> queryOfferDocumentTaskPage(Page<SalaryGrantTaskBO> page, SalaryGrantTaskBO salaryGrantTaskBO) {
-        return page.setRecords(salaryGrantSubTaskMapper.queryOfferDocumentTaskPage(page, salaryGrantTaskBO));
+        page.setRecords(salaryGrantSubTaskMapper.queryOfferDocumentTaskPage(page, salaryGrantTaskBO));
+        return getGrantTypeName(page);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<OfferDocumentBO> generateOfferDocument(String taskCode, String userId) {
-        //1.根据任务单编号查询薪资发放报盘信息表中报盘文件记录
+        //根据任务单编号查询薪资发放报盘信息表中报盘文件记录
         List<OfferDocumentBO> documentBOList = queryOfferDocument(taskCode);
-
-        //2.存在报盘文件记录时直接查询报盘文件列表返回
-        if (!CollectionUtils.isEmpty(documentBOList)) {
-            return documentBOList;
+        //不存在报盘文件先生成，再查询报盘文件列表
+        if (documentBOList.isEmpty()) {
+            createOfferDocument(taskCode, userId);
+            documentBOList = queryOfferDocument(taskCode);
         }
-
-        //3.不存在报盘文件记录时先生成报盘文件，再查询报盘文件列表返回
-        createOfferDocument(taskCode, userId);
-
-        return queryOfferDocument(taskCode);
+        return getBankCardName(documentBOList);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void createOfferDocument(String taskCode, String userId) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("新生成薪资发放报盘文件"));
         //根据薪资发放任务单子表编号查询雇员信息
         EntityWrapper<SalaryGrantEmployeePO> entityWrapper = new EntityWrapper<>();
         entityWrapper.where("salary_grant_sub_task_code = {0}", taskCode);
@@ -206,8 +210,8 @@ public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryG
      * @param employeeGroupInfoBOList
      * @param userId
      */
-    @Transactional(rollbackFor = Exception.class)
     public void insertOfferDocumentRecords(List<SalaryGrantEmployeeGroupInfoBO> employeeGroupInfoBOList, String userId) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 雇员分组信息").setContent(JSON.toJSONString(employeeGroupInfoBOList)));
         if (!CollectionUtils.isEmpty(employeeGroupInfoBOList)) {
             //新增薪资发放报盘信息表记录
             OfferDocumentPO offerDocumentPO;
@@ -227,7 +231,7 @@ public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryG
                 offerDocumentPO.setCreatedTime(new Date());
 
                 offerDocumentMapper.insert(offerDocumentPO);
-
+                logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 薪资发放报盘信息").setContent(JSON.toJSONString(offerDocumentPO)));
                 //新增薪资发放报盘文件表记录
                 List<OfferDocumentFilePO> documentFilePOList = commonService.generateOfferDocumentFile(groupInfoBO, offerDocumentPO);
                 if (!CollectionUtils.isEmpty(documentFilePOList)) {
@@ -242,5 +246,33 @@ public class SalaryGrantOfferDocumentTaskServiceImpl extends ServiceImpl<SalaryG
     @Override
     public List<OfferDocumentBO> queryOfferDocument(String taskCode) {
         return offerDocumentMapper.queryOfferDocument(taskCode);
+    }
+
+    /**
+     * 发放类型名称获取
+     */
+    private Page<SalaryGrantTaskBO> getGrantTypeName(Page<SalaryGrantTaskBO> page) {
+        if (!page.getRecords().isEmpty()) {
+            page.getRecords().forEach(x -> {
+                if (!ObjectUtils.isEmpty(x.getGrantType())) {
+                    x.setGrantTypeName(commonService.getNameByValue("sgmGrantType", String.valueOf(x.getGrantType())));
+                }
+            });
+        }
+        return page;
+    }
+
+    /**
+     * 银行卡名称获取
+     */
+    private List<OfferDocumentBO> getBankCardName(List<OfferDocumentBO> list) {
+        if (!list.isEmpty()) {
+            list.forEach(x -> {
+                if (!ObjectUtils.isEmpty(x.getBankcardType())) {
+                    x.setBankcardName(commonService.getNameByValue("sgBankcardType", String.valueOf(x.getBankcardType())));
+                }
+            });
+        }
+        return list;
     }
 }

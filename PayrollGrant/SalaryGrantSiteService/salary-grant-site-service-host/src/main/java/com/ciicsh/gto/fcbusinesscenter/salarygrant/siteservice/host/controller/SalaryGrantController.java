@@ -16,6 +16,8 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.ReprieveEmpImportExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.excel.SalaryTaskEmpExcelDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.CommonTransform;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.ExcelUtil;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.host.util.PageUtil;
@@ -56,6 +58,9 @@ public class SalaryGrantController {
 
     @Autowired
     private SalaryGrantTaskQueryService salaryGrantTaskQueryService;
+
+    @Autowired
+    private SalaryGrantSupplierSubTaskService salaryGrantSupplierSubTaskService;
 
     @Autowired
     private SalaryGrantEmployeeQueryService salaryGrantEmployeeQueryService;
@@ -166,8 +171,12 @@ public class SalaryGrantController {
             bo.setUserName(UserContext.getName());
             if (SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
                 resultBo = salaryGrantTaskQueryService.submit(true, bo);
+                SalaryGrantMainTaskPO mainPo = salaryGrantTaskQueryService.selectById(bo.getTaskId());
+                resultBo.setModifiedTime(mainPo.getModifiedTime());
             } else if (!SalaryGrantBizConsts.SALARY_GRANT_TASK_TYPE_MAIN_TASK.equals(bo.getTaskType())) {
                 resultBo = salaryGrantTaskQueryService.submit(false, bo);
+                SalaryGrantSubTaskPO subPo = salaryGrantSupplierSubTaskService.selectById(bo.getTaskId());
+                resultBo.setModifiedTime(subPo.getModifiedTime());
             }
             WorkFlowResultDTO resultDto = CommonTransform.convertToDTO(resultBo, WorkFlowResultDTO.class);
             return ResultGenerator.genSuccessResult(resultDto);

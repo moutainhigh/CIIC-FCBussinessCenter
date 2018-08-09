@@ -47,7 +47,6 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
      * @return
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void submitSubTask(SalaryGrantTaskBO bo) {
         SalaryGrantSubTaskPO subPo = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
@@ -72,7 +71,6 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
      * @return
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void approveSubTask(SalaryGrantTaskBO bo) {
         SalaryGrantSubTaskPO subPo = BeanUtils.instantiate(SalaryGrantSubTaskPO.class);
         subPo.setSalaryGrantSubTaskId(bo.getTaskId());
@@ -98,7 +96,6 @@ public class SalaryGrantSubTaskWorkFlowServiceImpl extends ServiceImpl<SalaryGra
      * @return
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void returnSubTask(SalaryGrantTaskBO bo) {
         taskProcessing(bo, SalaryGrantBizConsts.TASK_STATUS_REFUSE);
     }

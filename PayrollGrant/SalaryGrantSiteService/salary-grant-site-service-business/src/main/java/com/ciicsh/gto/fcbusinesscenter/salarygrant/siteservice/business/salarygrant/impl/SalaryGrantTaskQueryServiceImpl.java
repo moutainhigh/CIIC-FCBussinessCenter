@@ -1,28 +1,30 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantBizConsts;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.constant.SalaryGrantWorkFlowEnums;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salarygrant.*;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.*;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.*;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantMainTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantSubTaskMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.SalaryGrantTaskHistoryMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.dao.WorkFlowTaskInfoMapper;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.RefreshTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowResultBO;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.WorkFlowTaskInfoBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.WorkFlowTaskInfoPO;
-import com.ciicsh.gto.fcbusinesscenter.util.constants.EventName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
 import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.PayapplySalaryDTO;
-import com.ciicsh.gto.settlementcenter.payment.cmdapi.dto.SalaryBatchDTO;
 import com.ciicsh.gto.sheetservice.api.SheetServiceProxy;
 import com.ciicsh.gto.sheetservice.api.dto.Result;
 import com.ciicsh.gto.sheetservice.api.dto.ResultCode;
@@ -32,15 +34,10 @@ import com.ciicsh.gto.sheetservice.api.dto.response.StartProcessResponseDTO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -69,11 +66,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
     @Autowired
     private SalaryGrantTaskHistoryMapper salaryGrantTaskHistoryMapper;
     @Autowired
-    private SalaryGrantEmployeeMapper salaryGrantEmployeeMapper;
-    @Autowired
     private WorkFlowTaskInfoMapper workFlowTaskInfoMapper;
-    @Autowired
-    private FCBizTransactionMongoOpt fcBizTransactionMongoOpt;
     @Autowired
     private SalaryGrantWorkFlowService salaryGrantWorkFlowService;
     @Autowired
@@ -352,7 +345,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         if (flag && salaryGrantMainTaskMapper.lockTask(bo)> 0) {
             Integer result =  salaryGrantWorkFlowService.doSubmitTask(bo);
             workFlowResultBO.setResult(result);
-        } else if (salaryGrantSubTaskMapper.lockTask(bo) > 0) {
+        } else if (!flag && salaryGrantSubTaskMapper.lockTask(bo) > 0) {
             salaryGrantSubTaskWorkFlowService.submitSubTask(bo);
         } else {
             workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getResult());
@@ -393,7 +386,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
         if (flag && salaryGrantMainTaskMapper.lockTask(bo)> 0) {
             salaryGrantWorkFlowService.doApproveTask(bo);
-        } else if (salaryGrantSubTaskMapper.lockTask(bo) > 0) {
+        } else if (!flag && salaryGrantSubTaskMapper.lockTask(bo) > 0) {
             salaryGrantSubTaskWorkFlowService.approveSubTask(bo);
         } else {
             workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getResult());
@@ -421,7 +414,7 @@ public class SalaryGrantTaskQueryServiceImpl extends ServiceImpl<SalaryGrantMain
         WorkFlowResultBO workFlowResultBO = BeanUtils.instantiate(WorkFlowResultBO.class);
         if (flag && salaryGrantMainTaskMapper.lockTask(bo)> 0) {
             salaryGrantWorkFlowService.doReturnTask(bo);
-        } else if (salaryGrantSubTaskMapper.lockTask(bo) > 0) {
+        } else if (!flag && salaryGrantSubTaskMapper.lockTask(bo) > 0) {
             salaryGrantSubTaskWorkFlowService.returnSubTask(bo);
         } else {
             workFlowResultBO.setResult(SalaryGrantWorkFlowEnums.TaskResult.LOCK.getResult());
