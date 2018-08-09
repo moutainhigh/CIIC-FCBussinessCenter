@@ -119,7 +119,7 @@ public class ExportAboutVoucherXuHui extends BaseService {
             if (null == cellA) {
                 cellA = row.createCell(0);
             }
-            cellA.setCellValue(EnumUtil.getMessage(EnumUtil.IT_CERT_TYPE, taskSubProofDetailPO.getIdType()));
+            cellA.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, taskSubProofDetailPO.getIdType()));
 
             //B列-证件号
             HSSFCell cellB = row.getCell(1);
@@ -143,7 +143,7 @@ public class ExportAboutVoucherXuHui extends BaseService {
             String period = "";
             String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeStart());
             String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeEnd());
-            if (incomeStart.equals(incomeEnd)) {
+            if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
                 period = incomeStart;
             } else {
                 period = incomeStart + "~" + incomeEnd;

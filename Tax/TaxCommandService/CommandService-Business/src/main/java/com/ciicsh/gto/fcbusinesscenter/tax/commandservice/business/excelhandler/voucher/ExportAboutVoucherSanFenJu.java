@@ -201,7 +201,7 @@ public class ExportAboutVoucherSanFenJu extends BaseService {
             String period = "";
             String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeStart());
             String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeEnd());
-            if (incomeStart.equals(incomeEnd)) {
+            if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
                 period = incomeStart;
             } else {
                 period = incomeStart + "~" + incomeEnd;

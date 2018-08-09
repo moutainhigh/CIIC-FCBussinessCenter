@@ -16,7 +16,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +49,6 @@ public class ExportAboutCommercialInsuranceSh extends BaseService {
             fs = getFSFileSystem(fileName, type);
             //通过POIFSFileSystem对象获取WB对象
             wb = getHSSFWorkbook(fs);
-            if(taskSubDeclarePO.getCombined()){
-                taskSubDeclareDetailService.addMergeSubDeclareDetailList(taskSubDeclarePO,taskSubDeclareDetailPOList,employeeInfoBatchPOList);
-            }
             //根据不同的业务需要处理wb
             this.handleCommercialInsuranceWB(wb, taskSubDeclareDetailPOList, employeeInfoBatchPOList);
         } catch (Exception e) {
@@ -78,13 +74,11 @@ public class ExportAboutCommercialInsuranceSh extends BaseService {
      * @param employeeInfoBatchPOList
      */
     public void handleCommercialInsuranceWB(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
-        //筛选出商业健康保险费大于0的详细信息business_health_insurance
-        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOS = taskSubDeclareDetailPOList.stream().filter(item -> item.getBusinessHealthInsurance() != null && item.getBusinessHealthInsurance().compareTo(BigDecimal.ZERO) > 0).collect(Collectors.toList());
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //在相应的单元格进行赋值
         int sheetRowIndex = 1;
-        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOS) {
+        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOList) {
             List<EmployeeInfoBatchPO> employeeInfoBatchPOS = new ArrayList<>();
             //判断是否是合并明细
             if(po.getCombined()){
