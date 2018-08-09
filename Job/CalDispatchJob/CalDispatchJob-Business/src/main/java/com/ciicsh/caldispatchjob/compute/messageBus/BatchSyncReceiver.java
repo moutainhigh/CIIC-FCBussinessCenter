@@ -52,8 +52,12 @@ public class BatchSyncReceiver {
 
     @StreamListener(PayrollSink.PR_NORMAL_BATCH_INPUT)
     public void receive(PayrollMsg message) {
-        logger.info("received from normal batchCode : " + message.getBatchCode() + " BatchType: " + message.getBatchType());
-        processBatchInfo(message.getBatchCode(), message.getOperateType(), message.getBatchType());
+        logger.info("received from normal batchCode : " + message.getBatchCode()
+                + " BatchType: " + message.getBatchType());
+        processBatchInfo(message.getBatchCode(),
+                message.getOriginBatchCode(),
+                message.getOperateType(),
+                message.getBatchType());
     }
 
     @StreamListener(PayrollSink.EMP_GROUP_INPUT)
@@ -113,14 +117,17 @@ public class BatchSyncReceiver {
     /**
      * 订阅批次：新增或者删除
      *
-     * @param batchCode
-     * @param optType
+     * @param batchCode 当前批次code
+     * @param originBatchCode 源批次code(导入批次时选择的批次)
+     * @param optType 操作类型 1 增加, 2 更新, 3 删除, 4 查询, 5 导入;
+     * @param batchType 批次类型 1 正常批次, 2 调整批次, 3 回溯批次, 4 测试批次, 5 导入批次;
      */
-    private void processBatchInfo(String batchCode, int optType, int batchType) {
+    private void processBatchInfo(String batchCode, String originBatchCode, int optType, int batchType) {
         if (batchType == BatchTypeEnum.NORMAL.getValue()) { //正常批次
             if (optType == OperateTypeEnum.ADD.getValue()) {
                 batchService.batchInsertOrUpdateNormalBatch(batchCode, batchType);
             } else if (optType == OperateTypeEnum.DELETE.getValue()) {
+                // 正常批次删除，导入批次的删除复用此逻辑
                 batchService.deleteNormalBatch(batchCode, batchType);
             }
         } else if (batchType == BatchTypeEnum.Test.getValue()) { //测试批次
@@ -128,6 +135,12 @@ public class BatchSyncReceiver {
                 batchService.batchInsertOrUpdateNormalBatch(batchCode, batchType);
             } else if (optType == OperateTypeEnum.DELETE.getValue()) {
                 batchService.deleteNormalBatch(batchCode, batchType);
+            }
+        } else if (batchType == BatchTypeEnum.IMPORT.getValue()) {
+            // 导入批次
+            if (optType == OperateTypeEnum.IMPORT.getValue()) {
+                // 导入批次新增
+                batchService.batchInsertOrUpdateImportBatch(batchCode, originBatchCode);
             }
         } else { //其它批次
             if (optType == OperateTypeEnum.DELETE.getValue()) {

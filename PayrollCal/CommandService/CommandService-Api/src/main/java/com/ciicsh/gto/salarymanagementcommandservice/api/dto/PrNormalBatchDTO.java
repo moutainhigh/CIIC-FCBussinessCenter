@@ -117,4 +117,15 @@ public class PrNormalBatchDTO{
      * 表示是否为测试批次：1 表示 是； 0 表示 否；
      */
     private Integer isTestBatch;
+
+    /**
+     * 批次类型
+     * 1 正常批次,
+     * 2 调整批次,
+     * 3 回溯批次,
+     * 4 测试批次,
+     * 5 导入批次;
+     */
+    private int batchType;
+
 }
