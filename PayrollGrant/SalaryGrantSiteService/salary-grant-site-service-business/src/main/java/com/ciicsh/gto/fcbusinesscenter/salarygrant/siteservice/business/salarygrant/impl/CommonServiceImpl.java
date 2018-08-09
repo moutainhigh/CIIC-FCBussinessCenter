@@ -32,7 +32,6 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDo
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantEmployeePO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantMainTaskPO;
-import com.ciicsh.gto.logservice.api.LogServiceProxy;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
@@ -50,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -180,12 +180,16 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public List<OfferDocumentFilePO> generateOfferDocumentFile(SalaryGrantEmployeeGroupInfoBO groupInfoBO, OfferDocumentPO offerDocumentPO) {
         List<OfferDocumentFilePO> documentFilePOList = new ArrayList<>();
-        OfferDocumentFilePO documentFilePO;
-
-        BankFileProxyDTO bankFileProxyDTO = new BankFileProxyDTO();
-        //银行代码：建行1，工行2，招商银行3，中国银行4，其他银行5
-        bankFileProxyDTO.setBankCode(groupInfoBO.getBankcardType());
         List<BankFileEmployeeProxyDTO> list = new ArrayList<>();
+        BankFileProxyDTO bankFileProxyDTO = new BankFileProxyDTO();
+        OfferDocumentFilePO documentFilePO;
+        //银行代码：建行1，工行2，招商银行3，中国银行4，其他银行5
+        if (groupInfoBO.getBankcardType().intValue()>4) {
+            bankFileProxyDTO.setBankCode(Integer.valueOf(5));
+        } else {
+            bankFileProxyDTO.setBankCode(groupInfoBO.getBankcardType());
+        }
+
         BankFileEmployeeProxyDTO employeeProxyDTO;
 
         List<SalaryGrantEmployeePO> employeePOList = groupInfoBO.getSalaryGrantEmployeePOList();
@@ -211,8 +215,9 @@ public class CommonServiceImpl implements CommonService {
         }
 
         bankFileProxyDTO.setList(list);
-
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 调用结算中心接口").setContent(JSON.toJSONString(bankFileProxyDTO)));
         JsonResult<BankFileResultProxyDTO> proxyDTOJsonResult = bankFileProxy.getPrivateFile(bankFileProxyDTO);
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 结算中心处理结果").setContent(JSON.toJSONString(proxyDTOJsonResult)));
         if (!ObjectUtils.isEmpty(proxyDTOJsonResult) && "0".equals(proxyDTOJsonResult.getCode())) {
             BankFileResultProxyDTO fileResultProxyDTO = proxyDTOJsonResult.getData();
 
@@ -483,13 +488,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public PrBatchDTO getBatchInfo(String batchCode, int batchType) {
-        try {
-            return batchProxy.getBatchInfo(batchCode, batchType);
-        } catch (Exception e) {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("获取一个批次计算结果").setTitle("获取一个批次计算结果").setContent("调用接口异常"));
-        }
-
-        return null;
+        return batchProxy.getBatchInfo(batchCode, batchType);
     }
 
     @Override

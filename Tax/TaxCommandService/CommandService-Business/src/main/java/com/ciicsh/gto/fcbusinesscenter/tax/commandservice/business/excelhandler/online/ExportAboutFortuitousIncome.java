@@ -5,7 +5,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseServ
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -68,13 +67,11 @@ public class ExportAboutFortuitousIncome extends BaseService {
      * @param employeeInfoBatchPOList
      */
     public void handleFortuitousIncomeWB(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
-        //筛选出偶然所得详细信息
-        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOS = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.FORTUITOUSINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //在相应的单元格进行赋值
         int sheetRowIndex = 1;
-        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOS) {
+        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOList) {
             List<EmployeeInfoBatchPO> employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> po.getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList());
             EmployeeInfoBatchPO employeeInfoBatchPO = new EmployeeInfoBatchPO();
             if (employeeInfoBatchPOS.size() > 0) {

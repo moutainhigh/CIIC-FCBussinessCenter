@@ -140,6 +140,16 @@ public class TaskSubProofPO implements Serializable {
 	@TableField("declare_account_name")
 	private String declareAccountName;
 
+	/**
+	 * 所属税务局
+	 */
+	private String station;
+
+	/**
+	 * 城市代码
+	 */
+	private String cityCode;
+
 	public String getDeclareAccountName() {
 		return declareAccountName;
 	}
@@ -324,6 +334,22 @@ public class TaskSubProofPO implements Serializable {
 		isCombined = combined;
 	}
 
+	public String getStation() {
+		return station;
+	}
+
+	public void setStation(String station) {
+		this.station = station;
+	}
+
+	public String getCityCode() {
+		return cityCode;
+	}
+
+	public void setCityCode(String cityCode) {
+		this.cityCode = cityCode;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskSubProofPO{" +
@@ -343,7 +369,15 @@ public class TaskSubProofPO implements Serializable {
 				", createdBy='" + createdBy + '\'' +
 				", modifiedBy='" + modifiedBy + '\'' +
 				", taskType='" + taskType + '\'' +
-				", isCombined='" + isCombined + '\'' +
+				", isCombined=" + isCombined +
+				", managerNo='" + managerNo + '\'' +
+				", managerName='" + managerName + '\'' +
+				", taskSubDeclareId=" + taskSubDeclareId +
+				", createdByDisplayName='" + createdByDisplayName + '\'' +
+				", modifiedByDisplayName='" + modifiedByDisplayName + '\'' +
+				", declareAccountName='" + declareAccountName + '\'' +
+				", station='" + station + '\'' +
+				", cityCode='" + cityCode + '\'' +
 				'}';
 	}
 }

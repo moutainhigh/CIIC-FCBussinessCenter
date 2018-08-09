@@ -13,7 +13,8 @@ public enum BatchTypeEnum implements ValuedEnum {
     BACK(3, "回溯批次"),
 
     Test(4, "测试批次"),
-    ;
+
+    IMPORT(5, "导入批次");
 
     private int value;
 

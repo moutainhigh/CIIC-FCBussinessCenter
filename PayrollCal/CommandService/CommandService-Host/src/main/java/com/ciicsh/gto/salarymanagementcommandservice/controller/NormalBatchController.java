@@ -8,21 +8,14 @@ import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
 import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.message.ComputeMsg;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.BatchAuditDTO;
+import com.ciicsh.gto.salarymanagementcommandservice.api.dto.*;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.Custom.PrCustomBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.HistoryBatchDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrEmployeeTestDTO;
-import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
@@ -85,6 +78,9 @@ public class NormalBatchController {
     private NormalBatchMongoOpt normalBatchMongoOpt;
 
     @Autowired
+    private TestBatchMongoOpt testBatchMongoOpt;
+
+    @Autowired
     private AdjustBatchMongoOpt adjustBatchMongoOpt;
 
     @Autowired
@@ -130,6 +126,10 @@ public class NormalBatchController {
         prNormalBatchPO.setModifiedBy(UserContext.getUserId());
         Integer isTestBatch = batchDTO.getIsTestBatch(); //表示是否为测试批次：1 表示 是； 0 表示 否；
         prNormalBatchPO.setIsTestBatch(isTestBatch);
+        // 批次类型 1 正常批次, 2 调整批次, 3 回溯批次, 4 测试批次, 5 导入批次;
+        int batchType = batchDTO.getBatchType();
+        // 源批次code
+        String originBatchCode = batchDTO.getCode();
 
         PrPayrollAccountSetPO accountSetPO = accountSetService.getAccountSetInfo(batchDTO.getAccountSetCode());
 
@@ -139,7 +139,11 @@ public class NormalBatchController {
         prNormalBatchPO.setCode(code);
         prNormalBatchPO.setActualPeriod(actualPeriod);
 
-        String[] dates = BatchUtils.getPRDates(batchDTO.getPeriod(), accountSetPO.getStartDay(), accountSetPO.getEndDay(), accountSetPO.getPayrollPeriod());
+        String[] dates = BatchUtils.getPRDates(
+                batchDTO.getPeriod(),
+                accountSetPO.getStartDay(),
+                accountSetPO.getEndDay(),
+                accountSetPO.getPayrollPeriod());
         prNormalBatchPO.setStartDate(dates[0]);
         prNormalBatchPO.setEndDate(dates[1]);
 
@@ -149,22 +153,28 @@ public class NormalBatchController {
             if (result > 0) {
                 //send message to kafka
                 PayrollMsg msg = new PayrollMsg();
+                // 新建批次生成的batchCode
                 msg.setBatchCode(code);
-                if (isTestBatch == 1) {
-                    msg.setBatchType(BatchTypeEnum.Test.getValue());
-                } else {
-                    msg.setBatchType(BatchTypeEnum.NORMAL.getValue());
-                }
-                msg.setOperateType(OperateTypeEnum.ADD.getValue());
+                // 源批次Code, 导入批次时需要; 新建批次时不需要此字段,为默认值
+                msg.setOriginBatchCode(originBatchCode);
+                // 批次类型 1 正常批次, 2 调整批次, 3 回溯批次, 4 测试批次, 5 导入批次;
+                msg.setBatchType(
+                        isTestBatch == 1 ? BatchTypeEnum.Test.getValue()
+                                : (batchType == BatchTypeEnum.IMPORT.getValue() ? BatchTypeEnum.IMPORT.getValue()
+                                        : BatchTypeEnum.NORMAL.getValue()));
+                // 操作类型 1 增加, 2 更新, 3 删除, 4 查询, 5 导入;
+                msg.setOperateType(batchType == OperateTypeEnum.IMPORT.getValue() ? OperateTypeEnum.IMPORT.getValue()
+                        : OperateTypeEnum.ADD.getValue());
+
                 sender.Send(msg);
-                System.out.println("新增薪资帐套：%s" + msg.toString());
+                logger.info("新增/导入薪资帐套：{}", msg.toString());
 
                 return JsonResult.success(result);
             } else {
                 return JsonResult.faultMessage("插入记录重复");
             }
         } catch (Exception e) {
-            return JsonResult.faultMessage("保持失败");
+            return JsonResult.faultMessage("保存失败");
         }
     }
 
@@ -188,6 +198,22 @@ public class NormalBatchController {
 
         PageInfo<PrCustBatchPO> list = batchService.getList(custBatchPO, pageNum, pageSize);
         return JsonResult.success(list);
+
+    }
+
+    /**
+     * 查询所有对比的批次列表
+     * @param prCompareBatchDTO
+     * @return
+     */
+    @PostMapping("/getCompareBatchList")
+    public JsonResult getCompareBatchList(@RequestBody PrCompareBatchDTO prCompareBatchDTO) {
+        String managementIds = CommonHelper.getManagementIDs();
+        prCompareBatchDTO.setManagementId(managementIds);
+
+        PrCompareBatchPO prCompareBatchPO = BathTranslator.toPrCompareBatchPO(prCompareBatchDTO);
+        PageInfo<PrCompareBatchPO> compareBatchList = batchService.selectCompareBatchList(prCompareBatchPO);
+        return JsonResult.success(compareBatchList);
 
     }
 
@@ -265,7 +291,7 @@ public class NormalBatchController {
      * @param batchCode
      * @return
      */
-    @PostMapping("/getEmployees/{batchCode}")
+    @PostMapping("/getEmployees/{batchCode}/{batchType}")
     public JsonResult getFilterEmployees(
             @RequestParam(required = false, defaultValue = "") String empCode,
             @RequestParam(required = false, defaultValue = "") String empName,
@@ -273,7 +299,8 @@ public class NormalBatchController {
             @RequestParam(required = false, defaultValue = "") String customValue,
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "50") Integer pageSize,
-            @PathVariable("batchCode") String batchCode) {
+            @PathVariable("batchCode") String batchCode,
+            @PathVariable("batchType") Integer batchType) {
 
         long start = System.currentTimeMillis(); //begin
 
@@ -298,7 +325,13 @@ public class NormalBatchController {
         Query query = new Query(criteria);
         query.fields().include("batch_code");
 
-        long totalCount = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
+        long totalCount;
+        if (batchType == 4) {
+            //测试批次时
+            totalCount = testBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, TestBatchMongoOpt.PR_TEST_BATCH).stream().count();
+        } else {
+            totalCount = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
+        }
         if (totalCount == 0) {
             return JsonResult.success(0);
         }
@@ -319,7 +352,13 @@ public class NormalBatchController {
         query.skip((pageNum - 1) * pageSize);
         query.limit(pageSize);
 
-        List<DBObject> list = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        List<DBObject> list;
+        if (batchType == 4) {
+            //测试批次时
+            list = testBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, TestBatchMongoOpt.PR_TEST_BATCH);
+        } else {
+            list = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        }
         if (list.size() == 1) { // 如果有一条纪录，但 emp_info 为 "" 时，说明雇员组没有雇员
             DBObject checkEmpInfo = list.get(0);
             DBObject catalog = (DBObject) checkEmpInfo.get("catalog");

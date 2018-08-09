@@ -50,7 +50,7 @@ public class TaskMainProofServiceImpl extends ServiceImpl<TaskMainProofMapper, T
         });
         //判断是否包含起始时间条件
         if (requestForProof.getSubmitTimeStart() != null && !"".equals(requestForProof.getSubmitTimeStart())) {
-            wrapper.and("created_time >= {0}", requestForProof.getSubmitTimeStart() + "00:00:00");
+            wrapper.and("created_time >= {0}", requestForProof.getSubmitTimeStart() + " 00:00:00");
         }
         //判断是否包含结束时间条件
         if (requestForProof.getSubmitTimeEnd() != null && !"".equals(requestForProof.getSubmitTimeEnd())) {

@@ -55,9 +55,6 @@ public class GroupController implements PayrollGroupProxy{
     private PrGroupService prGroupService;
 
     @Autowired
-    private CodeGenerator codeGenerator;
-
-    @Autowired
     private ManagementProxy managementProxy;
 
     @Autowired

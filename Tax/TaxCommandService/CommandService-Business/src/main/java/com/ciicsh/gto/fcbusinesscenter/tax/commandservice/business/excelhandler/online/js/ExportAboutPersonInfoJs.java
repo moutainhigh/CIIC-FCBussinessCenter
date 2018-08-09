@@ -111,7 +111,7 @@ public class ExportAboutPersonInfoJs extends BaseService {
             if (null == cellE) {
                 cellE = row.createCell(4);
             }
-            cellE.setCellValue(employeeInfoBatchPO.getNationality());
+            cellE.setCellValue(EnumUtil.getMessage(EnumUtil.COUNTRY_ONLINE_COMMON, employeeInfoBatchPO.getNationality()));
             //性别-F列
             HSSFCell cellF = row.getCell(5);
             if (null == cellF) {
