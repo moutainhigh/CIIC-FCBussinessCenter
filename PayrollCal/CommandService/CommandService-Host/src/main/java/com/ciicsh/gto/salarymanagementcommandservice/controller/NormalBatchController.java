@@ -8,9 +8,7 @@ import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.entity.CancelClosingMsg;
 import com.ciicsh.gto.fcbusinesscenter.util.common.CommonHelper;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.AdjustBatchMongoOpt;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.BackTraceBatchMongoOpt;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.FCBizTransactionMongoOpt;
+import com.ciicsh.gto.fcbusinesscenter.util.mongo.*;
 import com.ciicsh.gto.salarymanagement.entity.bo.ExcelUploadStatistics;
 import com.ciicsh.gto.salarymanagement.entity.dto.ExcelMapDTO;
 import com.ciicsh.gto.salarymanagement.entity.dto.PrBatchExcelMapDTO;
@@ -22,7 +20,6 @@ import com.ciicsh.gto.salarymanagementcommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrEmployeeTestDTO;
 import com.ciicsh.gto.salarymanagementcommandservice.api.dto.PrNormalBatchDTO;
 import com.ciicsh.gto.fcbusinesscenter.util.constants.PayItemName;
-import com.ciicsh.gto.fcbusinesscenter.util.mongo.NormalBatchMongoOpt;
 import com.ciicsh.gto.salarymanagement.entity.dto.SimpleEmpPayItemDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BatchTypeEnum;
@@ -83,6 +80,9 @@ public class NormalBatchController {
 
     @Autowired
     private NormalBatchMongoOpt normalBatchMongoOpt;
+
+    @Autowired
+    private TestBatchMongoOpt testBatchMongoOpt;
 
     @Autowired
     private AdjustBatchMongoOpt adjustBatchMongoOpt;
@@ -265,7 +265,7 @@ public class NormalBatchController {
      * @param batchCode
      * @return
      */
-    @PostMapping("/getEmployees/{batchCode}")
+    @PostMapping("/getEmployees/{batchCode}/{batchType}")
     public JsonResult getFilterEmployees(
             @RequestParam(required = false, defaultValue = "") String empCode,
             @RequestParam(required = false, defaultValue = "") String empName,
@@ -273,7 +273,8 @@ public class NormalBatchController {
             @RequestParam(required = false, defaultValue = "") String customValue,
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "50") Integer pageSize,
-            @PathVariable("batchCode") String batchCode) {
+            @PathVariable("batchCode") String batchCode,
+            @PathVariable("batchType") Integer batchType) {
 
         long start = System.currentTimeMillis(); //begin
 
@@ -298,7 +299,13 @@ public class NormalBatchController {
         Query query = new Query(criteria);
         query.fields().include("batch_code");
 
-        long totalCount = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
+        long totalCount;
+        if (batchType == 4) {
+            //测试批次时
+            totalCount = testBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, TestBatchMongoOpt.PR_TEST_BATCH).stream().count();
+        } else {
+            totalCount = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH).stream().count();
+        }
         if (totalCount == 0) {
             return JsonResult.success(0);
         }
@@ -319,7 +326,13 @@ public class NormalBatchController {
         query.skip((pageNum - 1) * pageSize);
         query.limit(pageSize);
 
-        List<DBObject> list = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        List<DBObject> list;
+        if (batchType == 4) {
+            //测试批次时
+            list = testBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, TestBatchMongoOpt.PR_TEST_BATCH);
+        } else {
+            list = normalBatchMongoOpt.getMongoTemplate().find(query, DBObject.class, NormalBatchMongoOpt.PR_NORMAL_BATCH);
+        }
         if (list.size() == 1) { // 如果有一条纪录，但 emp_info 为 "" 时，说明雇员组没有雇员
             DBObject checkEmpInfo = list.get(0);
             DBObject catalog = (DBObject) checkEmpInfo.get("catalog");
