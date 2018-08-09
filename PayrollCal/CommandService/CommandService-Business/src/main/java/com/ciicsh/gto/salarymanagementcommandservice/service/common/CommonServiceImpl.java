@@ -298,8 +298,8 @@ public class CommonServiceImpl {
         });
 
         //薪资项扩展字段处理
-        List<BasicDBObject> employeeExtendFieldsList = getTemplateEmployeeExtendFields(batchPO.getPrGroupCode());
-        list.addAll(employeeExtendFieldsList);
+//        List<BasicDBObject> employeeExtendFieldsList = getTemplateEmployeeExtendFields(batchPO.getPrGroupCode());
+//        list.addAll(employeeExtendFieldsList);
 
         return list;
     }
