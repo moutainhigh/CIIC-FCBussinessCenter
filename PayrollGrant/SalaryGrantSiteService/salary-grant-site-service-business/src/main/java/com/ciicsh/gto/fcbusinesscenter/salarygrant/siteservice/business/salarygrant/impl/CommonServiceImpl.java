@@ -440,6 +440,7 @@ public class CommonServiceImpl implements CommonService {
                 employeeInfo.setEmployeeName(employeePO.getEmployeeName());         //雇员名称
                 employeeInfo.setCompanyId(employeePO.getCompanyId());               //公司编号
                 employeeInfo.setCompanyName(employeePO.getCompanyName());           //公司名称
+                employeeInfo.setBankcardId(employeePO.getBankcardId());
                 employeeInfo.setCardNum(employeePO.getCardNum());                   //收款人账号
                 employeeInfo.setAccountName(employeePO.getAccountName());           //收款人姓名
                 employeeInfo.setBankcode(employeePO.getBankCode());                 //收款行行号
