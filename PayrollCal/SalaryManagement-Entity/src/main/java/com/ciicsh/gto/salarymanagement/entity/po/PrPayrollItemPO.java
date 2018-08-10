@@ -20,10 +20,9 @@ import java.util.Date;
 @TableName("pr_payroll_item")
 public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializable{
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 薪资项I
+	private static final long serialVersionUID = 9027912774188282467L;
+	/**
+     * 薪资项Id
      */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
@@ -176,6 +175,10 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 	 */
 	@TableField("full_formula")
 	private String fullFormula;
+
+	// 操作类型 1:添加; 2:更新; 3:删除; 4:查询; 5:导入; 6:复制;
+	@TableField(exist = false)
+	private int operateType;
 
 	public Integer getId() {
 		return id;
@@ -415,6 +418,14 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 
 	public void setCanLock(Boolean canLock) {
 		this.canLock = canLock;
+	}
+
+	public int getOperateType() {
+		return operateType;
+	}
+
+	public void setOperateType(int operateType) {
+		this.operateType = operateType;
 	}
 
 	@Override

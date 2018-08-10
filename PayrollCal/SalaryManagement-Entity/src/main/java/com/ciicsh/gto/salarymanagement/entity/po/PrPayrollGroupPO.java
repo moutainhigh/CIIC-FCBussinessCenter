@@ -20,8 +20,7 @@ import java.util.Date;
 @TableName("pr_payroll_group")
 public class PrPayrollGroupPO extends Model<PrPayrollGroupPO> {
 
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 8044200329507925665L;
     /**
      * 自增id
      */
@@ -107,6 +106,10 @@ public class PrPayrollGroupPO extends Model<PrPayrollGroupPO> {
      */
     @TableField("emp_extend_field_template_name")
     private String empExtendFieldTemplateName;
+
+    // 操作类型 1:添加; 2:更新; 3:删除; 4:查询; 5:导入; 6:复制;
+    @TableField(exist = false)
+    private int operateType;
 
     public Integer getId() {
         return id;
@@ -258,6 +261,14 @@ public class PrPayrollGroupPO extends Model<PrPayrollGroupPO> {
 
     public void setEmpExtendFieldTemplateName(String empExtendFieldTemplateName) {
         this.empExtendFieldTemplateName = empExtendFieldTemplateName;
+    }
+
+    public int getOperateType() {
+        return operateType;
+    }
+
+    public void setOperateType(int operateType) {
+        this.operateType = operateType;
     }
 
     @Override

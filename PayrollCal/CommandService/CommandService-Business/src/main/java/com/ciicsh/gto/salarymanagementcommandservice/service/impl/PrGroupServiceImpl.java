@@ -6,6 +6,7 @@ import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
@@ -102,7 +103,7 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollGroupPO paramItem) {
-        //检查是否有重复薪资组模板名称
+        //检查是否有重复薪资组名称
         if (this.nameExistCheck(paramItem.getGroupName(), paramItem)) {
             throw new BusinessException("重复的薪资组名称");
         }
@@ -131,25 +132,16 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setManagementId(paramItem.getManagementId());
                         item.setDisplayPriority(i.getDisplayPriority());
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
-                        item.setDefaultValue(i.getDataType() == 3 ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.YYYY_MM_DD) : i.getDefaultValue());
+                        item.setDefaultValue(i.getDataType() == DataTypeEnum.DATE.getValue() ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.YYYY_MM_DD) : i.getDefaultValue());
                         return item;
                     })
                     .collect(Collectors.toList());
             itemService.addList(itemList);
             result = prPayrollGroupMapper.insert(paramItem);
+            // 1,新建薪资组,默认审核通过,同步草稿薪资项到审核通过表
             prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
-            // 审批通过，保存历史数据
-            if (ApprovalStatusEnum.APPROVE.getValue() == paramItem.getApprovalStatus()) {
-                // 保存历史数据
-                PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
-                prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
-                prPayrollGroupHistoryPO.setVersion(DEFAULT_VERSION);
-                prPayrollGroupHistoryPO.setPayrollGroupHistory(JSON.toJSONString(itemList));
-                prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
-                prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
-                prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
-
-            }
+            // 2,审批通过,保存历史数据
+            savePrPayrollGroupHistory(paramItem, itemList);
             return result;
         }
 
@@ -248,11 +240,17 @@ public class PrGroupServiceImpl implements PrGroupService {
         itemList.forEach(i -> {
             i.setPayrollGroupCode(newEntity.getGroupCode());
             i.setManagementId(newEntity.getManagementId());
+            i.setOperateType(newEntity.getOperateType());
         });
         int itemAddResult = itemService.addList(itemList);
         if (itemAddResult == 0) {
             throw new BusinessException("复制薪资项失败");
         }
+        // 1,复制薪资组,默认审核通过,同步草稿薪资项到审核通过表
+        prPayrollItemMapper.insertBatchApprovedItemsByGroup(newEntity.getGroupCode(), null);
+        // 2,审批通过,保存历史数据
+        savePrPayrollGroupHistory(newEntity, itemList);
+
         return true;
     }
 
@@ -385,5 +383,25 @@ public class PrGroupServiceImpl implements PrGroupService {
         relationPO.setModifiedBy(UserContext.getUserId());
         return relationPO;
 
+    }
+
+    /**
+     * 薪资组审批通过,保存历史数据
+     * @param prPayrollGroupPO 薪资组详情
+     * @param itemList 薪资项列表
+     */
+    private void savePrPayrollGroupHistory(PrPayrollGroupPO prPayrollGroupPO, List<PrPayrollItemPO> itemList) {
+        // 审批通过，保存历史数据
+        if (ApprovalStatusEnum.APPROVE.getValue() == prPayrollGroupPO.getApprovalStatus()) {
+            // 保存历史数据
+            PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
+            prPayrollGroupHistoryPO.setPayrollGroupCode(prPayrollGroupPO.getGroupCode());
+            prPayrollGroupHistoryPO.setVersion(DEFAULT_VERSION);
+            prPayrollGroupHistoryPO.setPayrollGroupHistory(JSON.toJSONString(itemList));
+            prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
+            prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
+            prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
+
+        }
     }
 }
