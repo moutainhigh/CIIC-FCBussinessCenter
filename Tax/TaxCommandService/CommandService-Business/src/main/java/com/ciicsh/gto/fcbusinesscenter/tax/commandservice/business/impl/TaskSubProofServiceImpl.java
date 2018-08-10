@@ -647,18 +647,21 @@ public class TaskSubProofServiceImpl extends ServiceImpl<TaskSubProofMapper, Tas
                     //批量新增明细
                     taskSubProofDetailService.insertBatch(taskSubProofDetailPOs);
 
-                    int headcount = taskSubProofDetailPOs.size();
-                    taskSubProofPO.setHeadcount(headcount);
-                    Long chineseNum = taskSubProofDetailPOs.stream().filter(x -> "1".equals(x.getIdType())).collect(Collectors.counting());
-                    if (chineseNum != null) {
-
-                        taskSubProofPO.setChineseNum(chineseNum.intValue());
-                        taskSubProofPO.setForeignerNum(headcount - chineseNum.intValue());
-                    } else {
-
-                        taskSubProofPO.setChineseNum(0);
-                        taskSubProofPO.setForeignerNum(headcount);
-                    }
+//                    int headcount = taskSubProofDetailPOs.size();
+//                    taskSubProofPO.setHeadcount(headcount);
+//                    Long chineseNum = taskSubProofDetailPOs.stream().filter(x -> "1".equals(x.getIdType())).collect(Collectors.counting());
+//                    if (chineseNum != null) {
+//
+//                        taskSubProofPO.setChineseNum(chineseNum.intValue());
+//                        taskSubProofPO.setForeignerNum(headcount - chineseNum.intValue());
+//                    } else {
+//
+//                        taskSubProofPO.setChineseNum(0);
+//                        taskSubProofPO.setForeignerNum(headcount);
+//                    }
+                    taskSubProofPO.setHeadcount(taskSubDeclarePO.getHeadcount());
+                    taskSubProofPO.setChineseNum(taskSubDeclarePO.getChineseNum());
+                    taskSubProofPO.setForeignerNum(taskSubDeclarePO.getForeignerNum());
 
                     //更新完税凭证子任务：总人数、中方人数、外放人数
                     this.baseMapper.updateById(taskSubProofPO);

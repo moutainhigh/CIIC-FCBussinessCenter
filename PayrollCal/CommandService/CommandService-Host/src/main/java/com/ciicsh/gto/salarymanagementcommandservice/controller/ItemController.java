@@ -1,10 +1,7 @@
 package com.ciicsh.gto.salarymanagementcommandservice.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
-import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.EmpExtendFieldTemplateProxy;
-import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DecimalProcessTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DefaultValueStyleEnum;
@@ -20,12 +17,8 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,9 +31,6 @@ public class ItemController extends BaseController {
 
     @Autowired
     private PrItemService itemService;
-
-    @Autowired
-    private EmpExtendFieldTemplateProxy empExtendFieldTemplateProxy;
 
     private static final int GROUP_TEMPLATE = 0;
     private static final int GROUP = 1;
@@ -56,7 +46,6 @@ public class ItemController extends BaseController {
      */
     @GetMapping(value = "/getPrItemPage")
     public JsonResult getPrItemList(@RequestParam String groupCode,
-                                    @RequestParam(required = false, defaultValue = "0") Long templateId,
                                     @RequestParam Integer parentType,
                                     @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                     @RequestParam(required = false, defaultValue = "50") Integer pageSize) {
@@ -75,69 +64,9 @@ public class ItemController extends BaseController {
                 .map(ItemTranslator::toPrPayrollItemDTO)
                 .collect(Collectors.toList());
 
-        // 获取雇员扩展模板中扩展项List
-        if(templateId > 0) {
-            List<PrPayrollItemDTO> extendItemDTOList = getExtendItems(templateId);
-            // 将扩展项List添加到返回结果中
-            if (!CollectionUtils.isEmpty(resultList)) {
-                resultList.addAll(extendItemDTOList);
-            }
-        }
-
         PageInfo<PrPayrollItemDTO> resultPage = new PageInfo<>(resultList);
         BeanUtils.copyProperties(pageInfo, resultPage, "list");
         return JsonResult.success(resultPage);
-    }
-
-    /**
-     * 根据模板ID获取扩展薪资项
-     *
-     * @param templateId
-     * @return
-     */
-    private List<PrPayrollItemDTO> getExtendItems(Long templateId) {
-        List<PrPayrollItemDTO> extendItemDTOList = new ArrayList<>();
-
-        com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult;
-        try {
-            listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(templateId);
-
-            if (!ObjectUtils.isEmpty(listJsonResult)) {
-                List<EmployeeExtendFieldDTO> extendFieldDTOList = listJsonResult.getData();
-                if (!CollectionUtils.isEmpty(extendFieldDTOList)) {
-                    extendItemDTOList.addAll(employeeExtendFieldList2PrPayrollItemList(extendFieldDTOList));
-                }
-            }
-
-            return extendItemDTOList;
-        } catch (Exception e) {
-            return extendItemDTOList;
-        }
-    }
-
-    /**
-     * 雇员扩展模板字段List转换为薪资项明细字段List
-     *
-     * @param extendFieldDTOList
-     * @return
-     */
-    private List<PrPayrollItemDTO> employeeExtendFieldList2PrPayrollItemList(List<EmployeeExtendFieldDTO> extendFieldDTOList) {
-        List<PrPayrollItemDTO> payrollItemDTOList = new ArrayList<>();
-
-        if (CollectionUtils.isEmpty(extendFieldDTOList)) {
-            return payrollItemDTOList;
-        }
-
-        extendFieldDTOList.forEach(employeeExtendFieldDTO -> {
-            PrPayrollItemDTO prPayrollItemDTO = new PrPayrollItemDTO();
-            prPayrollItemDTO.setItemType(1); //薪资项类型：1 - 固定输入项
-            prPayrollItemDTO.setItemName(employeeExtendFieldDTO.getFieldName()); //薪资项名称
-            prPayrollItemDTO.setExtendFlag(1); //扩展标识：1-扩展字段；0-非扩展字段
-
-            payrollItemDTOList.add(prPayrollItemDTO);
-        });
-
-        return payrollItemDTOList;
     }
 
     /**

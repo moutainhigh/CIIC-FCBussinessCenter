@@ -180,9 +180,15 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 	@TableField(exist = false)
 	private int operateType;
 
-	public Integer getId() {
-		return id;
-	}
+    /**
+     * 扩展标识：1-扩展字段；0-非扩展字段
+     */
+    @TableField("extend_flag")
+    private Integer extendFlag;
+
+    public Integer getId() {
+        return id;
+    }
 
 	public void setId(Integer id) {
 		this.id = id;
@@ -420,6 +426,18 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 		this.canLock = canLock;
 	}
 
+    public Integer getExtendFlag() {
+        return extendFlag;
+    }
+
+    public void setExtendFlag(Integer extendFlag) {
+        this.extendFlag = extendFlag;
+    }
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 	public int getOperateType() {
 		return operateType;
 	}
@@ -428,10 +446,6 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 		this.operateType = operateType;
 	}
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
 
 	@Override
 	public String toString() {

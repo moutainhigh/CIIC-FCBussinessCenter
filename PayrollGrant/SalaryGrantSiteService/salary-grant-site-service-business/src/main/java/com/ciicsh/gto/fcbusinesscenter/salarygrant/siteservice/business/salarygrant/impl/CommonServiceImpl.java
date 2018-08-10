@@ -197,44 +197,43 @@ public class CommonServiceImpl implements CommonService {
         if (!CollectionUtils.isEmpty(employeePOList)) {
             for (SalaryGrantEmployeePO employeePO : employeePOList) {
                 employeeProxyDTO = new BankFileEmployeeProxyDTO();
-
-                employeeProxyDTO.setEmployeeBankAccountName(employeePO.getEmployeeName());                       //雇员姓名
-                employeeProxyDTO.setEmployeeBankAccount(employeePO.getCardNum());                                //雇员银行账号
-                employeeProxyDTO.setEmployeeBankName(employeePO.getDepositBank());                               //银行名
-                employeeProxyDTO.setEmployeeCityName(getCityName(employeePO.getBankcardCityCode()));             //城市名
-                employeeProxyDTO.setPayAmount(employeePO.getPaymentAmount());                                    //付款金额
-                employeeProxyDTO.setEmployeeProvinceName(getProvinceName(employeePO.getBankcardProvinceCode())); //省名称
-                employeeProxyDTO.setEmployeeAreaCode(employeePO.getBankcardProvinceCode());                      //省代码
-                employeeProxyDTO.setRemark("薪资发放");                                                           //薪资发放
-                employeeProxyDTO.setPaymentBankAccountName(employeePO.getPaymentAccountName());                  //付款账户名
-                employeeProxyDTO.setPaymentBankAccount(employeePO.getPaymentAccountCode());                      //付款账号
-                employeeProxyDTO.setPaymentBankName(employeePO.getPaymentAccountBankName());                     //付款银行名
+                employeeProxyDTO.setEmployeeBankAccountName(employeePO.getEmployeeName());
+                //雇员银行账号
+                employeeProxyDTO.setEmployeeBankAccount(employeePO.getCardNum());
+                //银行名称
+                employeeProxyDTO.setEmployeeBankName(employeePO.getDepositBank());
+                employeeProxyDTO.setEmployeeCityName(getCityName(employeePO.getBankcardCityCode()));
+                //付款金额
+                employeeProxyDTO.setPayAmount(employeePO.getPaymentAmount());
+                employeeProxyDTO.setEmployeeProvinceName(getProvinceName(employeePO.getBankcardProvinceCode()));
+                employeeProxyDTO.setEmployeeAreaCode(employeePO.getBankcardProvinceCode());
+                employeeProxyDTO.setRemark("薪资发放");
+                employeeProxyDTO.setPaymentBankAccountName(employeePO.getPaymentAccountName());
+                employeeProxyDTO.setPaymentBankAccount(employeePO.getPaymentAccountCode());
+                employeeProxyDTO.setPaymentBankName(employeePO.getPaymentAccountBankName());
 
                 list.add(employeeProxyDTO);
             }
         }
-
         bankFileProxyDTO.setList(list);
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 调用结算中心接口").setContent(JSON.toJSONString(bankFileProxyDTO)));
         JsonResult<BankFileResultProxyDTO> proxyDTOJsonResult = bankFileProxy.getPrivateFile(bankFileProxyDTO);
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 结算中心处理结果").setContent(JSON.toJSONString(proxyDTOJsonResult)));
         if (!ObjectUtils.isEmpty(proxyDTOJsonResult) && "0".equals(proxyDTOJsonResult.getCode())) {
             BankFileResultProxyDTO fileResultProxyDTO = proxyDTOJsonResult.getData();
-
             if (!ObjectUtils.isEmpty(fileResultProxyDTO)) {
                 List<BankFileResultFileProxyDTO> resultFileProxyDTOList = fileResultProxyDTO.getList();
                 if (!CollectionUtils.isEmpty(resultFileProxyDTOList)) {
                     for (BankFileResultFileProxyDTO fileProxyDTO : resultFileProxyDTOList) {
                         documentFilePO = new OfferDocumentFilePO();
-                        documentFilePO.setOfferDocumentId(offerDocumentPO.getOfferDocumentId()); //报盘信息ID
-                        documentFilePO.setFileName(fileProxyDTO.getFileName());                  //报盘文件名称
-                        documentFilePO.setFilePath(fileProxyDTO.getFilePath());                  //报盘文件地址
-                        documentFilePO.setPaymentTotalSum(fileProxyDTO.getAmount());             //薪资发放总金额（RMB）
-                        documentFilePO.setTotalPersonCount(fileProxyDTO.getCount());             //发薪人数
+                        documentFilePO.setOfferDocumentId(offerDocumentPO.getOfferDocumentId());
+                        documentFilePO.setFileName(fileProxyDTO.getFileName());
+                        documentFilePO.setFilePath(fileProxyDTO.getFilePath());
+                        documentFilePO.setPaymentTotalSum(fileProxyDTO.getAmount());
+                        documentFilePO.setTotalPersonCount(fileProxyDTO.getCount());
                         documentFilePO.setActive(true);
                         documentFilePO.setCreatedBy(offerDocumentPO.getCreatedBy());
-                        documentFilePO.setCreatedTime(new Date());
-
+                        documentFilePO.setModifiedBy(offerDocumentPO.getCreatedBy());
                         documentFilePOList.add(documentFilePO);
                     }
                 }
@@ -242,7 +241,6 @@ public class CommonServiceImpl implements CommonService {
         } else {
             logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("调用结算中心接口生成报盘文件").setContent("调用接口返回错误"));
         }
-
         return documentFilePOList;
     }
 
@@ -445,6 +443,7 @@ public class CommonServiceImpl implements CommonService {
                 employeeInfo.setEmployeeName(employeePO.getEmployeeName());         //雇员名称
                 employeeInfo.setCompanyId(employeePO.getCompanyId());               //公司编号
                 employeeInfo.setCompanyName(employeePO.getCompanyName());           //公司名称
+                employeeInfo.setBankcardId(employeePO.getBankcardId());
                 employeeInfo.setCardNum(employeePO.getCardNum());                   //收款人账号
                 employeeInfo.setAccountName(employeePO.getAccountName());           //收款人姓名
                 employeeInfo.setBankcode(employeePO.getBankCode());                 //收款行行号

@@ -5,7 +5,6 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.impl.BaseServ
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.EmployeeInfoBatchPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.TaskSubDeclareDetailPO;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
-import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.StockIncomeType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.StrKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -68,13 +67,11 @@ public class ExportAboutRestrictiveStockSz extends BaseService {
      * @param employeeInfoBatchPOList
      */
     public void handleRestrictiveStockWB(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
-        //根据股权收入类型,筛选出股票期权的股权收入
-        List<EmployeeInfoBatchPO> employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.RESTRICTIVESTOCK.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //在相应的单元格进行赋值
         int sheetRowIndex = 1;
-        for (EmployeeInfoBatchPO employeeInfoBatchPO : employeeInfoBatchPOS) {
+        for (EmployeeInfoBatchPO employeeInfoBatchPO : employeeInfoBatchPOList) {
             List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOListS = taskSubDeclareDetailPOList.stream().filter(item -> employeeInfoBatchPO.getCalBatchDetailId().equals(item.getCalculationBatchDetailId())).collect(Collectors.toList());
             TaskSubDeclareDetailPO po = new TaskSubDeclareDetailPO();
             if (taskSubDeclareDetailPOListS.size() > 0) {

@@ -82,7 +82,7 @@ public class OfferFileController {
     @RequestMapping("/offerFile/generateOfferDocument/{taskCode}")
     public Result<List<OfferDocumentDTO>> generateOfferDocument(@PathVariable String taskCode) {
         try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 开始").setContent("taskCode: " + taskCode));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("生成薪资发放报盘文件 -> 开始").setContent("taskCode： " + taskCode));
             List<OfferDocumentBO> documentBOList = offerDocumentTaskService.generateOfferDocument(taskCode, UserContext.getUserId());
             // BO List 转换为 DTO List
             String boJSONStr = JSONObject.toJSONString(documentBOList);
@@ -102,7 +102,7 @@ public class OfferFileController {
     @RequestMapping("/offerFile/download/{offerDocumentFileId}")
     public void download(HttpServletResponse response, @PathVariable Long offerDocumentFileId){
         try {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("offerDocumentFileId: " + offerDocumentFileId));
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件").setContent("offerDocumentFileId：" + offerDocumentFileId));
             OfferDocumentFilePO documentFilePO = offerDocumentFileService.selectById(offerDocumentFileId);
             //获取文件
             URL url = new URL(documentFilePO.getFilePath());
@@ -126,7 +126,7 @@ public class OfferFileController {
             outputStream.close();
             inputStream.close();
         } catch (Exception e) {
-            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件异常").setContent(e.getMessage()));
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("报盘文件").setTitle("下载薪资发放报盘文件异常").setContent(e.getMessage()));
         }
     }
 }

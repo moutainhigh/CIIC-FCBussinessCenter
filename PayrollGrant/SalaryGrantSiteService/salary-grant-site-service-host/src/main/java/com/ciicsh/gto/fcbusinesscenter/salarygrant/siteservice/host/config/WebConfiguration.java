@@ -36,6 +36,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         // 排除配置
         addInterceptor.excludePathPatterns("/api/sg/exportEmpInfo**");
         addInterceptor.excludePathPatterns("/api/sg/exportFailList**");
+        addInterceptor.excludePathPatterns("/offerFile/download/**");
         addInterceptor.excludePathPatterns("/admin/**");
         addInterceptor.excludePathPatterns("/error/**");
     }
