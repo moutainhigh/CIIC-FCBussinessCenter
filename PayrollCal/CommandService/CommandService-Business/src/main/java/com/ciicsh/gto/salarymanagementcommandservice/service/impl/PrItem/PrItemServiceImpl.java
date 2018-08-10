@@ -5,6 +5,7 @@ import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.ItemTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagement.entity.po.custom.PrItemInAccountSetPO;
 import com.ciicsh.gto.salarymanagement.entity.utils.EnumHelpUtil;
@@ -304,17 +305,23 @@ public class PrItemServiceImpl implements PrItemService {
         return prPayrollItemMapper.selectItemNames(batchCode);
     }
 
+    /**
+     * 将所在薪资组/模板的审核状态更新为草稿
+     * @param param 需更新的内容
+     */
     private void updateRelatedGroupStatus(PrPayrollItemPO param) {
-        // 将所在薪资组/模板的审核状态更新为草稿
         if (!StringUtils.isEmpty(param.getPayrollGroupTemplateCode())
                 && StringUtils.isEmpty(param.getPayrollGroupCode())) {
+            // 将薪资组模板的审核状态更新为草稿
             PrPayrollGroupTemplatePO groupTemplatePO = new PrPayrollGroupTemplatePO();
             groupTemplatePO.setGroupTemplateCode(param.getPayrollGroupTemplateCode());
             groupTemplatePO.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
             groupTemplatePO.setModifiedTime(new Date());
             groupTemplatePO.setModifiedBy(UserContext.getUserId());
             prPayrollGroupTemplateMapper.updateItemByCode(groupTemplatePO);
-        } else {
+        } else if (!StringUtils.isEmpty(param.getPayrollGroupCode()) &&
+                param.getOperateType() != OperateTypeEnum.COPY.getValue()){
+            // 将薪资组的审核状态更新为草稿,薪资组为复制的除外
             PrPayrollGroupPO groupPO = new PrPayrollGroupPO();
             groupPO.setGroupCode(param.getPayrollGroupCode());
             groupPO.setApprovalStatus(ApprovalStatusEnum.DRAFT.getValue());
