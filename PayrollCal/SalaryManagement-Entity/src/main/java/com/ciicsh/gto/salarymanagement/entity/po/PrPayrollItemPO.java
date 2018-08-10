@@ -474,9 +474,10 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
 			", modifiedBy=" + modifiedBy +
-                ", itemValue=" + this.itemValue +
-                ", originCondition=" + originCondition +
-				", fullFormula=" + fullFormula +
+            ", itemValue=" + itemValue +
+            ", originCondition=" + originCondition +
+            ", fullFormula=" + fullFormula +
+            ", extendFlag=" + extendFlag +
 			"}";
 	}
 
