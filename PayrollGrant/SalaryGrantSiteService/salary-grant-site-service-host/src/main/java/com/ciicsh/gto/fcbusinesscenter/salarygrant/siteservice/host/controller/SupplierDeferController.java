@@ -37,40 +37,12 @@ import java.util.List;
  */
 @RestController
 public class SupplierDeferController {
-
+    @Autowired
+    LogClientService logClientService;
     @Autowired
     private SalaryGrantSupplierSubTaskService supplierSubTaskService;
     @Autowired
     private SalaryGrantTaskQueryService salaryGrantTaskQueryService;
-    @Autowired
-    LogClientService logClientService;
-
-    /**
-     * 查询供应商任务单列表
-     * 待提交：0-草稿 角色=操作员
-     *
-     * @param salaryGrantTaskDTO
-     * @return Page<SalaryGrantTaskDTO>
-     */
-    @RequestMapping("/supplierDefer/submit")
-    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForSubmitPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 待提交").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
-
-        Page<SalaryGrantTaskBO> page = new Page<>();
-        page.setCurrent(salaryGrantTaskDTO.getCurrent());
-        page.setSize(salaryGrantTaskDTO.getSize());
-        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        //设置管理方信息
-        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
-        page = supplierSubTaskService.querySupplierSubTaskForSubmitPage(page, salaryGrantTaskBO);
-
-        // BO PAGE 转换为 DTO PAGE
-        String boJSONStr = JSONObject.toJSONString(page);
-        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
-
-        return taskDTOPage;
-    }
 
     /**
      * 比较雇员最新信息之后
@@ -81,23 +53,50 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/submitUpdateEmployee")
-    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForSubmitPageUpdateEmployee(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 待提交").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+    public Result<Page<SalaryGrantTaskDTO>> querySupplierSubTaskForSubmitPageUpdateEmployee(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("同步待提交雇员信息").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+            Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(salaryGrantTaskDTO.getCurrent(), salaryGrantTaskDTO.getSize());
+            SalaryGrantTaskBO salaryGrantTaskBO = CommonTransform.convertToEntity(salaryGrantTaskDTO, SalaryGrantTaskBO.class);
+            //设置管理方信息
+            salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+            page = supplierSubTaskService.querySupplierSubTaskForSubmitPageUpdateEmployee(page, salaryGrantTaskBO);
 
-        Page<SalaryGrantTaskBO> page = new Page<>();
-        page.setCurrent(salaryGrantTaskDTO.getCurrent());
-        page.setSize(salaryGrantTaskDTO.getSize());
-        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        //设置管理方信息
-        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
-        page = supplierSubTaskService.querySupplierSubTaskForSubmitPageUpdateEmployee(page, salaryGrantTaskBO);
+            // BO PAGE 转换为 DTO PAGE
+            String boJSONStr = JSONObject.toJSONString(page);
+            Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+            return ResultGenerator.genSuccessResult(taskDTOPage);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("同步待提交雇员信息异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
+        }
+    }
 
-        // BO PAGE 转换为 DTO PAGE
-        String boJSONStr = JSONObject.toJSONString(page);
-        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+    /**
+     * 查询供应商任务单列表
+     * 待提交：0-草稿 角色=操作员
+     *
+     * @param salaryGrantTaskDTO
+     * @return Page<SalaryGrantTaskDTO>
+     */
+    @RequestMapping("/supplierDefer/submit")
+    public Result<Page<SalaryGrantTaskDTO>> querySupplierSubTaskForSubmitPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表 -> 待提交").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+            Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(salaryGrantTaskDTO.getCurrent(), salaryGrantTaskDTO.getSize());
+            SalaryGrantTaskBO salaryGrantTaskBO = CommonTransform.convertToEntity(salaryGrantTaskDTO, SalaryGrantTaskBO.class);
+            //设置管理方信息
+            salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+            page = supplierSubTaskService.querySupplierSubTaskForSubmitPage(page, salaryGrantTaskBO);
 
-        return taskDTOPage;
+            // BO PAGE 转换为 DTO PAGE
+            String boJSONStr = JSONObject.toJSONString(page);
+            Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+            return ResultGenerator.genSuccessResult(taskDTOPage);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表异常 -> 待提交").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
+        }
     }
 
     /**
@@ -108,23 +107,23 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/approve")
-    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForApprovePage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 待审批").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+    public Result<Page<SalaryGrantTaskDTO>> querySupplierSubTaskForApprovePage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表 -> 待审批").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+            Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(salaryGrantTaskDTO.getCurrent(), salaryGrantTaskDTO.getSize());
+            SalaryGrantTaskBO salaryGrantTaskBO = CommonTransform.convertToEntity(salaryGrantTaskDTO, SalaryGrantTaskBO.class);
+            //设置管理方信息
+            salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+            page = supplierSubTaskService.querySupplierSubTaskForApprovePage(page, salaryGrantTaskBO);
 
-        Page<SalaryGrantTaskBO> page = new Page<>();
-        page.setCurrent(salaryGrantTaskDTO.getCurrent());
-        page.setSize(salaryGrantTaskDTO.getSize());
-        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        //设置管理方信息
-        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
-        page = supplierSubTaskService.querySupplierSubTaskForApprovePage(page, salaryGrantTaskBO);
-
-        // BO PAGE 转换为 DTO PAGE
-        String boJSONStr = JSONObject.toJSONString(page);
-        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
-
-        return taskDTOPage;
+            // BO PAGE 转换为 DTO PAGE
+            String boJSONStr = JSONObject.toJSONString(page);
+            Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+            return ResultGenerator.genSuccessResult(taskDTOPage);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表异常 -> 待审批").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
+        }
     }
 
     /**
@@ -135,23 +134,23 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/haveApproved")
-    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForHaveApprovedPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 已处理:审批中").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+    public Result<Page<SalaryGrantTaskDTO>> querySupplierSubTaskForHaveApprovedPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表 -> 审批中").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+            Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(salaryGrantTaskDTO.getCurrent(), salaryGrantTaskDTO.getSize());
+            SalaryGrantTaskBO salaryGrantTaskBO = CommonTransform.convertToEntity(salaryGrantTaskDTO, SalaryGrantTaskBO.class);
+            //设置管理方信息
+            salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+            page = supplierSubTaskService.querySupplierSubTaskForHaveApprovedPage(page, salaryGrantTaskBO);
 
-        Page<SalaryGrantTaskBO> page = new Page<>();
-        page.setCurrent(salaryGrantTaskDTO.getCurrent());
-        page.setSize(salaryGrantTaskDTO.getSize());
-        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        //设置管理方信息
-        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
-        page = supplierSubTaskService.querySupplierSubTaskForHaveApprovedPage(page, salaryGrantTaskBO);
-
-        // BO PAGE 转换为 DTO PAGE
-        String boJSONStr = JSONObject.toJSONString(page);
-        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
-
-        return taskDTOPage;
+            // BO PAGE 转换为 DTO PAGE
+            String boJSONStr = JSONObject.toJSONString(page);
+            Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+            return ResultGenerator.genSuccessResult(taskDTOPage);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表异常 -> 审批中").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
+        }
     }
 
     /**
@@ -162,23 +161,23 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/pass")
-    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForPassPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 已处理:审批通过").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+    public Result<Page<SalaryGrantTaskDTO>> querySupplierSubTaskForPassPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表 -> 审批通过").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+            Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(salaryGrantTaskDTO.getCurrent(), salaryGrantTaskDTO.getSize());
+            SalaryGrantTaskBO salaryGrantTaskBO = CommonTransform.convertToEntity(salaryGrantTaskDTO, SalaryGrantTaskBO.class);
+            //设置管理方信息
+            salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+            page = supplierSubTaskService.querySupplierSubTaskForPassPage(page, salaryGrantTaskBO);
 
-        Page<SalaryGrantTaskBO> page = new Page<>();
-        page.setCurrent(salaryGrantTaskDTO.getCurrent());
-        page.setSize(salaryGrantTaskDTO.getSize());
-        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        //设置管理方信息
-        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
-        page = supplierSubTaskService.querySupplierSubTaskForPassPage(page, salaryGrantTaskBO);
-
-        // BO PAGE 转换为 DTO PAGE
-        String boJSONStr = JSONObject.toJSONString(page);
-        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
-
-        return taskDTOPage;
+            // BO PAGE 转换为 DTO PAGE
+            String boJSONStr = JSONObject.toJSONString(page);
+            Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+            return ResultGenerator.genSuccessResult(taskDTOPage);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表异常 -> 审批通过").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
+        }
     }
 
     /**
@@ -189,23 +188,23 @@ public class SupplierDeferController {
      * @return Page<SalaryGrantTaskDTO>
      */
     @RequestMapping("/supplierDefer/reject")
-    public Page<SalaryGrantTaskDTO> querySupplierSubTaskForRejectPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
-        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询供应商任务单列表 已处理:审批拒绝").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+    public Result<Page<SalaryGrantTaskDTO>> querySupplierSubTaskForRejectPage(@RequestBody SalaryGrantTaskDTO salaryGrantTaskDTO) {
+        try {
+            logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表 -> 审批拒绝").setContent(JSON.toJSONString(salaryGrantTaskDTO)));
+            Page<SalaryGrantTaskBO> page = new Page<SalaryGrantTaskBO>(salaryGrantTaskDTO.getCurrent(), salaryGrantTaskDTO.getSize());
+            SalaryGrantTaskBO salaryGrantTaskBO = CommonTransform.convertToEntity(salaryGrantTaskDTO, SalaryGrantTaskBO.class);
+            //设置管理方信息
+            salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
+            page = supplierSubTaskService.querySupplierSubTaskForRejectPage(page, salaryGrantTaskBO);
 
-        Page<SalaryGrantTaskBO> page = new Page<>();
-        page.setCurrent(salaryGrantTaskDTO.getCurrent());
-        page.setSize(salaryGrantTaskDTO.getSize());
-        SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        BeanUtils.copyProperties(salaryGrantTaskDTO, salaryGrantTaskBO);
-        //设置管理方信息
-        salaryGrantTaskBO.setManagementIds(CommonHelper.getManagementIDs());
-        page = supplierSubTaskService.querySupplierSubTaskForRejectPage(page, salaryGrantTaskBO);
-
-        // BO PAGE 转换为 DTO PAGE
-        String boJSONStr = JSONObject.toJSONString(page);
-        Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
-
-        return taskDTOPage;
+            // BO PAGE 转换为 DTO PAGE
+            String boJSONStr = JSONObject.toJSONString(page);
+            Page<SalaryGrantTaskDTO> taskDTOPage = JSONObject.parseObject(boJSONStr, Page.class);
+            return ResultGenerator.genSuccessResult(taskDTOPage);
+        } catch (Exception e) {
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("供应商暂缓处理").setTitle("查询任务单列表异常 -> 审批拒绝").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("系统异常！");
+        }
     }
 
     /**

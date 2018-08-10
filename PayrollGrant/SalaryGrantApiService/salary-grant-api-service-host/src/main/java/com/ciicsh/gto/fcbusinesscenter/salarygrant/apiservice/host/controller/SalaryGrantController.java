@@ -6,12 +6,15 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.core.ResultGen
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygrant.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantTaskProcessService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.transform.CommonTransform;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +36,8 @@ public class SalaryGrantController implements SalaryGrantProxy {
     LogClientService logClientService;
     @Autowired
     private SalaryGrantService salaryGrantService;
+    @Autowired
+    SalaryGrantTaskProcessService salaryGrantTaskProcessService;
 
     /**
      * 根据批次号查相关任务单
@@ -103,19 +108,58 @@ public class SalaryGrantController implements SalaryGrantProxy {
      * @author gaoyang
      * @date 2018-05-22
      * @param dto
-     * @return Result<Boolean>
+     * @return Result<ResponseRefundDTO>
      */
     @Override
     public Result<ResponseRefundDTO> toCreateRefundTask(@RequestBody SalaryGrantRefundDTO dto) {
         logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退票发放").setContent(JSON.toJSONString(dto)));
         try{
-            String batchCode = dto.getBatchCode();
-            List<SalaryGrantEmployeeRefundBO> employeeRefundList =  CommonTransform.convertToDTOs(dto.getEmployeeList(), SalaryGrantEmployeeRefundBO.class);
-            ResponseRefundBO responseRefundBO = salaryGrantService.toCreateRefundTask(employeeRefundList, batchCode);
-            ResponseRefundDTO responseDto = CommonTransform.convertToDTO(responseRefundBO, ResponseRefundDTO.class);
-            return ResultGenerator.genSuccessResult(responseDto);
+            if(StringUtils.isEmpty(dto.getBatchCode())){
+                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退票发放").setContent("传入参数计算批次号为空，生成薪资发放任务单失败！"));
+                ResponseRefundDTO responseDto = new ResponseRefundDTO();
+                responseDto.setProcessResult(false);
+                responseDto.setProcessMessage("传入参数计算批次号为空，生成薪资发放任务单失败！");
+                return ResultGenerator.genSuccessResult(responseDto);
+            }else{
+                String batchCode = dto.getBatchCode();
+                List<SalaryGrantEmployeeRefundBO> employeeRefundList =  CommonTransform.convertToDTOs(dto.getEmployeeList(), SalaryGrantEmployeeRefundBO.class);
+                ResponseRefundBO responseRefundBO = salaryGrantTaskProcessService.createRefundTask(employeeRefundList, batchCode);
+                ResponseRefundDTO responseDto = CommonTransform.convertToDTO(responseRefundBO, ResponseRefundDTO.class);
+                return ResultGenerator.genSuccessResult(responseDto);
+            }
         } catch (Exception e){
             logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("退票发放异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("处理失败");
+        }
+    }
+
+    /**
+     *  根据暂缓雇员信息创建薪资发放任务单
+     * @author gaoyang
+     * @date 2018-08-07
+     * @param dto
+     * @return Result<ResponseReprieveDTO>
+     */
+    @Override
+    public Result<ResponseReprieveDTO> toCreateReprieveTask(@RequestBody SalaryGrantReprieveDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓发放").setContent(JSON.toJSONString(dto)));
+        try{
+            if(StringUtils.isEmpty(dto.getBatchCode()) || StringUtils.isEmpty(dto.getTaskCode())){
+                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓发放").setContent("传入参数计算批次号或任务单编号为空，生成薪资发放任务单失败！"));
+                ResponseReprieveDTO responseDto = new ResponseReprieveDTO();
+                responseDto.setProcessResult(false);
+                responseDto.setProcessMessage("传入参数计算批次号或任务单编号为空，生成薪资发放任务单失败！");
+                return ResultGenerator.genSuccessResult(responseDto);
+            }else{
+                String batchCode = dto.getBatchCode();
+                String taskCode = dto.getTaskCode();
+                List<SalaryGrantEmployeeReprieveBO> employeeReprieveList =  CommonTransform.convertToDTOs(dto.getEmployeeList(), SalaryGrantEmployeeReprieveBO.class);
+                ResponseReprieveBO responseReprieveBO = salaryGrantTaskProcessService.createReprieveTask(employeeReprieveList, batchCode, taskCode);
+                ResponseReprieveDTO responseDto = CommonTransform.convertToDTO(responseReprieveBO, ResponseReprieveDTO.class);
+                return ResultGenerator.genSuccessResult(responseDto);
+            }
+        } catch (Exception e){
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓发放异常").setContent(e.getMessage()));
             return ResultGenerator.genServerFailResult("处理失败");
         }
     }
@@ -128,7 +172,7 @@ public class SalaryGrantController implements SalaryGrantProxy {
      * @return Result<Boolean>
      */
     @Override
-    public Result<Boolean> toRejectTask(SalaryGrantTaskDTO dto) {
+    public Result<Boolean> toRejectTask(@RequestBody SalaryGrantTaskDTO dto) {
         return null;
     }
 

@@ -2,10 +2,8 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.business.salaryg
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.api.dto.OfferDocumentDTO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.OfferDocumentBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.bo.SalaryGrantTaskBO;
-import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.OfferDocumentPO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.siteservice.entity.po.SalaryGrantSubTaskPO;
 
 import java.util.List;
@@ -31,27 +29,11 @@ public interface SalaryGrantOfferDocumentTaskService extends IService<SalaryGran
 
     /**
      * 生成薪资发放报盘文件
-     *
      * @param taskCode
-     * @return
+     * @param userId
+     * @return List<OfferDocumentBO>
      */
     List<OfferDocumentBO> generateOfferDocument(String taskCode, String userId);
-
-    /**
-     * 创建薪资发放报盘文件
-     *
-     * @param taskCode
-     * @return
-     */
-    void createOfferDocument(String taskCode, String userId);
-
-    /**
-     * 查询薪资发放报盘文件
-     *
-     * @param taskCode
-     * @return
-     */
-    List<OfferDocumentBO> queryOfferDocument(String taskCode);
 
     //todo
     // 46、报盘文件（调用结算中心接口，目前已有找周浩伟）

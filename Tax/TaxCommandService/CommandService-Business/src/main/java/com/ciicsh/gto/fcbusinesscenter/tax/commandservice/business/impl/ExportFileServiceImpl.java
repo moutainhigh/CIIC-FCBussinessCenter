@@ -22,6 +22,8 @@ import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TemplateFileBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.BatchType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.EnumUtil;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.IncomeSubject;
+import com.ciicsh.gto.fcbusinesscenter.tax.util.enums.StockIncomeType;
 import com.ciicsh.gto.fcbusinesscenter.tax.util.support.DateTimeKit;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.salarymanagementcommandservice.api.BatchProxy;
@@ -40,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1153,93 +1156,152 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      */
     public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSH(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
-
-        //减免事项附表
-        TemplateFileBO templateFileReductionExemption = new TemplateFileBO();
-        templateFileReductionExemption.setTemplateName("减免事项附表.xls");
-        templateFileReductionExemption.setWb(exportAboutReductionExemptionSh.getReductionExemptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "减免事项附表.xls", "sh"));
-        templateFileReductionExemption.setType(true);
-        templateFileBOList.add(templateFileReductionExemption);
-        //解除劳动合同一次性补偿金
-        TemplateFileBO templateFileLabor = new TemplateFileBO();
-        templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
-        templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "sh"));
-        templateFileLabor.setType(true);
-        templateFileBOList.add(templateFileLabor);
-        //劳务报酬所得
-        TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
-        templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
-        templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls", "sh"));
-        templateFileLaborIncome.setType(true);
-        templateFileBOList.add(templateFileLaborIncome);
-        //利息、股息、红利所得
-        TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
-        templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
-        templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "sh"));
-        templateFileIDDIncome.setType(true);
-        templateFileBOList.add(templateFileIDDIncome);
-        //偶然所得
-        TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
-        templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
-        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls", "sh"));
-        templateFileFortuitousIncome.setType(true);
-        templateFileBOList.add(templateFileFortuitousIncome);
-        //全年一次性奖金收入
-        TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
-        templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
-        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "sh"));
-        templateFileBonusIncomeYear.setType(true);
-        templateFileBOList.add(templateFileBonusIncomeYear);
-        //人员信息
-        TemplateFileBO templateFilePerson = new TemplateFileBO();
-        templateFilePerson.setTemplateName("人员信息.xls");
-        templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "sh"));
-        templateFilePerson.setType(true);
-        templateFileBOList.add(templateFilePerson);
-        //商业保险commercial insurance
-        TemplateFileBO templateFileCI = new TemplateFileBO();
-        templateFileCI.setTemplateName("商业保险.xls");
-        templateFileCI.setWb(exportAboutCommercialInsuranceSh.getCommercialInsuranceWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "商业保险.xls", "sh"));
-        templateFileCI.setType(true);
-        templateFileBOList.add(templateFileCI);
-        //外籍人员正常工资薪金
-        TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
-        templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySh.getForeignNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sh"));
-        templateFileForeignNormalSalary.setType(true);
-        templateFileBOList.add(templateFileForeignNormalSalary);
-        //正常工资薪金
-        TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
-        templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sh"));
-        templateFileNormalSalary.setType(true);
-        templateFileBOList.add(templateFileNormalSalary);
-        //个人股票期权行权收入(文件夹)Personal stock option revenue
-        TemplateFileBO templateFileStock = new TemplateFileBO();
-        templateFileStock.setTemplateName("个人股票期权行权收入");
-        templateFileStock.setType(false);
         List<TemplateFileBO> templateFileStockSubList = new ArrayList<>();
-        //个人股票期权行权收入-股票期权
-        TemplateFileBO templateFileStockOption = new TemplateFileBO();
-        templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
-        templateFileStockOption.setType(true);
-        templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls", "sh"));
-        templateFileStockSubList.add(templateFileStockOption);
-        //个人股票期权行权收入-股票增值权
-        TemplateFileBO templateFileStockAR = new TemplateFileBO();
-        templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
-        templateFileStockAR.setType(true);
-        templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls", "sh"));
-        templateFileStockSubList.add(templateFileStockAR);
-        //个人股票期权行权收入-限制性股票
-        TemplateFileBO templateFileRStock = new TemplateFileBO();
-        templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
-        templateFileRStock.setType(true);
-        templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls", "sh"));
-        templateFileStockSubList.add(templateFileRStock);
-
-        templateFileStock.setTemplateFileBOList(templateFileStockSubList);
-        templateFileBOList.add(templateFileStock);
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> stockOptionEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKOPTION.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(stockOptionEmployeeList.size() > 0 ){
+            //个人股票期权行权收入-股票期权
+            TemplateFileBO templateFileStockOption = new TemplateFileBO();
+            templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
+            templateFileStockOption.setType(true);
+            templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, stockOptionEmployeeList, "个人股票期权行权收入-股票期权.xls", "sh"));
+            templateFileStockSubList.add(templateFileStockOption);
+        }
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> stockAppreciationEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKAPPRECIATION.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(stockAppreciationEmployeeList.size() > 0){
+            //个人股票期权行权收入-股票增值权
+            TemplateFileBO templateFileStockAR = new TemplateFileBO();
+            templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
+            templateFileStockAR.setType(true);
+            templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, stockAppreciationEmployeeList, "个人股票期权行权收入-股票增值权.xls", "sh"));
+            templateFileStockSubList.add(templateFileStockAR);
+        }
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> restrictiveStockEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.RESTRICTIVESTOCK.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(restrictiveStockEmployeeList.size() > 0){
+            //个人股票期权行权收入-限制性股票
+            TemplateFileBO templateFileRStock = new TemplateFileBO();
+            templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
+            templateFileRStock.setType(true);
+            templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, restrictiveStockEmployeeList, "个人股票期权行权收入-限制性股票.xls", "sh"));
+            templateFileStockSubList.add(templateFileRStock);
+        }
+        if(templateFileStockSubList.size() > 0){
+            //个人股票期权行权收入(文件夹)Personal stock option revenue
+            TemplateFileBO templateFileStock = new TemplateFileBO();
+            templateFileStock.setTemplateName("个人股票期权行权收入");
+            templateFileStock.setType(false);
+            templateFileStock.setTemplateFileBOList(templateFileStockSubList);
+            templateFileBOList.add(templateFileStock);
+        }
+        //筛选出减免事项减免金额大于0的详细信息tax_deduction
+        List<TaskSubDeclareDetailPO> taxDeductionDetailList = taskSubDeclareDetailPOList.stream().filter(item -> item.getTaxDeduction() != null && item.getTaxDeduction().compareTo(BigDecimal.ZERO) > 0).collect(Collectors.toList());
+        if(taxDeductionDetailList.size() > 0 ){
+            //减免事项附表
+            TemplateFileBO templateFileReductionExemption = new TemplateFileBO();
+            templateFileReductionExemption.setTemplateName("减免事项附表.xls");
+            templateFileReductionExemption.setWb(exportAboutReductionExemptionSh.getReductionExemptionWB(taxDeductionDetailList, employeeInfoBatchPOList, "减免事项附表.xls", "sh"));
+            templateFileReductionExemption.setType(true);
+            templateFileBOList.add(templateFileReductionExemption);
+        }
+        //筛选出解除劳动合同一次性详细信息
+        List<TaskSubDeclareDetailPO> laborContractDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.LABORCONTRACT.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        //如果有符合条件的集合在生成对应模板
+        if(laborContractDetailList.size() > 0){
+            //解除劳动合同一次性补偿金
+            TemplateFileBO templateFileLabor = new TemplateFileBO();
+            templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
+            templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(laborContractDetailList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "sh"));
+            templateFileLabor.setType(true);
+            templateFileBOList.add(templateFileLabor);
+        }
+        //筛选出导出劳务报酬所得详细信息
+        List<TaskSubDeclareDetailPO> laborIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.LABORINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        //如果有符合条件的集合在生成对应模板
+        if(laborIncomeDetailList.size() > 0){
+            //劳务报酬所得
+            TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
+            templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
+            templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(laborIncomeDetailList, employeeInfoBatchPOList, "劳务报酬所得.xls", "sh"));
+            templateFileLaborIncome.setType(true);
+            templateFileBOList.add(templateFileLaborIncome);
+        }
+        //筛选出导出利息、股息、红利所得详细信息
+        List<TaskSubDeclareDetailPO> iddIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.IDDINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        //如果有符合条件的集合在生成对应模板
+        if(iddIncomeDetailList.size() > 0){
+            //利息、股息、红利所得
+            TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
+            templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
+            templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(iddIncomeDetailList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "sh"));
+            templateFileIDDIncome.setType(true);
+            templateFileBOList.add(templateFileIDDIncome);
+        }
+        //筛选出偶然所得详细信息
+        List<TaskSubDeclareDetailPO> fortuitousIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.FORTUITOUSINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        //如果有符合条件的集合在生成对应模板
+        if(fortuitousIncomeDetailList.size() > 0){
+            //偶然所得
+            TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
+            templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
+            templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(fortuitousIncomeDetailList, employeeInfoBatchPOList, "偶然所得.xls", "sh"));
+            templateFileFortuitousIncome.setType(true);
+            templateFileBOList.add(templateFileFortuitousIncome);
+        }
+        //筛选出全年一次性奖金收入详细信息
+        List<TaskSubDeclareDetailPO> bonusIncomeYearDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.BONUSINCOMEYEAR.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        //如果有符合条件的集合在生成对应模板
+        if(bonusIncomeYearDetailList.size() > 0){
+            //全年一次性奖金收入
+            TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
+            templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
+            templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(bonusIncomeYearDetailList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "sh"));
+            templateFileBonusIncomeYear.setType(true);
+            templateFileBOList.add(templateFileBonusIncomeYear);
+        }
+        if(taskSubDeclareDetailPOList.size() > 0){
+            //人员信息
+            TemplateFileBO templateFilePerson = new TemplateFileBO();
+            templateFilePerson.setTemplateName("人员信息.xls");
+            templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "sh"));
+            templateFilePerson.setType(true);
+            templateFileBOList.add(templateFilePerson);
+        }
+        //判断申报任务是否是合并任务
+        if(taskSubDeclarePO.getCombined()){
+            taskSubDeclareDetailService.addMergeSubDeclareDetailList(taskSubDeclarePO,taskSubDeclareDetailPOList,employeeInfoBatchPOList);
+        }
+        //筛选出商业健康保险费大于0的详细信息business_health_insurance
+        List<TaskSubDeclareDetailPO> businessHealthInsuranceDetailList = taskSubDeclareDetailPOList.stream().filter(item -> item.getBusinessHealthInsurance() != null && item.getBusinessHealthInsurance().compareTo(BigDecimal.ZERO) > 0).collect(Collectors.toList());
+        if(businessHealthInsuranceDetailList.size() > 0 ){
+            //商业保险commercial insurance
+            TemplateFileBO templateFileCI = new TemplateFileBO();
+            templateFileCI.setTemplateName("商业保险.xls");
+            templateFileCI.setWb(exportAboutCommercialInsuranceSh.getCommercialInsuranceWB(taskSubDeclarePO,businessHealthInsuranceDetailList, employeeInfoBatchPOList, "商业保险.xls", "sh"));
+            templateFileCI.setType(true);
+            templateFileBOList.add(templateFileCI);
+        }
+        //筛选出外籍人员正常工资薪金详细信息
+        List<TaskSubDeclareDetailPO> foreignNormalSalaryDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.FOREIGNNORMALSALARY.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(foreignNormalSalaryDetailList.size() > 0){
+            //外籍人员正常工资薪金
+            TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
+            templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
+            templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySh.getForeignNormalSalaryWB(taskSubDeclarePO,foreignNormalSalaryDetailList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sh"));
+            templateFileForeignNormalSalary.setType(true);
+            templateFileBOList.add(templateFileForeignNormalSalary);
+        }
+        //筛选出正常工资薪金详细信息
+        List<TaskSubDeclareDetailPO> normalSalaryDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.NORMALSALARY.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(normalSalaryDetailList.size() > 0){
+            //正常工资薪金
+            TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
+            templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
+            templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclarePO,normalSalaryDetailList, employeeInfoBatchPOList, "正常工资薪金.xls", "sh"));
+            templateFileNormalSalary.setType(true);
+            templateFileBOList.add(templateFileNormalSalary);
+        }
         return templateFileBOList;
     }
 
@@ -1253,89 +1315,130 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
      */
     public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutJS(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
-
-        //解除劳动合同一次性补偿金
-        TemplateFileBO templateFileLabor = new TemplateFileBO();
-        templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
-        templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "js"));
-        templateFileLabor.setType(true);
-        templateFileBOList.add(templateFileLabor);
-
-        //劳务报酬所得
-        TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
-        templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
-        templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls", "js"));
-        templateFileLaborIncome.setType(true);
-        templateFileBOList.add(templateFileLaborIncome);
-
-        //利息、股息、红利所得
-        TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
-        templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
-        templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "js"));
-        templateFileIDDIncome.setType(true);
-        templateFileBOList.add(templateFileIDDIncome);
-
-        //偶然所得
-        TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
-        templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
-        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls", "js"));
-        templateFileFortuitousIncome.setType(true);
-        templateFileBOList.add(templateFileFortuitousIncome);
-
-        //全年一次性奖金收入
-        TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
-        templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
-        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "js"));
-        templateFileBonusIncomeYear.setType(true);
-        templateFileBOList.add(templateFileBonusIncomeYear);
-
-        //人员信息
-        TemplateFileBO templateFilePerson = new TemplateFileBO();
-        templateFilePerson.setTemplateName("人员信息.xls");
-        templateFilePerson.setWb(exportAboutPersonInfoJs.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "js"));
-        templateFilePerson.setType(true);
-        templateFileBOList.add(templateFilePerson);
-
-        //外籍人员正常工资薪金
-        TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
-        templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalaryJs.getForeignNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "js"));
-        templateFileForeignNormalSalary.setType(true);
-        templateFileBOList.add(templateFileForeignNormalSalary);
-
-        //正常工资薪金
-        TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
-        templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "js"));
-        templateFileNormalSalary.setType(true);
-        templateFileBOList.add(templateFileNormalSalary);
-
-        //个人股票期权行权收入(文件夹)Personal stock option revenue
-        TemplateFileBO templateFileStock = new TemplateFileBO();
-        templateFileStock.setTemplateName("个人股票期权行权收入");
-        templateFileStock.setType(false);
         List<TemplateFileBO> templateFileStockSubList = new ArrayList<>();
-        //个人股票期权行权收入-股票期权
-        TemplateFileBO templateFileStockOption = new TemplateFileBO();
-        templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
-        templateFileStockOption.setType(true);
-        templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls", "js"));
-        templateFileStockSubList.add(templateFileStockOption);
-        //个人股票期权行权收入-股票增值权
-        TemplateFileBO templateFileStockAR = new TemplateFileBO();
-        templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
-        templateFileStockAR.setType(true);
-        templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls", "js"));
-        templateFileStockSubList.add(templateFileStockAR);
-        //个人股票期权行权收入-限制性股票
-        TemplateFileBO templateFileRStock = new TemplateFileBO();
-        templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
-        templateFileRStock.setType(true);
-        templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls", "js"));
-        templateFileStockSubList.add(templateFileRStock);
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> stockOptionEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKOPTION.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(stockOptionEmployeeList.size() > 0 ){
+            //个人股票期权行权收入-股票期权
+            TemplateFileBO templateFileStockOption = new TemplateFileBO();
+            templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
+            templateFileStockOption.setType(true);
+            templateFileStockOption.setWb(exportAboutStockOption.getStockOptionWB(taskSubDeclareDetailPOList, stockOptionEmployeeList, "个人股票期权行权收入-股票期权.xls", "js"));
+            templateFileStockSubList.add(templateFileStockOption);
+        }
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> stockAppreciationEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKAPPRECIATION.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(stockAppreciationEmployeeList.size() > 0){
+            //个人股票期权行权收入-股票增值权
+            TemplateFileBO templateFileStockAR = new TemplateFileBO();
+            templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
+            templateFileStockAR.setType(true);
+            templateFileStockAR.setWb(exportAboutStockAppreciation.getStockAppreciationWB(taskSubDeclareDetailPOList, stockAppreciationEmployeeList, "个人股票期权行权收入-股票增值权.xls", "js"));
+            templateFileStockSubList.add(templateFileStockAR);
+        }
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> restrictiveStockEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.RESTRICTIVESTOCK.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(restrictiveStockEmployeeList.size() > 0 ){
+            //个人股票期权行权收入-限制性股票
+            TemplateFileBO templateFileRStock = new TemplateFileBO();
+            templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
+            templateFileRStock.setType(true);
+            templateFileRStock.setWb(exportAboutRestrictiveStock.getRestrictiveStockWB(taskSubDeclareDetailPOList, restrictiveStockEmployeeList, "个人股票期权行权收入-限制性股票.xls", "js"));
+            templateFileStockSubList.add(templateFileRStock);
+        }
+        if(templateFileStockSubList.size() > 0){
+            //个人股票期权行权收入(文件夹)
+            TemplateFileBO templateFileStock = new TemplateFileBO();
+            templateFileStock.setTemplateName("个人股票期权行权收入");
+            templateFileStock.setType(false);
+            templateFileStock.setTemplateFileBOList(templateFileStockSubList);
+            templateFileBOList.add(templateFileStock);
+        }
+        //筛选出解除劳动合同一次性详细信息
+        List<TaskSubDeclareDetailPO> laborContractDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.LABORCONTRACT.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(laborContractDetailList.size() > 0){
+            //解除劳动合同一次性补偿金
+            TemplateFileBO templateFileLabor = new TemplateFileBO();
+            templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
+            templateFileLabor.setWb(exportAboutLaborRescission.getLaborRescissionWB(laborContractDetailList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "js"));
+            templateFileLabor.setType(true);
+            templateFileBOList.add(templateFileLabor);
+        }
+        //筛选出导出劳务报酬所得详细信息
+        List<TaskSubDeclareDetailPO> laborIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.LABORINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(laborIncomeDetailList.size() > 0){
+            //劳务报酬所得
+            TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
+            templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
+            templateFileLaborIncome.setWb(exportAboutLaborIncome.getLaborIncomeWB(laborIncomeDetailList, employeeInfoBatchPOList, "劳务报酬所得.xls", "js"));
+            templateFileLaborIncome.setType(true);
+            templateFileBOList.add(templateFileLaborIncome);
+        }
 
-        templateFileStock.setTemplateFileBOList(templateFileStockSubList);
-        templateFileBOList.add(templateFileStock);
+        //筛选出导出利息、股息、红利所得详细信息
+        List<TaskSubDeclareDetailPO> iddIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.IDDINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(iddIncomeDetailList.size() > 0){
+            //利息、股息、红利所得
+            TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
+            templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
+            templateFileIDDIncome.setWb(exportAboutIDDIncome.getIDDIncomeWB(iddIncomeDetailList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "js"));
+            templateFileIDDIncome.setType(true);
+            templateFileBOList.add(templateFileIDDIncome);
+        }
+
+        //筛选出偶然所得详细信息
+        List<TaskSubDeclareDetailPO> fortuitousIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.FORTUITOUSINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(fortuitousIncomeDetailList.size() > 0){
+            //偶然所得
+            TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
+            templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
+            templateFileFortuitousIncome.setWb(exportAboutFortuitousIncome.getFortuitousIncomeWB(fortuitousIncomeDetailList, employeeInfoBatchPOList, "偶然所得.xls", "js"));
+            templateFileFortuitousIncome.setType(true);
+            templateFileBOList.add(templateFileFortuitousIncome);
+        }
+
+        //筛选出全年一次性奖金收入详细信息
+        List<TaskSubDeclareDetailPO> bonusIncomeYearDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.BONUSINCOMEYEAR.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(bonusIncomeYearDetailList.size() > 0){
+            //全年一次性奖金收入
+            TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
+            templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
+            templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYear.getBonusIncomeYearWB(bonusIncomeYearDetailList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "js"));
+            templateFileBonusIncomeYear.setType(true);
+            templateFileBOList.add(templateFileBonusIncomeYear);
+        }
+        if(taskSubDeclareDetailPOList.size() > 0){
+            //人员信息
+            TemplateFileBO templateFilePerson = new TemplateFileBO();
+            templateFilePerson.setTemplateName("人员信息.xls");
+            templateFilePerson.setWb(exportAboutPersonInfoJs.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "js"));
+            templateFilePerson.setType(true);
+            templateFileBOList.add(templateFilePerson);
+        }
+        //判断申报任务是否是合并任务
+        if(taskSubDeclarePO.getCombined()){
+            taskSubDeclareDetailService.addMergeSubDeclareDetailList(taskSubDeclarePO,taskSubDeclareDetailPOList,employeeInfoBatchPOList);
+        }
+        //筛选出外籍人员正常工资薪金详细信息
+        List<TaskSubDeclareDetailPO> foreignNormalSalaryDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.FOREIGNNORMALSALARY.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(foreignNormalSalaryDetailList.size() > 0){
+            //外籍人员正常工资薪金
+            TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
+            templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
+            templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalaryJs.getForeignNormalSalaryWB(taskSubDeclarePO,foreignNormalSalaryDetailList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "js"));
+            templateFileForeignNormalSalary.setType(true);
+            templateFileBOList.add(templateFileForeignNormalSalary);
+        }
+        //筛选出正常工资薪金详细信息
+        List<TaskSubDeclareDetailPO> normalSalaryDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.NORMALSALARY.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(normalSalaryDetailList.size() > 0){
+            //正常工资薪金
+            TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
+            templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
+            templateFileNormalSalary.setWb(exportAboutNormalSalary.getNormalSalaryWB(taskSubDeclarePO,normalSalaryDetailList, employeeInfoBatchPOList, "正常工资薪金.xls", "js"));
+            templateFileNormalSalary.setType(true);
+            templateFileBOList.add(templateFileNormalSalary);
+        }
         return templateFileBOList;
     }
 
@@ -1349,88 +1452,133 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
     public List<TemplateFileBO> getTemplateFileListBySubDeclareIdAboutSZ(TaskSubDeclarePO taskSubDeclarePO,List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
         List<TemplateFileBO> templateFileBOList = new ArrayList<>();
 
-        //解除劳动合同一次性补偿金
-        TemplateFileBO templateFileLabor = new TemplateFileBO();
-        templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
-        templateFileLabor.setWb(exportAboutLaborRescissionSz.getLaborRescissionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "sz"));
-        templateFileLabor.setType(true);
-        templateFileBOList.add(templateFileLabor);
-
-        //劳务报酬所得
-        TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
-        templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
-        templateFileLaborIncome.setWb(exportAboutLaborIncomeSz.getLaborIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "劳务报酬所得.xls", "sz"));
-        templateFileLaborIncome.setType(true);
-        templateFileBOList.add(templateFileLaborIncome);
-
-        //利息、股息、红利所得
-        TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
-        templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
-        templateFileIDDIncome.setWb(exportAboutIDDIncomeSz.getIDDIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "sz"));
-        templateFileIDDIncome.setType(true);
-        templateFileBOList.add(templateFileIDDIncome);
-
-        //偶然所得
-        TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
-        templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
-        templateFileFortuitousIncome.setWb(exportAboutFortuitousIncomeSz.getFortuitousIncomeWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "偶然所得.xls", "sz"));
-        templateFileFortuitousIncome.setType(true);
-        templateFileBOList.add(templateFileFortuitousIncome);
-
-        //全年一次性奖金收入
-        TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
-        templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
-        templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYearSz.getBonusIncomeYearWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "sz"));
-        templateFileBonusIncomeYear.setType(true);
-        templateFileBOList.add(templateFileBonusIncomeYear);
-
-        //人员信息
-        TemplateFileBO templateFilePerson = new TemplateFileBO();
-        templateFilePerson.setTemplateName("人员信息.xls");
-        templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "sz"));
-        templateFilePerson.setType(true);
-        templateFileBOList.add(templateFilePerson);
-
-        //外籍人员正常工资薪金
-        TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
-        templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
-        templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySz.getForeignNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sz"));
-        templateFileForeignNormalSalary.setType(true);
-        templateFileBOList.add(templateFileForeignNormalSalary);
-
-        //正常工资薪金
-        TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
-        templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
-        templateFileNormalSalary.setWb(exportAboutNormalSalarySz.getNormalSalaryWB(taskSubDeclarePO,taskSubDeclareDetailPOList, employeeInfoBatchPOList, "正常工资薪金.xls", "sz"));
-        templateFileNormalSalary.setType(true);
-        templateFileBOList.add(templateFileNormalSalary);
-
-        //个人股票期权行权收入(文件夹)Personal stock option revenue
-        TemplateFileBO templateFileStock = new TemplateFileBO();
-        templateFileStock.setTemplateName("个人股票期权行权收入");
-        templateFileStock.setType(false);
         List<TemplateFileBO> templateFileStockSubList = new ArrayList<>();
-        //个人股票期权行权收入-股票期权
-        TemplateFileBO templateFileStockOption = new TemplateFileBO();
-        templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
-        templateFileStockOption.setType(true);
-        templateFileStockOption.setWb(exportAboutStockOptionSz.getStockOptionWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票期权.xls", "sz"));
-        templateFileStockSubList.add(templateFileStockOption);
-        //个人股票期权行权收入-股票增值权
-        TemplateFileBO templateFileStockAR = new TemplateFileBO();
-        templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
-        templateFileStockAR.setType(true);
-        templateFileStockAR.setWb(exportAboutStockAppreciationSz.getStockAppreciationWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-股票增值权.xls", "sz"));
-        templateFileStockSubList.add(templateFileStockAR);
-        //个人股票期权行权收入-限制性股票
-        TemplateFileBO templateFileRStock = new TemplateFileBO();
-        templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
-        templateFileRStock.setType(true);
-        templateFileRStock.setWb(exportAboutRestrictiveStockSz.getRestrictiveStockWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "个人股票期权行权收入-限制性股票.xls", "sz"));
-        templateFileStockSubList.add(templateFileRStock);
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> stockOptionEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKOPTION.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(stockOptionEmployeeList.size() > 0){
+            //个人股票期权行权收入-股票期权
+            TemplateFileBO templateFileStockOption = new TemplateFileBO();
+            templateFileStockOption.setTemplateName("个人股票期权行权收入-股票期权.xls");
+            templateFileStockOption.setType(true);
+            templateFileStockOption.setWb(exportAboutStockOptionSz.getStockOptionWB(taskSubDeclareDetailPOList, stockOptionEmployeeList, "个人股票期权行权收入-股票期权.xls", "sz"));
+            templateFileStockSubList.add(templateFileStockOption);
+        }
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> stockAppreciationEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.STOCKAPPRECIATION.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(stockAppreciationEmployeeList.size() > 0){
+            //个人股票期权行权收入-股票增值权
+            TemplateFileBO templateFileStockAR = new TemplateFileBO();
+            templateFileStockAR.setTemplateName("个人股票期权行权收入-股票增值权.xls");
+            templateFileStockAR.setType(true);
+            templateFileStockAR.setWb(exportAboutStockAppreciationSz.getStockAppreciationWB(taskSubDeclareDetailPOList, stockAppreciationEmployeeList, "个人股票期权行权收入-股票增值权.xls", "sz"));
+            templateFileStockSubList.add(templateFileStockAR);
+        }
+        //根据股权收入类型,筛选出股票期权的股权收入
+        List<EmployeeInfoBatchPO> restrictiveStockEmployeeList = employeeInfoBatchPOList.stream().filter(item -> StockIncomeType.RESTRICTIVESTOCK.getCode().equals(item.getStockOptionCategory())).collect(Collectors.toList());
+        if(restrictiveStockEmployeeList.size() > 0){
+            //个人股票期权行权收入-限制性股票
+            TemplateFileBO templateFileRStock = new TemplateFileBO();
+            templateFileRStock.setTemplateName("个人股票期权行权收入-限制性股票.xls");
+            templateFileRStock.setType(true);
+            templateFileRStock.setWb(exportAboutRestrictiveStockSz.getRestrictiveStockWB(taskSubDeclareDetailPOList, restrictiveStockEmployeeList, "个人股票期权行权收入-限制性股票.xls", "sz"));
+            templateFileStockSubList.add(templateFileRStock);
+        }
+        if(templateFileStockSubList.size() > 0 ){
+            //个人股票期权行权收入(文件夹)Personal stock option revenue
+            TemplateFileBO templateFileStock = new TemplateFileBO();
+            templateFileStock.setTemplateName("个人股票期权行权收入");
+            templateFileStock.setType(false);
+            templateFileStock.setTemplateFileBOList(templateFileStockSubList);
+            templateFileBOList.add(templateFileStock);
+        }
 
-        templateFileStock.setTemplateFileBOList(templateFileStockSubList);
-        templateFileBOList.add(templateFileStock);
+        //筛选出解除劳动合同一次性详细信息
+        List<TaskSubDeclareDetailPO> laborContractDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.LABORCONTRACT.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(laborContractDetailList.size() > 0){
+            //解除劳动合同一次性补偿金
+            TemplateFileBO templateFileLabor = new TemplateFileBO();
+            templateFileLabor.setTemplateName("解除劳动合同一次性补偿金.xls");
+            templateFileLabor.setWb(exportAboutLaborRescissionSz.getLaborRescissionWB(laborContractDetailList, employeeInfoBatchPOList, "解除劳动合同一次性补偿金.xls", "sz"));
+            templateFileLabor.setType(true);
+            templateFileBOList.add(templateFileLabor);
+        }
+
+        //筛选出导出劳务报酬所得详细信息
+        List<TaskSubDeclareDetailPO> laborIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.LABORINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(laborIncomeDetailList.size() > 0){
+            //劳务报酬所得
+            TemplateFileBO templateFileLaborIncome = new TemplateFileBO();
+            templateFileLaborIncome.setTemplateName("劳务报酬所得.xls");
+            templateFileLaborIncome.setWb(exportAboutLaborIncomeSz.getLaborIncomeWB(laborIncomeDetailList, employeeInfoBatchPOList, "劳务报酬所得.xls", "sz"));
+            templateFileLaborIncome.setType(true);
+            templateFileBOList.add(templateFileLaborIncome);
+        }
+
+        //筛选出导出利息、股息、红利所得详细信息
+        List<TaskSubDeclareDetailPO> iddIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.IDDINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(iddIncomeDetailList.size() > 0){
+            //利息、股息、红利所得
+            TemplateFileBO templateFileIDDIncome = new TemplateFileBO();
+            templateFileIDDIncome.setTemplateName("利息、股息、红利所得.xls");
+            templateFileIDDIncome.setWb(exportAboutIDDIncomeSz.getIDDIncomeWB(iddIncomeDetailList, employeeInfoBatchPOList, "利息、股息、红利所得.xls", "sz"));
+            templateFileIDDIncome.setType(true);
+            templateFileBOList.add(templateFileIDDIncome);
+        }
+
+        //筛选出偶然所得详细信息
+        List<TaskSubDeclareDetailPO> fortuitousIncomeDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.FORTUITOUSINCOME.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(fortuitousIncomeDetailList.size() > 0){
+            //偶然所得
+            TemplateFileBO templateFileFortuitousIncome = new TemplateFileBO();
+            templateFileFortuitousIncome.setTemplateName("偶然所得.xls");
+            templateFileFortuitousIncome.setWb(exportAboutFortuitousIncomeSz.getFortuitousIncomeWB(fortuitousIncomeDetailList, employeeInfoBatchPOList, "偶然所得.xls", "sz"));
+            templateFileFortuitousIncome.setType(true);
+            templateFileBOList.add(templateFileFortuitousIncome);
+        }
+        //筛选出全年一次性奖金收入详细信息
+        List<TaskSubDeclareDetailPO> bonusIncomeYearDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.BONUSINCOMEYEAR.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(bonusIncomeYearDetailList.size() > 0){
+            //全年一次性奖金收入
+            TemplateFileBO templateFileBonusIncomeYear = new TemplateFileBO();
+            templateFileBonusIncomeYear.setTemplateName("全年一次性奖金收入.xls");
+            templateFileBonusIncomeYear.setWb(exportAboutBonusIncomeYearSz.getBonusIncomeYearWB(bonusIncomeYearDetailList, employeeInfoBatchPOList, "全年一次性奖金收入.xls", "sz"));
+            templateFileBonusIncomeYear.setType(true);
+            templateFileBOList.add(templateFileBonusIncomeYear);
+        }
+
+        if(taskSubDeclareDetailPOList.size() > 0){
+            //人员信息
+            TemplateFileBO templateFilePerson = new TemplateFileBO();
+            templateFilePerson.setTemplateName("人员信息.xls");
+            templateFilePerson.setWb(exportAboutPersonInfo.getPersonInfoWB(taskSubDeclareDetailPOList, employeeInfoBatchPOList, "人员信息.xls", "sz"));
+            templateFilePerson.setType(true);
+            templateFileBOList.add(templateFilePerson);
+        }
+
+        //判断申报任务是否是合并任务
+        if(taskSubDeclarePO.getCombined()){
+            taskSubDeclareDetailService.addMergeSubDeclareDetailList(taskSubDeclarePO,taskSubDeclareDetailPOList,employeeInfoBatchPOList);
+        }
+        //筛选出外籍人员正常工资薪金详细信息
+        List<TaskSubDeclareDetailPO> foreignNormalSalaryDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.FOREIGNNORMALSALARY.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(foreignNormalSalaryDetailList.size() > 0){
+            //外籍人员正常工资薪金
+            TemplateFileBO templateFileForeignNormalSalary = new TemplateFileBO();
+            templateFileForeignNormalSalary.setTemplateName("外籍人员正常工资薪金.xls");
+            templateFileForeignNormalSalary.setWb(exportAboutForeignNormalSalarySz.getForeignNormalSalaryWB(taskSubDeclarePO,foreignNormalSalaryDetailList, employeeInfoBatchPOList, "外籍人员正常工资薪金.xls", "sz"));
+            templateFileForeignNormalSalary.setType(true);
+            templateFileBOList.add(templateFileForeignNormalSalary);
+        }
+        //筛选出正常工资薪金详细信息
+        List<TaskSubDeclareDetailPO> normalSalaryDetailList = taskSubDeclareDetailPOList.stream().filter(item -> IncomeSubject.NORMALSALARY.getCode().equals(item.getIncomeSubject())).collect(Collectors.toList());
+        if(normalSalaryDetailList.size() > 0){
+            //正常工资薪金
+            TemplateFileBO templateFileNormalSalary = new TemplateFileBO();
+            templateFileNormalSalary.setTemplateName("正常工资薪金.xls");
+            templateFileNormalSalary.setWb(exportAboutNormalSalarySz.getNormalSalaryWB(taskSubDeclarePO,normalSalaryDetailList, employeeInfoBatchPOList, "正常工资薪金.xls", "sz"));
+            templateFileNormalSalary.setType(true);
+            templateFileBOList.add(templateFileNormalSalary);
+        }
         return templateFileBOList;
 
     }
