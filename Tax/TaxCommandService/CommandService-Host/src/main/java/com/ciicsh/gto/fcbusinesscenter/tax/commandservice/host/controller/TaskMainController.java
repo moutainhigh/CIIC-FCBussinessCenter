@@ -455,4 +455,15 @@ public class TaskMainController extends BaseController {
         exportExcel(response, (HSSFWorkbook)map.get("wb"), map.get("fileName").toString());
     }
 
+    /**
+     * 导出个税数据明细
+     * @param response
+     */
+    @GetMapping(value = "/exportTaskMainDetailData")
+    public void exportTaskMainDetailData(HttpServletResponse response,TaskMainDTO taskMainDTO){
+        Map<String,Object> map = this.exportFileService.exportTaskMainDetailData(taskMainDTO.getTaskMainId(),taskMainDTO.getEmployeeNo(),taskMainDTO.getEmployeeName());
+        //导出excel
+        exportExcel(response, (HSSFWorkbook)map.get("wb"), map.get("fileName").toString());
+    }
+
 }
