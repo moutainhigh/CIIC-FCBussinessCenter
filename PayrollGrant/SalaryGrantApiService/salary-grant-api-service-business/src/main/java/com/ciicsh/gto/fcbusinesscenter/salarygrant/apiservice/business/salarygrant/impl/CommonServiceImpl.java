@@ -1,9 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.impl;
 
+import com.ciicsh.gto.basicdataservice.api.CountryServiceProxy;
 import com.ciicsh.gto.basicdataservice.api.DicItemServiceProxy;
+import com.ciicsh.gto.basicdataservice.api.dto.CountryDTO;
 import com.ciicsh.gto.basicdataservice.api.dto.DicItemDTO;
 import com.ciicsh.gto.entityidservice.api.EntityIdServiceProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.CommonService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,19 +26,43 @@ public class CommonServiceImpl implements CommonService {
     private DicItemServiceProxy dicItemServiceProxy;
     @Autowired
     private EntityIdServiceProxy entityIdServiceProxy;
+    @Autowired
+    private CountryServiceProxy countryServiceProxy;
 
     @Override
     public String getNameByValue(String dicValue, String dicItemValue) {
-        DicItemDTO dicItemDTO = dicItemServiceProxy.selectByValue(dicValue, dicItemValue);
-        return dicItemDTO.getDicItemText();
+        if (StringUtils.isEmpty(dicValue)) {
+            return null;
+        } else if (StringUtils.isEmpty(dicItemValue)) {
+            return null;
+        } else {
+            DicItemDTO dicItemDTO = dicItemServiceProxy.selectByValue(dicValue, dicItemValue);
+            if (dicItemDTO == null || "".equals(dicItemDTO.getDicItemText())) {
+                return null;
+            } else {
+                return dicItemDTO.getDicItemText();
+            }
+        }
     }
 
     @Override
     public String getEntityIdForSalaryGrantTask(Map entityParam) {
-        // 定义薪资发放code，在Confluence上EntityID编号规则中进行定义
         String idCode = (String) entityParam.get("idCode");
-        // 获取公共服务生成返回的entity_id
         String entityId = entityIdServiceProxy.getEntityId(idCode);
         return entityId;
+    }
+
+    @Override
+    public String getCountryName(String countryCode) {
+        if (StringUtils.isEmpty(countryCode)) {
+            return null;
+        } else {
+            CountryDTO countryDTO = countryServiceProxy.selectByCountryCode(countryCode);
+            if (countryDTO == null || "".equals(countryDTO.getCountryName())) {
+                return null;
+            } else {
+                return countryDTO.getCountryName();
+            }
+        }
     }
 }

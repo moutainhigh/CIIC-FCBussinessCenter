@@ -3,25 +3,22 @@ package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygra
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * <p>
- * 薪资发放任务单信息
+ * 驳回发放信息
  * </p>
  *
  * @author gaoyang
- * @since 2018-05-22
+ * @since 2018-08-10
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SalaryGrantTaskDTO {
+public class SalaryGrantRejectDTO {
     private static final long serialVersionUID = 1L;
-
     /**
-     * 任务单编号（发放批次号）
+     * 驳回任务单编号
      */
-    private String taskCode;
-    /**
-     * 薪酬计算批次号
-     */
-    private String batchCode;
+    private List<SalaryGrantTaskDTO> codeList;
 }

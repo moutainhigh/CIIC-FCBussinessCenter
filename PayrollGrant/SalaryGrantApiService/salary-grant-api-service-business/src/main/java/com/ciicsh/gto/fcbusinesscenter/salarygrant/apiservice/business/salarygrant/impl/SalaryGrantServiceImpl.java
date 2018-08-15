@@ -102,16 +102,4 @@ public class SalaryGrantServiceImpl extends ServiceImpl<SalaryGrantTaskMapper, S
         }
         return bo;
     }
-
-    /**
-     * 根据任务单信息进行驳回处理
-     * @author gaoyang
-     * @date 2018-05-23
-     * @param salaryGrantTaskBO
-     * @return Boolean
-     */
-    @Override
-    public Boolean toRejectTask(SalaryGrantTaskBO salaryGrantTaskBO) {
-        return null;
-    }
 }

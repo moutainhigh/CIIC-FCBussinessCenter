@@ -70,5 +70,5 @@ public interface SalaryGrantProxy {
      * @return Result<Boolean>
      */
     @PostMapping("/toRejectTask")
-    Result<Boolean> toRejectTask(@RequestBody SalaryGrantTaskDTO dto);
+    Result<Boolean> toRejectTask(@RequestBody SalaryGrantRejectDTO dto);
 }
