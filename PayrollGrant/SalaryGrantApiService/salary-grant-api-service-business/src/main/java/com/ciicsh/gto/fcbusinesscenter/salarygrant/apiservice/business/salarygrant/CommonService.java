@@ -25,4 +25,11 @@ public interface CommonService {
      * @return String ENTITY_ID
      */
     String getEntityIdForSalaryGrantTask(Map entityParam);
+
+    /**
+     *  调用公共服务根据国家编码查询国家名称
+     * @param countryCode 国家编码
+     * @return String 国家名称
+     */
+    String getCountryName(String countryCode);
 }

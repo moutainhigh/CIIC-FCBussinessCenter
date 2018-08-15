@@ -1,8 +1,12 @@
 package com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeBO;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.po.SalaryGrantEmployeePO;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -23,4 +27,13 @@ public interface SalaryGrantEmployeeMapper extends BaseMapper<SalaryGrantEmploye
      * @return
      */
     Integer updateForReprieveEmployee(SalaryGrantEmployeePO po);
+
+    /**
+     * 查询雇员信息
+     * 根据任务单编号查询
+     * @param page
+     * @param salaryGrantEmployeeBO
+     * @return Page<SalaryGrantEmployeeBO>
+     */
+    List<SalaryGrantEmployeeBO> selectEmpList(Page<SalaryGrantEmployeeBO> page, SalaryGrantEmployeeBO salaryGrantEmployeeBO);
 }

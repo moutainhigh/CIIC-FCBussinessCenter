@@ -7,13 +7,14 @@ import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.dto.salarygran
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.api.proxy.SalaryGrantProxy;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantTaskProcessService;
+import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.business.salarygrant.SalaryGrantWorkFlowService;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.*;
 import com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.host.transform.CommonTransform;
 import com.ciicsh.gto.logservice.api.dto.LogDTO;
 import com.ciicsh.gto.logservice.api.dto.LogType;
 import com.ciicsh.gto.logservice.client.LogClientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,8 @@ public class SalaryGrantController implements SalaryGrantProxy {
     private SalaryGrantService salaryGrantService;
     @Autowired
     SalaryGrantTaskProcessService salaryGrantTaskProcessService;
+    @Autowired
+    SalaryGrantWorkFlowService salaryGrantWorkFlowService;
 
     /**
      * 根据批次号查相关任务单
@@ -172,8 +175,21 @@ public class SalaryGrantController implements SalaryGrantProxy {
      * @return Result<Boolean>
      */
     @Override
-    public Result<Boolean> toRejectTask(@RequestBody SalaryGrantTaskDTO dto) {
-        return null;
+    public Result<Boolean> toRejectTask(@RequestBody SalaryGrantRejectDTO dto) {
+        logClientService.infoAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心驳回").setContent(JSON.toJSONString(dto)));
+        try{
+            if(CollectionUtils.isEmpty(dto.getCodeList())){
+                logClientService.info(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("结算中心驳回").setContent("传入参数为空，处理驳回操作失败！"));
+                return ResultGenerator.genSuccessResult(false);
+            }else{
+                List<SalaryGrantTaskBO> codeList =  CommonTransform.convertToDTOs(dto.getCodeList(), SalaryGrantTaskBO.class);
+                Boolean rejectResult = salaryGrantWorkFlowService.rejectTask(codeList);
+                return ResultGenerator.genSuccessResult(rejectResult);
+            }
+        } catch (Exception e){
+            logClientService.errorAsync(LogDTO.of().setLogType(LogType.APP).setSource("薪资发放").setTitle("暂缓发放异常").setContent(e.getMessage()));
+            return ResultGenerator.genServerFailResult("处理失败");
+        }
     }
 
 }

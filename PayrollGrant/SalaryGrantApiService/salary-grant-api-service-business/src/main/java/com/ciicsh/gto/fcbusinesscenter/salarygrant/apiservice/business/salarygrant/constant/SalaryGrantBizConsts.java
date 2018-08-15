@@ -175,5 +175,8 @@ public class SalaryGrantBizConsts {
     /** 申报账户类别: 2-独立库 */
     public static final int DECLARATION_ACCOUNT_CATEGORY_DEPOT_INDEPENDENT = 2;
 
+    /** 驳回信息*/
+    public static final String REJECT_MESSAGE = "由结算中心驳回";
+
 }
 
