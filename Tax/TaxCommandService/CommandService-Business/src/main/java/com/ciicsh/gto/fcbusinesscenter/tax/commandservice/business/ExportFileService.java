@@ -70,4 +70,14 @@ public interface ExportFileService {
      */
     Map<String,Object> exportTaxList(String taskNo,String[] batchNos,String operator);
 
+
+    /**
+     * 导出个税数据明细
+     * @param taskMainId
+     * @param employeeNo
+     * @param employeeName
+     * @return
+     */
+    Map<String,Object> exportTaskMainDetailData(long taskMainId,String employeeNo,String employeeName);
+
 }

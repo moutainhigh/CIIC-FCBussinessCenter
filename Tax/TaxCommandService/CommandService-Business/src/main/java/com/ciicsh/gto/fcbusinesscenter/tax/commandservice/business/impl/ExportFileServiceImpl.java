@@ -14,9 +14,12 @@ import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.online.sh.ExportAboutForeignNormalSalarySh;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.online.sh.ExportAboutReductionExemptionSh;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.online.sz.*;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.taxdata.ExportAboutTaskMainDetail;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.voucher.ExportAboutVoucherPuDong;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.voucher.ExportAboutVoucherSanFenJu;
 import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.business.excelhandler.voucher.ExportAboutVoucherXuHui;
+import com.ciicsh.gto.fcbusinesscenter.tax.commandservice.dao.TaskMainDetailMapper;
+import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskMainDetailBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TaskSubProofBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.bo.TemplateFileBO;
 import com.ciicsh.gto.fcbusinesscenter.tax.entity.po.*;
@@ -177,6 +180,12 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
 
     @Autowired
     private BatchProxy batchProxy;
+
+    @Autowired
+    private ExportAboutTaskMainDetail exportAboutTaskMainDetail;
+
+    @Autowired
+    private TaskMainDetailMapper taskMainDetailMapper;
 
     /**
      * 所得项目_正常工资薪金收入
@@ -1086,6 +1095,45 @@ public class ExportFileServiceImpl extends BaseService implements ExportFileServ
                     Map<String, String> tags = new HashMap<>(16);
                     //日志工具类返回
                     LogTaskFactory.getLogger().error(ee, "exportTaxList fs close error", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.OTHER, tags);
+                }
+            }
+            throw e;
+        }
+        map.put("wb", wb);
+        return map;
+    }
+
+    /**
+     * 导出个税数据明细
+     * @param taskMainId
+     * @param employeeNo
+     * @param employeeName
+     * @return
+     */
+    @Override
+    public Map<String, Object> exportTaskMainDetailData(long taskMainId, String employeeNo, String employeeName) {
+        Map<String, Object> map = new HashMap<>();
+        String fileName = "个税数据明细.xls";
+        map.put("fileName", fileName);
+        HSSFWorkbook wb = null;
+        try {
+            Map<String, Object> params = new HashMap<>();
+            //主任务id
+            params.put("taskMainId", taskMainId);
+            //是否为合并明细
+            params.put("isCombined", true);
+            params.put("employeeNo", employeeNo);
+            params.put("employeeName", employeeName);
+            List<TaskMainDetailBO> taskMainDetailBOList = taskMainDetailMapper.queryTaskMainDetails(params);
+            wb = exportAboutTaskMainDetail.getTaskMainDetailWB(taskMainDetailBOList,fileName,"voucher");
+        } catch (Exception e) {
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception ee) {
+                    Map<String, String> tags = new HashMap<>(16);
+                    //日志工具类返回
+                    LogTaskFactory.getLogger().error(ee, "exportTaskMainDetailData fs close error", EnumUtil.getMessage(EnumUtil.SOURCE_TYPE, "06"), LogType.OTHER, tags);
                 }
             }
             throw e;
