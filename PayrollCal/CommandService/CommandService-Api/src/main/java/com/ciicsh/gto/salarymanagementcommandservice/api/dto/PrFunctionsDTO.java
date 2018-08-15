@@ -16,10 +16,9 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class PrFunctionsDTO {
+public class PrFunctionsDTO implements Serializable{
 
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = -8479029352436182324L;
     /**
      * 函数ID
      */
@@ -55,7 +54,7 @@ public class PrFunctionsDTO {
     /**
      * 是否有效
      */
-	private Boolean isActive;
+        private Boolean isActive;
     /**
      * 数据创建时间
      */

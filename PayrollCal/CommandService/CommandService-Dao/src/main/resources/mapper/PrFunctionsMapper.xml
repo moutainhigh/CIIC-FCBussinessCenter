@@ -2,6 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ciicsh.gto.salarymanagementcommandservice.dao.PrFunctionsMapper">
 
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ciicsh.gto.salarymanagement.entity.po.PrFunctionsPO">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="rule_name" property="ruleName" />
+        <result column="category" property="category" />
+        <result column="sub_cateogry" property="subCateogry" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
     <select id="selectFunctionNameList" resultType="hashmap">
         SELECT
         id as functionId,
@@ -10,6 +20,23 @@
         pr_functions
         WHERE
         is_active = 1
+    </select>
+
+    <select id="getFunctionsListByName" parameterType="com.ciicsh.gto.salarymanagement.entity.po.PrFunctionsPO" resultMap="BaseResultMap">
+        SELECT
+        id,
+        name,
+        rule_name,
+        category,
+        sub_cateogry,
+        remark
+        FROM
+        pr_functions
+        WHERE
+        is_active = 1
+        <if test="name != null and name != ''">
+            AND name LIKE concat('%', #{name, jdbcType=VARCHAR}, '%')
+        </if>
     </select>
 
 </mapper>
