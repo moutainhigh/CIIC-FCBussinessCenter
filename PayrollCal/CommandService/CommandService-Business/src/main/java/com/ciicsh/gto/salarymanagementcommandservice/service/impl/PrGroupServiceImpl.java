@@ -1,11 +1,13 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.EmpExtendFieldTemplateProxy;
 import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
@@ -19,6 +21,7 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceC
 import com.ciicsh.gto.salarymanagementcommandservice.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mongodb.BasicDBObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,7 +161,7 @@ public class PrGroupServiceImpl implements PrGroupService {
             // 1,新建薪资组,默认审核通过,同步草稿薪资项到审核通过表
             prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
             // 2,审批通过,保存历史数据
-            savePrPayrollGroupHistory(paramItem, itemList);
+            savePrPayrollGroupHistory(paramItem, itemList,null);
             return result;
         }
 
@@ -353,17 +356,84 @@ public class PrGroupServiceImpl implements PrGroupService {
             i.setManagementId(newEntity.getManagementId());
             i.setOperateType(newEntity.getOperateType());
         });
-        int itemAddResult = itemService.addList(itemList);
+        itemService.addList(itemList);
+
+        //薪资项扩展字段处理
+        List<PrPayrollItemPO> employeeExtendFieldsList = getTemplateEmployeeExtendFields(newEntity.getEmpExtendFieldTemplateId(),newEntity.getManagementId(),newEntity.getGroupCode());
+
+        int itemAddResult = itemService.addList(employeeExtendFieldsList);
         if (itemAddResult == 0) {
             throw new BusinessException("复制薪资项失败");
         }
         // 1,复制薪资组,默认审核通过,同步草稿薪资项到审核通过表
         prPayrollItemMapper.insertBatchApprovedItemsByGroup(newEntity.getGroupCode(), null);
         // 2,审批通过,保存历史数据
-        savePrPayrollGroupHistory(newEntity, itemList);
+        savePrPayrollGroupHistory(newEntity, itemList,employeeExtendFieldsList);
 
         return true;
     }
+
+    private List<PrPayrollItemPO> getTemplateEmployeeExtendFields(Long templateID, String managementId,String groupCode) {
+        List<PrPayrollItemPO> extendFieldsList = new ArrayList<>();
+
+        if (org.springframework.util.ObjectUtils.isEmpty(templateID)) {
+            return extendFieldsList;
+        }
+        try {
+            JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(templateID);
+            if (!ObjectUtils.isEmpty(listJsonResult)) {
+                List<EmployeeExtendFieldDTO> extendFieldDTOList = listJsonResult.getData();
+                if (!CollectionUtils.isEmpty(extendFieldDTOList)) {
+                    extendFieldDTOList.forEach(extendFieldDTO -> {
+                        PrPayrollItemPO dbObject = new PrPayrollItemPO();
+                        dbObject.setItemName(extendFieldDTO.getFieldName());
+                        dbObject.setItemType(1); //薪资项类型：1-固定输入项;2-可变输入项;3-计算项;4-系统项
+
+                        Integer fieldType = extendFieldDTO.getFieldType(); //接口中DTO 字段类型（1.数值 2.文本 3日期 4选项）
+                        switch (fieldType) {
+                            case 1:
+                                dbObject.setDataType(2); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                                break;
+                            case 2:
+                            case 4:
+                            case 3:
+                                dbObject.setDataType(1); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                                break;
+                            default:
+                                break;
+                        }
+
+                        dbObject.setManagementId(managementId);
+                        dbObject.setPayrollGroupCode(groupCode);
+                        dbObject.setItemCode(codeGenerator.genPrItemCode(managementId)); //薪资项编码
+                        dbObject.setDefaultValue(""); //默认数字
+                        dbObject.setItemCondition(""); //薪资项取值范围的条件描述
+                        dbObject.setFormulaContent(""); //公式内容
+                        dbObject.setCanLock(false); //是否可以上锁
+                        dbObject.setFullFormula("");
+                        dbObject.setCalPrecision(0); //计算精度
+                        dbObject.setCalPriority(0); //计算顺序
+                        dbObject.setDefaultValueStyle(2); //默认值处理方式： 1 - 使用历史数据 2 - 使用基本值
+                        dbObject.setDecimalProcessType(1); //小数处理方式： 1 - 四舍五入 2 - 简单去位
+                        dbObject.setDisplayPriority(0); //显示顺序
+                        dbObject.setCreatedBy(UserContext.getUser().getDisplayName());
+                        dbObject.setModifiedBy(UserContext.getUser().getDisplayName());
+                        dbObject.setExtendFlag(1);
+
+                        dbObject.setIsActive(true);
+                        extendFieldsList.add(dbObject);
+                    });
+                }
+
+            }
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+
+        return extendFieldsList;
+    }
+
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
@@ -501,7 +571,10 @@ public class PrGroupServiceImpl implements PrGroupService {
      * @param prPayrollGroupPO 薪资组详情
      * @param itemList 薪资项列表
      */
-    private void savePrPayrollGroupHistory(PrPayrollGroupPO prPayrollGroupPO, List<PrPayrollItemPO> itemList) {
+    private void savePrPayrollGroupHistory(PrPayrollGroupPO prPayrollGroupPO, List<PrPayrollItemPO> itemList,List<PrPayrollItemPO> employeeExtendFieldsList) {
+        if(!CollectionUtils.isEmpty(itemList) && !CollectionUtils.isEmpty(employeeExtendFieldsList)){
+            itemList.addAll(employeeExtendFieldsList);
+        }
         // 审批通过，保存历史数据
         if (ApprovalStatusEnum.APPROVE.getValue() == prPayrollGroupPO.getApprovalStatus()) {
             // 保存历史数据

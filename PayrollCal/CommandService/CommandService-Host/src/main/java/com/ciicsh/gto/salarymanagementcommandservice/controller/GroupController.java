@@ -88,10 +88,12 @@ public class GroupController implements PayrollGroupProxy{
                                   @RequestParam String newName,
                                   @RequestParam String managementId,
                                   @RequestParam String remark,
-                                  @RequestParam boolean isCopyRemark){
+                                  @RequestParam boolean isCopyRemark,
+                                  @RequestParam Long empExtendFieldTemplateId){
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
+        newEntity.setEmpExtendFieldTemplateId(empExtendFieldTemplateId);
         newEntity.setGroupName(newName);
         newEntity.setManagementId(managementId);
         newEntity.setRemark(isCopyRemark ? srcEntity.getRemark() : remark);
