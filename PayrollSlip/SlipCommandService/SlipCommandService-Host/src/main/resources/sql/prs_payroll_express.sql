@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `prs_payroll_express`;
 
 CREATE TABLE `prs_payroll_express` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `task_id` varchar(20) NOT NULL COMMENT '任务单编号',
+  `task_id` varchar(50) NOT NULL COMMENT '任务单编号',
   `recipient` varchar(200) DEFAULT NULL COMMENT '收件人',
   `receive_address` varchar(200) DEFAULT NULL COMMENT '收件人地址',
   `postcode` varchar(200) DEFAULT NULL COMMENT '邮编',

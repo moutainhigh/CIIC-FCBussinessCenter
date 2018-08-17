@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `prs_payroll_print_record`;
 
 CREATE TABLE `prs_payroll_print_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '打印记录ID',
-  `task_id` varchar(20) NOT NULL COMMENT '任务单编号',
+  `task_id` varchar(50) NOT NULL COMMENT '任务单编号',
   `task_title` varchar(50) DEFAULT NULL COMMENT '任务单标题',
   `management_id` varchar(9) DEFAULT NULL DEFAULT '' COMMENT '管理方ID',
   `management_name` varchar(30) DEFAULT NULL COMMENT '管理方名称',
