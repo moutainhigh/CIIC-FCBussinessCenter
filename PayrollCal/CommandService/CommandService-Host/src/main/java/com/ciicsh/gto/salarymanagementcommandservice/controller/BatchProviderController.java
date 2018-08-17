@@ -126,7 +126,7 @@ public class BatchProviderController implements BatchProxy {
             batchDTO.setHasMoney(adjustBatchPO.getHasMoney());
             batchDTO.setHasAdvance(adjustBatchPO.getHasAdvance());
             batchDTO.setStatus(adjustBatchPO.getStatus());
-            batchDTO.setPeriod(adjustBatchPO.getPeriod());
+            batchDTO.setActualPeriod(adjustBatchPO.getPeriod());
 
             normalBatchPO = normalBatchService.getBatchByCode(adjustBatchPO.getRootBatchCode());
         } else {
@@ -135,7 +135,7 @@ public class BatchProviderController implements BatchProxy {
             batchDTO.setHasMoney(backTrackingBatchPO.getHasMoney());
             batchDTO.setHasAdvance(backTrackingBatchPO.getHasAdvance());
             batchDTO.setStatus(backTrackingBatchPO.getStatus());
-            batchDTO.setPeriod(backTrackingBatchPO.getPeriod());
+            batchDTO.setActualPeriod(backTrackingBatchPO.getPeriod());
 
             normalBatchPO = normalBatchService.getBatchByCode(backTrackingBatchPO.getRootBatchCode());
         }
