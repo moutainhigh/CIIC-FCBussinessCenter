@@ -284,11 +284,28 @@ public class PrsMainTaskServiceImpl implements PrsMainTaskService {
         }
 
         if (params.containsKey("updConds")) {
-            BasicDBObject filter = new BasicDBObject((Map)params.remove("updConds"));
-            BasicDBObject fields = new BasicDBObject((Map)params.remove("updFields"));
-            BasicDBObject update = new BasicDBObject("$set", fields);
-
-            coll.updateMany(filter, update);
+            Map updConds = (Map)params.remove("updConds");
+            Map updFields = (Map)params.remove("updFields");
+            if ( (int)updFields.get("publish_state") == 1 ) {
+                Map sendConds = new Hashtable(updConds);
+                Map sendFields = new Hashtable();
+                sendConds.put("publish_state", 0);
+                sendFields.put("publish_state", 1);
+                BasicDBObject filter = new BasicDBObject(sendConds);
+                BasicDBObject fields = new BasicDBObject(sendFields);
+                BasicDBObject update = new BasicDBObject("$set", fields);
+                coll.updateMany(filter, update);
+            }
+            if ( (int)updFields.get("upload_state") == 1 ) {
+                Map uploadConds = new Hashtable(updConds);
+                Map uploadFields = new Hashtable();
+                uploadConds.put("upload_state", 0);
+                uploadFields.put("upload_state", 1);
+                BasicDBObject filter = new BasicDBObject(uploadConds);
+                BasicDBObject fields = new BasicDBObject(uploadFields);
+                BasicDBObject update = new BasicDBObject("$set", fields);
+                coll.updateMany(filter, update);
+            }
         }
 
         if (params.containsKey("delObjectIds")) {

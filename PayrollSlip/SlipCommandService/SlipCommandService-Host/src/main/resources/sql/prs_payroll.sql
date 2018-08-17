@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS `prs_payroll`;
 CREATE TABLE `prs_payroll` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '工资单ID',
   `payroll_code` varchar(20) DEFAULT NULL COMMENT '工资单编号',
-  `main_task_id` varchar(20) DEFAULT NULL COMMENT '任务单id',
+  `main_task_id` varchar(50) DEFAULT NULL COMMENT '任务单id',
   `management_id` varchar(15) NOT NULL DEFAULT '' COMMENT '管理方ID',
   `management_name` varchar(30) DEFAULT NULL,
   `employee_id` varchar(9) NOT NULL DEFAULT '' COMMENT '雇员ID',
