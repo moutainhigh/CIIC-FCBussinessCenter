@@ -198,7 +198,7 @@ public class AdjustBatchController {
         }
     }
 
-    @PostMapping("/getAdjustBatch/{batchCode}")
+    @PostMapping("/getAdjustBatch/{batchCode}/{batchType}")
     public JsonResult getAdjustBatch(
             @RequestParam(required = false, defaultValue = "") String empCode,
             @RequestParam(required = false, defaultValue = "") String empName,
@@ -207,7 +207,8 @@ public class AdjustBatchController {
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "50")  Integer pageSize,
             @RequestParam(required = false, defaultValue = "") Integer flag,
-            @PathVariable("batchCode") String batchCode) {
+            @PathVariable("batchCode") String batchCode,
+            @PathVariable("batchType") Integer batchType) {
 
         Criteria criteria = null;
 

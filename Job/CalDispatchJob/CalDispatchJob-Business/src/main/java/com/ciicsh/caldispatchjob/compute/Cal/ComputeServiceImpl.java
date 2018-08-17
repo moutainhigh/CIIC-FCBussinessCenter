@@ -361,9 +361,9 @@ public class ComputeServiceImpl {
             condition_formula = formulaContent;
         }
         else if(conditions.length == 1  && formulas.length ==1){
-            condition_formula = StringUtils.removeEnd(conditions[0],";") + CONDITION_FUNCTION_SPLIT + formulas[0];
+            condition_formula = StringUtils.removeEnd(conditions[0],CONDITION_FOMULAR_SIPE) + CONDITION_FUNCTION_SPLIT + formulas[0];
         }else {
-            condition_formula = StringUtils.removeEnd(condition,";") + CONDITION_FUNCTION_SPLIT + formulaContent;
+            condition_formula = StringUtils.removeEnd(condition,CONDITION_FOMULAR_SIPE) + CONDITION_FUNCTION_SPLIT + formulaContent;
         }
         FuncEntity funcEntity = null;
         Matcher m = FUNCTION_REGEX.matcher(condition_formula);
@@ -429,11 +429,11 @@ public class ComputeServiceImpl {
             }else if(condition_formula.length == 2){
                 String formula = condition_formula[1];
                 String cond = condition_formula[0];
-                if(formula.split(";").length == 2 ){
+                if(formula.split(CONDITION_FOMULAR_SIPE).length == 2 ){
                     sb.append("if (" + cond + ")");
-                    sb.append("{ " + formula.split(";")[0] + " }");
+                    sb.append("{ " + formula.split(CONDITION_FOMULAR_SIPE)[0] + " }");
                     sb.append(" else ");
-                    sb.append("{ " + formula.split(";")[1] + " }");
+                    sb.append("{ " + formula.split(CONDITION_FOMULAR_SIPE)[1] + " }");
                 }
                 else {
                     sb.append("if (" + condition_formula[0] + ")");
