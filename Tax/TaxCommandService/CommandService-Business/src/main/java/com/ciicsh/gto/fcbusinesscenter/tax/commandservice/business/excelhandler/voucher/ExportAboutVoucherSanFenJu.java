@@ -14,6 +14,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -198,9 +199,9 @@ public class ExportAboutVoucherSanFenJu extends BaseService {
                 cellH = row.createCell(7);
             }
             String period = "";
-            String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
-            String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
-            if (incomeStart.equals(incomeEnd)) {
+            String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeStart());
+            String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeEnd());
+            if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
                 period = incomeStart;
             } else {
                 period = incomeStart + "~" + incomeEnd;

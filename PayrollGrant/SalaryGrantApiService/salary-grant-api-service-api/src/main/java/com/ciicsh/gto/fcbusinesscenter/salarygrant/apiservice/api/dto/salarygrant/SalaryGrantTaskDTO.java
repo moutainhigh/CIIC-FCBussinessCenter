@@ -24,8 +24,4 @@ public class SalaryGrantTaskDTO {
      * 薪酬计算批次号
      */
     private String batchCode;
-    /**
-     * 管理方编号
-     */
-    private String managementId;
 }

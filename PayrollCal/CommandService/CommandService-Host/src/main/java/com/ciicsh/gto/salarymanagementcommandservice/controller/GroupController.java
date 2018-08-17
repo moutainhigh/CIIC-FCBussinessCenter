@@ -8,6 +8,7 @@ import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
 import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.EmpExtendFieldTemplateProxy;
 import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmpExtendFieldTemplateListDTO;
 import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
+import com.ciicsh.gto.salarymanagement.entity.enums.OperateTypeEnum;
 import com.ciicsh.gto.salarymanagementcommandservice.api.PayrollGroupProxy;
 import com.ciicsh.gto.salarymanagement.entity.PrGroupEntity;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
@@ -55,9 +56,6 @@ public class GroupController implements PayrollGroupProxy{
     private PrGroupService prGroupService;
 
     @Autowired
-    private CodeGenerator codeGenerator;
-
-    @Autowired
     private ManagementProxy managementProxy;
 
     @Autowired
@@ -90,13 +88,17 @@ public class GroupController implements PayrollGroupProxy{
                                   @RequestParam String newName,
                                   @RequestParam String managementId,
                                   @RequestParam String remark,
-                                  @RequestParam boolean isCopyRemark){
+                                  @RequestParam boolean isCopyRemark,
+                                  @RequestParam Long empExtendFieldTemplateId){
         PrPayrollGroupPO srcEntity = prGroupService.getItemByCode(srcCode);
         PrPayrollGroupPO newEntity = new PrPayrollGroupPO();
         BeanUtils.copyProperties(srcEntity, newEntity);
+        newEntity.setEmpExtendFieldTemplateId(empExtendFieldTemplateId);
         newEntity.setGroupName(newName);
         newEntity.setManagementId(managementId);
         newEntity.setRemark(isCopyRemark ? srcEntity.getRemark() : remark);
+        // 标记此薪资组是复制而来
+        newEntity.setOperateType(OperateTypeEnum.COPY.getValue());
         boolean result;
         try {
             result = prGroupService.copyPrGroup(srcEntity, newEntity);

@@ -76,6 +76,21 @@ public class TaskSubProofDetailDTO {
      */
     private String declareAccount;
 
+    /**
+     * 申报账户(中文)
+     */
+    private String declareAccountName;
+
+    /**
+     * 所属税务局
+     */
+    private String station;
+
+    /**
+     * 城市代码
+     */
+    private String cityCode;
+
     public Long getId() {
         return id;
     }
@@ -180,6 +195,30 @@ public class TaskSubProofDetailDTO {
         this.declareAccount = declareAccount;
     }
 
+    public String getDeclareAccountName() {
+        return declareAccountName;
+    }
+
+    public void setDeclareAccountName(String declareAccountName) {
+        this.declareAccountName = declareAccountName;
+    }
+
+    public String getStation() {
+        return station;
+    }
+
+    public void setStation(String station) {
+        this.station = station;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
     @Override
     public String toString() {
         return "TaskSubProofDetailDTO{" +
@@ -196,6 +235,9 @@ public class TaskSubProofDetailDTO {
                 ", incomeForTax=" + incomeForTax +
                 ", withholdedAmount=" + withholdedAmount +
                 ", declareAccount='" + declareAccount + '\'' +
+                ", declareAccountName='" + declareAccountName + '\'' +
+                ", station='" + station + '\'' +
+                ", cityCode='" + cityCode + '\'' +
                 '}';
     }
 }

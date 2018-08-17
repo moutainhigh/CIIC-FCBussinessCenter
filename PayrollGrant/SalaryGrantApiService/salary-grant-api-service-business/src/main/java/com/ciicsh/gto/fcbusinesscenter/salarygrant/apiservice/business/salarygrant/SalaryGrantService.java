@@ -42,22 +42,4 @@ public interface SalaryGrantService extends IService<SalaryGrantTaskPO> {
      * @return
      */
     ReprieveEmployeeBO updateForReprieveEmployee(ReprieveEmployeeBO bo);
-
-    /**
-     *  根据退票雇员信息创建薪资发放任务单
-     *  @author gaoyang
-     *  @date 2018-05-23
-     * @param employeeRefundList
-     * @return Boolean
-     */
-    ResponseRefundBO toCreateRefundTask(List<SalaryGrantEmployeeRefundBO> employeeRefundList, String batchCode);
-
-    /**
-     *  根据任务单信息进行驳回处理
-     *  @author gaoyang
-     *  @date 2018-05-23
-     * @param salaryGrantTaskBO
-     * @return Boolean
-     */
-    Boolean toRejectTask(SalaryGrantTaskBO salaryGrantTaskBO);
 }

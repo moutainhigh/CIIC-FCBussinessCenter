@@ -13,6 +13,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,7 +184,7 @@ public class ExportAboutVoucherPuDong extends BaseService {
                 if (null == cellE) {
                     cellE = row.createCell(4);
                 }
-                cellE.setCellValue(EnumUtil.getMessage(EnumUtil.IT_CERT_TYPE, taskSubProofDetailPO.getIdType()));
+                cellE.setCellValue(EnumUtil.getMessage(EnumUtil.IT_TYPE, taskSubProofDetailPO.getIdType()));
 
                 //所属期-F列
                 HSSFCell cellF = row.getCell(5);
@@ -191,8 +192,8 @@ public class ExportAboutVoucherPuDong extends BaseService {
                     cellF = row.createCell(5);
                 }
                 String period = "";
-                String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : taskSubProofDetailPO.getIncomeStart().toString();
-                String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : taskSubProofDetailPO.getIncomeEnd().toString();
+                String incomeStart = taskSubProofDetailPO.getIncomeStart() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeStart());
+                String incomeEnd = taskSubProofDetailPO.getIncomeEnd() == null ? "" : DateTimeFormatter.ofPattern("yyyy-MM").format(taskSubProofDetailPO.getIncomeEnd());
                 if (incomeStart.equals(incomeEnd) || "".equals(incomeEnd)) {
                     period = incomeStart;
                 } else {

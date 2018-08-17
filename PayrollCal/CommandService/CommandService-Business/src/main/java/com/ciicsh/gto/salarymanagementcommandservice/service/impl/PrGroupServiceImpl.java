@@ -1,11 +1,16 @@
 package com.ciicsh.gto.salarymanagementcommandservice.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ciicsh.gt1.common.auth.UserContext;
 import com.ciicsh.gto.fcbusinesscenter.util.exception.BusinessException;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.EmpExtendFieldTemplateProxy;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.EmployeeExtendFieldDTO;
+import com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult;
 import com.ciicsh.gto.salarymanagement.entity.enums.ApprovalStatusEnum;
 import com.ciicsh.gto.salarymanagement.entity.enums.BizTypeEnum;
+import com.ciicsh.gto.salarymanagement.entity.enums.DataTypeEnum;
 import com.ciicsh.gto.salarymanagement.entity.po.*;
 import com.ciicsh.gto.salarymanagementcommandservice.dao.*;
 import com.ciicsh.gto.salarymanagementcommandservice.service.ApprovalHistoryService;
@@ -16,11 +21,14 @@ import com.ciicsh.gto.salarymanagementcommandservice.service.util.CommonServiceC
 import com.ciicsh.gto.salarymanagementcommandservice.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mongodb.BasicDBObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -30,6 +38,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by jiangtianning on 2017/10/24.
+ *
  * @author jiangtianning
  */
 @Service
@@ -58,6 +67,9 @@ public class PrGroupServiceImpl implements PrGroupService {
 
     @Autowired
     private CodeGenerator codeGenerator;
+
+    @Autowired
+    private EmpExtendFieldTemplateProxy empExtendFieldTemplateProxy;
 
     private final static String PAY_ITEM_REGEX = "\\[([^\\[\\]]+)\\]";
 
@@ -93,7 +105,7 @@ public class PrGroupServiceImpl implements PrGroupService {
         // 验证同一管理方下是否有重复薪资组模板名称，如有，不允许编辑成功
         List<PrPayrollGroupPO> resultList = prPayrollGroupMapper.queryGroupListByNameAndManagementId(paramItem.getGroupName(), paramItem.getManagementId());
         resultList.removeIf(group -> group.getGroupCode().equals(paramItem.getGroupCode()));
-        if (resultList != null && resultList.size() > 0 ){
+        if (resultList != null && resultList.size() > 0) {
             throw new BusinessException("重复的薪资组名称");
         }
         return prPayrollGroupMapper.updateItemByCode(paramItem);
@@ -102,7 +114,7 @@ public class PrGroupServiceImpl implements PrGroupService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public int addItem(PrPayrollGroupPO paramItem) {
-        //检查是否有重复薪资组模板名称
+        //检查是否有重复薪资组名称
         if (this.nameExistCheck(paramItem.getGroupName(), paramItem)) {
             throw new BusinessException("重复的薪资组名称");
         }
@@ -111,11 +123,12 @@ public class PrGroupServiceImpl implements PrGroupService {
         paramItem.setGroupName(paramItem.getManagementId() + "-" + paramItem.getGroupName());
         paramItem.setApprovalStatus(ApprovalStatusEnum.APPROVE.getValue());
         int result;
+        //继承薪资组模板ID不为空时
         if (StringUtils.isEmpty(paramItem.getGroupTemplateCode())) {
             List<PrPayrollBaseItemPO> paramList = prPayrollBaseItemMapper.selectList(
                     new EntityWrapper<>(new PrPayrollBaseItemPO()));
             // 初始化基本薪资项的显示顺序
-            for(PrPayrollBaseItemPO p : paramList){
+            for (PrPayrollBaseItemPO p : paramList) {
                 p.setDisplayPriority(paramList.indexOf(p));
             }
             List<PrPayrollItemPO> itemList = paramList.stream()
@@ -131,30 +144,30 @@ public class PrGroupServiceImpl implements PrGroupService {
                         item.setManagementId(paramItem.getManagementId());
                         item.setDisplayPriority(i.getDisplayPriority());
                         item.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
-                        item.setDefaultValue(i.getDataType() == 3 ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.YYYY_MM_DD) : i.getDefaultValue());
+                        item.setDefaultValue(i.getDataType() == DataTypeEnum.DATE.getValue() ? DateUtil.getNowDate(LocalDateTime.now(), DateUtil.YYYY_MM_DD) : i.getDefaultValue());
                         return item;
                     })
                     .collect(Collectors.toList());
+
+            //添加雇员扩展字段薪资项
+            List<PrPayrollItemPO> extendItemDTOList = getExtendItems(paramItem.getEmpExtendFieldTemplateId(), paramItem.getManagementId(), paramItem.getGroupCode());
+            // 将扩展项List添加到返回结果中
+            if (!CollectionUtils.isEmpty(extendItemDTOList)) {
+                itemList.addAll(extendItemDTOList);
+            }
+
             itemService.addList(itemList);
             result = prPayrollGroupMapper.insert(paramItem);
+            // 1,新建薪资组,默认审核通过,同步草稿薪资项到审核通过表
             prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
-            // 审批通过，保存历史数据
-            if (ApprovalStatusEnum.APPROVE.getValue() == paramItem.getApprovalStatus()) {
-                // 保存历史数据
-                PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
-                prPayrollGroupHistoryPO.setPayrollGroupCode(paramItem.getGroupCode());
-                prPayrollGroupHistoryPO.setVersion(DEFAULT_VERSION);
-                prPayrollGroupHistoryPO.setPayrollGroupHistory(JSON.toJSONString(itemList));
-                prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
-                prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
-                prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
-
-            }
+            // 2,审批通过,保存历史数据
+            savePrPayrollGroupHistory(paramItem, itemList,null);
             return result;
         }
 
+        //根据薪资组模版编码查询薪资项List
         List<PrPayrollItemPO> prItemListFromGroupTemplate =
-                itemService.getListByGroupTemplateCode(paramItem.getGroupTemplateCode(),0,0).getList();
+                itemService.getListByGroupTemplateCode(paramItem.getGroupTemplateCode(), 0, 0).getList();
         List<PrPayrollItemPO> itemList = prItemListFromGroupTemplate.stream()
                 .map(i -> {
                     PrPayrollItemPO item = new PrPayrollItemPO();
@@ -166,10 +179,103 @@ public class PrGroupServiceImpl implements PrGroupService {
                     return item;
                 })
                 .collect(Collectors.toList());
+
+        //添加雇员扩展字段薪资项
+        List<PrPayrollItemPO> extendItemDTOList = getExtendItems(paramItem.getEmpExtendFieldTemplateId(), paramItem.getManagementId(), paramItem.getGroupCode());
+        // 将扩展项List添加到返回结果中
+        if (!CollectionUtils.isEmpty(extendItemDTOList)) {
+            itemList.addAll(extendItemDTOList);
+        }
+
         itemService.addList(itemList);
         result = prPayrollGroupMapper.insert(paramItem);
         prPayrollItemMapper.insertBatchApprovedItemsByGroup(paramItem.getGroupCode(), null);
         return result;
+    }
+
+    /**
+     * 根据模板ID获取扩展薪资项
+     *
+     * @param templateId
+     * @return
+     */
+    private List<PrPayrollItemPO> getExtendItems(Long templateId, String managementId, String payrollGroupCode) {
+        if (ObjectUtils.isEmpty(templateId)) {
+            return null;
+        }
+
+        List<PrPayrollItemPO> extendItemDTOList = null;
+
+        com.ciicsh.gto.fcoperationcenter.fcoperationcentercommandservice.api.dto.JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult;
+        try {
+            listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(templateId);
+
+            if (!ObjectUtils.isEmpty(listJsonResult)) {
+                extendItemDTOList = employeeExtendFieldList2PrPayrollItemList(listJsonResult.getData(), managementId, payrollGroupCode);
+            }
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+
+        return extendItemDTOList;
+    }
+
+    /**
+     * 雇员扩展模板字段List转换为薪资项明细字段List
+     *
+     * @param extendFieldDTOList
+     * @return
+     */
+    private List<PrPayrollItemPO> employeeExtendFieldList2PrPayrollItemList(List<EmployeeExtendFieldDTO> extendFieldDTOList, String managementId, String payrollGroupCode) {
+        List<PrPayrollItemPO> payrollItemPOList = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(extendFieldDTOList)) {
+            return payrollItemPOList;
+        }
+
+        extendFieldDTOList.forEach(employeeExtendFieldDTO -> {
+            PrPayrollItemPO payrollItemPO = new PrPayrollItemPO();
+            payrollItemPO.setItemType(1); //薪资项类型：1 - 固定输入项
+            payrollItemPO.setItemName(employeeExtendFieldDTO.getFieldName()); //薪资项名称
+            payrollItemPO.setExtendFlag(1); //扩展标识：1-扩展字段；0-非扩展字段
+            //薪资项编码, 此处无需设置
+            payrollItemPO.setManagementId(managementId); //所属管理方ID
+            payrollItemPO.setPayrollGroupCode(payrollGroupCode); //薪资组编码
+            payrollItemPO.setCreatedTime(new Date());
+            payrollItemPO.setModifiedTime(new Date());
+
+            Integer fieldType = employeeExtendFieldDTO.getFieldType(); //接口中DTO 字段类型（1.数值 2.文本 3日期 4选项）
+            if (!ObjectUtils.isEmpty(fieldType)) {
+                switch (fieldType) {
+                    case 1:
+                        payrollItemPO.setDataType(2); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                        break;
+                    case 2:
+                    case 4:
+                    case 3:
+                        payrollItemPO.setDataType(1); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            payrollItemPO.setDefaultValue(""); //默认数字
+            payrollItemPO.setItemCondition(""); //薪资项取值范围的条件描述
+            payrollItemPO.setFormulaContent(""); //公式内容
+            payrollItemPO.setCanLock(false); //是否可以上锁
+            payrollItemPO.setCalPrecision(0); //计算精度
+            payrollItemPO.setCalPriority(0); //计算顺序
+            payrollItemPO.setDefaultValueStyle(2); //默认值处理方式： 1 - 使用历史数据 2 - 使用基本值
+            payrollItemPO.setDecimalProcessType(1); //小数处理方式： 1 - 四舍五入 2 - 简单去位
+            payrollItemPO.setDisplayPriority(0); //显示顺序
+            payrollItemPO.setActive(true); //是否有效
+
+            payrollItemPOList.add(payrollItemPO);
+        });
+
+        return payrollItemPOList;
     }
 
     @Override
@@ -248,13 +354,86 @@ public class PrGroupServiceImpl implements PrGroupService {
         itemList.forEach(i -> {
             i.setPayrollGroupCode(newEntity.getGroupCode());
             i.setManagementId(newEntity.getManagementId());
+            i.setOperateType(newEntity.getOperateType());
         });
-        int itemAddResult = itemService.addList(itemList);
+        itemService.addList(itemList);
+
+        //薪资项扩展字段处理
+        List<PrPayrollItemPO> employeeExtendFieldsList = getTemplateEmployeeExtendFields(newEntity.getEmpExtendFieldTemplateId(),newEntity.getManagementId(),newEntity.getGroupCode());
+
+        int itemAddResult = itemService.addList(employeeExtendFieldsList);
         if (itemAddResult == 0) {
             throw new BusinessException("复制薪资项失败");
         }
+        // 1,复制薪资组,默认审核通过,同步草稿薪资项到审核通过表
+        prPayrollItemMapper.insertBatchApprovedItemsByGroup(newEntity.getGroupCode(), null);
+        // 2,审批通过,保存历史数据
+        savePrPayrollGroupHistory(newEntity, itemList,employeeExtendFieldsList);
+
         return true;
     }
+
+    private List<PrPayrollItemPO> getTemplateEmployeeExtendFields(Long templateID, String managementId,String groupCode) {
+        List<PrPayrollItemPO> extendFieldsList = new ArrayList<>();
+
+        if (org.springframework.util.ObjectUtils.isEmpty(templateID)) {
+            return extendFieldsList;
+        }
+        try {
+            JsonResult<List<EmployeeExtendFieldDTO>> listJsonResult = empExtendFieldTemplateProxy.listTemplateFields(templateID);
+            if (!ObjectUtils.isEmpty(listJsonResult)) {
+                List<EmployeeExtendFieldDTO> extendFieldDTOList = listJsonResult.getData();
+                if (!CollectionUtils.isEmpty(extendFieldDTOList)) {
+                    extendFieldDTOList.forEach(extendFieldDTO -> {
+                        PrPayrollItemPO dbObject = new PrPayrollItemPO();
+                        dbObject.setItemName(extendFieldDTO.getFieldName());
+                        dbObject.setItemType(1); //薪资项类型：1-固定输入项;2-可变输入项;3-计算项;4-系统项
+
+                        Integer fieldType = extendFieldDTO.getFieldType(); //接口中DTO 字段类型（1.数值 2.文本 3日期 4选项）
+                        switch (fieldType) {
+                            case 1:
+                                dbObject.setDataType(2); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                                break;
+                            case 2:
+                            case 4:
+                            case 3:
+                                dbObject.setDataType(1); //数据格式: 1-文本,2-数字,3-日期,4-布尔
+                                break;
+                            default:
+                                break;
+                        }
+
+                        dbObject.setManagementId(managementId);
+                        dbObject.setPayrollGroupCode(groupCode);
+                        dbObject.setItemCode(codeGenerator.genPrItemCode(managementId)); //薪资项编码
+                        dbObject.setDefaultValue(""); //默认数字
+                        dbObject.setItemCondition(""); //薪资项取值范围的条件描述
+                        dbObject.setFormulaContent(""); //公式内容
+                        dbObject.setCanLock(false); //是否可以上锁
+                        dbObject.setFullFormula("");
+                        dbObject.setCalPrecision(0); //计算精度
+                        dbObject.setCalPriority(0); //计算顺序
+                        dbObject.setDefaultValueStyle(2); //默认值处理方式： 1 - 使用历史数据 2 - 使用基本值
+                        dbObject.setDecimalProcessType(1); //小数处理方式： 1 - 四舍五入 2 - 简单去位
+                        dbObject.setDisplayPriority(0); //显示顺序
+                        dbObject.setCreatedBy(UserContext.getUser().getDisplayName());
+                        dbObject.setModifiedBy(UserContext.getUser().getDisplayName());
+                        dbObject.setExtendFlag(1);
+
+                        dbObject.setIsActive(true);
+                        extendFieldsList.add(dbObject);
+                    });
+                }
+
+            }
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+
+        return extendFieldsList;
+    }
+
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
@@ -336,11 +515,11 @@ public class PrGroupServiceImpl implements PrGroupService {
     }
 
     // 从公式中获取薪资项名称列表
-    private List<String> getPayItems(String formula){
+    private List<String> getPayItems(String formula) {
         List<String> names = new LinkedList<>();
         Pattern p = Pattern.compile(PAY_ITEM_REGEX);
         Matcher m = p.matcher(formula);
-        while(m.find()) {
+        while (m.find()) {
             names.add(m.group(1));
         }
         return names;
@@ -364,9 +543,9 @@ public class PrGroupServiceImpl implements PrGroupService {
         return nameExistFlg != 0;
     }
 
-    private String builderStr(String ...strs){
+    private String builderStr(String... strs) {
         StringBuffer buffer = new StringBuffer();
-        for (String s : strs){
+        for (String s : strs) {
             buffer.append(s);
         }
         return buffer.toString();
@@ -385,5 +564,28 @@ public class PrGroupServiceImpl implements PrGroupService {
         relationPO.setModifiedBy(UserContext.getUserId());
         return relationPO;
 
+    }
+
+    /**
+     * 薪资组审批通过,保存历史数据
+     * @param prPayrollGroupPO 薪资组详情
+     * @param itemList 薪资项列表
+     */
+    private void savePrPayrollGroupHistory(PrPayrollGroupPO prPayrollGroupPO, List<PrPayrollItemPO> itemList,List<PrPayrollItemPO> employeeExtendFieldsList) {
+        if(!CollectionUtils.isEmpty(itemList) && !CollectionUtils.isEmpty(employeeExtendFieldsList)){
+            itemList.addAll(employeeExtendFieldsList);
+        }
+        // 审批通过，保存历史数据
+        if (ApprovalStatusEnum.APPROVE.getValue() == prPayrollGroupPO.getApprovalStatus()) {
+            // 保存历史数据
+            PrPayrollGroupHistoryPO prPayrollGroupHistoryPO = new PrPayrollGroupHistoryPO();
+            prPayrollGroupHistoryPO.setPayrollGroupCode(prPayrollGroupPO.getGroupCode());
+            prPayrollGroupHistoryPO.setVersion(DEFAULT_VERSION);
+            prPayrollGroupHistoryPO.setPayrollGroupHistory(JSON.toJSONString(itemList));
+            prPayrollGroupHistoryPO.setCreatedBy(UserContext.getUserId());
+            prPayrollGroupHistoryPO.setModifiedBy(UserContext.getUserId());
+            prPayrollGroupHistoryMapper.insert(prPayrollGroupHistoryPO);
+
+        }
     }
 }

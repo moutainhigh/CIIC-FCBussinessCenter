@@ -54,6 +54,7 @@
         <result column="is_pay_supported" property="paySupported" />
         <result column="is_declare_supported" property="declareSupported" />
         <result column="is_transfer_supported" property="transferSupported" />
+        <result column="is_proof_supported" property="proofSupported" />
         <result column="is_proof" property="proof" />
         <result column="is_proofed" property="proofed" />
         <result column="tax_real" property="taxReal" />
@@ -79,7 +80,7 @@
         ,t1.deduct_dleness_insurance,t1.deduct_property,t1.deduct_house_fund,t1.deduct_takeoff,t1.deduct_other,t1.deduct_total,t1.deduction,t1.donation,t1.income_for_tax
         ,t1.tax_rate,t1.quick_cal_deduct,t1.tax_amount,t1.tax_deduction,t1.tax_withhold_amount,t1.tax_withholded_amount,t1.tax_remedy_or_return
         ,t2.declare_account,t2.pay_account,t2.declare_account_name,t2.pay_account_name,t2.receipt_account,t2.support_no,t2.support_name,t2.is_support,t2.is_supported,t2.is_pay,t2.is_payed,t2.is_declare
-        ,t2.is_declared,t2.is_transfer,t2.is_transferred,t2.is_declare_supported,t2.is_transfer_supported,t2.is_pay_supported,t2.is_proof,t2.is_proofed
+        ,t2.is_declared,t2.is_transfer,t2.is_transferred,t2.is_declare_supported,t2.is_transfer_supported,t2.is_pay_supported,t2.is_proof,t2.is_proofed,t2.is_proof_supported
         FROM tax_fc_task_main_detail t1,tax_fc_employee_service_batch t2 where t1.task_main_id = #{taskMainId} and t1.calculation_batch_detail_id = t2.cal_batch_detail_id
         and t1.task_main_detail_id is null and t1.is_combined = #{isCombined}
         <if test="employeeNo != null and employeeNo != ''">

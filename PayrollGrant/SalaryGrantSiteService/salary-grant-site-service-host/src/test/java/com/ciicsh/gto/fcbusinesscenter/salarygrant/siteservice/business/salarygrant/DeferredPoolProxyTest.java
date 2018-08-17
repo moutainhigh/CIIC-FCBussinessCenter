@@ -41,16 +41,16 @@ public class DeferredPoolProxyTest {
 
     @Test
     public void addDeferredPool() {
-        SalaryGrantSubTaskPO salaryGrantSubTaskPO = salaryGrantSupplierSubTaskService.selectById(5);
+        SalaryGrantSubTaskPO salaryGrantSubTaskPO = salaryGrantSupplierSubTaskService.selectById(274);
         SalaryGrantTaskBO salaryGrantTaskBO = new SalaryGrantTaskBO();
-        salaryGrantTaskBO.setTaskCode(salaryGrantSubTaskPO.getSalaryGrantSubTaskCode());
+        salaryGrantTaskBO.setTaskCode(salaryGrantSubTaskPO.getSalaryGrantMainTaskCode());
         salaryGrantTaskBO.setBatchCode(salaryGrantSubTaskPO.getBatchCode());
         salaryGrantTaskBO.setManagementId(salaryGrantSubTaskPO.getManagementId());
         salaryGrantTaskBO.setManagementName(salaryGrantSubTaskPO.getManagementName());
         salaryGrantTaskBO.setGrantCycle(salaryGrantSubTaskPO.getGrantCycle());
 
         EntityWrapper<SalaryGrantEmployeePO> employeePOEntityWrapper = new EntityWrapper<>();
-        employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and is_active = 1", salaryGrantSubTaskPO.getSalaryGrantSubTaskCode());
+        employeePOEntityWrapper.where("salary_grant_sub_task_code = {0} and grant_status=1 and is_active = 1", salaryGrantSubTaskPO.getSalaryGrantSubTaskCode());
         List<SalaryGrantEmployeePO> employeeList = salaryGrantEmployeeMapper.selectList(employeePOEntityWrapper);
 
         PaymentDeferredRequestDTO paymentDeferredRequestDTO = new PaymentDeferredRequestDTO();
@@ -69,6 +69,7 @@ public class DeferredPoolProxyTest {
                 employeeInfo.setEmployeeName(employeePO.getEmployeeName());         //雇员名称
                 employeeInfo.setCompanyId(employeePO.getCompanyId());               //公司编号
                 employeeInfo.setCompanyName(employeePO.getCompanyName());           //公司名称
+                employeeInfo.setBankcardId(employeePO.getBankcardId());
                 employeeInfo.setCardNum(employeePO.getCardNum());                   //收款人账号
                 employeeInfo.setAccountName(employeePO.getAccountName());           //收款人姓名
                 employeeInfo.setBankcode(employeePO.getBankCode());                 //收款行行号

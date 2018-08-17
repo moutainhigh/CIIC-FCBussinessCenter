@@ -91,4 +91,56 @@
             t.is_active = 1
     </update>
 
+    <select id="selectEmpList" resultType="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeBO" parameterType="com.ciicsh.gto.fcbusinesscenter.salarygrant.apiservice.entity.bo.SalaryGrantEmployeeBO">
+        select
+        t.salary_grant_employee_id      salaryGrantEmployeeId,
+        t.employee_id                         employeeId,
+        t.employee_name                    employeeName,
+        t.company_id                          companyId,
+        t.grant_cycle                           grantCycle,
+        t.batch_code                           batchCode,
+        t.grant_account_code              grantAccountCode,
+        t.grant_account_name              grantAccountName,
+        t.card_num                             cardNum,
+        t.account_name                       accountName,
+        t.bank_code                            bankCode,
+        t.deposit_bank                        depositBank,
+        t.payment_amount                   paymentAmount,
+        t.currency_code                       currencyCode,
+        case t.currency_code               when 'CNY' then '人民币' when 'USD' then '美元' when 'EUR' then '欧元' else '' end   currencyName,
+        t.country_code                        countryCode,
+        ''                                            countryName,
+        t.grant_status                          grantStatus,
+        ''                                            grantStatusName,
+        t.remark
+        from
+        sg_salary_grant_employee t
+        <where>
+            <if test="salaryGrantMainTaskCode != null">
+                and t.salary_grant_main_task_code = #{salaryGrantMainTaskCode}
+            </if>
+            <if test="salaryGrantSubTaskCode != null">
+                and t.salary_grant_sub_task_code = #{salaryGrantSubTaskCode}
+            </if>
+            <if test="employeeId != null and employeeId != ''">
+                and t.employee_id = #{employeeId}
+            </if>
+            <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
+            <if test="employeeName != null and employeeName != ''">
+                and t.employee_name like concat('%', #{employeeName}, '%')
+            </if>
+            <!-- modify by gaoyang  on 20180507 add not empty string conditon -->
+            <if test="grantStatus != null">
+                and t.grant_status = #{grantStatus}
+            </if>
+            <if test="remark != null and remark != ''">
+                and t.remark is not null
+            </if>
+            and t.is_active=1
+        </where>
+        order by
+        t.employee_id
+    </select>
+
+
 </mapper>

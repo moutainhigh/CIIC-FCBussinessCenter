@@ -33,14 +33,34 @@ public interface SalaryGrantProxy {
     Result<ReponseSubTaskDTO> getSubTask(@RequestBody RequestSubTaskDTO dto);
 
     /**
+     *  修改雇员发放状态
+     * @author chenpb
+     * @date 2018-06-19
+     * @param dto
+     * @return Result<ReprieveEmployeeDTO>
+     */
+    @PostMapping("/updateGrantStatus")
+    Result<ReprieveEmployeeDTO> updateForReprieveEmployee(@RequestBody ReprieveEmployeeDTO dto);
+
+    /**
      *  根据退票雇员信息创建薪资发放任务单
      * @author gaoyang
      * @date 2018-05-22
      * @param dto
-     * @return Result<Boolean>
+     * @return Result<ResponseRefundDTO>
      */
     @PostMapping("/toCreateRefundTask")
     Result<ResponseRefundDTO> toCreateRefundTask(@RequestBody SalaryGrantRefundDTO dto);
+
+    /**
+     *  根据暂缓雇员信息创建薪资发放任务单
+     * @author gaoyang
+     * @date 2018-08-07
+     * @param dto
+     * @return Result<ResponseReprieveDTO>
+     */
+    @PostMapping("/toCreateReprieveTask")
+    Result<ResponseReprieveDTO> toCreateReprieveTask(@RequestBody SalaryGrantReprieveDTO dto);
 
     /**
      *  根据任务单信息进行驳回处理
@@ -50,15 +70,5 @@ public interface SalaryGrantProxy {
      * @return Result<Boolean>
      */
     @PostMapping("/toRejectTask")
-    Result<Boolean> toRejectTask(@RequestBody SalaryGrantTaskDTO dto);
-
-    /**
-     *  修改雇员发放状态
-     * @author chenpb
-     * @date 2018-06-19
-     * @param dto
-     * @return Result<ReprieveEmployeeDTO>
-     */
-    @PostMapping("/updateGrantStatus")
-    Result<ReprieveEmployeeDTO> updateForReprieveEmployee(@RequestBody ReprieveEmployeeDTO dto);
+    Result<Boolean> toRejectTask(@RequestBody SalaryGrantRejectDTO dto);
 }

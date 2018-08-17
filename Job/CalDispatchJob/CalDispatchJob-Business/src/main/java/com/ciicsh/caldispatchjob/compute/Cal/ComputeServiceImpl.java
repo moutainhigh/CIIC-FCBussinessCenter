@@ -361,9 +361,9 @@ public class ComputeServiceImpl {
             condition_formula = formulaContent;
         }
         else if(conditions.length == 1  && formulas.length ==1){
-            condition_formula = conditions[0] + CONDITION_FUNCTION_SPLIT + formulas[0];
+            condition_formula = StringUtils.removeEnd(conditions[0],";") + CONDITION_FUNCTION_SPLIT + formulas[0];
         }else {
-            condition_formula = condition + CONDITION_FUNCTION_SPLIT + formulaContent;
+            condition_formula = StringUtils.removeEnd(condition,";") + CONDITION_FUNCTION_SPLIT + formulaContent;
         }
         FuncEntity funcEntity = null;
         Matcher m = FUNCTION_REGEX.matcher(condition_formula);
@@ -427,8 +427,18 @@ public class ComputeServiceImpl {
             if(condition_formula.length == 1 && StringUtils.isEmpty(condition)){
                 sb.append(condition_formula[0]); // 说明只有一个方法，没有执行条件
             }else if(condition_formula.length == 2){
-                sb.append("if (" + condition_formula[0] + ")");
-                sb.append("{ " + condition_formula[1] + " }");
+                String formula = condition_formula[1];
+                String cond = condition_formula[0];
+                if(formula.split(";").length == 2 ){
+                    sb.append("if (" + cond + ")");
+                    sb.append("{ " + formula.split(";")[0] + " }");
+                    sb.append(" else ");
+                    sb.append("{ " + formula.split(";")[1] + " }");
+                }
+                else {
+                    sb.append("if (" + condition_formula[0] + ")");
+                    sb.append("{ " + condition_formula[1] + " }");
+                }
             }
             else { // 多个执行条件，多个方法，一个条件一个方法
                 String[] conditions = condition_formula[0].split(CONDITION_FOMULAR_SIPE);
@@ -463,6 +473,7 @@ public class ComputeServiceImpl {
             return sb.toString();
         }
     }
+
 
     /**
      * 替换 公式薪资项名为薪资项的值

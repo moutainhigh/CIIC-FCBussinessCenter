@@ -13,7 +13,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,13 +67,11 @@ public class ExportAboutReductionExemptionSh extends BaseService{
      * @param employeeInfoBatchPOList
      */
     public void handleReductionExemptionWB(HSSFWorkbook wb, List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOList, List<EmployeeInfoBatchPO> employeeInfoBatchPOList) {
-        //筛选出减免事项减免金额大于0的详细信息tax_deduction
-        List<TaskSubDeclareDetailPO> taskSubDeclareDetailPOS = taskSubDeclareDetailPOList.stream().filter(item -> item.getTaxDeduction() != null && item.getTaxDeduction().compareTo(BigDecimal.ZERO) > 0).collect(Collectors.toList());
         // 读取了模板内所有sheet内容
         HSSFSheet sheet = wb.getSheetAt(0);
         //在相应的单元格进行赋值
         int sheetRowIndex = 1;
-        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOS) {
+        for (TaskSubDeclareDetailPO po : taskSubDeclareDetailPOList) {
             List<EmployeeInfoBatchPO> employeeInfoBatchPOS = employeeInfoBatchPOList.stream().filter(item -> po.getCalculationBatchDetailId().equals(item.getCalBatchDetailId())).collect(Collectors.toList());
             EmployeeInfoBatchPO employeeInfoBatchPO = new EmployeeInfoBatchPO();
             if (employeeInfoBatchPOS.size() > 0) {

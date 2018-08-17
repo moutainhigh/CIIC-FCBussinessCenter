@@ -20,9 +20,8 @@ import java.util.Date;
 @TableName("pr_functions")
 public class PrFunctionsPO extends Model<PrFunctionsPO> {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
+	private static final long serialVersionUID = 2572353407094116830L;
+	/**
      * 函数ID
      */
 	@TableId(value="id", type= IdType.AUTO)
@@ -39,6 +38,7 @@ public class PrFunctionsPO extends Model<PrFunctionsPO> {
     /**
      * 函数大类
      */
+	@TableField("category")
 	private String category;
     /**
      * 函数小类
@@ -58,6 +58,7 @@ public class PrFunctionsPO extends Model<PrFunctionsPO> {
     /**
      * 备注说明
      */
+	@TableField("remark")
 	private String remark;
     /**
      * 是否有效

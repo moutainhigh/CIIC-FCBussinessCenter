@@ -20,10 +20,9 @@ import java.util.Date;
 @TableName("pr_payroll_item")
 public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializable{
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 薪资项I
+	private static final long serialVersionUID = 9027912774188282467L;
+	/**
+     * 薪资项Id
      */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
@@ -177,9 +176,19 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 	@TableField("full_formula")
 	private String fullFormula;
 
-	public Integer getId() {
-		return id;
-	}
+	// 操作类型 1:添加; 2:更新; 3:删除; 4:查询; 5:导入; 6:复制;
+	@TableField(exist = false)
+	private int operateType;
+
+    /**
+     * 扩展标识：1-扩展字段；0-非扩展字段
+     */
+    @TableField("extend_flag")
+    private Integer extendFlag;
+
+    public Integer getId() {
+        return id;
+    }
 
 	public void setId(Integer id) {
 		this.id = id;
@@ -417,10 +426,26 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 		this.canLock = canLock;
 	}
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
+    public Integer getExtendFlag() {
+        return extendFlag;
+    }
+
+    public void setExtendFlag(Integer extendFlag) {
+        this.extendFlag = extendFlag;
+    }
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
+	public int getOperateType() {
+		return operateType;
 	}
+
+	public void setOperateType(int operateType) {
+		this.operateType = operateType;
+	}
+
 
 	@Override
 	public String toString() {
@@ -449,9 +474,10 @@ public class PrPayrollItemPO extends Model<PrPayrollItemPO> implements Serializa
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +
 			", modifiedBy=" + modifiedBy +
-                ", itemValue=" + this.itemValue +
-                ", originCondition=" + originCondition +
-				", fullFormula=" + fullFormula +
+            ", itemValue=" + itemValue +
+            ", originCondition=" + originCondition +
+            ", fullFormula=" + fullFormula +
+            ", extendFlag=" + extendFlag +
 			"}";
 	}
 

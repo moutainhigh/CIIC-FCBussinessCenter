@@ -97,6 +97,11 @@ public class TaskSubMoneyDTO {
      */
     private String payAccountName;
 
+    /**
+     * 主任务ID
+     */
+    private Long taskMainId;
+
     public String getPayAccountName() {
         return payAccountName;
     }
@@ -273,6 +278,14 @@ public class TaskSubMoneyDTO {
         this.fine = fine;
     }
 
+    public Long getTaskMainId() {
+        return taskMainId;
+    }
+
+    public void setTaskMainId(Long taskMainId) {
+        this.taskMainId = taskMainId;
+    }
+
     @Override
     public String toString() {
         return "TaskSubMoneyDTO{" +
@@ -297,6 +310,8 @@ public class TaskSubMoneyDTO {
                 ", payStatus='" + payStatus + '\'' +
                 ", overdue=" + overdue +
                 ", fine=" + fine +
+                ", payAccountName='" + payAccountName + '\'' +
+                ", taskMainId=" + taskMainId +
                 '}';
     }
 }

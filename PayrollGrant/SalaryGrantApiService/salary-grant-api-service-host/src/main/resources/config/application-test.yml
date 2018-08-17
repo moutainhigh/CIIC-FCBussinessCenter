@@ -31,3 +31,9 @@ druid:
 #  configPathSmdb:  /data/appdatas/gt1/gtosmdb_sit.properties
 #  configPathSupplier:  /data/appdatas/gt1/gtosupplierdb_sit.properties
 admin.url: http://172.16.9.24:9625
+mongo:
+  host: 172.16.9.16 #172.16.9.52 172.16.9.15 172.16.9.16 sit
+  port: 27017
+  database: payroll_db
+  userName: ciicit
+  pwd: ciicit!#%
