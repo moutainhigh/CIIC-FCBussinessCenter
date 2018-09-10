@@ -357,6 +357,7 @@
         <module>./Tax/TaxCommandService/CommandService-Business</module>
         <module>./Tax/TaxCommandService/CommandService-Api</module>
         <module>./Tax/TaxCommandService/CommandService-Host</module>
+        <module>Job/salary-compute-executor</module>
 
     </modules>
 

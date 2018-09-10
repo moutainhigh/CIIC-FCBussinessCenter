@@ -1,4 +1,4 @@
-package com.ciicsh.gt1.fcbusinesscenter.biz;
+package com.ciicsh.gt1.fcbusinesscenter.engine;
 
 import com.ciicsh.gt1.fcbusinesscenter.config.XxlJobConfig;
 import com.ciicsh.gt1.fcbusinesscenter.mongo.BatchMongoOpt;
@@ -22,6 +22,9 @@ public class ComputeEngineImpl implements ComputeEngine {
     @Autowired
     private BatchMongoOpt batchMongoOpt;
 
+    @Autowired
+    private XxlJobConfig config;
+
     /**
      * 处理当前批次号的分片数据的薪资计算
      * @param batchCode 批次号
@@ -29,7 +32,7 @@ public class ComputeEngineImpl implements ComputeEngine {
      */
     @Override
     public void processShardingCompute(String batchCode, int shardingIndex) {
-        int shardingCount = XxlJobConfig.ShardingCount; //分片数量
+        int shardingCount = config.ShardingCount; //分片数量
         logger.info(String.format("batchCode = %s, shardingIndex = %d, shardingCount = %d", batchCode, shardingIndex,shardingCount));
     }
 

@@ -1,4 +1,4 @@
-package com.xxl.job.executor.core.config;
+package com.ciicsh.gt1.fcbusinesscenter.config;
 
 import com.xxl.job.core.executor.XxlJobExecutor;
 import org.slf4j.Logger;
@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
 /**
  * xxl-job config
  *
- * @author xuxueli 2017-04-28
+ * @author bill
  */
 @Configuration
-@ComponentScan(basePackages = "com.xxl.job.executor.service.jobhandler")
+@ComponentScan(basePackages = "com.ciicsh.gt1.fcbusinesscenter.jobHandler")
 public class XxlJobConfig {
     private Logger logger = LoggerFactory.getLogger(XxlJobConfig.class);
 
@@ -39,6 +39,8 @@ public class XxlJobConfig {
     @Value("${xxl.job.executor.logretentiondays}")
     private int logRetentionDays;
 
+    @Value("${xxl.job.sharding.count}")
+    public int ShardingCount;
 
     @Bean(initMethod = "start", destroyMethod = "destroy")
     public XxlJobExecutor xxlJobExecutor() {
