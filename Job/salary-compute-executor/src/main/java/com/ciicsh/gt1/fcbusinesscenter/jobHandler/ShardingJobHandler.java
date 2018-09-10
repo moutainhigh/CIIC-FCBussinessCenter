@@ -39,8 +39,8 @@ public class ShardingJobHandler extends IJobHandler {
 		if(StringUtils.isEmpty(param)){
 			throw new Exception("输入的参数不能为空！");
 		}
-
-		String batchCode = param.split("=")[1];
+		String batchCodeKeyVal = param.split(",")[0];
+		String batchCode = batchCodeKeyVal.split("=")[1];
 		logger.info(String.format("批次ID号：%s", batchCode));
 
 		// 分片参数
