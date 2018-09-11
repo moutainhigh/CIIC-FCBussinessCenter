@@ -11,10 +11,10 @@ public class BatchMongoOpt extends BaseOpt {
 
     private final static Logger logger = LoggerFactory.getLogger(BatchMongoOpt.class);
 
-    public static final String PR_ADJUST_BATCH  = "pr_normal_batch_table";
+    public static final String PR_NORMAL_BATCH  = "pr_normal_batch_table";
 
     public BatchMongoOpt() {
-        super(PR_ADJUST_BATCH);
+        super(PR_NORMAL_BATCH);
     }
 
     public MongoTemplate getMongoTemplate(){

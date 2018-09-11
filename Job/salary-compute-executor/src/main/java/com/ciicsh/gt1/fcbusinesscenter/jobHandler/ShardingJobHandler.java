@@ -39,8 +39,7 @@ public class ShardingJobHandler extends IJobHandler {
 		if(StringUtils.isEmpty(param)){
 			throw new Exception("输入的参数不能为空！");
 		}
-		String batchCodeKeyVal = param.split(",")[0];
-		String batchCode = batchCodeKeyVal.split("=")[1];
+		String batchCode = param.split("=")[1];
 		logger.info(String.format("批次ID号：%s", batchCode));
 
 		// 分片参数
@@ -51,13 +50,6 @@ public class ShardingJobHandler extends IJobHandler {
 		// 薪资计算业务逻辑
 		computeEngine.processShardingCompute(batchCode,shardingVO.getIndex());
 
-		/*for (int i = 0; i < shardingVO.getTotal(); i++) {
-			if (i == shardingVO.getIndex()) {
-				XxlJobLogger.log("第 {0} 片, 命中分片开始处理", i);
-			} else {
-				XxlJobLogger.log("第 {0} 片, 忽略", i);
-			}
-		}*/
 
 		return SUCCESS;
 	}
