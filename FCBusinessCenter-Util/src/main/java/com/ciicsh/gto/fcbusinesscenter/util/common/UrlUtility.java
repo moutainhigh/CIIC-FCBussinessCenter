@@ -17,17 +17,30 @@ public class UrlUtility {
      */
     public static boolean XXLJobRemoteCall(String url) throws IOException{
 
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost post = new HttpPost(url);
-        //StringEntity entity = new StringEntity();
-        //post.setEntity(entity);
-        post.setHeader("Accept", "application/json");
-        post.setHeader("Content-type", "application/json");
+        CloseableHttpClient client = null;
+        CloseableHttpResponse response = null;
 
-        CloseableHttpResponse response = client.execute(post);
+        try {
+            client = HttpClients.createDefault();
+            HttpPost post = new HttpPost(url);
+            //StringEntity entity = new StringEntity();
+            //post.setEntity(entity);
+            post.setHeader("Accept", "application/json");
+            post.setHeader("Content-type", "application/json");
 
-        if(response.getStatusLine().getStatusCode() == 200){
-            return true;
+            response = client.execute(post);
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        }
+        finally {
+            if (response != null) {
+                response.close();
+            }
+            if (client != null) {
+                client.close();
+            }
         }
         return false;
     }
