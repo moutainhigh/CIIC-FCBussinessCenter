@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = {
         "com.ciicsh.gt1",
         "com.ciicsh.gt1.fcbusinesscenter.config",
+        "com.ciicsh.gt1.fcbusinesscenter.mongo",
         "com.ciicsh.gt1.fcbusinesscenter.jobHandler",
         "com.ciicsh.gt1.fcbusinesscenter.engine"}
 )
