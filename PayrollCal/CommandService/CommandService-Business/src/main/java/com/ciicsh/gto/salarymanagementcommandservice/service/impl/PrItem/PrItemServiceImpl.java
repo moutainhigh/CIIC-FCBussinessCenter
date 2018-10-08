@@ -139,7 +139,9 @@ public class PrItemServiceImpl implements PrItemService {
         // 插入薪资项
         param.setItemCode(codeGenerator.genPrItemCode(param.getManagementId()));
         param.setCalPriority(CommonServiceConst.DEFAULT_CAL_PRIORITY);
-        param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
+        if(param.getDisplayPriority() == null) {
+            param.setDisplayPriority(CommonServiceConst.DEFAULT_DIS_PRIORITY);
+        }
         param.setModifiedTime(new Date());
         param.setCreatedTime(new Date());
         if(param.getItemType() == ItemTypeEnum.CALC.getValue()) {

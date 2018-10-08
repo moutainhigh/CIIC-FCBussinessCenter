@@ -360,10 +360,11 @@ public class PrGroupServiceImpl implements PrGroupService {
 
         //薪资项扩展字段处理
         List<PrPayrollItemPO> employeeExtendFieldsList = getTemplateEmployeeExtendFields(newEntity.getEmpExtendFieldTemplateId(),newEntity.getManagementId(),newEntity.getGroupCode());
-
-        int itemAddResult = itemService.addList(employeeExtendFieldsList);
-        if (itemAddResult == 0) {
-            throw new BusinessException("复制薪资项失败");
+        if (null != newEntity.getEmpExtendFieldTemplateId()) {
+            int itemAddResult = itemService.addList(employeeExtendFieldsList);
+            if (itemAddResult == 0) {
+                throw new BusinessException("复制薪资项失败");
+            }
         }
         // 1,复制薪资组,默认审核通过,同步草稿薪资项到审核通过表
         prPayrollItemMapper.insertBatchApprovedItemsByGroup(newEntity.getGroupCode(), null);
