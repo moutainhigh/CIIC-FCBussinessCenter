@@ -47,9 +47,13 @@ public class ShardingJobHandler extends IJobHandler {
 		XxlJobLogger.log("分片参数：当前分片序号 = {0}, 总分片数 = {1}", shardingVO.getIndex(), shardingVO.getTotal());
 		logger.info(String.format("分片参数：当前分片序号 = %d, 总分片数 = %d", shardingVO.getIndex(), shardingVO.getTotal()));
 
-		// 薪资计算业务逻辑
-		computeEngine.processShardingCompute(batchCode,shardingVO.getIndex());
+		try {
+			// 薪资计算业务逻辑
+			computeEngine.processShardingCompute(batchCode, shardingVO.getIndex());
 
+		}catch (Exception ex){
+			return FAIL;
+		}
 
 		return SUCCESS;
 	}
