@@ -429,45 +429,47 @@ public class ComputeServiceImpl {
             }else if(condition_formula.length == 2){
                 String formula = condition_formula[1];
                 String cond = condition_formula[0];
-                if(formula.split(CONDITION_FOMULAR_SIPE).length == 2 ){
+                int formulaCount = formula.split(CONDITION_FOMULAR_SIPE).length;
+                int conditionCount = cond.split(CONDITION_FOMULAR_SIPE).length;
+
+                if(conditionCount == 1 && formulaCount == 2){
                     sb.append("if (" + cond + ")");
                     sb.append("{ " + formula.split(CONDITION_FOMULAR_SIPE)[0] + " }");
                     sb.append(" else ");
                     sb.append("{ " + formula.split(CONDITION_FOMULAR_SIPE)[1] + " }");
                 }
-                else {
-                    sb.append("if (" + condition_formula[0] + ")");
-                    sb.append("{ " + condition_formula[1] + " }");
+                else if(conditionCount == 1 && formulaCount == 1){
+                    sb.append("if (" + cond + ")");
+                    sb.append("{ " + formula + " }");
                 }
-            }
-            else { // 多个执行条件，多个方法，一个条件一个方法
-                String[] conditions = condition_formula[0].split(CONDITION_FOMULAR_SIPE);
+                else { // 多个执行条件，多个方法，一个条件一个方法
+                    String[] conditions = condition_formula[0].split(CONDITION_FOMULAR_SIPE);
 
-                String[] formulas = condition_formula[1].split(CONDITION_FOMULAR_SIPE);
+                    String[] formulas = condition_formula[1].split(CONDITION_FOMULAR_SIPE);
 
-                if(conditions.length == formulas.length) { // 倒序实行条件
-                    for (int i = conditions.length-1; i >= 0; i --) {
-                        if( i == conditions.length-1 ) {
-                            sb.append("if (" + conditions[i] + ")");
-                            sb.append("{ " + formulas[i] + " }");
-                        }else {
-                            sb.append("else if (" + conditions[i] + ")");
-                            sb.append("{ " + formulas[i] + " }");
+                    if (conditions.length == formulas.length) { // 倒序实行条件
+                        for (int i = conditions.length - 1; i >= 0; i--) {
+                            if (i == conditions.length - 1) {
+                                sb.append("if (" + conditions[i] + ")");
+                                sb.append("{ " + formulas[i] + " }");
+                            } else {
+                                sb.append("else if (" + conditions[i] + ")");
+                                sb.append("{ " + formulas[i] + " }");
+                            }
                         }
-                    }
-                }
-                else if(conditions.length + 1 == formulas.length){ // 倒序实行条件
-                    for (int i = conditions.length-1; i >= 0; i --) {
-                        if( i == conditions.length-1 ) {
-                            sb.append("if (" + conditions[i] + ")");
-                            sb.append("{ " + formulas[i] + " }");
-                        }else {
-                            sb.append("else if (" + conditions[i] + ")");
-                            sb.append("{ " + formulas[i] + " }");
+                    } else if (conditions.length + 1 == formulas.length) { // 倒序实行条件
+                        for (int i = conditions.length - 1; i >= 0; i--) {
+                            if (i == conditions.length - 1) {
+                                sb.append("if (" + conditions[i] + ")");
+                                sb.append("{ " + formulas[i] + " }");
+                            } else {
+                                sb.append("else if (" + conditions[i] + ")");
+                                sb.append("{ " + formulas[i] + " }");
+                            }
                         }
+                        sb.append(" else");
+                        sb.append(" { " + formulas[conditions.length] + " }");
                     }
-                    sb.append(" else");
-                    sb.append(" { " + formulas[conditions.length] + " }");
                 }
             }
             return sb.toString();
