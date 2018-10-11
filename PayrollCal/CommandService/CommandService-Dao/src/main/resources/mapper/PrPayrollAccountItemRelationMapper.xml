@@ -49,9 +49,9 @@
 			pr_payroll_account_item_relation a
 		INNER JOIN pr_approved_payroll_item b on a.payroll_item_code = b.item_code
 		WHERE
-			a.is_active = 1
+		<!-- a.is_active = 1, 软删除 - 薪资项即使禁用也应显示。SJ 10/11/2018 -->
 		<if test="accountSetCode != null and accountSetCode != ''">
-			AND a.account_set_code = #{accountSetCode}
+			a.account_set_code = #{accountSetCode}
 		</if>
 		<if test="payrollGroupTemplateCode != null and payrollGroupTemplateCode != ''">
 			AND b.payroll_group_template_code = #{payrollGroupTemplateCode}
