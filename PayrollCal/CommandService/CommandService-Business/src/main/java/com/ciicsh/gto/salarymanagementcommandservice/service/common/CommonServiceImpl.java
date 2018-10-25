@@ -295,7 +295,7 @@ public class CommonServiceImpl {
             dbObject.put("default_value_style", item.getDefaultValueStyle());
             dbObject.put("decimal_process_type", item.getDecimalProcessType());
             dbObject.put("display_priority", item.getDisplayPriority());
-            dbObject.put("isShow", find.get().getIsShow());
+            dbObject.put("is_show", find.get().getIsShow());
             list.add(dbObject);
         });
 
@@ -492,7 +492,7 @@ public class CommonServiceImpl {
 
             List<DBObject> items = (List<DBObject>) calalog.get("pay_items");
             items.stream().forEach(dbItem -> {
-                 if (dbItem.get("isShow") != null && (Boolean) dbItem.get("isShow")) {
+                 if (dbItem.get("is_show") != null && (Boolean) dbItem.get("is_show")) {
                     SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
                     simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
                     simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
