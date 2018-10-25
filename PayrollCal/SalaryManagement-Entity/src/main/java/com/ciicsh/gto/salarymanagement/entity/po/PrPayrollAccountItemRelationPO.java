@@ -49,6 +49,13 @@ public class PrPayrollAccountItemRelationPO extends Model<PrPayrollAccountItemRe
      */
 	@TableField("payroll_item_alias")
 	private String payrollItemAlias;
+
+	/**
+	 * 是否显示
+	 */
+	@TableField("is_show")
+	private Boolean isShow;
+
     /**
      * 是否有效
      */
@@ -132,6 +139,22 @@ public class PrPayrollAccountItemRelationPO extends Model<PrPayrollAccountItemRe
 		this.isActive = isActive;
 	}
 
+	public Boolean getIsShow() {
+		return isShow;
+	}
+
+	public void setIsShow(Boolean isShow) {
+		this.isShow = isShow;
+	}
+
+	public Boolean getShow() {
+		return isShow;
+	}
+
+	public void setShow(Boolean isShow) {
+		this.isShow = isShow;
+	}
+
 	public Date getCreatedTime() {
 		return createdTime;
 	}
@@ -177,6 +200,7 @@ public class PrPayrollAccountItemRelationPO extends Model<PrPayrollAccountItemRe
 			", payrollItemCode=" + payrollItemCode +
 			", payrollItemAlias=" + payrollItemAlias +
 			", isActive=" + isActive +
+			", isShow=" + isShow +
 			", createdTime=" + createdTime +
 			", modifiedTime=" + modifiedTime +
 			", createdBy=" + createdBy +

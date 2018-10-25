@@ -347,7 +347,8 @@ public class NormalBatchController {
                 include("catalog.pay_items.item_type").
                 include("catalog.pay_items.item_name").
                 include("catalog.pay_items.item_value").
-                include("catalog.pay_items.display_priority")
+                include("catalog.pay_items.display_priority").
+                include("catalog.pay_items.isShow")
         ;
         query.skip((pageNum - 1) * pageSize);
         query.limit(pageSize);

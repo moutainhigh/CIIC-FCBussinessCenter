@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
+import jdk.nashorn.internal.ir.ContinueNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -294,6 +295,7 @@ public class CommonServiceImpl {
             dbObject.put("default_value_style", item.getDefaultValueStyle());
             dbObject.put("decimal_process_type", item.getDecimalProcessType());
             dbObject.put("display_priority", item.getDisplayPriority());
+            dbObject.put("isShow", find.get().getIsShow());
             list.add(dbObject);
         });
 
@@ -490,34 +492,36 @@ public class CommonServiceImpl {
 
             List<DBObject> items = (List<DBObject>) calalog.get("pay_items");
             items.stream().forEach(dbItem -> {
-                SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
-                simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
-                simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
-                simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
-                simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
-                simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
-                simplePayItemDTO.setCanLock((boolean) dbItem.get("canLock"));
-                if (dbItem.get("isLocked") == null) {
-                    simplePayItemDTO.setLocked(false);
-                } else {
-                    simplePayItemDTO.setLocked((boolean) dbItem.get("isLocked"));
-                }
-
-                if (dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)) { //雇员姓名
-                    itemPO.setEmpName(String.valueOf(dbItem.get("item_value")));
-                }
-
-                // 根据每个薪资项名称求和，存入hashmap
-                if (simplePayItemDTO.getDataType() == DataTypeEnum.NUM.getValue()) {
-                    if (statics.containsKey(simplePayItemDTO.getName())) {
-                        double current = statics.get(simplePayItemDTO.getName());
-                        statics.put(simplePayItemDTO.getName(), current + Double.valueOf(simplePayItemDTO.getVal().toString()));
+                 if (dbItem.get("isShow") != null && (Boolean) dbItem.get("isShow")) {
+                    SimplePayItemDTO simplePayItemDTO = new SimplePayItemDTO();
+                    simplePayItemDTO.setDataType(dbItem.get("data_type") == null ? -1 : (int) dbItem.get("data_type"));
+                    simplePayItemDTO.setItemType(dbItem.get("item_type") == null ? -1 : (int) dbItem.get("item_type"));
+                    simplePayItemDTO.setVal(dbItem.get("item_value") == null ? dbItem.get("default_value") : dbItem.get("item_value"));
+                    simplePayItemDTO.setName(dbItem.get("item_name") == null ? "" : (String) dbItem.get("item_name"));
+                    simplePayItemDTO.setDisplay(dbItem.get("display_priority") == null ? -1 : (int) dbItem.get("display_priority"));
+                    simplePayItemDTO.setCanLock((boolean) dbItem.get("canLock"));
+                    if (dbItem.get("isLocked") == null) {
+                        simplePayItemDTO.setLocked(false);
                     } else {
-                        statics.put(simplePayItemDTO.getName(), Double.valueOf(simplePayItemDTO.getVal().toString()));
+                        simplePayItemDTO.setLocked((boolean) dbItem.get("isLocked"));
                     }
-                }//end
 
-                simplePayItemDTOList.add(simplePayItemDTO);
+                    if (dbItem.get("item_name").equals(PayItemName.EMPLOYEE_NAME_CN)) { //雇员姓名
+                        itemPO.setEmpName(String.valueOf(dbItem.get("item_value")));
+                    }
+
+                    // 根据每个薪资项名称求和，存入hashmap
+                    if (simplePayItemDTO.getDataType() == DataTypeEnum.NUM.getValue()) {
+                        if (statics.containsKey(simplePayItemDTO.getName())) {
+                            double current = statics.get(simplePayItemDTO.getName());
+                            statics.put(simplePayItemDTO.getName(), current + Double.valueOf(simplePayItemDTO.getVal().toString()));
+                        } else {
+                            statics.put(simplePayItemDTO.getName(), Double.valueOf(simplePayItemDTO.getVal().toString()));
+                        }
+                    }//end
+
+                    simplePayItemDTOList.add(simplePayItemDTO);
+                }
             });
             //设置显示顺序
             List<SimplePayItemDTO> payItemDTOS = simplePayItemDTOList.stream().sorted(Comparator.comparing(SimplePayItemDTO::getDisplay)).collect(Collectors.toList());
