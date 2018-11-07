@@ -49,7 +49,7 @@ public class ShardingJobHandler extends IJobHandler {
 
 		try {
 			// 薪资计算业务逻辑
-			computeEngine.processShardingCompute(batchCode, shardingVO.getIndex());
+			//computeEngine.processShardingCompute(batchCode, shardingVO.getIndex());
 
 		}catch (Exception ex){
 			return FAIL;
