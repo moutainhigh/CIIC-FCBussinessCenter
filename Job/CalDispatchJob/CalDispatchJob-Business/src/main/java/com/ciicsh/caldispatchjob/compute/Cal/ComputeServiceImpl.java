@@ -112,6 +112,7 @@ public class ComputeServiceImpl {
                 .include("catalog.pay_items.item_condition")
                 .include("catalog.pay_items.formula_content")
                 .include("catalog.pay_items.display_priority")
+                .include("catalog.pay_items.is_show")
         ;
 
         //query = query.skip(pageindex*size).limit(size);
