@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  *
  * @author bill
  */
-@JobHandler(value="computeShardingJobHandler")
+@JobHandler(value="shardingComputeJobHandler")
 @Service
 public class ShardingJobHandler extends IJobHandler {
 
