@@ -48,7 +48,8 @@ public class ComputeServiceImpl {
     private final static Pattern FUNCTION_REGEX = Pattern.compile("\\{([^\\{\\}]+)\\}");
     private final static Pattern DIGEST_REGEX = Pattern.compile("^(-?\\d+)(\\.\\d+)?$");
     private final static Pattern PARAMETER_REGEX = Pattern.compile("\\(([^\\[\\]]+)\\)");
-
+    private final static Pattern DATE_REGEX_PATTERN = Pattern.compile("\\$\\d{4}[-.]\\d{1,2}[-.]\\d{1,2}\\$");
+    private final static Pattern XZX_REGEX_PATTERN = Pattern.compile("(XZX_GL)\\d{7}(_)\\d{5}");
 
     private final static String FUNCTION_LEFT_SIDE_PREFIX = "{";
     private final static String FUNCTION_RIGHT_SIDE_PREFIX = "}";
@@ -429,9 +430,14 @@ public class ComputeServiceImpl {
             }else if(condition_formula.length == 2){
                 String formula = condition_formula[1];
                 String cond = condition_formula[0];
+                Matcher dateMatcher = DATE_REGEX_PATTERN.matcher(cond);
+                if (dateMatcher.find()) {
+                    Matcher xzxMatcher = XZX_REGEX_PATTERN.matcher(cond);
+                    cond = processDateType(dateMatcher, xzxMatcher, cond);
+                }
+
                 int formulaCount = formula.split(CONDITION_FOMULAR_SIPE).length;
                 int conditionCount = cond.split(CONDITION_FOMULAR_SIPE).length;
-
                 if(conditionCount == 1 && formulaCount == 2){
                     sb.append("if (" + cond + ")");
                     sb.append("{ " + formula.split(CONDITION_FOMULAR_SIPE)[0] + " }");
@@ -443,10 +449,8 @@ public class ComputeServiceImpl {
                     sb.append("{ " + formula + " }");
                 }
                 else { // 多个执行条件，多个方法，一个条件一个方法
-                    String[] conditions = condition_formula[0].split(CONDITION_FOMULAR_SIPE);
-
-                    String[] formulas = condition_formula[1].split(CONDITION_FOMULAR_SIPE);
-
+                    String[] conditions = cond.split(CONDITION_FOMULAR_SIPE);
+                    String[] formulas = formula.split(CONDITION_FOMULAR_SIPE);
                     if (conditions.length == formulas.length) { // 倒序实行条件
                         for (int i = conditions.length - 1; i >= 0; i--) {
                             if (i == conditions.length - 1) {
@@ -476,6 +480,26 @@ public class ComputeServiceImpl {
         }
     }
 
+    /**
+     * 处理条件中日期类型
+     * @param cond
+     * @return
+     */
+    private String processDateType(Matcher dateMatcher, Matcher xzxMatcher, String cond){
+        String result = "";
+        if (dateMatcher.find()) {
+            String ori = cond.substring(dateMatcher.start(), dateMatcher.end());
+            String update = "new Date('" + ori.replaceAll("\\$","") + "')";
+            result = cond.replace(ori, update);
+        }
+        //todo: 假设条件有日期型值的话，条件里所有薪资项都是日期型，以后可能要优化。11/12/2018
+        if(xzxMatcher.find()) {
+            String ori = result.substring(xzxMatcher.start(), xzxMatcher.end());
+            String update = "new Date(" + ori + ")";
+            result = result.replace(ori, update);
+        }
+        return result;
+    }
 
     /**
      * 替换 公式薪资项名为薪资项的值
