@@ -17,4 +17,5 @@ public class PayrollAccountItemRelationExtPO {
     private Integer payrollDataType;
     private String payrollItemAlias;
     private Boolean isActive;
+    private Boolean isShow;
 }

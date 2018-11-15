@@ -35,6 +35,12 @@ public class PrPayrollAccountItemRelationDTO{
      * 薪资账套薪资项别名
      */
 	private String payrollItemAlias;
+
+    /**
+     * 是否显示
+     */
+    private Boolean isShow;
+
     /**
      * 是否有效
      */

@@ -24,6 +24,7 @@
 		<result column="item_type" property="payrollItemType" />
 		<result column="data_type" property="payrollDataType" />
 		<result column="payroll_item_alias" property="payrollItemAlias" />
+		<result column="is_show" property="isShow" />
 		<result column="is_active" property="isActive" />
 	</resultMap>
 
@@ -37,6 +38,7 @@
 			a.account_set_code,
 			a.payroll_item_code,
 			a.payroll_item_alias,
+			a.is_show,
 			a.is_active,
 			b.item_name,
 			b.item_type,

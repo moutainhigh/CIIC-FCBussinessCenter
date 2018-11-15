@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  *
  * @author bill
  */
-@JobHandler(value="computeShardingJobHandler")
+@JobHandler(value="shardingComputeJobHandler")
 @Service
 public class ShardingJobHandler extends IJobHandler {
 
@@ -49,7 +49,7 @@ public class ShardingJobHandler extends IJobHandler {
 
 		try {
 			// 薪资计算业务逻辑
-			computeEngine.processShardingCompute(batchCode, shardingVO.getIndex());
+			//computeEngine.processShardingCompute(batchCode, shardingVO.getIndex());
 
 		}catch (Exception ex){
 			return FAIL;

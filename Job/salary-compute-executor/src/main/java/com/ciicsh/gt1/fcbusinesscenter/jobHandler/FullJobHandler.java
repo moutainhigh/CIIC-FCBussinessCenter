@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@JobHandler(value = "computeFullJobHandler")
+@JobHandler(value = "fullComputeJobHandler")
 public class FullJobHandler extends IJobHandler {
 
     private Logger logger = LoggerFactory.getLogger(FullJobHandler.class);
