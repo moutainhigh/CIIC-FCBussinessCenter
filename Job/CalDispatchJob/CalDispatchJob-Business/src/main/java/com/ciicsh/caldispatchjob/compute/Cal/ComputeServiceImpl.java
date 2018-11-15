@@ -433,8 +433,6 @@ public class ComputeServiceImpl {
                 String cond = condition_formula[0];
                 Matcher dateMatcher = DATE_REGEX_PATTERN.matcher(cond);
                 if (dateMatcher.find()) {
-                    //todo: 日期类型调试后清除
-                    logger.info("发现日期类型 -");
                     Matcher xzxMatcher = XZX_REGEX_PATTERN.matcher(cond);
                     cond = processDateType(dateMatcher, xzxMatcher, cond);
                 }
@@ -501,8 +499,6 @@ public class ComputeServiceImpl {
             String update = "new Date(" + ori + ")";
             result = result.replace(ori, update);
         }
-        //todo: 调试结算清除
-        logger.info("日期类型被处理，结果是：" + result);
         return result;
     }
 

@@ -371,11 +371,6 @@ public class NormalBatchController {
 
         logger.info("获取翻页时间 : " + String.valueOf((System.currentTimeMillis() - start)));
         List<SimpleEmpPayItemDTO> simplePayItemDTOS = commonService.translate(list);
-        //todo: 日历功能调试通过后清除
-        for(int i = 0; i < simplePayItemDTOS.size(); i++) {
-            logger.info("payItemDTOS" + i +" :");
-            logger.info(simplePayItemDTOS.get(0).toString());
-        }
         PageInfo<SimpleEmpPayItemDTO> result = new PageInfo<>(simplePayItemDTOS);
         result.setTotal(totalCount);
         result.setPageNum(pageNum);
