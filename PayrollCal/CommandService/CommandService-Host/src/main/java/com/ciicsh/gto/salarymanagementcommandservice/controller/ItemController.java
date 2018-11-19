@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +37,9 @@ public class ItemController extends BaseController {
     private static final int GROUP_TEMPLATE = 0;
     private static final int GROUP = 1;
 
+    private final static Pattern DATE_REGEX_PATTERN = Pattern.compile("\\$\\d{4}(-)\\d{1,2}(-)\\d{1,2}\\$");
+    private final static Pattern XZX_REGEX_PATTERN = Pattern.compile("\\[([\\u4E00-\\u9FA5]+|[a-zA-Z0-9]+)\\]");
+
     /**
      * 获取薪资项列表
      *
@@ -43,6 +48,7 @@ public class ItemController extends BaseController {
      * @param pageNum
      * @param pageSize
      * @return
+     *
      */
     @GetMapping(value = "/getPrItemPage")
     public JsonResult getPrItemList(@RequestParam String groupCode,
@@ -92,11 +98,24 @@ public class ItemController extends BaseController {
     public JsonResult updatePrItemById(@RequestBody PrPayrollItemDTO paramDTO) {
         // 校验同名薪资项
         JsonResult checkJsonResult = checkSameNamePrItem(paramDTO);
-        if (checkJsonResult != null) return checkJsonResult;
+        if (checkJsonResult != null) {
+            return checkJsonResult;
+        }
 
         try {
             PrPayrollItemPO paramPO = new PrPayrollItemPO();
             BeanUtils.copyProperties(paramDTO, paramPO);
+
+            if (StringUtils.isNotBlank(paramDTO.getOriginCondition())) {
+                paramPO.setOriginCondition(processDateType(paramDTO.getOriginCondition()));
+            }
+            if (StringUtils.isNotBlank(paramDTO.getItemCondition())) {
+                paramPO.setItemCondition(processDateType(paramDTO.getItemCondition()));
+            }
+            if (StringUtils.isNotBlank(paramDTO.getFullFormula())) {
+                paramPO.setFullFormula(processDateType(paramDTO.getFullFormula()));
+            }
+
             int result = itemService.updatePrItemById(paramPO);
             return JsonResult.success(result);
         } catch (BusinessException be) {
@@ -171,24 +190,6 @@ public class ItemController extends BaseController {
         return itemService.updateCalPriority(ids) ?
                 JsonResult.message(true, "更新薪资项计算顺序成功") : JsonResult.faultMessage("更新薪资项计算顺序失败");
     }
-//    @RequestMapping("/addTest")
-//    public String addTestData() throws Exception{
-//        List<PrPayrollItemPO> items = this.getItems();
-//        for(Map.Entry<String,String> model:getPayrollGroup().entrySet()){
-//            items.forEach(x->{
-//                x.setManagementId(model.getKey());
-//                x.setItemCode(codeGenerator.genPrItemCode(model.getKey()));
-//                x.setPayrollGroupCode(model.getValue());
-//                x.setActive(true);
-//                x.setCreatedBy("macor");
-//                x.setCreatedTime(new Date());
-//                x.setModifiedBy("macor");
-//                x.setModifiedTime(new Date());
-//                itemService.addItem(x);
-//            });
-//        }
-//        return "添加成功!";
-//    }
 
     @GetMapping("/decimalProcessType")
     public JsonResult getDecimalProcessTypeEnums() {
@@ -235,6 +236,47 @@ public class ItemController extends BaseController {
             }
         }
         return null;
+    }
+
+    /**
+     * 处理条件中日期类型
+     * @param input
+     * @return input
+     */
+    private String processDateType(String input) {
+        Matcher dateMatcher = null;
+        if (input != null) {
+            dateMatcher = DATE_REGEX_PATTERN.matcher(input);
+        }
+        if (dateMatcher != null) {
+            Matcher xzxMatcher = XZX_REGEX_PATTERN.matcher(input);
+            input = convert(dateMatcher, xzxMatcher, input);
+        }
+        return input;
+    }
+
+    /**
+     * 转换条件中日期类型
+     * @param dateMatcher, xzxMatcher, cond
+     * @return result
+     */
+    private String convert(Matcher dateMatcher, Matcher xzxMatcher, String cond){
+        String result = null;
+        while (dateMatcher.find()) {
+            String ori = cond.substring(dateMatcher.start(), dateMatcher.end());
+            String update = "new Date('" + ori.replaceAll("\\$","") + "')";
+            result = cond.replace(ori, update);
+        }
+        if (StringUtils.isBlank(result)) {
+            return cond;
+        }
+        //todo: 假设条件有日期型值的话，条件里所有薪资项都是日期型，以后可能要优化。11/12/2018
+        while (xzxMatcher.find()) {
+            String ori = result.substring(xzxMatcher.start(), xzxMatcher.end());
+            String update = "new Date(" + ori + ")";
+            result = result.replace(ori, update);
+        }
+        return result;
     }
 
     /**
