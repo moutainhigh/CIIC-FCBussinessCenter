@@ -10,10 +10,8 @@ eureka:
       instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 
 kafka:
-#  brokers: 172.16.9.11:9092
-#  zk-nodes: 172.16.9.11:2181
-  brokers: 172.16.9.17:9092,172.16.9.18:9092
-  zk-nodes: 172.16.9.19:2181,172.16.9.20:2181,172.16.9.21:2181
+  brokers: 172.16.9.11:9092
+  zk-nodes: 172.16.9.11:2181
 
 logging:
   file: logs/dev_app.log
@@ -38,11 +36,11 @@ sleuth:
   percentage: 1.0
 
 mongo:
-  host: 172.16.9.16  # 172.16.9.52 java -Xms384m -Xmx512m -jar app.jar --spring.profiles.active=qa --server.port=8060
+  host: 172.16.9.15  # 172.16.9.52 java -Xms384m -Xmx512m -jar app.jar --spring.profiles.active=qa --server.port=8060
   port: 27017
   database: payroll_db
   userName: ciicit
   pwd: ciicit!#%
 
 druid:
-   configPath: /data/appdatas/gt1/gtopayrolldb_test.properties # /Users/hubing/Downloads/gtopayrolldb_dev.properties
+   configPath: /data/appdatas/gt1/gtopayrolldb_dev.properties # /Users/hubing/Downloads/gtopayrolldb_dev.properties
