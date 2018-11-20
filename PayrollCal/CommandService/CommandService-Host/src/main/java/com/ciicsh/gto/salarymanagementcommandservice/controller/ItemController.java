@@ -248,35 +248,21 @@ public class ItemController extends BaseController {
         if (input != null) {
             dateMatcher = DATE_REGEX_PATTERN.matcher(input);
         }
-        if (dateMatcher != null) {
+
+        while (dateMatcher.find()) {
             Matcher xzxMatcher = XZX_REGEX_PATTERN.matcher(input);
-            input = convert(dateMatcher, xzxMatcher, input);
+            String ori = input.substring(dateMatcher.start(), dateMatcher.end());
+            String update = "new Date('" + ori.replaceAll("\\$","") + "')";
+            input = input.replace(ori, update);
+
+            //todo: 假设条件有日期型值的话，条件里所有薪资项都是日期型，以后可能要优化。11/12/2018
+            while (xzxMatcher.find()) {
+                ori = input.substring(xzxMatcher.start(), xzxMatcher.end());
+                update = "new Date(" + ori + ")";
+                input = input.replace(ori, update);
+            }
         }
         return input;
-    }
-
-    /**
-     * 转换条件中日期类型
-     * @param dateMatcher, xzxMatcher, cond
-     * @return result
-     */
-    private String convert(Matcher dateMatcher, Matcher xzxMatcher, String cond){
-        String result = null;
-        while (dateMatcher.find()) {
-            String ori = cond.substring(dateMatcher.start(), dateMatcher.end());
-            String update = "new Date('" + ori.replaceAll("\\$","") + "')";
-            result = cond.replace(ori, update);
-        }
-        if (StringUtils.isBlank(result)) {
-            return cond;
-        }
-        //todo: 假设条件有日期型值的话，条件里所有薪资项都是日期型，以后可能要优化。11/12/2018
-        while (xzxMatcher.find()) {
-            String ori = result.substring(xzxMatcher.start(), xzxMatcher.end());
-            String update = "new Date(" + ori + ")";
-            result = result.replace(ori, update);
-        }
-        return result;
     }
 
     /**
