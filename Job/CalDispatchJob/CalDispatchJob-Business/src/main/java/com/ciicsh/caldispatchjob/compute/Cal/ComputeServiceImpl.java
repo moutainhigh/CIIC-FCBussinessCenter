@@ -280,11 +280,8 @@ public class ComputeServiceImpl {
                                     result = Arith.round(computeResult.doubleValue(), 2);
                                 }
 
-                                if (StringUtils.isNotEmpty(itemName) && itemName.equals(PayItemName.EMPLOYEE_NET_PAY) && result < 0) {
-                                    item.put("item_value", 0.0);
-                                } else {
-                                    item.put("item_value", result);
-                                }
+                                item.put("item_value", result);
+
                             }
                             bindings.put(itemCode, result); // 设置计算项的值
                             context.getFuncEntityList().clear(); // 清除FIRE 过的函数
